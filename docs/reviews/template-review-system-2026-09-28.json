@@ -1,0 +1,403 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-09-28T13:19:18.919Z",
+  "scope": "Local shared-review implementation; external email/SMS delivery skipped by user",
+  "actual_setups": 48,
+  "actual_designs": 36,
+  "planned_setups": 24,
+  "shared_editorial_approvals": 48,
+  "studio_tests": 12,
+  "layout": {
+    "cases": 720,
+    "findings": 0
+  },
+  "responsive_review": {
+    "method": "320px iframe viewports",
+    "studio_width": 320,
+    "studio_scroll_width": 320,
+    "walkthrough_width": 320,
+    "walkthrough_scroll_width": 320,
+    "review_select_font_px": 16,
+    "review_select_height_px": 44,
+    "physical_device": false
+  },
+  "native_wordpress": {
+    "studio-welcome": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "edition-early-access": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "journey-email-then-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "delivery-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "fullscreen-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result garden_sun: destination and products",
+        "result balcony: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "home-repair-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "photography-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "consultation-corner": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "sunday-reading": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "content-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "result growing: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "cart-straight-away": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "cart-delivery-help": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "drop-alerts": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sale-deadline": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-care-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "wholesale-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "venue-visit-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "course-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "maintenance-letter": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "seasonal-service-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "event-registration-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "topic-reading-list": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "new-arrivals-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "maker-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restyling-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sizing-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "launch-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "product-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restock-announcements": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "collection-discovery": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "packaging-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "cleaning-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "landscaping-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "enquiry-request: required fields, capture, retry, saved values"
+      ]
+    },
+    "renovation-callback": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "agency-project-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "tutoring-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "fitness-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "accounting-consultation": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "service-text-updates": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-readiness-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "editorial-weekly": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "writing-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "related-essay": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "membership-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "headlines-optional-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "_outbox": {
+      "messages": 100,
+      "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+  },
+  "live_browser": {
+    "campaign": "landscaping-enquiry",
+    "back_preserved_choice": true,
+    "forward_preserved_contact": true,
+    "acknowledgement": "Garden enquiry received",
+    "matching_leads": 1,
+    "stored_interest": "planting"
+  },
+  "screenshots": [
+    {
+      "file": "review-controls-320.png",
+      "sha256": "f8d9a8e077460ed9ab2dde8d7c47f83882659a3ff1dd5550ca3aef0bc2168ff8"
+    },
+    {
+      "file": "review-live-enquiry.png",
+      "sha256": "27e080f1f0b7dc1a72628058822d76cc32fe6e186805f2b211b24fd94811b2f6"
+    },
+    {
+      "file": "business-walkthroughs.png",
+      "sha256": "5e83b886be5b9e1dbe025f5f948cc26781c922b5c7fd75833d2e164760de8786"
+    },
+    {
+      "file": "shared-review-studio.png",
+      "sha256": "a6314637c8bc625d0f2a909d72028f14f6e30006827f15d1e6a7e4e45ca81c91"
+    }
+  ],
+  "release_approved": false
+}

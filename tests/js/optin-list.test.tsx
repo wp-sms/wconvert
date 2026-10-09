@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -20,6 +20,7 @@ const optins = vi.hoisted(() => ({
   createVariant: vi.fn(),
   declareWinner: vi.fn(),
   readCampaignPreviews: vi.fn(),
+  readProductHealth: vi.fn(),
   duplicateCampaign: vi.fn(),
 }));
 
@@ -61,11 +62,60 @@ const OPTIN = {
 beforeEach(() => {
   vi.clearAllMocks();
   optins.readCampaignPreviews.mockResolvedValue([]);
+  optins.readProductHealth.mockImplementation(async (ids: string[]) => ids.map(id => ({ id, basis: 'draft', checks: [] })));
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [], impact: [] });
   optins.listOptins.mockResolvedValue([OPTIN]);
   goals.listGoals.mockResolvedValue([
     { id: 'grow_email_list', label: 'Grow my email list', availability: 'ready' },
   ]);
+});
+
+it('copies the full campaign ID from details without publishing', async () => {
+  const user = userEvent.setup();
+  const write = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+  render(<OptinList onEdit={vi.fn()} onCreate={vi.fn()} />);
+  await user.click(await screen.findByRole('button', { name: OPTIN.name }));
+  await user.click(screen.getByRole('button', { name: 'Copy campaign ID' }));
+  expect(write).toHaveBeenCalledWith(OPTIN.id);
+  expect(await screen.findByText('ID copied.')).toHaveAttribute('role', 'status');
+  expect(optins.publishOptin).not.toHaveBeenCalled();
+  write.mockRestore();
+});
+
+it('a free install is never asked about products (ADR 0116)', async () => {
+  render(<OptinList onEdit={vi.fn()} />);
+  expect(await screen.findByRole('button', { name: OPTIN.name })).toBeInTheDocument();
+  expect(screen.queryByText('Product checks for this page.')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Check products again' })).not.toBeInTheDocument();
+  expect(optins.readProductHealth).not.toHaveBeenCalled();
+});
+
+it('opens product warnings with the affected selection and an editor action', async () => {
+  window.wconvertAdmin = { exportUrl: '', journeys: true };
+  onTestFinished(() => { delete window.wconvertAdmin; });
+  optins.readProductHealth.mockResolvedValue([{ id: OPTIN.id, basis: 'published', checks: [{ label: 'Brewing', state: 'warning', message: 'No available products match. Review this result’s filters.' }] }]);
+  const edit = vi.fn();
+  render(<OptinList onEdit={edit} />);
+  await userEvent.click(await screen.findByRole('button', { name: '1 product warning' }));
+  const dialog = screen.getByRole('dialog');
+  expect(within(dialog).getByText('Published version · current catalog')).toBeInTheDocument();
+  expect(within(dialog).getByText('Brewing')).toBeInTheDocument();
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Review products' }));
+  expect(edit).toHaveBeenCalledWith(OPTIN.id);
+});
+
+it('selects the campaign ID for manual copying when clipboard permission is refused', async () => {
+  const user = userEvent.setup();
+  const write = vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
+  render(<OptinList onEdit={vi.fn()} />);
+  await user.click(await screen.findByRole('button', { name: OPTIN.name }));
+  await user.click(screen.getByRole('button', { name: 'Copy campaign ID' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy automatically');
+  const field = screen.getByRole('textbox', { name: 'Campaign ID' }) as HTMLInputElement;
+  expect(field).toHaveFocus(); expect(field.value).toBe(OPTIN.id);
+  expect(field.selectionStart).toBe(0); expect(field.selectionEnd).toBe(OPTIN.id.length);
+  expect(screen.queryByText('ID copied.')).not.toBeInTheDocument();
+  write.mockRestore();
 });
 
 /**
@@ -401,6 +451,19 @@ describe('an A/B test on the list', () => {
 
   const A_TEST = [{ ...OPTIN, arms: [ARM_B] }];
 
+  it('copies a variants own ID and distinguishes it from the parent campaign', async () => {
+    const user = userEvent.setup();
+    const write = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+    optins.listOptins.mockResolvedValue(A_TEST);
+    render(<OptinList onEdit={vi.fn()} />);
+    await user.click(await screen.findByRole('button', { name: ARM_B.name }));
+    await user.click(screen.getByRole('button', { name: 'Copy variant ID' }));
+    expect(write).toHaveBeenCalledWith(ARM_B.id);
+    expect(screen.getByRole('textbox', { name: 'Variant ID' })).toHaveValue(ARM_B.id);
+    expect(screen.queryByRole('button', { name: 'Copy campaign ID' })).not.toBeInTheDocument();
+    write.mockRestore();
+  });
+
   it('keeps an A/B family together when searching for an arm and can clear unmatched filters', async () => {
     optins.listOptins.mockResolvedValue(A_TEST);
     render(<OptinList onEdit={() => undefined} />);
@@ -506,11 +569,14 @@ describe('an A/B test on the list', () => {
    */
   it('marks A/B testing as premium rather than offering a control that would 404', async () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
+    // A paid install whose rung lacks A/B testing (ADR 0116).
     window.wconvertAdmin = {
       exportUrl: '',
+      installedTier: 'basic',
       variants: { availability: 'locked', tier: 'pro' },
       tiers: { pro: { name: 'Pro', product_name: 'WConvert Pro' } },
     };
+    onTestFinished(() => { delete window.wconvertAdmin; });
 
     render(<OptinList onEdit={() => undefined} />);
 
@@ -520,6 +586,25 @@ describe('an A/B test on the list', () => {
       await screen.findByText('A/B testing is available with WConvert Pro.'),
     ).toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
+  });
+
+  /** A free install's menu carries no A/B item at all — not even a note (ADR 0116). */
+  it('says nothing about A/B testing on a free install', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    window.wconvertAdmin = {
+      exportUrl: '',
+      installedTier: 'free',
+      variants: { availability: 'locked', tier: 'pro' },
+    };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions/);
+
+    expect(await screen.findByRole('menuitem', { name: 'Duplicate as draft' })).toBeInTheDocument();
+    expect(screen.queryByText(/A\/B testing/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /A\/B test|variant/ })).not.toBeInTheDocument();
   });
 
   /**

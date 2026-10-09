@@ -34,7 +34,7 @@ final class PackPlaybooks
         $seen = [];
         foreach ($entries as $entry) {
             PackValidator::check(is_array($entry), __('This pack contains an invalid campaign setup.', 'wconvert'));
-            PackValidator::keys($entry, ['id', 'name', 'goal', 'template_id', 'copy', 'rules', 'targeting', 'destination_hint', 'notes']);
+            PackValidator::keys($entry, ['id', 'name', 'goal', 'template_id', 'copy', 'rules', 'targeting', 'destination_hint', 'notes', 'business_types']);
             PackValidator::check(PackValidator::identifier($entry['id'] ?? null) && !isset($seen[$entry['id']]), __('This pack repeats or misnames a campaign setup.', 'wconvert'));
             $seen[$entry['id']] = true;
             PackValidator::words($entry['name'] ?? null, 120);
@@ -60,35 +60,50 @@ final class PackPlaybooks
             }
             PackValidator::check(PlaybookLibrary::refuse($entry, $templates, $this->vocabulary, $rules) === null, __('This campaign setup refers to unsupported designs, goals, rules or site-specific content.', 'wconvert'));
             $template = $templates->find($entry['template_id']);
-            $bindings = [];
-            TemplateTree::rewrittenIn(['template' => $template], function (array $node) use (&$bindings): array {
-                foreach (SlotRoles::bindingsOf($node, $this->vocabulary) as $role => $keys) $bindings[$role][] = $keys;
-                return $node;
-            });
-            foreach ($entry['copy'] as $role => $words) {
-                $items = is_array($words) && array_is_list($words) ? $words : [$words];
-                PackValidator::check(count($items) > 0 && count($items) <= count($bindings[$role]), __('This campaign setup supplies more wording than its design can use.', 'wconvert'));
-                foreach ($items as $at => $item) {
-                    $keys = $bindings[$role][$at];
-                    if (is_array($item)) {
-                        PackValidator::check($item !== [] && !array_is_list($item), __('This campaign setup has invalid structured wording.', 'wconvert'));
-                        PackValidator::keys($item, $keys);
-                        foreach ($item as $key => $value) {
-                            if ($key === 'link') {
-                                PackValidator::check(is_array($value), __('This campaign setup has an invalid policy label.', 'wconvert'));
-                                PackValidator::keys($value, ['label']);
-                                PackValidator::words($value['label'] ?? null, 200);
-                            } elseif ($key === 'options') {
-                                PackValidator::check(is_array($value) && $value !== [] && $this->vocabulary->choiceOptions($value) === $value, __('This campaign setup has invalid choice options.', 'wconvert'));
-                                foreach ($value as $option) PackValidator::words($option['label'], 200);
-                            } else {
-                                PackValidator::words($value, 2000);
-                            }
+            $this->copy($template['tree'], $entry['copy']);
+        }
+    }
+
+    /** @param array<string, mixed> $tree
+     * @param array<string, mixed> $copy */
+    private function copy(array $tree, array $copy): void
+    {
+        if (isset($copy['screens'])) {
+            // Scope names and roles were checked by the shared Playbook validator.
+            foreach ($tree['steps'] as $index => $screen) {
+                $words = $copy['screens'][SlotRoles::scope($tree, $index)] ?? [];
+                $this->copy(['steps' => [$screen]], $words);
+            }
+            return;
+        }
+        $bindings = [];
+        TemplateTree::rewrittenIn(['template' => ['tree' => $tree]], function (array $node) use (&$bindings): array {
+            foreach (SlotRoles::bindingsOf($node, $this->vocabulary) as $role => $keys) $bindings[$role][] = $keys;
+            return $node;
+        });
+        foreach ($copy as $role => $words) {
+            $items = is_array($words) && array_is_list($words) ? $words : [$words];
+            PackValidator::check(count($items) > 0 && count($items) <= count($bindings[$role]), __('This campaign setup supplies more wording than its design can use.', 'wconvert'));
+            foreach ($items as $at => $item) {
+                $keys = $bindings[$role][$at];
+                if (is_array($item)) {
+                    PackValidator::check($item !== [] && !array_is_list($item), __('This campaign setup has invalid structured wording.', 'wconvert'));
+                    PackValidator::keys($item, $keys);
+                    foreach ($item as $key => $value) {
+                        if ($key === 'link') {
+                            PackValidator::check(is_array($value), __('This campaign setup has an invalid policy label.', 'wconvert'));
+                            PackValidator::keys($value, ['label']);
+                            PackValidator::words($value['label'] ?? null, 200);
+                        } elseif ($key === 'options') {
+                            PackValidator::check(is_array($value) && $value !== [] && $this->vocabulary->choiceOptions($value) === $value, __('This campaign setup has invalid choice options.', 'wconvert'));
+                            foreach ($value as $option) PackValidator::words($option['label'], 200);
+                        } else {
+                            PackValidator::words($value, 2000);
                         }
-                    } else {
-                        PackValidator::check($keys !== ['options'], __('Choice wording needs named options.', 'wconvert'));
-                        PackValidator::words($item, 2000);
                     }
+                } else {
+                    PackValidator::check($keys !== ['options'], __('Choice wording needs named options.', 'wconvert'));
+                    PackValidator::words($item, 2000);
                 }
             }
         }
@@ -107,6 +122,7 @@ final class PackPlaybooks
             $params = $definition['params'];
             $allowed = ['type'];
             foreach (array_keys($params) as $name) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
                 if (!is_string($name)) throw new \RuntimeException(__('This rule declares an invalid parameter.', 'wconvert'));
                 $allowed[] = $name;
             }

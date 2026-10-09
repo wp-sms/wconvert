@@ -73,13 +73,16 @@ final class ConnectionStore
     /**
      * @param array<string, mixed> $credentials
      */
-    public function save(?string $id, string $type, string $label, array $credentials): Connection
+    public function save(?string $id, string $type, string $label, array $credentials, ?string $accountIdentity = null): Connection
     {
         $connection = new Connection(
             $id !== null && $id !== '' ? $id : Ulid::generate(),
             $type,
             $label,
-            $credentials
+            $credentials,
+            $accountIdentity,
+            gmdate('c'),
+            'success'
         );
 
         $all = $this->all();
@@ -91,5 +94,29 @@ final class ConnectionStore
         ));
 
         return $connection;
+    }
+
+    public function delete(string $id): bool
+    {
+        $all = $this->all();
+        if (!isset($all[$id])) {
+            return false;
+        }
+        unset($all[$id]);
+        $this->options->set(self::OPTION, array_map(
+            static fn (Connection $entry): array => $entry->toArray(),
+            $all
+        ));
+        return true;
+    }
+
+    public function recordCheck(string $id, bool $success): void
+    {
+        $all = $this->all();
+        $old = $all[$id] ?? null;
+        if ($old === null) return;
+        $all[$id] = new Connection($old->id, $old->type, $old->label, $old->credentials,
+            $old->accountIdentity, gmdate('c'), $success ? 'success' : 'failed');
+        $this->options->set(self::OPTION, array_map(static fn (Connection $entry): array => $entry->toArray(), $all));
     }
 }

@@ -18,6 +18,7 @@ import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { canExport, eraseIdentifier, exportLeads, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
+import { journeysSupported } from '../settings';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
 import { leadsHref } from '../nav';
@@ -108,6 +109,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   };
   const data = log.status === 'ready' ? log.data : null;
   const csv = data !== null && canExport();
+  // Question answers exist only where journeys run, or where a removed module
+  // left answered submissions behind (ADR 0127).
+  const questionCsv = csv && (journeysSupported() || data.leads.some((lead) => (lead.question_answers?.length ?? 0) > 0));
   const shownGrouped = applied.query.grouped === true;
   const hasAppliedFilters = queryKeyOf(applied.query) !== '{}';
   const rows = data === null ? 0 : shownGrouped ? data.groups.length : data.leads.length;
@@ -131,12 +135,15 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query)}>
       <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
     </Button></PageAction>}
+    {questionCsv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query, 'questions')}>
+      <Download aria-hidden="true" />{__('Export question answers', 'wconvert')}
+    </Button></PageAction>}
     <Region label={__('Submissions', 'wconvert')}>
       <RegionBody>
         <div role="group" aria-label={__('Submission purpose', 'wconvert')} className="mb-4 flex flex-wrap gap-2">
           {[{ value: undefined, label: __('All submissions', 'wconvert') }, { value: 'subscribers' as const, label: __('Subscriber collection', 'wconvert') }, { value: 'enquiries' as const, label: __('Enquiries', 'wconvert') }].map(({ value, label }) => <label key={value ?? 'all'} className="cursor-pointer">
             <input type="radio" className="peer sr-only" name="wconvert-submission-purpose" value={value ?? 'all'} checked={requested.purpose === value} onChange={() => changeQuery({ ...requested, purpose: value })} />
-            <span className="inline-flex min-h-(--control-height-sm) items-center rounded-sm px-3 py-1 font-medium text-muted-foreground hover:bg-muted peer-checked:bg-secondary peer-checked:text-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">{label}{data?.purpose_counts && <span className="ms-2 rounded-sm bg-muted px-1.5 text-note tabular-nums" title={__('Counts use the applied search, campaign and dates.', 'wconvert')}>{data.purpose_counts[value ?? 'all']}</span>}</span>
+            <span className="inline-flex min-h-(--control-height-sm) items-center rounded-sm px-3 py-1 font-medium text-muted-foreground hover:bg-muted peer-checked:bg-secondary peer-checked:text-action peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">{label}{data?.purpose_counts && <span className="ms-2 rounded-sm bg-muted px-1.5 text-note tabular-nums" title={__('Counts use the applied search, campaign and dates.', 'wconvert')}>{data.purpose_counts[value ?? 'all']}</span>}</span>
           </label>)}
         </div>
         <HistoryFilters key={queryKey} query={requested} optins={optins} onApply={changeQuery} />
@@ -346,6 +353,7 @@ function GroupEvents({ group, query, nameOf, goalOf, onRelated }: { group: LeadG
   return <div className="flex flex-col gap-4">
     <p>{submissionCount(data?.submissions ?? group.submissions)}{__(' within the selected filters. These are capture events, not a contact profile.', 'wconvert')}</p>
     {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter)}><Download aria-hidden="true" />{__('Export these submissions', 'wconvert')}</Button>}
+    {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter, 'questions')}><Download aria-hidden="true" />{__('Export question answers', 'wconvert')}</Button>}
     {loading && <p role="status">{__('Loading submissions…', 'wconvert')}</p>}
     {error && <div><p role="alert">{error}</p><Button variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry', 'wconvert')}</Button></div>}
     {data !== null && data.leads.length === 0 && <p>{__('No retained submissions match this group and these filters.', 'wconvert')}</p>}

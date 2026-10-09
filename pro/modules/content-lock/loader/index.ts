@@ -1,3 +1,4 @@
+import { notifyCampaign } from '@loader/events';
 import type { LoaderModule, PayloadEntry, PresentationSession } from '@loader/types';
 import { decide, audienceAnswer, rulesOf, type Decision } from '@loader/decide';
 import { isWithinWindow } from '@loader/schedule';
@@ -114,6 +115,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
         if (!view.root || !captureEndpoint()) { view.close(); return false; }
         mounts.push(view);
         bindJourney(view, entry, {
+          onLeadAccepted: () => notifyCampaign(entry, 'capture'),
           onDismiss: () => controls.dismiss(),
           onCaptured() {
             const focus = view.root?.getRootNode() as ShadowRoot;

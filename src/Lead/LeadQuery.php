@@ -11,6 +11,7 @@ defined('ABSPATH') || exit;
 /** Read-only filters shared by history, its count, group drilldown and CSV. */
 final class LeadQuery
 {
+    // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
     public function __construct(
         public readonly ?string $optinId = null,
         public readonly ?string $identifier = null,
@@ -156,4 +157,5 @@ final class LeadQuery
         }
         return $parsed;
     }
+    // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 }

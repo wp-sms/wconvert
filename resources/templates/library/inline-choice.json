@@ -55,7 +55,10 @@
                   "name": "name",
                   "label": "Your name (optional)",
                   "placeholder": "Alex Morgan",
-                  "required": false
+                  "required": false,
+                  "tokens": {
+                    "border": "#709276"
+                  }
                 },
                 {
                   "type": "field",
@@ -63,7 +66,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#709276"
+                  }
                 }
               ]
             },
@@ -83,7 +89,10 @@
                   "value": "repair",
                   "label": "Repair"
                 }
-              ]
+              ],
+              "tokens": {
+                "border": "#709276"
+              }
             },
             {
               "type": "button",

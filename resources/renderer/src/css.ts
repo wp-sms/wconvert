@@ -305,6 +305,7 @@ export const SHADOW_CSS = [
    */
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
+  `.wc-answer-review{margin-block:.75rem;text-align:start;overflow-wrap:anywhere}.wc-answer-review h3{font-size:inherit}.wc-answer-review dl{margin:.5rem 0}.wc-answer-review dt{font-weight:600;margin-block-start:.5rem}.wc-answer-review dd{margin:0;white-space:pre-wrap}.wc-capture-note{font-size:.875em;white-space:pre-wrap}`,
   // `.8125em` is small body text, not fine print — it sat close enough to the
   // body copy that a design with both read as two paragraphs of equal weight.
   // `.6875em` is the size this genre actually sets a consent line at.
@@ -365,7 +366,7 @@ export const SHADOW_CSS = [
    * tracking stops being an eyebrow.
    */
   `.wc-eyebrow{margin:0;font-size:.75em;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--wc-muted,#6b7280)}`,
-  `.wc-badge{align-self:start;font-size:.75em;font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
+  `.wc-badge{align-self:start;font-size:calc(var(--wc-text-size,1rem)*.75);font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
   /*
    * ==========================================================================
    * THE CORNER FLASH — THE ONE PLACEMENT NO TOKEN REACHES, AT ANY SCOPE.
@@ -383,6 +384,8 @@ export const SHADOW_CSS = [
    * Logical properties, so a `fa_IR` site flashes the corner that side of the
    * page actually has with no second spelling (ADR 0009).
    */
+  // Rows centre their content vertically; stacked badges keep start alignment.
+  `.wc-row>.wc-badge:not(.wc-badge-corner){align-self:center}`,
   `.wc-badge-corner{position:absolute;inset-block-start:var(--wc-pad,1.5rem);inset-inline-end:var(--wc-pad,1.5rem)}`,
   // `1px` and not a token: a rule the merchant can make 8px thick is a rule
   // that stops being a rule. Its COLOUR is the design's border colour, which is
@@ -518,7 +521,9 @@ export const SHADOW_CSS = [
    * `grid` cell or a `split` pane needs neither: neither parent is a flex
    * container, so the shorthand was already inert there.
    */
-  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
+  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start;position:relative}`,
+  `.wc-product{display:grid;grid-template-columns:4.5rem minmax(0,1fr);gap:.75rem;padding:.75rem;border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-product>img{inline-size:4.5rem;block-size:4.5rem;object-fit:cover}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
   /*
    * ==========================================================================
@@ -539,7 +544,7 @@ export const SHADOW_CSS = [
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
-  `.wc-field>select{appearance:auto}`,
+  `select.wc-input{appearance:none;padding-inline-end:2rem}.wc-field:has(select):after{content:"▾"/"";position:absolute;inset-inline-end:1rem;bottom:.75rem;pointer-events:none}`,
   /*
    * ==========================================================================
    * A compact field-and-button row can use its placeholder as the visible cue.
@@ -595,7 +600,7 @@ export const SHADOW_CSS = [
    * inline padding stays generous for the same reason it always was: a label
    * that says what happens ("Send my code") is longer than "Submit".
    */
-  `.wc-button{display:inline-block;font:inherit;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
+  `.wc-button{display:inline-block;font:inherit;font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
   /*
    * ==========================================================================
    * THE ONLY MOTION INSIDE THE BOUNDARY, AND IT IS ON THE CONTROL THAT MATTERS.
@@ -629,6 +634,9 @@ export const SHADOW_CSS = [
   // the way out, and it must not be able to make the reason its form was
   // refused invisible. So the colour is a literal and not a token.
   `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:.875em;font-weight:600;text-align:start}`,
+  // Form-wide refusals sit outside the template's stack and need their own gap.
+  // Keep their focus visible without the template accent overlapping the CTA.
+  `.wc-root>.wc-error{margin-block-start:.75rem;outline-color:currentColor;outline-offset:0}`,
   // Follows the ring above. `border-color` styled a border this no longer
   // draws, so the invalid state was silently invisible the moment the field
   // changed shape — which is the one state that must not be.
@@ -657,6 +665,9 @@ export const SHADOW_CSS = [
   // One visible focus ring for everything focusable, so the keyboard path
   // `showModal()` supplies for free is actually followable.
   `:focus-visible{outline:2px solid var(--wc-accent,#2563eb);outline-offset:2px}`,
+  // A secondary button can override its accent with transparent. Its focus
+  // ring must still contrast with the surrounding surface in any palette.
+  `.wc-button:focus-visible{outline-color:var(--wc-fg,#0f172a)}`,
 
   /*
    * ==========================================================================
@@ -713,3 +724,7 @@ export const SHADOW_CSS = [
    * --------------------------------------------------------------------- */
   `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');
+
+let premiumStyles = '';
+export function registerJourneyStyles(css: string): void { premiumStyles = css; }
+export function mountedStyles(): string { return SHADOW_CSS + premiumStyles; }

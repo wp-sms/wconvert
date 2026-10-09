@@ -1,0 +1,5 @@
+/*
+Theme Name: WConvert practical review
+Version: 1.0.0
+*/
+body{margin:0;background:#f6f5f0;color:#26372e;font:17px/1.65 system-ui,sans-serif}header,main,footer{max-width:1000px;margin:auto;padding:24px}header{display:flex;gap:20px;align-items:center;border-bottom:1px solid #d7ddd6}header strong{margin-inline-end:auto}a{color:#315d49}main{min-height:55vh}h1{font-size:clamp(28px,4vw,44px);line-height:1.2;max-width:760px;margin:40px 0 24px}h2{line-height:1.3}footer{border-top:1px solid #d7ddd6;font-size:14px}img{max-width:100%;height:auto}.woocommerce ul.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;list-style:none;padding:0}.woocommerce ul.products li{padding:20px;background:white;border-radius:12px}.woocommerce ul.products img{width:180px}.woocommerce ul.products a{display:block}.woocommerce a.button{padding:10px 16px;background:#315d49;color:white;border-radius:6px;margin-top:16px}form input,form button{font:inherit}@media(max-width:550px){header{flex-wrap:wrap}header strong{width:100%}}

@@ -112,21 +112,38 @@ final class CaptureControllerTest extends TestCase
     /**
      * **The whole point of this file.**
      *
-     * `consent` and `fields` are deliberately undeclared. WordPress runs
-     * `rest_sanitize_value_from_schema` over any arg that names a `type`, and
-     * for `'boolean'` that coerces `"true"`, `"on"` and `"1"` into `true` —
-     * so a one-word "tidy-up" adding `'type' => 'boolean'` would leave every
-     * `CaptureFormTest` green while a submission spelling consent as a string
-     * asserted it. An optional consent checkbox captures Leads whose consent
-     * was explicitly refused, which is worse than never asking (ADR 0032).
+     * `consent` and `fields` are declared with no type and no sanitizer.
+     * WordPress runs `rest_sanitize_value_from_schema` over any arg that names
+     * a `type`, and for `'boolean'` that coerces `"true"`, `"on"` and `"1"`
+     * into `true` — so a one-word "tidy-up" adding `'type' => 'boolean'` would
+     * leave every `CaptureFormTest` green while a submission spelling consent
+     * as a string asserted it. An optional consent checkbox captures Leads
+     * whose consent was explicitly refused, which is worse than never asking
+     * (ADR 0032).
      */
-    public function testTheRouteDeclaresNoSchemaForConsentOrTheCapturedFields(): void
+    public function testTheRouteDeclaresNoCoercingSchemaForConsentOrTheCapturedFields(): void
     {
         $args = self::declaredArgs();
 
-        $this->assertArrayNotHasKey('consent', $args, 'ADR 0032: consent must reach CaptureForm uncoerced');
-        $this->assertArrayNotHasKey('fields', $args);
-        $this->assertSame(['optin_id'], array_keys($args));
+        $this->assertSame(['optin_id', 'fields', 'consent'], array_keys($args));
+        foreach (['consent', 'fields'] as $name) {
+            $this->assertArrayNotHasKey('type', $args[$name], "ADR 0032: {$name} must reach CaptureForm uncoerced");
+            $this->assertArrayNotHasKey('sanitize_callback', $args[$name], "ADR 0032: {$name} must reach CaptureForm uncoerced");
+        }
+        $this->assertArrayNotHasKey('validate_callback', $args['consent'], 'consent is for CaptureForm to judge');
+    }
+
+    /** What the public route accepts is declared where a reviewer reads it. */
+    public function testTheDeclaredArgsRefuseWhatCanNeverBeASubmission(): void
+    {
+        $args = self::declaredArgs();
+
+        $this->assertTrue($args['optin_id']['validate_callback']('01JQ0000000000000000000001'));
+        $this->assertFalse($args['optin_id']['validate_callback']('not-an-id'));
+        $this->assertFalse($args['optin_id']['validate_callback'](['01JQ0000000000000000000001']));
+        $this->assertTrue($args['fields']['validate_callback'](['email' => 'a@example.com']));
+        $this->assertTrue($args['fields']['validate_callback']([]));
+        $this->assertFalse($args['fields']['validate_callback']('email=a@example.com'));
     }
 
     public function testAnOversizedBodyIsRefusedBeforeAnyCampaignLookupOrWrite(): void
@@ -173,5 +190,40 @@ final class CaptureControllerTest extends TestCase
         self::assertStringNotContainsString('sarah@example.com', $response->get_error_message());
         self::assertStringNotContainsString('INSERT', $response->get_error_message());
         self::assertFalse($dispatched, 'Nothing downstream may receive a Lead that was not stored.');
+    }
+
+    /**
+     * A journey published on an install that no longer registers journeys is
+     * refused before its contract is read — whatever rung the install is
+     * (ADR 0116). Pro's journeys module registering is what lets it through.
+     */
+    public function testAJourneyIsOnlyCapturedWhereTheJourneysModuleRegistered(): void
+    {
+        $options = new FakeOptionStore();
+        $published = new PublishedSet($options);
+        $db = new FakeConnection();
+        $optins = new OptinRepository($db, $published, RuleVocabulary::fromManifest(), new MilestoneStore($options));
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
+        $config = ['template' => $template, 'display_type' => 'popup', 'capture_mode' => 'local', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])];
+        $optin = $optins->create('Journey test', 'find_match', $config);
+        $optins->publish($optin->id);
+        $controller = new CaptureController($published, new JourneyCapture($db, new StatsRepository($db)), $optins, new CaptureGrant('test-signing-key'),
+            TemplateVocabulary::fromManifest(dirname(__DIR__, 3)), new CaptureRateLimit(new FakeTransientStore()));
+        $request = new \WP_REST_Request('POST', '/wconvert/v1/capture');
+        $request->set_param('optin_id', $optin->id);
+        $request->set_body((string) json_encode(['fields' => [], 'contract' => 'stale']));
+
+        $refused = $controller->capture($request);
+        self::assertInstanceOf(\WP_Error::class, $refused);
+        self::assertSame('wconvert_journey_unavailable', $refused->get_error_code());
+
+        \WConvert\Tests\Unit\Support\Journeys::on();
+        try {
+            $passed = $controller->capture($request);
+            self::assertInstanceOf(\WP_Error::class, $passed);
+            self::assertSame('wconvert_capture_changed', $passed->get_error_code(), 'past the journey gate, to the contract check');
+        } finally {
+            \WConvert\Tests\Unit\Support\Journeys::off();
+        }
     }
 }

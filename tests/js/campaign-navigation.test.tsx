@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 
-const api = vi.hoisted(() => ({ listOptins: vi.fn(), readCampaignPreviews: vi.fn(), duplicateCampaign: vi.fn() }));
+const api = vi.hoisted(() => ({ listOptins: vi.fn(), readCampaignPreviews: vi.fn(), duplicateCampaign: vi.fn(), readProductHealth: vi.fn() }));
 vi.mock('../../resources/admin/src/optins/api', async original => ({ ...await original<typeof import('../../resources/admin/src/optins/api')>(), ...api }));
 vi.mock('../../resources/admin/src/goals/api', () => ({ listGoals: async () => [] }));
 vi.mock('../../resources/admin/src/stats/api', () => ({ readDashboard: async () => ({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [] }) }));
@@ -16,6 +16,7 @@ beforeEach(() => {
   window.innerWidth = 1200;
   api.listOptins.mockResolvedValue([ROW]);
   api.readCampaignPreviews.mockResolvedValue([]);
+  api.readProductHealth.mockImplementation(async (ids: string[]) => ids.map(id => ({ id, basis: 'draft', checks: [] })));
 });
 
 it('blocks creation and detail-editor navigation until a duplicate completes', async () => {

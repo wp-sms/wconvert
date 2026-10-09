@@ -87,18 +87,26 @@ final class BeaconControllerTest extends TestCase
     }
 
     /**
-     * **No declared schema, deliberately.**
+     * **No coercing schema, deliberately.**
      *
      * A declared `'type'` runs `rest_sanitize_value_from_schema`, which
      * COERCES — and every field of this body is already checked more strictly
      * than it could be: the id against `Ulid::isOne()`, the kind against a
      * closed enum of four. A coercing layer in front of an exact one can only
      * widen what gets through, which is the same trap the capture route's
-     * `consent` avoids (ADR 0032).
+     * `consent` avoids (ADR 0032). The batch's shape is declared with a
+     * validate_callback, which changes nothing it accepts.
      */
     public function testItDeclaresNoSchemaToCoerceTheBodyWith(): void
     {
-        $this->assertSame([], self::beaconRoute()['args'][0]['args']);
+        $args = self::beaconRoute()['args'][0]['args'];
+
+        $this->assertSame(['events'], array_keys($args));
+        $this->assertArrayNotHasKey('type', $args['events']);
+        $this->assertArrayNotHasKey('sanitize_callback', $args['events']);
+        $this->assertTrue($args['events']['validate_callback']([['id' => '01JQ0000000000000000000001', 'kind' => 'view']]));
+        $this->assertFalse($args['events']['validate_callback'](['id' => '01JQ0000000000000000000001']));
+        $this->assertFalse($args['events']['validate_callback']('view'));
     }
 
     /**

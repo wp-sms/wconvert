@@ -473,8 +473,13 @@
       ],
       "roles": [],
       "choices": {
-        "phone_country": ["site"],
-        "phone_dropdown": ["true", "false"],
+        "phone_country": [
+          "site"
+        ],
+        "phone_dropdown": [
+          "true",
+          "false"
+        ],
         "required": [
           "true",
           "false"
@@ -483,6 +488,45 @@
       "defaults": {
         "phone_country": "site",
         "phone_dropdown": "true",
+        "required": "false"
+      },
+      "style_tokens": [
+        "font",
+        "text-size",
+        "fg",
+        "muted",
+        "input-bg",
+        "border",
+        "radius"
+      ]
+    },
+    "question": {
+      "content": [
+        "label",
+        "help",
+        "options"
+      ],
+      "copy": [],
+      "params": [
+        "answer_type",
+        "required",
+        "tokens",
+        "narrow"
+      ],
+      "roles": [],
+      "choices": {
+        "answer_type": [
+          "single",
+          "multi",
+          "text"
+        ],
+        "required": [
+          "true",
+          "false"
+        ]
+      },
+      "defaults": {
+        "answer_type": "single",
         "required": "false"
       },
       "style_tokens": [
@@ -592,6 +636,43 @@
         "radius",
         "align"
       ]
+    },
+    "products": {
+      "content": [],
+      "copy": [],
+      "params": [
+        "action",
+        "source",
+        "context",
+        "main_product_id",
+        "product_ids",
+        "exclude_cart",
+        "tokens",
+        "narrow"
+      ],
+      "roles": [],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "accent",
+        "accent-fg",
+        "radius",
+        "align"
+      ],
+      "choices": {
+        "source": [
+          "selected",
+          "cross_sells"
+        ],
+        "action": [
+          "link",
+          "add_to_cart"
+        ]
+      },
+      "defaults": {
+        "source": "selected",
+        "action": "link"
+      }
     }
   },
   "identity": "id",
@@ -813,6 +894,7 @@
     "screen_kinds": [
       "content",
       "input",
+      "result",
       "acknowledgement"
     ],
     "actions": [

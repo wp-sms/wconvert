@@ -1,6 +1,6 @@
 {
   "name": "veronalabs/wconvert",
-  "description": "Lead capture and conversion display for WordPress — popups, floating bars, slide-ins and inline forms.",
+  "description": "Lead capture for WordPress — popups and inline forms, created goal-first.",
   "type": "wordpress-plugin",
   "license": "GPL-2.0+",
   "authors": [

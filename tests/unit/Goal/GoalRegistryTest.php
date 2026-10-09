@@ -28,7 +28,7 @@ final class GoalRegistryTest extends TestCase
     public function testTheRegistryHoldsTheGoalsInTheirDeclaredOrder(): void
     {
         $this->assertSame(
-            ['grow_email_list', 'grow_sms_list', 'recover_cart', 'promote_offer', 'deliver_lead_magnet', 'collect_enquiries'],
+            ['grow_email_list', 'grow_sms_list', 'increase_basket_value', 'recover_cart', 'promote_offer', 'deliver_lead_magnet', 'collect_enquiries', 'find_match'],
             array_map(static fn (Goal $goal): string => $goal->value, Goal::cases())
         );
     }
@@ -96,14 +96,14 @@ final class GoalRegistryTest extends TestCase
         );
     }
 
-    public function testOnlyTheCartGoalDependsOnAnythingTheSiteMightNotHave(): void
+    public function testCommerceGoalsRequireWooCommerce(): void
     {
         $dependent = array_values(array_filter(
             Goal::cases(),
             static fn (Goal $goal): bool => $goal->requires() !== null
         ));
 
-        $this->assertSame([Goal::RecoverCart], $dependent);
+        $this->assertSame([Goal::IncreaseBasketValue, Goal::RecoverCart], $dependent);
         $this->assertSame(SiteDependency::WooCommerce, Goal::RecoverCart->requires());
     }
 
@@ -112,7 +112,7 @@ final class GoalRegistryTest extends TestCase
         $entries = $this->registry()->toArray();
 
         $this->assertCount(count(Goal::cases()), $entries);
-        $this->assertSame('recover_cart', $entries[2]['id']);
+        $this->assertSame('increase_basket_value', $entries[2]['id']);
         $this->assertSame(Availability::Unavailable->value, $entries[2]['availability']);
     }
 

@@ -1,5 +1,9 @@
 # Enforcement is by non-registration
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** question journeys and product recommendations belong to every paid tier. A Free install does not register their visitor module and suppresses a campaign that requires it, preserving the draft for a later Pro activation.
+
+**Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md):** journeys are now literally non-registration. Free used to ask whether a paid tier was installed; it now asks `JourneySupport::active()`, which only Pro's `journeys` module adds to. **And a free install no longer renders `locked` as an upsell anywhere.** It hides it. The "identical upsell" this ADR calls honest marketing below is now one header link and one static Settings list.
+
 There is **no runtime licence check anywhere in WConvert.** The only question ever
 asked is "is [[Pro]] loaded", and it is answered by the registries themselves: a
 premium capability is *absent* from a free install rather than present and guarded.
@@ -89,15 +93,20 @@ and would put a branch on the request path 0004 exists to protect.
 
 - **Every registry must enumerate its premium members as data**, marked
   `tier: premium`, so a free install can render the `locked` state without containing
-  the feature. Content, never capability — the same line the Playbook library holds.
+  the feature.
+  *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): a free install renders `locked` as `hide`, and the server sends it
+  no locked design at all. The data is still needed, because a paid install still
+  renders the rungs above it as upsells, and because free hides by reading it.* Content, never capability — the same line the Playbook library holds.
 - **That data is bundled, never fetched.** A free wp.org plugin phoning home for
   *upsell copy* is a different conversation with the review team than fetching a
   template library the user asked for.
+  *Still true after [ADR 0116](0116-free-shows-nothing-it-cannot-run.md). Free's only upsell copy is the header link and the static
+  "More with Pro" list, both bundled.*
   *Both halves acted on by
   [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md), and the
   distinction this sentence draws is the one it splits on. The **locked
   metadata** — a premium design's name, its facets and a link to a live preview
-  on wconvert.com — is `resources/templates/locked.json`, bundled and never
+  on wconvert.io — is `resources/templates/locked.json`, bundled and never
   fetched. The **library** may grow from a WConvert-hosted index over the
   `TemplateSource` seam, transient-cached, degrading to the bundled set on any
   failure; that is the template library the user asked for, and it ships with

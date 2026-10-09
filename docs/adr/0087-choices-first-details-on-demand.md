@@ -24,9 +24,13 @@ setup/measurement background is optional, while consequential warnings stay visi
   the full derived facts, measurement boundary, requirements, checklist and notes.
   Opening/closing details writes nothing and returns keyboard focus to its trigger.
   Draft/publication guidance is shared once, not repeated on every card.
-- The Goal stays visible as a compact button in the editor's existing footer.
-  Its measurement and Change/Duplicate action are in Campaign details, also
-  reachable from the header. There is no permanent Goal/metric row above the canvas.
+- Updated after editor review on 2026-10-02: the Goal, its measurement and
+  Change/Duplicate action live in Campaign details, reached from the header’s
+  ellipsis button. The redundant Goal footer is removed; save status sits beside
+  the campaign name and mobile-editing guidance beside the device selector. Display rules
+  and Destinations retain their top-level tabs, with contextual shortcuts at the
+  flow’s first screen and capture screens/settings instead of a summary bar.
+  These shortcuts open the existing side panels without leaving the campaign.
 - The Design tab names **How it appears** — current format, effective physical
   placement where one exists, and design — before offering **Browse designs and
   formats**. A draft without a design starts at that same goal-aware library rather

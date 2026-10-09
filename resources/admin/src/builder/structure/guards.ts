@@ -1,4 +1,4 @@
-import { walkNodes } from './journey';
+import { walkNodes, usedBy } from './journey';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { childKeysOf } from '../panel';
 import { nodeAt, nodesOf, withRemoved, type Block } from './tree';
@@ -51,16 +51,19 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  * to the renderer and another to whatever counts.
  */
 export function convertingActOf(tree: TemplateTree): ConvertingAct[] {
+  const result = tree.steps.findIndex(step => step.kind === 'result');
+  if (result >= 0) return ['match'];
   const found: ConvertingAct[] = [];
 
   for (const step of tree.steps) {
     collectActs(step.content, found);
   }
 
-  return (['submit', 'click'] as const).filter((act) => found.includes(act));
+  return (['submit', 'click', 'add_to_cart'] as const).filter((act) => found.includes(act));
 }
 
 function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
+  if (node.type === 'products') { const act = 'action' in node && node.action === 'add_to_cart' ? 'add_to_cart' : 'click'; if (!found.includes(act)) found.push(act); }
   if (node.type === 'button' && 'action' in node && ['submit', 'link'].includes(String(node.action))) {
     const act: ConvertingAct = (node as { action?: string }).action === 'link' ? 'click' : 'submit';
 
@@ -120,8 +123,12 @@ export const isConvertingAct = (block: Block): boolean => block.type === 'button
  *    field back.
  */
 export function whyRemovalIsRefused(tree: TemplateTree, path: Path): string | null {
-  if (nodeAt(tree, path) === null) {
+  const current = nodeAt(tree, path);
+  if (current === null) {
     return null;
+  }
+  if (walkNodes(current).some(node => node.type === 'question' && 'id' in node && usedBy(tree, node.id as string).length > 0)) {
+    return __('This question controls another screen or result. Remove those conditions first.', 'wconvert');
   }
 
   const after = withRemoved(tree, path);

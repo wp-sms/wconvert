@@ -70,6 +70,16 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
     appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
+  if (screen?.kind === 'input' && screen.details_note?.trim()) {
+    const note = document.createElement('p'); note.className = 'wc-text wc-capture-note'; note.textContent = screen.details_note;
+    const heading = root.querySelector('h1,h2,h3'); if (heading) heading.after(note); else root.prepend(note);
+  }
+
+  if (screen?.kind === 'result' && journeyResult) {
+    root.prepend(journeyResult(screen));
+    root.classList.add('wc-stack');
+  }
+
   return root;
 }
 
@@ -102,6 +112,21 @@ export interface RenderOptions {
    * what was clicked. Off by default — see above.
    */
   readonly paths?: boolean;
+}
+
+let suppliedLeaf: ((node: TemplateNode) => HTMLElement | null) | undefined;
+export function registerLeafRenderer(render: (node: TemplateNode) => HTMLElement | null): void { suppliedLeaf = render; }
+
+let journeyQuestion: ((node: TemplateNode) => HTMLElement) | undefined;
+let journeyResult: ((screen: TemplateTree['steps'][number]) => HTMLElement) | undefined;
+
+/** Pro supplies its renderer in the same compiled bundle before mounting. */
+export function registerJourneyRenderer(implementation: {
+  question(node: TemplateNode): HTMLElement;
+  result(screen: TemplateTree['steps'][number]): HTMLElement;
+}): void {
+  journeyQuestion = implementation.question;
+  journeyResult = implementation.result;
 }
 
 /**
@@ -164,7 +189,10 @@ function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_
         `--wc-n-accent` exists only on a box that carries a narrow bag, so
         pointing the mirror at itself would resolve to nothing on most of them.
       */
-      value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
+      value !== name && REFERABLE.includes(value)
+        // Secondary actions can follow foreground even in an unstyled template.
+        // Match the root's CSS fallback when that optional token is absent.
+        ? `var(${TOKEN_PREFIX}${value}${value === 'fg' ? ',#111827' : ''})` : value,
     );
   }
 }
@@ -231,7 +259,7 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
     element.dataset.path = at;
   }
 
-  parent.appendChild(element);
+  parent.append(element);
 }
 
 function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTMLElement | null {
@@ -266,13 +294,15 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
       return image(node as ImageNode);
     case 'field':
       return field(node as FieldNode);
+    case 'question':
+      return journeyQuestion?.(node) ?? null;
     case 'button':
     case 'followup':
       return button(node as ButtonNode | FollowupNode);
     case 'consent':
       return consent(node as ConsentNode);
     default:
-      return null;
+      return suppliedLeaf?.(node) ?? null;
   }
 }
 
@@ -462,7 +492,7 @@ function split(node: SplitNode, scoped: Tokens, at: string | null): HTMLElement 
       appendNode(pane, child, here, into(at, key, index));
     }
 
-    element.appendChild(pane);
+    element.append(pane);
   }
 
   return element;
@@ -525,7 +555,7 @@ function words(tag: string, className: string, text: string | undefined): HTMLEl
 function lines(element: HTMLElement, text: string): void {
   text.split('\n').forEach((line, at) => {
     if (at > 0) {
-      element.appendChild(document.createElement('br'));
+      element.append(document.createElement('br'));
     }
 
     if (line !== '') {
@@ -585,7 +615,7 @@ function glyph(name: string, className: string): SVGElement {
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('class', className);
   path.setAttribute('d', GLYPHS[name] ?? '');
-  svg.appendChild(path);
+  svg.append(path);
 
   return svg;
 }
@@ -616,11 +646,11 @@ function rating(node: RatingNode): HTMLElement {
   const element = wrap('div', 'wc-rating', stars);
 
   for (let at = 0; at < 5; at += 1) {
-    stars.appendChild(glyph('star', at < filled ? 'wc-glyph wc-star' : 'wc-glyph'));
+    stars.append(glyph('star', at < filled ? 'wc-glyph wc-star' : 'wc-glyph'));
   }
 
   if (typeof node.text === 'string' && node.text !== '') {
-    element.appendChild(words('span', 'wc-rating-text', node.text));
+    element.append(words('span', 'wc-rating-text', node.text));
   }
 
   return element;
@@ -670,15 +700,13 @@ export const COUNTDOWN_SLOT = 'wc-count';
  * and keeps filling it.
  */
 function countdown(): HTMLElement {
-  const element = document.createElement('div');
   const value = document.createElement('span');
 
   value.className = COUNTDOWN_SLOT;
-  element.className = 'wc-countdown';
+  const element = wrap('div', 'wc-countdown', value);
   element.setAttribute('role', 'timer');
   element.setAttribute('aria-atomic', 'true');
   element.setAttribute('aria-label', 'Time remaining');
-  element.appendChild(value);
 
   return element;
 }
@@ -688,7 +716,7 @@ function wrap(tag: string, className: string, child: Node): HTMLElement {
   const element = document.createElement(tag);
 
   element.className = className;
-  element.appendChild(child);
+  element.append(child);
 
   return element;
 }
@@ -839,7 +867,7 @@ function fill(element: HTMLElement, text: string, anchor: Node | null, strong: N
        * evidence of nothing.
        */
       parts.set(piece, null);
-      element.appendChild(part);
+      element.append(part);
       continue;
     }
 
@@ -923,7 +951,6 @@ function field(node: FieldNode): HTMLElement | null {
     return null;
   }
 
-  const wrapper = document.createElement('div');
   const label = document.createElement('label');
   const input = document.createElement(kind.type === 'select' ? 'select' : 'input');
 
@@ -963,11 +990,11 @@ function field(node: FieldNode): HTMLElement | null {
     // The native required attribute already announces this to assistive tech.
     required.setAttribute('aria-hidden', 'true');
     required.textContent = ' *';
-    label.appendChild(required);
+    label.append(required);
   }
 
-  wrapper.className = 'wc-field';
-  wrapper.append(label, input);
+  const wrapper = wrap('div', 'wc-field', label);
+  wrapper.append(input);
   if (name === 'phone') {
     const hint = document.createElement('small');
     hint.className = 'wc-phone-fallback';
@@ -975,7 +1002,7 @@ function field(node: FieldNode): HTMLElement | null {
       || 'Include + and the country code, for example +1 202 555 0123.';
     hint.id = `${input.id}-hint`;
     input.setAttribute('aria-describedby', hint.id);
-    wrapper.appendChild(hint);
+    wrapper.append(hint);
   }
 
   return wrapper;

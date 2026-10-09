@@ -54,7 +54,7 @@ final class InspectorTag
         RequestContext $context,
         array $labels
     ): string {
-        $json = json_encode(
+        $json = wp_json_encode(
             [
                 'request' => self::request($context),
                 'optins' => self::optins($summaries, $suspensions, $schedules, $publishedSet, $context),
@@ -71,11 +71,7 @@ final class InspectorTag
         // containing `</script>` would otherwise close this element early and
         // turn the rest of the report into markup. Names are merchant input,
         // and this tag carries them where the payload does not.
-        return sprintf(
-            '<script type="application/json" id="%s">%s</script>',
-            self::ELEMENT_ID,
-            $json
-        );
+        return wp_get_inline_script_tag($json, ['type' => 'application/json', 'id' => self::ELEMENT_ID]);
     }
 
     /**

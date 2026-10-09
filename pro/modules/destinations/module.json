@@ -1,0 +1,5 @@
+{
+  "slug": "destinations",
+  "name": "Remote destinations",
+  "description": "Mailchimp, Brevo and Mailtrap account connections and outbound contact delivery."
+}

@@ -1,3 +1,6 @@
+import { reportExtensions } from '@/stats/extensions';
+import { registerProductPreview } from '@/productPreview';
+import { analyticsIntegration } from '@/analyticsIntegration';
 import { lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/App';
@@ -7,6 +10,15 @@ import { previewSurfaces } from '@/previewSurfaces';
 import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
 import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
+import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
+import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
+
+registerPremiumJourneyRenderer();
+registerProviderMarks();
+registerProductPreview();
+reportExtensions.commerce = lazy(() => import('../../../modules/analytics/admin/Revenue'));
+analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));
+analyticsIntegration.campaign = lazy(() => import('../../../modules/analytics/admin/Campaign'));
 
 reopenControls.component = lazy(() => import('../../../modules/display-types/admin/ReopenSettings'));
 reopenControls.preview = lazy(() => import('../../../modules/display-types/admin/ReopenPreview'));

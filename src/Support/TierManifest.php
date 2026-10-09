@@ -48,6 +48,7 @@ final class TierManifest
     public static function load(string $pluginDir = WCONVERT_DIR): self
     {
         $path = rtrim($pluginDir, '/') . '/' . self::PATH;
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
         $raw = is_file($path) && is_readable($path) ? file_get_contents($path) : false;
         $decoded = $raw === false ? null : json_decode($raw, true);
 

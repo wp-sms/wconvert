@@ -177,7 +177,7 @@ The flow vocabulary is generated from the same manifest as the validator:
 
 ${JSON.stringify(manifest.flow, null, 2)}
 
-A click-only design has one content screen and no submissions. A capture design
+A click-only design has one content screen and no submissions. Its action is one link button or one Pro products block, never both. Products require WooCommerce; ship product_ids empty and let the merchant select products on this site. A capture design
 has up to six screens followed by one acknowledgement. It has one required
 submission and may have one optional signup for the other marketing channel.
 Each submission declares id, required, fields (node IDs), and consents (node IDs).
@@ -465,8 +465,9 @@ Ranked by how long each one costs before you notice.
    default and looks nearly right. This includes a name inside a node's
    \`tokens\` bag — and a bag that keeps nothing leaves no key at all, so the
    node looks untouched rather than empty.
-6. **A \`tokens\` bag on a LEAF is dropped whole.** Only layouts declare the
-   param. A \`heading\` given its own ground silently keeps the one it inherited.
+6. **A token only affects elements that read it.** Layouts and leaves accept
+   scoped bags, but a heading does not paint a background merely because it
+   has a bg token. Use a panel when a painted box is needed.
 7. **A \`split\` written with \`children\`** loses both panes and everything in
    them.
 

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { destinationHref, leadsHref } from '../../resources/admin/src/nav';
@@ -210,7 +210,7 @@ describe('the destinations screen', () => {
     render(<Destinations />);
 
     expect(await screen.findByText(/3 failures in a row. Last error: Gateway timeout/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Re-push leads/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: /Re-push stored submissions/ })).toBeVisible();
   });
 
   /**
@@ -242,6 +242,9 @@ describe('the destinations screen', () => {
   });
 
   it('explains an unavailable type rather than offering to sell it', async () => {
+    // A paid install meeting a higher rung's type (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     api.readDestinations.mockResolvedValue({
       types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
       destinations: [],
@@ -268,6 +271,59 @@ describe('the destinations screen', () => {
     // used, which is `tierProductName`'s documented last resort.
     expect(screen.getByText('Included with WConvert Pro.')).toBeInTheDocument();
     expect(screen.queryByText(/Needs null/)).not.toBeInTheDocument();
+  });
+
+  /** A free install lists only what it can set up, and explains the rest (ADR 0116). */
+  it('lists no type a free install would have to buy', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
+      destinations: [],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
+    expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
+    expect(screen.queryByText('Mailchimp')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Included with/)).not.toBeInTheDocument();
+  });
+
+  /** A route saved under Pro keeps its card on free, and sells nothing (ADR 0116). */
+  it('names no product on a saved route whose type a free install lacks', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [MAILCHIMP_LOCKED],
+      destinations: [{ ...HEALTHY, type: 'mailchimp', label: 'Mailchimp audience', availability: 'locked' as const }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('This destination type isn’t available on this site, so captures are not being sent.')).toBeInTheDocument();
+    expect(screen.getByText('Not available')).toBeInTheDocument();
+    expect(screen.queryByText(/WConvert Pro/)).not.toBeInTheDocument();
+  });
+
+  /**
+   * **One badge vocabulary for Settings and the Campaign editor.** A route
+   * whose required setting is empty cannot send, and saying "Not used yet"
+   * about it reads as healthy-but-idle.
+   */
+  it('marks a route with an empty required setting as needing setup', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...MAILPOET_READY, requirements: { capture_any_of: ['email'], settings: { lists: { label: 'Lists to add to', type: 'ids' } }, fields: ['email'], mapped_fields: {} } }],
+      destinations: [{ ...MAILPOET_BOUND, settings: { lists: [] }, target: '', health: { ...HEALTHY.health, last_success_at: null } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('Needs setup')).toBeInTheDocument();
+    expect(screen.queryByText('Not used yet')).not.toBeInTheDocument();
   });
 
   /**
@@ -575,7 +631,7 @@ describe('the destinations screen', () => {
     render(<Destinations />);
     await userEvent.click(await screen.findByRole('button', { name: 'Settings' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Re-push stored submissions/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
     await waitFor(() => {
@@ -611,7 +667,7 @@ describe('the destinations screen', () => {
 
     // The other Destination is untouched — all three of its controls still work.
     expect(within(magnet).getByRole('button', { name: 'Save' })).not.toBeDisabled();
-    expect(within(magnet).getByRole('button', { name: /Re-push leads/ })).not.toBeDisabled();
+    expect(within(magnet).getByRole('button', { name: /Re-push stored submissions/ })).not.toBeDisabled();
     expect(within(magnet).getByRole('button', { name: 'Remove' })).not.toBeDisabled();
   });
 
@@ -682,10 +738,10 @@ describe('the destinations screen', () => {
 
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
 
-    await userEvent.click(within(wsms).getByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(within(wsms).getByRole('button', { name: /Re-push stored submissions/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
-    expect(await within(wsms).findByText(/4 Leads queued for re-pushing/)).toBeInTheDocument();
+    expect(await within(wsms).findByText(/4 submissions queued for re-pushing/)).toBeInTheDocument();
 
     // Saving anything at all re-reads the payload, and the report is a fact
     // about the moment before that read.
@@ -1102,7 +1158,7 @@ describe('testing a destination', () => {
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     const settings = within(region).getByRole('button', { name: 'Settings' });
     expect(settings).toHaveAttribute('aria-expanded', 'false');
-    expect(within(region).queryByRole('button', { name: /Re-push leads/ })).toBeNull();
+    expect(within(region).queryByRole('button', { name: /Re-push stored submissions/ })).toBeNull();
     expect(within(region).queryByRole('textbox', { name: 'Name' })).not.toBeInTheDocument();
     expect(within(region).getByRole('button', { name: 'Send a test' })).toBeVisible();
     await userEvent.click(settings);
@@ -1227,7 +1283,7 @@ describe('destination recovery entry points', () => {
     render(<Destinations />);
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     expect(within(region).getByRole('button', { name: 'Settings' })).toHaveAttribute('aria-expanded', 'false');
-    const replay = within(region).getByRole('button', { name: /Re-push leads/ });
+    const replay = within(region).getByRole('button', { name: /Re-push stored submissions/ });
     expect(replay).toHaveAccessibleDescription(/published configuration.*since its last success/);
     expect(api.rePush).not.toHaveBeenCalled();
     await userEvent.click(replay);
@@ -1235,7 +1291,7 @@ describe('destination recovery entry points', () => {
     expect(await screen.findByRole('alertdialog', { name: 'Re-push stored submissions?' })).toHaveTextContent('published configuration');
     await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
     expect(api.rePush).toHaveBeenCalledExactlyOnceWith(HEALTHY.id);
-    expect(await within(region).findByText(/12 Leads queued/)).toBeVisible();
+    expect(await within(region).findByText(/12 submissions queued/)).toBeVisible();
   });
 
   it('opens and focuses the destination named by a failure link', async () => {

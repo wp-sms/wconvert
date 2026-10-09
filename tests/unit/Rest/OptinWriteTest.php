@@ -83,6 +83,52 @@ final class OptinWriteTest extends TestCase
         self::assertSame([$sms], $settings['sms-signup']['destination_ids']);
     }
 
+    /**
+     * **An SMS signup subscribes the `phone` channel** — the word WP SMS
+     * declares and `CaptureContract` checks. Publish spelled it `sms`, which
+     * no Destination type declares, so every SMS signup bound to WP SMS was
+     * refused as "does not support its channel".
+     */
+    public function testAnOptionalSmsSignupPublishesToARouteThatTakesPhoneNumbers(): void
+    {
+        $email = $this->destinations->save(null, 'mailpoet', 'Newsletter', null, ['lists' => ['3']]);
+        $sms = $this->destinations->save(null, 'wsms', 'SMS subscribers', null, []);
+        $draft = $this->create(Goal::GrowEmailList, $this->withPhoneCountry(['template_id' => 'journey-email-then-sms',
+            'destinations' => [$email->id], 'submission_settings' => ['sms-signup' => ['destination_ids' => [$sms->id]]]]));
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertNotInstanceOf(WP_Error::class, $response, $response instanceof WP_Error ? $response->get_error_message() : '');
+        self::assertNotNull($this->optins->find($draft['id'])?->publishedAt);
+    }
+
+    /** The same spelling decides the main signup of an SMS list, which WP SMS must be able to receive. */
+    public function testAnSmsListPublishesToWpSms(): void
+    {
+        $sms = $this->destinations->save(null, 'wsms', 'SMS subscribers', null, []);
+        $draft = $this->create(Goal::GrowSmsList, $this->withPhoneCountry(['template_id' => 'stacked-signup', 'destinations' => [$sms->id]]));
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertNotInstanceOf(WP_Error::class, $response, $response instanceof WP_Error ? $response->get_error_message() : '');
+    }
+
+    /** The channel rule still refuses a route that cannot take the signup's channel. */
+    public function testAnOptionalSmsSignupRefusesAnEmailOnlyRoute(): void
+    {
+        $email = $this->destinations->save(null, 'mailpoet', 'Newsletter', null, ['lists' => ['3']]);
+        $draft = $this->create(Goal::GrowEmailList, $this->withPhoneCountry(['template_id' => 'journey-email-then-sms',
+            'destinations' => [$email->id], 'submission_settings' => ['sms-signup' => ['destination_ids' => [$email->id]]]]));
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_signup_destination', $response->get_error_code());
+    }
+
     public function testAnEmailOnlySmsDraftSavesButCannotBePublished(): void
     {
         $draft = $this->create(Goal::GrowSmsList, ['template_id' => 'centred-card']);
@@ -92,6 +138,42 @@ final class OptinWriteTest extends TestCase
         $response = $this->controller->publish($request);
         self::assertInstanceOf(WP_Error::class, $response);
         self::assertContains($response->get_error_code(), ['wconvert_optin_goal_incomplete', 'wconvert_optin_form_incomplete']);
+        self::assertNull($this->optins->find($draft['id'])?->publishedAt);
+    }
+
+    /**
+     * Without the journeys module's registration a journey stays a draft, and
+     * the refusal names neither a product nor a tier (ADR 0116).
+     */
+    public function testAJourneyIsNotPublishedWhereNoModuleRegisteredJourneys(): void
+    {
+        \WConvert\Tests\Unit\Support\Journeys::off();
+        $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-coffee.json'), true);
+        $draft = $this->create(Goal::FindMatch, ['template' => $fixture['template'], 'capture_mode' => 'local']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request(); $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_journey_unsupported', $response->get_error_code());
+        self::assertStringNotContainsString('Pro', $response->get_error_message());
+        self::assertNull($this->optins->find($draft['id'])?->publishedAt);
+    }
+
+    public function testJourneyRefusalIncludesItsRepairCategoryWithoutPublishingTheDraft(): void
+    {
+        $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-coffee.json'), true);
+        $template = $fixture['template'];
+        foreach ($template['tree']['steps'] as &$screen) {
+            if ($screen['kind'] === 'result') $screen['results'][0]['heading'] = '';
+        }
+        unset($screen);
+        $draft = $this->create(Goal::FindMatch, ['template' => $template, 'capture_mode' => 'local']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request(); $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_optin_form_incomplete', $response->get_error_code());
+        self::assertSame('results', $response->get_error_data()['issue']);
         self::assertNull($this->optins->find($draft['id'])?->publishedAt);
     }
 
@@ -179,9 +261,15 @@ final class OptinWriteTest extends TestCase
 
     private \WConvert\Destination\DestinationStore $destinations;
 
+    protected function tearDown(): void
+    {
+        \WConvert\Tests\Unit\Support\Journeys::off();
+    }
+
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestRoutes'] = [];
+        \WConvert\Tests\Unit\Support\Journeys::on();
 
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
@@ -190,7 +278,7 @@ final class OptinWriteTest extends TestCase
         // A Pro install with a store, so the cart [[Goal]] is settable and the
         // refusals below are about the DESIGN rather than about availability.
         $pro = new FakeProPresence(Tier::Elite);
-        $site = new FakeSitePresence([SiteDependency::WooCommerce, SiteDependency::MailPoet]);
+        $site = new FakeSitePresence([SiteDependency::WooCommerce, SiteDependency::MailPoet, SiteDependency::Wsms]);
 
         $this->milestones = new FakeOptionStore();
 
@@ -216,7 +304,26 @@ final class OptinWriteTest extends TestCase
             (new \WConvert\Destination\DestinationRegistry($pro, $site))->register(
                 new \WConvert\Destination\LeadMagnet\LeadMagnetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailer())
             )->register(new \WConvert\Destination\MailPoet\MailPoetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailPoetSubscribers()))
+                ->register(new \WConvert\Destination\Wsms\WsmsDestinationType(new \WConvert\Tests\Unit\Support\FakeWsmsContacts()))
         );
+    }
+
+    /**
+     * The journey's design with its phone field set to one country, so the
+     * site-wide default is not what decides whether it publishes.
+     *
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    private function withPhoneCountry(array $config): array
+    {
+        $file = dirname(__DIR__, 3) . '/resources/templates/library/' . $config['template_id'] . '.json';
+        $config['template'] = json_decode((string) file_get_contents($file), true);
+        return \WConvert\Template\TemplateTree::rewrittenIn($config, static function (array $node): array {
+            if (($node['type'] ?? '') === 'consent') { $node['hidden'] = false; }
+            if (($node['type'] ?? '') === 'field' && ($node['name'] ?? '') === 'phone') { $node['phone_country'] = 'US'; }
+            return $node;
+        });
     }
 
     /**

@@ -5,34 +5,43 @@ import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { DestinationSettingsForm } from '../destinations/DestinationSettingsForm';
 import { saveDestination, type Connection, type Destination, type DestinationType } from '../destinations/api';
-import { renderingFor, tierProductName } from '../goals/availability';
-import { iconFor } from '../icons';
+import { isShown, renderingFor, tierProductName } from '../goals/availability';
+import { ProviderMark } from '../destinations/ProviderMark';
 import { messageOf } from '../shell/loadable';
 
 /** The shared route can be configured without leaving the Optin's draft. */
 export function DestinationSetupDialog({
-  destination, types, connections, returnFocusTo, onClose, onSaved,
+  destination, initialType, focusField, types, connections, returnFocusTo, onClose, onSaved, onConnectionSaved,
 }: {
   destination?: Destination;
+  /** Opens a new route's setup on this provider rather than on the provider list. */
+  initialType?: string;
+  /** A setting key (or `connection`) to focus instead of the title — where "Finish setup" was pressed. */
+  focusField?: string;
   types: readonly DestinationType[];
   connections: readonly Connection[];
   returnFocusTo: RefObject<HTMLElement | null>;
   onClose: () => void;
   onSaved: (destinations: readonly Destination[]) => void;
+  onConnectionSaved?: (connection: Connection) => void;
 }) {
-  const [selected, setSelected] = useState<string | null>(destination?.type ?? null);
+  const [selected, setSelected] = useState<string | null>(destination?.type ?? initialType ?? null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const description = useId();
   const type = types.find((candidate) => candidate.id === selected);
-  useEffect(() => { title.current?.focus(); }, [selected]);
+  const offered = types.filter((candidate) => isShown(candidate.availability));
+  useEffect(() => { if (focusField === undefined) title.current?.focus(); }, [selected, focusField]);
   const close = () => { if (!busy) onClose(); };
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
       <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-xl"
         showCloseButton={!busy}
+        // The portal mounts after this component's effects, so the first
+        // focus is taken here rather than in the effect below.
+        onOpenAutoFocus={(event) => { if (focusField === undefined) { event.preventDefault(); title.current?.focus(); } }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           returnFocusTo.current?.focus();
@@ -44,20 +53,25 @@ export function DestinationSetupDialog({
               : sprintf(__('Add a %s destination', 'wconvert'), type.label)}
           </DialogTitle>
           <DialogDescription className="m-0" id={description}>
-            {destination !== undefined
-              ? __('These settings are shared across the site. Saving changes this destination for every Campaign that uses it, including published Campaigns.', 'wconvert')
-              : __('Create a destination for this site, then select it for this Campaign. Your Campaign draft stays open.', 'wconvert')}
+            {/*
+              Editing says who else is affected in the usage notice below, so
+              the description names the provider rather than saying it twice.
+            */}
+            {type?.needs_connection && !connections.some((account) => account.type === type.id)
+              ? sprintf(__('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
+              : destination !== undefined
+              ? type?.label ?? destination.type
+              : __('It is selected for this campaign when you save.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
 
         {type === undefined ? (
           <ul className="m-0 list-none divide-y divide-border p-0" aria-label={__('Destination providers', 'wconvert')}>
-            {types.map((candidate) => {
-              const Icon = iconFor(candidate.icon);
+            {offered.map((candidate) => {
               const rendering = renderingFor(candidate.availability, 'settings_list');
               return (
                 <li key={candidate.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <span className="flex items-center gap-2 font-medium"><Icon aria-hidden="true" className="size-4" />{candidate.label}</span>
+                  <span className="flex items-center gap-2 font-medium"><ProviderMark type={candidate} className="size-4 shrink-0" />{candidate.label}</span>
                   {rendering === 'offer' ? (
                     <Button variant="outline" size="sm" aria-label={sprintf(__('Choose %s', 'wconvert'), candidate.label)}
                       onClick={() => setSelected(candidate.id)}>{__('Choose', 'wconvert')}</Button>
@@ -71,7 +85,7 @@ export function DestinationSetupDialog({
                 </li>
               );
             })}
-            {types.length === 0 && <li className="text-muted-foreground">{__('No destination providers are available on this site.', 'wconvert')}</li>}
+            {offered.length === 0 && <li className="text-muted-foreground">{__('No destination providers are available on this site.', 'wconvert')}</li>}
           </ul>
         ) : (
           <>
@@ -79,8 +93,9 @@ export function DestinationSetupDialog({
               onClick={() => { setSelected(null); setError(null); }}>
               <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Choose another provider', 'wconvert')}
             </Button>}
-            <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination}
+            <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination} focusField={focusField}
               connections={connections.filter((connection) => connection.type === type.id)}
+              onConnectionSaved={onConnectionSaved}
               busy={busy} error={error} submitDescription={description} onCancel={close}
               onConfirm={(draft) => {
                 if (busy) return;

@@ -1,5 +1,5 @@
 import manifest from '../../../resources/rules/manifest.json';
-import type { Control, RuleBundle, RuleType, RuleVocabulary } from '../../../resources/admin/src/builder/api';
+import type { Control, RuleType, RuleVocabulary } from '../../../resources/admin/src/builder/api';
 import type { Availability } from '../../../resources/admin/src/goals/availability';
 
 /**
@@ -71,7 +71,6 @@ export function ruleTypes(
     targeting: axis('targeting'),
     triggers: axis('triggers'),
     conditions: axis('conditions'),
-    bundles: [],
   };
 }
 
@@ -91,17 +90,6 @@ export function ruleTypes(
  */
 const phraseFor = (key: string, open: readonly string[]): string =>
   [key, ...open.map((_param, index) => `%${index + 1}$s`)].join(' ');
-
-/** A Starting point, for the one screen that renders them. */
-export const ruleBundle = (bundle: Partial<RuleBundle> = {}): RuleBundle => ({
-  id: 'after-a-read',
-  label: 'Once they have read a while',
-  description: 'Waits fifteen seconds.',
-  availability: 'ready',
-  requires_label: null,
-  triggers: [{ type: 'time_on_page', seconds: 15 }],
-  ...bundle,
-});
 
 /** Every type across every axis, which is what the row reader is given. */
 export const allRuleTypes = (availability?: Readonly<Record<string, Availability>>): RuleType[] =>

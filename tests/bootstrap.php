@@ -21,6 +21,15 @@ if (!defined('ABSPATH')) {
 // file here keeps one definition of where Pro's classes live.
 require_once dirname(__DIR__) . '/pro/src/autoload.php';
 
+// Plain-text answer fixtures retain newlines; WordPress integration verifies
+// the real sanitization boundary rather than this standalone test shim.
+if (!function_exists('sanitize_textarea_field')) {
+    function sanitize_textarea_field(string $text): string
+    {
+        return trim(strip_tags($text));
+    }
+}
+
 /*
  * The handful of WordPress functions the units under test call.
  *
@@ -41,6 +50,12 @@ if (!function_exists('wp_json_encode')) {
     function wp_json_encode($data, int $options = 0): string|false
     {
         return json_encode($data, $options);
+    }
+}
+
+if (!function_exists('wp_cache_delete')) {
+    function wp_cache_delete(string $key, string $group = ''): void
+    {
     }
 }
 
@@ -956,7 +971,7 @@ defined('WCONVERT_PRO_URL') || define('WCONVERT_PRO_URL', 'https://example.test/
 // The free plugin's own version, which `src/constants.php` defines at load time
 // and which nothing in the unit suite loads that file to get. It reaches
 // `_doing_it_wrong()` as the "since" argument.
-defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
+defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '1.0.0');
 
 // The plugin directory, which `src/constants.php` defines at load time and
 // which is the default argument of every `fromManifest()` and `fromDirectory()`
@@ -1081,6 +1096,104 @@ if (!function_exists('esc_attr')) {
     }
 }
 
+if (!function_exists('esc_url_raw')) {
+    function esc_url_raw(string $url): string
+    {
+        return $url;
+    }
+}
+
+if (!function_exists('wp_strip_all_tags')) {
+    /** WordPress's own: script and style go with their contents, then every tag, then the ends. */
+    function wp_strip_all_tags(string $text, bool $remove_breaks = false): string
+    {
+        $text = strip_tags((string) preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', $text));
+        if ($remove_breaks) {
+            $text = (string) preg_replace('/[\r\n\t ]+/', ' ', $text);
+        }
+
+        return trim($text);
+    }
+}
+
+if (!function_exists('sanitize_key')) {
+    function sanitize_key(string $key): string
+    {
+        return (string) preg_replace('/[^a-z0-9_\-]/', '', strtolower($key));
+    }
+}
+
+/*
+ * WordPress's inline and external script tags, in the shape 6.8 prints them:
+ * attributes through esc_attr(), a boolean attribute as its bare name, and an
+ * inline body padded with a newline either side. Newer WordPress builds the same
+ * markup with the HTML API.
+ */
+if (!function_exists('wp_sanitize_script_attributes')) {
+    /** @param array<string, string|bool> $attributes */
+    function wp_sanitize_script_attributes(array $attributes): string
+    {
+        $html = '';
+        foreach ($attributes as $name => $value) {
+            if (is_bool($value)) {
+                $html .= $value ? ' ' . $name : '';
+            } else {
+                $html .= sprintf(' %s="%s"', $name, esc_attr($value));
+            }
+        }
+
+        return $html;
+    }
+}
+
+if (!function_exists('wp_get_inline_script_tag')) {
+    /** @param array<string, string|bool> $attributes */
+    function wp_get_inline_script_tag(string $data, array $attributes = []): string
+    {
+        return sprintf("<script%s>\n%s\n</script>\n", wp_sanitize_script_attributes($attributes), trim($data, "\n\r "));
+    }
+}
+
+if (!function_exists('wp_get_script_tag')) {
+    /** @param array<string, string|bool> $attributes */
+    function wp_get_script_tag(array $attributes): string
+    {
+        return sprintf("<script%s></script>\n", wp_sanitize_script_attributes($attributes));
+    }
+}
+
+/*
+ * The filesystem helpers, performed. WordPress's are thin wrappers over the
+ * same PHP calls; these drop the filters and the permission inheritance.
+ */
+if (!function_exists('wp_delete_file')) {
+    function wp_delete_file(string $file): bool
+    {
+        return @unlink($file);
+    }
+}
+
+if (!function_exists('wp_mkdir_p')) {
+    function wp_mkdir_p(string $target): bool
+    {
+        return is_dir($target) || mkdir($target, 0755, true);
+    }
+}
+
+if (!function_exists('wp_is_writable')) {
+    function wp_is_writable(string $path): bool
+    {
+        return is_writable($path);
+    }
+}
+
+if (!function_exists('get_temp_dir')) {
+    function get_temp_dir(): string
+    {
+        return rtrim(sys_get_temp_dir(), '/') . '/';
+    }
+}
+
 if (!function_exists('esc_html__')) {
     function esc_html__(string $text, string $domain = 'default'): string
     {
@@ -1143,6 +1256,24 @@ if (!function_exists('wp_schedule_event')) {
         $GLOBALS['wconvertTestSchedule'][$hook] = $timestamp;
 
         return true;
+    }
+}
+
+if (!function_exists('wp_clear_scheduled_hook')) {
+    /** @param array<mixed> $args Ignored: the record is per hook. */
+    function wp_clear_scheduled_hook(string $hook, array $args = [], bool $wp_error = false): int
+    {
+        $had = isset($GLOBALS['wconvertTestSchedule'][$hook]);
+        unset($GLOBALS['wconvertTestSchedule'][$hook]);
+
+        return $had ? 1 : 0;
+    }
+}
+
+if (!function_exists('wp_unschedule_hook')) {
+    function wp_unschedule_hook(string $hook, bool $wp_error = false): int
+    {
+        return wp_clear_scheduled_hook($hook);
     }
 }
 
@@ -1412,6 +1543,8 @@ if (!class_exists('WP_REST_Response')) {
             return $this->data;
         }
 
+        public function header(string $key, string $value): void { $this->headers[$key] = $value; }
+
         public function get_status(): int
         {
             return $this->status;
@@ -1534,6 +1667,9 @@ if (!class_exists('WP_REST_Request')) {
             private array $attributes = []
         ) {
         }
+
+        /** @return array<string, mixed> */
+        public function get_file_params(): array { return []; }
 
         public function get_method(): string
         {
@@ -1707,10 +1843,10 @@ defined('YEAR_IN_SECONDS') || define('YEAR_IN_SECONDS', 31536000);
 
 // Pack paths are uploads-local. Standalone tests never use the live site's files.
 if (!function_exists('wp_upload_dir')) {
-    /** @return array{basedir: string, error: false} */
+    /** @return array{basedir: string, baseurl: string, error: false} */
     function wp_upload_dir(?string $time = null, bool $create_dir = true, bool $refresh_cache = false): array
     {
-        return ['basedir' => sys_get_temp_dir() . '/wconvert-unit-no-installed-packs', 'error' => false];
+        return ['basedir' => sys_get_temp_dir() . '/wconvert-unit-no-installed-packs', 'baseurl' => 'https://example.com/uploads', 'error' => false];
     }
 }
 
@@ -1736,4 +1872,8 @@ if (!function_exists('wp_salt')) {
 if (!function_exists('as_has_scheduled_action')) {
     /** @param array<mixed> $args */
     function as_has_scheduled_action(string $hook, array $args = [], string $group = ''): bool { return false; }
+}
+
+if (!function_exists('rest_url')) {
+    function rest_url(string $path = ''): string { return 'https://example.test/wp-json/' . ltrim($path, '/'); }
 }

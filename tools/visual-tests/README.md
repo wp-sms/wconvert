@@ -13,8 +13,17 @@ npm run test:visual
 ```
 
 `test:visual` owns port 9413 and refuses to reuse an existing server. Stop a
-manual `visual:serve` process before running the suite. CI installs Chromium's
-system dependencies and uploads `tools/visual-tests/out/` for 14 days.
+manual `visual:serve` process before running the suite.
+
+Every suite boots Playground with six PHP workers, Playground's recommended pool:
+fewer queues page loads behind analytics beacons and loopback requests. Playwright
+itself still runs one test at a time per suite.
+
+In CI, one job runs `npm run build` and the suites then run in parallel, one
+matrix leg each, from that build; this suite is split across two
+`--shard`s. Each leg installs Chromium's system dependencies and uploads
+`tools/visual-tests/out/` as `admin-visual-checks-<suite>` for 14 days. To
+reproduce a shard locally: `npm run test:visual -- --shard=1/2`.
 
 ## Coverage
 
@@ -52,14 +61,35 @@ npm run visual:serve
 
 Full data is seeded through the product repositories. Empty responses retain real
 REST shapes with collections cleared. Failed reads are real WordPress REST errors.
-Loading is held by an api-fetch middleware in the browser, so the single PHP
-worker remains free. Mail is suppressed on this disposable site.
+Loading is held by an api-fetch middleware in the browser, so no PHP worker is
+tied up holding a request open. Mail is suppressed on this disposable site.
 
 Playground's SQLite translator currently leaves MySQL's `<=>` operator intact.
 The harness expands the campaign summary's one null-safe comparison into its
 boolean equivalent. This is a test-environment shim; production SQL is unchanged.
 This suite does not claim MySQL compatibility coverage. Use the `bin/verify-*`
 checks described in the repository README against a disposable MySQL site for that.
+
+## Flow authoring review fixtures
+
+For manual flow-map checks using the shipping Free/Pro admin bundles:
+
+```sh
+npm run build:admin && npm run build:admin:pro
+WCONVERT_VISUAL_PRO=1 WCONVERT_VISUAL_PORT=9417 npm run visual:serve
+```
+
+Sign in with the disposable account above. Open
+`http://127.0.0.1:9417/?wconvert_visual_flow=branches`, `=large-12`, or `=large-20`
+and follow Open flow editor. Each creates or reuses an unpublished fixture,
+validated by the existing graph validator; none publishes a campaign. The
+larger fixtures have exclusive question branches with a shared collection screen
+and ending, within the ten-question route limit. Use Direction controls to test
+the same editor with WordPress RTL styles. Restarting the server discards data.
+
+These controls are for disposable Playground only; never mount the fixture
+mu-plugins into a saved site. The pure layout/traversal assertions for the larger
+cases are in `tests/js/journey-large-map.test.ts`.
 
 ## Workflow review, 2026-09-19
 
@@ -94,3 +124,16 @@ disposable WordPress with both plugins on port 9415. The fixture exercises real
 content hooks; it never edits a saved Local site. Automatic placement uses the
 existing viewport-based impression and capture paths. Normal-flow insertion can
 shift article content; mobile and real-theme checks remain important.
+
+Analytics integration smoke checks: `npm run build && npm run test:visual:analytics`.
+This uses a disposable WordPress/PHP 8.1 site, checks GA/GTM JavaScript handoff with
+recording tags, consent gating, progressive capture, quiz results, content unlock,
+REST access control, settings and dry-run diagnostics. It never sends to Google;
+DebugView receipt requires a separately configured test property.
+
+The analytics consent-contract check uses the actual WP Consent API JavaScript
+at a pinned upstream revision (requires network access). After `npm run build:analytics`,
+run `node tools/visual-tests/consent-api-check.mjs`. It tests cookie-backed consent
+changes against a recording Google tag; real Site Kit/CMP and Google receipt
+remain separate acceptance checks. Run loader budgets with Node 22, as in CI:
+`npx --package=node@22 node bin/check-loader.mjs` after building the loaders.

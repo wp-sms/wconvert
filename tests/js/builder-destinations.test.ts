@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { destinationsSaid, hintIn, hintSaid } from '../../resources/admin/src/builder/destinations';
-import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
+import { destinationsSaid, hintIn } from '../../resources/admin/src/builder/destinations';
+import type { Destination } from '../../resources/admin/src/destinations/api';
 
 /**
  * What the builder says about an [[Optin]]'s [[Destination]]s, as pure
- * functions — the readiness panel takes two of these sentences and the
- * Destinations tab takes the third.
+ * functions — the readiness panel's sentence, and the Playbook hint the
+ * Destinations tab reads for its "Suggested" tag.
  *
  * ============================================================================
  * ONE OF THEM READS A KEY THAT HAS BEEN WRITTEN AND NEVER READ.
@@ -15,28 +15,7 @@ import type { Destination, DestinationType } from '../../resources/admin/src/des
  * on the way to the browser because it is authoring state, and no screen has
  * ever opened it. `PrefillSnapshotTest` asserts it is stored; nothing asserted
  * anybody could see it.
- *
- * ============================================================================
- * THE HARD CASE IS A TYPE THIS INSTALL DOES NOT HAVE, AND IT IS NOT HYPOTHETICAL.
- * ============================================================================
- * `welcome-discount` names `email_service_provider`, which is not the id of any
- * registered [[Destination]] type on any install — the ESPs are Pro's and are
- * named for the vendor. A hint is written for every install rather than for
- * this one, so a type it names may simply be absent, and there is nothing here
- * that could put words to one: the words for a type come FROM the type.
  */
-
-const type = (id: string, label: string): DestinationType => ({
-  id,
-  label,
-  icon: 'send',
-  tier: 'free',
-  requires: null,
-  requires_label: null,
-  availability: 'ready',
-  needs_connection: false,
-  settings_schema: {},
-});
 
 const destination = (over: Partial<Destination> & { id: string; label: string }): Destination => ({
   type: 'wsms',
@@ -54,10 +33,6 @@ const destination = (over: Partial<Destination> & { id: string; label: string })
   },
   ...over,
 });
-
-const TYPES = [type('wsms', 'WP SMS'), type('lead_magnet_email', 'Lead magnet email')];
-
-const FIELDS = { email: 'Email address', name: 'Name', phone: 'Phone number' };
 
 describe('the playbook’s destination hint', () => {
   it('is read out of a config that has one', () => {
@@ -82,117 +57,6 @@ describe('the playbook’s destination hint', () => {
       types: [],
       fields: ['email'],
     });
-  });
-
-  it('names both halves where the install has the type', () => {
-    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, []);
-
-    expect(said).toContain('Email address');
-    expect(said).toContain('WP SMS');
-  });
-
-  /**
-   * **The `welcome-discount` case.** It names `wsms` and
-   * `email_service_provider`; only the first is a type any install registers,
-   * so the sentence names WP SMS and says nothing about the other. Printing an
-   * unresolved key at a merchant is printing our own vocabulary at them.
-   */
-  it('drops a type this install cannot name, and keeps the one it can', () => {
-    const said = hintSaid(
-      { types: ['wsms', 'email_service_provider'], fields: ['email'] },
-      TYPES,
-      FIELDS,
-      [],
-    );
-
-    expect(said).toContain('WP SMS');
-    expect(said).not.toContain('email_service_provider');
-  });
-
-  /**
-   * And where it can name NONE of them, the fields are still the answer: they
-   * are the closed capture vocabulary, named on every install.
-   */
-  it('still says what is captured when it can name no type at all', () => {
-    const said = hintSaid({ types: ['email_service_provider'], fields: ['email'] }, [], FIELDS, []);
-
-    expect(said).toBe('The campaign setup this started from captures Email address.');
-  });
-
-  /**
-   * A Playbook may name types and no fields — nothing in `HINT_KEYS` requires
-   * both. The clause exists so that entry gets a sentence rather than silence,
-   * and this is what stops it being a translated string with no reader.
-   */
-  it('says only what it suggests where the playbook named no fields', () => {
-    const said = hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS, []);
-
-    expect(said).toBe(
-      'The campaign setup this started from works well with a destination like WP SMS. Add a destination here.',
-    );
-  });
-
-  it('says nothing at all where there is nothing to say', () => {
-    expect(hintSaid(null, TYPES, FIELDS, [])).toBeNull();
-    expect(hintSaid({ types: [], fields: [] }, TYPES, FIELDS, [])).toBeNull();
-  });
-
-  /**
-   * ==========================================================================
-   * THE HINT IS GUIDANCE, AND IT USED TO READ AS AN UNMET REQUIREMENT.
-   * ==========================================================================
-   * *"expects a destination like WP SMS"* is a sentence about something
-   * missing, printed at a merchant who has configured exactly the right thing
-   * and merely not bound it yet — and there is no requirement at all: a
-   * [[Standalone]] install with no [[Destination]]s is a fully working
-   * install, because the [[Lead]] log is written first and always.
-   */
-  it('drops the type half once a destination of that type is configured', () => {
-    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [
-      destination({ id: 'a', label: 'Newsletter signups', type: 'wsms' }),
-    ]);
-
-    // The expectation is met, so only the guidance is left.
-    expect(said).toBe('The campaign setup this started from captures Email address.');
-  });
-
-  /**
-   * Met by TYPE and never by count. A merchant with a lead-magnet email
-   * configured has not met a hint that named WP SMS, and saying they have
-   * would drop the one sentence worth printing.
-   */
-  it('keeps the type half where what is configured is a different type', () => {
-    const said = hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [
-      destination({ id: 'a', label: 'The guide', type: 'lead_magnet_email' }),
-    ]);
-
-    expect(said).toContain('WP SMS');
-    // Something IS configured, so the merchant is not sent to a screen they
-    // have already used — that clause is for an install with nothing at all.
-    expect(said).not.toContain('Destinations screen');
-  });
-
-  /**
-   * **Where to go, and only where there is nowhere for the leads to go yet.**
-   * ADR 0042: it changes what you do next.
-   */
-  it('says where to add one only when nothing at all is configured', () => {
-    expect(hintSaid({ types: ['wsms'], fields: ['email'] }, TYPES, FIELDS, [])).toContain(
-      'Add a destination here.',
-    );
-  });
-
-  /**
-   * A type the hint names that this install does not have was already dropped;
-   * a type it names that IS configured is dropped for the opposite reason. With
-   * both gone and no fields either, there is nothing to say.
-   */
-  it('says nothing where the only thing it named is already configured and it named no fields', () => {
-    expect(
-      hintSaid({ types: ['wsms'], fields: [] }, TYPES, FIELDS, [
-        destination({ id: 'a', label: 'Newsletter signups', type: 'wsms' }),
-      ]),
-    ).toBeNull();
   });
 });
 

@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import { enhancePhones } from '../../../phone/src/enhance';
 import { phoneSiteCountry } from '../phoneSiteCountry';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
-import type { Template } from '@renderer/types';
+import type { ResultVariant, Template } from '@renderer/types';
 import { previewSurfaces } from '../previewSurfaces';
 
 /**
@@ -85,7 +85,7 @@ import { previewSurfaces } from '../previewSurfaces';
  * across the boundary by inheritance, while a rule matching `.wc-heading` never
  * would.
  */
-const OUTLINE = '2px solid var(--ring, #0f6e79)';
+const OUTLINE = '2px solid var(--ring, #302720)';
 
 /**
  * What the NEXT press would take, drawn under the pointer.
@@ -105,7 +105,7 @@ const OUTLINE = '2px solid var(--ring, #0f6e79)';
  * one distinction a merchant with a colour-vision deficiency must still get
  * (ADR 0038). The selected outline always wins where both would land.
  */
-const HINT = '2px dashed var(--ring, #0f6e79)';
+const HINT = '2px dashed var(--ring, #302720)';
 
 /**
  * What is already a control, because the preview is the real render.
@@ -172,6 +172,8 @@ export interface PreviewProps {
   readonly step?: number;
   readonly interactive?: boolean;
   readonly onAdvance?: () => void;
+  /** A specific result to inspect. Never written back to the campaign. */
+  readonly result?: ResultVariant;
   /** The block drawn as selected, addressed the way `slots.ts` addresses one. */
   readonly selected?: SlotKey | null;
   /**
@@ -186,7 +188,7 @@ export interface PreviewProps {
   readonly onSelect?: (key: SlotKey) => void;
 }
 
-export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance }: PreviewProps) {
+export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance, result }: PreviewProps) {
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -195,6 +197,20 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
    * screen.
    */
   const [root, setRoot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!root || !result) return;
+    const heading = root.querySelector<HTMLElement>('[data-result-heading]');
+    const body = root.querySelector<HTMLElement>('[data-result-body]');
+    const link = root.querySelector<HTMLAnchorElement>('[data-result-link]');
+    if (heading) heading.textContent = result.heading;
+    if (body) body.textContent = result.body ?? '';
+    if (link) {
+      link.textContent = result.link_label ?? '';
+      link.hidden = !result.href;
+      if (result.href) link.href = result.href;
+      else link.removeAttribute('href');
+    }
+  }, [root, result]);
   /*
    * Read as a boolean so a caller passing a fresh arrow function on every
    * render does not remount the tree — `onSelect` is in the effects that BIND
@@ -254,14 +270,18 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
     (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels = {
       fallback: __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
       select: __('Select country', 'wconvert'),
+      /* translators: 1: a country's name, 2: its calling code without the plus sign, for example 44. */
       trigger: __('Select country: %1$s (+%2$s)', 'wconvert'),
       closeSelector: __('Close country selector', 'wconvert'),
       close: __('Close', 'wconvert'),
       search: __('Search…', 'wconvert'),
       searchCountries: __('Search countries', 'wconvert'),
       countries: __('Countries', 'wconvert'),
-      oneResult: __('%s result', 'wconvert'),
-      manyResults: __('%s results', 'wconvert'),
+      // The same two forms LoaderEnqueue hands the phone bundle on the site.
+      /* translators: %s: the number of countries matching the search. */
+      oneResult: _n('%s result', '%s results', 1, 'wconvert'),
+      /* translators: %s: the number of countries matching the search. */
+      manyResults: _n('%s result', '%s results', 2, 'wconvert'),
       too_short: __('Enter a longer phone number.', 'wconvert'),
       too_long: __('This phone number is too long.', 'wconvert'),
       invalid_length: __('Check the phone number length.', 'wconvert'),

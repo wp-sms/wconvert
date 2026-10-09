@@ -1,0 +1,185 @@
+# Set up product recommendations
+
+Recommend a few useful extras for a main product. Choose product-page links or let shoppers add simple products directly.
+WConvert Pro and WooCommerce must be active.
+
+## Choose products
+
+1. Open a campaign with a **Product recommendations** element. The
+   **Recommend a compatible accessory** starting point includes one.
+2. Open **Theme & layout**, then **Layers → Product recommendations**.
+3. Choose the **Main product**.
+4. Under **Recommended extras**, choose products yourself or select
+   **WooCommerce cross-sells** to use pairings saved on the main product.
+5. Keep **Hide items already in the basket** checked unless you want to show
+   those items again.
+
+Choose up to six extras and use the arrows to set their order. The first three
+available extras appear. The main product is never recommended to itself.
+Sold-out, hidden, private and unpurchasable products are skipped. If nothing
+useful remains, the offer stays hidden.
+
+Cross-sells are pairings you save in WooCommerce under the main product's
+**Product data → Linked products → Cross-sells**. WConvert does not decide
+whether two products are compatible. Pick extras you know work together.
+
+## Choose when and where
+
+- **Viewing the main product:** show extras on that product's page, even with
+  an empty basket.
+- **Main product is in the basket:** require the main product in the basket.
+  Recommendations can appear on the pages allowed by your display rules.
+
+Select **Placement & rules** to review pages, audience, opening conditions and
+repeat limits. Choosing a shopping condition does not install a placement or
+override those rules.
+
+For an inline campaign on a classic WooCommerce theme, use the supported
+placement after the product summary. On a block theme, add the existing
+WConvert campaign block to the appropriate product template in the Site Editor
+and select your campaign. Custom builders may need manual placement.
+
+## Test before publishing
+
+In **Display rules**, select **Test a sample visit**.
+
+1. For product-page recommendations, choose the **Viewed product**. Leave the
+   sample basket empty. You should see the eligible extras.
+2. Add one extra to the sample basket. It should disappear from the suggestions.
+3. Add every extra. There should be no eligible suggestions.
+4. For basket-based recommendations, test both with and without the main product.
+5. Check the other conditions. These are assumptions you control, not automatic
+   checks of your actual page, schedule or placement.
+
+Sample visits use your current draft and live catalog availability. They do not
+change a real basket or record clicks or sales. Enter sample amounts yourself
+when testing amount rules; product prices do not calculate those fields.
+
+Select **Review & publish** when ready, then visit the actual product page on
+desktop and a phone. Use the real WooCommerce cart to check exclusion and links.
+
+## If nothing appears
+
+Check the chosen main product, shopping condition, available extras, placement
+and display rules. For cross-sells, check that pairings are saved in WooCommerce.
+An unavailable basket or missing required functional consent also prevents
+recommendations. Use **Test a sample visit**, or the storefront's **Why no popup?**
+tool while signed in as an administrator, to investigate.
+
+## Read results correctly
+
+**View product** opens the selected product page. Variable products use
+**Choose options**. A product click is not an addition or a purchase. Preview and
+diagnostic activity must not be interpreted as shopper results.
+
+To stop the offer, unpublish the campaign. This does not remove items from
+anyone's WooCommerce basket.
+
+## Let shoppers add extras directly
+
+Create a campaign with **Increase basket value → Add useful extras**. Choose the
+main product and extras, then keep **Product action → Add to cart** selected.
+This starting point requires the Elite commerce capability (shown as WConvert Pro).
+An existing published click campaign keeps its original goal; create a new campaign
+for addition results.
+
+A button adds one item. Products needing options open their product page instead.
+Extensions that add custom cart fields or validation can make direct additions
+unavailable; use **Open product page** with the offer goal for those stores.
+If prices change or WooCommerce refuses the item, shoppers can open its product
+page. A lost response says to check the basket; WConvert does not retry it.
+
+**Basket additions** counts campaign appearances with at least one confirmed
+addition. **Items added to basket** counts all successful additions. Adding two
+extras in one appearance is one headline result and two items. Neither is a
+purchase. Reports and CSV keep these results separate from product clicks.
+
+Successful cards stay visible until the appearance ends so the confirmation and
+keyboard focus remain available. New appearances exclude basket items as usual.
+The real WooCommerce cart remains the place to review quantities and totals.
+
+Reports show completed days. Today's test additions appear in the standard report
+window tomorrow.
+
+## See which extras perform
+
+Open **Analytics → your campaign → Product activity**, or the editor's
+**Campaign actions → Campaign details**. The editor includes today; Analytics
+uses completed days, so today's activity appears there tomorrow.
+
+- **Shown:** the product card appeared on screen.
+- **Clicked:** its product-page link was used.
+- **Added:** WooCommerce accepted the addition.
+
+Shown and Clicked count once per product per campaign appearance. Product data
+starts when this version first serves recommendations; earlier campaign totals
+cannot supply product history. The first tracking day may be partial. Product
+activity lasts 90 days, and dates without coverage are marked. Product names are
+current; deleted products retain their IDs. More than 100 active products in a
+period requires a shorter period before a complete table is shown.
+
+These are recorded actions, not unique shoppers, purchases or sales lift.
+Campaign outcomes and attributed sales retain their existing definitions.
+
+## Choose quiz products by category
+
+In a product-finder campaign, open **Your result**, choose a result, then expand
+**Recommend products → Choose products by → Category and attributes**.
+
+1. Choose a category. Its subcategories are included.
+2. Optionally add up to three attribute filters. Each needs a different global
+   WooCommerce attribute and one value; products must match all of them.
+3. Choose **Product order**: oldest, newest or price. Existing results keep oldest first.
+4. Optionally open **Pin or exclude products**. Pin up to three products in priority
+   order, or exclude up to twelve. Pins must match every filter and be available.
+   Exclusions always win, including over pins.
+5. Open **Preview matches** to see current matches. Keep a useful fallback shop
+   or guide link, even when matches are available.
+6. Use **Preview & test** to try different answers and empty/error states.
+
+Up to three available products appear, with eligible pins first. Reads check up
+to three pins and a bounded window of twelve other candidates, sorted and
+filtered before the limit. Unavailable pins are skipped and other matches fill
+their places; preview and campaign checks explain missing pins. With **View product**,
+shoppers follow links and choose any size or other options on the product page.
+For optional cart buttons, see the next section.
+Hand-picked products remain available and keep their saved order. Imported
+category-based results keep their ordering but require choosing categories,
+attribute values, pins and exclusions again on the new site. The feature is included wherever paid product-finder journeys are available.
+
+## Add products from quiz results
+
+1. Open a quiz, choose its Results screen, then a result.
+2. Open **Recommend products** and choose the products or category filters.
+3. Set **Product button → Add to cart**. Products needing options keep a link
+   to their product page. Each accepted click adds one item.
+4. Use **Preview & test** to try the sample action safely. Then check the live
+   quiz on your test store.
+
+Keep the fallback link: shoppers can still continue when products are unavailable.
+An empty basket is fine. Going Back and revisiting a result does not add again.
+If an addition cannot be confirmed, check the basket before trying elsewhere.
+
+In **Campaign details → Product activity**, review Shown, Clicked and Added.
+Completing the quiz remains the campaign result; cart additions are separate.
+These counts do not show purchases or prove that recommendations increased sales.
+
+## Find product problems
+
+Open **Campaigns**. Product checks run for the campaigns on the current page.
+Click a **product warning** to see the affected selection and what to change,
+then choose **Review products** to open the editor. Checks use the published version if one exists;
+otherwise they use the saved draft. Unpublished edits do not repair a live warning.
+
+Checks cover unavailable selected products (including reserves), missing main
+products, empty category matches, missing categories or attributes, missing
+cross-sells and unsupported direct-add offers. A quiz's link-only fallback is
+allowed. Variable quiz products can still use their product links.
+
+After changing products or stock, click **Check products again**. A failed read
+says products could not be checked. Basket-dependent cross-sells need a sample
+visit in the editor. These are catalog checks, not proof that a campaign will
+appear for every visitor; display rules and basket exclusions still apply.
+
+Checks do not change products, baskets, campaigns or activity counts. They run
+when you open the list or ask to recheck, not as background monitoring.

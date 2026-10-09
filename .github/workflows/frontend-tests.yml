@@ -16,9 +16,13 @@ name: Frontend tests
 #                backlog to grandfather, and holding it at zero is the whole
 #                point: a lint backlog is what makes the signal worthless.
 #
-# Visual contracts build the admin bundle and run on disposable WordPress.
-# Screenshots and traces are retained for review; geometry/style assertions gate
-# the regressions that jsdom cannot see. No release ZIP is staged here.
+# Visual contracts run on disposable WordPress. [visual-build] runs `npm run
+# build` once — every bundle, free and Pro — and hands public/, pro/public/ and
+# vendor/ to [visual], a matrix with one leg per suite (admin, the largest, is
+# split into two Playwright shards). Each leg boots its own Playground, so the
+# legs share nothing but the build and none waits on another. Screenshots and
+# traces are retained per leg; geometry/style assertions gate the regressions
+# that jsdom cannot see. No release ZIP is staged here.
 #
 # NO TRIGGERS OF ITS OWN beyond a manual dispatch. See ci.yml.
 # =============================================================================
@@ -74,10 +78,10 @@ jobs:
       - run: npm ci
       - run: npm run lint
 
-  visual:
-    name: 'Admin visual contracts'
+  visual-build:
+    name: 'Visual contracts: build'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -90,21 +94,63 @@ jobs:
           coverage: none
       - run: composer dist --no-progress
       - run: npm ci
+      # The one script that builds everything, so no leg's build list can drift
+      # from the suites that need it.
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: visual-build
+          path: |
+            public/
+            pro/public/
+            vendor/
+          retention-days: 1
+
+  visual:
+    name: 'Visual contracts: ${{ matrix.suite }}'
+    needs: visual-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      # Report every suite even if one fails. Any failed leg still fails the
+      # frontend-tests call, and with it the Required checks gate.
+      fail-fast: false
+      matrix:
+        include:
+          - { suite: admin-1, script: 'test:visual', args: '--shard=1/2' }
+          - { suite: admin-2, script: 'test:visual', args: '--shard=2/2' }
+          - { suite: popup, script: 'test:visual:popup' }
+          - { suite: fullscreen, script: 'test:visual:fullscreen' }
+          - { suite: reopen, script: 'test:visual:reopen' }
+          - { suite: events, script: 'test:visual:events' }
+          - { suite: inline, script: 'test:visual:inline' }
+          - { suite: content-lock, script: 'test:visual:content-lock' }
+          - { suite: analytics, script: 'test:visual:analytics' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      # No PHP or Composer here: vendor/ comes from the build, and PHP runs
+      # inside Playground. npm ci is for the Playground CLI and Playwright.
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: visual-build
+      - id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      # Still runs on a cache hit: --with-deps installs the system libraries,
+      # which live outside the cached directory.
       - run: npx playwright install --with-deps chromium
-      - run: npm run build:admin
-      - run: npm run test:visual
-      - name: Build Pro admin and visitor loaders for fullscreen contracts
-        run: npm run build:admin:pro && npm run build:loader && npm run build:loader:pro
-      - run: npm run test:visual:popup
-      - run: npm run test:visual:fullscreen
-      - run: npm run test:visual:reopen
-      - name: Build block and inspectors for inline contracts
-        run: npm run build:block && npm run build:inspector && npm run build:inspector:pro
-      - run: npm run test:visual:inline
-      - run: npm run test:visual:content-lock
+      - run: npm run ${{ matrix.script }} -- ${{ matrix.args }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: admin-visual-checks
+          name: admin-visual-checks-${{ matrix.suite }}
           path: tools/visual-tests/out/
           retention-days: 14

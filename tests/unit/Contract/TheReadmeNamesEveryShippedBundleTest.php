@@ -31,7 +31,7 @@ use PHPUnit\Framework\TestCase;
  * somebody adds a bundle, and adding one is exactly the moment this paragraph
  * goes stale.
  *
- * **Pro's two configs are deliberately excluded.** `readme.txt` is free's
+ * **Pro's configs are deliberately excluded.** `readme.txt` is free's
  * artifact and describes free's download; Pro ships its own loader and
  * inspector, and naming them here would be the free readme promising sources
  * for code the free ZIP has never contained (ADR 0015).
@@ -39,10 +39,10 @@ use PHPUnit\Framework\TestCase;
 final class TheReadmeNamesEveryShippedBundleTest extends TestCase
 {
     /**
-     * Free's four builds. Pro's `-pro` pair is not free's to describe.
+     * Free's six builds. Pro's `-pro` configs are not free's to describe.
      *
      * Listed rather than globbed for `vite.config.*.mjs`, because a glob would
-     * silently start requiring Pro's two the moment somebody renamed a file —
+     * silently start requiring Pro's the moment somebody renamed a file —
      * and the point of the exclusion is that it is a decision.
      */
     private const FREE_CONFIGS = [
@@ -50,6 +50,8 @@ final class TheReadmeNamesEveryShippedBundleTest extends TestCase
         'vite.config.inspector.mjs',
         'vite.config.admin.mjs',
         'vite.config.block.mjs',
+        'vite.config.phone.mjs',
+        'vite.config.protection.mjs',
     ];
 
     public function testEveryFreeBundleHasItsOutputAndItsSourceNamedInTheReadme(): void

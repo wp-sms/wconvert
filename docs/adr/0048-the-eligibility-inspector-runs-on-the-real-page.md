@@ -1,5 +1,7 @@
 # The eligibility inspector runs on the real page, and the decision has one spelling
 
+> **Amended by [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** The visitor loader now exposes two anonymous boot milestones for delivery diagnostics. The inspector still runs its own evaluators and the real `decide()`; no Campaign IDs, decision state or debug registry enter the marker. The earlier byte-identical-loader statement below is historical.
+
 A merchant asking *"why didn't my popup show?"* is asking about a page. WConvert
 answers it by **opening that page**: an administrator visits
 `https://site/pricing?wconvert-inspect=1` and a panel appears beside the real

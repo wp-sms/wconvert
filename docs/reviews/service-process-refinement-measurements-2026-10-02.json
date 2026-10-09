@@ -1,0 +1,2510 @@
+{
+  "summary": "32 rendered cases across 1 designs. 0 cases need attention (horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).",
+  "failures": [],
+  "cases": [
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 707,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 257,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 1192,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 367,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 707,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 257,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 1192,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 367,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 635,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 233,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 1044,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 312,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 635,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 233,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 1044,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 312,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 363,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 177,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 650,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 209,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 363,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 177,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 650,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 209,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 864,
+      "height": 363,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 864,
+      "height": 177,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 864,
+      "height": 620,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 864,
+      "height": 177,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep.",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing.",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 864,
+      "height": 363,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 864,
+      "height": 177,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Start with the piece you want to keep. — a little more to ex",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "An enquiry is the first step towards a restoration plan. Tak",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "01",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Tell us — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Leave your email so we can discuss the piece. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "02",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Assess together — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Share photos and agree what needs attention. Take a moment t",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "03",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Decide on the work — a little more to explore together",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Review the scope and price before committing. Take a moment ",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Use my email to discuss this restoration request.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about restoration and explore the details",
+          "ratio": 8.359983469404833,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your email to reply. No work is booked by this form.",
+          "ratio": 5.467606872179868,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            237,
+            241,
+            246
+          ],
+          "ring": [
+            115,
+            131,
+            152
+          ],
+          "ratio": 3.410236305622975,
+          "minimum": 3
+        }
+      ],
+      "width": 864,
+      "height": 620,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "service-process-strip",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.2018504614574,
+          "minimum": 4.5
+        },
+        {
+          "text": "Restoration enquiry received — a little more to explore toge",
+          "ratio": 12.241088968835179,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. The next conversation can cover the piece, photog",
+          "ratio": 12.241088968835179,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 864,
+      "height": 177,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    }
+  ]
+}

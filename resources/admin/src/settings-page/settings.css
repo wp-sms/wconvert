@@ -15,6 +15,6 @@
 /* RegionHeader, RegionBody and RegionFooter own card spacing on every screen. */
 
 @layer utilities {
-  #wconvert-admin .wconvert-settings > nav > a[aria-current] { background:var(--card) !important; border-color:var(--primary) !important; }
+  #wconvert-admin .wconvert-settings > nav > a[aria-current] { background:var(--card) !important; border-color:var(--action) !important; }
   #wconvert-admin .wconvert-settings > nav > a:not([aria-current]):hover { background:var(--secondary) !important; }
 }

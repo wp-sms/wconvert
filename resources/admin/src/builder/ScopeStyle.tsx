@@ -113,7 +113,7 @@ export function ScopeStyle({
                       onChange={write(token.name)}
                       resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
                     />
-                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-primary">{__('Different on mobile', 'wconvert')}</p>}
+                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-action">{__('Different on mobile', 'wconvert')}</p>}
                     <SourceNote
                       from={from}
                       token={token.name}

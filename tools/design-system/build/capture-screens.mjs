@@ -23,10 +23,9 @@
  *               REST error body — a 500 synthesised in the browser would prove
  *               the error path against a shape WordPress does not send.
  * - **loading** — a Playwright route that is never fulfilled. It has to be the
- *               BROWSER: Playground runs `--workers=1` (its default six all
- *               write one SQLite file and corrupt it), so a request held open
- *               in PHP deadlocks the whole server instead of rendering a
- *               skeleton.
+ *               BROWSER: Playground runs `--workers=1` here, so a request
+ *               held open in PHP deadlocks the whole server instead of
+ *               rendering a skeleton.
  *
  * ============================================================================
  * AND WHY THE CARDS ARE DOM RATHER THAN SCREENSHOTS.

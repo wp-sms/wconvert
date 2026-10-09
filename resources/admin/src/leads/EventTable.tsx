@@ -130,11 +130,18 @@ export function EventTable({
               </div>
               {selected.fields.message && <section className="border-y border-border py-5">
                 <h3 className="m-0 text-body font-semibold">{__('What they said', 'wconvert')}</h3>
-                <blockquote className="mx-0 mb-0 mt-3 border-s-2 border-primary ps-4 whitespace-pre-wrap break-words">{selected.fields.message}</blockquote>
+                <blockquote className="mx-0 mb-0 mt-3 border-s-2 border-action ps-4 whitespace-pre-wrap break-words">{selected.fields.message}</blockquote>
+              </section>}
+              {!!selected.question_answers?.length && <section className="border-y border-border py-5">
+                <h3 className="m-0 text-body font-semibold">{__('Answers', 'wconvert')}</h3>
+                <dl className="mt-3 flex flex-col gap-3">{selected.question_answers.map(answer => <div key={answer.id}>
+                  <dt className="font-medium">{answer.question}</dt>
+                  <dd className="m-0 break-words whitespace-pre-wrap">{(answer.labels.length ? answer.labels : answer.values).join(', ')}</dd>
+                </div>)}</dl>
               </section>}
               <section>
                 <h3 className="mb-3 mt-0 text-body font-semibold">{__('Capture context', 'wconvert')}</h3>
-                <a className="inline-flex items-center gap-2 text-primary" href={editorHref(selected.optin_id, returnTo)}>{nameOf(selected.optin_id)}<ExternalLink aria-hidden="true" className="size-3" /></a>
+                <a className="inline-flex items-center gap-2 text-link underline decoration-link/40 underline-offset-4 hover:decoration-current" href={editorHref(selected.optin_id, returnTo)}>{nameOf(selected.optin_id)}<ExternalLink aria-hidden="true" className="size-3" /></a>
                 {goalOf?.(selected.optin_id) && <p className="mb-0 mt-1 text-note text-muted-foreground">{goalOf(selected.optin_id)}</p>}
               </section>
               <dl className="m-0 flex flex-col gap-4">
@@ -177,7 +184,7 @@ export function EventTable({
               </dl>
               {(selected.email || selected.phone) && <div className="rounded-md border border-border bg-surface p-4">
                 {onRelated ? <Button variant="link" className="h-auto p-0 text-start whitespace-normal" onClick={() => { const identifier = selected.email || selected.phone!; setSelected(null); onRelated(identifier); }}>{selected.email ? __('View submissions using this email', 'wconvert') : __('View submissions using this phone', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4" /></Button>
-                  : <a className="text-primary" href={leadsHref({ identifier: selected.email || selected.phone! })}>{__('View submissions using this identifier', 'wconvert')}</a>}
+                  : <a className="text-link underline decoration-link/40 underline-offset-4 hover:decoration-current" href={leadsHref({ identifier: selected.email || selected.phone! })}>{__('View submissions using this identifier', 'wconvert')}</a>}
                 <p className="mb-0 mt-1 text-note text-muted-foreground">{__('Search all retained captures, outside the current filters. These remain separate submissions, not a merged contact.', 'wconvert')}</p>
               </div>}
               <details className="rounded-md border border-border p-3">
@@ -226,7 +233,7 @@ function fieldLabel(name: string): string {
 function LeadIdentity({ lead }: { lead: Lead }) {
   const initials = lead.fields.name?.trim().split(/\s+/).map((part) => Array.from(part)[0]).slice(0, 2).join('').toLocaleUpperCase();
   return <span className="flex items-center gap-3">
-    <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-note font-semibold text-primary">{initials || '—'}</span>
+    <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-note font-semibold text-action">{initials || '—'}</span>
     <span className="min-w-0">{lead.fields.name && <span className="block font-medium">{lead.fields.name}</span>}<bdi dir="ltr" className="block break-all text-note text-muted-foreground">{lead.email ?? lead.phone ?? '—'}</bdi></span>
   </span>;
 }

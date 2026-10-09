@@ -98,7 +98,7 @@ final class WsmsDestinationType implements DestinationType
                 'type' => 'ids',
                 'label' => __('Tags to add', 'wconvert'),
                 'description' => __(
-                    'Added to the contact, never removed — a tag WConvert did not set is not WConvert’s to take away.',
+                    'Adds these tags without removing existing tags.',
                     'wconvert'
                 ),
             ],

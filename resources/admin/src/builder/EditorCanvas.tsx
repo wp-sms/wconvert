@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
+import { CircleHelp, Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
+import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
 import { resolvedPlacement } from './PlacementControl';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
+import { graphDisplayOrder } from './structure/graph';
 
 export type PreviewWidth = 'own' | 'narrow';
 export function ScreenControls({
@@ -22,13 +24,20 @@ export function ScreenControls({
   return (
     <div className="wconvert-screen-controls">
       <select aria-label={__('Campaign screen', 'wconvert')} value={extra?.selected ? 'reopen' : String(step)} onChange={event => event.target.value === 'reopen' ? extra?.onSelect() : onChange(Number(event.target.value))}>
-        {template.tree.steps.map((screen, index) => <option key={screen.id} value={String(index)}>{sprintf(__('%1$d. %2$s', 'wconvert'), index + 1, screen.name)}</option>)}
+        {graphDisplayOrder(template.tree).map((index, position) => <option key={template.tree.steps[index].id} value={String(index)}>
+          {sprintf(__('%1$d. %2$s', 'wconvert'), position + 1, template.tree.steps[index].name)}</option>)}
         {extra && <option value="reopen">{extra.label}</option>}
       </select>
       {extra && <Button variant="ghost" size="sm" aria-pressed={extra.selected} onClick={extra.onSelect}>{extra.label}</Button>}
     </div>
   );
 }
+export function MobileAppearanceNote() {
+  return <Popover><PopoverTrigger asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('About mobile editing', 'wconvert')}><CircleHelp aria-hidden="true" /></Button></PopoverTrigger>
+    <PopoverContent className="text-note" align="end">{__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}</PopoverContent>
+  </Popover>;
+}
+
 export function DeviceControls({
   width,
   onChange,
@@ -37,7 +46,7 @@ export function DeviceControls({
   onChange: (width: PreviewWidth) => void;
 }) {
   return (
-    <div className="wconvert-segmented" aria-label={__('Preview width', 'wconvert')}>
+    <div className="wconvert-device-controls"><div className="wconvert-segmented" aria-label={__('Preview width', 'wconvert')}>
       <Button
         variant="ghost"
         size="icon-sm"
@@ -58,7 +67,7 @@ export function DeviceControls({
       >
         <Smartphone aria-hidden="true" />
       </Button>
-    </div>
+    </div>{width === 'narrow' && <MobileAppearanceNote />}</div>
   );
 }
 
@@ -105,11 +114,12 @@ export function EditorCanvas({
       const paper = page.current;
       const area = stage.current;
       if (!paper || !area) return;
+      const padding = getComputedStyle(area);
       const next = {
         width: paper.offsetWidth,
         height: paper.offsetHeight,
-        availableWidth: area.clientWidth,
-        availableHeight: area.clientHeight,
+        availableWidth: area.clientWidth - (parseFloat(padding.paddingLeft) || 0) - (parseFloat(padding.paddingRight) || 0),
+        availableHeight: area.clientHeight - (parseFloat(padding.paddingTop) || 0) - (parseFloat(padding.paddingBottom) || 0),
       };
       setSize((current) =>
         Object.keys(next).every((key) => current[key as keyof typeof next] === next[key as keyof typeof next])
@@ -135,8 +145,8 @@ export function EditorCanvas({
       ? 1
       : Math.min(
           1,
-          Math.max(0.1, (size.availableWidth - 32) / Math.max(1, size.width)),
-          Math.max(0.1, (size.availableHeight - 32) / Math.max(1, size.height)),
+          Math.max(0.1, size.availableWidth / Math.max(1, size.width)),
+          Math.max(0.1, size.availableHeight / Math.max(1, size.height)),
         );
   return (
     <section className="wconvert-canvas" data-width={width} aria-label={__('Design canvas', 'wconvert')}>

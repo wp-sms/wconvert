@@ -11,7 +11,7 @@ $wconvertPluginDir = dirname(__DIR__);
  * absent entirely", so it is defined before anything can fail.
  */
 if (!defined('WCONVERT_VERSION')) {
-    define('WCONVERT_VERSION', '0.1.0');
+    define('WCONVERT_VERSION', '1.0.0');
 }
 
 if (!defined('WCONVERT_DIR')) {

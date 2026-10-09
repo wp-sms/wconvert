@@ -5,7 +5,7 @@ namespace WConvert\Stats;
 defined('ABSPATH') || exit;
 
 /**
- * What a counted act was — **a closed set of four, with no filter and no
+ * What a counted act was — **a closed set, with no filter and no
  * registry** (ADR 0019).
  *
  * The closure is the point. `wconvert_stats`' entire justification is a
@@ -36,9 +36,14 @@ enum StatKind: string
 
     /**
      * The visitor doing the thing the Optin exists to make them do. One Optin
-     * has exactly one converting act, fixed by its [[Goal]] (ADR 0020).
+     * has exactly one converting act, derived from its design (ADR 0059).
      */
     case Conversion = 'conversion';
+    case CartAddition = 'cart_addition';
+    case ProductShown = 'product_shown';
+    case ProductClick = 'product_click';
+    case Capture = 'capture';
+    case ResultClick = 'result_click';
 
     /**
      * A **deliberate** close — the button, `Esc`, the backdrop, or the
@@ -67,6 +72,11 @@ enum StatKind: string
             self::ScreenDismissed => __('Screen dismissed', 'wconvert'),
             self::Impression => __('Impressions', 'wconvert'),
             self::Conversion => __('Conversions', 'wconvert'),
+            self::ProductShown => __('Product cards shown', 'wconvert'),
+            self::ProductClick => __('Product links clicked', 'wconvert'),
+            self::CartAddition => __('Items added to basket', 'wconvert'),
+            self::Capture => __('Captured submissions', 'wconvert'),
+            self::ResultClick => __('Result link clicks', 'wconvert'),
             self::Dismiss => __('Dismissals', 'wconvert'),
             self::LeadMagnetDelivered => __('Emails accepted for sending', 'wconvert'),
         };
@@ -75,7 +85,7 @@ enum StatKind: string
     /**
      * The kind a *browser* may assert, or null.
      *
-     * Three of the four, not four. The beacon endpoint is public and
+     * The beacon endpoint is public and
      * unauthenticated by necessity — a nonce baked into a page the full-page
      * cache serves byte-identically to everyone authenticates nothing — so the
      * honest limit on it is what a browser could possibly know. It saw the
@@ -86,6 +96,6 @@ enum StatKind: string
     {
         $kind = self::tryFrom($value);
 
-        return $kind === self::LeadMagnetDelivered ? null : $kind;
+        return in_array($kind, [self::LeadMagnetDelivered, self::Capture, self::CartAddition, self::ProductShown, self::ProductClick], true) ? null : $kind;
     }
 }

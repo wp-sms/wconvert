@@ -10,9 +10,11 @@ export interface PrivacyDestination {
 }
 
 export interface PrivacyDataMap {
+  analytics_integration?: { configured: boolean; route: string; consent: string } | null;
   retention_days: number | null;
   destinations: PrivacyDestination[];
   browser: {
+    additional?: string[];
     key: string;
     local_storage_expiry_days: null;
     cookie_fallback: boolean;
@@ -30,8 +32,11 @@ export interface PrivacyDataMap {
       contains_contact_details: boolean;
     };
   };
+  product_activity_retention_days?: number | null;
   beacon_rate_limit_seconds: number;
   capture_rate_limit_seconds: number;
+  protection_provider?: string;
+  resource_send_limit_seconds?: number;
 }
 
 export interface PrivacyGuidance {

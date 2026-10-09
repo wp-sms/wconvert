@@ -117,9 +117,14 @@ echo "Writing the fixture\n";
 
 // Sarah, twice, into one Optin. Bob once, into the other. And a phone-only
 // capture, which is the row the second half of the union exists for.
+// Newest-first assertions need distinct ULID milliseconds: the random suffix
+// deliberately does not order two leads created within the same millisecond.
 $sarahFirst = $leads->record($optinId, new Submission('sarah@example.com', null, ['name' => 'Sarah']));
+usleep(2000);
 $bob = $leads->record($otherOptinId, new Submission('bob@example.com', '+442071234567', []));
+usleep(2000);
 $phoneOnly = $leads->record($optinId, new Submission(null, '+12025551234', ['consent_text' => 'Email me offers.']));
+usleep(2000);
 $sarahSecond = $leads->record($optinId, new Submission('sarah@example.com', null, []));
 
 // Paging intentionally excludes the current millisecond. Let the final fixture

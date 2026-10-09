@@ -1,10 +1,14 @@
 # Display workspace uses bounded groups and fresh gestures
 
+> **Amended by [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** Pro adds an optional bounded ad-block audience Condition. A pending or inconclusive measurement matches neither authored status, while an absent module still suspends the Campaign. The loader caps below are historical; ADR 0109 records current numbers.
+
 Accepted 2026-09-23. Implements the approved [Option A plan](../plans/display-workspace/README.md), reviewed against the Goal setup and progressive capture changes in ADRs 0102–0103.
 
 ## Authoring and storage
 
 Display is one workspace: Pages, Audience, Opening moment, Schedule & limits, with a live summary and design preview on demand. Advanced audience alternatives are disclosed only when requested. Save, Undo, Redo and publication still belong to the existing Campaign draft.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Pages, Audience, Opening moment, Schedule & limits, with a live summary". It is five plain questions instead — Where does it show?, Who sees it?, When does it open?, How often? and Dates — one open at a time, with one summary sentence above them and no side summary. Alternative audiences sit behind "+ Or a different group of visitors" under Custom…._
 
 `config.display_rules` is the sole saved and published policy. Audience is explicit Everyone or up to five alternative groups; each group matches ALL or ANY of up to eight leaves. Groups combine with OR. Opening is explicit Immediate, Automatic (ALL/ANY and minimum elapsed seconds), or Click (alternative selectors). There is no recursive expression tree or second legacy runtime. Old pre-release drafts require an explicit replacement before save/publish.
 
@@ -21,6 +25,8 @@ Known incomplete rows may be saved for repair. Publication rejects invalid range
 
 The catalog's existing declarative recipes remain authoring input and are compiled at Prefill, where installation-specific starting suggestions are already resolved. They are never interpreted as old saved Campaign data. The chooser reports the compiled setup. Applying a rule set remains one reviewed, atomic draft edit.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): there is no rule-set chooser any more. Its common answers are client-side Quick picks, matched by the stored value's shape and applied as one draft edit with no review step; `RuleBundles.php` is deleted._
+
 The authoring controls expose explicit values: sign-in status has an unset
 choice distinct from Yes/No, quick delays and scroll choices name their numbers,
 and ALL/ANY explain whether every rule or just one must match. URL-presence
@@ -35,7 +41,11 @@ limits, weekly spacing and alternative leaving/scroll-up gestures. Their copy
 names browser-scoped limits and touch limitations without claiming to detect
 reading, abandonment or a permanent person-level history.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally described a filterable display-rule library with a before/after review. It is removed. Each question offers Quick picks instead; a pacing pick changes only the pacing keys, and no pick changes another question — the cart set is split into a Who pick and a When pick._
+
 ## Runtime
+
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** rich cart facts are prepared asynchronously but evaluated synchronously; unknown or stale facts never match and completed reads never replay a gesture.
 
 The manifest names threshold, state and gesture semantics. Time and scroll-depth thresholds remain achieved after crossing. Inactivity is live visible-page elapsed time without input; hiding/returning resets it. Activity never reads input values, and pointer movement does not continually allocate new timers. Exit, scroll-back-up and click are synchronous fresh-event pulses. A gesture before the minimum time cannot be replayed when a timer or consent change later arrives.
 
@@ -47,7 +57,10 @@ Future schedule starts remain waiting and receive a wake-up. Automatic opening r
 
 `frequency.maxPerSession` is a Campaign-only positive integer, 1–100. The key `wcv_display_session_v1:<capture endpoint path>` uses the existing REST endpoint to separate sites on the same origin. It stores only family IDs and appearance counts, with at most 128 families and least-recently-shown eviction. It writes only on a counted appearance when that cap exists. Denied storage falls back to the current document; copied/restored browser sessions may retain it. No database, cookie, visitor ID, form value or event history is added.
 
-New interruptive drafts start at one automatic appearance per tab session, stop-after-dismiss off and stop-after-conversion on. The repeat selector labels this choice as recommended. Both scratch and bundled creation paths are checked after frequency normalization; inline starting points keep their existing embedded behavior. These are creation defaults, never an automatic rewrite of existing Campaign settings. Absent frequency fields retain their established meanings. Every A/B arm carries its family for pacing, whether or not Reopen or content locking is enabled. Site-wide allowance fields and storage are unchanged.
+New interruptive drafts start at one automatic appearance per tab session, stop-after-dismiss off and stop-after-conversion on. The repeat selector labels this choice as recommended.
+Both scratch and bundled creation paths are checked after frequency normalization; inline starting points keep their existing embedded behavior. These are creation defaults, never an automatic rewrite of existing Campaign settings. Absent frequency fields retain their established meanings. Every A/B arm carries its family for pacing, whether or not Reopen or content locking is enabled. Site-wide allowance fields and storage are unchanged.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the admin calls this "Once per visit", with one note — "A visit ends when they close the tab." — rather than "tab session". The storage and its semantics are unchanged. There is no repeat selector; the Once per visit chip carries the "Recommended" badge instead._
 
 ## Diagnostics and size
 
@@ -61,8 +74,12 @@ still appears in the verdict when collapsed. The window explicitly explains
 that values are pretend, results update automatically, and no real campaign
 opens or visit is recorded.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the tester is now "Test a visit". It reads one described visitor — page, device, account, what happened before this visit, date — against all five questions and says when the campaign would open. It no longer simulates gestures, time or scroll, and the collapsed "Other conditions" assumptions are gone: page, pacing and dates are fields the merchant fills in. The result stays in view beside the visitor, above it on narrow screens._
+
 The user explicitly approved a **1 KiB increase to the existing paid-loader cap**, from 19,456 to 20,480 bytes gzip, after measured safe minifier trials could not fit the added behavior. Free remains 14,012 bytes. CI remains a hard, flagless check per tier. Payload and per-design caps are unchanged. No simulation or admin UI code enters visitor bundles.
 
 > **Amended by [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** Basic remains at 20,480 bytes; Pro caps at 20,608 and Elite at 20,784 after the full phone-field integration. Free remains at 14,012 bytes. The optional phone asset has its own 16 KiB cap.
+
+> **Amended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** Paid caps now stand at 24,064 / 25,088 / 25,344 bytes for Basic / Pro / Elite. Free and the optional phone cap remain unchanged.
 
 This amends ADRs 0005 (grouping), 0012/0027 (authored availability), 0047 (Campaign session cap), 0048 (draft simulation beside live inspection), 0050 (schedule wake/active capture), 0101 (explicit activation/collision/expiry) and 0103 (paid-loader cap). Their relevant passages are annotated inline.

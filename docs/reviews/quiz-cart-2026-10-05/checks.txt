@@ -1,0 +1,60 @@
+wconvert-quiz-finalphp.log
+............................................................. 2379 / 2562 ( 92%)
+............................................................. 2440 / 2562 ( 95%)
+............................................................. 2501 / 2562 ( 97%)
+............................................................. 2562 / 2562 (100%)
+
+
+Time: 00:50.654, Memory: 70.00 MB
+
+OK (2562 tests, 15745 assertions)
+
+wconvert-quiz-finaljs.log
+   ✓ the visible Add element picker > lets the merchant choose the field to add and disables a duplicate capture  764ms
+   ✓ adaptive editor and signup deletion > opens selected layer controls in a drawer on a phone and saves the edit  500ms
+   ✓ adaptive editor and signup deletion > removes an optional signup and its routing together, and Undo restores both  412ms
+
+ Test Files  215 passed (215)
+      Tests  3789 passed (3789)
+   Start at  15:56:54
+   Duration  52.94s (transform 6.90s, setup 12.69s, collect 46.94s, tests 278.95s, environment 71.58s, prepare 11.00s)
+
+
+wconvert-quiz-finalstan.log
+Note: Using configuration file /Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/phpstan.neon.dist.
+   0/589 [░░░░░░░░░░░░░░░░░░░░░░░░░░░░]   0%
+ 589/589 [▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓] 100%
+
+
+ [OK] No errors
+
+
+wconvert-quiz-finaltypes.log
+
+> wconvert@0.1.0 typecheck
+> tsc --noEmit
+
+
+wconvert-quiz-finallint.log
+
+> wconvert@0.1.0 lint
+> eslint . --max-warnings=0
+
+
+wconvert-quiz-source.log
+==> verify-source-contract: /Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert
+  ✓ source contract clean
+
+wconvert-quiz-finalbudget.log
+  ✓ basic phone page: 39996 B gzipped (combined ceiling 41216 B)
+  ✓ pro phone page: 41576 B gzipped (combined ceiling 42752 B)
+  ✓ elite phone page: 42207 B gzipped (combined ceiling 43008 B)
+Analytics feature: 2055 B gzip (budget 4096 B, enabled pages only)
+basic: loader + analytics 27408 B; with phone 42051 B gzip
+pro: loader + analytics 28988 B; with phone 43631 B gzip
+elite: loader + analytics 29619 B; with phone 44262 B gzip
+Commerce: 6045 B gzip (cap 6208 B); loader + commerce 33609 B, commerce campaigns only.
+Revenue feature: 749 B gzip (budget 2048 B, enabled stores only)
+
+wconvert-quiz-assets.log
+PASS published quiz keeps quiz conversion, retains cart intent and serves 2 matching package assets

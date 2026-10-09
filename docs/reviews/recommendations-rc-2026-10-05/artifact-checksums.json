@@ -1,0 +1,28 @@
+{
+  "candidate": "recommendations-rc-2026-10-05",
+  "public_release": false,
+  "plugin_header_version": "0.1.0",
+  "created_at": "2026-10-05T08:36:17.817Z",
+  "artifacts": [
+    {
+      "file": "wconvert-pro-basic-v0.1.0.zip",
+      "bytes": 983802,
+      "sha256": "9facf84d18ab4faf5b515065ac66699d24f2277763a448251f4a83601eaba320"
+    },
+    {
+      "file": "wconvert-pro-elite-v0.1.0.zip",
+      "bytes": 1051615,
+      "sha256": "c5384687802c3d37035c30b2f9ea8db58246ffce550081ed3f94dafe597301c4"
+    },
+    {
+      "file": "wconvert-pro-pro-v0.1.0.zip",
+      "bytes": 1009069,
+      "sha256": "182744117c91005bad7e948a79647463fc0b6420c60b8da1874a28aa6bf19ea2"
+    },
+    {
+      "file": "wconvert-v0.1.0.zip",
+      "bytes": 3093254,
+      "sha256": "d8e9ebe129598af55bfd489c72bd5f8b450424cd5f1e4cecc7c9f0595bf36fc5"
+    }
+  ]
+}

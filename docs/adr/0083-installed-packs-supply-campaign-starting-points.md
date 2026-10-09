@@ -11,8 +11,10 @@ These are JSON data. Installed entries join the existing PlaybookLibrary and
 Prefill; no second campaign builder or snapshot mechanism is introduced.
 
 Choose a goal, then Browse template packs, preview and install a collection.
+**Amended by [ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):**
+that button appears only once a catalog service is configured.
 Choose a starting point returns to that goal's creation gallery filtered to the
-collection. Cards show the real Prefill composition and effective setup facts.
+collection. Cards show the real Prefill composition and effective setup facts. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** the index is metadata-only; bounded visible-card requests prepare actual previews. Canonical design grouping follows active filters, and source/prepared revisions protect creation after inspection. Reviewed discovery Collections are separate from delivery packs.
 Only Customize this starting point creates a draft; the editor continues to own
 review and publication. Merely installing or choosing a collection creates no
 Optin. The design picker still changes designs only, and explains which campaign
@@ -35,7 +37,11 @@ installation. Registration uses the existing Playbook refusal rules without
 emitting author warnings for remote validation failures.
 
 Copy follows the actual Slot Role bindings, including repeated paragraphs,
-policy-link labels and choice options. Extra or unsupported properties, markup,
+policy-link labels and choice options. The 1 October publisher check corrected
+screen-scoped copy validation: use the existing SlotRoles scope mapping, then
+validate each screen's own roles and values. Valid multi-screen setups no longer
+trigger an undefined `screens` binding; unsafe scoped wording remains refused.
+See [ADR 0112](0112-template-discovery-and-reviewed-collections.md). Extra or unsupported properties, markup,
 URLs and merchant-owned coupon codes are refused. The bound tree passes the
 same placeholder-only node checks as a downloaded design.
 

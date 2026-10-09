@@ -1,5 +1,8 @@
 # Goals have publish contracts and stable history
 
+
+**Amended by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md):** the separate Increase basket value Goal counts server-accepted quantity-one recommendation additions. Existing product-link and cart-return outcomes retain their meaning. The guarded cart adapter is the sole permitted product mutation; supporting links do not count as additions.
+
 Accepted 2026-09-14 after the pre-release Goal, Playbook and Template UX review.
 
 ## Decision
@@ -13,16 +16,19 @@ publication requirement, not an alternative runtime detector or a new taxonomy.
 Email and lead-magnet Goals require email; SMS requires phone. The field must be
 visible on the submitting screen and required. Enquiries require a form collecting
 email or phone, with CaptureForm enforcing at least one identifier. Offer Goals
-require a click design with a link; cart recovery uses its runtime-injected cart URL.
+require a click design with a link (including the configured Pro product block in [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md)); cart recovery uses its runtime-injected cart URL.
 Lead magnets additionally require a selected dispatchable lead-magnet email
 Destination with its required settings completed at REST publication.
+
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** Find Match requires a Results screen and allows an anonymous completion. Required contact before results is a request; optional contact after immediate results is a separate marketing signup with consent. The server validates either edited order before publication.
 
 The shared contract drives starting-point facts, fit-first browsing, readiness and
 reporting copy. The server checks the final edited tree. Incomplete pairings can
 save as drafts. Show all designs remains available, and Templates acquire no Goal
 tags. Existing unrelated structural, binding and A/B compatibility checks remain.
 **Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
-the Goal is a compact footer control, with metric detail on demand. Full setup
+the Goal is a compact footer control, with metric detail on demand.
+**Discovery amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** Goal-first setup browsing adds grouped use cases and reviewed collections. Changing layout retains Goal fit, content transfer and Show all designs; event and collection changes never rewrite saved campaigns. Full setup
 facts are optional; All designs is a toolbar choice. Publication checks are unchanged.
 
 ## Evidence, not implied business results

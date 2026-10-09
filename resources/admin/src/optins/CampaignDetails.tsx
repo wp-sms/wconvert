@@ -35,8 +35,6 @@ async function readContext(id: string) {
       priority: typeof config.priority === 'number' ? config.priority : 0,
     },
     vocabulary,
-    config.display_type !== 'inline',
-    act,
   );
   const bound = Array.isArray(config.destinations) ? (config.destinations as string[]) : [];
   const forwarding = destinationsSaid(bound, destinations.destinations, capturedFields(template));
@@ -78,7 +76,7 @@ export default function CampaignDetails({ id }: { id: string }) {
   if (error) return <RegionError message={`${__('Campaign details couldn’t load.', 'wconvert')} ${error}`} action={<Button variant="outline" onClick={() => setAttempt((n) => n + 1)}>{__('Try again', 'wconvert')}</Button>} />;
   if (!context) return <RowsSkeleton rows={4} />;
   return (
-    <div className="wc-campaign-context">
+    <div className="wconvert-campaign-context">
       <h3>{__('Audience & placement', 'wconvert')}</h3>
       {context.inline && (
         <p>
@@ -114,7 +112,7 @@ export default function CampaignDetails({ id }: { id: string }) {
             )}
           </p>
           {context.links.map((link) => (
-            <p className="wc-campaign-context-url" key={link}>
+            <p className="wconvert-campaign-context-url" key={link}>
               {link}
             </p>
           ))}

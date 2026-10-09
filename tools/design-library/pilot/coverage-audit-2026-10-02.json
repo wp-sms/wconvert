@@ -1,0 +1,306 @@
+{
+  "schema": 1,
+  "date": "2026-10-02",
+  "scope": "Repository coverage and duplication audit; not user research or conversion-performance evidence. Counts separate curated studio setups from all registered playbooks.",
+  "baseline_commit": "a233429dca204a4434d32a7922e4d0bb24e4d837",
+  "counts": {
+    "studio_setups": 118,
+    "studio_designs": 67,
+    "registered_playbooks": 143,
+    "registered_playbook_designs": 78,
+    "source_designs": 99,
+    "source_designs_without_playbooks": 21
+  },
+  "audiences": {
+    "publishers": 20,
+    "services": 44,
+    "stores": 54
+  },
+  "goals": {
+    "collect_enquiries": 40,
+    "deliver_lead_magnet": 12,
+    "find_match": 8,
+    "grow_email_list": 18,
+    "grow_sms_list": 2,
+    "promote_offer": 36,
+    "recover_cart": 2
+  },
+  "formats": {
+    "floating_bar": 16,
+    "fullscreen": 3,
+    "inline": 35,
+    "popup": 46,
+    "slide_in": 18
+  },
+  "tiers": {
+    "basic": 44,
+    "elite": 2,
+    "free": 72
+  },
+  "audience_by_goal": {
+    "stores": {
+      "collect_enquiries": 13,
+      "deliver_lead_magnet": 4,
+      "find_match": 4,
+      "grow_email_list": 11,
+      "grow_sms_list": 1,
+      "promote_offer": 19,
+      "recover_cart": 2
+    },
+    "services": {
+      "collect_enquiries": 25,
+      "deliver_lead_magnet": 4,
+      "find_match": 2,
+      "grow_email_list": 2,
+      "grow_sms_list": 1,
+      "promote_offer": 10,
+      "recover_cart": 0
+    },
+    "publishers": {
+      "collect_enquiries": 2,
+      "deliver_lead_magnet": 4,
+      "find_match": 2,
+      "grow_email_list": 5,
+      "grow_sms_list": 0,
+      "promote_offer": 7,
+      "recover_cart": 0
+    }
+  },
+  "audience_by_format": {
+    "stores": {
+      "floating_bar": 10,
+      "fullscreen": 2,
+      "inline": 13,
+      "popup": 23,
+      "slide_in": 6
+    },
+    "services": {
+      "floating_bar": 5,
+      "fullscreen": 1,
+      "inline": 13,
+      "popup": 17,
+      "slide_in": 8
+    },
+    "publishers": {
+      "floating_bar": 1,
+      "fullscreen": 0,
+      "inline": 9,
+      "popup": 6,
+      "slide_in": 4
+    }
+  },
+  "most_reused_designs": [
+    {
+      "id": "appointment-note",
+      "setups": 11
+    },
+    {
+      "id": "bar-announcement",
+      "setups": 9
+    },
+    {
+      "id": "slide-in-question",
+      "setups": 8
+    },
+    {
+      "id": "inline-choice",
+      "setups": 6
+    },
+    {
+      "id": "service-docket",
+      "setups": 4
+    },
+    {
+      "id": "resource-index",
+      "setups": 4
+    },
+    {
+      "id": "slide-in-nudge",
+      "setups": 3
+    },
+    {
+      "id": "edition-pass",
+      "setups": 2
+    },
+    {
+      "id": "journey-email-then-sms",
+      "setups": 2
+    },
+    {
+      "id": "fullscreen-poster",
+      "setups": 2
+    }
+  ],
+  "registered_outside_studio": [
+    {
+      "id": "announcement-bar",
+      "name": "Announce an offer",
+      "template_id": "inline-cta"
+    },
+    {
+      "id": "article-end-newsletter",
+      "name": "Newsletter signup after an article",
+      "template_id": "inline-rule"
+    },
+    {
+      "id": "cart-after-a-while",
+      "name": "Cart reminder after a delay",
+      "template_id": "offer-panel"
+    },
+    {
+      "id": "cart-on-the-way-out",
+      "name": "Cart reminder on exit",
+      "template_id": "offer-panel"
+    },
+    {
+      "id": "category-promotion",
+      "name": "Promote a product category",
+      "template_id": "photo-offer"
+    },
+    {
+      "id": "checklist-download",
+      "name": "Download with name and email",
+      "template_id": "name-and-email"
+    },
+    {
+      "id": "consultation-invitation",
+      "name": "Request a consultation",
+      "template_id": "name-and-email"
+    },
+    {
+      "id": "content-upgrade",
+      "name": "Offer an article checklist",
+      "template_id": "inline-split"
+    },
+    {
+      "id": "coupon-ticket",
+      "name": "Reveal a welcome discount",
+      "template_id": "punched-ticket"
+    },
+    {
+      "id": "fullscreen-guide",
+      "name": "Offer a guide in fullscreen",
+      "template_id": "fullscreen-split"
+    },
+    {
+      "id": "fullscreen-newsletter",
+      "name": "Offer a weekly email in fullscreen",
+      "template_id": "fullscreen-editorial"
+    },
+    {
+      "id": "guide-download",
+      "name": "Email a downloadable guide",
+      "template_id": "useful-guide"
+    },
+    {
+      "id": "journey-email-only",
+      "name": "Email signup",
+      "template_id": "journey-email-only"
+    },
+    {
+      "id": "journey-enquiry",
+      "name": "Enquiry in small steps",
+      "template_id": "journey-enquiry"
+    },
+    {
+      "id": "journey-offer-first",
+      "name": "Introduce the signup first",
+      "template_id": "journey-offer-first"
+    },
+    {
+      "id": "launch-checklist",
+      "name": "Offer a website launch checklist",
+      "template_id": "launch-checklist"
+    },
+    {
+      "id": "one-line-invite",
+      "name": "Simple newsletter signup",
+      "template_id": "bold-ask"
+    },
+    {
+      "id": "read-to-the-end",
+      "name": "Newsletter signup while reading",
+      "template_id": "sunday-marginalia"
+    },
+    {
+      "id": "reading-recommendation",
+      "name": "Recommend a related article",
+      "template_id": "reading-slip"
+    },
+    {
+      "id": "request-a-callback",
+      "name": "Request a callback",
+      "template_id": "callback-notes"
+    },
+    {
+      "id": "request-a-quote",
+      "name": "Request a quote",
+      "template_id": "inline-choice"
+    },
+    {
+      "id": "sale-announcement",
+      "name": "Announce a sale",
+      "template_id": "summer-archive"
+    },
+    {
+      "id": "service-enquiry",
+      "name": "Route a service enquiry",
+      "template_id": "journey-service-enquiry"
+    },
+    {
+      "id": "vip-early-access",
+      "name": "Early-access SMS signup",
+      "template_id": "inline-phone"
+    },
+    {
+      "id": "welcome-discount",
+      "name": "Welcome discount",
+      "template_id": "fieldwork"
+    }
+  ],
+  "designs_without_registered_playbooks": [
+    "centred-card",
+    "code-reveal",
+    "cream-coupon",
+    "deadline-panel",
+    "flash-offer",
+    "inline-bar",
+    "inline-quiet",
+    "inline-tinted",
+    "makers-index",
+    "number-invitation",
+    "photo-wash",
+    "reader-review",
+    "split-hero",
+    "wide-banner",
+    "bar-code",
+    "inline-code-strip",
+    "popup-editorial",
+    "popup-flash",
+    "popup-two-column",
+    "slide-in-benefits",
+    "slide-in-code"
+  ],
+  "review_states": {
+    "approved": 26,
+    "stale": 92
+  },
+  "decisions": [
+    "Keep the three top-level business categories. Use specific use cases for retail, trades, agencies, educators and creators instead of more overlapping filters.",
+    "Keep all seven goals and five formats. Do not fill irrelevant cells, such as cart recovery for publishers or forced fullscreen signup.",
+    "Do not mistake the two curated cart setups for missing popup recovery: delayed and exit cart playbooks already exist outside the studio.",
+    "Prioritise clear SMS expectations, service boundaries and project evidence. Reuse the existing sample-plus-form design for newsletter sampling.",
+    "Review dormant designs before making more generic offers, coupons, split signups or newsletter cards.",
+    "Freshly review the 92 stale studio approvals before including those setups in a hosted release. Stale is not a claim that a template is broken.",
+    "Do not add booking calendars, live cart contents, SKU restock subscriptions, real-time inventory, shipping calculators or conditional entitlement checks as template-only promises. Those need product capability work."
+  ],
+  "projected_batch": {
+    "setups": 4,
+    "new_design_candidates": 3,
+    "reused_designs": 1,
+    "maximum_studio_setups": 122,
+    "maximum_studio_designs": 70,
+    "maximum_source_designs": 102,
+    "condition": "New-design counts are provisional. Reject or consolidate candidates that do not differ enough in actual rendered comparisons."
+  }
+}

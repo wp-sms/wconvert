@@ -1,0 +1,17 @@
+[
+    {
+        "email": "variety-sample@example.test",
+        "fields": {
+            "interest": "colour",
+            "interest_label": "Matching a colour"
+        }
+    },
+    {
+        "email": "variety-service@example.test",
+        "fields": []
+    },
+    {
+        "email": "variety-reader@example.test",
+        "fields": []
+    }
+]

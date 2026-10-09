@@ -40,6 +40,9 @@ final class RuleManifestParityTest extends TestCase
         'targeting' => [RuleKind::Page, RuleKind::Visitor],
         'triggers' => [RuleKind::Trigger],
         'conditions' => [RuleKind::Condition],
+        // Internal block requirements share condition modules, but never
+        // appear in the merchant's authored rule picker.
+        'requirements' => [RuleKind::Condition],
     ];
 
     /** WP Consent API's five categories, adopted verbatim (CONTEXT.md, Storage Consent). */

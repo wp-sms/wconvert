@@ -15,6 +15,8 @@ export default [
       'vendor/',
       'public/',
       'pro/public/',
+      'pro/modules/*/public/',
+      '.claude/worktrees/',
       'dist/',
       '*.config.*',
       'vite.loader-config.mjs',

@@ -20,7 +20,10 @@ defined('ABSPATH') || exit;
  * nothing in `tests/unit/` can see a lost update; what the unit suite proves is
  * the statement issued, which is the half that can drift silently.
  *
- * **There are two reads, and no delete ever.** {@see self::inRange()} is the
+ * Product dimensions are pruned separately by ProductStats (ADR 0122).
+ * Empty-scope campaign counters and milestone history remain lifetime totals.
+ *
+ * **This repository has two reads, and no delete.** {@see self::inRange()} is the
  * one the dashboard issues; {@see self::firstDays()} is the one the milestone
  * screen issues, and it is deliberately not the same query. Retention is
  * keep-forever with no pruning, because at ~29k rows a year there is nothing

@@ -571,7 +571,7 @@ final class OptinController implements RestController
             return self::notFound();
         }
 
-        $displayIssues = \WConvert\Rules\DisplayPlan::issues($optin->config['display_rules'] ?? [], $this->vocabulary);
+        $displayIssues = apply_filters('wconvert_publish_issues', \WConvert\Rules\DisplayPlan::issues($optin->config['display_rules'] ?? [], $this->vocabulary), $optin->config);
         if (($optin->config['targeting']['mode'] ?? '') === 'selected' && empty($optin->config['targeting']['include'])) {
             $displayIssues[] = __('Choose at least one included page.', 'wconvert');
         }
@@ -597,15 +597,33 @@ final class OptinController implements RestController
             return $placementError;
         }
 
-        $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url());
+        $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url(), true);
+        if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !\WConvert\Template\JourneySupport::active()) {
+            return new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display. You can keep saving this Campaign as a draft.', 'wconvert'), ['status' => 400]);
+        }
         if ($issue !== null) {
             $message = match ($issue) {
                 'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
+                // A free install names no product (ADR 0116 §3); it says what a question block says.
+                'quiz_cart', 'commerce_products' => (new \WConvert\Support\WpProPresence())->installedTier() === \WConvert\Support\Tier::Free
+                    ? __('This design uses elements this site can’t display. You can keep saving this Campaign as a draft.', 'wconvert')
+                    : ($issue === 'quiz_cart'
+                        ? __('Quiz cart buttons need WConvert Pro and WooCommerce. Choose products for each result that uses them.', 'wconvert')
+                        : __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one recommendation block on a single offer screen before publishing.', 'wconvert')),
+                'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
+                'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
+                'routes' => __('In Journey, connect every screen, give continuing screens a fallback path, and remove loops. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'capture_paths' => __('Every route to the ending must pass the required save or result screen. Review the connections in Journey.', 'wconvert'),
+                'question_path_limit' => __('A connected journey route can contain at most ten questions. In Journey, remove questions from the affected route or move them to a separate branch.', 'wconvert'),
+                'conditions' => __('In Journey, complete each rule using a question available before it. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'questions' => __('In Journey, complete the question text and answer choices. Choice questions need 2 to 12 named answers.', 'wconvert'),
+                'results' => __('In Journey, give each result a heading and a condition, with one unconditional Everyone else result last.', 'wconvert'),
+                'navigation' => __('Review each screen’s buttons in Design. Continuing screens need either Continue or Save, not both. Optional saves also need No thanks.', 'wconvert'),
                 default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
-            return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);
+            return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400, 'issue' => $issue]);
         }
 
         $outcome = Goal::tryFrom($optin->goal)?->outcome();
@@ -653,7 +671,8 @@ final class OptinController implements RestController
             foreach ($setting['destination_ids'] as $destinationId) {
                 $destination = $this->destinations->find($destinationId);
                 $type = $destination === null ? null : $this->destinationTypes->find($destination->type);
-                $channel = $setting['purpose'] === 'email_marketing' ? 'email' : 'sms';
+                // `phone`, as `CaptureContract` and every type's audience channels spell it.
+                $channel = $setting['purpose'] === 'email_marketing' ? 'email' : 'phone';
                 if ($destination === null || $type === null || !$this->destinationTypes->isDispatchable($destination->type)
                     || $type->requirements()->missingSettings($destination->settings) !== []
                     || !$type->requirements()->acceptsCapture($requiredValues)
@@ -748,7 +767,7 @@ final class OptinController implements RestController
     private function refuseMalformedChoices($template): ?WP_Error
     {
         if (is_array($template) && is_array($template['tree'] ?? null)
-            && ($template['tree']['v'] ?? null) !== \WConvert\Template\TemplateTree::VERSION) {
+            && !in_array($template['tree']['v'] ?? null, [\WConvert\Template\TemplateTree::VERSION, 3], true)) {
             return new WP_Error('wconvert_template_version', __('This design uses an unsupported format. Choose a current design.', 'wconvert'), ['status' => 400]);
         }
 
@@ -800,6 +819,7 @@ final class OptinController implements RestController
      */
     private function normalizeConfig(array $config, ?string $pickedBefore = null): array
     {
+        // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if (isset($config['capture_mode'])) {
             $config['capture_mode'] = $config['capture_mode'] === 'local' ? 'local' : 'connected';
         }
@@ -986,6 +1006,10 @@ final class OptinController implements RestController
             if ($lock === null) unset($config['content_lock']);
             else $config['content_lock'] = $lock;
         }
+        if (array_key_exists('analytics', $config)) {
+            $config['analytics'] = \WConvert\Optin\AnalyticsPreference::normalize($config['analytics']);
+        }
+        // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
         return $config;
     }
 
@@ -1019,7 +1043,7 @@ final class OptinController implements RestController
         $triggers = \WConvert\Rules\DisplayPlan::compatibilityTriggers($config['display_rules'] ?? []);
         if (count($triggers) !== 1 || ($triggers[0]['type'] ?? null) !== 'page_load') {
             return new WP_Error('wconvert_inline_trigger',
-                __('Automatic inline placement requires only the page-load trigger. Change When it appears, or use manual placement.', 'wconvert'), ['status' => 400]);
+                __('Automatic inline placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), ['status' => 400]);
         }
         return null;
     }
@@ -1095,6 +1119,17 @@ final class OptinController implements RestController
         }
 
         return null;
+    }
+
+    /** Apply the existing draft compatibility rules without saving or publishing.
+     * @param array<string, mixed> $config
+     */
+    public function transferRefusal(array $config, string $id): ?WP_Error
+    {
+        if ($this->optins->find($id) === null) return self::notFound();
+        return $this->refuseUnusableBindings($config)
+            ?? $this->refuseAnArmMeteredDifferently($config, $id)
+            ?? $this->refuseContentLock($config, $id);
     }
 
     /**

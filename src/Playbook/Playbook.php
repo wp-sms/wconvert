@@ -37,6 +37,7 @@ final class Playbook
      * @param array<string, mixed> $targeting
      * @param array<string, string>|null $collection Installed source, for choosing between starts.
      * @param array<string, mixed> $destinationHint Destination TYPES and the Lead fields wanted — never ids.
+     * @param list<'stores'|'services'|'publishers'> $businessTypes Editorial examples, never Goal eligibility restrictions.
      */
     public function __construct(
         public readonly string $id,
@@ -50,6 +51,7 @@ final class Playbook
         public readonly array $destinationHint = [],
         public readonly string $notes = '',
         public readonly ?array $collection = null,
+        public readonly array $businessTypes = [],
     ) {
     }
 
@@ -76,6 +78,11 @@ final class Playbook
             'targeting' => $this->targeting,
             'destination_hint' => $this->destinationHint,
             'notes' => $this->notes,
+            'business_types' => array_map(static fn (string $id): array => ['id' => $id, 'label' => match ($id) {
+                'stores' => __('Stores', 'wconvert'),
+                'services' => __('Service businesses', 'wconvert'),
+                'publishers' => __('Publishers & creators', 'wconvert'),
+            }], $this->businessTypes),
             ...($this->collection === null ? [] : ['collection' => $this->collection]),
         ];
     }

@@ -7,14 +7,13 @@ use WConvert\Lead\Lead;
 defined('ABSPATH') || exit;
 
 /**
- * The canonical keys a [[Lead]] offers a [[Destination]] — **the thing that
- * removes the per-Optin field map**.
+ * The automatic contact keys a [[Lead]] offers a [[Destination]].
  *
  * An [[Optin]]'s field definitions carry canonical keys rather than
  * merchant-typed names, so canonical→vendor mapping lives once on the
  * Destination type and a second Optin reusing `name` needs no new mapping at
- * all (#4). Without this, every (Optin × Destination) pair would carry a map
- * for the merchant to fill in and get wrong.
+ * all (#4). Extra form and quiz answers may be mapped per campaign; the
+ * common contact keys still need no merchant-authored map.
  *
  * The keys are the template manifest's `fields` list plus the reserved
  * `consent`, and they are read here rather than re-derived: `email` and

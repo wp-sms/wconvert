@@ -1,5 +1,8 @@
 # Cart recovery captures nothing
 
+
+**Amended by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md):** the separate Increase basket value Goal counts server-accepted quantity-one recommendation additions. Existing product-link and cart-return outcomes retain their meaning. The guarded cart adapter is the sole permitted product mutation; supporting links do not count as additions.
+
 The v1 Goal **"Bring shoppers back to their cart"** is metered by a **click**. Its
 [[Optin]] carries no form, produces no [[Lead]], holds no [[Consent Record]], and
 pushes to no [[Destination]]. Its whole product is a message on the page and a link
@@ -96,10 +99,7 @@ taxonomy already had the right home for it.
 
 *Reachable as of [#36](https://github.com/navidkashani/wconvert/issues/36), which
 registers `cart_has_items` as an ordinary premium Condition available to any Goal.
-The routing is therefore a merchant's own hand in the rules panel, and deliberately
-not a bundled [[Playbook]]: an entry pairing a cart Condition with a non-cart Goal
-would suspend the Optin on every store-less install that started from it, which
-`tests/unit/Playbook/BundledPlaybooksTest.php` refuses.*
+The original Free bundled library did not pair cart conditions with other Goals. [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md) adds two Pro-owned commerce starts under Promote Offer; their dependency remains explicit and a store-less installation cannot publish them.*
 
 ## What this buys against WSMS
 
@@ -127,7 +127,9 @@ render a comparison would buy brittle coupling for no safety —
 unlike [ADR 0023](0023-the-wsms-push-fires-wsms-contact-events.md)'s
 `OutboundSyncManager` double path, which was detected because it was a real hazard.
 
-## The coupling: one cookie, two reads, no writes
+## The coupling: legacy cookie and prepared cart context
+
+**Amended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** the count/total cookie remains for legacy campaigns. Rich product/category/quantity/amount rules use a bounded, private WooCommerce session projection prepared before synchronous evaluation. The projection persists no cart contents. The explicit shopper-triggered addition exception is defined in [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md).
 
 *Recorded by [#36](https://github.com/navidkashani/wconvert/issues/36), which had
 to build what this ADR only implied.*
@@ -147,7 +149,7 @@ COMPLETED CHECKOUT calls — fires `woocommerce_cart_emptied` and never calls
 `calculate_totals()`, so `cart_updated` never fires. On one hook, a shopper who
 had just paid kept a cookie saying three items were waiting and the Optin told
 them so on the order-received page: this ADR's own lying popup, reached by buying
-something.* **The scope is capped at two numbers and never contents** — no product ids, no
+something.* **The cookie scope is capped at two numbers and never contents** — no product ids, no
 SKUs, no names — which is what makes cart-*contents* Conditions a later, additive
 decision rather than one the cookie settled by accident. The count is there because
 the count is what the copy asserts: a rule named `cart_has_items` answered from the
@@ -202,8 +204,7 @@ the wheel for needing a code PER VISITOR.*
 
 *Asserted rather than argued as of [#36](https://github.com/navidkashani/wconvert/issues/36):
 `tests/unit/Pro/WooCommerce/NoWriteIntoWooCommerceTest.php` reads both plugin trees
-and fails on a coupon, an order, a cart mutation or a write into WooCommerce's
-session — the same posture, and the same tokenised scan, that ADR 0024's own test
+and rejects coupon creation and cart mutation. **Amended by [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** optional consented analytics may store a pending campaign reference in the WooCommerce session and provenance on the order. It may not alter cart contents, prices, payment, coupons or order status. The older scan covers the original trees; runtime attribution checks cover the analytics module. This is the same posture, and the same tokenised scan, that ADR 0024's own test
 takes over `wsms_engagements`. The failure either exists to catch is a line
 somebody ADDS, which no assertion about output can see.*
 
@@ -265,7 +266,7 @@ somebody ADDS, which no assertion about output can see.*
   typed one has named a destination and it wins. A cleared control is an absent
   key, so clearing restores the site's own — emptiness judged the way a form field
   is, which is the reading the rule vocabulary already takes one axis over.*
-- **No WooCommerce-specific templates.** What the Goal needs is *one step,
+- **Original library decision, extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md) with a Pro selected-products block and design.** What the Goal needs is *one step,
   click-metered, CTA-bearing* — a shape shared with the other click Goal, not a
   WooCommerce design.
   *Held literally by [#36](https://github.com/navidkashani/wconvert/issues/36):

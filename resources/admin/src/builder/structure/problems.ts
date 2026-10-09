@@ -4,6 +4,7 @@ import { resolvedToken, type Path } from '../panel';
 import { losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
 import { submissionScreen } from './journey';
+import { graphRequiresScreen } from './graph';
 import { nodesOf, nodeAt } from './tree';
 import { validInterestOptions } from '../InterestOptions';
 import { safeHref } from '@renderer/render';
@@ -178,6 +179,11 @@ export function problemsIn(
   endsAt: string | undefined,
 ): Problem[] {
   return [
+    ...nodesOf(template.tree).filter(node => node.type === 'products').flatMap((node): Problem[] => {
+      const block = nodeAt(template.tree, node.path) as import('@renderer/types').ProductsNode | null;
+      if (block?.type === 'products' && (block.context === 'product' || 'main_product_id' in block) && (!Number.isInteger(block.main_product_id) || !block.main_product_id || block.main_product_id < 1)) return [{ said: __('Choose the main product for these recommendations.', 'wconvert'), path: node.path, blocksPublish: true }];
+      return block?.type === 'products' && !('source' in block && block.source === 'cross_sells') && !('product_ids' in block && Array.isArray(block.product_ids) && block.product_ids.length) ? [{ said: __('Choose compatible products for this recommendation block.', 'wconvert'), path: node.path, blocksPublish: true }] : [];
+    }),
     ...whatCannotConvert(template),
     ...whatCapturesNothing(template),
     ...whatHasIncompleteFields(template),
@@ -192,7 +198,10 @@ function whatHasIncompleteFollowups(template: Template): Problem[] {
   const acceptedAt = submissionScreen(template.tree, template.tree.submissions[0]?.id);
   return nodesOf(template.tree).filter(node => node.type === 'followup' && !node.hidden).flatMap(node => {
     const link = nodeAt(template.tree, node.path) as FollowupNode;
-    if (acceptedAt >= 0 && Number(node.path[0]) > acceptedAt && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
+    const afterSave = acceptedAt >= 0 && (template.tree.graph
+      ? graphRequiresScreen(template.tree.graph, template.tree.steps[acceptedAt].id, template.tree.steps[Number(node.path[0])].id)
+      : Number(node.path[0]) > acceptedAt);
+    if (afterSave && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
     return [{ said: __('Give this resource link a label and address, and place it after the form.', 'wconvert'), path: node.path, check: 'words' as const, blocksPublish: true }];
   });
 }
@@ -208,6 +217,10 @@ function whatHasIncompleteFields(template: Template): Problem[] {
     });
     if (identifiers.length === 0) {
       issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
+    } else if (!identifiers.some(field => (nodeAt(template.tree, field.path) as FieldNode).required)) {
+      issues.push({ said: sprintf(__('Require an email or phone field for “%s” so every saved lead has contact details.', 'wconvert'),
+        template.tree.steps[submissionScreen(template.tree, submission.id)].name),
+        path: identifiers[0].path, check: 'captures', blocksPublish: true });
     }
   }
   for (const field of fields.filter((field) => field.captures === 'interest')) {
@@ -265,13 +278,19 @@ function whatCapturesNothing(template: Template): Problem[] {
   const stranded = nodesOf(template.tree).filter(block => {
     if (block.captures === null) return false;
     const node = nodeAt(template.tree, block.path) as FieldNode;
-    return !template.tree.submissions.some((submission, index) =>
-      node.id && submission.fields.includes(node.id) && Number(block.path[0]) > (index === 0 ? -1 : boundaries[index - 1])
-      && Number(block.path[0]) <= boundaries[index] && template.tree.steps[Number(block.path[0])].kind === 'input');
+    const source = template.tree.steps[Number(block.path[0])];
+    return !template.tree.submissions.some((submission, index) => {
+      if (!node.id || !submission.fields.includes(node.id) || source.kind !== 'input' || boundaries[index] < 0) return false;
+      return template.tree.graph
+        ? !source.when && graphRequiresScreen(template.tree.graph, source.id, template.tree.steps[boundaries[index]].id)
+        : Number(block.path[0]) > (index === 0 ? -1 : boundaries[index - 1]) && Number(block.path[0]) <= boundaries[index];
+    });
   });
   return stranded.map(block => ({
     said: boundaries.every(at => at < 0)
       ? __('This design captures something but has no button that submits, so what a visitor types goes nowhere.', 'wconvert')
+      : template.tree.graph && template.tree.submissions.some(submission => submission.fields.includes((nodeAt(template.tree, block.path) as FieldNode).id ?? ''))
+      ? __('Every path to this field’s save must include its screen. Move the field onto the save screen or reconnect the paths.', 'wconvert')
       : __('Assign this field to a submission after its screen so the answer can be saved.', 'wconvert'),
     path: block.path,
     check: 'captures',

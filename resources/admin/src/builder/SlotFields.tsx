@@ -8,6 +8,7 @@ import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
 import { ImageFitPreview, ImageShapePreview } from './ChoicePreview';
 import { InterestOptions } from './InterestOptions';
+import { LinkField } from './LinkField';
 import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
 import countries from '../../../phone/countries.json';
@@ -338,8 +339,11 @@ export function LinkControl({
  * has to cost the editor nothing, and a `switch` on key names would be another
  * hand-maintained cross-cutting list (ADR 0019).
  *
- * - **`href`** is an address, so `type="url"` — which is a keyboard on a phone
- *   and a validity hint on a desktop, and nothing at all otherwise.
+ * - **`href`** is where a button goes, so it is a {@link LinkField}: a page
+ *   found by name, or an address pasted as is.
+ * - **`src` on anything but an image** is an address, so `type="url"` — which
+ *   is a keyboard on a phone and a validity hint on a desktop, and nothing at
+ *   all otherwise.
  * - **`src` on an image** is an address a merchant should not have to type.
  *   The media library is WordPress's own picker, and it degrades to the URL
  *   field where the script is absent.
@@ -353,11 +357,11 @@ export function LinkControl({
  *   are short by nature and a bigger control would be a bigger target for the
  *   same three words.
  */
-export type KeyControlKind = 'url' | 'media' | 'multiline' | 'text';
+export type KeyControlKind = 'link' | 'url' | 'media' | 'multiline' | 'text';
 
 export function controlFor(key: string, slot: Pick<Slot, 'type'>): KeyControlKind {
   if (key === 'href') {
-    return 'url';
+    return 'link';
   }
 
   if (key === 'src') {
@@ -391,6 +395,10 @@ function KeyControl({
 
   if (control === 'media') {
     return <MediaControl label={label} value={value} onChange={onChange} />;
+  }
+
+  if (control === 'link') {
+    return <LinkField className="widefat" value={value} onChange={onChange} />;
   }
 
   return (

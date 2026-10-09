@@ -1,0 +1,24 @@
+<?php
+/** Small working example resources; source templates contain no site-local links. */
+function wconvert_demo_resource(string $id): string {
+    $contextual = json_decode(file_get_contents(__DIR__ . '/../contextual-fixtures.json'), true);
+    if (isset($contextual[$id])) {
+        $html = '<p>A fictional working resource for campaign review.</p>';
+        foreach ($contextual[$id][1] as $heading => $body) $html .= '<h2>' . esc_html($heading) . '</h2><p>' . esc_html($body) . '</p>';
+        return $html;
+    }
+    $topics = match ($id) {
+        'excerpt-window' => ['1. Make the next step smaller' => 'Write down one task you have been putting off. Now describe its first two minutes. Sort the whole room becomes clear one shelf.', '2. Name the obstacle' => 'Write the one missing detail, tool or decision stopping you. Choose one way to find it.', '3. Define a small finish' => 'Describe what would count as useful progress today. Keep it observable, such as a paragraph drafted or one shelf cleared.', '4. Make room for the task' => 'Choose a short time and a place. Put the materials you need within reach.', '5. Try and notice' => 'Work on your first step. Write one sentence about what helped and one about what got in the way.', '6. Choose the next step' => 'Use what you noticed to choose another small action. Change the plan if the earlier step revealed a better direction.'],
+        'sizing-guide' => ['Measure the garment you already like' => 'Lay it flat and record its width and length. Compare like-for-like garment measurements.', 'Check the product chart' => 'Use the chart for the exact item. A body measurement and a garment measurement describe different things.', 'Allow room to move' => 'Consider the intended fit and fabric stretch. Ask the shop if the measurements or instructions are unclear.'],
+        'gift-planning-guide' => ['Start with their interests' => 'Write down what they enjoy using, making or learning.', 'Choose a useful occasion' => 'Think about when the gift will be used. Prefer a specific everyday use to a vague trend.', 'Check the practical details' => 'Confirm size, compatibility, delivery timing and the gift returns policy before ordering.'],
+        'project-readiness-guide' => ['Photograph the space' => 'Take one wide photograph and a close view of the part you want to discuss.', 'Record measurements' => 'Note approximate dimensions and label them clearly. Your contractor should verify critical measurements.', 'List the questions' => 'Write your priorities, access constraints, preferred timing and questions. Agree scope and next steps after the visit.'],
+        'writing-checklist' => ['1. State the point' => 'Write the main idea in one sentence.', '2. Check the opening' => 'Give the reader a reason to continue.', '3. Order the argument' => 'Make each paragraph build on the previous one.', '4. Support claims' => 'Check facts and link to the evidence.', '5. Remove repetition' => 'Keep the strongest version of each point.', '6. Read aloud' => 'Simplify awkward or confusing sentences.', '7. Give a useful ending' => 'Leave the reader with a clear implication or next action.'],
+        'fit-checklist' => ['1. Measure the doorway' => 'Record the clear opening with the door fully open. Compare it with the packaged product dimensions.', '2. Check stairs and turns' => 'Measure narrow landings, turns and lift openings. Ask the seller if the delivery route is uncertain.', '3. Check the final placement' => 'Measure width, depth and clearance where the product will sit. Compare against the exact item’s measurements.'],
+        'pre-visit-checklist' => ['Prepare photographs' => 'Take a wide view of the room and close views of the areas you want to discuss.', 'Note measurements and access' => 'Record approximate dimensions, doors, stairs and access constraints. Critical measurements must be verified before work.', 'Write your questions' => 'List priorities, preferred timing and the questions you need answered. This checklist does not confirm an appointment.'],
+        default => ['Prepare your questions' => 'Write down the information that would help you decide your next step.'],
+    };
+    $html = '<p>A working sample resource for campaign review.</p>';
+    foreach ($topics as $heading => $body) $html .= '<h2>' . esc_html($heading) . '</h2><p>' . esc_html($body) . '</p>';
+    if ($id === 'sizing-guide') $html .= '<h2>Example relaxed-fit top: garment measurements</h2><p>Illustrative sample collection, measured flat in centimetres. Compare with a similar top you own; these are garment measurements, not body measurements.</p><table><thead><tr><th>Size</th><th>Chest width</th><th>Length</th></tr></thead><tbody><tr><td>S</td><td>50 cm</td><td>66 cm</td></tr><tr><td>M</td><td>54 cm</td><td>69 cm</td></tr><tr><td>L</td><td>58 cm</td><td>72 cm</td></tr></tbody></table>';
+    return $html;
+}

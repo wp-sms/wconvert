@@ -102,6 +102,7 @@ final class TargetingExplainer
             'logged_in' => $loggedIn,
             'roles' => $roles,
             'include' => $include,
+            // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting key, not a get_posts() argument.
             'exclude' => $exclude,
         ];
     }

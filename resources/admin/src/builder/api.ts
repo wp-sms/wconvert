@@ -58,10 +58,15 @@ export type Control =
   | 'hours'
   | 'role_set'
   | 'boolean'
+  | 'enum'
   | 'post_id'
   | 'term_id'
   | 'post_type'
   | 'path_glob'
+  | 'product_set'
+  | 'category_set'
+  | 'quantity_range'
+  | 'money_range'
   | 'amount';
 
 export interface RuleParam {
@@ -134,36 +139,10 @@ export interface RuleType {
   presets: RulePreset[];
 }
 
-/**
- * One [[Starting point]]: a named set of rules to begin from.
- *
- * **Not a preset.** `preset` already means a per-type shortcut on this very
- * screen ({@link RulePreset}), and two meanings of one word is what the
- * glossary exists to prevent.
- *
- * **It carries exactly the sections it fills**, so "applying replaces the axes
- * it names" is readable off the response: a bundle with no `triggers` key
- * leaves the merchant's Triggers alone, which is what stops a starting point
- * from landing an Optin that can never fire.
- */
-export interface RuleBundle {
-  id: string;
-  label: string;
-  description: string;
-  availability: Availability;
-  requires_label: string | null;
-  triggers?: Rule[];
-  conditions?: Rule[];
-  targeting?: Targeting;
-  frequency?: Frequency;
-}
-
-/** The rule vocabulary, by axis, as `GET /wconvert/v1/rules` resolves it. */
 export interface RuleVocabulary {
   targeting: RuleType[];
   triggers: RuleType[];
   conditions: RuleType[];
-  bundles: RuleBundle[];
 }
 
 /**
@@ -296,6 +275,7 @@ export const getRules = () => apiFetch<RuleVocabulary>({ path: '/wconvert/v1/rul
  * campaign.
  */
 export interface OptinDraft extends OptinState {
+  parent_id?: string | null;
   can_change_goal: boolean;
   id: string;
   name: string;

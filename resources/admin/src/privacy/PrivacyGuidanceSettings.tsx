@@ -101,7 +101,7 @@ export function PrivacyGuidanceSettings({
         <label className="flex items-start gap-3 py-2" htmlFor="wconvert-privacy-guidance">
           <input
             id="wconvert-privacy-guidance"
-            className="mt-1 size-4 shrink-0 accent-primary"
+            className="mt-1 size-4 shrink-0 accent-action"
             type="checkbox"
             checked={draft}
             disabled={saving}

@@ -55,6 +55,8 @@ export interface Rule {
 export interface RuleEvaluator {
   /** Does this rule hold RIGHT NOW? Never a cached answer. */
   holds(rule: Rule): boolean;
+  /** Optional inspection-time reason; never used to decide eligibility. */
+  diagnostic?(): string;
   /** Detach anything `create` attached. Absent when there was nothing to attach. */
   stop?(): void;
 }
@@ -98,6 +100,7 @@ export interface Frequency {
  * publish time (ADR 0005).
  */
 export interface PayloadEntry {
+  readonly server_conversion?: boolean;
   readonly capture_contract?: string;
   readonly id: string;
   readonly display_type?: string;

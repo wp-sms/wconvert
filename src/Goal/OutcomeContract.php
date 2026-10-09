@@ -96,6 +96,7 @@ final class OutcomeContract
     private static function hasLink(array $node): bool
     {
         if (($node['hidden'] ?? false) === true) return false;
+        if (($node['type'] ?? '') === 'products') return ($node['source'] ?? 'selected') === 'cross_sells' || !empty($node['product_ids']);
         if (($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link') {
             $href = trim((string) ($node['href'] ?? ''));
             return $href !== '' && $href !== '#';

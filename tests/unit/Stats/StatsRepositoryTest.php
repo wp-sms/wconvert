@@ -113,7 +113,7 @@ final class StatsRepositoryTest extends TestCase
         }
 
         $this->assertSame(
-            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'dismiss', 'lead_magnet_delivered'],
+            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'cart_addition', 'product_shown', 'product_click', 'capture', 'result_click', 'dismiss', 'lead_magnet_delivered'],
             array_map(static fn (array $upsert): string => (string) $upsert['params'][2], $this->db->upserts)
         );
     }

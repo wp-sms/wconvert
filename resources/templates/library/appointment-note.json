@@ -1,0 +1,198 @@
+{
+  "id": "appointment-note",
+  "name": "Appointment note",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffcf8",
+    "fg": "#492e38",
+    "muted": "#65454e",
+    "accent": "#673e4f",
+    "accent-fg": "#ffffff",
+    "border": "#cbb7bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "tracking": "-0.03em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "28rem",
+    "shadow": "0 24px 60px -24px rgba(73,46,56,.32)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "0"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "bg": "#f4e9e4"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "Come and take a look"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "Picture your day here."
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Ask about visiting the venue before choosing a date."
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n4",
+                  "name": "interest",
+                  "label": "What would you like to explore? (optional)",
+                  "placeholder": "Choose an option",
+                  "required": false,
+                  "options": [
+                    {
+                      "value": "ceremony",
+                      "label": "Ceremony spaces"
+                    },
+                    {
+                      "value": "reception",
+                      "label": "Reception spaces"
+                    },
+                    {
+                      "value": "both",
+                      "label": "Both"
+                    }
+                  ],
+                  "tokens": {
+                    "border": "#a7858f"
+                  }
+                },
+                {
+                  "type": "field",
+                  "id": "n5",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#a7858f"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n6",
+                  "role": "consent_text",
+                  "text": "Use my details for this request.",
+                  "hidden": true,
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n7",
+                  "role": "cta_label",
+                  "label": "Request a venue visit",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "We use your details to reply. Your visit is not booked yet.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "icon",
+              "id": "n90",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "role": "success_headline",
+              "text": "Request received"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "role": "success_body",
+              "text": "Thank you. Your request has been received."
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4",
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ]
+  }
+}

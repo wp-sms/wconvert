@@ -127,6 +127,17 @@ final class RuleVocabularyTest extends TestCase
         );
     }
 
+    public function testBlockRequirementsCannotBeAuthoredAsDisplayRules(): void
+    {
+        $this->assertSame(
+            [['type' => 'page_load']],
+            self::vocabulary()->normalize([
+                ['type' => 'products_ready', 'context_key' => 'invented:products'],
+                ['type' => 'page_load'],
+            ])
+        );
+    }
+
     /**
      * @return iterable<string, array{mixed}>
      */

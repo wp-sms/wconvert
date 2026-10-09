@@ -125,17 +125,26 @@ final class TemplateController implements RestController
      * pushed to the bottom is an advertisement in the shape of a gallery. What
      * marks it is its `availability`, which the surface renders through the
      * doctrine it already has (`availability.ts`, ADR 0026).
+     *
+     * ***Amended by ADR 0116: a free install is sent no locked design at
+     * all.*** The interleaving above holds wherever Pro is installed, where
+     * the next rung's designs are information the site can act on. On free,
+     * `locked.json` stays in the ZIP but never reaches the payload, so the
+     * gallery has no card to hide and the REST answer carries no upsell.
      */
     public function index(): WP_REST_Response
     {
         $entries = [];
+        $free = $this->pro->installedTier() === Tier::Free;
 
         foreach ($this->templates->all() as $entry) {
             if (($entry['catalog_current'] ?? true) === false) continue;
-            $entries[] = $this->indexEntry($entry, $this->availabilityOf((string) $entry['tier']));
+            $availability = $this->availabilityOf((string) $entry['tier']);
+            if ($free && $availability === Availability::Locked) continue;
+            $entries[] = $this->indexEntry($entry, $availability);
         }
 
-        foreach ($this->templates->locked() as $entry) {
+        foreach ($free ? [] : $this->templates->locked() as $entry) {
             // **`locked` by construction, not by tier arithmetic.** A stub is a
             // design this install did not get — that is what having no tree
             // MEANS ({@see \WConvert\Template\LockedTemplates}) — so it is
@@ -212,7 +221,7 @@ final class TemplateController implements RestController
 
         $transfer = PictureTransfer::prepare(
             $this->vocabulary->normalize($request->get_param('template')),
-            is_string($source) ? $this->templates->find($source) : null,
+            is_string($source) ? $this->templates->find($source) : ['tree' => ['steps' => []], 'tokens' => []],
             ['tree' => $entry['tree'], 'tokens' => $entry['tokens']]
         );
         return new WP_REST_Response($config['template'] + ['transfer' => [
@@ -259,6 +268,7 @@ final class TemplateController implements RestController
     {
         $card = [
             'id' => $entry['id'],
+            'design_key' => $entry['design_key'] ?? 'registered:' . $entry['id'],
             'name' => $entry['name'],
             'display_type' => $entry['display_type'],
             'tier' => $entry['tier'],

@@ -52,7 +52,9 @@ final class PrivacyServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): DataMap => new DataMap(
                 $c->resolve(RetentionPeriod::class),
                 $c->resolve(DestinationStore::class),
-                $c->resolve(DestinationRegistry::class)
+                $c->resolve(DestinationRegistry::class),
+                $c->resolve(\WConvert\Optin\OptinRepository::class),
+                $c->resolve(\WConvert\Protection\Settings::class)
             )
         );
 

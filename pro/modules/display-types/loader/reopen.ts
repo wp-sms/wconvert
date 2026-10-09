@@ -1,7 +1,8 @@
+import { campaignLifecycle } from '@loader/events';
 import { PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import type { OptinControls, PayloadEntry } from '@loader/types';
 import { mount } from '@renderer/mount';
-import { captureInto } from '@loader/present';
+import { premiumCaptureInto } from '../../journeys/loader';
 import { mountPopover } from './popover';
 
 import { reminder, type Teaser } from './reminder';
@@ -58,6 +59,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
     else hide();
   };
   const mounted = (entry.display_type === 'slide_in' ? mountPopover : mount)({
+    ...campaignLifecycle(entry),
     displayType: entry.display_type, placement: entry.placement, template: entry.template, endsAt: entry.ends_at,
     onDismiss: () => { expanded = false; if (completed) { removed = true; hide(); } else { recovery?.minimized(); once('dismiss'); remind(); if (returnFocus) button.focus(); } },
     onConvert: convert,
@@ -83,7 +85,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   };
   close.addEventListener('click', dismissReminder);
   host.addEventListener('keydown', event => { if (event.key === 'Escape') { event.stopPropagation(); dismissReminder(); } });
-  captureInto(mounted, entry, { impression: () => once('impression'), dismiss: () => once('dismiss'), convert });
+  premiumCaptureInto(mounted, entry, { impression: () => once('impression'), dismiss: () => once('dismiss'), convert });
   if (recovery?.restoring) { mounted.close(); remind(); }
   else {
     // Mobile visibility controls the reminder, never the initial campaign.

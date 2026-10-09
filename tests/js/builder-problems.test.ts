@@ -1,3 +1,4 @@
+import splitCapture from '../fixtures/journey-graph-split-capture.json';
 import enquiry from '../../resources/templates/library/journey-enquiry.json';
 import optionalSignup from '../../resources/templates/library/journey-email-then-sms.json';
 import { treeFixture } from './support/journey';
@@ -279,5 +280,34 @@ describe('journey readiness', () => {
       const problems = problemsIn(template, undefined);
       expect(problems.filter(p => p.check === 'captures' || p.said.includes('resource link'))).toEqual([]);
     }
+  });
+});
+
+describe('graph capture readiness follows connections instead of storage order', () => {
+  const template: Template = { tokens: {}, tree: splitCapture as TemplateTree };
+  const blocking = (value: Template) => problemsIn(value, undefined).filter(issue => issue.blocksPublish);
+  it('accepts a field before its save and a resource after it despite reversed storage order', () => {
+    expect(blocking(template)).toEqual([]);
+  });
+  it('names a required contact field and links to its actual Design location', () => {
+    const optional = withValue(template.tree, [2, 'children', 0], 'required', false) as TemplateTree;
+    const issue = blocking({ ...template, tree: optional }).find(item => item.said.startsWith('Require an email'));
+    expect(issue?.said).toContain('“Send enquiry”');
+    expect(issue?.path).toEqual([2, 'children', 0]);
+  });
+  it('rejects a bypassable field on one incoming branch, even if another path visits it', () => {
+    const branched: Template = { ...template, tree: { ...template.tree, steps: [...template.tree.steps,
+      { id: 'start', name: 'Start', kind: 'content', content: { type: 'button', action: 'next', label: 'Continue' } }],
+      graph: { entry: 'start', edges: [...template.tree.graph!.edges,
+        { id: 'direct', from: 'start', to: 'save', kind: 'default' }, { id: 'via-details', from: 'start', to: 'details', kind: 'answer' }] } } };
+    expect(blocking(branched)).toContainEqual(expect.objectContaining({ path: [2, 'children', 0], said: expect.stringContaining('Every path to this field’s save') }));
+  });
+  it('rejects conditional owned fields and a resource reachable without saving', () => {
+    const conditional: Template = { ...template, tree: { ...template.tree, steps: template.tree.steps.map(step => step.id === 'details'
+      ? { ...step, when: { match: 'all', clauses: [] } } : step) } };
+    expect(blocking(conditional)).toContainEqual(expect.objectContaining({ path: [2, 'children', 0], check: 'captures' }));
+    const bypass: Template = { ...template, tree: { ...template.tree, graph: { ...template.tree.graph!, edges: [...template.tree.graph!.edges,
+      { id: 'shortcut', from: 'details', to: 'thanks', kind: 'answer' }] } } };
+    expect(blocking(bypass)).toContainEqual(expect.objectContaining({ path: [0], check: 'words' }));
   });
 });

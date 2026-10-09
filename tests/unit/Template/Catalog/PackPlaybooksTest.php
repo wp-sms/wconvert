@@ -27,6 +27,23 @@ final class PackPlaybooksTest extends TestCase
             'playbooks' => [require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php']];
     }
 
+    public function testScopedScreenCopyIsValidatedAndPreserved(): void
+    {
+        $pack = $this->pack();
+        $setup = require WCONVERT_DIR . 'resources/playbooks/repair-advice-request.php';
+        $json = file_get_contents(WCONVERT_DIR . 'resources/templates/library/' . $setup['template_id'] . '.json');
+        self::assertIsString($json);
+        $pack['templates'] = [json_decode($json, true)];
+        $pack['playbooks'] = [$setup];
+        $pack['requires']['capabilities'] = PackValidator::CAPABILITIES;
+        $validated = PackValidator::shipping()->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $this->assertSame($setup['copy'], $validated['playbooks'][0]['copy']);
+        $scope = array_key_first($setup['copy']['screens']);
+        $pack['playbooks'][0]['copy']['screens'][$scope]['headline'] = '<script>bad</script>';
+        $this->expectException(RuntimeException::class);
+        PackValidator::shipping()->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
     public function testPackConsumersReuseOneReadAndARepairOrInstallRefreshesIt(): void
     {
         $directory = sys_get_temp_dir() . '/wconvert-pack-cache-' . bin2hex(random_bytes(8));
@@ -82,6 +99,8 @@ final class PackPlaybooksTest extends TestCase
             $pack = $this->pack();
             $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
             $entry = $installed->playbooks()[0];
+            $canonical = $installed->entries()[0]['design_key'];
+            $this->assertSame('pack:store:fieldwork', $canonical);
             $this->assertNotSame('welcome-discount', $entry['id']);
             $this->assertNotSame('fieldwork', $entry['template_id']);
             $vocabulary = TemplateVocabulary::fromManifest();
@@ -102,6 +121,7 @@ final class PackPlaybooksTest extends TestCase
             $this->assertNotSame($entry['id'], $installed->playbooks()[0]['id']);
             $this->assertSame(15, $installed->playbooks()[0]['rules'][0]['seconds']);
             $this->assertCount(2, $installed->entries(), 'Old design baselines stay addressable.');
+            foreach ($installed->entries() as $design) $this->assertSame($canonical, $design['design_key'], 'A favorite follows a logical design across immutable release IDs.');
             $this->assertSame($before, json_encode($draft), 'An existing campaign owns its snapshot.');
             // A newer design-only release cannot resurrect a removed old start.
             $pack['version'] = '1.2.0'; unset($pack['playbooks']);

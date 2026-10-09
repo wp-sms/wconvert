@@ -1,0 +1,745 @@
+{
+  "v": 3,
+  "submissions": [
+    {
+      "id": "project_request",
+      "required": true,
+      "fields": [
+        "email_field"
+      ],
+      "consents": []
+    }
+  ],
+  "steps": [
+    {
+      "id": "interests",
+      "name": "Choose your project",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_interests",
+            "label": "Which project are you planning?",
+            "answer_type": "single",
+            "required": true,
+            "options": [
+              {
+                "value": "garden",
+                "label": "Garden"
+              },
+              {
+                "value": "business",
+                "label": "Business"
+              },
+              {
+                "value": "other",
+                "label": "Something else"
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "id": "next_interests",
+            "action": "next",
+            "label": "Continue"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_01",
+      "name": "Garden question 1",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_01",
+            "label": "What should we know about your garden project? (Question 1)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_01",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_01",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_02",
+      "name": "Garden question 2",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_02",
+            "label": "What should we know about your garden project? (Question 2)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_02",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_02",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_03",
+      "name": "Garden question 3",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_03",
+            "label": "What should we know about your garden project? (Question 3)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_03",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_03",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_04",
+      "name": "Garden question 4",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_04",
+            "label": "What should we know about your garden project? (Question 4)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_04",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_04",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_05",
+      "name": "Garden question 5",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_05",
+            "label": "What should we know about your garden project? (Question 5)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_05",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_05",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_06",
+      "name": "Garden question 6",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_06",
+            "label": "What should we know about your garden project? (Question 6)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_06",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_06",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_07",
+      "name": "Garden question 7",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_07",
+            "label": "What should we know about your garden project? (Question 7)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_07",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_07",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "garden_08",
+      "name": "Garden question 8",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_garden_08",
+            "label": "What should we know about your garden project? (Question 8)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_garden_08",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_garden_08",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_01",
+      "name": "Business question 1",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_01",
+            "label": "What should we know about your business project? (Question 1)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_01",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_01",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_02",
+      "name": "Business question 2",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_02",
+            "label": "What should we know about your business project? (Question 2)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_02",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_02",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_03",
+      "name": "Business question 3",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_03",
+            "label": "What should we know about your business project? (Question 3)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_03",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_03",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_04",
+      "name": "Business question 4",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_04",
+            "label": "What should we know about your business project? (Question 4)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_04",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_04",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_05",
+      "name": "Business question 5",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_05",
+            "label": "What should we know about your business project? (Question 5)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_05",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_05",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_06",
+      "name": "Business question 6",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_06",
+            "label": "What should we know about your business project? (Question 6)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_06",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_06",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_07",
+      "name": "Business question 7",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_07",
+            "label": "What should we know about your business project? (Question 7)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_07",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_07",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_08",
+      "name": "Business question 8",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_08",
+            "label": "What should we know about your business project? (Question 8)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_08",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_08",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_09",
+      "name": "Business question 9",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "q_business_09",
+            "label": "What should we know about your business project? (Question 9)",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "next_business_09",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "back_business_09",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "capture",
+      "name": "Send your project details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "field",
+            "id": "email_field",
+            "name": "email",
+            "label": "Email address",
+            "required": true
+          },
+          {
+            "type": "button",
+            "id": "submit_request",
+            "action": "submit",
+            "submission": "project_request",
+            "label": "Send request"
+          },
+          {
+            "type": "button",
+            "id": "back_capture",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "received",
+      "name": "Request received",
+      "kind": "acknowledgement",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "thanks_heading",
+            "text": "Thanks, your request is ready"
+          }
+        ]
+      }
+    }
+  ],
+  "graph": {
+    "entry": "interests",
+    "edges": [
+      {
+        "id": "choose_garden",
+        "from": "interests",
+        "to": "garden_01",
+        "kind": "answer",
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "q_interests",
+              "operator": "is",
+              "values": [
+                "garden"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "choose_business",
+        "from": "interests",
+        "to": "business_01",
+        "kind": "answer",
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "q_interests",
+              "operator": "is",
+              "values": [
+                "business"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "other_to_capture",
+        "from": "interests",
+        "to": "capture",
+        "kind": "default"
+      },
+      {
+        "id": "garden_01_next",
+        "from": "garden_01",
+        "to": "garden_02",
+        "kind": "default"
+      },
+      {
+        "id": "garden_02_next",
+        "from": "garden_02",
+        "to": "garden_03",
+        "kind": "default"
+      },
+      {
+        "id": "garden_03_next",
+        "from": "garden_03",
+        "to": "garden_04",
+        "kind": "default"
+      },
+      {
+        "id": "garden_04_next",
+        "from": "garden_04",
+        "to": "garden_05",
+        "kind": "default"
+      },
+      {
+        "id": "garden_05_next",
+        "from": "garden_05",
+        "to": "garden_06",
+        "kind": "default"
+      },
+      {
+        "id": "garden_06_next",
+        "from": "garden_06",
+        "to": "garden_07",
+        "kind": "default"
+      },
+      {
+        "id": "garden_07_next",
+        "from": "garden_07",
+        "to": "garden_08",
+        "kind": "default"
+      },
+      {
+        "id": "garden_08_to_capture",
+        "from": "garden_08",
+        "to": "capture",
+        "kind": "default"
+      },
+      {
+        "id": "business_01_next",
+        "from": "business_01",
+        "to": "business_02",
+        "kind": "default"
+      },
+      {
+        "id": "business_02_next",
+        "from": "business_02",
+        "to": "business_03",
+        "kind": "default"
+      },
+      {
+        "id": "business_03_next",
+        "from": "business_03",
+        "to": "business_04",
+        "kind": "default"
+      },
+      {
+        "id": "business_04_next",
+        "from": "business_04",
+        "to": "business_05",
+        "kind": "default"
+      },
+      {
+        "id": "business_05_next",
+        "from": "business_05",
+        "to": "business_06",
+        "kind": "default"
+      },
+      {
+        "id": "business_06_next",
+        "from": "business_06",
+        "to": "business_07",
+        "kind": "default"
+      },
+      {
+        "id": "business_07_next",
+        "from": "business_07",
+        "to": "business_08",
+        "kind": "default"
+      },
+      {
+        "id": "business_08_next",
+        "from": "business_08",
+        "to": "business_09",
+        "kind": "default"
+      },
+      {
+        "id": "business_09_to_capture",
+        "from": "business_09",
+        "to": "capture",
+        "kind": "default"
+      },
+      {
+        "id": "submitted",
+        "from": "capture",
+        "to": "received",
+        "kind": "default"
+      }
+    ]
+  }
+}

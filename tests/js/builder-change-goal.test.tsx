@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
 
@@ -223,7 +223,8 @@ it('copies current edits to another Goal while leaving a published original unto
   const onCreated = vi.fn();
   render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
   await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
-  await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
   await userEvent.click(screen.getByRole('button', { name: 'Duplicate for another goal' }));
   await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: 'Use this goal' }));
   expect(screen.getByText(/results start at zero/)).toBeInTheDocument();
@@ -235,7 +236,8 @@ it('copies current edits to another Goal while leaving a published original unto
 
 /** Open the picker from the band. */
 const changeGoal = async () => {
-  await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
 };
 
@@ -246,7 +248,8 @@ const changeGoal = async () => {
 describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
   });
@@ -261,7 +264,8 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockReturnValue(new Promise(() => undefined));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
 
 
@@ -281,7 +285,8 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await within(screen.getByRole('dialog')).findByText('grow_email_list')).toBeInTheDocument();
   });
@@ -295,7 +300,8 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockResolvedValue([GOALS[0]]);
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions');
 
@@ -344,6 +350,9 @@ describe('the goal picker', () => {
    * it to stop agreeing (ADR 0026).
    */
   it('upsells a goal this install has to buy, and never as a button', async () => {
+    // A paid install meeting a higher rung's Goal (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     open();
     await changeGoal();
 
@@ -363,6 +372,15 @@ describe('the goal picker', () => {
       'data-variant',
       'secondary',
     );
+  });
+
+  /** A free install is not sold a Goal at all — not even a card (ADR 0116). */
+  it('hides a goal a free install would have to buy', async () => {
+    open();
+    await changeGoal();
+
+    expect(screen.queryByText('Bring shoppers back to their cart')).toBeNull();
+    expect(screen.queryByText(/Available with/)).toBeNull();
   });
 
   it('hides a goal this site cannot serve at all', async () => {
@@ -517,16 +535,16 @@ describe('confirming the change', () => {
   it('starts a fresh Undo history only after a successful Goal save', async () => {
     open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
     await pick('Promote a sale or offer');
     const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
     expect(confirm).toHaveAccessibleDescription(/clears the current Undo and Redo history/);
     await userEvent.click(confirm);
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled());
-    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    await waitFor(() => expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled());
+    expect(screen.getByRole('button', { name: /^Redo/ })).toBeDisabled();
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), ' again');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount revised');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });
@@ -538,7 +556,7 @@ describe('confirming the change', () => {
     await pick('Promote a sale or offer');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
     await screen.findByText('The goal change was refused.');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });

@@ -56,9 +56,9 @@ final class ArtifactContractTest extends TestCase
           "premium": {
             "slug": "wconvert-pro",
             "tiers": [
-              { "slug": "basic", "name": "Pro", "modules": ["display-types"] },
-              { "slug": "pro", "name": "Pro", "modules": ["display-types", "premium-triggers"] },
-              { "slug": "elite", "name": "Pro", "modules": ["display-types", "premium-triggers", "cart-recovery"] }
+              { "slug": "basic", "name": "Pro", "modules": ["display-types", "journeys", "spam-filters"] },
+              { "slug": "pro", "name": "Pro", "modules": ["display-types", "journeys", "spam-filters", "premium-triggers"] },
+              { "slug": "elite", "name": "Pro", "modules": ["display-types", "journeys", "spam-filters", "premium-triggers", "cart-recovery"] }
             ]
           }
         }
@@ -143,6 +143,7 @@ final class ArtifactContractTest extends TestCase
             'vendor/autoload.php' => "<?php\n// composer\n",
             'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
             'public/loader/loader.js' => "console.log('loader');\n",
+            'public/protection/protection.js' => "console.log('protection');\n",
             'public/phone/phone.js' => "console.log('phone');\n",
             // Pro replaces this one on the same hook it replaces the loader
             // (ADR 0048), so a ZIP missing it on EITHER tier is a real
@@ -157,6 +158,7 @@ final class ArtifactContractTest extends TestCase
             // that has to be caught instead.
             'public/blocks/inline-optin.js' => "console.log('block');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
+            'resources/protection/src/challenge.ts' => "export const verify = () => {};\n",
             'resources/phone/src/main.ts' => "export const enhance = () => {};\n",
             'resources/phone/countries.json' => "[{\"code\":\"US\",\"name\":\"United States\"}]\n",
             'resources/admin/src/main.tsx' => "export const App = () => null;\n",
@@ -172,9 +174,33 @@ final class ArtifactContractTest extends TestCase
             'tiers.json' => self::LADDER,
             'resources/templates/locked.json' => "{\"designs\":[]}\n",
             'resources/playbooks/welcome.php' => "<?php\nreturn [];\n",
+            // What rebuilds the bundles above from the sources above. The
+            // repository is private, so a reviewer's only route to
+            // reproducing public/ is the ZIP itself.
+            ...self::FREE_BUILD_FILES,
+            'license.txt' => "GNU GENERAL PUBLIC LICENSE\nVersion 2, June 1991\n",
             ...$overrides,
         ]);
     }
+
+    /**
+     * Free's build files, each as a staged free tree carries it.
+     */
+    private const FREE_BUILD_FILES = [
+        'package.json' => "{\"scripts\":{\"build:free\":\"vite build -c vite.config.admin.mjs\"}}\n",
+        'package-lock.json' => "{\"lockfileVersion\":3}\n",
+        'tsconfig.json' => "{\"compilerOptions\":{}}\n",
+        'composer.json' => "{\"name\":\"veronalabs/wconvert\"}\n",
+        'composer.lock' => "{\"packages\":[]}\n",
+        'vite.admin-config.mjs' => "export function adminConfig() {}\n",
+        'vite.loader-config.mjs' => "export function loaderConfig() {}\n",
+        'vite.config.admin.mjs' => "export default adminConfig({ entry: 'resources/admin/src/main.tsx', outDir: 'public/admin' });\n",
+        'vite.config.block.mjs' => "export default { build: { outDir: 'public/blocks' } };\n",
+        'vite.config.loader.mjs' => "export default loaderConfig({ entry: 'resources/loader/src/main.ts', outDir: 'public/loader' });\n",
+        'vite.config.inspector.mjs' => "export default loaderConfig({ entry: 'resources/loader/src/inspect/main.ts', outDir: 'public/inspector' });\n",
+        'vite.config.phone.mjs' => "export default loaderConfig({ entry: 'resources/phone/src/main.ts', outDir: 'public/phone' });\n",
+        'vite.config.protection.mjs' => "export default loaderConfig({ entry: 'resources/protection/src/challenge.ts', outDir: 'public/protection' });\n",
+    ];
 
     /**
      * @param array<string, string|null> $overrides
@@ -189,6 +215,10 @@ final class ArtifactContractTest extends TestCase
             'modules/content-lock/static-blocks.json' => '{"top": [], "children": {}}',
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
+            'modules/analytics/public/revenue.js' => "console.log('revenue');\n",
+            'docs/campaign-sales.html' => '<html>Campaign sales setup</html>',
+            'public/analytics/analytics.js' => "console.log('analytics');\n",
+            'docs/analytics-integrations.html' => '<html>Analytics setup</html>',
             // Pro's admin bundle, both halves. Pro replaces free's on the same
             // rule it replaces the loader (ADR 0014 extended to the admin), so
             // a Pro ZIP without it degrades to free's screen — correctly and
@@ -205,11 +235,16 @@ final class ArtifactContractTest extends TestCase
             // nothing that could be too high. The tests that assert the
             // per-tier rules build lower rungs explicitly.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
+            'modules/analytics/module.json' => "{\"slug\":\"analytics\"}\n",
+            'modules/spam-filters/module.json' => "{\"slug\":\"spam-filters\"}\n",
+            'modules/journeys/module.json' => "{\"slug\":\"journeys\"}\n",
             'modules/content-lock/module.json' => "{\"slug\":\"content-lock\"}\n",
             'modules/inline-placement/module.json' => "{\"slug\":\"inline-placement\"}\n",
             'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
             'modules/ab-testing/module.json' => "{\"slug\":\"ab-testing\"}\n",
+            'modules/cart-recovery/public/commerce.js' => "/* commerce runtime */\n",
             'modules/cart-recovery/module.json' => "{\"slug\":\"cart-recovery\"}\n",
+            'modules/destinations/module.json' => "{\"slug\":\"destinations\"}\n",
             // The premium designs, inside the module that owns them. Pro IS
             // where they ship, so a Pro artifact with an empty library is a
             // broken build rather than a clean one — it installs, replaces the
@@ -230,9 +265,10 @@ final class ArtifactContractTest extends TestCase
     {
         $withheld = [];
 
-        foreach (['display-types', 'premium-triggers', 'ab-testing', 'cart-recovery'] as $slug) {
+        foreach (['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'] as $slug) {
             if (!in_array($slug, $modules, true)) {
                 $withheld["modules/{$slug}/module.json"] = null;
+                if ($slug === 'cart-recovery') $withheld["modules/cart-recovery/public/commerce.js"] = null;
             }
         }
 
@@ -377,7 +413,7 @@ final class ArtifactContractTest extends TestCase
     /**
      * **The trialware shape arriving through the file written to prevent it.**
      * `locked.json` carries the CARD — a name, its facets, a link to a live
-     * preview on wconvert.com — and never the design. A tree in it is a premium
+     * preview on wconvert.io — and never the design. A tree in it is a premium
      * design in the free ZIP by another route.
      */
     public function testFailsWhenTheLockedMetadataCarriesADesign(): void
@@ -430,9 +466,9 @@ final class ArtifactContractTest extends TestCase
     public function testPassesOnEachRungCutToItsOwnModules(): void
     {
         foreach ([
-            'basic' => ['display-types'],
-            'pro' => ['display-types', 'premium-triggers', 'ab-testing'],
-            'elite' => ['display-types', 'premium-triggers', 'ab-testing', 'cart-recovery'],
+            'basic' => ['display-types', 'journeys', 'spam-filters'],
+            'pro' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing'],
+            'elite' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'],
         ] as $rung => $modules) {
             $result = $this->verify($this->stagedProAt($modules));
 
@@ -466,7 +502,7 @@ final class ArtifactContractTest extends TestCase
      */
     public function testFailsWhenABasicZipCarriesAHigherRungsModule(): void
     {
-        $tree = $this->stagedProAt(['display-types', 'premium-triggers', 'ab-testing']);
+        $tree = $this->stagedProAt(['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing']);
 
         // Inferred as `pro`, correctly. What makes it wrong is the design
         // library: `pro` ships `display-types` too, so the tree is internally
@@ -504,7 +540,7 @@ final class ArtifactContractTest extends TestCase
     /** And a rung's own rules in its own bundle are exactly what belongs there. */
     public function testARungsBundleMayCarryItsOwnRules(): void
     {
-        $result = $this->verify($this->stagedProAt(['display-types', 'premium-triggers', 'ab-testing'], [
+        $result = $this->verify($this->stagedProAt(['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing'], [
             'public/loader/loader.js' => "var rules={exit_intent:1};\n",
         ]));
 
@@ -735,6 +771,57 @@ final class ArtifactContractTest extends TestCase
 
         $this->assertSame(1, $result['status'], $result['output']);
         $this->assertStringContainsString('resources/loader/src', $result['output']);
+    }
+
+    /**
+     * **Sources nobody can build are half a source claim.** The repository is
+     * private, so every file `npm ci && npm run build:free` and `composer
+     * install --no-dev` need has to be in the ZIP.
+     */
+    public function testFailsWhenAFreeBuildFileIsStrippedFromTheFreeTree(): void
+    {
+        foreach (array_keys(self::FREE_BUILD_FILES) as $file) {
+            $result = $this->verify($this->stagedFree([$file => null]));
+
+            $this->assertSame(1, $result['status'], "$file stripped:\n" . $result['output']);
+            $this->assertStringContainsString($file, $result['output']);
+        }
+    }
+
+    public function testFailsWhenTheShippedPackageJsonCannotBuildFreeAlone(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'package.json' => "{\"scripts\":{\"build\":\"vite build\"}}\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('build:free', $result['output']);
+    }
+
+    public function testFailsWhenTheFreeTreeShipsNoLicence(): void
+    {
+        $result = $this->verify($this->stagedFree(['license.txt' => null]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('license.txt', $result['output']);
+    }
+
+    /**
+     * A Pro build config the .distignore forgot — `vite.config.block-pro.mjs`
+     * did, once — or a free config reaching into Pro. Either way the free ZIP
+     * names a path it does not contain, and the rebuild fails.
+     */
+    public function testFailsWhenAShippedViteConfigNamesAProPath(): void
+    {
+        foreach ([
+            'vite.config.block-pro.mjs' => "export default { build: { outDir: resolve(import.meta.dirname, 'pro/public/blocks') } };\n",
+            'vite.config.loader.mjs' => "export default loaderConfig({ entry: 'pro/resources/loader/src/elite.ts', outDir: 'public/loader' });\n",
+        ] as $file => $contents) {
+            $result = $this->verify($this->stagedFree([$file => $contents]));
+
+            $this->assertSame(1, $result['status'], "$file:\n" . $result['output']);
+            $this->assertStringContainsString($file, $result['output']);
+        }
     }
 
     public function testFailsWhenTheAdminSourceIsStrippedFromTheFreeTree(): void

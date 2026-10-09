@@ -1,5 +1,5 @@
 import type { Template } from './types';
-import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS } from './css';
+import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS, mountedStyles } from './css';
 import { COUNTDOWN_SLOT, render } from './render';
 
 export { render, SHADOW_CSS };
@@ -103,6 +103,9 @@ export interface MountOptions {
   readonly anchor?: Element | null;
   /** A DELIBERATE close by the visitor — the button, Esc, or the backdrop. */
   readonly onDismiss?: () => void;
+  /** Actual overlay transitions, not screen changes or inline mounting. */
+  readonly onOpened?: () => void;
+  readonly onClosed?: () => void;
   /**
    * The converting act, where the container can see it: a click-metered
    * Optin's CTA. A submit-metered one converts when the capture succeeds,
@@ -118,6 +121,8 @@ export interface MountOptions {
    * to select. {@see \@renderer/render's RenderOptions}.
    */
   readonly paths?: boolean;
+  /** Controlled admin tests may expose their rendered inputs to browser tooling. Visitor mounts remain closed. */
+  readonly shadowMode?: 'open';
 }
 
 export interface Mounted {
@@ -206,10 +211,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   resume: () => void;
 } {
   const host = document.createElement('div');
-  const shadow = host.attachShadow({ mode: 'closed' });
+  const shadow = host.attachShadow({ mode: options.shadowMode ?? 'closed' });
   const style = document.createElement('style');
 
-  style.textContent = SHADOW_CSS;
+  style.textContent = mountedStyles();
   shadow.appendChild(style);
 
   let root = render(template.tree, template.tokens, 0, { paths: options.paths });
@@ -228,6 +233,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
    * own ticket; preventing the navigation is this ticket's business.
    */
   function bind(element: HTMLElement): void {
+    // Embedded campaigns grow with the page, including after a screen swap.
+    // Only overlays need the renderer's viewport cap and inner scrolling.
+    if (options.displayType === 'inline') element.style.maxBlockSize = 'none';
+
     const api = window as Window & { __wcPhone?: (root: HTMLElement) => void };
     if (api.__wcPhone) api.__wcPhone(element);
     else if (element.querySelector('input[name="phone"]')) {
@@ -244,9 +253,11 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
     element.addEventListener('submit', (event) => event.preventDefault());
 
-    for (const cta of element.querySelectorAll('a[data-convert]')) {
-      cta.addEventListener('click', () => options.onConvert?.());
-    }
+    element.addEventListener('wconvert:cart-added', () => options.onConvert?.());
+    element.addEventListener('click', event => {
+      // Dispatch sets target before invoking us; text nodes have no closest().
+      if ((event.target as Element).closest?.('a[data-convert]')) options.onConvert?.();
+    });
 
     // Painted on BIND rather than only on the interval, so a countdown is right
     // the frame it appears — including the one a step swap has just drawn,
@@ -408,8 +419,13 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
   });
 
   let dismissible = true;
+  let opened = false;
+  const label = () => dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
 
-  dialog.addEventListener('close', () => {
+  const closed = () => {
+    // Native close events are queued. A stale event must not hide a reopened dialog.
+    if (!opened || dialog.open) return;
+    opened = false;
     dialog.style.setProperty('display', 'none', 'important');
     // Every route out of a dialog ends here — Esc, the backdrop, the close
     // button and `close()` itself — which is why the tick is stopped on the
@@ -417,12 +433,14 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     // after it closes, so nothing else would ever end the interval.
     parts.stop();
     surface.closed?.();
+    options.onClosed?.();
 
     if (dismissible) {
       parts.root.dispatchEvent(new Event('wconvert:dismissed'));
       options.onDismiss?.();
     }
-  });
+  };
+  dialog.addEventListener('close', closed);
 
   return {
     mounted: true,
@@ -431,10 +449,12 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     },
     steps: options.template.tree.steps.length,
     show() {
+      if (dialog.open) return;
+      closed();
       dismissible = true;
       parts.resume();
       surface.prepare?.(parts.root);
-      dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
+      label();
       documentStyle();
       document.body.appendChild(dialog);
       dialog.style.setProperty('display', 'block', 'important');
@@ -447,11 +467,16 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
         dialog.remove();
         throw error;
       }
+      opened = true;
+      options.onOpened?.();
     },
     showStep(step) {
       const root = parts.step(step);
       surface.prepare?.(root);
-      dialog.setAttribute('aria-label', root.querySelector('h1,h2')?.textContent || 'Campaign');
+      label();
+      // Journeys resolve their selected result immediately after the step swap.
+      // Name the completed screen, including that synchronous content update.
+      queueMicrotask(label);
     },
     close() {
       // The four ways a visitor dismisses are one thing; closing it OURSELVES
@@ -460,7 +485,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
       dismissible = false;
       parts.stop();
       dialog.close();
-      surface.closed?.();
+      closed();
     },
   };
 }

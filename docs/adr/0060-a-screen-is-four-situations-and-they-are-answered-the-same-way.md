@@ -141,7 +141,10 @@ always been a shared decision function; what was missing is a shared *rendering*
 [`renderingFor()`](../../resources/admin/src/goals/availability.ts) maps
 `ready | locked | unavailable` × `creation_flow | settings_list` to
 `offer | upsell | explain | hide`, and no surface ever renders `unavailable` as
-an upsell. That half is load-bearing: a paying customer must never be shown an
+an upsell.
+*Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): `locked` maps
+to `upsell` only on a paid install. On a free install it maps to `hide`, so the
+grey-and-lock badge below never appears there.* That half is load-bearing: a paying customer must never be shown an
 advertisement for Pro, and we must never offer to sell a merchant a WooCommerce
 licence we do not have (ADR 0026).
 
@@ -283,6 +286,14 @@ admin"*. Read down a column to find a gap.
 | **Builder — Content** | with the design | `EmptyState` + *Pick a design* | with the frame | tree + inspector |
 | **Builder — Destinations** | `RowsSkeleton` | `EmptyState` | `RegionErrorState` | bindable routes |
 | **Milestones** | renders nothing, deliberately | the disclosure, collapsed — see the correction below | `RegionErrorState` | a next step + what was recorded |
+
+*Builder — Destinations row amended by
+[0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s tab
+redesign: "Ready" is the bound routes as cards, not every bindable route. Empty
+has two cases — a site with no routes shows the providers to set one up in
+place, and routes with none selected shows `EmptyState` + *Add destination*. A
+failed first read is `RegionErrorState` + Retry; a failed re-read keeps the
+cards under `RegionError` + Retry.*
 
 Two columns are deliberately thin. *Empty* is `n/a` wherever the region holds a
 SETTING rather than a collection: a retention period has no empty state, it has

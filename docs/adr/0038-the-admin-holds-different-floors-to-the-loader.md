@@ -137,7 +137,9 @@ free. **WCAG 2.1 AA** is the replacement bar, and it is held three ways:
   it fires on the pull request rather than in a review.
 - **Contrast is measured at the token**, once, rather than per component
   ([ADR 0037](0037-the-admin-inherits-token-structure-and-owns-its-values.md)
-  records the 5.95:1 for `--primary`).
+  records the 5.95:1 for `--primary`; _amended: the current palette's ratios,
+  14.62:1 for `--primary` among them, are in
+  [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)_).
 
 AAA is explicitly not the bar. It would rule out the palette on
 [ADR 0037](0037-the-admin-inherits-token-structure-and-owns-its-values.md)'s own

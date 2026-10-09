@@ -4,8 +4,16 @@
 no WooCommerce. Not greyed out, not explained — absent.
 
 It is also `tier: pro`, so on a free install with a store it renders as a **locked**
-upsell card. When both reasons apply at once, **`unavailable` wins**: a merchant with
+upsell card.
+
+> **Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): on a free
+> install a `locked` member is hidden on every surface, this Goal included.** It
+> is an upsell only where Pro is installed and a higher rung is what is missing.
+> The precedence below is unchanged, and so is the rule that `unavailable` is
+> never an upsell. When both reasons apply at once, **`unavailable` wins**: a merchant with
 no store is never sold [[Pro]] for a feature Pro would not give them.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): one exception, on a free install only, for the Display rules Quick picks. A pick whose rule type is paid there reads as `locked` even when a plugin is also missing, so it is hidden rather than drawn as "Needs WooCommerce". Explaining the plugin would offer a free merchant a pick that vanishes the moment they install it. Rule rows and every other surface keep this precedence._
 
 ## Availability names the reason, not the rendering
 
@@ -96,10 +104,13 @@ widened audience trades a missing feature for a factually false one.
   reused rather than a second rule being invented, so a locked design is an
   upsell on both surfaces and the precedence this ADR settles has nothing to
   decide.
+  *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): an upsell
+  on both surfaces **of a paid install**. On a free install `renderingFor()`
+  answers `hide` for `locked`, and the server sends it no locked design.*
 
   The **upsell metadata stays bundled**, which is the half worth restating here:
   `resources/templates/locked.json` carries a premium design's name, its facets
-  and a link to a live preview on wconvert.com, and free ships it rather than
+  and a link to a live preview on wconvert.io, and free ships it rather than
   fetching it. What free does **not** ship is the design — shipping the tree and
   refusing the save is trialware
   ([#7](https://github.com/navidkashani/wconvert/issues/7)) and rendering a real

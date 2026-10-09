@@ -1,0 +1,145 @@
+{
+  "name": "Shopper preferences",
+  "display_type": "inline",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#fcfdff",
+    "fg": "#243650",
+    "muted": "#43546e",
+    "accent": "#243f6b",
+    "accent-fg": "#ffffff",
+    "border": "#b9c7dc",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "pad": "2rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "32rem",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "interests",
+        "name": "Your interests",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "text": "Updates for your interests.",
+              "role": "headline"
+            },
+            {
+              "type": "question",
+              "id": "n2",
+              "label": "What interests you? (optional)",
+              "help": "Choose any that apply, or continue without an answer.",
+              "answer_type": "multi",
+              "required": false,
+              "options": [
+                {
+                  "value": "running",
+                  "label": "Running"
+                },
+                {
+                  "value": "hiking",
+                  "label": "Hiking"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "label": "Continue",
+              "action": "next"
+            }
+          ]
+        }
+      },
+      {
+        "id": "signup",
+        "name": "Email signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n4",
+              "text": "Get relevant news and tips"
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "text": "Tell us where to send your updates. Your interests help us choose relevant content."
+            },
+            {
+              "type": "field",
+              "id": "n6",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n7",
+              "text": "Email me product news and tips. I can unsubscribe at any time.",
+              "hidden": false
+            },
+            {
+              "type": "button",
+              "id": "n8",
+              "label": "Sign up for updates",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "button",
+              "id": "n9",
+              "label": "Back",
+              "action": "back"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n10",
+              "text": "Preferences received"
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "text": "Thank you. Your signup request has been received."
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n6"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ]
+  }
+}

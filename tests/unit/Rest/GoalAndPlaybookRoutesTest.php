@@ -9,6 +9,7 @@ use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rest\GoalController;
 use WConvert\Rest\PlaybookController;
+use WConvert\Discovery\SetupIndex;
 use WConvert\Rest\Routes;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\TemplateLibrary;
@@ -56,7 +57,7 @@ final class GoalAndPlaybookRoutesTest extends TestCase
         $goals = new GoalRegistry(new FakeProPresence(), new FakeSitePresence());
 
         (new GoalController($goals))->registerRoutes();
-        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free())))
+        (new PlaybookController($playbooks, $goals, new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free()), new SetupIndex($templates, new FakeProPresence())))
             ->registerRoutes();
     }
 
@@ -90,10 +91,10 @@ final class GoalAndPlaybookRoutesTest extends TestCase
         self::fail("{$route} is not registered");
     }
 
-    public function testTheCreationFlowIsThreeRoutesInWConvertsNamespace(): void
+    public function testTheCreationFlowRegistersMetadataAndBoundedPreviewRoutes(): void
     {
         $this->assertSame(
-            ['/goals', '/playbooks', '/playbooks/prefill'],
+            ['/goals', '/playbooks', '/playbooks/previews', '/playbooks/prefill'],
             array_column(self::routes(), 'route')
         );
 
@@ -109,7 +110,7 @@ final class GoalAndPlaybookRoutesTest extends TestCase
      */
     public function testEveryRouteIsAReadAndProvesPrefillWritesNothing(): void
     {
-        foreach (['/goals', '/playbooks', '/playbooks/prefill'] as $route) {
+        foreach (['/goals', '/playbooks', '/playbooks/previews', '/playbooks/prefill'] as $route) {
             $this->assertSame('GET', self::handlerOn($route)['methods'], "{$route} is not a read");
         }
     }
@@ -121,7 +122,7 @@ final class GoalAndPlaybookRoutesTest extends TestCase
      */
     public function testNoneOfTheCreationFlowIsPublic(): void
     {
-        foreach (['/goals', '/playbooks', '/playbooks/prefill'] as $route) {
+        foreach (['/goals', '/playbooks', '/playbooks/previews', '/playbooks/prefill'] as $route) {
             $this->assertSame(
                 [Routes::class, 'canManage'],
                 self::handlerOn($route)['permission_callback'],

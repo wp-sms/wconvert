@@ -73,6 +73,18 @@ final class NodeIdentityTest extends TestCase
         return $found;
     }
 
+    public function testReferencesFollowTheFirstClaimantWithoutInventingMissingSources(): void
+    {
+        $ids = NodeIdentities::in([], 'id');
+        $first = $ids->claim('imported_field');
+        self::assertNotSame($first, $ids->claim('imported_field'));
+        self::assertSame($first, $ids->reference('imported_field'));
+        self::assertSame('n20', $ids->claim('n20'));
+        self::assertNotSame('n20', $ids->claim('n20'));
+        self::assertSame('n20', $ids->reference('n20'));
+        self::assertSame('missing_field', $ids->reference('missing_field'));
+    }
+
     public function testEveryLeafLeavesWithAnId(): void
     {
         $tree = self::normalize([[

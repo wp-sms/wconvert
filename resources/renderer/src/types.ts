@@ -56,6 +56,54 @@ export type SlotRole =
 /** What a `field` captures. Closed, because the capture path canonicalises per kind. */
 export type FieldName = 'email' | 'name' | 'phone' | 'interest';
 
+/** Answers are separate from canonical contact fields. IDs survive copy edits. */
+export interface QuestionChoice { readonly value: string; readonly label: string; }
+export interface QuestionNode extends BaseNode {
+  readonly type: 'question';
+  readonly label: string;
+  readonly help?: string;
+  readonly answer_type: 'single' | 'multi' | 'text';
+  readonly required?: boolean;
+  readonly options?: readonly QuestionChoice[];
+}
+
+export interface QuestionClause {
+  readonly question: string;
+  readonly operator: 'is' | 'is_not' | 'includes_any' | 'includes_none';
+  readonly values: readonly string[];
+}
+export interface QuestionCondition { readonly match: 'all' | 'any'; readonly clauses: readonly QuestionClause[]; }
+/** Explicit journey connections. Answer edges are checked in array order. */
+export interface JourneyGraphEdge {
+  readonly id: string;
+  readonly from: string;
+  readonly to: string;
+  readonly kind: 'answer' | 'default' | 'hidden';
+  readonly when?: QuestionCondition;
+}
+export interface JourneyGraph {
+  readonly entry: string;
+  readonly edges: readonly JourneyGraphEdge[];
+}
+export interface ResultProductFilter {
+  readonly order?: 'oldest' | 'newest' | 'price_low' | 'price_high';
+  readonly pinned_ids?: readonly number[];
+  readonly excluded_ids?: readonly number[];
+  readonly category_id: number;
+  readonly attributes: readonly { readonly taxonomy: string; readonly term_id: number }[];
+}
+export interface ResultVariant {
+  readonly product_action?: 'link' | 'add_to_cart';
+  readonly id: string;
+  readonly heading: string;
+  readonly body?: string;
+  readonly href?: string;
+  readonly link_label?: string;
+  readonly product_ids?: readonly number[];
+  readonly product_filter?: ResultProductFilter;
+  readonly when?: QuestionCondition;
+}
+
 /**
  * A link inside a sentence, expressed as STRUCTURE rather than markup
  * (ADR 0013). The renderer splits the text on `%s` and constructs the `<a>`
@@ -440,6 +488,8 @@ export interface FollowupNode extends HideableNode {
   readonly href?: string | null;
 }
 
+export interface ProductsNode extends BaseNode { readonly type: 'products'; readonly action?: 'link' | 'add_to_cart'; readonly context?: 'cart' | 'product'; readonly main_product_id?: number; readonly source?: 'selected' | 'cross_sells'; readonly product_ids: readonly number[]; readonly exclude_cart?: boolean; readonly context_key?: string }
+
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';
   readonly label?: string;
@@ -481,6 +531,8 @@ export type LeafNode =
   | IconNode
   | ImageNode
   | FieldNode
+  | QuestionNode
+  | ProductsNode
   | ButtonNode
   | FollowupNode
   | ConsentNode;
@@ -765,8 +817,15 @@ export type TemplateNode = LayoutNode | LeafNode | { readonly type: string };
 export interface TemplateScreen {
   readonly id: string;
   readonly name: string;
-  readonly kind: 'content' | 'input' | 'acknowledgement';
+  readonly kind: 'content' | 'input' | 'result' | 'acknowledgement';
   readonly content: TemplateNode;
+  readonly when?: QuestionCondition;
+  /** First matching route wins; the final route has no condition and is the fallback. */
+  readonly paths?: readonly { readonly to: string; readonly when?: QuestionCondition }[];
+  readonly results?: readonly ResultVariant[];
+  readonly products_required?: boolean;
+  readonly review_answers?: boolean;
+  readonly details_note?: string;
 }
 export interface CaptureSubmission {
   readonly id: string;
@@ -778,6 +837,8 @@ export interface TemplateTree {
   readonly v: number;
   readonly steps: readonly TemplateScreen[];
   readonly submissions: readonly CaptureSubmission[];
+  /** Version 3 routing; the v2 ordered steps remain readable without this. */
+  readonly graph?: JourneyGraph;
 }
 
 /**

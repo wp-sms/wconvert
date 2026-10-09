@@ -1,3 +1,4 @@
+import { isFreeInstall } from '../goals/availability';
 import { useId } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink } from 'lucide-react';
@@ -52,7 +53,7 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
         <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert Content lock” section instead. Use one lock per page.', 'wconvert')}</p>
         <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
         <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
-      </> : automatic ? <>
+      </> : automatic && !isFreeInstall() ? <>
         <p>{automatic}</p>
         <p>{__('After publishing, Pro places this Campaign in matching WordPress posts and pages when its display rules allow it. No block or shortcode is needed. A manual embed takes precedence.', 'wconvert')}</p>
         <p>{__('Check a matching article on your site. Page builders and custom layouts may need manual placement.', 'wconvert')}</p>

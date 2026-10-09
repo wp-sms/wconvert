@@ -79,6 +79,9 @@ final class NodeIdentities
     /** @var array<string, true> Ids a node has actually been given, this walk. */
     private array $claimed = [];
 
+    /** @var array<string, string> First claimant of each supplied identity. */
+    private array $references = [];
+
     /** The lowest number not yet handed out. */
     private int $next = 1;
 
@@ -127,6 +130,7 @@ final class NodeIdentities
         // on the site on the next save.
         if (is_string($id) && preg_match(self::SHAPE, $id) === 1 && !isset($this->claimed[$id])) {
             $this->claimed[$id] = true;
+            $this->references[$id] ??= $id;
 
             return $id;
         }
@@ -137,8 +141,21 @@ final class NodeIdentities
 
         $minted = 'n' . $this->next;
         $this->claimed[$minted] = true;
+        if (is_string($id) && $id !== '') $this->references[$id] ??= $minted;
 
         return $minted;
+    }
+
+    /** A dangling reference must not accidentally bind to a freshly minted node. */
+    public function reserveReference(string $id): void
+    {
+        if (preg_match(self::SHAPE, $id) === 1) $this->reserved[$id] = true;
+    }
+
+    /** Keep references attached to the original node when its supplied ID is reminted. */
+    public function reference(string $id): string
+    {
+        return $this->references[$id] ?? $id;
     }
 
     /**

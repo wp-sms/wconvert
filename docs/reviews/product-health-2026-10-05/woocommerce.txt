@@ -1,0 +1,9 @@
+PASS admin-only route rejects guest, malformed and oversized requests
+PASS healthy quiz/addition sources are checked; basket-dependent cross-sells are not guessed
+PASS stock warnings identify the product; unpublished repairs cannot conceal the published problem
+PASS unavailable reserve products are checked beyond the first three visible cards
+PASS empty filters, deleted references and failed catalog reads have distinct states
+PASS ordinary quiz links use their Store API eligibility without the commerce adapter
+PASS missing cross-sells, unavailable main products and unsupported direct additions are actionable
+PASS rechecking clears repaired warnings without cart changes or recorded product activity
+8 grouped product-health checks passed: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}

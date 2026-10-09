@@ -7,7 +7,6 @@ import {
   CircleCheck,
   ChevronDown,
   Info,
-  Lock,
   Plug,
   Plus,
   RefreshCw,
@@ -17,14 +16,15 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
-import { iconFor } from '../icons';
+import { ProviderMark } from './ProviderMark';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
+import { AccountEditor } from './AccountEditor';
 import { SendTestDialog } from './SendTestDialog';
+import { destinationStatus, setupProblems } from './status';
 import { destinationHref, leadsHref, sendingIssuesHref } from '../nav';
 import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
 import type { EditingState } from '../hooks/useAdminNavigation';
@@ -55,6 +55,8 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import {
   deleteDestination,
   readDestinations,
+  readSelectedSchema,
+  readRecentAttempts,
   rePush,
   saveDestination,
   testConnection,
@@ -63,6 +65,7 @@ import {
   type DestinationType,
   type DestinationsPayload,
   type RePushReport,
+  type RecentAttempt,
   type TestReport,
 } from './api';
 import {
@@ -73,7 +76,7 @@ import {
   targetSaid,
   toDraft,
 } from './settings';
-import { renderingFor, tierName, tierProductName } from '../goals/availability';
+import { isFreeInstall, isShown, renderingFor, tierProductName } from '../goals/availability';
 import { issueCount } from './issueCount';
 
 /**
@@ -357,11 +360,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         <Region>
           <RegionHeader title={__('Connected accounts', 'wconvert')} description={__('Accounts hold credentials. Destinations choose where submissions go.', 'wconvert')} />
           <RegionBody>
-            {data.connections.length === 0 ? <p className="m-0 text-note text-muted-foreground">{__('No remote accounts are configured. Local services such as MailPoet use this WordPress site and do not need a separate account connection.', 'wconvert')}</p>
-              : <ul className="m-0 list-none divide-y divide-border p-0">{data.connections.map((connection) => <li key={connection.id} className="flex flex-wrap items-start justify-between gap-3 py-4">
-                <div><strong className="block">{connection.label}</strong><span className="mt-1 block text-note text-muted-foreground">{data.types.find((type) => type.id === connection.type)?.label ?? connection.type} · {__('Credentials stored; connection not verified by this view.', 'wconvert')}</span></div>
-                <div className="flex flex-col gap-1 text-note">{data.destinations.filter((destination) => destination.connection === connection.id).map((destination) => <a key={destination.id} className="text-primary underline" href={destinationHref(destination.id)}>{destination.label}</a>)}</div>
-              </li>)}</ul>}
+            <AccountEditor types={data.types} connections={data.connections} usage={Object.fromEntries(data.connections.map((account) => [account.id, data.destinations.filter((destination) => destination.connection === account.id).map((destination) => destination.label)]))} onChange={refresh} />
           </RegionBody>
         </Region>
         <div><h2 className="mb-1 mt-2 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2><p className="m-0 text-note text-muted-foreground">{__('Reusable places to send submissions. Choose them inside each campaign.', 'wconvert')}</p></div>
@@ -458,6 +457,11 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
             add(adding, draft);
           }
         }}
+        onConnectionSaved={(account) => {
+          setPayload((current) => current.status === 'ready'
+            ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
+          void refresh();
+        }}
       >
         <Types types={data?.types ?? []} errors={errors} busyIds={busyIds} onAdd={(type) => {
           setAdding(type);
@@ -477,7 +481,13 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         open={replaying !== null}
         onOpenChange={(open) => { if (!open) setReplaying(null); }}
         title={__('Re-push stored submissions?', 'wconvert')}
-        description={replaying === null ? '' : sprintf(__('This queues retained submissions for “%1$s” from Campaigns whose published configuration uses it, since %2$s. With no previous success, all retained matching submissions are included. It is not limited to the visible failures or search results, and can send an email again.', 'wconvert'), replaying.label, replaying.health.last_success_at ?? __('the beginning', 'wconvert'))}
+        description={replaying === null ? '' : [
+          sprintf(__('This queues retained submissions for “%s” from Campaigns whose published configuration uses it.', 'wconvert'), replaying.label),
+          replaying.health.last_success_at
+            ? sprintf(__('The last successful delivery was %s. Recovery includes an overlap before that time so later steps of a journey are not missed.', 'wconvert'), replaying.health.last_success_at)
+            : __('With no previous success, all retained matching submissions are included.', 'wconvert'),
+          __('It is not limited to the visible failures or search results, and can send an email again.', 'wconvert'),
+        ].join(' ')}
         confirmLabel={__('Queue re-push', 'wconvert')}
         returnFocusTo={returnFocus}
         onConfirm={() => { if (replaying !== null) replay(replaying); setReplaying(null); }}
@@ -583,7 +593,9 @@ function Configured({
   // has one and the lead magnet email has three.
   // Every field its TYPE declares, in the order PHP returned them — copy
   // included — and an empty set where this build no longer ships the type.
-  const schema = type?.settings_schema ?? {};
+  const [schema, setSchema] = useState(type?.settings_schema ?? {});
+  const [metadataError, setMetadataError] = useState<string | null>(null);
+  const [loadingSchema, setLoadingSchema] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
   /**
    * **The name is the merchant's, and it is editable here.**
@@ -599,8 +611,27 @@ function Configured({
    */
   const [label, setLabel] = useState(destination.label);
   const [connection, setConnection] = useState(destination.connection);
+  useEffect(() => {
+    if (type?.needs_connection !== true || connection === null) {
+      setSchema(type?.settings_schema ?? {});
+      return;
+    }
+    let active = true;
+    setLoadingSchema(true);
+    setMetadataError(null);
+    void readSelectedSchema(type.id, connection).then((result) => {
+      if (!active) return;
+      setSchema(result.settings_schema);
+      setDraft(toDraft(result.settings_schema, destination.settings));
+    }).catch(() => {
+      if (active) setMetadataError(__('Could not load this account’s audiences. Check the account and try again.', 'wconvert'));
+    }).finally(() => { if (active) setLoadingSchema(false); });
+    return () => { active = false; };
+  }, [type?.id, type?.needs_connection, type?.settings_schema, connection, destination.settings]);
   const removeTrigger = useRef<HTMLButtonElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [recent, setRecent] = useState<readonly RecentAttempt[] | null>(null);
+  const [recentError, setRecentError] = useState<string | null>(null);
   const settingsTrigger = useRef<HTMLButtonElement>(null);
   const region = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -611,7 +642,6 @@ function Configured({
     heading?.focus();
     region.current?.scrollIntoView?.({ block: 'start' });
   }, [focusRequested]);
-  const TypeIcon = iconFor(type?.icon ?? 'plug');
   const failing = destination.health.consecutive_failures > 0;
   /*
    * Whether the two *Test* buttons can do anything. The region above already
@@ -654,7 +684,7 @@ function Configured({
       {error !== null && <RegionError message={error} />}
 
       <RegionHeader
-        icon={<TypeIcon />}
+        icon={<ProviderMark type={type} />}
         title={destination.label}
         /*
           **`locked` and `unavailable` are two sentences, not one.** They were
@@ -666,7 +696,11 @@ function Configured({
           and a merchant is offered a licence we do not sell (ADR 0026).
         */
         description={
-          destination.availability === 'locked'
+          // A free install keeps the saved route and names no product
+          // (ADR 0116) — it only ever reaches `locked` after Pro was removed.
+          destination.availability === 'locked' && isFreeInstall()
+            ? __('This destination type isn’t available on this site, so captures are not being sent.', 'wconvert')
+            : destination.availability === 'locked'
             ? sprintf(
                 /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
                 __('A %s feature this install does not have, so captures are not being sent.', 'wconvert'),
@@ -686,27 +720,24 @@ function Configured({
           install that has simply not bought the tier — which is the same
           collapse as the sentence above, in colour.
         */
-        trailing={
-          failing ? (
-            <Badge variant="destructive">{__('Failing', 'wconvert')}</Badge>
-          ) : destination.availability === 'locked' ? (
-            <Badge variant="secondary">
-              <Lock aria-hidden="true" />
-              {tierName(type?.tier)}
-            </Badge>
-          ) : destination.availability === 'unavailable' ? (
-            <Badge variant="warning">{__('Paused', 'wconvert')}</Badge>
-          ) : destination.health.last_success_at === null ? (
-            <Badge variant="secondary">{__('Not used yet', 'wconvert')}</Badge>
-          ) : (
-            <Badge variant="success">{__('Success recorded', 'wconvert')}</Badge>
-          )
-        }
+        trailing={destinationStatus(destination, type, setupProblems(destination, type, connections)).badge}
       />
+      <RegionBody>
+        <Button variant="outline" onClick={async () => {
+          try { const result = await readRecentAttempts(destination.id); setRecent(result.attempts); setRecentError(null); }
+          catch (cause) { setRecentError(messageOf(cause)); }
+        }}>{__('Recent sends', 'wconvert')}</Button>
+        {recentError && <RegionError message={recentError} />}
+        {recent !== null && (recent.length === 0 ? <p>{__('No recent attempts are retained. Older status is unknown.', 'wconvert')}</p>
+          : <ul className="m-0 list-none divide-y divide-border p-0">{recent.map((attempt) => <li key={attempt.id} className="py-2 text-note">
+            <strong>{({ accepted: __('Provider accepted', 'wconvert'), retry_scheduled: __('Retry scheduled', 'wconvert'), needs_attention: __('Needs attention', 'wconvert'), skipped: __('Skipped', 'wconvert'), queued: __('Queued', 'wconvert'), running: __('Running', 'wconvert'), unknown: __('Unknown', 'wconvert') })[attempt.outcome]}</strong>
+            {' · '}{__('Attempt', 'wconvert')} {attempt.attempt}{attempt.at && ` · ${attempt.at}`}
+          </li>)}</ul>)}
+      </RegionBody>
       {reporting && (
         <RegionBody className="flex flex-col gap-3">
           {failing ? (
-            <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+            <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
               <CircleAlert />
               <AlertTitle>
                 {sprintf(
@@ -743,7 +774,7 @@ function Configured({
           )}
 
           {destination.health.skipped_captures > 0 && (
-            <Alert className="border-warning/30 bg-warning/5 text-warning">
+            <Alert className="border-warning/30 bg-warning-surface text-warning">
               <TriangleAlert />
               <AlertTitle className="line-clamp-none">
                 {sprintf(
@@ -759,11 +790,11 @@ function Configured({
                 )}
               </AlertTitle>
               <AlertDescription>
-                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored leads from Campaigns whose published configuration uses this destination, since its last success. It can send an email again.', 'wconvert')}</p>
+                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored submissions from Campaigns whose published configuration uses this destination, since its last success, including an overlap for later journey steps. It can send an email again.', 'wconvert')}</p>
                 {!runnable && <p>{__('Restore the required plugin or plan before re-pushing.', 'wconvert')}</p>}
                 <div className="mt-3"><Button variant="outline" size="sm" disabled={busy || !runnable}
                   aria-describedby={`wconvert-recovery-${destination.id}`} onClick={() => onRePush(destination)}>
-                  <RotateCcw aria-hidden="true" />{__('Re-push leads since the last success', 'wconvert')}
+                  <RotateCcw aria-hidden="true" />{__('Re-push stored submissions', 'wconvert')}
                 </Button></div>
               </AlertDescription>
             </Alert>
@@ -778,23 +809,23 @@ function Configured({
             <Alert
               className={
                 report.capped
-                  ? 'border-warning/30 bg-warning/5 text-warning'
-                  : 'border-success/30 bg-success/5 text-success'
+                  ? 'border-warning/30 bg-warning-surface text-warning'
+                  : 'border-success/30 bg-success-surface text-success'
               }
             >
               <RotateCcw />
               <AlertTitle className="line-clamp-none">
                 {sprintf(
                   /* translators: %d: number of pushes queued. */
-                  _n('%d lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
+                  _n('%d submission queued for re-pushing.', '%d submissions queued for re-pushing.', report.jobs, 'wconvert'),
                   report.jobs,
                 )}
               </AlertTitle>
-              {report.capped && (
-                <AlertDescription>
-                  {__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}
-                </AlertDescription>
-              )}
+              <AlertDescription>
+                <p>{__('Each submission uses its original accepted details. Re-pushing does not create new Leads; queued submissions still need to be delivered.', 'wconvert')}</p>
+                {report.capped && <p>{__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}</p>}
+                {(report.needs_review ?? 0) > 0 && <p>{sprintf(__('%d older submissions were not queued because this destination’s account, target or policy changed. Review them before resending.', 'wconvert'), report.needs_review ?? 0)}</p>}
+              </AlertDescription>
             </Alert>
           )}
           {/*
@@ -875,6 +906,9 @@ function Configured({
           </div>
         )}
 
+        {loadingSchema && <p>{__('Loading audiences…', 'wconvert')}</p>}
+        {metadataError && <RegionError message={metadataError} />}
+
         {fields.map(([key, field]) => (
           <div key={key} className="flex max-w-xl flex-col gap-1.5">
             {/*
@@ -904,7 +938,7 @@ function Configured({
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            disabled={busy}
+            disabled={busy || loadingSchema || metadataError !== null || (type?.needs_connection === true && connection === null)}
             aria-describedby={`wconvert-shared-${destination.id}`}
             onClick={() =>
               onSave(destination, {
@@ -979,7 +1013,7 @@ function Configured({
           </Button>
           {(mode === 'issues' || settingsOpen || failing) && destination.health.skipped_captures === 0 && <Button variant="outline" size="sm" disabled={busy || !runnable} onClick={() => onRePush(destination)}>
             <RotateCcw aria-hidden="true" />
-            {__('Re-push leads since the last success', 'wconvert')}
+            {__('Re-push stored submissions', 'wconvert')}
           </Button>}
         </div>
         {mode === 'settings' && settingsOpen && <Button
@@ -1009,7 +1043,7 @@ function Configured({
  * requirements together, without making the merchant hunt below saved routes.
  */
 function Types({
-  types,
+  types: all,
   errors,
   busyIds,
   onAdd,
@@ -1025,6 +1059,9 @@ function Types({
   busyIds: ReadonlySet<string>;
   onAdd: (type: DestinationType) => void;
 }) {
+  // A free install lists only what it can set up (ADR 0116); `unavailable`
+  // still explains itself here, because this is a settings list.
+  const types = all.filter((type) => isShown(type.availability));
   return (
     <Region>
       {types.map((type) =>
@@ -1052,7 +1089,6 @@ function Types({
         <ul className="m-0 list-none p-0">
           {types.map((type) => {
             const rendering = renderingFor(type.availability, 'settings_list');
-            const TypeIcon = iconFor(type.icon);
 
             return (
               <li
@@ -1060,7 +1096,7 @@ function Types({
                 className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 last:border-b-0"
               >
                 <span className="flex min-w-0 items-center gap-2.5">
-                  <TypeIcon aria-hidden="true" className="size-5 shrink-0 text-primary" />
+                  <ProviderMark type={type} className="size-5 shrink-0" />
                   <span className="font-medium text-foreground">{type.label}</span>
                 </span>
 
@@ -1136,9 +1172,9 @@ function Types({
  * installed (ADR 0026).
  */
 const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: LucideIcon }> = {
-  success: { className: 'border-success/30 bg-success/5 text-success', icon: CircleCheck },
+  success: { className: 'border-success/30 bg-success-surface text-success', icon: CircleCheck },
   skipped: { className: 'border-border bg-surface text-muted-foreground', icon: Info },
-  failed: { className: 'border-destructive/30 bg-destructive/5 text-destructive', icon: CircleAlert },
+  failed: { className: 'border-destructive/30 bg-destructive-surface text-destructive', icon: CircleAlert },
 };
 
 /**

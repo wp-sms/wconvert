@@ -40,6 +40,12 @@ enum ConvertingAct: string
     /** The CTA's navigation. Produces a Conversion and no Lead, and the Template has one step. */
     case Click = 'click';
 
+    /** Showing the selected result after completing the active questions. */
+    case Match = 'match';
+
+    /** A server-confirmed WooCommerce addition; supporting product links do not convert. */
+    case AddToCart = 'add_to_cart';
+
     /**
      * The `action` a `button` carries to produce this act.
      *
@@ -54,14 +60,15 @@ enum ConvertingAct: string
      */
     public function action(): string
     {
-        return $this === self::Submit ? 'submit' : 'link';
+        return match ($this) { self::Submit => 'submit', self::Click => 'link', self::Match => 'next', self::AddToCart => 'add_to_cart' };
     }
 
     /**
      * Every act a tree offers, once each, in this enum's order.
      *
-     * A `button` node is the only thing that converts, and its `action` param
-     * is which of the two it is — `link` navigates and `submit` captures. Navigation buttons are not acts.
+     * A Results screen offers Match regardless of whether contact is required
+     * before it. Without Results, a button offers Submit or Click; navigation
+     * buttons are not acts.
      *
      * The walk covers every step and every pane, through
      * {@see TemplateTree::childrenOf()}, because a `split`'s far pane is
@@ -73,6 +80,10 @@ enum ConvertingAct: string
     public static function offeredIn($tree): array
     {
         $tree = is_array($tree) ? $tree : [];
+        $resultAt = array_search('result', array_column(is_array($tree['steps'] ?? null) ? $tree['steps'] : [], 'kind'), true);
+        if ($resultAt !== false) {
+            return [self::Match];
+        }
         $found = [];
 
         foreach (is_array($tree['steps'] ?? null) ? $tree['steps'] : [] as $step) {
@@ -92,6 +103,7 @@ enum ConvertingAct: string
             return;
         }
 
+        if (($node['type'] ?? null) === 'products') $found[] = ($node['action'] ?? 'link') === 'add_to_cart' ? self::AddToCart : self::Click;
         if (($node['type'] ?? null) === 'button' && in_array($node['action'] ?? null, ['submit', 'link'], true)) {
             $act = ($node['action'] ?? null) === self::Click->action() ? self::Click : self::Submit;
 

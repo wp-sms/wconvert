@@ -12,7 +12,8 @@
     "heading-size": "clamp(1.75rem, 4vw, 3rem)",
     "tracking": "-0.03em",
     "width": "56rem",
-    "gap": "1.25rem"
+    "gap": "1.25rem",
+    "pad": "1rem"
   },
   "tree": {
     "steps": [
@@ -52,7 +53,12 @@
                   "text": "Seven practical ways to organise a calmer working week.",
                   "id": "n3"
                 }
-              ]
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "heading-size": "1.75rem",
+                "gap": ".875rem"
+              }
             }
           ],
           "end": [
@@ -70,7 +76,17 @@
                   "required": true,
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "id": "n4"
+                  "id": "n4",
+                  "tokens": {
+                    "border": "#8790a3"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "role": "consent_text",
+                  "text": "Use my email to send the requested guide.",
+                  "hidden": true,
+                  "id": "n6"
                 },
                 {
                   "type": "button",
@@ -79,13 +95,6 @@
                   "action": "submit",
                   "id": "n5",
                   "submission": "primary"
-                },
-                {
-                  "type": "consent",
-                  "role": "consent_text",
-                  "text": "I agree to receive these emails.",
-                  "hidden": true,
-                  "id": "n6"
                 },
                 {
                   "type": "text",
@@ -97,7 +106,12 @@
                   },
                   "id": "n7"
                 }
-              ]
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "heading-size": "1.75rem",
+                "gap": ".875rem"
+              }
             }
           ]
         }
@@ -123,7 +137,7 @@
             {
               "type": "text",
               "role": "success_body",
-              "text": "Thank you for your request.",
+              "text": "Thank you. We have received your request for the practical field guide.",
               "id": "n10"
             }
           ]

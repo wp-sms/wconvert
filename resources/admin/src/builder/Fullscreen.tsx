@@ -61,7 +61,7 @@ export function Fullscreen() {
   }, [on]);
 
   const exit = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' && !event.defaultPrevented && !document.body.classList.contains('wconvert-journey-focus')) {
       setOn(false);
       remember(false);
     }

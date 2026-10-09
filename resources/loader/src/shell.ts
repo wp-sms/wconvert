@@ -7,6 +7,7 @@ import { decide, isOverlay, rulesOf } from './decide';
 import { onConsentChange, withheldTypes } from './consent';
 import { sessionCounts } from './session-counts';
 import { persistentStore } from './storage';
+import { isResultFirst } from './journey-mode';
 import {
   SITE_SLOT,
   STATE_KEY,
@@ -221,7 +222,7 @@ export function start(options: ShellOptions): () => void {
             record((current) => scopesOf(entry.id).reduce(withConversion, current));
             run();
           },
-        }, (entry.template?.tree.submissions.length ?? 0) > 0));
+        }, entry.server_conversion === true || (entry.template?.tree.submissions.length ?? 0) > 0 && !isResultFirst(entry.template?.tree)));
         if (accepted === false) { failed = true; if (activeOverlay === entry.id) activeOverlay = undefined; }
         else overlayDone = overlayDone || isOverlay(entry);
       }

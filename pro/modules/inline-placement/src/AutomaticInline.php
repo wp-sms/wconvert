@@ -27,6 +27,7 @@ final class AutomaticInline
 
     public function hooks(): void
     {
+        add_action('woocommerce_after_single_product_summary', [$this, 'product'], 5);
         add_filter('the_content', [$this, 'content'], 20);
         add_filter('render_block_core/post-content', [$this, 'block'], 20, 3);
     }
@@ -56,6 +57,23 @@ final class AutomaticInline
         return $parts[1] . $this->place($parts[3], (int) ($block->context['postId'] ?? 0)) . $parts[4];
     }
 
+    /** Classic WooCommerce boundary; block/custom templates use the manual campaign block. */
+    public function product(): void
+    {
+        $id = (int) get_queried_object_id();
+        if ($this->inserted || wp_is_block_theme() || is_admin() || is_feed() || is_preview()
+            || (defined('REST_REQUEST') && REST_REQUEST) || !is_singular('product')
+            || $id !== (int) get_the_ID() || post_password_required($id)
+            || get_post_meta($id, '_elementor_edit_mode', true) === 'builder'
+            || get_post_meta($id, '_et_pb_use_builder', true) === 'on') return;
+        $set = PublishedOptin::fromSet($this->published->all());
+        $entries = Payload::forRequest($set, RequestContextFactory::forPublishedSet($set, $this->roles), $this->degradation);
+        $html = self::insertCandidates('', $entries, 'product');
+        $this->inserted = $html !== '';
+        // Only escaped, hidden campaign markers are emitted; no merchant HTML.
+        echo $html;
+    }
+
     private function place(string $html, int $postId): string
     {
         if ($this->inserted || trim($html) === '' || is_admin() || is_feed() || is_preview()
@@ -74,7 +92,7 @@ final class AutomaticInline
     }
 
     /** @param list<array<string, mixed>> $entries */
-    public static function insertCandidates(string $html, array $entries): string
+    public static function insertCandidates(string $html, array $entries, string $surface = 'content'): string
     {
         $seen = [];
         // Derive all boundaries from the original article, not from anchors
@@ -87,6 +105,7 @@ final class AutomaticInline
                 || !is_string($id) || !Ulid::isOne($id)) {
                 continue;
             }
+            if (($placement['position'] === 'after_product_summary') !== ($surface === 'product')) continue;
             // Each A/B arm has a candidate at its configured position. Only
             // the assigned arm may promote its candidate to the family anchor.
             $candidateId = (string) ($entry['id'] ?? '');
@@ -98,7 +117,7 @@ final class AutomaticInline
             if (str_contains($html, $marker)) {
                 continue;
             }
-            $placed = ContentInsertion::insert($html, $marker, $placement);
+            $placed = $surface === 'product' ? $html . $marker : ContentInsertion::insert($html, $marker, $placement);
             $at = strpos($placed, $marker);
             if ($at !== false) {
                 $insertions[$at] = ($insertions[$at] ?? '') . $marker;

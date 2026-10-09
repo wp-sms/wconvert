@@ -114,6 +114,9 @@ deliberately withholds trees, so it would have nothing to read.
    never fetched: *a free wp.org plugin phoning home for advertising copy is a
    different conversation with the review team* (ADR 0015, and
    `goals/availability.ts` already says it about upsell copy).
+   *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): the file
+   still ships, but a free install's `/templates` index leaves it out. Only a
+   paid install, missing a higher rung, is sent these cards.*
 3. **Fetched free entries** — `wp_remote_get` against a WConvert-hosted index,
    transient-cached, degrading to (1) on any failure. **Implemented and amended by
    [ADR 0082](0082-template-packs-install-as-validated-local-data.md):** explicit
@@ -137,7 +140,7 @@ structurally rather than by intention.
 [#7](https://github.com/navidkashani/wconvert/issues/7) states it: *"if the free
 ZIP ships exit-intent code and refuses to run it, that is trialware"*. So free
 ships the card and never the design. `LockedCard` renders the name, its facet
-chips and **"See this design"** linking to a live preview on wconvert.com —
+chips and **"See this design"** linking to a live preview on wconvert.io —
 no preview, no thumbnail, **no image at all**, which is why ADR 0010's *no
 static thumbnails anywhere* survives this intact. There is no `disabled` "Use
 this design", which is what wp.org Guideline 9 fires on; an admin-side link to

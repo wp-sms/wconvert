@@ -7,6 +7,15 @@ use WConvert\Goal\Goal;
 
 final class OutcomeContractTest extends TestCase
 {
+    public function testBasketAdditionGoalRequiresAnAdditionDesignAndDoesNotReuseClickMeaning(): void
+    {
+        $config = ['template' => ['tree' => ['steps' => [['content' => ['type' => 'products', 'action' => 'add_to_cart']]]]]];
+        self::assertNull(Goal::IncreaseBasketValue->outcome()->designIssue($config));
+        self::assertNotNull(Goal::PromoteOffer->outcome()->designIssue($config));
+        self::assertSame('Basket additions', Goal::IncreaseBasketValue->headlineLabel());
+        unset($config['template']['tree']['steps'][0]['content']['action']);
+        self::assertNotNull(Goal::IncreaseBasketValue->outcome()->designIssue($config));
+    }
     public function testListCollectionDefaultsToAConnectedServiceButAllowsExplicitLocalCollection(): void
     {
         $email = Goal::GrowEmailList->outcome();

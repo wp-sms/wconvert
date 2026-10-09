@@ -3,7 +3,7 @@
 A [[Goal]] declares the **counted kind**, the tier, the site dependency, the
 words, and the grouping on Analytics. It no longer declares the converting act.
 Which act an [[Optin]] converts on is read from the design it holds, and from
-nowhere else.
+nowhere else. [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md) extends click designs with one selected-products block: its product links share one converting act and cannot coexist with a capture flow.
 
 *Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the design
@@ -11,6 +11,8 @@ still defines the converting act, but the first accepted capture in a journey
 counts once. Subsequent submissions can add to its Lead without counting again.
 Submission-button count and screen count therefore cannot define the number
 of Conversions. The runtime and the two-screen rules below are not yet updated.*
+
+*Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md): a design with a Results screen converts on the first showing of that screen, whether contact was required before it or offered afterward. The later optional capture is a separate channel count, not another Campaign Conversion.*
 
 > **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Runtime act detection still belongs to the design. An Outcome contract now checks Goal/action/channel compatibility at publication, while allowing incomplete drafts.
 

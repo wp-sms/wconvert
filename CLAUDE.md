@@ -13,7 +13,7 @@ vocabulary, and `Optin` / `Lead` / `Contact` / `Goal` / `Playbook` /
 
 ### Issue tracker
 
-GitHub Issues on `navidkashani/wconvert`, via the `gh` CLI. See
+GitHub Issues on `wp-sms/wconvert`, via the `gh` CLI. See
 `docs/agents/issue-tracker.md`.
 
 ### Triage labels

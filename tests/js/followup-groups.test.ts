@@ -1,0 +1,73 @@
+import { expect, it } from 'vitest';
+import type { TemplateTree } from '@renderer/types';
+import { followupGroups, followupGroupSource } from '../../resources/admin/src/builder/structure/followupGroups';
+import fixture from '../fixtures/journey-graph-enquiry.json';
+import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
+import { graphTrace } from '@loader/journey-graph';
+import { screenQuestionIds } from '@loader/journey-rules';
+const tree = fixture as unknown as TemplateTree;
+const groupedNames = (value: TemplateTree) => followupGroups(value).map(group => group.screens.map(index => value.steps[index].id));
+
+it('groups the independently checked sequence in route order without rewriting the journey', () => {
+  const before = JSON.stringify(tree);
+  expect(groupedNames(tree)).toEqual([['garden', 'indoors', 'balcony']]);
+  expect(followupGroups(tree)[0].next).toBe('contact');
+  expect(JSON.stringify(tree)).toBe(before);
+  expect(groupedNames({ ...tree, steps: [...tree.steps].reverse() })).toEqual([['garden', 'indoors', 'balcony']]);
+});
+
+it('keeps an outside entry into the middle explicit', () => {
+  const branched = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
+    { id: 'shortcut', from: 'interests', to: 'indoors', kind: 'answer' as const, when: tree.steps[1].when! }] } };
+  expect(groupedNames(branched)).toEqual([['indoors', 'balcony']]);
+});
+
+it('does not hide exclusive routes or a different hidden continuation inside a group', () => {
+  const skipped = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'garden_hidden' ? { ...edge, to: 'contact' } : edge) } };
+  expect(groupedNames(skipped)).toEqual([['indoors', 'balcony']]);
+  const branched = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
+    { id: 'answer', from: 'indoors', to: 'contact', kind: 'answer' as const, when: tree.steps[1].when! }] } };
+  expect(groupedNames(branched)).toEqual([]);
+});
+
+it('does not group capture fields or dependent follow-up answers', () => {
+  const capture = { ...tree, steps: tree.steps.map(screen => screen.id === 'indoors' ? { ...screen,
+    content: { type: 'stack' as const, children: [screen.content, { type: 'field' as const, name: 'name' as const, label: 'Name' }] } } : screen) };
+  expect(groupedNames(capture)).toEqual([]);
+  const dependent = { ...tree, steps: tree.steps.map(screen => screen.when ? { ...screen,
+    when: { ...screen.when, clauses: screen.when.clauses.map(clause => ({ ...clause, question: 'n2' })) } } : screen) };
+  expect(groupedNames(dependent)).toEqual([]);
+});
+
+it('leaves legacy and simple journeys unchanged', () => {
+  expect(followupGroups({ ...tree, graph: undefined })).toEqual([]);
+  expect(groupedNames({ ...tree, steps: tree.steps.map(screen => ({ ...screen, when: undefined })) })).toEqual([]);
+});
+
+it('keeps exclusive branches distinct while both follow-up groups rejoin the same save', () => {
+  const value = branchedFixture as unknown as TemplateTree;
+  expect(groupedNames(value)).toEqual([
+    ['home_garden', 'home_balcony', 'home_indoor', 'home_irrigation'],
+    ['business_office', 'business_hospitality', 'business_retail', 'business_maintenance'],
+  ]);
+  expect(followupGroups(value).map(group => group.next)).toEqual(['contact', 'contact']);
+  const question = (id: string) => screenQuestionIds(value.steps.find(screen => screen.id === id)!)[0];
+  const trace = graphTrace(value.steps, value.graph!, {
+    [question('scope')]: 'business', [question('business')]: ['office', 'maintenance'],
+    [question('business_office')]: 'Thirty workspaces', [question('business_maintenance')]: 'Monthly',
+    [question('home')]: ['garden'], [question('home_garden')]: 'An obsolete answer',
+  });
+  expect(trace.indices.map(index => value.steps[index].id)).toEqual(['scope', 'business', 'business_office', 'business_maintenance', 'contact', 'received']);
+  expect(trace.answers[question('home_garden')]).toBeUndefined();
+  expect(trace.decisions[0].edge).toBe('business_entry');
+});
+
+
+it('nests each group only under its own directly preceding question', () => {
+  const value = branchedFixture as unknown as TemplateTree;
+  expect(followupGroups(value).map(group => value.steps[followupGroupSource(value, group)!].id)).toEqual(['home', 'business']);
+  const group = followupGroups(tree)[0];
+  const multipleEntries = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
+    { id: 'extra-entry', from: 'contact', to: tree.steps[group.screens[0]].id, kind: 'default' as const }] } };
+  expect(followupGroupSource(multipleEntries, group)).toBeUndefined();
+});

@@ -252,15 +252,19 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
   await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose', exact: true }).click();
-  await page.getByRole('button', { name: 'Inline form', exact: true }).click();
+  const inline = page.getByRole('radio', { name: 'Inline form', exact: true });
+  await page.locator('label').filter({ has: inline }).click();
+  await expect(inline).toBeChecked();
   await expect(page.getByText('Newsletter signup after an article', { exact: true })).toBeVisible();
   await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
+  await page.getByRole('button', { name: 'Setup details for Newsletter signup after an article', exact: true }).click();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
 
   // Placement authoring belongs only to Display rules. Design must contain no
   // placement summary or route, in either the initial manual state or later
   // automatic state.
-  const design = page.getByRole('tabpanel', { name: 'Design', exact: true });
+  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
+  const design = page.getByRole('tabpanel', { name: 'Theme & layout', exact: true });
   await expect(design).toBeVisible();
   await expect(design.getByText('Manual', { exact: true })).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
@@ -269,9 +273,9 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await rulesTab.click();
   await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
   const rulesPanel = page.getByRole('tabpanel', { name: 'Display rules', exact: true });
-  const pages = rulesPanel.getByRole('navigation', { name: 'Display setup sections', exact: true }).getByRole('button', { name: /Pages/ });
+  const pages = rulesPanel.getByRole('navigation', { name: 'Display rules', exact: true }).getByRole('button', { name: /^Where does it show\?/ });
   await pages.click();
-  await expect(pages).toHaveAttribute('aria-current', 'step');
+  await expect(pages).toHaveAttribute('aria-current', 'true');
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   const placementPanel = rulesPanel.getByRole('heading', { name: 'Placement', exact: true }).locator('..');
   const method = placementPanel.getByRole('group', { name: 'Placement method', exact: true });
@@ -280,15 +284,16 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(placementPanel.getByRole('heading', { name: 'Placement', exact: true })).toBeVisible();
   await expect(placementPanel.locator('fieldset')).toHaveCount(0);
   await expect(placementPanel.locator('.wconvert-overlay-placement')).toHaveCount(0);
-  await expect(method).toHaveClass(/wconvert-choice-set/);
+  // The method is the shared quick-pick row (ADR 0129), on its 2.25rem floor.
+  await expect(method).toHaveClass(/wconvert-quick-picks/);
   const manual = method.getByRole('radio', { name: 'Manual', exact: true });
   const automatic = method.getByRole('radio', { name: 'Automatic', exact: true });
-  await expect(automatic).toBeVisible();
-  const choices = method.locator('label.wconvert-choice');
+  await expect(manual).toBeChecked();
+  const choices = method.locator('label.wconvert-quick-pick');
   await expect(choices).toHaveCount(3);
   for (let index = 0; index < 3; index++) {
     const box = await choices.nth(index).boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(36);
   }
 
   // The builder floor must wrap the shared labels without horizontal overflow;
@@ -298,7 +303,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
     return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       panelOverflow: panel.scrollWidth - panel.clientWidth,
-      whiteSpace: getComputedStyle(panel.querySelector('.wconvert-choice__label')).whiteSpace,
+      whiteSpace: getComputedStyle(panel.querySelector('.wconvert-quick-pick')).whiteSpace,
     };
   });
   expect(narrow).not.toBeNull();
@@ -307,22 +312,21 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   expect(narrow.whiteSpace).toBe('normal');
   await page.screenshot({ path: info.outputPath('inline-placement-manual-782-rtl.png'), fullPage: true });
 
-  // The editor intentionally leaves the radio unchecked until the explicit
-  // confirmation button commits automatic placement.
+  // Choosing Automatic applies at once. The playbook already opens right away
+  // on blog posts, so it changes no other answer and asks for no confirmation.
   await manual.focus();
   await page.keyboard.press('ArrowLeft'); // Forward through native radios in RTL.
   await expect(automatic).toBeFocused();
-  const enable = page.getByRole('group', { name: 'Enable automatic placement' });
-  await expect(enable).toBeVisible();
-  await enable.getByRole('button', { name: 'Enable automatic placement', exact: true }).click();
   await expect(automatic).toBeChecked();
-  await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
-  await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
+  await expect(placementPanel.getByText('Switch to automatic placement?', { exact: true })).toHaveCount(0);
+  const position = placementPanel.getByRole('group', { name: 'Position in the content', exact: true });
+  await expect(position.getByRole('radio', { name: 'After the content', exact: true })).toBeChecked();
+  await expect(placementPanel.getByLabel('Priority', { exact: true })).toHaveValue('0');
   await page.screenshot({ path: info.outputPath('inline-placement-automatic-782-rtl.png'), fullPage: true });
 
   // Return to Design: placement remains entirely absent, including after the
   // automatic state has been committed.
-  await page.getByRole('tab', { name: 'Design', exact: true }).click();
+  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
   await expect(design.getByText('Automatically after content', { exact: true })).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
   await expect(design.getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
@@ -331,17 +335,36 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await rulesTab.click();
   await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
   await pages.click();
-  await expect(pages).toHaveAttribute('aria-current', 'step');
+  await expect(pages).toHaveAttribute('aria-current', 'true');
   await expect(placementPanel).toBeVisible();
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).toBeChecked();
-  await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
-  await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
+  await expect(position.getByRole('radio', { name: 'After the content', exact: true })).toBeChecked();
+  await expect(placementPanel.getByLabel('Priority', { exact: true })).toHaveValue('0');
 
   // The disposable Playground has no connected service. Exercise the real
   // product's explicit local lead-storage choice so this test can publish
   // without inventing a destination or mutating an external account.
   await page.getByRole('tab', { name: 'Destinations', exact: true }).click();
+  // The tab is cards and tiles rather than a checkbox list: it must hold at
+  // the widest admin and at phone width, in both directions, with no
+  // horizontal scroll on the page or inside the tab.
+  const destinationsPanel = page.getByRole('tabpanel', { name: 'Destinations', exact: true });
+  await expect(destinationsPanel.getByText('Saved in WConvert Leads', { exact: true })).toBeVisible();
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const direction of ['ltr', 'rtl']) {
+      await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      await expect.poll(() => destinationsPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
+      const always = await destinationsPanel.locator('.wconvert-destination-always').boundingBox();
+      const panelBox = await destinationsPanel.boundingBox();
+      expect(always && panelBox && always.x >= panelBox.x - 1 && always.x + always.width <= panelBox.x + panelBox.width + 1).toBe(true);
+      await page.screenshot({ path: info.outputPath(`destinations-${width}-${direction}.png`), fullPage: true });
+    }
+  }
+  await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
+  await page.setViewportSize({ width: 782, height: 900 });
   const collectOnly = page.getByRole('radio', { name: 'Collect only in WConvert', exact: true });
   await collectOnly.click();
   await expect(collectOnly).toBeChecked();
@@ -361,21 +384,21 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await rulesTab.click();
   await pages.click();
   await method.getByText('Content lock', { exact: true }).click();
-  await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
-  const previewButton = page.getByRole('button', { name: 'Preview campaign', exact: true });
-  const previewDialog = page.getByRole('dialog', { name: 'Preview campaign', exact: true });
+  const previewButton = page.getByRole('button', { name: 'Preview & test', exact: true });
+  const previewDialog = page.getByRole('dialog', { name: 'Preview & test', exact: true });
   const canvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
-  // Display setup owns the full pane at every width; its preview opens in the
+  // Display rules owns the full pane at every width; its preview opens in the
   // same dialog on desktop and at the builder floor.
   for (const width of [1440, 782]) {
     await page.setViewportSize({ width, height: 1000 });
     await expect(rulesPanel.getByRole('region', { name: 'Design canvas', exact: true })).toHaveCount(0);
     await previewButton.click();
     await expect(previewDialog).toBeVisible();
+    await previewDialog.getByRole('button', { name: 'Check the design', exact: true }).click();
     await expect(preview).toBeVisible();
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
@@ -391,10 +414,6 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
-      const help = placementPanel.locator('details').filter({ has: page.getByText('Setup details', { exact: true }) });
-      await help.getByText('Setup details', { exact: true }).click();
-      await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
-      await help.getByText('Setup details', { exact: true }).click();
     }
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -403,6 +422,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(placementPanel).not.toContainText('—');
   await previewButton.click();
   await expect(previewDialog).toBeVisible();
+  await previewDialog.getByRole('button', { name: 'Check the design', exact: true }).click();
   await preview.selectOption('locked');
   await preview.scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('content-lock-workspace.png'), fullPage: true });

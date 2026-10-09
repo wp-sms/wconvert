@@ -85,6 +85,16 @@ final class PlaybookRegistrationTest extends TestCase
         $GLOBALS['wconvertTestDoingItWrong'] = [];
     }
 
+    public function testBusinessExamplesAreOptionalValidatedEditorialMetadata(): void
+    {
+        $entry = $this->library(self::entry(['business_types' => ['stores', 'publishers']]))->find('welcome-discount');
+        self::assertSame([['id' => 'stores', 'label' => 'Stores'], ['id' => 'publishers', 'label' => 'Publishers & creators']], $entry?->toArray()['business_types']);
+        self::assertSame([], $this->library(self::entry())->find('welcome-discount')?->businessTypes);
+        foreach (['stores', ['unknown'], ['stores', 'stores'], [12], [['id' => 'stores']]] as $invalid) {
+            $this->assertRejected(self::entry(['business_types' => $invalid]), RejectionReason::Malformed);
+        }
+    }
+
     /**
      * **A refusal is not silent.**
      *

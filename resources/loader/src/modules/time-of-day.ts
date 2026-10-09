@@ -47,7 +47,7 @@ import { siteTimezone } from '../payload';
 const MINUTES_IN_A_DAY = 1440;
 
 /** One `HH:MM` as minutes since midnight, or **null where it is not one**. */
-function minutesIn(clock: string): number | null {
+export function minutesIn(clock: string): number | null {
   const read = /^(\d\d):(\d\d)$/.exec(clock);
 
   if (read === null) {
@@ -145,7 +145,7 @@ function siteClock(zone: string | null): (now: Date) => number | null {
  * what {@see \WConvert\Optin\Schedule::isImpossible()} decides about the same
  * shape one scope up.
  */
-function inside(between: string, at: number): boolean {
+export function inside(between: string, at: number): boolean {
   const window = /^(\d\d:\d\d)-(\d\d:\d\d)$/.exec(between);
 
   if (window === null) {

@@ -1,0 +1,306 @@
+{
+  "id": "gift-edit",
+  "name": "Gift edit",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#fffaf3",
+    "fg": "#332e28",
+    "muted": "#62564d",
+    "accent": "#704a38",
+    "accent-fg": "#ffffff",
+    "border": "#d9cfc3",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "36rem",
+    "shadow": "0 24px 60px -24px rgba(36,30,24,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "recipient",
+        "name": "Their interests",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "n3",
+                  "name": "gift"
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n4",
+                  "text": "The thoughtful gift edit",
+                  "role": "eyebrow"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "id": "n5",
+              "text": "A gift that feels\nlike them.",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "text": "Start with what they enjoy. Two questions, no signup.",
+              "role": "body"
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n7",
+                  "text": "01 · Their interests",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "question",
+                  "id": "n1",
+                  "label": "What do they enjoy?",
+                  "answer_type": "single",
+                  "required": true,
+                  "options": [
+                    {
+                      "value": "growing",
+                      "label": "Growing things"
+                    },
+                    {
+                      "value": "home",
+                      "label": "Making a home"
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "label": "Next: your budget",
+                  "action": "next",
+                  "role": "next_label"
+                }
+              ],
+              "tokens": {
+                "bg": "#f1e7dc",
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "budget",
+        "name": "Your budget",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n9",
+              "text": "02 · A comfortable budget",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n10",
+              "text": "Something thoughtful.\nWithin reach.",
+              "role": "headline"
+            },
+            {
+              "type": "question",
+              "id": "n2",
+              "label": "What is your gift budget?",
+              "answer_type": "single",
+              "required": true,
+              "options": [
+                {
+                  "value": "under30",
+                  "label": "Up to £30"
+                },
+                {
+                  "value": "over30",
+                  "label": "£30 to £60"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "label": "See gift ideas",
+              "action": "next",
+              "role": "next_label"
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "label": "Back to interests",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "match",
+        "name": "Gift ideas",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "button",
+              "id": "n13",
+              "label": "Change my answers",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "growing_small",
+            "heading": "A small start to something green",
+            "body": "A compact planter or a simple growing kit. Check the product price and care notes before choosing.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "growing"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "under30"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "growing_set",
+            "heading": "A little more room to grow",
+            "body": "A coordinated growing set for someone who enjoys caring for plants. Check what is included.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "growing"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "over30"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "home_small",
+            "heading": "A useful everyday detail",
+            "body": "A small tray or a practical desk accessory. Check materials and dimensions before choosing.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "home"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "under30"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "home_set",
+            "heading": "A considered set for home",
+            "body": "A useful set of everyday pieces. Check the contents and current price.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "home"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "over30"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Explore the gift collection",
+            "body": "Browse more ideas if these choices are unavailable. No gift is reserved.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option"
+          }
+        ],
+        "products_required": true
+      }
+    ],
+    "submissions": []
+  }
+}

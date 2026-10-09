@@ -37,9 +37,9 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { listGoals } from '../goals/api';
-import { tierProductName } from '../goals/availability';
+import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
-import { adminSettings } from '../settings';
+import { adminSettings, productModuleActive } from '../settings';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
@@ -69,6 +69,9 @@ import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { CampaignSkeleton } from './CampaignSkeleton';
 import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
+
+import { CampaignId } from './CampaignId';
+import { ProductHealthDetails, productHealthLabel, useProductHealth } from './ProductHealth';
 
 const Design = lazy(() => import('./CampaignDesign'));
 const Details = lazy(() => import('./CampaignDetails'));
@@ -214,6 +217,10 @@ export function OptinList({
   const shown = visible.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   const displayed = shown.flatMap((c) => (collapsed.has(c.id) ? [c] : family(c)));
   const ids = displayed.map((c) => c.id).join(',');
+  // Only a site that can put a product in a campaign is asked about products:
+  // a free install has neither module and meets no product checks (ADR 0116).
+  const productChecks = productModuleActive();
+  const productHealth = useProductHealth(productChecks ? ids : '', refreshKey);
   useEffect(() => {
     let active = true;
     setPreviews({});
@@ -279,17 +286,17 @@ export function OptinList({
     ['all', __('All', 'wconvert')],
     ['published', __('Published', 'wconvert')],
     ['draft', __('Drafts', 'wconvert')],
-    ['suspended', __('Needs attention', 'wconvert')],
+    ['suspended', __('Suspended', 'wconvert')],
   ] as const;
   const preview = (row: OptinSummary) => (
-    <div className="wc-campaign-thumbnail">
+    <div className="wconvert-campaign-thumbnail">
       {previews[row.id]?.template ? (
-        <Suspense fallback={<div className="wc-preview-placeholder" />}>
+        <Suspense fallback={<div className="wconvert-preview-placeholder" />}>
           <Design template={previews[row.id].template!} />
         </Suspense>
       ) : (
         <div
-          className="wc-preview-placeholder"
+          className="wconvert-preview-placeholder"
           aria-label={
             previewError
               ? __('Preview unavailable', 'wconvert')
@@ -316,26 +323,26 @@ export function OptinList({
           : __('Edit', 'wconvert');
     return (
       <CampaignRow key={row.id} row={row} arm={arm}>
-        <DataTableCell label={__('Campaign', 'wconvert')} className="wc-campaign-identity">
+        <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
           <button
-            className="wc-preview-button"
+            className="wconvert-preview-button"
             onClick={(e) => openDetails(row, e.currentTarget)}
             aria-label={sprintf(__('Preview %s', 'wconvert'), row.name)}
           >
             {preview(row)}
           </button>
           <div>
-            <button className="wc-campaign-name" onClick={(e) => openDetails(row, e.currentTarget)}>
+            <button className="wconvert-campaign-name" onClick={(e) => openDetails(row, e.currentTarget)}>
               {row.name}
             </button>
-            <p className="wc-campaign-meta">
+            <p className="wconvert-campaign-meta">
               {displayTypeLabel(previews[row.id]?.display_type)}
               {previews[row.id] && labels?.[row.goal] ? ' · ' : ''}
               {labels?.[row.goal] ?? (labelsError ? __('Goal unavailable', 'wconvert') : labels === null ? null : <code>{row.goal}</code>)}
             </p>
             {testing && !arm && (
               <button
-                className="wc-family-toggle"
+                className="wconvert-family-toggle"
                 aria-expanded={!collapsed.has(row.id)}
                 onClick={() =>
                   setCollapsed((previous) => {
@@ -347,24 +354,27 @@ export function OptinList({
                 }
               >
                 {collapsed.has(row.id) ? (
-                  <ChevronRight className="wc-chevron-collapsed" aria-hidden="true" />
+                  <ChevronRight className="wconvert-chevron-collapsed" aria-hidden="true" />
                 ) : (
                   <ChevronDown aria-hidden="true" />
                 )}
                 {sprintf(__('A/B test · %d designs', 'wconvert'), parent.arms.length + 1)}
               </button>
             )}
-            {arm && <span className="wc-campaign-meta">{__('Variant', 'wconvert')}</span>}
+            {arm && <span className="wconvert-campaign-meta">{__('Variant', 'wconvert')}</span>}
           </div>
         </DataTableCell>
-        <DataTableCell label={__('Status', 'wconvert')} className="wc-campaign-state">
+        <DataTableCell label={__('Status', 'wconvert')} className="wconvert-campaign-state">
           <StatusBadge status={status} />
           {canUnpublish(status) && row.has_unpublished_changes && (
-            <p className="wc-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
+            <p className="wconvert-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
           )}
-          {status === 'suspended' && <p className="wc-campaign-note">{row.suspended}</p>}
+          {status === 'suspended' && <p className="wconvert-campaign-note">{row.suspended}</p>}
+          {productHealthLabel(productHealth.rows[row.id]) && <button type="button" className="wconvert-product-health-link" aria-haspopup="dialog" onClick={e => openDetails(row, e.currentTarget)}>
+            {productHealthLabel(productHealth.rows[row.id])}
+          </button>}
         </DataTableCell>
-        <DataTableCell label={__('Results', 'wconvert')} numeric className="wc-campaign-results">
+        <DataTableCell label={__('Results', 'wconvert')} numeric className="wconvert-campaign-results">
           {reportReady && result ? (
             <a
               href={reportHref({ optinId: row.id, ...period })}
@@ -385,7 +395,7 @@ export function OptinList({
             </span>
           )}
         </DataTableCell>
-        <DataTableActions className="wc-campaign-actions">
+        <DataTableActions className="wconvert-campaign-row-actions">
           <Button
             variant="outline"
             disabled={busy.size > 0}
@@ -423,7 +433,7 @@ export function OptinList({
     );
   };
   return (
-    <div className="wc-campaign-workspace" data-layout={layout}>
+    <div className="wconvert-campaign-workspace" data-layout={layout}>
       {list.status === 'failed' ? (
         <Region label={__('Campaigns', 'wconvert')}>
           <RegionErrorState message={list.message} action={
@@ -434,9 +444,9 @@ export function OptinList({
         </Region>
       ) : (
         <>
-          <div className="wconvert-toolbar wc-campaign-filterbar">
+          <div className="wconvert-toolbar wconvert-campaign-filterbar">
             <div
-              className="wc-campaign-filters"
+              className="wconvert-campaign-filters"
               role="radiogroup"
               aria-label={__('Filter Campaigns by status', 'wconvert')}
             >
@@ -455,7 +465,7 @@ export function OptinList({
                 </label>
               ))}
             </div>
-            <label className="wc-campaign-period">
+            <label className="wconvert-campaign-period">
               {__('Results', 'wconvert')}
               <select
                 aria-label={__('Results period', 'wconvert')}
@@ -478,8 +488,8 @@ export function OptinList({
               ].filter(Boolean).join(' ')}
               action={<Button variant="outline" onClick={() => setRefreshKey((n) => n + 1)}>{__('Retry', 'wconvert')}</Button>}
             />}
-            <div className="wconvert-toolbar wc-campaign-toolbar">
-              <label className="wc-campaign-search">
+            <div className="wconvert-toolbar wconvert-campaign-toolbar">
+              <label className="wconvert-campaign-search">
                 <Search aria-hidden="true" />
                 <input
                   type="search"
@@ -492,7 +502,7 @@ export function OptinList({
                   }}
                 />
               </label>
-              <div className="wc-campaign-viewtools">
+              <div className="wconvert-campaign-viewtools">
                 <select
                   aria-label={__('Sort campaigns', 'wconvert')}
                   value={sort}
@@ -504,7 +514,7 @@ export function OptinList({
                   <option value="newest">{__('Newest first', 'wconvert')}</option>
                   <option value="name">{__('Name A–Z', 'wconvert')}</option>
                 </select>
-                <div className="wc-campaign-layout" role="radiogroup" aria-label={__('Campaign layout', 'wconvert')}>
+                <div className="wconvert-campaign-layout" role="radiogroup" aria-label={__('Campaign layout', 'wconvert')}>
                   <label>
                     <input type="radio" name="campaign-layout" aria-label={__('List view', 'wconvert')} checked={layout === 'list'} onChange={() => setLayout('list')} />
                     <List aria-hidden="true" />
@@ -516,6 +526,10 @@ export function OptinList({
                 </div>
               </div>
             </div>
+            {productChecks && ids && <div className="wconvert-product-health-toolbar">
+              <span role="status">{productHealth.loading ? __('Checking products…', 'wconvert') : productHealth.failed ? __('Product checks unavailable.', 'wconvert') : __('Product checks for this page.', 'wconvert')}</span>
+              <Button variant="ghost" disabled={productHealth.loading} onClick={productHealth.recheck}>{__('Check products again', 'wconvert')}</Button>
+            </div>}
             {list.status === 'ready' && rows.length === 0 ? (
               <EmptyState
                 icon={Megaphone}
@@ -551,7 +565,7 @@ export function OptinList({
                 {__('Try another name or clear your filters.', 'wconvert')}
               </EmptyState>
             ) : (
-              <DataTable label={__('Campaigns', 'wconvert')} className="wc-campaign-table">
+              <DataTable label={__('Campaigns', 'wconvert')} className="wconvert-campaign-table">
                 <DataTableHead>
                   <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
                   <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
@@ -567,7 +581,7 @@ export function OptinList({
               </DataTable>
             )}
           </Region>
-          <div className="wconvert-footer wc-campaign-footer">
+          <div className="wconvert-footer wconvert-campaign-footer">
             <span>
               {list.status === 'loading'
                 ? __('Loading campaigns…', 'wconvert')
@@ -588,7 +602,7 @@ export function OptinList({
             </a>
           </div>
           {shown.some((c) => c.arms.length > 0) && (
-            <p className="wc-campaign-test-note">
+            <p className="wconvert-campaign-test-note">
               {__(
                 'A/B assignments use browser storage, not unique people. Results count recorded views and conversions.',
                 'wconvert',
@@ -596,7 +610,7 @@ export function OptinList({
             </p>
           )}
           {lastPage > 0 && (
-            <div className="wconvert-footer wc-campaign-pagination">
+            <div className="wconvert-footer wconvert-campaign-pagination">
               <Button
                     variant="outline"
                 disabled={currentPage === 0}
@@ -625,7 +639,7 @@ export function OptinList({
         }}
       >
         <DialogContent
-          className="wc-campaign-detail"
+          className="wconvert-campaign-detail"
           onCloseAutoFocus={(e) => {
             e.preventDefault();
             returnFocus.current?.focus();
@@ -642,6 +656,12 @@ export function OptinList({
           </DialogHeader>
           {selected && (
             <>
+              <ProductHealthDetails health={productHealth.rows[selected.id]} loading={productHealth.loading} failed={productHealth.failed} onRecheck={productHealth.recheck} reviewDisabled={busy.size > 0} onReview={() => {
+                if (busyRef.current.size > 0) return;
+                const id = selected.id;
+                setSelected(null);
+                onEdit(id);
+              }} />
               {preview(selected)}
               <StatusBadge status={statusOf(selected)} />
               {statusOf(selected) === 'published' && selected.has_unpublished_changes && (
@@ -667,7 +687,7 @@ export function OptinList({
                 {labels?.[selected.goal]}
               </p>
               {reportReady && numbers[selected.id] && (
-                <div className="wc-campaign-detail-stats">
+                <div className="wconvert-campaign-detail-stats">
                   <div>
                     <strong>{formatCount(numbers[selected.id].count)}</strong>
                     <span>{numbers[selected.id].label}</span>
@@ -691,6 +711,7 @@ export function OptinList({
               <Suspense fallback={<RowsSkeleton rows={4} />}>
                 <Details key={selected.id} id={selected.id} />
               </Suspense>
+              <CampaignId key={selected.id} value={selected.id} variant={selected.parent_id !== null} />
               <div className="flex flex-wrap gap-2">
                 <Button
                   disabled={busy.size > 0}
@@ -795,7 +816,7 @@ function CampaignRow({
 }) {
   return (
     <DataTableRow
-      className={arm ? 'wc-campaign-row is-arm' : 'wc-campaign-row'}
+      className={arm ? 'wconvert-campaign-row is-arm' : 'wconvert-campaign-row'}
       label={row.name}
     >
       {children}
@@ -851,8 +872,8 @@ function CampaignMenu({
           <MoreHorizontal aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={5} className="wc-campaign-menu">
-        <DropdownMenuLabel className="wc-menu-heading">{row.name}</DropdownMenuLabel>
+      <DropdownMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu">
+        <DropdownMenuLabel className="wconvert-menu-heading">{row.name}</DropdownMenuLabel>
         <DropdownMenuItem onSelect={() => onPreview(trigger.current)}>
           <Eye aria-hidden="true" />
           {__('Preview & details', 'wconvert')}
@@ -884,8 +905,8 @@ function CampaignMenu({
                 ? __('Add another variant', 'wconvert')
                 : __('Create A/B test', 'wconvert')}
             </DropdownMenuItem>
-          ) : availability === 'locked' ? (
-            <DropdownMenuLabel className="wc-menu-note">
+          ) : renderingFor(availability, 'settings_list') === 'upsell' ? (
+            <DropdownMenuLabel className="wconvert-menu-note">
               {sprintf(
                 __('A/B testing is available with %s.', 'wconvert'),
                 tierProductName(adminSettings()?.variants?.tier ?? undefined),
@@ -914,7 +935,7 @@ function CampaignMenu({
             {__('Publish saved draft', 'wconvert')}
           </DropdownMenuItem>
         )}
-        {missingDesign && <DropdownMenuLabel className="wc-menu-note">{__('Add a design in the editor before publishing.', 'wconvert')}</DropdownMenuLabel>}
+        {missingDesign && <DropdownMenuLabel className="wconvert-menu-note">{__('Add a design in the editor before publishing.', 'wconvert')}</DropdownMenuLabel>}
         {parent.arms.length > 0 && (
           <DropdownMenuItem onSelect={() => onDecision('winner', trigger.current)}>
             <Trophy aria-hidden="true" />

@@ -1,5 +1,7 @@
 # Progressive capture keeps one Lead per journey
 
+*Byte limits amended by [ADR 0111](0111-spam-protection-precedes-capture.md): Free / Basic / Pro / Elite now cap at 14,592 / 25,088 / 26,624 / 26,880 bytes gzip-9 after pre-capture verification and campaign events. Other asset limits are unchanged.*
+
 Product direction agreed during the [#184 planning interview](../plans/184-progressive-capture.md)
 on 2026-09-22 and confirmed after the
 [use-case review](../plans/184-progressive-capture/decision-review.md). Implemented on the issue branch; see the
@@ -13,6 +15,8 @@ adds phone and separate SMS consent evidence to the same Lead. The journey count
 one Conversion, at its first accepted capture. Next, Back, later additions, and
 retries do not count again. Separate journeys still create separate Leads;
 matching an email or phone never authorizes merging or updating one.
+
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** that capture-first count remains the rule for ordinary journeys. A paid result journey counts its Conversion when its selected Results screen is shown, even if required contact was accepted first; optional signup after an immediate result creates a Lead without counting another Conversion. Anonymous answers create no Lead.
 
 Already-submitted details are fixed. Back can review earlier submissions, but
 only unsaved answers remain editable. Later submissions add new details and
@@ -76,6 +80,8 @@ qualification and relevant offers. No branching engine, UI, JSON fields or
 release commitment is introduced here. A future plan must cover skipped required
 fields, consent/submission ownership, Back after changing an answer, and reports
 for different paths before implementation.
+
+**Implemented by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** the bounded paid extension adds flat earlier-answer conditions, selected results, and a path preview. The Free linear journey contract remains available.
 
 Reports include the overall Conversion count, separate email/SMS capture totals,
 and anonymous screen progress counts. Repeated screen visits are not unique

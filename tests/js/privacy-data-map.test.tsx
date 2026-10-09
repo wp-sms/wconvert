@@ -39,6 +39,19 @@ beforeEach(() => {
 
 const disclosure = () => screen.getByRole('button', { name: /Where visitor data goes/ });
 
+it.each([
+  ['plausible', 'Plausible', 'Google Analytics'],
+  ['gtag', 'Google Analytics', 'Plausible'],
+  ['gtm', 'Google Analytics', 'Plausible'],
+])('names the configured recipient for %s analytics', async (route, provider, otherProvider) => {
+  privacy.readDataMap.mockResolvedValue({ ...MAP, analytics_integration: { configured: true, route } });
+  render(<PrivacyDataMap />);
+  fireEvent.click(disclosure());
+  const description = await screen.findByText(/External analytics is enabled/);
+  expect(description).toHaveTextContent(`through ${provider}.`);
+  expect(description).not.toHaveTextContent(otherProvider);
+});
+
 it('explains where visitor data goes in direct merchant language', async () => {
   render(<PrivacyDataMap />);
 

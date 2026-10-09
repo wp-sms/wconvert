@@ -1,0 +1,141 @@
+{
+  "date": "2026-09-28",
+  "setups": 108,
+  "referenced_designs": 59,
+  "inventory_designs": 91,
+  "registered_playbooks": 133,
+  "new_campaigns": [
+    "first-order-receipt",
+    "reading-notes-guide",
+    "website-review-enquiry",
+    "lighting-collection",
+    "rereading-essay",
+    "upholstery-samples",
+    "visiting-details",
+    "opening-hours-signpost"
+  ],
+  "new_designs": [
+    "offer-receipt",
+    "reading-cover",
+    "service-summary",
+    "collection-poster",
+    "margin-note",
+    "sample-envelope",
+    "availability-note",
+    "inline-signpost"
+  ],
+  "layout": {
+    "cases": 1760,
+    "findings": 0,
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "directions": [
+      "ltr",
+      "rtl"
+    ]
+  },
+  "visual": {
+    "screens": 11,
+    "paired_captures": 22,
+    "available_widths": [
+      768,
+      320
+    ],
+    "native_phone": [
+      390,
+      844
+    ],
+    "native_desktop": [
+      1440,
+      1000
+    ]
+  },
+  "contrast": {
+    "pairs": 124,
+    "minimum": 5.48,
+    "below_4_5": []
+  },
+  "wordpress": {
+    "campaigns": 108,
+    "passed": 108,
+    "resource_handoffs": 11,
+    "real_delivery": "skipped"
+  },
+  "comparison_only": [
+    "edition-early-access",
+    "delivery-announcement",
+    "fullscreen-announcement",
+    "photography-enquiry",
+    "project-planning-guide",
+    "cart-delivery-help",
+    "sale-deadline",
+    "product-care-guide",
+    "venue-visit-request",
+    "course-advice-request",
+    "seasonal-service-link",
+    "topic-reading-list",
+    "new-arrivals-link",
+    "sizing-guide",
+    "restock-announcements",
+    "collection-discovery",
+    "tutoring-introduction",
+    "accounting-consultation",
+    "project-readiness-guide",
+    "material-comparison",
+    "bulk-gift-enquiry",
+    "collection-interest",
+    "local-pickup-details",
+    "return-policy-guide",
+    "service-area-check",
+    "group-training-enquiry",
+    "service-options-guide",
+    "pre-visit-checklist",
+    "service-open-day",
+    "series-start",
+    "reader-format-choice",
+    "gift-wrap-details",
+    "dispatch-schedule",
+    "showroom-information",
+    "holiday-service-hours",
+    "remote-consultation-details",
+    "contributor-guidelines",
+    "repair-workshop-news",
+    "local-class-news",
+    "care-clinic-request",
+    "gift-message-enquiry",
+    "remote-walkthrough-request",
+    "portfolio-feedback-request",
+    "translation-project-enquiry",
+    "venue-hire-checklist",
+    "contributor-pitch-checklist",
+    "repair-advice-request",
+    "writing-session-details",
+    "furniture-fit-guide"
+  ],
+  "revisions": {
+    "first-order-receipt": "85c77da271e6fa21cf61bd2a1c84b1243cd661bbc0c591f11a176300e925ac96",
+    "reading-notes-guide": "64f0ebd3789c94b8cda36a6a19481a29a249e120fea48b386d67b646776471e2",
+    "website-review-enquiry": "3615562918a3cb2beb5270b0d3ee1cff85d4c925d8a5de01e7f6dff4a00cbf2e",
+    "lighting-collection": "8572c42008c68ef86854efbd0ae058968f500ecf9b5b0ab666b851347c4e818c",
+    "rereading-essay": "900ab1a642ee943e5644f9323cbffbfe5e4a514c70ed234647655cc8e29c720f",
+    "upholstery-samples": "dd77a94a4e309e665a188a7b303920dc14020a8e948e7db456a35ee3248bdd49",
+    "visiting-details": "502ce7a88a4de6d3bf79638ffb05b57f71fc058791f4d18dfa83374181282490",
+    "opening-hours-signpost": "c9871e19e988b1baf9ef3aa10c63da34b9ecb86c00fe484a51f33831050adeb7"
+  },
+  "php": {
+    "tests": 2328,
+    "assertions": 13873
+  },
+  "javascript": {
+    "tests": 3387,
+    "files": 180,
+    "concurrent_timeout": "Scope-style test passed on focused retry; full lower-concurrency rerun recorded separately."
+  },
+  "studio_tests": 15,
+  "ci": "skipped",
+  "release": "not approved"
+}

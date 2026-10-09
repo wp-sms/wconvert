@@ -44,7 +44,7 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
     resolve: {
       alias: {
         // Free's loader tree, so Pro's entry can name it readably. There is
-        // deliberately NO alias pointing into pro/: free's tree has no reason
+        // deliberately NO alias pointing into Pro's tree: free's tree has no reason
         // to reach that way, and an alias would be a second spelling of a path
         // the source contract scans for.
         '@loader': resolve(root, 'resources/loader/src'),
@@ -66,7 +66,7 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
       },
       minify: 'terser',
       // Keep shared helpers compact in the gzipped visitor payload.
-      terserOptions: { compress: { passes: 5, hoist_funs: true, inline: 1 } },
+      terserOptions: { compress: { passes: 5, hoist_funs: true, inline: 2 } },
       // The loader is subject to a hard 8KB gzipped budget, per build
       // (ADR 0014, ADR 0029). Nothing asserts that here: the assertion is
       // `npm run check:loader`, and it lands with the rule manifest whose

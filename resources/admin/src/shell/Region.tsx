@@ -57,7 +57,9 @@ export function Region({
  * `trailing` is for what belongs on the title's line and is not an action — the
  * window a set of numbers covers, a badge naming a state. Actions do not go
  * here: they are page-scoped and belong in the page header, or region-scoped
- * and belong in a {@see Toolbar} (ADR 0039).
+ * and belong in a {@see Toolbar} (ADR 0039). One exception is recorded there:
+ * the builder's destination regions put **Add destination** on the heading,
+ * where a toolbar holding only it would repeat the region's own boundary.
  */
 export function RegionHeader({
   title,
@@ -156,7 +158,7 @@ export function RegionFooter({ className, children }: { className?: string; chil
 export function RegionError({ message, action }: { message: string; action?: ReactNode }) {
   return (
     <div className="border-b border-border px-4 py-2.5">
-      <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+      <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
         {/*
           **`line-clamp-none`, because `AlertTitle` ships `line-clamp-1`.** A
@@ -193,7 +195,7 @@ export function RegionError({ message, action }: { message: string; action?: Rea
 export function RegionErrorState({ message, hint, action }: { message: string; hint?: string; action?: ReactNode }) {
   return (
     <RegionBody>
-      <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+      <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
         <AlertDescription>
@@ -227,7 +229,7 @@ export function RegionErrorState({ message, hint, action }: { message: string; h
  */
 export function PageError({ message }: { message: string }) {
   return (
-    <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+    <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
       <CircleAlert />
       <AlertTitle className="line-clamp-none">{message}</AlertTitle>
     </Alert>

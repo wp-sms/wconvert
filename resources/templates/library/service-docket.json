@@ -1,0 +1,238 @@
+{
+  "id": "service-docket",
+  "name": "Service docket",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f4f1e9",
+    "fg": "#183f50",
+    "muted": "#183f50",
+    "accent": "#183f50",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.25rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "48rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "basis": "16rem",
+          "ratio": "0.5",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#183f50",
+                "fg": "#ffffff",
+                "muted": "#ffffff",
+                "pad": "2rem",
+                "gap": "1.25rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "A practical next step"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "Small repair.\nFresh start."
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Tell us what needs attention. Leave your email so we can discuss the job."
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "fine_print",
+                  "text": "A quote request, with no booking or payment.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1rem",
+                "gap": ".75rem",
+                "heading-size": "1.75rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#f4f1e9",
+                "pad": "2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n6",
+                  "name": "name",
+                  "label": "Your name (optional)",
+                  "placeholder": "Your name",
+                  "required": false,
+                  "tokens": {
+                    "border": "#92856c"
+                  }
+                },
+                {
+                  "type": "field",
+                  "id": "n7",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#92856c"
+                  }
+                },
+                {
+                  "type": "field",
+                  "id": "n8",
+                  "name": "interest",
+                  "label": "What needs attention? (optional)",
+                  "placeholder": "Choose a service",
+                  "required": false,
+                  "options": [
+                    {
+                      "value": "repair",
+                      "label": "A repair"
+                    },
+                    {
+                      "value": "installation",
+                      "label": "An installation"
+                    },
+                    {
+                      "value": "advice",
+                      "label": "Help deciding"
+                    }
+                  ],
+                  "tokens": {
+                    "border": "#92856c"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n9",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Contact me about this home repair request.",
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n10",
+                  "role": "cta_label",
+                  "label": "Request a repair quote",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n11",
+                  "role": "fine_print",
+                  "text": "We use your details to respond to this request.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1rem",
+                "gap": ".75rem",
+                "heading-size": "1.75rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n12",
+              "role": "eyebrow",
+              "text": "Thank you"
+            },
+            {
+              "type": "heading",
+              "id": "n13",
+              "role": "success_headline",
+              "text": "Your request is received."
+            },
+            {
+              "type": "text",
+              "id": "n14",
+              "role": "success_body",
+              "text": "Thank you for describing what you need. This is a quote request, not a confirmed booking."
+            }
+          ],
+          "narrow": {
+            "pad": "1rem",
+            "gap": ".75rem",
+            "heading-size": "1.75rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n6",
+          "n7",
+          "n8"
+        ],
+        "consents": [
+          "n9"
+        ]
+      }
+    ]
+  }
+}

@@ -4,16 +4,24 @@
   "display_type": "fullscreen",
   "tier": "basic",
   "tokens": {
-    "bg": "#201c35",
-    "fg": "#ffffff",
-    "muted": "#d2cce5",
-    "accent": "#e8d4ff",
-    "accent-fg": "#201c35",
-    "heading-size": "clamp(2.5rem, 6vw, 5rem)",
-    "tracking": "-0.045em",
-    "width": "48rem",
-    "gap": "1.5rem",
-    "align": "center"
+    "bg": "#1f3540",
+    "fg": "#fff1ce",
+    "muted": "#fff1ce",
+    "accent": "#f4cb7f",
+    "accent-fg": "#1f3540",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "3.5rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "3rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "60rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
   },
   "tree": {
     "steps": [
@@ -34,7 +42,10 @@
               "type": "heading",
               "role": "headline",
               "text": "A fresh perspective.",
-              "id": "n2"
+              "id": "n2",
+              "narrow": {
+                "heading-size": "2.125rem"
+              }
             },
             {
               "type": "text",

@@ -6,6 +6,7 @@ import {
   DISPLAY_TYPE_MODULES,
   INLINE_PLACEMENT_MODULES,
   CONTENT_LOCK_MODULES,
+  JOURNEY_MODULES,
   MODULES_AT,
   PREMIUM_TRIGGER_MODULES,
 } from '../../resources/loader/src/modules';
@@ -43,12 +44,16 @@ import type { LoaderModule } from '@loader/types';
  * exists only to be checked, which is the cross-cutting list ADR 0015 refuses.
  */
 const MODULE_DIRECTORIES: Readonly<Record<string, readonly LoaderModule[]>> = {
+  'spam-filters': [],
   'display-types': DISPLAY_TYPE_MODULES,
   'inline-placement': INLINE_PLACEMENT_MODULES,
   'content-lock': CONTENT_LOCK_MODULES,
+  'journeys': JOURNEY_MODULES,
   'premium-triggers': PREMIUM_TRIGGER_MODULES,
   'ab-testing': AB_TESTING_MODULES,
   'cart-recovery': CART_MODULES,
+  'analytics': [], // Optional transport, no rule evaluators.
+  'destinations': [], // PHP-only module; no visitor-side loader code.
 };
 
 const idsOf = (modules: readonly LoaderModule[]): string[] => modules.map((module) => module.id);

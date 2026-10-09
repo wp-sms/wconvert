@@ -33,7 +33,7 @@ Stable ids and choice `value` keys are identifiers, not translated words.
 return [
     'id' => 'kebab-case',
     'name' => __('Sentence case', 'wconvert'),
-    'goal' => 'grow_email_list',   // one of the six, below
+    'goal' => 'grow_email_list',   // one of the seven, below
     'template_id' => 'centred-card',
     'notes' => __('Why a merchant would pick this, and what to expect.', 'wconvert'),
     'copy' => [ /* Slot Role => words */ ],
@@ -43,8 +43,11 @@ return [
 ];
 ```
 
-**The Goal is a closed enum of six**: `grow_email_list`, `grow_sms_list`,
-`deliver_lead_magnet`, `promote_offer`, `recover_cart`, `collect_enquiries`.
+**The Goal is a closed enum of eight**: `grow_email_list`, `grow_sms_list`,
+`deliver_lead_magnet`, `promote_offer`, `recover_cart`, `collect_enquiries`, `find_match`, `increase_basket_value`.
+`increase_basket_value` uses one products block with `action: add_to_cart`, counts server-confirmed additions, and requires WooCommerce plus Elite (ADR 0121).
+`find_match` uses paid question/result journeys. Read the current Goal enum and
+generated vocabulary for capabilities; never infer subscription or sale from capture.
 The enquiry Goal is free and standalone; it counts Conversions, not replies,
 sales or completed jobs. It adds no Goal/design coupling (ADR 0076).
 Adding a case is a code change a reviewer reads. If a Playbook does not fit one, it is

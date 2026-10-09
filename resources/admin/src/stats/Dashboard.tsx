@@ -1,3 +1,10 @@
+import { ReportNavigationProvider, ReportShortcuts } from './ReportNavigation';
+import { DeliveryAttention } from './DeliveryAttention';
+import { CommerceReport } from './extensions';
+import { Interests } from './Interests';
+import { Insights } from './Insights';
+import { ProductActivityReport } from './ProductActivityReport';
+import { JourneyReport } from './JourneyReport';
 import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
@@ -27,6 +34,10 @@ import { formatCount } from './format';
 import { families, rangeLabel, reportCSV } from './reporting';
 import { CampaignTable, Change, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
+import { commerceSupported } from '../settings';
+
+/** Cart goals need a store and the cart module; a site with neither is shown no zero for them (ADR 0127). */
+const CART_IMPACT = ['carts', 'additions'];
 import { InfoTip } from '../shell/InfoTip';
 import {
   MonthlyTargets,
@@ -41,7 +52,11 @@ const periodLabel = (days: number) =>
     String(days),
   );
 
-export function Dashboard({
+export function Dashboard(props: { query?: ReportQuery; onQueryChange?: (query: ReportQuery) => void } = {}) {
+  return <ReportNavigationProvider><DashboardContent {...props} /></ReportNavigationProvider>;
+}
+
+function DashboardContent({
   query,
   onQueryChange,
 }: { query?: ReportQuery; onQueryChange?: (query: ReportQuery) => void } = {}) {
@@ -109,6 +124,8 @@ export function Dashboard({
       ? (payload?.goals.filter((g) => impact.goals.includes(g.goal)) ?? [])
       : (payload?.goals ?? []);
   const previous = compare ? payload?.previous : undefined;
+  const insightIds = new Set(scopedCards.flatMap(g => g.optins.filter(o => !focusedId || (selection.experiment ? families(g).find(f => f.arms.some(a => a.id === focusedId))?.arms.some(a => a.id === o.id) : o.id === focusedId)).map(o => o.id)));
+  const insights = (payload?.insights ?? []).filter(item => (overview || insightIds.has(item.optin_id)) && (compare || item.rule_id === 'no_appearances'));
   const priorCard = previous?.goals.find((g) => g.goal === card?.goal);
   const exportReport = () => {
     if (!payload) return;
@@ -196,6 +213,7 @@ export function Dashboard({
           onCompare={(value) => change({ ...selection, compare: value })}
         />
       )}
+      {payload && <ReportShortcuts />}
       {updating && payload && (
         <p className="wa-muted" role="status">
           {__('Updating report…', 'wconvert')}
@@ -282,7 +300,8 @@ export function Dashboard({
             </p>
           </div>
           <div className="wa-impact-grid">
-            {payload.impact.map((item, index) => (
+            {payload.impact.filter((item) => !CART_IMPACT.includes(item.id) || commerceSupported() || item.goals.length > 0
+              || item.count > 0 || (previous?.impact.find((p) => p.id === item.id)?.count ?? 0) > 0).map((item, index) => (
               <a
                 key={item.id}
                 className={`wa-impact ${index === 0 ? 'wa-impact-primary' : ''}`}
@@ -313,12 +332,13 @@ export function Dashboard({
           {payload.impact.find((i) => i.id === 'impressions')?.count === 0 && (
             <p className="wa-notice">
               {__(
-                'No appearances recorded in this period. Check when and where your published campaigns are set to appear.',
+                'No appearances in this period. Today’s activity appears tomorrow.',
                 'wconvert',
               )}
             </p>
           )}
-          <MonthlyTargets report={targets} />
+          <DeliveryAttention />
+          <Insights items={insights} query={accepted} />
           <div className="wa-section-heading">
             <h3>{__('Results by goal', 'wconvert')}</h3>
             <span>
@@ -422,6 +442,11 @@ export function Dashboard({
           </EmptyState>
         </Region>
       ) : null}
+      {payload && !overview && <Insights items={insights} query={accepted} />}
+      {payload && optin && !selection.experiment && <ProductActivityReport id={optin.id} period={payload} />}
+      {payload && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} campaignNames={Object.fromEntries(payload.goals.flatMap(goal => goal.optins.map(campaign => [campaign.id, campaign.name])))} optinId={overview ? undefined : optin?.id} />}
+      {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
+      {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} />}
       {payload && payload.goals.length > 0 && (
         <details className="wa-help">
           <summary>{__('How these numbers work', 'wconvert')}</summary>

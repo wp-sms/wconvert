@@ -81,6 +81,7 @@ final class Dashboard
         $previous = $range->previous();
         $current['previous'] = self::of($previous, $this->stats->inRange($previous), $optins);
         $current['complete_days'] = true;
+        $current['insights'] = Insights::forReport($current);
         return $current;
     }
 
@@ -129,13 +130,14 @@ final class Dashboard
             'leads' => ['label' => __('Leads captured', 'wconvert'), 'note' => __('Form submissions across all capture goals', 'wconvert')],
             'offers' => ['label' => __('Offer link clicks', 'wconvert'), 'note' => __('Clicks to linked offers or content', 'wconvert')],
             'carts' => ['label' => __('Cart return clicks', 'wconvert'), 'note' => __('Clicks back to a shopping basket, not orders', 'wconvert')],
+            'additions' => ['label' => __('Basket additions', 'wconvert'), 'note' => __('Campaign appearances with a confirmed addition, not purchases', 'wconvert')],
             'impressions' => ['label' => __('Times shown', 'wconvert'), 'note' => __('Campaign appearances, including repeats', 'wconvert')],
         ];
         $impact = [];
         foreach ($groups as $id => $group) $impact[$id] = $group + ['id' => $id, 'count' => 0, 'goals' => []];
         foreach ($cards as $card) {
             $goal = Goal::from($card['goal']);
-            $key = $goal->outcome()->action === 'submit' ? 'leads' : ($goal === Goal::RecoverCart ? 'carts' : 'offers');
+            $key = $goal->outcome()->action === 'add_to_cart' ? 'additions' : ($goal->outcome()->action === 'submit' ? 'leads' : ($goal === Goal::RecoverCart ? 'carts' : 'offers'));
             $impact[$key]['count'] += $card['conversions'];
             $impact[$key]['goals'][] = $card['goal'];
             $impact['impressions']['count'] += $card['impressions'];
@@ -165,6 +167,7 @@ final class Dashboard
             'proof_level' => $goal->outcome()->proofLevel,
             'action' => $goal->outcome()->action,
             'result_label' => $goal === Goal::DeliverLeadMagnet ? __('Resource requests', 'wconvert') : $goal->headlineLabel(),
+            'rate_label' => $goal->rateLabel(),
             'undelivered_conversions' => self::undeliveredConversions($goal, $rows),
             ...self::numbers($goal, $range, $rows),
             'optins' => self::optinRows($goal, $range, $held, $byOptin),
@@ -217,6 +220,7 @@ final class Dashboard
         return [
             'headline' => $totals[$goal->headlineKind()->value] ?? 0,
             'conversions' => $conversions,
+            'items_added' => $totals[StatKind::CartAddition->value] ?? 0,
             'deliveries' => $goal->headlineKind() === StatKind::LeadMagnetDelivered ? ($totals[StatKind::LeadMagnetDelivered->value] ?? 0) : null,
             'impressions' => $impressions,
             'dismissals' => $totals[StatKind::Dismiss->value] ?? 0,
@@ -293,6 +297,7 @@ final class Dashboard
                 'name' => $optin->name,
                 'parent_id' => $optin->parentId,
                 'status' => $optin->deleted ? 'historical' : ($optin->published ? 'published' : 'paused'),
+                'published_at' => $optin->publishedAt,
                 ...self::numbers($goal, $range, $byOptin[$id] ?? []),
             ];
         }

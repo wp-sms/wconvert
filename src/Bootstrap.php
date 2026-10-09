@@ -72,13 +72,13 @@ final class Bootstrap
     }
 
     /**
-     * Run on `plugins_loaded` — loads the text domain, boots services and
-     * announces that free is up.
+     * Run on `plugins_loaded` — boots services and announces that free is up.
+     *
+     * No `load_plugin_textdomain()`: translations come from wp.org language
+     * packs, which WordPress loads just in time for the `wconvert` domain.
      */
     public static function setup(): void
     {
-        add_action('init', [self::class, 'loadTextdomain']);
-
         self::initializeServices();
 
         /**
@@ -143,6 +143,12 @@ final class Bootstrap
             RuleVocabulary::fromManifest(),
             new MilestoneStore($options)
         )))->install();
+
+        // Deactivation clears the product-activity pruner; retained rows still
+        // need it, whether or not a product module comes back.
+        if (\WConvert\Stats\ProductStats::tracked() && !wp_next_scheduled(\WConvert\Stats\ProductStats::HOOK)) {
+            wp_schedule_single_event(time() + DAY_IN_SECONDS, \WConvert\Stats\ProductStats::HOOK);
+        }
     }
 
     /**
@@ -150,10 +156,22 @@ final class Bootstrap
      *
      * The retention period stays in its option, so re-activating restores the
      * setting rather than silently reverting to keep-forever.
+     *
+     * Every WP-Cron event goes, because each would otherwise fire into a hook
+     * nobody is listening on: the pruner, the recovery sweep (re-scheduled on
+     * the next boot), the import cleanup — cleared by hook rather than by
+     * arguments, because it is scheduled once per administrator — and the
+     * product-activity pruner, which activate() re-schedules while retained
+     * product rows may exist. Queued
+     * Action Scheduler deliveries stay: they are a [[Lead]] on its way to a
+     * [[Destination]], and re-activating sends them.
      */
     public static function deactivate(): void
     {
         wp_clear_scheduled_hook(LeadPruner::HOOK);
+        wp_clear_scheduled_hook(\WConvert\Destination\SubmissionDispatcher::RECOVER);
+        wp_unschedule_hook(\WConvert\Rest\TemplateTransferController::CLEANUP);
+        wp_clear_scheduled_hook(\WConvert\Stats\ProductStats::HOOK);
     }
 
     /**
@@ -190,21 +208,5 @@ final class Bootstrap
         foreach ($providers as $provider) {
             $provider->boot($container);
         }
-    }
-
-    /**
-     * Load the plugin text domain.
-     *
-     * Translations are not bundled — WordPress delivers them into
-     * wp-content/languages/plugins/ for the wconvert slug, and
-     * load_plugin_textdomain() checks that global directory first.
-     */
-    public static function loadTextdomain(): void
-    {
-        load_plugin_textdomain(
-            'wconvert',
-            false,
-            dirname(plugin_basename(WCONVERT_MAIN_FILE)) . '/resources/languages'
-        );
     }
 }

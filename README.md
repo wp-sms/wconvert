@@ -16,6 +16,50 @@ Read [`CONTEXT.md`](CONTEXT.md) before using any domain term.
 
 Planned follow-ups and deferred work: [Product todo list](docs/TODO.md).
 
+React to live campaign opening, closing, and first lead capture with the
+[JavaScript events API](docs/guides/javascript-events.md). Campaign details
+include a copy button for the existing campaign/variant ID.
+
+## Import and export designs
+
+See the [step-by-step import/export guide](docs/guides/import-export-designs.md),
+including where to find Campaign actions and how to resolve upload problems.
+
+In the campaign editor, open **Campaign actions → Export design** to download the
+current design, including unsaved changes, as a `.wconvert.zip`. Supported local
+PNG/JPEG/WebP images travel with it. Unavailable images need explicit omission.
+
+Use **Campaign actions → Import design**, choose the file, and review its desktop
+and mobile preview. File content is the default; **Keep my current content** fits
+current words and pictures into matching slots. Review links before applying.
+**Apply to draft** is undoable and does not save or publish the campaign. Imported
+pictures become normal Media Library items and remain there after Undo.
+
+Transport is available in Free; designs using paid formats/journeys still need
+Pro. ZIP support and private temporary storage are required on the server.
+Maximum ZIP size is 25 MiB or the host's lower limit. No campaign settings,
+connections, leads or history are exported. Fonts, remote-only pictures, SVG
+uploads and linked documents are not embedded. See the
+[contract and limits](docs/adr/0113-template-files-replace-only-reviewed-draft-designs.md).
+
+## Spam protection
+
+Settings → Spam protection offers optional Cloudflare Turnstile Managed,
+Google reCAPTCHA v2 checkbox, or hCaptcha with merchant-owned keys in Free.
+Baseline hidden-field checks and request limits work without a provider.
+Every queued resource email also uses a ten-minute recipient/resource guard;
+this can suppress recent bulk re-pushes while preserving separate Leads.
+Pro adds exact email/domain blocklists and email exceptions on every paid rung.
+
+No external verification service is enabled by default. Saving keys is not a
+connection test: use **Test saved setup** on the configured hostname before
+relying on it. Verification errors preserve the form for retry. Secrets never
+appear in API read responses. No table or column is added.
+
+See the [setup guide](docs/guides/spam-protection.md),
+[implementation and deferred work](docs/plans/spam-protection.md), and
+[architecture decision](docs/adr/0111-spam-protection-precedes-capture.md).
+
 ## Multi-screen capture
 
 Free includes editable linear journeys: offer screens, questions, a final Submit,
@@ -107,6 +151,10 @@ bin/verify-source-contract.sh          # no build, runs on every pull request
 npm run check:loader                   # two loader builds, runs on every pull request
 ```
 
+Use Node 22 (`nvm use`, matching `.nvmrc`) for release and loader-size checks,
+as CI does. Node versions can bundle different gzip implementations: the same
+JavaScript can measure differently even with identical compression settings.
+
 No file in free's tree may import a `pro/` path or the `WConvert\Pro`
 namespace, in TypeScript **and** PHP
 ([ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md)). The
@@ -125,7 +173,7 @@ reaches for first.
 
 `npm run check:loader` is the **one build a pull request pays for**, and it
 earns it: both of its assertions are about build output. Free's and Pro's
-loader, gzip -9, hard-fail at 14,012 bytes for Free and 19,456 bytes for paid builds (ADR 0103); and free's loader is scanned for
+loader, gzip -9, hard-fail at 14,592 / 25,088 / 26,624 / 26,880 bytes for Free / Basic / Pro / Elite (ADR 0111); and free's loader is scanned for
 every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
@@ -193,9 +241,9 @@ times this size affordable without a virtualization library.
 
 A design declares its `tier`. Free ships free designs and, in
 `resources/templates/locked.json`, the **card** for a premium one — a name, its
-facets and a link to a live preview on wconvert.com, with no tree and no image
+facets and a link to a live preview on wconvert.io, with no tree and no image
 at all. Shipping the design and refusing the save is trialware
-([#7](https://github.com/navidkashani/wconvert/issues/7)), so
+([#7](https://github.com/wp-sms/wconvert/issues/7)), so
 `bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or
 a `tree` in `locked.json`, inside the free artifact — and refuses a **Pro**
 artifact that carries no premium design at all, which is the same rule read from
@@ -341,9 +389,33 @@ A [[Destination]] is **outbound and fallible** — configured, optional, one of
 several, and able to fail without the capture failing
 ([ADR 0007](docs/adr/0007-destinations-are-outbound-and-fallible.md)). **The
 Lead log is not one**: it is the Lead store, written first and always. Free
-ships two Destination types — the in-process WSMS push, and the lead-magnet
-delivery email over `wp_mail()`. Every type that makes an outbound HTTP call is
-Pro's.
+ships the WSMS push, MailPoet push when MailPoet is installed, and lead-magnet
+delivery email over `wp_mail()`. The Pro `destinations` module adds Mailchimp,
+Brevo and Mailtrap email-contact adapters.
+
+For a remote provider, connect an account on the Destinations page, create a
+named Destination for one audience/list, and choose whether existing contacts
+keep their details or receive the fields included in a new submission. A
+campaign sends basic supported contact details automatically. Its optional
+**Send extra answers** control maps captured questions, interest or message to
+provider text fields for each signup step. Preview uses sample values without
+sending; **Send test contact** sends the sample to the provider. Publishing the
+campaign makes edited mappings live.
+
+For marketing signups, Mailchimp requests confirmation for a new member and
+Brevo adds a new Contact to the selected list. An enquiry is saved as a
+Mailchimp transactional Contact or a Brevo Contact without list membership;
+its email address alone does not grant marketing consent. An explicit test send
+uses the merchant's own address and can enter the selected marketing list.
+
+Mailtrap has no name field of its own, so a Mailtrap Destination also chooses
+which text field the name goes to, preselected to `first_name` when the account
+has one. Mailtrap applies a write seconds after answering, so each push looks
+the address up and writes once: a new Contact is created with its details and
+list together, and in keep mode an existing one only joins the list. An enquiry
+is a Mailtrap Contact on no list. WConvert never sends a subscription status
+or removes a list, and Mailtrap's API has no double opt-in, so a new marketing
+Contact lands subscribed.
 
 **Everything is queued, including the WSMS push.** Action Scheduler is a core
 dependency bundled in the free plugin — three free features want a scheduler
@@ -357,7 +429,7 @@ period, which outlives any retention policy WConvert sets for itself — so
 personal data in one would survive both the prune and an honoured erasure
 request, in a table nothing here would ever look in again.
 
-**Delivery state is per-Destination health, not a per-Lead record**
+**Long-lived delivery state is per-Destination health, not a per-Lead record**
 ([ADR 0008](docs/adr/0008-delivery-state-is-destination-health-not-per-lead.md)).
 There is no `wconvert_lead_deliveries` table, because `push()` is idempotent:
 once re-pushing a Lead that already landed is harmless, per-Lead precision buys
@@ -370,6 +442,13 @@ guarded against. What is stored is `last_success_at`,
 non-autoloaded option — deliberately separate from Destination configuration,
 so the lost-increment race `update_option` allows can only ever eat advisory
 health and never an admin's edit.
+
+The Destinations page also shows recent Action Scheduler attempts for each
+route. WConvert records whether the provider accepted the request, a retry was
+scheduled, or the attempt needs attention. Scheduler completion alone does not
+prove provider acceptance, and attempts without a WConvert outcome marker are
+shown as unknown. This history lasts only as long as the site's Action
+Scheduler cleanup policy retains it.
 
 The failure split is the whole design, and it inverts under a naive
 implementation:
@@ -772,7 +851,8 @@ exists from day one with nothing to do.
 ```bash
 composer install && npm install
 
-npm run build          # admin bundle, block bundle, both loaders, both inspectors
+npm run build          # build:free then build:pro — every bundle, both plugins
+npm run build:free     # free's bundles only; what the shipped package.json rebuilds
 npm run check:loader   # the loader byte budget + the premium-identifier scan
 composer verify:artifact dist/stage/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit
@@ -793,24 +873,32 @@ on its own does nothing.
 
 ```bash
 npm run build          # public/ and pro/public/ are gitignored — nothing is stale
-bin/build.sh free      # → dist/wconvert-v0.1.0.zip
+bin/build.sh free      # → dist/wconvert-v1.0.0.zip
 bin/build.sh pro       # → one ZIP per tier (below)
 bin/build.sh all
 ```
 
-`bin/build.sh` stages a copy, runs `composer dist` inside it,
+`bin/build.sh` first rebuilds and checks reviewed collection revisions, then stages a copy, runs `composer install --no-dev` inside it,
 applies the tree's own `.distignore`, and then runs
 [`bin/verify-artifact-contract.sh`](bin/verify-artifact-contract.sh) **before**
 writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the
 contract has to be what decides whether one is written.
 
-`composer dist` (`composer install --no-dev --optimize-autoloader
---classmap-authoritative`) is the one production install command; the build and
-the CI jobs that need a no-dev tree call it rather than spelling the flags out.
+**The free ZIP carries its build files.** The repository is private, so a wp.org
+reviewer's only way to reproduce `public/` is the download itself:
+`package.json`, `package-lock.json`, `tsconfig.json`, `composer.json`,
+`composer.lock`, and free's Vite configs (`vite.config.{admin,block,loader,
+inspector,phone,protection}.mjs` plus the two factories they import) all ship,
+and `npm ci && npm run build:free` then `composer install --no-dev` in the
+unzipped plugin rebuild `public/` and `vendor/` without `pro/`. Every Pro config
+is named in `.distignore`; the contract fails the build if a shipped root Vite
+config mentions a `pro/` path, so a new Pro config nobody listed stops the ZIP
+rather than leaking into it. `components.json` (shadcn's CLI) and Action
+Scheduler's contributor notes do not ship; `license.txt` does.
 
-The wp.org listing images (banner, icon, screenshots) live in `.wordpress-org/`,
-are never part of the ZIP, and are pushed by `release-free.yml` and, between
-releases, by `assets.yml`.
+**Translations are wp.org language packs.** There is no `Domain Path` and no
+`load_plugin_textdomain()` — WordPress loads the `wconvert` domain from
+`wp-content/languages/plugins/` just in time.
 
 ### Pro is one plugin at three tiers
 
@@ -847,8 +935,10 @@ The third of ADR 0029's three programs, and the one whose subject is a build:
   in `vendor/composer/`'s generated autoload map, which is a leak the source
   contract structurally cannot see because `vendor/` does not exist until build
   time;
-* the free artifact contains **its un-minified source tree**, which is what makes
-  `readme.txt`'s source claim true by construction;
+* the free artifact contains **its un-minified source tree and the files that
+  rebuild it** — the npm and Composer manifests and free's Vite configs, none of
+  which may name a `pro/` path — which is what makes `readme.txt`'s source and
+  build claims true by construction, plus its `license.txt`;
 * no premium design ships in the free ZIP — the trialware gate, issue #7;
 * **no artifact carries a higher tier's module**, in PHP *and* in the built
   JavaScript. WP Statistics proves this and WSMS does not: all three of its
@@ -912,7 +1002,7 @@ pinning its SHA pins the wrapper rather than the gate.
 got.
 
 ```bash
-bin/plugin-check.sh dist/stage/wconvert "$(cat .github/plugin-check-version)"
+bin/plugin-check.sh dist/stage/plain/wconvert "$(cat .github/plugin-check-version)"
 ```
 
 It needs Docker — `@wordpress/env` starts a real WordPress and runs wp.org's own
@@ -920,9 +1010,14 @@ checker inside it. `.github/workflows/plugin-check-drift.yml` runs the **latest*
 against `main` weekly, compares it to the pin by finding code, and opens an
 issue on anything new.
 
-**The free plugin passes this gate**, as of
-[#60](https://github.com/navidkashani/wconvert/issues/60): zero errors, and
-eighteen warnings printed in full. The first run against a real staged tree
+**The free plugin passes this gate.** The 1.0.0 run
+([#96](https://github.com/wp-sms/wconvert/issues/96), Plugin Check 2.1.0)
+reports zero errors and three warnings, all one finding: `trademarked_term`
+says the name and the slug contain `wc`, which wp.org reserves for
+WooCommerce. That is a question for the plugin review team, not a code fix —
+ask for the `wconvert` slug explicitly when submitting. As of
+[#60](https://github.com/wp-sms/wconvert/issues/60) it was zero errors and
+eighteen warnings. The first run against a real staged tree
 reported 53 errors — escaping, i18n and `WordPress.DB.PreparedSQL` findings in
 `src/` and `resources/playbooks/`, none of them introduced by the release
 workflow. Thirty-one were fixed outright.

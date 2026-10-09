@@ -7,6 +7,18 @@ export interface CampaignPreview {
   display_type: string;
 }
 
+export interface ProductHealth {
+  id: string;
+  basis: 'published' | 'draft';
+  checks: { label: string; state: 'ok' | 'warning' | 'unknown' | 'context'; message: string }[];
+}
+
+export const readProductHealth = (ids: string[], signal?: AbortSignal) => {
+  const query = new URLSearchParams();
+  for (const id of ids) query.append('ids[]', id);
+  return apiFetch<ProductHealth[]>({ path: `/wconvert/v1/optins/product-health?${query}`, signal });
+};
+
 /** Only visible designs are fetched; the list response remains small. */
 export const readCampaignPreviews = (ids: string[]) => {
   const query = new URLSearchParams();
@@ -17,7 +29,9 @@ export const readCampaignPreviews = (ids: string[]) => {
 /** Copy the saved draft through the same validated creation route as the editor. */
 export async function duplicateCampaign(id: string, name: string) {
   const saved = await apiFetch<{ goal: string; config: Record<string, unknown> }>({ path: `/wconvert/v1/optins/${id}` });
-  return createOptin(name, saved.goal, saved.config);
+  const config = { ...saved.config };
+  if (config.analytics && typeof config.analytics === 'object') config.analytics = { ...config.analytics, label: '' };
+  return createOptin(name, saved.goal, config);
 }
 
 /**

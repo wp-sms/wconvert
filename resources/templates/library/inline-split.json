@@ -33,8 +33,8 @@
             {
               "type": "image",
               "id": "n1",
-              "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%2314532d'/%3E%3Cstop%20offset='.55'%20stop-color='%2315803d'/%3E%3Cstop%20offset='1'%20stop-color='%2386efac'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='0.85'%20cy='1.1'%20r='0.6'%20fill='%23dcfce7'%20opacity='.55'/%3E%3Ccircle%20cx='2.2'%20cy='2.8'%20r='0.9'%20fill='%234ade80'%20opacity='.5'/%3E%3C/svg%3E",
-              "alt": "Image placeholder",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20140%22%3E%3Crect%20width%3D%22320%22%20height%3D%22140%22%20rx%3D%2212%22%20fill%3D%22%23e9ede4%22%2F%3E%3Crect%20x%3D%22104%22%20y%3D%2214%22%20width%3D%22112%22%20height%3D%22112%22%20rx%3D%225%22%20fill%3D%22%23fffdf6%22%2F%3E%3Cpath%20d%3D%22M126%2042h62M126%2058h44M146%2082h42M146%20100h32%22%20stroke%3D%22%2372806a%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22m125%2081%204%204%207-9m-11%2024%204%204%207-9%22%20fill%3D%22none%22%20stroke%3D%22%233c634b%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E",
+              "alt": "Original illustration of a guide with a short checklist",
               "fit": "cover"
             }
           ],
@@ -60,7 +60,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#8790a3"
+                  }
                 },
                 {
                   "type": "button",
@@ -75,7 +78,7 @@
                   "id": "n6",
                   "role": "consent_text",
                   "hidden": true,
-                  "text": "Email me offers and news. %s",
+                  "text": "Use my email for this guide request. %s",
                   "link": {
                     "label": "Privacy Policy"
                   },
@@ -87,7 +90,7 @@
                   "type": "text",
                   "id": "n10",
                   "role": "fine_print",
-                  "text": "One guide email. %s",
+                  "text": "One guide request. No newsletter signup. %s",
                   "size": "s",
                   "link": {
                     "label": "Privacy Policy"

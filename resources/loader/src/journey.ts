@@ -1,22 +1,17 @@
+import { requestCapture, type Reply } from './capture-request';
+import { protectionField } from './protection';
+import { journeyLabel } from './journey-labels';
+import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
 import type { PayloadEntry } from './types';
-import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from './payload';
+import { beaconEndpoint } from './payload';
 import { createBeacon, type BeaconKind } from './beacon';
 import { clear, pending, refuse } from './capture';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
-interface Reply { id?: string; grant?: string; message?: string; data?: { field?: string }; }
-interface Options { onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
-
-function labels(): string[] {
-  try {
-    const value: unknown = JSON.parse(document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-journey') ?? 'null');
-    if (Array.isArray(value) && value.length === 2 && value.every(item => typeof item === 'string')) return value;
-  } catch { /* Use fallback copy if the page attribute was removed. */ }
-  return ['Continue', 'Submission not confirmed. Please try again.'];
-}
+interface Options { onLeadAccepted?(): void; onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
 export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Options): void {
@@ -58,6 +53,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   function bind() {
     const root = mounted.root;
     if (!root) return;
+    const website = protectionField(root);
     root.setAttribute('aria-label', tree!.steps[step].name);
     const index = step;
     let observer: IntersectionObserver | undefined;
@@ -74,6 +70,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     root.addEventListener('wconvert:closed', () => observer?.disconnect());
     root.addEventListener('wconvert:dismissed', () => report('screen_dismissed'));
     root.querySelector('.wc-close')?.addEventListener('click', () => report('screen_dismissed'));
+    let reviewing = false;
     for (const input of controls()) {
       const id = input.dataset.captureId!;
       const value = answers.get(id);
@@ -85,14 +82,16 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       }
       else if (cleared.delete(id)) (input as PhoneControl).__r?.();
       if (fixed.has(id)) {
+        reviewing = true;
         input.required = false;
         if (input instanceof HTMLSelectElement || (input instanceof HTMLInputElement && input.type === 'checkbox')) input.disabled = true;
         else input.readOnly = true;
       }
     }
+    if (reviewing) journeyNotice(root, journeyLabel(3));
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action]')) {
       if (button.dataset.action === 'submit' && accepted.has(button.dataset.submission!)) {
-        button.dataset.action = 'next'; button.textContent = labels()[0];
+        button.dataset.action = 'next'; button.textContent = journeyLabel(0);
       }
     }
     root.addEventListener('click', event => {
@@ -135,18 +134,19 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       busy = true; clear(root); const release = pending(root);
       void (async () => {
         try {
-          const base = { optin_id: entry.id, contract: entry.capture_contract };
+          const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
           if (!grant) {
-            const start = await request({ ...base, phase: 'start' });
+            const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
-          const result = await request({ ...base, grant, submission: submission.id, fields,
+          const result = await requestCapture({ ...base, grant, submission: submission.id, fields,
             consent: submission.consents.length > 0 ? submission.consents.every(id => answers.get(id) === true) : undefined });
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
           release(); busy = false;
+          if (accepted.size === 1) options.onLeadAccepted?.();
           report('screen_advanced'); show(step + 1);
           if (accepted.size === 1) options.onCaptured();
         } catch (error) {
@@ -158,25 +158,11 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
               : [...nodes.values()].find(({ node }) => 'name' in node && node.name === field);
             if (target && target.screen !== step) show(target.screen);
           }
-          if (mounted.root) refuse(mounted.root, reply?.message || labels()[1], field ?? null);
-          options.onRefused?.(field ? 'correctable' : 'unconfirmed');
+          if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
+          options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }
       })();
     });
   }
   bind();
-}
-
-async function request(body: Record<string, unknown>): Promise<Reply> {
-  const endpoint = captureEndpoint();
-  if (!endpoint) throw {};
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
-    const reply: unknown = await response.json();
-    if (!reply || typeof reply !== 'object' || Array.isArray(reply)) throw {};
-    if (!response.ok) throw reply;
-    return reply as Reply;
-  } finally { clearTimeout(timeout); }
 }

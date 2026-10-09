@@ -29,6 +29,7 @@ export interface GoalEntry {
   label: string;
   description: string;
   outcome: OutcomeContract;
+  cart_required?: boolean;
   audience_requirement?: string | null;
   headline_kind: string;
   headline_label: string;
@@ -43,7 +44,12 @@ export interface PlaybookEntry {
   goal: string;
   template_id: string;
   display_type: string;
-  copy: Record<string, unknown>;
+  revision?: string;
+  prepared_revision?: string;
+  design_key?: string;
+  availability?: 'ready' | 'locked' | 'unavailable';
+  requirements?: string[];
+  copy?: Record<string, unknown>;
   rules: Record<string, unknown>[];
   targeting: Record<string, unknown>;
   destination_hint: Record<string, unknown>;
@@ -51,6 +57,8 @@ export interface PlaybookEntry {
   notes: string;
   /** Optional editorial recommendation; never a Goal or design restriction. */
   recommendation?: string;
+  /** Editorial examples; choosing a business never changes Goal eligibility. */
+  business_types?: { id: string; label: string }[];
   collection?: { id: string; name: string; version: string };
   /**
    * **The design this Playbook would prefill, with its words already in it.**
@@ -93,9 +101,15 @@ export const listPlaybooks = (goal: string) =>
 
 // `playbookId` absent is "start from scratch", which skips the Playbook and
 // never the Goal.
-export const prefill = (goal: string, playbookId?: string) =>
+export const prefill = (goal: string, playbookId?: string, revision?: string, preparedRevision?: string) =>
   apiFetch<Draft>({
     path:
       `/wconvert/v1/playbooks/prefill?goal=${encodeURIComponent(goal)}` +
-      (playbookId === undefined ? '' : `&playbook_id=${encodeURIComponent(playbookId)}`),
+      (playbookId === undefined ? '' : `&playbook_id=${encodeURIComponent(playbookId)}`) +
+      (revision === undefined ? '' : `&revision=${encodeURIComponent(revision)}`) +
+      (preparedRevision === undefined ? '' : `&prepared_revision=${encodeURIComponent(preparedRevision)}`),
   });
+
+export const previewPlaybooks = (goal: string, ids: readonly string[]) => apiFetch<{ entries: PlaybookEntry[] }>({
+  path: `/wconvert/v1/playbooks/previews?${new URLSearchParams({ goal, ids: ids.join(',') })}`,
+});

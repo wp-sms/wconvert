@@ -41,6 +41,7 @@ defined('ABSPATH') || exit;
  */
 final class BulkRePush
 {
+    private int $needsReview = 0;
     /**
      * How many Leads are read at a time — a keyset walk, so the cursor is the
      * primary key the rows are already ordered by.
@@ -69,6 +70,7 @@ final class BulkRePush
 
     public function run(string $destinationId): RePushReport
     {
+        $this->needsReview = 0;
         $destination = $this->destinations->find($destinationId);
 
         if ($destination === null || !$this->registry->isDispatchable($destination->type)) {
@@ -83,11 +85,11 @@ final class BulkRePush
             $queued = $this->replayOptin($optinId, $destinationId, $this->boundary($since), $throughput, $queued);
 
             if ($queued >= self::MAX_JOBS) {
-                return new RePushReport($queued, true, $since);
+                return new RePushReport($queued, true, $since, $this->needsReview);
             }
         }
 
-        return new RePushReport($queued, false, $since);
+        return new RePushReport($queued, false, $since, $this->needsReview);
     }
 
     /**
@@ -155,6 +157,12 @@ final class BulkRePush
                 // dispatch stays immediate — only this is slowed (ADR 0008).
                 foreach ($lead->capture['submissions'] ?? [] as $submissionId => $submission) {
                     if (!in_array($destinationId, $submission['destination_ids'] ?? [], true)) { continue; }
+                    $expected = $submission['route_identities'][$destinationId] ?? null;
+                    $destination = $this->destinations->find($destinationId);
+                    if (is_string($expected) && $destination !== null && !hash_equals($expected, RouteIdentity::of($destination))) {
+                        $this->needsReview++;
+                        continue;
+                    }
                     if ($queued >= self::MAX_JOBS) { return $queued; }
                     $this->queue->schedule(
                         $now + intdiv($queued, $throughput) * self::MINUTE,

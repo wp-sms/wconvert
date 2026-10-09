@@ -1,3 +1,4 @@
+import { CommercePicker, CommerceRange } from './CommerceControls';
 import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ObjectPicker } from './rules/ObjectPicker';
@@ -34,6 +35,18 @@ export interface ParamControlProps {
 
 export function ParamControl({ id, param, value, onChange }: ParamControlProps) {
   switch (param.control) {
+    case 'product_set':
+    case 'category_set':
+      return <CommercePicker value={value} onChange={onChange} categories={param.control === 'category_set'} />;
+    case 'quantity_range':
+    case 'money_range':
+      return <CommerceRange value={value} onChange={onChange} money={param.control === 'money_range'} />;
+    case 'enum':
+      return <select id={id} value={typeof value === 'string' ? value : ''}
+        onChange={event => onChange(event.target.value || undefined)}>
+        <option value="">{__('Choose…', 'wconvert')}</option>
+        {param.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>;
     case 'boolean':
       return (
         <select id={id} value={typeof value === 'boolean' ? String(value) : ''}

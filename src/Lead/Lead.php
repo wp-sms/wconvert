@@ -19,6 +19,8 @@ final class Lead
         public readonly string $createdAt,
         /** @var array<string, mixed> Internal accepted snapshots; never a public DTO. */
         public readonly array $capture = [],
+        /** @var list<array<string, mixed>> Questions explicitly submitted with this Lead. */
+        public readonly array $questionAnswers = [],
     ) {
     }
 
@@ -45,7 +47,8 @@ final class Lead
             self::nullableString($row['phone'] ?? null),
             array_filter(is_array($decoded['answers'] ?? null) ? $decoded['answers'] : [], 'is_string'),
             (string) ($row['created_at'] ?? ''),
-            is_array($decoded['capture'] ?? null) ? $decoded['capture'] : []
+            is_array($decoded['capture'] ?? null) ? $decoded['capture'] : [],
+            self::questionAnswers($decoded['question_answers'] ?? null)
         );
     }
 
@@ -60,6 +63,7 @@ final class Lead
             'email' => $this->email,
             'phone' => $this->phone,
             'fields' => $this->fields,
+            'question_answers' => $this->questionAnswers,
             'created_at' => $this->createdAt,
         ];
     }
@@ -73,7 +77,16 @@ final class Lead
         $email = $values['email'] ?? null;
         $phone = $values['phone'] ?? null;
         unset($values['email'], $values['phone']);
-        return new self($this->id, $this->optinId, $email, $phone, $values, $this->createdAt);
+        return new self($this->id, $this->optinId, $email, $phone, $values, $this->createdAt, ['field_mappings' => $snapshot['field_mappings'] ?? [], 'route_identities' => $snapshot['route_identities'] ?? [],
+            'purpose' => $snapshot['purpose'] ?? 'request'],
+            self::questionAnswers($snapshot['question_answers'] ?? null));
+    }
+
+    /** @return list<array<string, mixed>> */
+    private static function questionAnswers(mixed $value): array
+    {
+        if (!is_array($value)) return [];
+        return array_values(array_filter($value, static fn (mixed $answer): bool => is_array($answer)));
     }
 
     private static function nullableString(?string $value): ?string

@@ -1,5 +1,8 @@
+import { observePresentation } from '../../analytics/loader/bridge';
+import { campaignLifecycle } from '@loader/events';
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
-import { captureInto, templatePresenter } from '@loader/present';
+import { createTemplatePresenter } from '@loader/present';
+import { premiumCaptureInto } from '../../journeys/loader';
 import { mountPopover } from './popover';
 import { mountFullscreen } from './fullscreen';
 import { selectAutomatic, showAutomatic } from '../../inline-placement/loader';
@@ -43,11 +46,11 @@ import { connectContentLock } from '../../content-lock/loader';
  * free's to draw (CONTEXT.md, Impression).
  */
 export const proPresenter: Presenter = {
-  connect: ({ entries, changed }) => connectContentLock(connectRecovery(proPresenter, entries, changed), entries, changed),
+  connect: ({ entries, changed }) => observePresentation(connectContentLock(connectRecovery(proPresenter, entries, changed), entries, changed)),
   select: selectAutomatic,
   show(entry: PayloadEntry, controls: OptinControls): void {
     if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in' && entry.display_type !== 'fullscreen') {
-      showAutomatic(entry, controls, templatePresenter);
+      showAutomatic(entry, controls, createTemplatePresenter(premiumCaptureInto));
 
       return;
     }
@@ -63,6 +66,7 @@ export const proPresenter: Presenter = {
     }
 
     const mounted = (entry.display_type === 'fullscreen' ? mountFullscreen : mountPopover)({
+      ...campaignLifecycle(entry),
       displayType: entry.display_type,
       placement: entry.placement,
       template,
@@ -87,7 +91,7 @@ export const proPresenter: Presenter = {
       return;
     }
 
-    captureInto(mounted, entry, controls);
+    premiumCaptureInto(mounted, entry, controls);
 
     controls.impression();
   },

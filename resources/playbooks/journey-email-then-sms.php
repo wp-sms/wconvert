@@ -3,43 +3,41 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'journey-email-then-sms',
-    'name' => __('Email with optional SMS', 'wconvert'),
+    'name' => __('Launch updates with optional SMS', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'journey-email-then-sms',
-    'notes' => __('Save the email signup first, then offer an optional text signup. Closing the second screen keeps the email request.', 'wconvert'),
+    'notes' => __('Configure email and SMS destinations and separate consent wording. SMS is optional; skipping it preserves the email request.', 'wconvert'),
     'copy' => [
         'screens' => [
             'submission:email' => [
-                'headline' => __('Get our email updates', 'wconvert'),
+                'headline' => __('First to know. Your choice how.', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
-                'consent_text' => [
-                    'text' => __('Email me news and offers.', 'wconvert'),
-                ],
-                'cta_label' => __('Sign up for email', 'wconvert'),
+                'consent_text' => __('Email me new-collection announcements.', 'wconvert'),
+                'cta_label' => __('Request launch emails', 'wconvert'),
             ],
             'submission:phone' => [
-                'headline' => __('Would you also like text updates?', 'wconvert'),
-                'body' => [
-                    'text' => __('Your email signup request was received. This next step is optional.', 'wconvert'),
-                ],
+                'headline' => __('Want a text for the next launch?', 'wconvert'),
+                'body' => __('Your email signup request was received. This next step is optional.', 'wconvert'),
                 'phone_label' => __('Phone number', 'wconvert'),
-                'consent_text' => [
-                    'text' => __('Send me news and offers by text message.', 'wconvert'),
-                ],
+                'consent_text' => __('Text me new-collection announcements.', 'wconvert'),
                 'back_label' => __('Review email', 'wconvert'),
-                'cta_label' => __('Sign up for SMS', 'wconvert'),
+                'cta_label' => __('Request launch texts', 'wconvert'),
                 'skip_label' => __('Finish without SMS', 'wconvert'),
             ],
             'acknowledgement' => [
                 'success_headline' => __('Details received', 'wconvert'),
-                'success_body' => [
-                    'text' => __('Thank you. We have received the details you submitted.', 'wconvert'),
-                ],
+                'success_body' => __('Thank you. We have received the details you submitted.', 'wconvert'),
             ],
         ],
     ],
-    'rules' => [['type' => 'time_on_page', 'seconds' => 8]],
-    'targeting' => ['include' => [], 'exclude' => []],
-    'destination_hint' => ['types' => [], 'fields' => ['email']],
+    'rules' => [[
+            'type' => 'time_on_page',
+            'seconds' => 15,
+        ]],
+    'destination_hint' => [
+        'types' => [],
+        'fields' => ['email'],
+    ],
 ];

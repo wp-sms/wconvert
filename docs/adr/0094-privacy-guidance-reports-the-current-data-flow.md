@@ -11,6 +11,9 @@ amends [ADR 0091](0091-shared-settings-and-submission-workflows-have-distinct-ho
 The factual Data Map remains read-only. [ADR 0096](0096-privacy-authoring-help-is-progressive-and-snapshotted.md)
 adds a separate preference for privacy help while authoring new Campaigns.
 
+
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** The Data Map and suggested policy text describe the rich session projection, document-memory lifetime and separate 60-second hashed-IP rate bucket alongside the legacy cart cookie.
+
 ## Facts and wording remain separate
 
 The Data Map reports only what WConvert can prove: the saved Retention Period,
@@ -22,6 +25,16 @@ and total but no product or contact details. It never returns connection
 credentials or provider settings. A configured destination whose implementation
 is currently unavailable remains visible with unknown fields; missing code does
 not make a configured data flow disappear.
+
+**Extended by [ADR 0111](0111-spam-protection-precedes-capture.md):** the map
+also names the configured bot-verification provider and the resource-email
+guard's ten-minute active window. Browser/network information goes to the
+verification provider; WConvert forwards only its verification token and
+required credentials, never the form's contact fields. The map exposes no
+keys. Suggested policy text discloses these checks and no longer claims the
+site makes no automated decisions.
+
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** paid question answers stay in page memory unless a visitor explicitly submits contact details, when the submitted answers join the Lead snapshot and its export/erasure path. Product recommendations read only merchant-selected IDs from the public WooCommerce Store API; aggregate completions and clicks contain no individual answer set.
 
 The REST representation is available only to administrators with
 `manage_options`. The admin translates it into merchant guidance. PolicyText

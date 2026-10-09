@@ -130,47 +130,64 @@ final class PayloadTag
         // becomes markup. JSON_UNESCAPED_SLASHES and _UNICODE are there for
         // the byte budget: a URL and a non-ASCII headline are otherwise
         // escaped into two and six bytes per character.
-        $json = json_encode($entries, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $entries = apply_filters('wconvert_payload_entries', $entries);
+        $json = wp_json_encode($entries, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         if ($json === false) {
             return '';
         }
 
+        // WordPress writes the tag and escapes every attribute value for an
+        // attribute. The route URLs are cleaned with `esc_url_raw()` — the
+        // protocol check, without HTML-encoding — because the tag escapes
+        // them once more: on WordPress 7.1, whose HTML API builds the tag,
+        // the `&#038;` that `esc_url()` leaves is encoded again into a literal
+        // the loader would post to.
+        $attributes = [
+            'type' => 'application/json',
+            'id' => self::ELEMENT_ID,
+            self::CAPTURE_ATTRIBUTE => esc_url_raw($captureUrl),
+            self::BEACON_ATTRIBUTE => esc_url_raw($beaconUrl),
+            self::TIMEZONE_ATTRIBUTE => $timezone,
+        ];
+
+        $allowance = self::siteAllowanceJson($siteAllowance);
+        if ($allowance !== null) {
+            $attributes[self::SITE_ALLOWANCE_ATTRIBUTE] = $allowance;
+        }
+
         $reopenLabels = [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')];
-        $localized = $hasReopen && $reopenLabels !== ['Dismiss reminder', 'Submission received — View details']
-            ? ' data-reopen="' . esc_attr((string) json_encode($reopenLabels, JSON_UNESCAPED_UNICODE)) . '"' : '';
+        if ($hasReopen && $reopenLabels !== ['Dismiss reminder', 'Submission received — View details']) {
+            $attributes['data-reopen'] = (string) wp_json_encode($reopenLabels, JSON_UNESCAPED_UNICODE);
+        }
 
         $lockLabels = [__('Content unlocked.', 'wconvert'), __('Continue to content', 'wconvert'), __('Your submission could not be confirmed. The content is available below.', 'wconvert')];
         if (array_filter($entries, static fn (array $entry): bool => isset($entry['content_lock'])) !== []
             && $lockLabels !== ['Content unlocked.', 'Continue to content', 'Your submission could not be confirmed. The content is available below.']) {
-            $localized .= ' data-content-lock="' . esc_attr((string) json_encode($lockLabels, JSON_UNESCAPED_UNICODE)) . '"';
+            $attributes['data-content-lock'] = (string) wp_json_encode($lockLabels, JSON_UNESCAPED_UNICODE);
         }
-        $journeyLabels = [__('Continue', 'wconvert'), __('Submission not confirmed. Please try again.', 'wconvert')];
+        $journeyLabels = [__('Continue', 'wconvert'), __('Submission not confirmed. Please try again.', 'wconvert'), __('Contact details are required before you see your result.', 'wconvert'), __('Already saved. You can review these details, but cannot change them.', 'wconvert'), __('Review your answers', 'wconvert')];
         if (array_filter($entries, static fn (array $entry): bool => isset($entry['capture_contract'])) !== []
-            && $journeyLabels !== ['Continue', 'Submission not confirmed. Please try again.']) {
-            $localized .= ' data-journey="' . esc_attr((string) json_encode($journeyLabels, JSON_UNESCAPED_UNICODE)) . '"';
+            && $journeyLabels !== ['Continue', 'Submission not confirmed. Please try again.', 'Contact details are required before you see your result.', 'Already saved. You can review these details, but cannot change them.', 'Review your answers']) {
+            $attributes['data-journey'] = (string) wp_json_encode($journeyLabels, JSON_UNESCAPED_UNICODE);
         }
-        return sprintf(
-            '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s%s>%s</script>',
-            self::ELEMENT_ID,
-            self::CAPTURE_ATTRIBUTE,
-            esc_url($captureUrl),
-            self::BEACON_ATTRIBUTE,
-            esc_url($beaconUrl),
-            self::TIMEZONE_ATTRIBUTE,
-            // `esc_attr()` rather than `esc_url()`: this is a zone name, and
-            // the escaping an attribute needs is the attribute's.
-            esc_attr($timezone),
-            // Last of the three, because it is the one that prints its own
-            // leading space or nothing at all.
-            self::siteAllowanceAttribute($siteAllowance),
-            $localized,
-            $json
-        );
+        foreach ($entries as $entry) {
+            $steps = $entry['template']['tree']['steps'] ?? [];
+            if (!is_array($steps)) { continue; }
+            foreach ($steps as $step) {
+                foreach ($step['results'] ?? [] as $result) {
+                    if (!empty($result['product_ids'])) {
+                        $attributes['data-products'] = esc_url_raw(rest_url('wc/store/v1/products'));
+                    }
+                }
+            }
+        }
+
+        return wp_get_inline_script_tag($json, apply_filters('wconvert_payload_attributes', $attributes, $entries));
     }
 
     /**
-     * The site's allowance as one attribute, or **the empty string**.
+     * The site's allowance as one attribute's JSON, or **null** for no attribute.
      *
      * `JSON_FORCE_OBJECT` is not decoration. Every one of the four fields is
      * optional, so an allowance that turns both switches on and caps no number
@@ -178,23 +195,23 @@ final class PayloadTag
      * breath it refuses a blob it cannot parse. `{}` is that same allowance,
      * readable.
      *
-     * `esc_attr()` rather than `esc_url()`, because this is JSON rather than a
-     * URL: the double quote on every key is what would otherwise close the
-     * attribute on its first character.
+     * Escaped as an attribute (`esc_attr()`, by `wp_get_inline_script_tag()`)
+     * rather than as a URL, because this is JSON: the double quote on every key
+     * is what would otherwise close the attribute on its first character.
      *
      * @param array<string, mixed>|null $allowance
      */
-    private static function siteAllowanceAttribute(?array $allowance): string
+    private static function siteAllowanceJson(?array $allowance): ?string
     {
         if ($allowance === null) {
-            return '';
+            return null;
         }
 
-        $json = json_encode($allowance, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES);
+        $json = wp_json_encode($allowance, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES);
 
         // Unencodable is the same answer as absent, and it fails OPEN: the
         // page carries no site allowance and behaves as it does today, rather
         // than carrying half of one.
-        return $json === false ? '' : sprintf(' %s="%s"', self::SITE_ALLOWANCE_ATTRIBUTE, esc_attr($json));
+        return $json === false ? null : $json;
     }
 }

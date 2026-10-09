@@ -110,6 +110,8 @@ final class TemplateLabels
             /* translators: a block — one discount code, boxed, the same for every visitor. */
             'code' => __('Discount code', 'wconvert'),
             'field' => __('Field', 'wconvert'),
+            'question' => __('Question', 'wconvert'),
+            'products' => __('Product recommendations', 'wconvert'),
             'button' => __('Button', 'wconvert'),
             'followup' => __('Resource link', 'wconvert'),
             'consent' => __('Consent checkbox', 'wconvert'),
@@ -474,6 +476,10 @@ final class TemplateLabels
             'field.required' => __('Required field', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
             'field.phone_dropdown' => __('Country dropdown', 'wconvert'),
+            'products.action' => __('Product action', 'wconvert'),
+            'products.source' => __('Recommendation source', 'wconvert'),
+            'question.answer_type' => __('Answer type', 'wconvert'),
+            'question.required' => __('Required answer', 'wconvert'),
             /* translators: how many of the five stars are filled in. */
             'rating.value' => __('How many stars', 'wconvert'),
             /* translators: which of the six pictures an Icon block draws. */
@@ -510,6 +516,15 @@ final class TemplateLabels
             'button.action.skip' => __('Skip optional signup', 'wconvert'),
             'button.action.close' => __('Close', 'wconvert'),
             'button.action.link' => __('Open link', 'wconvert'),
+            'products.action.link' => __('Open product page', 'wconvert'),
+            'products.action.add_to_cart' => __('Add to cart', 'wconvert'),
+            'products.source.selected' => __('Choose products', 'wconvert'),
+            'products.source.cross_sells' => __('Use WooCommerce cross-sells', 'wconvert'),
+            'question.answer_type.single' => __('Choose one', 'wconvert'),
+            'question.answer_type.multi' => __('Choose several', 'wconvert'),
+            'question.answer_type.text' => __('Short answer', 'wconvert'),
+            'question.required.false' => __('Optional', 'wconvert'),
+            'question.required.true' => __('Required', 'wconvert'),
             'code.copy.false' => __('Code only', 'wconvert'),
             'code.copy.true' => __('Code and copy button', 'wconvert'),
             'heading.level.1' => __('Main heading', 'wconvert'),
@@ -689,6 +704,7 @@ final class TemplateLabels
             /* translators: plain words filling %i in a sentence. */
             'italic' => __('Words in italic', 'wconvert'),
             'label' => __('Label', 'wconvert'),
+            'help' => __('Help text', 'wconvert'),
             'placeholder' => __('Placeholder', 'wconvert'),
             'src' => __('Image address', 'wconvert'),
             'alt' => __('Alt text', 'wconvert'),
@@ -725,6 +741,10 @@ final class TemplateLabels
         return [
             'submit' => __('Sends the form', 'wconvert'),
             'link' => __('Goes somewhere else', 'wconvert'),
+            'next' => __('Continues the journey', 'wconvert'),
+            'back' => __('Returns to the previous screen', 'wconvert'),
+            'skip' => __('Skips optional signup', 'wconvert'),
+            'close' => __('Closes the popup', 'wconvert'),
         ];
     }
 

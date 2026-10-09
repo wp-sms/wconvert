@@ -25,6 +25,7 @@ use WConvert\Rest\GoalController;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\PlaybookController;
+use WConvert\Rest\PickerController;
 use WConvert\Rest\RestController;
 use WConvert\Rest\Routes;
 use WConvert\Rest\RuleController;
@@ -90,13 +91,17 @@ final class NothingTranslatesAtBootTest extends TestCase
      */
     private const A_ROUTE_PER_CONTROLLER = [
         \WConvert\Rest\JourneyStatsController::class => '/optins/(?P<id>[A-Z0-9]{26})/journey-stats',
+        \WConvert\Rest\ProductStatsController::class => "/optins/(?P<id>[A-Z0-9]{26})/product-stats",
+        \WConvert\Rest\ProductHealthController::class => '/optins/product-health',
         OptinController::class => '/optins',
         TemplateController::class => '/templates',
         \WConvert\Rest\TemplateCatalogController::class => '/template-catalog',
+        \WConvert\Rest\TemplateTransferController::class => '/template-transfer',
         RuleController::class => '/rules',
         ThemeController::class => '/theme',
         GoalController::class => '/goals',
         PlaybookController::class => '/playbooks',
+        PickerController::class => '/picker',
         CaptureController::class => '/capture',
         BeaconController::class => '/beacon',
         LeadController::class => '/leads',
@@ -105,6 +110,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         MilestoneController::class => '/milestones',
         DestinationController::class => '/destinations',
         \WConvert\Rest\PrivacyController::class => '/privacy/data-map',
+        \WConvert\Rest\ProtectionController::class => '/protection',
     ];
 
     /**
@@ -135,6 +141,10 @@ final class NothingTranslatesAtBootTest extends TestCase
 
     protected function tearDown(): void
     {
+        // Booting Pro registers its filters — the journeys capability among
+        // them — and a suite that left them behind would run every later test
+        // on a Pro install (ADR 0116).
+        $GLOBALS['wconvertTestFilters'] = [];
         $GLOBALS['wconvertTestIsAdmin'] = false;
         $GLOBALS['wconvertTestInitHasFired'] = true;
     }
@@ -294,7 +304,9 @@ final class NothingTranslatesAtBootTest extends TestCase
 
     public function testAuthoringRoutesLoadTheCombinedFreeAndProCatalogOnDemand(): void
     {
-        $this->boot();
+        // A Pro install that knows it is one: free sends no locked design at
+        // all (ADR 0116), so Pro's designs only appear where Pro is the rung.
+        $this->boot(new FakeProPresence(\WConvert\Support\Tier::Elite));
         do_action('rest_api_init');
 
         $callbacks = [];
@@ -517,7 +529,7 @@ final class NothingTranslatesAtBootTest extends TestCase
      * Playbook directory, because a boot that built fakes would prove nothing
      * about what the shipped one builds.
      */
-    private function boot(): ServiceContainer
+    private function boot(?ProPresence $pro = null): ServiceContainer
     {
         $container = self::container();
 
@@ -541,7 +553,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         $container->register(OptionStore::class, static fn (): OptionStore => new FakeOptionStore());
         $container->register(TransientStore::class, static fn (): TransientStore => new FakeTransientStore());
         $container->register(Queue::class, static fn (): Queue => new FakeQueue());
-        $container->register(ProPresence::class, static fn (): ProPresence => new FakeProPresence());
+        $container->register(ProPresence::class, static fn (): ProPresence => $pro ?? new FakeProPresence());
         $container->register(SitePresence::class, static fn (): SitePresence => new FakeSitePresence());
 
         $GLOBALS['wconvertTestInitHasFired'] = false;

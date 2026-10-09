@@ -33,8 +33,8 @@ a usable Optin must not require rebuilding its layout.
    Roles and step counts is in it.
 2. **Author** one JSON file. Free designs go in
    `resources/templates/library/`, Pro ones in
-   `pro/modules/display-types/templates/`. The `id` must be unique across
-   **both**.
+   `pro/modules/display-types/templates/`; paid question designs go in
+   `pro/modules/journeys/templates/`. The `id` must be unique across all modules.
    Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
    preserve that id when reordering it. Author `tree.v: 2`; do not author derived facets.
    PHP mints missing ids on newly added draft leaves; that fallback is not a
@@ -42,9 +42,17 @@ a usable Optin must not require rebuilding its layout.
 3. **`composer verify:templates`.** Not optional — see below.
 4. **Render it.** `./tools/design-library/build.sh renderer designs sheet` and
    read `out/contact-sheet-320-ltr.png` first.
-5. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
+5. **Inspect the final output again after the last edit.** Rebuild the renderer
+   and review pages, then inspect the actual rendered result in a browser. Check
+   every screen at desktop and phone widths, including acknowledgements and
+   result variants. Look at hierarchy, font sizes, line breaks, spacing, row
+   alignment, button prominence and overall balance. Run the size/contrast checks
+   as well. Zero automated findings is not visual approval. Record what was
+   actually inspected and keep a screenshot of the final result; an earlier
+   screenshot does not verify a later edit.
+6. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
    conversion heuristics. Walk all eleven.
-6. **Iterate**, then `composer test && npm test`.
+7. **Iterate**, then `composer test && npm test`.
 
 The [Design Bench](../../../tools/design-library/README.md) is the interactive
 half of steps 4–5: paste the tree in, drive every token live, switch container,
@@ -90,7 +98,7 @@ all, so it is missing from the gallery entirely.
   `tree.submissions` with stable field/consent references. At most six screens
   precede one terminal acknowledgement, with one required submission and at most
   one optional signup for the other marketing channel. Click-only designs retain
-  one content screen, one link button and no submissions.
+  one content screen and no submissions, with either one link button or one Pro `products` block (ADR 0117). Product blocks ship empty `product_ids`, require WooCommerce, and count product-link clicks by default. ADR 0121 adds `action: add_to_cart` on the products block for server-confirmed quantity-one additions; supporting product links then do not convert.
 - **Navigation is separate.** Next/Back do not save; Submit names its submission;
   every optional screen offers Skip for that submission. Use navigation Roles
   (`next_label`, `back_label`, `skip_label`, `close_label`) so copy transfer cannot
@@ -152,10 +160,11 @@ written anywhere.
    `tree`, ever. Shipping premium trees in the free ZIP and refusing the save
    is trialware ([#7](https://github.com/navidkashani/wconvert/issues/7)).
    `bin/verify-artifact-contract.sh` enforces it.
-2. **A live page** at `https://wconvert.com/designs/<slug>/` for its
-   `preview_url`. Out-of-repo work, one per design. A free install draws a card
-   with a *"See this design"* link, and a dead link is worse than one fewer
-   card.
+2. **A live page before adding a preview link.** `preview_url` may point to
+   `https://wconvert.io/designs/<slug>/` only after that page is published.
+   Until then, omit it: the card says *Included in Pro* (ADR 0098, as extended
+   to the practical library). Never fabricate a URL or ship the paid tree in
+   Free. Website preview publication remains a separate release task.
 
 ## What cannot be imported, and why there is no mapper
 

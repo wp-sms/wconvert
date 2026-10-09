@@ -114,7 +114,7 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published />);
 
-    expect(screen.getByText(/template or template part/)).toBeInTheDocument();
+    expect(screen.getByText(/edit the template part that holds it/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Open Site Editor' })).toHaveAttribute(
       'href',
       'https://example.org/wp-admin/site-editor.php',
@@ -130,7 +130,7 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published />);
 
-    expect(screen.getByText(/Choose a sidebar or footer area/)).toHaveTextContent('Text widget');
+    expect(screen.getByText(/For a sidebar or footer/)).toHaveTextContent('Text widget');
     expect(screen.getByRole('link', { name: 'Open Widgets' })).toHaveAttribute(
       'href',
       'https://example.org/wp-admin/widgets.php',
@@ -142,9 +142,8 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published={false} />);
 
-    expect(screen.getByText(/Publish this Campaign first/)).toBeInTheDocument();
+    expect(screen.getByText(/Publish this Campaign first/)).toHaveAttribute('data-attention', 'true');
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText(/theme controls which site-wide areas exist/)).toBeInTheDocument();
   });
 });
 
@@ -187,5 +186,20 @@ describe('the real site-check URL', () => {
     }
     expect(siteCheckUrl('https://example.org/', undefined)).toBeNull();
     expect(siteCheckUrl(undefined, 'inspect')).toBeNull();
+  });
+});
+
+describe('automatic placement saved on an install without Pro', () => {
+  /** It describes manual placement and sells nothing (ADR 0116). */
+  it('falls back to the manual steps on a free install', () => {
+    render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
+    expect(screen.queryByText(/Pro places this Campaign/)).toBeNull();
+    expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
+  });
+
+  it('keeps the automatic explanation on a paid install', () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
+    expect(screen.getByText(/Pro places this Campaign/)).toBeInTheDocument();
   });
 });

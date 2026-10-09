@@ -74,12 +74,12 @@ function TabsList({
  * **`text-muted-foreground` where upstream has `text-foreground/60`, and that
  * is a WConvert change to the vendored component.**
  *
- * `#12242b` at 60% over `--muted` `#eef3f4` measures **4.13:1** — under AA's
+ * `--foreground` at 60% over `--muted` measured **4.13:1** when this was
+ * written, and reads 3.83:1 on the wconvert.io palette (ADR 0130) — under AA's
  * 4.5, on the label of an unselected tab, which is a control a merchant reads
- * before deciding to press it. Measured in a browser rather than reasoned
- * about. `--muted-foreground` is 5.98:1 over the same surface and is what
- * upstream's own `dark:text-muted-foreground` line intends for the other half
- * of the same component; ADR 0038 sets AA as the bar for this admin.
+ * before deciding to press it. `--muted-foreground` is 5.23:1 over the same
+ * surface and is what upstream's own `dark:text-muted-foreground` line intends
+ * for the other half of the same component; ADR 0038 sets AA as the bar for this admin.
  */
 function TabsTrigger({
   className,

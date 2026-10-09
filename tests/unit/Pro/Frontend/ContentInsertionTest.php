@@ -23,6 +23,21 @@ final class ContentInsertionTest extends TestCase
         self::assertSame($result, AutomaticInline::insertCandidates($result, $entries));
     }
 
+    public function test_product_markers_never_leak_into_article_content_and_preserve_family_ownership(): void
+    {
+        $a = '01J00000000000000000000001';
+        $b = '01J00000000000000000000002';
+        $entries = [
+            ['id' => $a, 'display_type' => 'inline', 'inline_placement' => ['position' => 'after_content']],
+            ['id' => $b, 'anchor' => $a, 'display_type' => 'inline', 'inline_placement' => ['position' => 'after_product_summary']],
+        ];
+        $article = AutomaticInline::insertCandidates('<p>One</p>', $entries);
+        self::assertStringNotContainsString('data-wconvert-auto="' . $b, $article);
+        $product = AutomaticInline::insertCandidates('', $entries, 'product');
+        self::assertSame('<div hidden data-wconvert-auto="' . $b . '" data-wconvert-owner="' . $a . '"></div>', $product);
+        self::assertSame($product, AutomaticInline::insertCandidates($product, $entries, 'product'));
+    }
+
     public function test_unsafe_markup_is_unchanged_and_nested_raw_text_does_not_count(): void
     {
         $placement = ['position' => 'after_paragraph', 'paragraph' => 1];

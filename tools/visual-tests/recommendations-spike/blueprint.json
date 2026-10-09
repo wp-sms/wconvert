@@ -1,0 +1,10 @@
+{
+  "steps": [
+    {"step":"defineWpConfigConsts","consts":{"DISABLE_WP_CRON":true,"AUTOMATIC_UPDATER_DISABLED":true}},
+    {"step":"activatePlugin","pluginPath":"woocommerce/woocommerce.php"},
+    {"step":"activatePlugin","pluginPath":"wconvert/wconvert.php"},
+    {"step":"activatePlugin","pluginPath":"wconvert-pro/wconvert-pro.php"},
+    {"step":"setSiteOptions","options":{"woocommerce_currency":"USD","woocommerce_coming_soon":"no","timezone_string":"Asia/Muscat","woocommerce_onboarding_profile":{"completed":true}}},
+    {"step":"runPHP","code":"<?php require '/wordpress/wp-load.php'; WC_Install::create_pages();"}
+  ]
+}

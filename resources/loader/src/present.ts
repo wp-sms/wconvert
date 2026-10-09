@@ -3,6 +3,7 @@ import type { Mounted } from '@renderer/mount';
 import { mount } from '@renderer/mount';
 import { bindJourney } from './journey';
 import { isOverlay } from './decide';
+import { campaignLifecycle, notifyCampaign } from './events';
 
 /**
  * The presenter: the join between deciding WHETHER to show an Optin and
@@ -26,7 +27,7 @@ import { isOverlay } from './decide';
  */
 export const INLINE_ANCHOR_ATTRIBUTE = 'data-wconvert-optin';
 
-export const templatePresenter: Presenter = {
+export function createTemplatePresenter(bind: typeof captureInto): Presenter { return {
   show(entry: PayloadEntry, controls: OptinControls): void {
     const template = entry.template;
 
@@ -52,6 +53,7 @@ export const templatePresenter: Presenter = {
     const anchor = isOverlay(entry) ? null : anchorFor(entry.anchor ?? entry.id);
 
     const mounted = mount({
+      ...campaignLifecycle(entry),
       displayType: entry.display_type,
       template,
       anchor,
@@ -71,7 +73,7 @@ export const templatePresenter: Presenter = {
 
     mounted.show();
 
-    captureInto(mounted, entry, controls);
+    bind(mounted, entry, controls);
 
     // **An Impression has two moments and only a renderer can tell them
     // apart.** For the three overlays it is the moment it is shown, because
@@ -87,7 +89,9 @@ export const templatePresenter: Presenter = {
 
     whenInViewport(anchor, () => controls.impression());
   },
-};
+}; }
+
+export const templatePresenter: Presenter = createTemplatePresenter(captureInto);
 
 /**
  * Wire a mounted Optin's form to the capture endpoint.
@@ -106,7 +110,7 @@ export const templatePresenter: Presenter = {
  * renders can submit.
  */
 export function captureInto(mounted: Mounted, entry: PayloadEntry, controls: OptinControls): void {
-  bindJourney(mounted, entry, { onCaptured: () => controls.convert(), onDismiss: () => controls.dismiss() });
+  bindJourney(mounted, entry, { onLeadAccepted: () => notifyCampaign(entry, 'capture'), onCaptured: () => controls.convert(), onDismiss: () => controls.dismiss() });
 }
 
 function anchorFor(id: string): Element | null {

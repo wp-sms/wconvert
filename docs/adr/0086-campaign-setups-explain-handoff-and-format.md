@@ -10,6 +10,8 @@ Internal class names, routes, block identity, config keys and tables remain Opti
 and Playbook. Smaller rule-only bundles are **Display rule sets**. A design remains
 reusable structure, not a business scenario.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): there are no Display rule sets any more. Their common answers are Quick picks inside each Display rules question._
+
 Bundled names describe jobs: Recommend a related article, Email a downloadable
 guide, Request a quote, Cart reminder after a delay. PromoteOffer becomes **Promote
 an offer or content**, measured by **Link clicks**, reflecting existing content

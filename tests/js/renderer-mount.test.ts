@@ -163,6 +163,24 @@ describe('a popup', () => {
 });
 
 describe('an inline Optin', () => {
+  it('lets every inline screen grow with the page instead of inheriting the popup height cap', () => {
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    const template = { ...TEMPLATE, tree: treeFixture({ steps: [
+      { type: 'text' as const, text: 'A long embedded story' },
+      { type: 'text' as const, text: 'A follow-up story' },
+    ] }) };
+    const mounted = mount({ displayType: 'inline', template, anchor });
+    mounted.show();
+    expect(mounted.root?.style.maxBlockSize).toBe('none');
+    mounted.showStep(1);
+    expect(mounted.root?.style.maxBlockSize).toBe('none');
+    const popup = mount({ displayType: 'popup', template });
+    expect(popup.root?.style.maxBlockSize).toBe('');
+    mounted.close();
+    popup.close();
+  });
+
   it('keeps its authored percentage width relative to its placement', () => {
     const anchor = document.createElement('div');
     const template: Template = { ...TEMPLATE, tokens: { ...TEMPLATE.tokens, width: '80%' } };
@@ -410,6 +428,23 @@ describe('the visitor acting on a mounted Optin', () => {
     mounted.show();
     (mounted.root?.querySelector('a') as HTMLAnchorElement).click();
 
+    expect(onConvert).toHaveBeenCalledOnce();
+  });
+
+  it('converts newly rendered product links without counting unrelated or non-element targets', () => {
+    const onConvert = vi.fn();
+    const mounted = mount({ displayType: 'popup', template: TEMPLATE, onConvert });
+    mounted.show();
+    const link = document.createElement('a');
+    link.dataset.convert = '';
+    const label = document.createElement('strong');
+    label.textContent = 'View product';
+    link.append(label);
+    mounted.root!.append(link);
+    mounted.root!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    label.firstChild!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(onConvert).not.toHaveBeenCalled();
+    label.click();
     expect(onConvert).toHaveBeenCalledOnce();
   });
 

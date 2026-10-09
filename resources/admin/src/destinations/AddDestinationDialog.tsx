@@ -55,6 +55,7 @@ export function AddDestinationDialog({
   returnFocusTo,
   onOpenChange,
   onConfirm,
+  onConnectionSaved,
 }: {
   /** The selected service, or null while choosing or closed. */
   type: DestinationType | null;
@@ -72,6 +73,7 @@ export function AddDestinationDialog({
     connection: string | null;
     settings: Record<string, unknown>;
   }) => void;
+  onConnectionSaved?: (connection: Connection) => void;
 }) {
   const content = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -95,8 +97,8 @@ export function AddDestinationDialog({
       >
         <DialogHeader>
           <p className="m-0 text-note text-muted-foreground">{type === null
-            ? __('Step 1 of 2 · Choose a service', 'wconvert')
-            : __('Step 2 of 2 · Set up destination', 'wconvert')}</p>
+            ? __('Choose a service', 'wconvert')
+            : __('Set up destination', 'wconvert')}</p>
           <DialogTitle>
             {type === null
               ? __('Add a destination', 'wconvert')
@@ -116,7 +118,9 @@ export function AddDestinationDialog({
           <DialogDescription>
             {type === null
               ? __('Choose a service to send submissions to. Next, you’ll give this destination a name and choose its settings.', 'wconvert')
-              : __('Give this destination a name and choose where submissions should go. You’ll select it in a campaign afterward.', 'wconvert')}
+              : type.needs_connection && !connections.some((account) => account.type === type.id)
+                ? sprintf(__('Connect %s, then name this destination and choose where submissions should go.', 'wconvert'), type.label)
+                : __('Give this destination a name and choose where submissions should go. You’ll select it in a campaign afterward.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
 
@@ -135,6 +139,7 @@ export function AddDestinationDialog({
             error={error}
             onCancel={() => onOpenChange(false)}
             onConfirm={onConfirm}
+            onConnectionSaved={onConnectionSaved}
           />
         )}
       </DialogContent>

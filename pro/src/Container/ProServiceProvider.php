@@ -179,6 +179,50 @@ final class ProServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        // Existing receipts must expire even after WooCommerce or the module is disabled.
+        add_action('wconvert_cart_claim_expired', static function (string $key): void {
+            if (preg_match('/^wconvert_cart_claim_[a-f0-9]{64}$/D', $key)) delete_option($key);
+        });
+
+        // Question journeys exist on this install because the module that runs
+        // them shipped in this ZIP, and that registration is the whole of the
+        // entitlement (ADR 0116). Its manifest on disk is the possession test —
+        // the same one `WpProPresence` reads a rung from. First, and above every
+        // guard: the publish route, the capture route, the payload and the
+        // builder all ask it. The module's PHP is the product side of a quiz
+        // result — the category route, its payload attribute and the merchant's
+        // product check — which free no longer carries (ADR 0127).
+        if (is_file(WCONVERT_PRO_DIR . 'modules/journeys/module.json')) {
+            add_filter(\WConvert\Template\JourneySupport::FILTER, static fn (): bool => true);
+            \WConvert\Pro\Module\Journeys\ResultProducts::hooks();
+        }
+
+        if (class_exists(\WConvert\Pro\Module\Analytics\Hooks::class)) {
+            (new \WConvert\Pro\Module\Analytics\Hooks(
+                new \WConvert\Pro\Module\Analytics\Settings($container->resolve(\WConvert\Storage\OptionStore::class)),
+                $container->resolve(PublishedSet::class), $container->resolve(OptinRepository::class),
+            ))->hooks();
+        }
+
+        if (class_exists(\WConvert\Pro\Module\Analytics\RevenueHooks::class)) {
+            (new \WConvert\Pro\Module\Analytics\RevenueHooks(
+                $container->resolve(\WConvert\Storage\OptionStore::class),
+                $container->resolve(PublishedSet::class),
+                $container->resolve(\WConvert\Lead\LeadRepository::class),
+                $container->resolve(\WConvert\Rest\RateLimit::class),
+                $container->resolve(\WConvert\Rules\Degradation::class),
+            ))->hooks();
+        }
+
+        if (class_exists(\WConvert\Pro\Module\Destinations\MailchimpDestinationType::class)) {
+            $registry = $container->resolve(\WConvert\Destination\DestinationRegistry::class);
+            $registry->register(new \WConvert\Pro\Module\Destinations\MailchimpDestinationType());
+            $registry->register(new \WConvert\Pro\Module\Destinations\BrevoDestinationType());
+            $registry->register(new \WConvert\Pro\Module\Destinations\MailtrapDestinationType());
+        }
+        if (class_exists(\WConvert\Pro\Module\SpamFilters\SpamFilters::class)) {
+            \WConvert\Pro\Module\SpamFilters\SpamFilters::hooks();
+        }
         if (class_exists(\WConvert\Pro\Module\ContentLock\ContentLock::class)) {
             \WConvert\Pro\Module\ContentLock\ContentLock::hooks();
             (new \WConvert\Pro\Module\ContentLock\ContentLockCampaigns(
@@ -326,6 +370,11 @@ final class ProServiceProvider implements ServiceProvider
         if (class_exists(CartCookie::class) && $site->has(SiteDependency::WooCommerce)) {
             add_filter('wconvert_privacy_browser_storage', [CartCookie::class, 'privacy']);
             $container->resolve(CartCookie::class)->hooks();
+            $commerce = new \WConvert\Pro\Module\CartRecovery\CommerceContext($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class));
+            $commerce->hooks();
+            (new \WConvert\Pro\Module\CartRecovery\QuizProducts($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class)))->hooks();
+            (new \WConvert\Pro\Module\CartRecovery\ProductActivity($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class), $container->resolve(\WConvert\Stats\StatsRepository::class)))->hooks();
+            (new \WConvert\Pro\Module\CartRecovery\CartAddition($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class), $commerce, $container->resolve(\WConvert\Stats\StatsRepository::class)))->hooks();
         }
 
         // The same guard free's loader sits behind, and for the same reason:

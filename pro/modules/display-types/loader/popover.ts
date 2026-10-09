@@ -92,6 +92,8 @@ import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
  */
 const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
   position: 'fixed',
+  // Clear the browser's inset:0 before pinning only the chosen logical edges.
+  inset: 'auto',
   margin: '0',
   padding: '0',
   border: '0',
@@ -475,6 +477,7 @@ export function mountPopover(options: MountOptions): Mounted {
       cancelClose();
       element.hidePopover?.();
       element.remove();
+      options.onClosed?.();
     };
 
     element.addEventListener('transitionend', finish, { once: true });
@@ -492,6 +495,8 @@ export function mountPopover(options: MountOptions): Mounted {
     },
     steps: options.template.tree.steps.length,
     show() {
+      const opened = element.isConnected;
+      if (opened && !element.hasAttribute('data-leaving')) return;
       cancelClose();
       element.removeAttribute('data-leaving');
       takesPointers(parts.root);
@@ -519,6 +524,7 @@ export function mountPopover(options: MountOptions): Mounted {
       if (reservesPage) {
         releaseReservation = reserveTopBar(element);
       }
+      if (!opened) options.onOpened?.();
     },
     showStep: (step) => {
       takesPointers(parts.step(step));

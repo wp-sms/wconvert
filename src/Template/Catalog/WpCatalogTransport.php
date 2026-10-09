@@ -4,9 +4,20 @@ namespace WConvert\Template\Catalog;
 
 defined('ABSPATH') || exit;
 
-final class WpCatalogTransport implements CatalogTransport
+final class WpCatalogTransport implements CatalogTransport, CatalogImageTransport
 {
     public function get(string $url): string
+    {
+        return $this->request($url, PackValidator::MAX_BYTES, 'application/json');
+    }
+
+    public function image(string $url, int $bytes): string
+    {
+        PackValidator::check($bytes > 0 && $bytes <= VerifiedAssets::MAX_BYTES, __('Image exceeds the download budget.', 'wconvert'));
+        return $this->request($url, $bytes, 'image/png, image/jpeg, image/webp');
+    }
+
+    private function request(string $url, int $limit, string $accept): string
     {
         $parts = wp_parse_url($url);
         $local = wp_get_environment_type() === 'local'
@@ -17,14 +28,16 @@ final class WpCatalogTransport implements CatalogTransport
         $response = wp_safe_remote_get($url, [
             'timeout' => 15,
             'redirection' => 0,
-            'limit_response_size' => PackValidator::MAX_BYTES + 1,
-            'headers' => ['Accept' => 'application/json'],
+            'limit_response_size' => $limit + 1,
+            'headers' => ['Accept' => $accept],
             // No WordPress version, site URL, licence, campaign or lead data.
             'user-agent' => 'WConvert template catalog',
         ]);
-        PackValidator::check(!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200, __('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
+        if ($response instanceof \WP_Error) throw new \RuntimeException(__('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
+        PackValidator::check(wp_remote_retrieve_response_code($response) === 200, __('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
         $body = wp_remote_retrieve_body($response);
-        PackValidator::check(strlen($body) <= PackValidator::MAX_BYTES, __('The catalog response is too large.', 'wconvert'));
+        PackValidator::check(strlen($body) <= $limit, __('The catalog response is too large.', 'wconvert'));
         return $body;
     }
 }

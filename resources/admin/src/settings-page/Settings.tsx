@@ -1,3 +1,6 @@
+import { AnalyticsIntegrationSettings } from '../analyticsIntegration';
+import { isFreeInstall } from '../goals/availability';
+import { MoreWithPro } from './MoreWithPro';
 import { useEffect, useState } from 'react';
 import './settings.css';
 import { __ } from '@wordpress/i18n';
@@ -5,6 +8,7 @@ import { Eye, Plug, Search, Shield } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
+import { SpamProtection } from './SpamProtection';
 import { SitePhoneCountry } from './SitePhoneCountry';
 import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
@@ -16,7 +20,7 @@ import { Region, RegionBody, RegionHeader } from '../shell/Region';
 
 /** A persistent category rail; the chosen category goes straight to its controls. */
 export function Settings({
-  group,
+  group: asked,
   destinationId,
   onEditingStateChange,
 }: {
@@ -25,7 +29,13 @@ export function Settings({
   onEditingStateChange?: SettingsEditing;
 }) {
   const [search, setSearch] = useState('');
+  // Analytics integrations arrive with Pro; a free install has no such page
+  // to open (ADR 0116), so a deep link lands on the default group.
+  const free = isFreeInstall();
+  const group = free && asked === 'integrations' ? 'experience' : asked;
   const categories = [
+    { id: 'integrations', label: __('Analytics integrations', 'wconvert'), description: __('Google Analytics, GTM and Plausible', 'wconvert'), icon: Plug, terms: 'GA4 GTM Plausible analytics tracking consent' },
+    { id: 'protection', label: __('Spam protection', 'wconvert'), description: __('Bot verification and form filters', 'wconvert'), icon: Shield, terms: __('spam captcha turnstile recaptcha hcaptcha bot protection filters', 'wconvert') },
     {
       id: 'experience',
       label: __('Visitor experience', 'wconvert'),
@@ -48,7 +58,7 @@ export function Settings({
       terms: __('retention delete export erase personal data privacy guidance notice consent campaign editor policy', 'wconvert'),
     },
   ] as const;
-  const matching = categories.filter((category) => search.trim().toLocaleLowerCase().split(/\s+/).every((word) => `${category.label} ${category.description} ${category.terms}`.toLocaleLowerCase().includes(word)));
+  const matching = categories.filter((category) => !(free && category.id === 'integrations')).filter((category) => search.trim().toLocaleLowerCase().split(/\s+/).every((word) => `${category.label} ${category.description} ${category.terms}`.toLocaleLowerCase().includes(word)));
   return (
     <div className="wconvert-settings grid min-w-0 items-start gap-7 lg:grid-cols-[17rem_minmax(0,1fr)]">
       <nav
@@ -61,7 +71,7 @@ export function Settings({
             key={id}
             href={settingsHref(id)}
             aria-current={id === group ? 'page' : undefined}
-            className={`flex gap-3 rounded-sm p-3 focus-visible:outline-2 focus-visible:outline-ring ${id === group ? 'bg-secondary text-primary' : 'text-foreground hover:bg-muted'}`}
+            className={`flex gap-3 rounded-sm p-3 focus-visible:outline-2 focus-visible:outline-ring ${id === group ? 'bg-secondary text-action' : 'text-foreground hover:bg-muted'}`}
           >
             <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
             <span className="min-w-0">
@@ -74,8 +84,11 @@ export function Settings({
         ))}
         {matching.length === 0 && <p role="status" className="px-3 text-note text-muted-foreground">{__('No settings match. Try “retention” or “email”.', 'wconvert')}</p>}
         <p className="mb-1 mt-5 border-t border-border px-3 pt-4 text-note text-muted-foreground">{__('Need a campaign’s design, timing or audience?', 'wconvert')} <a href="#optins" className="underline">{__('Open that campaign.', 'wconvert')}</a></p>
+        {free && <MoreWithPro />}
       </nav>
       <div className="min-w-0">
+        {group === 'integrations' && <AnalyticsIntegrationSettings onEditingStateChange={onEditingStateChange} />}
+        {group === 'protection' && <SpamProtection onEditingStateChange={onEditingStateChange} />}
         {group === 'experience' && (
           <div className="grid gap-6"><SiteAllowance onEditingStateChange={onEditingStateChange} /><SitePhoneCountry /></div>
         )}

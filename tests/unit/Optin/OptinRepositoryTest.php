@@ -60,6 +60,27 @@ final class OptinRepositoryTest extends TestCase
         return $this->repository->create('Spring sale', 'promote_offer', $config + ['template' => OptinDesign::template(), 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
     }
 
+    public function testDirectPublicationCannotPromoteAnUnmappedCategoryResult(): void
+    {
+        $design = json_decode((string) file_get_contents(WCONVERT_PRO_DIR . '/modules/journeys/templates/journey-product-finder.json'), true);
+        foreach ($design['tree']['steps'] as &$screen) if (($screen['kind'] ?? '') === 'result') {
+            $screen['products_required'] = false;
+            foreach ($screen['results'] as &$result) {
+                $result['href'] = '/shop'; $result['link_label'] = 'Shop';
+            }
+            unset($result);
+        }
+        unset($screen);
+        $config = ['template' => $design, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+        $optin = $this->repository->create('Category quiz', 'find_match', $config);
+        self::assertNotNull($this->repository->publish($optin->id));
+        foreach ($config['template']['tree']['steps'] as &$screen) if (($screen['kind'] ?? '') === 'result') $screen['results'][0]['product_filter'] = ['category_id' => 0, 'attributes' => []];
+        unset($screen);
+        $this->repository->saveDraft($optin->id, null, null, $config);
+        self::assertNull($this->repository->publish($optin->id));
+        self::assertArrayNotHasKey('product_filter', $this->repository->find($optin->id)->publishedConfig['template']['tree']['steps'][2]['results'][0]);
+    }
+
     public function testPublishPromotesTheDraftAndRebuildsTheSetInOneCall(): void
     {
         $optin = $this->anOptin();
@@ -72,6 +93,47 @@ final class OptinRepositoryTest extends TestCase
         $this->assertSame($optin->config, $published->publishedConfig);
         $this->assertNotNull($published->publishedAt);
         $this->assertSame([$optin->id], array_column($this->publishedSet->all(), 'id'));
+    }
+
+    public function testGraphPublicationPromotesAValidCombinedEnquiryAndKeepsItsLiveSnapshotWhenABranchBypassesCapture(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $config = ['template' => ['tree' => $tree], 'capture_mode' => 'local', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+        $optin = $this->repository->create('Combined enquiry', 'collect_enquiries', $config);
+        $published = $this->repository->publish($optin->id);
+        self::assertNotNull($published);
+        self::assertSame($tree, $published->publishedConfig['template']['tree']);
+        self::assertSame([$optin->id], array_column($this->publishedSet->all(), 'id'));
+
+        $config['template']['tree']['graph']['edges'][] = ['id' => 'bypass', 'from' => 'interests', 'to' => 'received', 'kind' => 'answer',
+            'when' => ['match' => 'all', 'clauses' => [['question' => 'n1', 'operator' => 'includes_any', 'values' => ['garden']]]]];
+        $this->repository->saveDraft($optin->id, null, null, $config);
+        self::assertNull($this->repository->publish($optin->id));
+        self::assertSame($tree, $this->repository->find($optin->id)?->publishedConfig['template']['tree']);
+    }
+
+    public function testGraphPublicationUsesTheQuizGoalToAllowAnAnonymousResult(): void
+    {
+        $template = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
+        $tree = $template['tree'];
+        // A content quiz has no WooCommerce product recommendation requirement.
+        foreach ($tree['steps'] as &$screen) unset($screen['products_required']);
+        unset($screen);
+        $edges = [];
+        foreach ($tree['steps'] as $index => $screen) {
+            if (!isset($tree['steps'][$index + 1])) continue;
+            $edges[] = ['id' => 'next_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'default'];
+            if (isset($screen['when'])) $edges[] = ['id' => 'hidden_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'hidden'];
+        }
+        $tree['v'] = 3;
+        $tree['graph'] = ['entry' => $tree['steps'][0]['id'], 'edges' => $edges];
+        $template['tree'] = $tree;
+        $config = ['template' => $template, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+        self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        $quiz = $this->repository->create('Anonymous graph quiz', 'find_match', $config);
+        self::assertNotNull($this->repository->publish($quiz->id));
+        $enquiry = $this->repository->create('Enquiry cannot omit capture', 'collect_enquiries', $config);
+        self::assertNull($this->repository->publish($enquiry->id));
     }
 
     /**
@@ -196,7 +258,8 @@ final class OptinRepositoryTest extends TestCase
         $this->repository->armsByParent();
 
         foreach ($this->db->statements as $sql) {
-            $this->assertStringContainsString('NOT (BINARY config <=> BINARY published_config)', $sql);
+            $this->assertStringContainsString('WHEN config IS NULL OR published_config IS NULL THEN 1', $sql);
+            $this->assertStringContainsString('BINARY config <> BINARY published_config', $sql);
             $this->assertStringContainsString('AS has_unpublished_changes', $sql);
             $this->assertStringNotContainsString(', config,', $sql);
             $this->assertStringNotContainsString(', published_config,', $sql);
@@ -478,6 +541,20 @@ final class OptinRepositoryTest extends TestCase
      * fails on the pull request that reaches for one, rather than on the one
      * that forgets to update a comment.
      */
+    public function testAnalyticsFamilyPreferencesSurviveWinnerPromotionWithoutPublishingDraftChanges(): void
+    {
+        $parent = $this->anOptin(['analytics' => ['off' => true, 'label' => 'Published label']]);
+        $this->repository->publish($parent->id);
+        $winner = $this->repository->createVariant($parent->id);
+        $this->assertNotNull($winner);
+        $this->repository->publish($winner->id);
+        $this->repository->saveDraft($parent->id, null, null, array_replace($parent->config, ['analytics' => ['off' => false, 'label' => 'Draft label']]));
+        $this->repository->declareWinner($parent->id, $winner->id);
+        $promoted = $this->repository->find($winner->id);
+        $this->assertSame(['off' => false, 'label' => 'Draft label'], $promoted?->config['analytics']);
+        $this->assertSame(['off' => true, 'label' => 'Published label'], $promoted->publishedConfig['analytics']);
+    }
+
     public function testDeclaringAWinnerSoftDeletesTheLoserAndDeletesNoRow(): void
     {
         $parent = $this->anOptin();

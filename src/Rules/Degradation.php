@@ -58,7 +58,10 @@ final class Degradation
      */
     public function suspendedIn(array $entry): ?string
     {
+        if ((\WConvert\Template\CommerceSupport::used($entry['template']['tree'] ?? []) || \WConvert\Template\CommerceSupport::quizAdditions($entry['template']['tree'] ?? [])) && !\WConvert\Template\CommerceSupport::active()) return 'cart_products';
         if (!isset($entry['display_rules'])) return 'display_rules';
+        if (\WConvert\Template\CaptureJourney::requiresPremium($entry['template']['tree'] ?? [])
+            && !\WConvert\Template\JourneySupport::active()) return 'journey_questions';
         return $this->suspendedBy([...DisplayPlan::rules($entry['display_rules']), ...($entry['required_rules'] ?? [])]);
     }
 

@@ -8,6 +8,7 @@ use WConvert\Lead\Refusal;
 use WConvert\Lead\RefusalCode;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
+use WConvert\Support\Ulid;
 use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
@@ -50,6 +51,7 @@ final class CaptureController implements RestController
         private readonly \WConvert\Lead\CaptureGrant $grants,
         private readonly TemplateVocabulary $vocabulary,
         private readonly CaptureRateLimit $rateLimit,
+        private readonly ?\WConvert\Protection\Protection $protection = null,
     ) {
     }
 
@@ -60,18 +62,34 @@ final class CaptureController implements RestController
                 'methods' => 'POST',
                 'callback' => [$this, 'capture'],
                 'permission_callback' => [Routes::class, 'canCapture'],
+                // Public and nonce-free on purpose — Routes::canCapture() says
+                // why. What protects this route is below and in capture():
+                // every value is re-checked against the server's own published
+                // copy of the form.
                 'args' => [
                     'optin_id' => [
+                        'description' => 'The published Campaign this submission belongs to.',
                         'required' => true,
                         'type' => 'string',
+                        'validate_callback' => static fn ($value): bool => is_string($value) && Ulid::isOne($value),
                         'sanitize_callback' => 'sanitize_text_field',
                     ],
-                    // `fields` and `consent` are DELIBERATELY not declared
-                    // here. A declared `'type' => 'boolean'` runs
+                    // `fields` and `consent` declare NO `type` and NO
+                    // `sanitize_callback`, deliberately. A declared
+                    // `'type' => 'boolean'` runs
                     // `rest_sanitize_value_from_schema`, which coerces
                     // `"true"`, `"on"` and `"1"` into `true` — and consent read
                     // leniently is consent asserted on the visitor's behalf.
-                    // {@see CaptureForm} requires the JSON boolean itself.
+                    // A validate_callback changes nothing it accepts, so
+                    // `fields` has one; {@see CaptureForm} checks each value
+                    // and requires consent as the JSON boolean itself.
+                    'fields' => [
+                        'description' => 'The values the visitor entered, keyed by form field.',
+                        'validate_callback' => static fn ($value): bool => is_array($value),
+                    ],
+                    'consent' => [
+                        'description' => 'Whether the visitor ticked the consent box: the JSON boolean, never coerced.',
+                    ],
                 ],
             ],
         ]);
@@ -109,9 +127,11 @@ final class CaptureController implements RestController
 
         // Only the address the web server identifies as the peer. Trusting a
         // caller-supplied forwarding header would let a bot choose its bucket.
-        $address = (string) wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+        // Sanitized rather than validated as an IP — see BeaconController.
+        $address = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
 
         if (!$this->rateLimit->allows($address, $optin->id, time())) {
+            $this->protection?->diagnostics->record('rate_limit');
             return new WP_Error(
                 'wconvert_capture_rate_limited',
                 __('Too many submissions were received. Please wait a few minutes and try again.', 'wconvert'),
@@ -126,6 +146,10 @@ final class CaptureController implements RestController
         $saved = $this->optins->find($optin->id);
         if ($saved === null) { return new WP_Error('wconvert_unavailable', __('This form is no longer available.', 'wconvert'), ['status' => 404]); }
         $config = $saved->publishedConfig;
+        if (\WConvert\Template\CaptureJourney::requiresPremium($config['template']['tree'] ?? [])
+            && !\WConvert\Template\JourneySupport::active()) {
+            return new WP_Error('wconvert_journey_unavailable', __('This journey is temporarily unavailable. Please try again later.', 'wconvert'), ['status' => 503]);
+        }
         $goal = $saved->goal;
         $policy = get_privacy_policy_url();
         $contract = \WConvert\Template\CaptureContract::fingerprint($config, $goal, $policy);
@@ -134,10 +158,16 @@ final class CaptureController implements RestController
             || \WConvert\Template\CaptureContract::issue($config, $goal, $policy) !== null) {
             return new WP_Error('wconvert_capture_changed', __('This form changed. Refresh the page to review it. Details already received remain saved.', 'wconvert'), ['status' => 409]);
         }
+        $refusal = $this->protection?->honeypot($body);
+        if ($refusal !== null) { return $refusal; }
+        $protectedContract = $this->protection?->settings->contract($contract) ?? $contract;
         if (($body['phase'] ?? null) === 'start') {
-            return new WP_REST_Response(['grant' => $this->grants->issue($optin->id, $contract, time())], 200);
+            $challenge = $this->protection?->start($body);
+            if ($challenge instanceof WP_Error) { return $challenge; }
+            if (is_array($challenge)) { return new WP_REST_Response($challenge, 200); }
+            return new WP_REST_Response(['grant' => $this->grants->issue($optin->id, $protectedContract, time())], 200);
         }
-        $grant = $this->grants->verify(is_string($body['grant'] ?? null) ? $body['grant'] : '', $optin->id, $contract, time());
+        $grant = $this->grants->verify(is_string($body['grant'] ?? null) ? $body['grant'] : '', $optin->id, $protectedContract, time());
         if ($grant === null) {
             return new WP_Error('wconvert_capture_expired', __('This form session has expired. Details already received remain saved. Refresh to start a new request.', 'wconvert'), ['status' => 409]);
         }
@@ -147,6 +177,11 @@ final class CaptureController implements RestController
         if (!isset($settings[$id])) { return new WP_Error('wconvert_capture_invalid', __('This submission is unavailable.', 'wconvert'), ['status' => 422]); }
         $result = CaptureForm::fromTemplate($template, $this->vocabulary, $id)->validate($body);
         if ($result instanceof Refusal) { return self::refuse($result); }
+        $questionAnswers = \WConvert\Lead\QuestionCapture::validate($template['tree'], $body['question_answers'] ?? [], $id);
+        if ($questionAnswers instanceof Refusal) { return self::refuse($questionAnswers); }
+        $result = new \WConvert\Lead\Submission($result->email, $result->phone, $result->fields, $questionAnswers);
+        $refusal = $this->protection?->submission($result, $optin->id);
+        if ($refusal !== null) { return $refusal; }
         try {
             $accepted = $this->capture->accept($optin->id, $contract, $grant, $template['tree'], $id, $result, $settings[$id]);
         } catch (\WConvert\Lead\CaptureConflict) {

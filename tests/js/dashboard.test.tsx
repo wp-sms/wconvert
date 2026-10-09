@@ -62,6 +62,7 @@ const row = (
   id,
   name: 'Newsletter footer',
   parent_id: null,
+  published_at: null,
   status,
 });
 const goal = (optins = [row()]): GoalReport => ({
@@ -70,6 +71,7 @@ const goal = (optins = [row()]): GoalReport => ({
   label: 'Grow my email list',
   action: 'submit',
   result_label: 'Email submissions',
+  rate_label: 'Email submission rate',
   headline_label: 'Email submissions',
   undelivered_conversions: null,
   optins,
@@ -222,6 +224,19 @@ describe('impact overview', () => {
     ).toBeNull();
     expect(api.readDashboard).toHaveBeenCalledWith(null, true);
   });
+  it('shows no cart results on a site that cannot run cart campaigns (ADR 0127)', async () => {
+    render(<Dashboard />);
+    await screen.findByRole('heading', { name: 'What WConvert brought to your site' });
+    expect(screen.queryByRole('link', { name: /Cart return clicks/ })).toBeNull();
+    expect(screen.getByRole('link', { name: /Offer link clicks/ })).toBeInTheDocument();
+  });
+  it('keeps cart results where the cart module runs', async () => {
+    window.wconvertAdmin = { exportUrl: '', commerce: true };
+    try {
+      render(<Dashboard />);
+      expect(await screen.findByRole('link', { name: /Cart return clicks/ })).toBeInTheDocument();
+    } finally { delete window.wconvertAdmin; }
+  });
   it('toggles the previous period without fetching or discarding the current result', async () => {
     render(<Dashboard />);
     const toggle = await screen.findByRole('switch', {
@@ -373,14 +388,14 @@ describe('Goal and campaign reports', () => {
   it('does not send click-only campaigns to the lead log', async () => {
     api.readDashboard.mockResolvedValue({
       ...payload(),
-      goals: [{ ...goal(), action: 'click' }],
+      goals: [{ ...goal(), action: 'click', rate_label: 'Link click rate' }],
     });
     render(<Dashboard query={{ optinId: 'email' }} />);
     await screen.findByRole('heading', { name: 'Newsletter footer' });
     expect(
       screen.queryByRole('link', { name: 'View captured leads' }),
     ).toBeNull();
-    expect(screen.getByText('Click-through rate')).toBeInTheDocument();
+    expect(screen.getByText('Link click rate')).toBeInTheDocument();
   });
   it('searches and filters campaign contributions', async () => {
     api.readDashboard.mockResolvedValue({
@@ -574,4 +589,11 @@ describe('Goal and campaign reports', () => {
     ).toBeInTheDocument();
     expect(api.declareWinner).toHaveBeenCalledWith('email', 'arm');
   });
+});
+
+it('explains publication after the selected dates without implying a display problem', async () => {
+  api.readDashboard.mockResolvedValue({ ...payload(), goals: [goal([{ ...row(), ...numbers(0, 0), published_at: '2026-09-14 09:00:00' }])] });
+  render(<Dashboard query={{ optinId: 'email' }} />);
+  expect(await screen.findByText('Published after these report dates. New activity appears after each day ends.')).toBeVisible();
+  expect(screen.queryByRole('heading', { name: 'Needs attention' })).not.toBeInTheDocument();
 });

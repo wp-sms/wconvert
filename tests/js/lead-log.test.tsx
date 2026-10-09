@@ -30,6 +30,16 @@ describe('capture history', () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
+  it('offers the question-answer export only where answers can exist (ADR 0127)', async () => {
+    const view = render(<LeadLog />);
+    expect(await screen.findByRole('button', { name: 'Export matching submissions' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Export question answers' })).not.toBeInTheDocument();
+    view.unmount();
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, question_answers: [{ id: 'q1', question: 'Size?', type: 'choice', values: ['s'], labels: ['Small'] }] }] });
+    render(<LeadLog />);
+    expect(await screen.findByRole('button', { name: 'Export question answers' })).toBeInTheDocument();
+  });
+
   it('keeps count and export context in dismissible help rather than a permanent row', async () => {
     render(<LeadLog />);
     const help = await screen.findByRole('button', { name: 'About this count and export' });

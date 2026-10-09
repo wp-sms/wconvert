@@ -8,6 +8,7 @@ defined('ABSPATH') || exit;
 /** Fixed-depth authored display policy. Draft validation never discards a restriction. */
 final class DisplayPlan
 {
+    // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
     /**
      * @return array<string, mixed> */
     public static function immediate(): array
@@ -154,8 +155,11 @@ final class DisplayPlan
                     if ($valid) $valid = match ($control) {
                         'seconds' => is_numeric($value) && $value >= 1 && $value <= 3600,
                         'percent' => is_numeric($value) && (float) (int) $value === (float) $value && $value >= 1 && $value <= 100,
+                        'product_set', 'category_set' => RuleValue::ids($value),
+                        'quantity_range', 'money_range' => RuleValue::range($value, $control === 'money_range'),
                         'amount' => is_numeric($value) && $value >= 0 && is_finite((float) $value),
                         'boolean' => is_bool($value),
+                        'enum' => is_string($value) && in_array($value, $param['options'] ?? [], true),
                         'device_set', 'referrer_set', 'role_set', 'text_set' => is_array($value) && array_is_list($value)
                             && count(array_filter($value, static fn ($v) => is_string($v) && trim($v) !== '')) === count($value)
                             && (!isset($param['options']) || array_diff($value, $param['options']) === []),
@@ -163,7 +167,14 @@ final class DisplayPlan
                         'hours' => is_string($value) && (bool) preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]-(?:[01][0-9]|2[0-3]):[0-5][0-9]$/D', $value),
                         default => is_string($value) && trim($value) !== '',
                     };
+                    /* translators: 1: a display rule's name, for example "Time on page", 2: the name of the rule's setting that is incomplete. */
                     if (!$valid) $issues[] = sprintf(__('%1$s: complete the %2$s value.', 'wconvert'), RuleLabels::types()[$rule['type']] ?? $rule['type'], $name);
+                }
+            }
+            if (($group['match'] ?? 'any') === 'all') {
+                $adStatuses = array_column(array_filter($group['rules'], static fn ($rule) => $rule['type'] === 'ad_blocking'), 'value');
+                if (in_array('detected', $adStatuses, true) && in_array('not_detected', $adStatuses, true)) {
+                    $issues[] = __('Ad blocking cannot be both detected and not detected. Use ANY or change the values.', 'wconvert');
                 }
             }
             if (($group['match'] ?? 'any') === 'all' && ($devices === [] || (in_array(true, $signedIn, true) && in_array(false, $signedIn, true)))) $issues[] = __('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert');
@@ -255,4 +266,5 @@ final class DisplayPlan
         $plan['audience']['groups'] = $survivors;
         return $plan;
     }
+    // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 }

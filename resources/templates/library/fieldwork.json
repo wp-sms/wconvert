@@ -100,7 +100,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#7e8d71"
+                  }
                 },
                 {
                   "type": "consent",
@@ -225,7 +228,7 @@
                   },
                   "copy": true,
                   "copy_label": "Copy code",
-                  "copied_label": "Copied \u2014 ready to use.",
+                  "copied_label": "Copied — ready to use.",
                   "copy_failed_label": "Copy unavailable. Select and copy the code above."
                 },
                 {

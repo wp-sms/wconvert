@@ -28,10 +28,11 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
         strict: false,
         allowDropdown: input.dataset.pd !== '0',
         dropdownContainer: portal,
-        placeholder: input.placeholder || 'auto',
+        // International example placeholders must follow the selected country.
+        placeholder: /^\+[\d\s()-]+$/.test(input.placeholder) ? 'auto' : input.placeholder || 'auto',
         inputAttributes: { autocomplete: 'tel', inputmode: 'tel' },
       });
-      const visible = phone.getInput() as HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
+      const visible = phone.getInput() as HTMLInputElement & { __p?: (value: string, country?: string) => void; __r?: () => void };
       const remembered = drafts.get(shadow)?.get(input.dataset.captureId || '');
       if (remembered) {
         phone.setValue(remembered.value);
@@ -43,7 +44,11 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
       visible.required = input.required;
       visible.dataset.captureId = input.dataset.captureId;
       if (hint) hint.hidden = true;
-      visible.__p = value => { if (value !== phone.getValue()) phone.setValue(value); visible.dataset.e164 = phone.getValue(); };
+      visible.__p = (value, selectedCountry) => {
+        if (selectedCountry && /^[A-Z]{2}$/.test(selectedCountry)) phone.setCountry(selectedCountry);
+        if (value !== phone.getValue()) phone.setValue(value);
+        visible.dataset.e164 = phone.getValue();
+      };
       visible.__r = () => { phone.setValue(''); phone.setCountry(country); visible.dataset.e164 = ''; };
       const observer = new MutationObserver(() => phone.setOptions({ disabled: visible.readOnly }));
       observer.observe(visible, { attributes: true, attributeFilter: ['readonly'] });
@@ -84,6 +89,7 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
       const validity = () => {
         const value = phone.getValue();
         visible.dataset.e164 = value;
+        visible.dataset.phoneCountry = phone.getCountry().code;
         const result = phone.validate();
         visible.setCustomValidity(!value || result.valid ? '' : word(result.reason || 'invalid_length', 'Enter a valid phone number for the selected country.'));
       };

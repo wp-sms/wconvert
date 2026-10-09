@@ -47,11 +47,20 @@ const paramFor = (control: string, options: string[] = []): RuleParam => ({
  * component draws a control at all.
  */
 const OPTIONS: Readonly<Record<string, string[]>> = {
+  enum: ['detected', 'not_detected'],
   device_set: ['mobile', 'tablet', 'desktop'],
   referrer_set: ['direct', 'search', 'social'],
   post_type: ['post', 'page'],
   role_set: ['subscriber', 'customer', 'plan_gold'],
 };
+
+it('offers only the declared ad-block statuses', async () => {
+  const changed = vi.fn();
+  render(<ParamControl id="status" param={paramFor('enum', OPTIONS.enum)} value={undefined} onChange={changed} />);
+  await userEvent.selectOptions(screen.getByRole('combobox'), 'detected');
+  expect(changed).toHaveBeenCalledWith('detected');
+  expect(screen.getAllByRole('option')).toHaveLength(3);
+});
 
 describe('every param kind the manifest declares', () => {
   it('has kinds to check, so this is not asserted about nothing', () => {

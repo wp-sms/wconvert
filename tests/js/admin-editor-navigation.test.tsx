@@ -125,8 +125,8 @@ describe('App navigation through the real lazy editor', () => {
 
   it('includes name edits in draft history and updates navigation dirty state on Undo', async () => {
     const name = await openEditor();
-    const undo = screen.getByRole('button', { name: 'Undo draft edit' });
-    const redo = screen.getByRole('button', { name: 'Redo draft edit' });
+    const undo = screen.getByRole('button', { name: /^Undo/ });
+    const redo = screen.getByRole('button', { name: /^Redo/ });
     expect(undo).toHaveAttribute('title', 'Undo draft edit');
     expect(redo).toHaveAttribute('title', 'Redo draft edit');
     await userEvent.type(name, ' revised');
@@ -141,12 +141,15 @@ describe('App navigation through the real lazy editor', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
-  it('keeps mobile editing scope visible before a block is selected', async () => {
+  it('explains mobile editing scope from the device controls before a block is selected', async () => {
     await openEditor();
     expect(screen.queryByRole('treegrid')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(screen.getByRole('button', { name: 'About mobile editing' }));
     expect(screen.getByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
     await userEvent.click(screen.getByRole('button', { name: 'Desktop preview' }));
+    expect(screen.queryByRole('button', { name: 'About mobile editing' })).toBeNull();
     expect(screen.queryByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeNull();
   });
 
@@ -259,4 +262,13 @@ describe('App navigation through the real lazy editor', () => {
     await screen.findByText('Report content');
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
+});
+
+it('opens display rules from analytics and returns to the same report', async () => {
+  window.history.replaceState({}, '', `/wp-admin/admin.php?page=wconvert${editorHref('OPTIN1', REPORT, 'rules')}`);
+  render(<App />);
+  const tab = await screen.findByRole('tab', { name: 'Display rules' });
+  expect(tab).toHaveAttribute('aria-selected', 'true');
+  await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+  await waitFor(() => expect(window.location.hash).toBe(REPORT));
 });

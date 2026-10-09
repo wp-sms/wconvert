@@ -1,0 +1,180 @@
+{
+  "gift-wrap-details": [
+    "Sample gift wrapping",
+    {
+      "What is included": "Recyclable paper, a paper ribbon and a plain message card. Sample wrapping costs £3 per eligible item.",
+      "Eligible items": "Available for the sample tray and planter; oversized items are excluded.",
+      "Message and ordering": "A message can contain up to 120 characters. This review page does not accept orders or add wrapping."
+    }
+  ],
+  "dispatch-schedule": [
+    "Sample dispatch schedule",
+    {
+      "Dispatch days": "The fictional shop packs orders Monday to Thursday. Orders placed before noon normally enter the next packing session.",
+      "Delivery is separate": "Carrier transit starts after dispatch. Dispatch is not a guaranteed arrival date.",
+      "Exceptions": "Made-to-order items have their own estimate; bank holidays may change the schedule."
+    }
+  ],
+  "showroom-information": [
+    "Sample showroom visit",
+    {
+      "Plan a visit": "Fictional showroom: 12 Sample Lane, Exampletown. Open Tuesday to Saturday, 10am to 4pm.",
+      "Access": "The sample entrance is level; contact the shop to discuss individual access requirements.",
+      "On display": "The sample ceramic planter and wooden tray can be viewed. Call before travelling to check current availability."
+    }
+  ],
+  "holiday-service-hours": [
+    "Example holiday hours",
+    {
+      "Illustrative closure": "This fictional team is closed 24–26 December and reopens on 27 December. Replace these dates before any real use.",
+      "Replies": "Requests received during the closure are reviewed after reopening. No response time is guaranteed.",
+      "Existing appointments": "Contact the team in advance if an already agreed appointment needs discussion."
+    }
+  ],
+  "remote-consultation-details": [
+    "A sample remote consultation",
+    {
+      "Format": "An illustrative 20-minute video conversation to discuss the project and decide whether a longer consultation would help.",
+      "Prepare": "Bring a short brief, photographs and your main questions. Test your audio connection first.",
+      "Next step": "The business must confirm scope, any fee and a time with you. This information page creates no appointment."
+    }
+  ],
+  "contributor-guidelines": [
+    "Sample contributor guidance",
+    {
+      "Topic fit": "Our fictional publication considers practical essays on making, design and everyday learning. Read recent issues before pitching.",
+      "Pitch format": "Prepare a 150-word outline, the reader question it answers and a short author introduction. Do not send a full draft until requested.",
+      "Editorial process": "An editor reviews fit before commissioning. Acceptance, payment and rights must be agreed separately; this demo accepts no pitches."
+    }
+  ],
+  "venue-hire-checklist": [
+    "Offer a venue hire planning checklist",
+    {
+      "List your practical needs": "Write the purpose, approximate guest count, seating style and equipment needs. Ask the venue to confirm its usable capacity for that layout.",
+      "Check access and facilities": "Ask about step-free routes, toilets, parking, unloading and available furniture. Verify details before promising an arrangement to guests.",
+      "Prepare timing questions": "Include setup, the event and pack-down in the requested hours. Ask about noise limits, cleaning, deposits and cancellation terms before agreeing a booking."
+    }
+  ],
+  "contributor-pitch-checklist": [
+    "Offer an editorial pitch checklist",
+    {
+      "Identify the reader question": "Write one sentence stating the reader problem and why it matters to this publication. Check recent coverage before pitching.",
+      "Outline the evidence": "List the examples, primary sources or reporting you can use. Distinguish what you already know from what still needs research.",
+      "Explain your approach": "Prepare a short outline, likely length, proposed format and a short author introduction. Ask about commissioning terms before writing a full draft."
+    }
+  ],
+  "furniture-fit-guide": [
+    "Sample furniture measuring guide",
+    {
+      "Measure the room": "Measure the available floor area and leave space for moving around the furniture and opening drawers.",
+      "Check the route": "Measure doorways, hallway corners, stairs and lifts along the delivery route. Compare all dimensions with the actual item.",
+      "Before ordering": "Ask the shop about packaging dimensions and delivery access when uncertain. This sample does not guarantee a fit."
+    }
+  ],
+  "writing-session-details": [
+    "Sample writing sessions",
+    {
+      "What to expect": "A short writing prompt, quiet drafting time and optional discussion. Participants can keep their work private.",
+      "Who it suits": "This fictional example is intended for adults starting or returning to personal writing. No experience is required.",
+      "Taking part": "This review page has no open dates and takes no bookings. A real publisher must explain current dates, cost, attendance and accessibility."
+    }
+  ],
+  "reading-notes-guide": [
+    "Five ways to get more from a book",
+    {
+      "1. Choose a question": "Before reading, write one question you hope the book will help you explore.",
+      "2. Mark a useful passage": "Choose a passage that changes or challenges your thinking; note its page.",
+      "3. Explain it yourself": "Close the book and describe the idea in your own words.",
+      "4. Make a connection": "Connect that idea to an experience or another book.",
+      "5. Return later": "Revisit the note after a few days. Add what you remember and what you would like to read again."
+    }
+  ],
+  "lighting-collection": [
+    "The lighting edit",
+    {
+      "Reading lamp": "An illustrative terracotta table lamp for a reading corner. Confirm dimensions, bulb compatibility and electrical specifications with the actual seller.",
+      "Ambient lamp": "An illustrative cream-shaded table lamp for softer background light. This demonstration does not list real products for sale."
+    }
+  ],
+  "rereading-essay": [
+    "The value of reading twice",
+    {
+      "A changed question": "On a first reading we often follow what happens. Returning with a question lets us notice how the argument or story is made.",
+      "A different pace": "Try rereading one paragraph slowly. Notice a word or connection you missed and describe why it matters.",
+      "Keep a small note": "Record one changed impression. Rereading need not produce agreement; it may simply make your own response clearer."
+    }
+  ],
+  "visiting-details": [
+    "Service visit arrangements",
+    {
+      "Where we work": "This fictional studio discusses service areas before arranging a visit. Give your general area when enquiring; do not assume every location is covered.",
+      "When to visit": "Visits are by prior arrangement in this demonstration. Agree a date and time before travelling.",
+      "Next step": "Contact the service team to discuss area, scope and timing. Opening this page does not book a visit."
+    }
+  ],
+  "opening-hours-signpost": [
+    "Current opening hours",
+    {
+      "Fictional studio hours": "Monday to Friday, 09:00–17:00. Closed Saturday and Sunday. These are demonstration hours for this local review site.",
+      "Exceptional closures": "Confirm holiday and exceptional opening arrangements before travelling.",
+      "Visits": "Arrange a visit with the team first. A page view does not reserve an appointment."
+    }
+  ],
+  "specification-sheet": [
+    "Compare the sample tables",
+    {
+      "Small table": "Footprint: 35 × 35 cm. Suggested beside an armchair. Wipe clean. Fictional sample: painted wood, illustrative price £60, not available to purchase.",
+      "Wide table": "Footprint: 50 × 40 cm. Suggested beside a two-seat sofa. Wipe clean. Fictional sample: painted wood, illustrative price £85, not available to purchase.",
+      "Before choosing": "Measure the available floor space and check access. These examples demonstrate the campaign link; they are not real product offers."
+    }
+  ],
+  "event-calendar": [
+    "Sample chair-restoration open workshop",
+    {
+      "When": "Saturday 14 November 2026, 14:00–16:00 Europe/London (GMT on this date). This is a fictional review event, not an event accepting registrations.",
+      "Where and format": "In person at the sample restoration workshop, 12 Example Lane. Verify the real address and access details before publishing.",
+      "Registration and access": "A production event page must state the fee or free entry, registration method, accessibility contact and cancellation terms. This demo creates no booking.",
+      "Campaign schedule": "End the invitation before 14:00 Europe/London on 14 November 2026. Convert that instant to the site timezone when configuring the schedule."
+    }
+  ],
+  "product-detail-sheet": [
+    "Sample Task lamp specification",
+    {
+      "Product facts": "Illustrative Task lamp: an 18 × 18 cm base, powder-coated steel construction, and an adjustable shade. The lamp drawing is original WConvert sample artwork.",
+      "Before choosing": "Check the real product height, power supply, bulb specification, finish and safety information with the merchant. These details are not established by the illustration.",
+      "Ordering": "This is a product-information fixture. There is no stock claim, price or Add to cart action; configure an actual product destination before publication."
+    }
+  ],
+  "launch-index": [
+    "Sample morning collection",
+    {
+      "The collection": "A fictional range of cups and trays for everyday use, corresponding to the announcement bar.",
+      "Before shopping": "In a real store this page must show available products, accurate prices and delivery information. The demo accepts no orders.",
+      "Announcement timing": "Only show the announcement while the real collection is available and the description remains current."
+    }
+  ],
+  "accessible-visit-note": [
+    "Sample arrival and access information",
+    {
+      "Getting here": "Fictional review venue: 12 Example Lane. The sample drop-off point is beside the front entrance; parking is across the courtyard. These are review fixtures, not directions to a real venue.",
+      "Routes and facilities": "The fictional courtyard route is step-free. The sample first-floor exhibition is stairs-only, and no accessible toilet is represented in this fixture. A real venue must verify and publish its own measurements, surfaces, facilities and limitations.",
+      "Individual questions": "Before travelling, use the real venue’s published contact details to discuss the route and facilities you need. This demonstration has no staffed contact route and makes no booking."
+    }
+  ],
+  "returns-deadline-notice": [
+    "Sample seasonal returns policy",
+    {
+      "Current terms": "This is a policy-page fixture for a fictional shop that takes no orders. It does not establish return rights, accept return requests or offer an extended seasonal return period.",
+      "Before placing an order": "On a real shop, check the policy that applies to your purchase: eligible items, how the return period is calculated, item condition, exceptions, return costs and the method for requesting a return.",
+      "Seasonal dates": "No seasonal deadline is offered in this demonstration. If a merchant offers different seasonal terms, its actual policy should state the eligible purchase dates and applicable return dates before this notice is published."
+    }
+  ],
+  "workspace-change-story": [
+    "A fictional workspace layout study",
+    {
+      "The starting point": "The original WConvert diagrams illustrate a fictional room, not a client project. A central desk and separate storage units occupy the middle and edges of the room.",
+      "The alternative": "The desk moves towards the window, storage is grouped on one wall and the middle of the room is left clearer. The drawings share the same illustrative room outline.",
+      "Limits of the study": "There are no measurements, building inspections or performance results behind this illustration. A real project must check dimensions, circulation, access, lighting and requirements with the people using the space. This is not a claim that the layout is suitable for a particular property."
+    }
+  ]
+}

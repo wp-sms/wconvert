@@ -15,7 +15,8 @@ final class JourneyCapture
 {
     public const ACCEPTED = 'wconvert_submission_accepted';
 
-    public function __construct(private readonly Connection $db, private readonly StatsRepository $stats) {}
+    public function __construct(private readonly Connection $db, private readonly StatsRepository $stats,
+        private readonly ?\WConvert\Destination\DestinationStore $destinations = null) {}
 
     /** @param array{receipt: string, expires: int} $grant
      * @param array<string, mixed> $tree
@@ -41,7 +42,7 @@ final class JourneyCapture
             if (!is_array($data) || ($data['capture']['contract'] ?? null) !== $contract) { throw new CaptureConflict('changed'); }
             $values = array_filter(['email' => $submitted->email, 'phone' => $submitted->phone, ...$submitted->fields], static fn ($value): bool => $value !== null);
             ksort($values);
-            $hash = hash('sha256', (string) wp_json_encode($values));
+            $hash = hash('sha256', (string) wp_json_encode([$values, $submitted->questionAnswers]));
             $accepted = $data['capture']['submissions'];
             $primary = ($tree['submissions'][0]['id'] ?? '') === $submissionId;
             if (isset($accepted[$submissionId])) {
@@ -49,16 +50,39 @@ final class JourneyCapture
                 return ['id' => $leadId, 'submission' => $submissionId, 'first' => $primary, 'replay' => true];
             }
             if (($stored === null && !$primary) || ($stored !== null && $primary) || count($accepted) >= 2) { throw new CaptureConflict('order'); }
+            $currentQuestions = [];
+            foreach ($submitted->questionAnswers as $answer) {
+                $currentQuestions[$answer['id']] = $answer['values'];
+            }
             foreach ($accepted as $snapshot) {
                 if (array_intersect(array_keys($snapshot['values']), array_diff(array_keys($values), ['consent_text'])) !== []) { throw new CaptureConflict('fixed'); }
+                $priorQuestions = [];
+                foreach ($snapshot['question_answers'] ?? [] as $answer) {
+                    $priorQuestions[$answer['id']] = $answer['values'];
+                }
+                $covered = $snapshot['question_ids'] ?? QuestionCapture::coveredIds($tree, $snapshot['question_answers'] ?? [],
+                    (string) ($snapshot['submission_id'] ?? $tree['submissions'][0]['id']));
+                foreach ($covered as $id) {
+                    if (($priorQuestions[$id] ?? null) !== ($currentQuestions[$id] ?? null)) { throw new CaptureConflict('fixed'); }
+                }
             }
             $now = gmdate('Y-m-d\TH:i:s\Z');
+            $routes = [];
+            foreach ($setting['destination_ids'] as $destinationId) {
+                $destination = $this->destinations?->find($destinationId);
+                if ($destination !== null) $routes[$destinationId] = \WConvert\Destination\RouteIdentity::of($destination);
+            }
             $data['capture']['submissions'][$submissionId] = [
                 'accepted_at' => $now, 'request_hash' => $hash, 'consent_ids' => $tree['submissions'][array_search($submissionId, array_column($tree['submissions'], 'id'), true)]['consents'], 'purpose' => $setting['purpose'],
-                'values' => $values, 'destination_ids' => $setting['destination_ids'],
+                'values' => $values, 'question_answers' => $submitted->questionAnswers,
+                'question_ids' => QuestionCapture::coveredIds($tree, $submitted->questionAnswers, $submissionId),
+                'submission_id' => $submissionId, 'destination_ids' => $setting['destination_ids'],
+                'field_mappings' => is_array($setting['field_mappings'] ?? null) ? $setting['field_mappings'] : [],
+                'route_identities' => $routes,
                 'handoff' => $setting['destination_ids'] === [] ? 'complete' : 'pending',
             ];
             $data['answers'] += $submitted->fields;
+            $data['question_answers'] = array_merge($data['question_answers'] ?? [], $submitted->questionAnswers);
             if ($setting['purpose'] !== 'request') {
                 $prefix = $setting['purpose'] === 'email_marketing' ? 'email' : 'sms';
                 $data['answers'][$prefix . '_accepted_at'] = $now;
@@ -73,18 +97,28 @@ final class JourneyCapture
                     'fields' => (string) wp_json_encode($data), 'created_at' => current_time('mysql'),
                 ]);
                 $this->db->update(Connection::TABLE_OPTIONS, ['option_value' => (string) wp_json_encode(['expires' => $grant['expires'], 'lead' => $leadId])], ['option_name' => $key]);
-                $this->stats->increment($optinId, StatKind::Conversion, StatDay::today());
+                $resultAt = array_search('result', array_column($tree['steps'] ?? [], 'kind'), true);
+                if ($resultAt === false) {
+                    $this->stats->increment($optinId, StatKind::Conversion, StatDay::today());
+                }
             } else {
                 $this->db->update(Connection::TABLE_LEADS, ['email' => $email, 'phone' => $phone, 'fields' => (string) wp_json_encode($data)], ['id' => $leadId]);
             }
+            $this->stats->increment($optinId, StatKind::Capture, StatDay::today());
             if ($setting['purpose'] !== 'request') { $this->stats->increment($optinId, StatKind::Conversion, StatDay::today(), 'channel:' . $setting['purpose']); }
             return ['id' => $leadId, 'submission' => $submissionId, 'first' => $primary, 'replay' => false];
         });
         wp_cache_delete($grant['receipt'], 'options');
         // A queue outage cannot undo an accepted capture. The pending snapshot is recoverable.
         if (!$result['replay']) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::ACCEPTED is 'wconvert_'-prefixed.
             try { do_action(self::ACCEPTED, $result['id'], $submissionId); }
-            catch (\Throwable) { error_log('WConvert: accepted submission is awaiting queue handoff.'); }
+            catch (\Throwable) {
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- under WP_DEBUG only; the recovery sweep hands the submission over later.
+                    error_log('WConvert: accepted submission is awaiting queue handoff.');
+                }
+            }
         }
         return $result;
     }

@@ -1,6 +1,10 @@
+import { RecommendationSettings } from './RecommendationSettings';
+import type { ProductsNode } from '@renderer/types';
+import { journeysSupported, commerceSupported } from '../settings';
+import { unlessFree } from '../goals/availability';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeftRight, Check, ChevronRight, Layers, Type } from 'lucide-react';
+import { ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -17,6 +21,9 @@ import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from '.
 import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
+import { QuestionSettings } from './JourneySettings';
+import { CaptureOwnership } from './CaptureOwnership';
+import { submissionScreen } from './structure/journey';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -35,11 +42,14 @@ export interface BlockInspectorProps {
   readonly endsAt?: string;
 
   readonly onSetEndDate?: () => void;
+  readonly onPlacement?: () => void;
 
   readonly look?: ReactNode;
   readonly onSelect?: (path: Path) => void;
   readonly onDesign?: () => void;
   readonly onShowLayers?: () => void;
+  /** A new repair request opens Content even when the same element was on Style. */
+  readonly revealContent?: { readonly path: Path } | null;
 }
 
 export function BlockInspector({
@@ -51,14 +61,21 @@ export function BlockInspector({
   onSwap,
   endsAt,
   onSetEndDate,
+  onPlacement,
   look,
   onSelect,
   onDesign,
   onShowLayers,
+  revealContent,
 }: BlockInspectorProps) {
   const heading = useId();
 
   const [half, setHalf] = useState('content');
+  const [lastReveal, setLastReveal] = useState(revealContent);
+  if (lastReveal !== revealContent) {
+    setLastReveal(revealContent);
+    if (revealContent) setHalf('content');
+  }
   const block =
     path === null ? null : (nodesOf(template.tree).find((each) => samePath(each.path, path)) ?? null);
   const slot =
@@ -87,6 +104,7 @@ export function BlockInspector({
     onChange,
     endsAt,
     onSetEndDate,
+    onPlacement,
   });
 
   const breadcrumbs = nodesOf(template.tree).filter(
@@ -109,7 +127,7 @@ export function BlockInspector({
       </nav>
       <div className="wconvert-inspector__heading">
         <span className="wconvert-element-icon">
-          {block.leaf ? <Type aria-hidden="true" /> : <Layers aria-hidden="true" />}
+          {block.type === 'products' ? <Package aria-hidden="true" /> : block.leaf ? <Type aria-hidden="true" /> : <Layers aria-hidden="true" />}
         </span>
         <div>
           <h4 id={heading} className="wconvert-inspector__name">
@@ -209,6 +227,7 @@ function contentBody({
   onChange,
   endsAt,
   onSetEndDate,
+  onPlacement,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -218,16 +237,33 @@ function contentBody({
   onChange: (template: Template, coalesce?: string) => void;
   endsAt?: string;
   onSetEndDate?: () => void;
+  onPlacement?: () => void;
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
+  if (block.type === 'products') {
+    if (!commerceSupported()) return <p>{unlessFree(__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'))}</p>;
+    const selected = nodeAt(template.tree, path) as ProductsNode;
+    return <RecommendationSettings value={selected} onPlacement={onPlacement} onChange={patch => {
+      let tree = template.tree;
+      for (const [key, value] of Object.entries(patch)) tree = withValue(tree, path, key, value);
+      onChange({ ...template, tree });
+    }} />;
+  }
+  if (block.type === 'question' && !journeysSupported()) {
+    return <p className="text-note text-muted-foreground">{__('This design uses elements this site can’t display.', 'wconvert')}</p>;
+  }
+  if (block.type === 'question') {
+    return <QuestionSettings tree={template.tree} step={Number(path[0])} onChange={tree => onChange({ ...template, tree })} onSelect={() => undefined} />;
+  }
   return (
     <>
-      {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <label className="block p-3">
-        {__('Signup', 'wconvert')}
+      {['field', 'consent'].includes(block.type) && <CaptureOwnership tree={template.tree} path={path} onChange={tree => onChange({ ...template, tree })} />}
+      {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <label className="wconvert-slot__key">
+        {__('Save point', 'wconvert')}
         <select value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
-          <option value="">{__('Choose a signup', 'wconvert')}</option>
+          <option value="">{__('Choose a save point', 'wconvert')}</option>
           {template.tree.submissions.filter(s => node?.action !== 'skip' || !s.required).map((s, index) => <option key={s.id} value={s.id}>
-            {s.required ? __('Primary signup or request', 'wconvert') : __('Optional signup', 'wconvert')}{index > 1 ? ` ${index + 1}` : ''}
+            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(__('Save point %d', 'wconvert'), index + 1)}
           </option>)}
         </select>
       </label>}

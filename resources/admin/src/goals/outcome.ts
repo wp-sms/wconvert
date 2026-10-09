@@ -8,7 +8,7 @@ import type { TemplateNode } from '@renderer/types';
 
 /** Rules and wording are declared by PHP; the admin evaluates the current draft. */
 export interface OutcomeContract {
-  action: 'submit' | 'click';
+  action: 'submit' | 'click' | 'match' | 'add_to_cart';
   capture_any_of: readonly string[];
   requirement: string;
   measurement: string;
@@ -27,6 +27,7 @@ export function outcomeDesignIssue(outcome: OutcomeContract, template: Template 
 }
 
 function hasLink(node: TemplateNode | undefined): boolean {
+  if (node?.type === 'products' && 'product_ids' in node) return node.source === 'cross_sells' || Array.isArray(node.product_ids) && node.product_ids.length > 0;
   if (!node || ('hidden' in node && node.hidden === true)) return false;
   if (node.type === 'button' && 'action' in node && node.action === 'link') {
     return 'href' in node && typeof node.href === 'string' && node.href.trim() !== '' && node.href.trim() !== '#';
@@ -47,7 +48,7 @@ export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly st
       && destination.availability === 'ready'
       && destination.requirements?.audience_channels?.includes(outcome.audience_channel as string)
       && settingsProblems(destination.requirements, destination.settings).length === 0);
-    return ready ? null : __('Choose and configure a service for this channel, or explicitly choose Collect only in WConvert before publishing.', 'wconvert');
+    return ready ? null : __('Before you can publish, connect a service or choose “Collect only in WConvert”.', 'wconvert');
   }
   if (outcome.destination_type === null) return null;
   if (destinations === null) return __('Open Destinations to check the required delivery setup before publishing.', 'wconvert');
@@ -55,5 +56,5 @@ export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly st
     && destination.type === outcome.destination_type && destination.availability === 'ready'
     && destination.requirements != null
     && settingsProblems(destination.requirements, destination.settings).length === 0);
-  return ready ? null : __('Connect a lead magnet email destination and complete its file link before publishing.', 'wconvert');
+  return ready ? null : __('Before you can publish, connect a lead magnet email destination and complete its file link.', 'wconvert');
 }

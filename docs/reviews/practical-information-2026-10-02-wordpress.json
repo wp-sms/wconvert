@@ -1,0 +1,20 @@
+{
+    "accessible-visit-note": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "real link destination"
+        ]
+    },
+    "returns-deadline-notice": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "real link destination"
+        ]
+    },
+    "_outbox": {
+        "messages": 100,
+        "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+}

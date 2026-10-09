@@ -20,7 +20,7 @@ final class StatKindTest extends TestCase
     public function testItIsExactlyTheseFour(): void
     {
         $this->assertSame(
-            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'dismiss', 'lead_magnet_delivered'],
+            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'cart_addition', 'product_shown', 'product_click', 'capture', 'result_click', 'dismiss', 'lead_magnet_delivered'],
             array_map(static fn (StatKind $kind): string => $kind->value, StatKind::cases())
         );
     }
@@ -73,6 +73,9 @@ final class StatKindTest extends TestCase
     public function testABrowserMayNotAssertADeliveryItCannotHaveSeen(): void
     {
         $this->assertNull(StatKind::fromBeacon('lead_magnet_delivered'));
+        $this->assertNull(StatKind::fromBeacon('cart_addition'));
+        $this->assertNull(StatKind::fromBeacon('product_shown'));
+        $this->assertNull(StatKind::fromBeacon('product_click'));
         $this->assertSame(StatKind::LeadMagnetDelivered, StatKind::tryFrom('lead_magnet_delivered'));
     }
 }

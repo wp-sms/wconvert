@@ -1,6 +1,8 @@
 # The free contract is proven at the source, not at the artifact
 
-**Current budget amendment — [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 20,480 B, Pro at 20,608 B, Elite at 20,784 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
+*Byte limits amended by [ADR 0111](0111-spam-protection-precedes-capture.md): Free / Basic / Pro / Elite now cap at 14,592 / 25,088 / 26,624 / 26,880 bytes gzip-9 after pre-capture verification and campaign events. Other asset limits are unchanged.*
+
+**Current budget amendment — [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders cap at 14,336 B; Basic at 24,832 B, Pro at 26,368 B, Elite at 26,624 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
 
 **Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
 
@@ -42,6 +44,12 @@ acquire. Its own analysis bootstrap is *not* an exception, and proved the point
 by failing on day one: `phpstan-bootstrap.php` named Pro's plugin file, so
 Pro's constants moved to `pro/phpstan-bootstrap.php` rather than the check
 learning to look away.
+
+*Amended by [ADR 0115](0115-the-free-zip-carries-its-build-files.md): free's own
+Vite configs and the npm and Composer manifests now ship in the free ZIP so a
+reviewer can rebuild `public/`. They are still outside this check's tree — Pro's
+configs sit beside them — and are checked at the artifact instead, which fails
+the build if a shipped root Vite config names a `pro/` path.*
 
 A Pro *URL* is not a Pro path. Free links to the Pro landing page to render a
 `locked` Availability state ([ADR 0015](0015-enforcement-is-by-non-registration.md)),

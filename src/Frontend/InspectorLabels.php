@@ -36,6 +36,12 @@ final class InspectorLabels
      */
     public static function all(): array
     {
+        $commerce = [
+            'pending' => __('Checking the current basket…', 'wconvert'),
+            'ready' => __('Using a recent basket check; missing products or changed currency cannot match.', 'wconvert'),
+            'unavailable' => __('The basket could not be checked. Neither positive nor negative cart rules can match.', 'wconvert'),
+            'consent-blocked' => __('Waiting for functional consent.', 'wconvert'),
+        ];
         return [
             'title' => __('Why each popup did or did not show', 'wconvert'),
             'intro' => __(
@@ -187,10 +193,17 @@ final class InspectorLabels
                 'unknown' => __('Not evaluated', 'wconvert'),
                 'unsupported' => __('No module on this site evaluates this rule', 'wconvert'),
             ],
+            'products_ready' => $commerce, 'cart_products' => $commerce, 'cart_categories' => $commerce, 'cart_quantity' => $commerce, 'cart_amount' => $commerce, 'cart_has_items' => $commerce, 'cart_value_min' => $commerce,
+            'ad_blocking' => [
+                'pending' => __('Checking ad-block status…', 'wconvert'),
+                'detected' => __('Ad blocking detected by this check', 'wconvert'),
+                'not_detected' => __('Ad blocking not detected by this check', 'wconvert'),
+                'unknown' => __('Ad-block status could not be determined', 'wconvert'),
+            ],
 
             'display' => [
                 'group' => __('Audience group', 'wconvert'),
-                'opening' => __('Opening moment', 'wconvert'),
+                'opening' => __('When it opens', 'wconvert'),
                 'all' => __('ALL', 'wconvert'), 'any' => __('ANY', 'wconvert'),
                 'true' => __('Matches', 'wconvert'), 'false' => __('Does not match', 'wconvert'), 'blocked' => __('Waiting for consent', 'wconvert'),
                 'immediate' => __('Immediately', 'wconvert'), 'automatic' => __('Automatic', 'wconvert'), 'click' => __('Explicit click', 'wconvert'),
@@ -202,6 +215,7 @@ final class InspectorLabels
                 'triggers' => __('When it fires', 'wconvert'),
                 'conditions' => __('Who sees it', 'wconvert'),
                 'include' => __('Shows on', 'wconvert'),
+                // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting key, not a get_posts() argument.
                 'exclude' => __('But never on', 'wconvert'),
                 'server_only' => __('It never reached the browser, so there is nothing more to report.', 'wconvert'),
             ],
@@ -230,16 +244,29 @@ final class InspectorLabels
              * They are the observations a merchant has no other way to make.
              */
             'arrival' => [
+                'entered' => __('The WConvert loader started executing.', 'wconvert'),
+                'completed' => __('The WConvert loader completed its startup.', 'wconvert'),
+                'waiting' => __('Waiting briefly for the WConvert loader to start…', 'wconvert'),
+                'unobserved' => __('Loader execution has not been observed yet. Check delayed scripts or blocking.', 'wconvert'),
+                'recheck' => __('Recheck loader', 'wconvert'),
+                'check' => __('Check analytics connection', 'wconvert'),
+                'checking' => __('Checking analytics connection…', 'wconvert'),
+                'connected' => __('The analytics endpoint responded. This does not prove earlier events arrived.', 'wconvert'),
+                'rate_limited' => __('The analytics endpoint is rate limiting requests.', 'wconvert'),
+                'failed' => __('The request failed. A blocker, connection problem, or site policy may be responsible.', 'wconvert'),
+                /* translators: %s: an HTTP status code, for example 404. */
+                'http_error' => __('The analytics endpoint returned HTTP %s.', 'wconvert'),
+                'unavailable' => __('This page has no analytics endpoint to check.', 'wconvert'),
                 'aggregated' => __(
-                    'The loader’s own script tag is not on this page, so something has combined it into a bundle. WConvert copes with that.',
+                    'The loader’s own script tag was not found. An optimizer may have combined it, or the script may not have been delivered.',
                     'wconvert'
                 ),
                 'defer' => __(
-                    'Something removed the loader’s “defer”. WConvert copes with that, but a script optimiser is rewriting its tags.',
+                    'The loader tag has no “defer” attribute. A script optimizer may have changed it.',
                     'wconvert'
                 ),
                 'order' => __(
-                    'The loader is above the data it reads, which is what “force JavaScript in head” does. WConvert copes with that.',
+                    'The loader tag appears before its data. Startup may wait until the document is ready.',
                     'wconvert'
                 ),
             ],

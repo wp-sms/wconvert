@@ -4,7 +4,7 @@
   "free": {
     "slug": "wconvert",
     "plugin_name": "WConvert",
-    "description": "Lead capture and conversion display for WordPress — popups, floating bars, slide-ins and inline forms."
+    "description": "Lead capture for WordPress — popups and inline forms, created goal-first."
   },
 
   "premium": {
@@ -22,21 +22,21 @@
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Fullscreen campaigns, floating bars, slide-ins, automatic inline placement, and the designs that come with them.",
-        "modules": ["display-types", "inline-placement", "content-lock"]
+        "modules": ["display-types", "inline-placement", "content-lock", "journeys", "spam-filters", "analytics"]
       },
       {
         "slug": "pro",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Adds the premium Triggers, the advanced targeting Conditions, and A/B testing.",
-        "modules": ["display-types", "inline-placement", "content-lock", "premium-triggers", "ab-testing"]
+        "modules": ["display-types", "inline-placement", "content-lock", "journeys", "spam-filters", "premium-triggers", "ab-testing", "analytics"]
       },
       {
         "slug": "elite",
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Everything, including cart recovery and the outbound Destinations.",
-        "modules": ["display-types", "inline-placement", "content-lock", "premium-triggers", "ab-testing", "cart-recovery"]
+        "modules": ["display-types", "inline-placement", "content-lock", "journeys", "spam-filters", "premium-triggers", "ab-testing", "cart-recovery", "destinations", "analytics"]
       }
     ]
   }

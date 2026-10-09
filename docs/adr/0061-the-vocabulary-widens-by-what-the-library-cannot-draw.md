@@ -187,6 +187,7 @@ padding.
   journeys, multi-screen enquiries, and email followed by optional SMS supply
   concrete use cases. The accepted feature includes editable linear screens,
   with navigation and capture explicitly distinct. It is implemented in the shared journey contract.*
+  *Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md): paid questions, conditional screens, and result variants are now concrete library needs. They extend the same bounded JSON vocabulary rather than introducing arbitrary jumps or loops.*
 - **Per-node styling**, above.
 
 ## What would reopen rung 3

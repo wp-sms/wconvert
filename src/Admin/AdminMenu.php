@@ -49,6 +49,19 @@ final class AdminMenu
     public const SCRIPT_HANDLE = 'wconvert-admin';
 
     /**
+     * The wconvert.io mark as one monochrome path (ADR 0130): the tile with the
+     * W knocked out by `evenodd`, then the dot. WordPress's `svg-painter`
+     * rewrites the `fill` to the admin colour scheme's icon colour, so the
+     * artwork's own colours would be discarded anyway. The paths are
+     * `resources/admin/src/assets/branding/wconvert-mark.svg`.
+     */
+    private const MENU_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+        . '<path fill="black" fill-rule="evenodd" d="'
+        . 'M12 8h32c0 6.627 5.373 12 12 12v32c0 5.523-4.477 10-10 10H12C6.477 62 2 57.523 2 52V18C2 12.477 6.477 8 12 8Z'
+        . 'M12 24h8l-.2 16L29 24h7l-.4 16L44 24h8L38 49h-8l.5-16L21 49h-8L12 24Z'
+        . 'M49 8a7 7 0 1 0 14 0a7 7 0 1 0-14 0Z"/></svg>';
+
+    /**
      * When this runs on `admin_enqueue_scripts`.
      *
      * A named constant for the reason {@see \WConvert\Frontend\LoaderEnqueue::PRIORITY}
@@ -84,7 +97,7 @@ final class AdminMenu
             'manage_options',
             self::SLUG,
             [$this, 'renderScreen'],
-            'dashicons-megaphone',
+            'data:image/svg+xml;base64,' . base64_encode(self::MENU_ICON),
             26
         );
 
@@ -156,15 +169,12 @@ final class AdminMenu
          * which needs the `@font-face` rules to be on this page. Core prints
          * them on the front end; wp-admin gets them only where something asks.
          *
-         * Core's own, since 6.4, and guarded because this plugin's floor is
-         * 6.2 — where it is absent the row falls back to the next family in the
-         * stack and the control still works. **Nothing is fetched and no face
-         * is declared here**: this prints the site's, or nothing
+         * Core's own, since 6.4, and so on every WordPress this plugin
+         * supports (6.8 and up). **Nothing is fetched and no face is declared
+         * here**: this prints the site's, or nothing
          * (`docs/adr/0055-the-font-list-is-the-sites.md`).
          */
-        if (function_exists('wp_print_font_faces')) {
-            add_action('admin_print_styles', 'wp_print_font_faces');
-        }
+        add_action('admin_print_styles', 'wp_print_font_faces');
 
         // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
         // difference is not stylistic: `localize` casts every value to a
@@ -216,6 +226,15 @@ final class AdminMenu
             // it back into a download.
             'exportUrl' => LeadExport::url(),
             'installedTier' => (new \WConvert\Support\WpProPresence())->installedTier()->value,
+            // Registered by Pro's journeys module, never inferred from a tier:
+            // the builder offers questions, results and paths only where the
+            // code that draws them is on disk (ADR 0116).
+            'commerce' => \WConvert\Template\CommerceSupport::active(),
+            'journeys' => \WConvert\Template\JourneySupport::active(),
+            // Template packs appear only once a catalog service is configured.
+            // Guarded like PhoneCountry::siteDefault(): a suite without
+            // WordPress reads the settings too.
+            'catalogConfigured' => function_exists('get_option') && \WConvert\Template\Catalog\TemplateCatalog::configured(new \WConvert\Storage\WpOptionStore()),
             // **Authoring is the settings panel plus a DEV-ONLY export**
             // (ADR 0010). Gated on `WP_DEBUG` rather than on a capability:
             // everyone who reached this screen already has `manage_options`,

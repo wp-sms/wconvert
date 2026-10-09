@@ -29,8 +29,8 @@ import type { Rule, RuleType, Targeting } from '../api';
  * only the server can answer `logged_in`, and a membership level is a fact
  * another plugin holds — and read whole the axis is
  * `page-set AND logged_in AND roles` (ADR 0005). What moved is the CONTROLS,
- * to the section a merchant looks in for a question about who sees the Optin.
- * {@see Who} carries the note.
+ * to the section a merchant looks in for a question about who sees the Optin
+ * — *Who sees it?*, where the quick picks and Custom… write them as rules.
  *
  * This was `TargetingEditor`, whole; what it lost is its own `<h3>`, because
  * the section above it is the heading now.
@@ -39,9 +39,11 @@ export interface WhereProps {
   readonly types: readonly RuleType[];
   readonly targeting: Targeting;
   readonly onChange: (targeting: Targeting) => void;
+  /** Selected pages is chosen: the include list is the merchant's to edit. */
+  readonly showInclude: boolean;
 }
 
-export function Where({ types, targeting, onChange }: WhereProps) {
+export function Where({ types, targeting, onChange, showInclude }: WhereProps) {
   // The five page rules, and only those. The visitor predicates are on this
   // axis only because the client cannot read WordPress's HttpOnly auth cookie,
   // and neither of them is a page set — which is why they are fields rather
@@ -56,16 +58,11 @@ export function Where({ types, targeting, onChange }: WhereProps) {
 
   return (
     <>
-      <fieldset className="wconvert-display-choices"><legend>{__('Page selection', 'wconvert')}</legend>
-        <label><input type="radio" name="display-pages" checked={targeting.mode !== 'selected' && !include.length}
-          onChange={() => onChange({ ...targeting, mode: 'entire', include: [] })} />{__('Entire site', 'wconvert')}</label>
-        <label><input type="radio" name="display-pages" checked={targeting.mode === 'selected' || !!include.length}
-          onChange={() => onChange({ ...targeting, mode: 'selected' })} />{__('Selected pages', 'wconvert')}</label>
-      </fieldset>
-      {(targeting.mode === 'selected' || include.length > 0) && <RuleList
+      {showInclude && <RuleList
         list="include"
         heading={__('Show it on', 'wconvert')}
-        empty={__('Choose at least one page before publishing.', 'wconvert')}
+        empty={__('Choose at least one page', 'wconvert')}
+        attention
         types={pages}
         rules={include}
         onChange={(rules) => onChange({ ...targeting, mode: 'selected', include: rules })}
@@ -102,6 +99,8 @@ interface RuleListProps {
   readonly types: readonly RuleType[];
   readonly rules: readonly { type: string; value: unknown }[];
   readonly onChange: (rules: { type: string; value: unknown }[]) => void;
+  /** An empty list here is something to fix before publishing. */
+  readonly attention?: boolean;
 }
 
 /**
@@ -113,7 +112,7 @@ interface RuleListProps {
  * path is a glob. Which is what makes this a picker rather than a pair of
  * free-text boxes.
  */
-function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProps) {
+function RuleList({ list, heading, empty, types, rules, onChange, attention = false }: RuleListProps) {
   const rows: Row[] = rules.map((rule, at) => {
     const type = types.find((each) => each.type === rule.type);
 
@@ -155,9 +154,9 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
       input, which is `--text-micro`'s role (ADR 0037).
     */
     <div className="wconvert-rules__group">
-      <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
+      <h4 className="wconvert-rules__label">{heading}</h4>
       {list === 'include' && rules.length > 1 && <p className="wconvert-display-rule-help">{__('A page only needs to match one of these rules.', 'wconvert')}</p>}
-      <RuleRows rows={rows} empty={empty} />
+      <RuleRows rows={rows} empty={empty} attention={attention} />
       {/*
         ==================================================================
         THE SAME ADD CONTROL AS THE OTHER THREE SECTIONS, AND THAT CLOSES A

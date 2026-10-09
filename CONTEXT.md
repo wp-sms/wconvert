@@ -24,8 +24,10 @@ to them. Going Back may review submitted details but cannot replace them.
 
 The implemented progressive journey contract is recorded in
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
-The runtime supports linear screens with one primary submission and an optional
-other-channel signup, saved independently within the same capture journey.
+The Free runtime supports linear screens with one primary submission and an optional
+other-channel signup, saved independently within the same capture journey. Pro
+also supports questions and answer-dependent screens, with at most one Results
+screen. See [ADR 0106](docs/adr/0106-question-journeys-extend-the-paid-loader.md).
 
 "Never confirmed" is the sharpest case, because it is the one every competitor
 gets wrong: **WConvert has no double opt-in and never will.** Confirming an
@@ -33,8 +35,8 @@ opt-in means reading and mutating [[Contact]] state, which the [[Destination]]
 contract forbids outright. Where double opt-in is wanted it belongs to whoever
 owns the Contact — WSMS's own subscription form, or the ESP's audience setting.
 
-Not every [[Conversion]] is a Lead. An Optin whose success is a click-through
-captures no form, so it produces a Conversion and no Lead.
+Not every [[Conversion]] is a Lead. A click-through or an anonymous quiz result
+produces a Conversion without a Lead.
 
 A submit design's success copy acknowledges the captured request. It must not
 claim that a Contact is subscribed or confirmed, or that a message or resource
@@ -75,6 +77,18 @@ here, and would carry no [[Consent Record]], which is the half that cannot be
 invented.
 
 WConvert owns Leads.
+
+The public browser `wconvert:capture` event acknowledges the first accepted Lead
+in a mounted journey, including quiz contact capture. It never denotes provider
+confirmation or repeats for optional additions. See
+[ADR 0110](docs/adr/0110-public-browser-events-describe-campaign-outcomes.md).
+
+When a visitor explicitly submits contact details after answering Pro questions,
+the Lead also holds a snapshot of the active question IDs, wording, values and
+choice labels in existing JSON storage. Skipped answers are excluded. An
+anonymous completion creates no Lead and stores no individual answers; only
+aggregate completion and result-click counts remain. A later optional signup
+adds one Lead without a second Conversion.
 
 A form can also ask one choice question under the canonical key `interest`.
 Its stable selected value and the label from the published choice definition
@@ -121,7 +135,7 @@ browser-local campaign state and its fallback-cookie lifetime, and the short
 anonymous-count and form-protection rate-limit windows. Pro adds only facts for
 modules this install can actually run: A/B assignment state and, with
 WooCommerce cart recovery, a session cookie containing cart count and total but
-no product or contact details.
+no product or contact details. Rich cart targeting also keeps campaign-match booleans and public product cards in document memory for up to 30 seconds, using the existing WooCommerce session. It saves no cart contents or new visitor identity; cart reads use a separate 60-second hashed-IP rate bucket.
 The same facts feed WordPress's suggested privacy-policy text; they never expose
 credentials, publish policy wording, choose a legal basis or claim to erase
 external copies. See
@@ -143,7 +157,7 @@ and [ADR 0099](docs/adr/0099-privacy-defaults-follow-campaign-purpose.md).
 
 Analytics starts with compatible totals: captured submissions, offer clicks,
 cart return clicks and appearances. It never reports a global conversion rate,
-unique people, purchases or recovered revenue. Goal and individual Optin reports
+unique people or recovered revenue from those counters. The optional paid campaign-sales report reads actual WooCommerce paid orders and refunds separately, under a consented 30-minute last-interaction model; attribution is not causation. See [ADR 0119](docs/adr/0119-actionable-reports-use-local-evidence-and-order-provenance.md). Goal and individual Optin reports
 explain their denominators. Resource requests and accepted email sends remain
 separate. Complete-day comparisons are resolved in the site's calendar; no
 visible timezone label is needed. Campaigns also uses complete days through yesterday; editor windows still include today.
@@ -168,19 +182,23 @@ their calendar month independently of rolling report dates. See
 
 A visitor doing the thing an [[Optin]] exists to make them do — the countable
 act its [[Goal]] names. Submitting a form is one kind of Conversion; clicking
-through to an offer is another.
+through to an offer and completing an anonymous quiz result are others.
 
-Every [[Lead]] is a Conversion; the reverse does not hold. Assuming it does
-makes any Goal measured by clicks report zero forever.
+Most accepted Leads are Conversions; a quiz Lead is not a second Conversion.
+The reverse does not hold either: anonymous quiz completion and link clicks
+create no Lead.
 
-A progressive [[Capture journey]] converts at its first accepted capture.
-Later submissions in that journey add to the same Lead without another
-Conversion. Next, Back and Skip do not convert. This is the accepted product
+A capture-only progressive [[Capture journey]] converts at its first accepted
+capture. Later submissions add to the same Lead without another Conversion.
+A Pro quiz converts when its selected result appears, whether it asked for
+contact first or offers an optional signup afterward. Captures in that quiz
+are recorded separately. Next, Back and Skip alone do not convert. This is the accepted product
 contract in [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 **One Optin has exactly one converting act**, and its ~~[[Goal]]~~ **design**
-decides which: a design whose button submits converts on the submit, and one
-whose button links away converts on the click. A [[Template]] offering both is
+decides which: a design whose button submits converts on the submit, one
+whose button links away converts on the click, and a quiz converts
+on its first selected result. A [[Template]] offering both unrelated acts is
 rejected when it is registered, not disambiguated at runtime — an Optin with two
 candidate Conversions has no honest number to report.
 
@@ -235,6 +253,14 @@ left empty** — a name it never had. It never overwrites a stored value, becaus
 submission is anonymous and matched on one identifier, so honouring it would let
 whoever knows an email rewrite the phone beside it. And it never touches lifecycle
 state at all: not the subscription status, not an opt-out, not on a re-subscribe.
+
+> **Accepted extension, not yet implemented:**
+> [ADR 0110](docs/adr/0110-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+> adds a per-Destination choice to update eligible mapped **non-identity** values
+> on adapters with a verified safe write path. Keep existing details is the
+> default. The existing prohibition on identifier replacement, merging and
+> subscription/suppression changes remains. WSMS and MailPoet retain their current
+> behavior until their individual adapter support is verified.
 
 That asymmetry is deliberate. Creating a Contact is a claim about someone the owning
 system has never heard of, where the form the visitor filled in is the only evidence
@@ -343,6 +369,17 @@ never stores the raw address. A missing server address fails open so a proxy
 configuration mistake cannot block every real visitor. This is an operational
 security default, not an optional privacy feature.
 
+Optional bot verification is a separate pre-capture boundary, never a
+[[Destination]]. Free includes Turnstile Managed, reCAPTCHA v2 checkbox and
+hCaptcha with merchant-owned keys, a hidden-field check, and a ten-minute
+recipient/resource guard on queued resource emails. Pro adds explicit exact
+email/domain filters and email exceptions. One server-verified grant covers one
+[[Capture journey]]; independent captures remain independent Leads. Unverified
+requests receive a retryable form response, not a saved Lead or success screen.
+Settings → Spam protection owns these site-wide choices. No external provider
+is enabled by default. See [ADR 0111](docs/adr/0111-spam-protection-precedes-capture.md)
+and the [setup guide](docs/guides/spam-protection.md).
+
 ### Retention Period
 
 How long the merchant keeps their [[Lead]]s before WConvert deletes them
@@ -395,6 +432,11 @@ shows real known issues on request. See [ADR 0092](docs/adr/0092-campaigns-use-a
 An Optin is never hard-deleted. Its counters reference it by id, so a removed row
 would make every count naming it uninterpretable — which is also why ending an
 A/B test cannot delete the losing [[Variant]].
+
+Live overlays notify page scripts through `wconvert:open` and `wconvert:close`.
+These describe actual presentation transitions, not changing journey screens or
+analytics impressions/dismissals. Campaign details can copy existing campaign
+or variant IDs. See [ADR 0110](docs/adr/0110-public-browser-events-describe-campaign-outcomes.md).
 
 ### Variant
 
@@ -737,12 +779,33 @@ semantics. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-an
 *Whether* a visitor is eligible to see an [[Optin]] — device, referrer, cart
 state, time of day.
 
+Pro can also check for signs of ad blocking with a short, document-local
+cosmetic-interference probe. The check reports detected, not detected or
+inconclusive; pending and inconclusive match neither authored status. It does
+not identify an extension, store a visitor profile or prove that WConvert's
+own loader and requests were delivered. A Campaign whose paid module is absent
+is suspended as for other authored unavailable Conditions. See
+[ADR 0109](docs/adr/0109-ad-block-observation-is-a-bounded-condition.md).
+
 Audience is Everyone or up to five alternative groups. A group requires ALL or
 ANY of up to eight Conditions/account leaves; the groups combine with OR.
 Required Goal predicates are outside those alternatives. The chosen expression
 must hold at the instant the opening requirements are met. They are not
-evaluated ahead of time and held: an Optin whose cart emptied while its ten
-second timer ran does not show.
+allowed to rely on expired facts: an Optin whose cart emptied while its ten
+second timer ran does not show. Pro product/category/quantity/amount predicates use a prepared, expiring WooCommerce session projection and fail closed while it is unavailable. A selected-products block offers merchant-chosen catalog links as one click-only act. See [ADR 0117](docs/adr/0117-cart-intelligence-uses-a-bounded-session-projection.md).
+
+The cart-intelligence follow-up supports configured WooCommerce cross-sells and
+a stateless sample-basket preview in the Test a visit dialog. The preview
+uses live catalog facts and shared cart predicates without a real cart mutation
+or analytics event. See [ADR 0118](docs/adr/0118-sample-baskets-share-live-commerce-evaluation.md).
+
+Recommendations can now explicitly use the viewed main product or a basket
+containing it. Product-page context allows a known empty basket; legacy blocks
+retain their nonempty-basket behavior. The sample visit distinguishes viewed
+product from basket contents. Classic WooCommerce product pages offer an explicit
+after-summary placement; block themes use a manual campaign block. Cards still
+count product-link clicks. See [ADR 0120](docs/adr/0120-recommendations-distinguish-product-pages-from-baskets.md).
+
 
 > **The distinction is load-bearing and fixed per rule.** A rule type is a
 > Trigger or a Condition, never both — `scroll_depth` means "when they reach
@@ -754,7 +817,7 @@ second timer ran does not show.
 
 The business outcome an [[Optin]] serves, selected before choosing a [[Playbook]].
 It remains visible in the editor alongside the precise metric WConvert can prove.
-The six Goals stay business-oriented; their counts do not claim subscriber state,
+The seven Goals stay business-oriented; their counts do not claim subscriber state,
 inbox delivery, bookings, orders or revenue that WConvert does not observe.
 
 A Goal can change until first publication. After publication, including after
@@ -778,6 +841,7 @@ contract checks compatibility before that design becomes live.
 | Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
 | Promote an offer or content | Click design with an offer/content link | Link clicks |
 | Deliver a lead magnet | Required email plus a selected, available, configured lead-magnet email Destination | Emails accepted for sending |
+| Find a match | Pro result journey; contact is optional | Completed results |
 
 Submissions are events, not unique people or confirmed subscriptions. Mail
 acceptance is not inbox arrival or a download; resends can count again. These are
@@ -797,20 +861,43 @@ See [ADR 0085](docs/adr/0085-goals-have-publish-contracts-and-stable-history.md)
 ### Capture journey
 
 One visitor's sequence of screens and explicit submissions within one [[Optin]].
-The first accepted submission creates one [[Lead]] and counts one [[Conversion]];
+In a capture-only journey, the first accepted submission creates one [[Lead]]
+and counts one [[Conversion]];
 later accepted submissions in that journey add to that Lead. Navigation alone
 captures nothing. Ordinary forms submit once at the end; a primary marketing
 signup may offer one optional signup for the other channel. A saved signup
 survives abandonment of that optional follow-up.
+In a quiz, required pre-result contact is a request, while optional signup
+after a result is a separate marketing purpose with visible consent. Both
+create a Lead only when submitted; showing the result counts the Conversion.
 This contract is implemented under
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
-A journey is linear: the merchant can arrange its screens and submission
+A Free journey is linear: the merchant can arrange its screens and submission
 points, including a screen that explains an offer before asking for details.
-It does not branch based on answers. This is a Free core capability; using
-a Pro Display Type or integration still requires that capability's own tier.
+Pro can ask choice or short-text questions and skip later screens based on
+earlier choice answers. It still moves forward in one ordered list: there are
+no arbitrary jumps or loops. Its one Results screen selects the first matching
+variant, then a fallback. Results may precede an optional signup, so a visitor
+can finish without giving contact details. Product cards use the live public
+WooCommerce catalog for merchant-selected IDs or a category with up to three
+explicit global attribute values (all must match). Filters choose cards after
+the existing answer rules choose the result. Missing references fail closed;
+unavailable products fall back to the result's own link. Filtered results remain
+in every paid journeys tier ([ADR 0123](docs/adr/0123-quiz-results-select-products-by-category-and-attributes.md)).
+With the commerce module active, results can offer protected quantity-one cart
+buttons for supported simple products; products needing options keep links.
+Product activity spans the quiz mount, and accepted additions never create a
+second quiz Conversion ([ADR 0124](docs/adr/0124-quiz-products-share-protected-cart-actions.md)).
 
 ### Template
+
+A merchant may export one current design and import it into another campaign as
+an owned snapshot, with supported local images. File import defaults to the file's
+content, previews explicit link decisions, and applies one undoable draft change.
+It clears the registered template identity and does not create a library entry or
+transfer campaign settings. Free transport retains paid runtime limits
+([ADR 0113](docs/adr/0113-template-files-replace-only-reviewed-draft-designs.md)).
 
 The reusable structure and look of an [[Optin]], with sample content for the
 gallery that a merchant can explicitly adopt.
@@ -830,10 +917,14 @@ candidate, changes only the draft, and is undoable. Sample offers and links stil
 need review. A new Playbook draft continues to use its own copy, not those samples
 ([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
+Pro question text and choice labels survive a Template snapshot because they
+define the quiz and its conditional references; ordinary display copy still
+uses Slot Roles. A Results screen carries ordered variants and one fallback.
+
 A submit Template also supplies a hidden consent control as a capability, not a
 decision that the Campaign needs it. With Privacy Guidance on, Campaign setup
-reveals that control for ongoing marketing Goals and keeps it hidden for
-one-time requests. Choosing another Template reapplies the same purpose-based
+reveals that control for ongoing marketing Goals and optional quiz signup, and
+keeps it hidden for one-time requests. Choosing another Template reapplies the same purpose-based
 starting point; the design never acquires a Goal tag (ADR 0099).
 
 > **"How it is styled" has a scope.** The design sets its tokens for the
@@ -899,9 +990,10 @@ starting point; the design never acquires a Goal tag (ADR 0099).
 > [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md)
 > and [ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md).
 
-A design a free install did not get is still advertised — a card with a name,
+A design a paid install did not get is still advertised — a card with a name,
 its facets and a link to a live preview, and no tree
-([[Availability]], `locked`). **So a card is an advertisement, and an
+([[Availability]], `locked`). A free install is shown no such card
+([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). **So a card is an advertisement, and an
 advertisement for a design nobody can be given is a worse defect than one fewer
 design.** It is the same rule as *a paying customer is never shown an upsell*,
 one step earlier: that one is about who sees the card, this one is about whether
@@ -973,8 +1065,10 @@ inferred the manifest enumerates it
 ### Template pack
 
 A versioned collection of downloadable designs, installed explicitly from a
-configured catalog. The first format supports Free popup/inline designs with
-placeholders. It supplies no renderer code or site-local destinations. Installed
+configured catalog. The format supports Free popup/inline designs and Pro
+question journeys where Pro registered them (`JourneySupport`,
+[ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). It supplies no renderer code,
+site-local destinations, product IDs, or links. Installed
 versions remain local and retain source baselines; updates affect the library
 for future choices, never existing Optin snapshots. Browsing and installation
 live in the design picker and the Goal-first creation flow. Packs may also carry
@@ -982,52 +1076,66 @@ validated Playbooks: their wording and rules enter the existing Prefill path;
 installing one creates no Optin. See [ADR 0082](docs/adr/0082-template-packs-install-as-validated-local-data.md)
 and [ADR 0083](docs/adr/0083-installed-packs-supply-campaign-starting-points.md).
 
-### Starting point
+### Collection
 
-Shown as **Display rule sets** in the UI, distinct from full Campaign setups
-(Playbooks), under [ADR 0086](docs/adr/0086-campaign-setups-explain-handoff-and-format.md).
+A reviewed discovery list of [[Playbook]]s, shown as campaign setups. It is not a
+[[Template pack]]: one setup can appear in several Collections without another
+installation or another design. Matching setup and canonical design counts are
+shown separately. Optional before/during/after stages and event date windows
+help merchants plan; they never schedule or publish an [[Optin]]. The internal
+repository studio prepares public authored collections, not customer data.
+See [ADR 0112](docs/adr/0112-template-discovery-and-reviewed-collections.md).
 
-A named set of display rules a merchant can begin from — *"Once they have read a
-while"*, *"Only on blog posts"*, *"Rescue an abandoned cart"* — offered in the
-rules panel and applied after reviewing and confirming the replacement.
+### Site occasion
 
-**It is not a preset, and the word is the decision.** *Preset* already means a
-per-type shortcut over one rule's general form: `time_on_page {seconds: 5}` is
-"after a few seconds", and that is what `RulePreset` and `RuleLabels::presets()`
-name. Both would be on this screen at once, since a Starting point that lands
-"after a few seconds" is a bundle whose content is a preset. Two meanings of one
-word on one screen is what this glossary exists to prevent.
+A merchant-owned name and inclusive date range stored in a site option for
+planning, such as an anniversary sale. It suggests browsing ideas without
+creating targeting rules, discounts or campaign schedules.
 
-A Starting point **names sections and replaces only the ones it names**. The
-rules panel is four sections — **Pages, Audience, When it appears, Schedule &
-frequency** under [ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-scope.md) — and one carrying
-Conditions leaves the merchant's [[Trigger]]s alone: an [[Optin]] with no Trigger
-can never fire and the save route refuses one, so a button that wiped them would
-break the Optin it was offered to improve. Which sections it names is readable
-off what it carries, and applying one **confirms first** so replacement scope is
-reviewable. Rule changes now participate in draft Undo, including a whole
-starting-point replacement (ADR 0075).
+### Picker preferences
 
-The review compares current and proposed values for the sections supplied.
-Replacing frequency does not replace campaign dates or overlay priority; those
-fields are absent from a rule bundle. Applying changes the working draft and
-does not save or publish it. [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md) adds bounded groups and supersedes the flat
-Trigger/Condition/Targeting semantics.
+Saved canonical design identities, hidden Collections, event participation and
+market choices, held in user meta scoped to the current site. They are personal
+library preferences; Site occasions are shared by site administrators. Favorites
+survive a pack version update while exact source baselines retain immutable IDs.
 
-> *That reason has a second case: changing an Optin's [[Goal]] confirms too, and
-> for exactly this — a Goal is a column rather than part of `config`, so there
-> is no history entry to walk back to
-> ([ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md)).*
+### Quick pick
 
-Like a [[Playbook]] it is bundled PHP returning an array — `wp i18n make-pot`
-cannot see a string in JSON — and like a Playbook it may not name anything only
-one site has: no post ids, no CSS selectors, no cart totals in the store's own
-currency. **Unlike** a Playbook it touches no copy and no [[Template]]: applying
-one changes rules and nothing else, because there is no reading under which
-"start from this" means "replace my headline".
+One common answer to a Display rules question, one click away — *Entire site*,
+*Phones only*, *After [15] seconds*, *Once per visit*, *Until you pause it* —
+beside **Custom…**, which opens the full rule editors
+([ADR 0129](docs/adr/0129-display-rules-plain-questions-and-quick-picks.md)).
+The five questions are *Where does it show?*, *Who sees it?*, *When does it
+open?*, *How often?* and *Dates*.
 
-Its [[Availability]] is the least of its rules', so a site with no store is never
-offered one that would [[Suspend]] the Optin on the spot.
+**It is matched by shape, never remembered.** Nothing stores which pick was
+chosen: each pick asks the stored value whether it has the pick's shape — one
+audience group holding one `device` rule whose set is `{mobile}`, an automatic
+opening holding only `scroll_depth`. So a value a [[Playbook]] prefilled, an
+undo and a draft edited elsewhere all show the pick they actually hold, and a
+chip with a number reads the real number. While a question is open, an open
+pick the merchant chose (Custom…, Selected pages, Between two dates) stays
+chosen even if its value comes to match a quick pick; re-opening derives it
+again.
+
+**It is not a preset.** *Preset* means a per-type shortcut over one rule's
+general form (`RulePreset`, `RuleLabels::presets()`); a pick names an answer to
+a question. No pick label repeats a rule type or preset label.
+
+**It changes one question and nothing else.** A pacing pick changes only the
+pacing keys, never the stop settings; no pick writes into another question, so
+the old cart set is two picks, one under Who and one under When.
+
+Its [[Availability]] is the least of the rule types it writes, `unavailable`
+outranking `locked`. A locked pick is drawn with a lock on a lower tier and not
+drawn on Free; a pick needing a missing plugin names it. A stored rule the site
+cannot offer reads as Custom…, so the rule stays on screen.
+
+**It is client-only** (`rules/picks.ts`). The server ships no rule-set library;
+a pick writes the same `display_rules`, `targeting`, `frequency` and `schedule`
+the editors write, so the server validates it like any other edit. This entry
+replaces *Starting point*, which named the server-side rule sets (*Display rule
+sets* in the UI) that ADR 0129 removed.
 
 ### Playbook
 
@@ -1039,6 +1147,11 @@ only the choice summary; full facts and checklist are in optional **Setup detail
 A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a
 [[Display Type]], display rules and destination hints, packaged with notes on why
 it works. One Goal has many Playbooks.
+
+Optional `business_types` metadata labels examples for stores, service businesses,
+and publishers/creators. Goal-first discovery combines this filter with search,
+format and collection. These labels do not restrict Goal or Template eligibility;
+untagged third-party setups remain available under All businesses.
 
 A Playbook is **data, not code**: a registry entry, so third parties can add them
 and the library can update independently of a plugin release. It carries **no
@@ -1054,8 +1167,9 @@ In creation the merchant-facing term is **starting point**. Goal is the first
 choice, and the Playbook is the second; *Customize this starting point* creates a
 draft and opens the editor directly. A card's compact setup facts come from the
 same resolved Prefill result the draft receives. Browsing does not create or
-publish an Optin. This creation bundle includes design and copy, unlike the
-rule-only Starting point above (ADR 0072).
+publish an Optin. This creation bundle includes design and copy, unlike a
+[[Quick pick]], which answers one display question and touches nothing else
+(ADR 0129).
 
 The twelve flagship Playbooks are editorial recommendations, four for each of
 stores, publishers and services. They appear first within the chosen Goal and
@@ -1128,8 +1242,9 @@ so, rather than blocking; the premium seam is an explanation, not a wall. A
 [[Trigger]] is substituted, because an Optin with none can never fire. A
 [[Condition]] is dropped, because there is no honest substitute for one and
 inventing it fabricates targeting nobody asked for. A Playbook whose *Display
-Type* is unavailable does not degrade at all — it is shown as an upsell, since a
-floating bar reshaped into a popup is a different design badly made.
+Type* is unavailable does not degrade at all — it is shown as an upsell on a paid
+install and hidden on a free one (ADR 0116), since a floating bar reshaped into a
+popup is a different design badly made.
 
 A Playbook whose requirements are simply **absent from the site** — a
 cart-abandonment Playbook with no store — is hidden rather than degraded. You can
@@ -1244,9 +1359,19 @@ one. Renaming breaks nothing — the binding is by id. Whatever the selector is,
 is only ever **added**: a Lead arriving cannot remove the audience or tag
 membership a [[Contact]] already has, because that membership is a decision the
 owning system made and WConvert has no standing to revise. An
-[[Optin]] holds Destination ids and nothing more, so two Optins feeding one
-audience reference one Destination. Where several Destinations share credentials,
-those live on a [[Connection]] underneath them.
+[[Optin]] holds Destination ids and optional extra-answer mappings scoped by
+Destination and accepted submission, so two Optins feeding one audience can send
+different question answers through one route. Where several Destinations share
+credentials, those live on a [[Connection]] underneath them.
+
+> **Implemented foundation:**
+> [ADR 0110](docs/adr/0110-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+> extends Destination ids with optional extra-answer
+> mappings in the Campaign configuration, scoped by Destination and accepted
+> submission. Accounts, targets and existing-contact policy stay shared; basic
+> fields are automatic. Extra mappings have one Campaign-owned home, with no
+> Destination default/override hierarchy. See the
+> [implementation plan](docs/plans/integration-foundation.md).
 
 Editing a shared Destination shows its saved users: **Saved draft only**,
 **Live only**, or **Live and saved draft**. Those facts are read from existing
@@ -1257,18 +1382,30 @@ an unused route (ADR 0074).
 
 Each shipped adapter declares its identifiers, required settings and values it
 uses. WSMS accepts email or phone; MailPoet and lead-magnet email need email.
-MailPoet additionally needs a list and can map `interest` to an existing custom
-text field using **Save interest in MailPoet**, for new subscribers only.
+MailPoet additionally needs a list and can receive optional campaign-mapped
+answers in an existing custom text field, for new subscribers only.
 Existing subscriber fields remain unchanged. Neither WSMS nor lead-magnet email
-forwards that answer; without a compatible mapping it remains local. The editor
+forwards extra answers; without a compatible mapping they remain local. The editor
 distinguishes an absent required identifier from an optional one and explains
 unsupported answers without claiming provider delivery. See
 [ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md).
 
+The campaign map can include accepted form/quiz answers, interest and message.
+Multiple-choice answers can also map each stable choice to a separate boolean
+field when supported by the adapter (currently Mailtrap). Selected choices send
+Yes; skipped and unselected choices send nothing, preserving earlier interests.
+Adding interests to an existing Contact requires **Update mapped fields**.
+Whole-question text mappings keep their existing joined-label behavior.
+The MailPoet existing-contact limitation remains until a safe update path is
+verified.
+
 Data flow through a Destination is **one-way at capture time**: WConvert →
 Destination. WConvert never reads [[Contact]] state back — not subscription
 status, list membership, or suppression — so it never has an opinion about who is
-subscribed, and it reads nothing at all on the capture path. Admin-time metadata
+subscribed, and it reads nothing at all on the capture path. The one exception is
+existence: a queued push may ask whether a Contact exists, and read its provider id
+only, where the provider cannot sequence a create and a follow-up write
+([ADR 0128](docs/adr/0128-a-push-may-ask-whether-a-contact-exists.md)). Admin-time metadata
 reads are permitted and expected: listing a provider's audiences or custom fields
 to populate the configuration UI, and testing a connection. Those are reads of
 the provider's *shape*, never of a person's state.
@@ -1330,6 +1467,12 @@ exact selection. Analytics now presents daily conversion and send totals
 separately, not their same-period difference as a per-Lead pending or failure
 count ([ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)). Named-route and capture links help investigate those facts
 without creating a delivery ledger ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
+
+The history extension in ADR 0110 records explicit provider outcomes
+against recent Action Scheduler attempts. Scheduler completion alone does not mean
+the push landed. Missing/expired or inconclusive evidence is Unknown; no permanent
+per-Lead outcome record or inbox/subscription confirmation is promised. This is
+shown alongside Destination health, with no durable delivery ledger.
 
 ### Connection
 
@@ -1421,7 +1564,9 @@ load-bearing:
 
 - **`ready`** — present and usable.
 - **`locked`** — absent because the install does not have the [[Tier]] the member
-  is declared at. Buyable from us.
+  is declared at. Buyable from us. **Hidden on a free install, upsold on a paid
+  one** ([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). Free's
+  only upsell is its header link and one static "More with Pro" list.
 - **`unavailable`** — absent because something the *site* would need is missing: no
   WooCommerce, no WSMS, no MailPoet. Not buyable from us.
 
@@ -1445,6 +1590,11 @@ Availability is a property of the registry member, declared as data beside it. T
 no separate list of premium capabilities to keep in step.
 
 ### Suspended
+
+Product warnings in Campaigns are separate, advisory catalog checks. They read
+the published version (or saved draft) without changing Campaign state; missing
+products, incomplete reads and visitor-basket dependencies stay distinct. See
+[ADR 0125](docs/adr/0125-product-warnings-are-current-catalog-advice.md).
 
 An [[Optin]] that exists and is published but is **not shown**, because a rule it
 depends on is no longer available on this install — [[Pro]] was deactivated, or
@@ -1515,3 +1665,34 @@ When both plugins are active:
 - WConvert pushes Leads to WSMS as a Destination.
 - WSMS never calls into WConvert, and WConvert degrades cleanly to Standalone if
   WSMS is deactivated.
+
+### External analytics integration
+
+The optional paid analytics integration exports campaign observations through one
+selected existing Google tag, GTM container or Plausible script. It is separate from native WConvert statistics
+and from Lead Destinations: no provider credential, capture field, lead ID, visitor
+identity or outbound delivery queue crosses this boundary. Consent is checked per
+observation. Public campaign labels and opt-out preferences follow published family
+settings. GA4 and Plausible consume the same semantic observation seam; templates
+need no provider-specific selectors. See [ADR 0114](docs/adr/0114-analytics-exports-use-existing-site-tags.md).
+
+## Recommendation additions
+
+[ADR 0121](docs/adr/0121-recommendation-additions-count-server-accepted-cart-actions.md)
+adds **Increase basket value** as a commerce Goal. **Basket additions** means
+campaign appearances with at least one server-accepted quantity-one addition;
+**Items added to basket** counts each accepted operation. Product links and purchases
+are separate acts. Existing link campaigns retain their history. This is the only
+shopper-triggered cart-product write; no orders, coupons, Leads or contacts are
+created. Thirty-minute session-bound claims use existing WP options, with cron
+cleanup, and aggregate activity uses the existing Stats table.
+
+## Product activity
+
+[ADR 0122](docs/adr/0122-product-activity-uses-retained-anonymous-dimensions.md)
+adds **Shown**, **Clicked**, and **Added** by recommended product inside campaign
+reports. Views and product links count once per product per mount; additions use
+server acceptance and existing replay protection. Anonymous product dimensions
+use the existing Stats scope and retain 90 days; campaign totals retain their
+history. Tracking start and partial coverage are explicit. Current product names
+are not historical snapshots, and product activity is not product-level sales.

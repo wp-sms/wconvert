@@ -1,0 +1,474 @@
+{
+  "source": "Prototype B coffee scenario: 3 brew methods x 8 taste sets x 2 grinder answers; production v3 schema.",
+  "template": {
+    "tokens": {
+      "bg": "#ffffff",
+      "fg": "#17324a",
+      "muted": "#607288",
+      "accent": "#315f89",
+      "accent-fg": "#ffffff",
+      "border": "#d7e2eb",
+      "heading-size": "1.875rem",
+      "text-size": "1rem",
+      "radius": "0.75rem",
+      "pad": "1.5rem",
+      "gap": "1rem",
+      "width": "32rem",
+      "align": "start"
+    },
+    "tree": {
+      "v": 3,
+      "submissions": [
+        {
+          "id": "coffee-signup",
+          "required": false,
+          "fields": [
+            "n21"
+          ],
+          "consents": [
+            "n22"
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "id": "result",
+          "name": "Your coffee match",
+          "kind": "result",
+          "content": {
+            "type": "stack",
+            "children": [
+              {
+                "type": "button",
+                "id": "n19",
+                "label": "Optional email updates",
+                "action": "next"
+              },
+              {
+                "type": "button",
+                "id": "n20",
+                "label": "Back",
+                "action": "back",
+                "tokens": {
+                  "accent": "transparent",
+                  "accent-fg": "fg"
+                }
+              }
+            ]
+          },
+          "results": [
+            {
+              "id": "espresso",
+              "heading": "Rich espresso, made for your mornings",
+              "body": "Try a chocolate-led blend with milk or as a straight espresso.",
+              "product_ids": [
+                101,
+                102
+              ],
+              "href": "https://example.test/coffee",
+              "link_label": "Explore all coffee",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "question": "n1",
+                    "operator": "is",
+                    "values": [
+                      "espresso"
+                    ]
+                  },
+                  {
+                    "question": "n2",
+                    "operator": "includes_any",
+                    "values": [
+                      "bold"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "filter",
+              "heading": "A fresh start for your filter brew",
+              "body": "Explore a lighter roast with a clean, bright finish.",
+              "product_ids": [
+                103,
+                102
+              ],
+              "href": "https://example.test/coffee",
+              "link_label": "Explore all coffee",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "question": "n1",
+                    "operator": "is",
+                    "values": [
+                      "filter"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "id": "fallback",
+              "heading": "An easy everyday favourite",
+              "body": "A balanced blend is a good place to start. You can explore from there.",
+              "product_ids": [
+                102
+              ],
+              "href": "https://example.test/coffee",
+              "link_label": "Explore all coffee"
+            }
+          ],
+          "products_required": false
+        },
+        {
+          "id": "thanks",
+          "name": "All set",
+          "kind": "acknowledgement",
+          "content": {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "id": "n28",
+                "text": "Thanks for visiting"
+              },
+              {
+                "type": "text",
+                "id": "n29",
+                "text": "You can return to your coffee match whenever you like on this page."
+              },
+              {
+                "type": "button",
+                "id": "n30",
+                "label": "Back",
+                "action": "back",
+                "tokens": {
+                  "accent": "transparent",
+                  "accent-fg": "fg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "taste",
+          "name": "Your taste",
+          "kind": "input",
+          "content": {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "id": "n12",
+                "text": "Your taste"
+              },
+              {
+                "type": "text",
+                "id": "n13",
+                "text": "Choose any that sound good. This is optional."
+              },
+              {
+                "type": "question",
+                "id": "n2",
+                "label": "What flavours do you enjoy?",
+                "answer_type": "multi",
+                "required": false,
+                "options": [
+                  {
+                    "value": "bold",
+                    "label": "Rich and chocolatey"
+                  },
+                  {
+                    "value": "bright",
+                    "label": "Bright and fruity"
+                  },
+                  {
+                    "value": "smooth",
+                    "label": "Smooth and balanced"
+                  }
+                ]
+              },
+              {
+                "type": "button",
+                "id": "n14",
+                "label": "Continue",
+                "action": "next"
+              },
+              {
+                "type": "button",
+                "id": "n15",
+                "label": "Back",
+                "action": "back",
+                "tokens": {
+                  "accent": "transparent",
+                  "accent-fg": "fg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "email",
+          "name": "Optional email signup",
+          "kind": "input",
+          "content": {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "id": "n23",
+                "text": "More good coffee in your inbox?"
+              },
+              {
+                "type": "text",
+                "id": "n24",
+                "text": "Your match is already available. Signup is optional."
+              },
+              {
+                "type": "field",
+                "id": "n21",
+                "name": "email",
+                "label": "Email address",
+                "required": true
+              },
+              {
+                "type": "consent",
+                "id": "n22",
+                "text": "Send me coffee notes and offers. %s",
+                "link": {
+                  "label": "Privacy Policy",
+                  "href": "https://example.test/privacy"
+                },
+                "hidden": false
+              },
+              {
+                "type": "button",
+                "id": "n25",
+                "label": "Sign up for email",
+                "action": "submit",
+                "submission": "coffee-signup"
+              },
+              {
+                "type": "button",
+                "id": "n26",
+                "label": "No thanks",
+                "action": "skip",
+                "tokens": {
+                  "accent": "transparent",
+                  "accent-fg": "fg"
+                },
+                "submission": "coffee-signup"
+              },
+              {
+                "type": "button",
+                "id": "n27",
+                "label": "Back to match",
+                "action": "back",
+                "tokens": {
+                  "accent": "transparent",
+                  "accent-fg": "fg"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "brew",
+          "name": "How you brew",
+          "kind": "input",
+          "content": {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "id": "n10",
+                "text": "How you brew"
+              },
+              {
+                "type": "question",
+                "id": "n1",
+                "label": "How do you make your coffee?",
+                "answer_type": "single",
+                "required": true,
+                "options": [
+                  {
+                    "value": "espresso",
+                    "label": "Espresso machine"
+                  },
+                  {
+                    "value": "filter",
+                    "label": "Filter or pour-over"
+                  },
+                  {
+                    "value": "press",
+                    "label": "French press"
+                  }
+                ]
+              },
+              {
+                "type": "button",
+                "id": "n11",
+                "label": "Continue",
+                "action": "next"
+              }
+            ]
+          }
+        },
+        {
+          "id": "grind",
+          "name": "Your grinder",
+          "kind": "input",
+          "content": {
+            "type": "stack",
+            "children": [
+              {
+                "type": "heading",
+                "id": "n16",
+                "text": "Your grinder"
+              },
+              {
+                "type": "question",
+                "id": "n3",
+                "label": "Do you grind your own beans?",
+                "answer_type": "single",
+                "required": true,
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes, I have a grinder"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No, I buy ground coffee"
+                  }
+                ]
+              },
+              {
+                "type": "button",
+                "id": "n17",
+                "label": "Continue",
+                "action": "next"
+              },
+              {
+                "type": "button",
+                "id": "n18",
+                "label": "Back",
+                "action": "back",
+                "tokens": {
+                  "accent": "transparent",
+                  "accent-fg": "fg"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "graph": {
+        "entry": "brew",
+        "edges": [
+          {
+            "id": "brew_taste",
+            "from": "brew",
+            "to": "taste",
+            "kind": "default"
+          },
+          {
+            "id": "taste_grind",
+            "from": "taste",
+            "to": "grind",
+            "kind": "answer",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "filter"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "taste_result",
+            "from": "taste",
+            "to": "result",
+            "kind": "default"
+          },
+          {
+            "id": "grind_result",
+            "from": "grind",
+            "to": "result",
+            "kind": "default"
+          },
+          {
+            "id": "result_email",
+            "from": "result",
+            "to": "email",
+            "kind": "default"
+          },
+          {
+            "id": "email_thanks",
+            "from": "email",
+            "to": "thanks",
+            "kind": "default"
+          }
+        ]
+      }
+    }
+  },
+  "cases": [
+    {"name":"espresso/no taste/yes","answers":{"n1":"espresso","n2":[],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":[]},"result":"fallback"},
+    {"name":"espresso/no taste/no","answers":{"n1":"espresso","n2":[],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":[]},"result":"fallback"},
+    {"name":"espresso/bold/yes","answers":{"n1":"espresso","n2":["bold"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold"]},"result":"espresso"},
+    {"name":"espresso/bold/no","answers":{"n1":"espresso","n2":["bold"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold"]},"result":"espresso"},
+    {"name":"espresso/bright/yes","answers":{"n1":"espresso","n2":["bright"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bright"]},"result":"fallback"},
+    {"name":"espresso/bright/no","answers":{"n1":"espresso","n2":["bright"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bright"]},"result":"fallback"},
+    {"name":"espresso/bold+bright/yes","answers":{"n1":"espresso","n2":["bold","bright"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold","bright"]},"result":"espresso"},
+    {"name":"espresso/bold+bright/no","answers":{"n1":"espresso","n2":["bold","bright"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold","bright"]},"result":"espresso"},
+    {"name":"espresso/smooth/yes","answers":{"n1":"espresso","n2":["smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["smooth"]},"result":"fallback"},
+    {"name":"espresso/smooth/no","answers":{"n1":"espresso","n2":["smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["smooth"]},"result":"fallback"},
+    {"name":"espresso/bold+smooth/yes","answers":{"n1":"espresso","n2":["bold","smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold","smooth"]},"result":"espresso"},
+    {"name":"espresso/bold+smooth/no","answers":{"n1":"espresso","n2":["bold","smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold","smooth"]},"result":"espresso"},
+    {"name":"espresso/bright+smooth/yes","answers":{"n1":"espresso","n2":["bright","smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bright","smooth"]},"result":"fallback"},
+    {"name":"espresso/bright+smooth/no","answers":{"n1":"espresso","n2":["bright","smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bright","smooth"]},"result":"fallback"},
+    {"name":"espresso/bold+bright+smooth/yes","answers":{"n1":"espresso","n2":["bold","bright","smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold","bright","smooth"]},"result":"espresso"},
+    {"name":"espresso/bold+bright+smooth/no","answers":{"n1":"espresso","n2":["bold","bright","smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"espresso","n2":["bold","bright","smooth"]},"result":"espresso"},
+    {"name":"filter/no taste/yes","answers":{"n1":"filter","n2":[],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":[],"n3":"yes"},"result":"filter"},
+    {"name":"filter/no taste/no","answers":{"n1":"filter","n2":[],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":[],"n3":"no"},"result":"filter"},
+    {"name":"filter/bold/yes","answers":{"n1":"filter","n2":["bold"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/bold/no","answers":{"n1":"filter","n2":["bold"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold"],"n3":"no"},"result":"filter"},
+    {"name":"filter/bright/yes","answers":{"n1":"filter","n2":["bright"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bright"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/bright/no","answers":{"n1":"filter","n2":["bright"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bright"],"n3":"no"},"result":"filter"},
+    {"name":"filter/bold+bright/yes","answers":{"n1":"filter","n2":["bold","bright"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold","bright"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/bold+bright/no","answers":{"n1":"filter","n2":["bold","bright"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold","bright"],"n3":"no"},"result":"filter"},
+    {"name":"filter/smooth/yes","answers":{"n1":"filter","n2":["smooth"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["smooth"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/smooth/no","answers":{"n1":"filter","n2":["smooth"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["smooth"],"n3":"no"},"result":"filter"},
+    {"name":"filter/bold+smooth/yes","answers":{"n1":"filter","n2":["bold","smooth"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold","smooth"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/bold+smooth/no","answers":{"n1":"filter","n2":["bold","smooth"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold","smooth"],"n3":"no"},"result":"filter"},
+    {"name":"filter/bright+smooth/yes","answers":{"n1":"filter","n2":["bright","smooth"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bright","smooth"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/bright+smooth/no","answers":{"n1":"filter","n2":["bright","smooth"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bright","smooth"],"n3":"no"},"result":"filter"},
+    {"name":"filter/bold+bright+smooth/yes","answers":{"n1":"filter","n2":["bold","bright","smooth"],"n3":"yes"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold","bright","smooth"],"n3":"yes"},"result":"filter"},
+    {"name":"filter/bold+bright+smooth/no","answers":{"n1":"filter","n2":["bold","bright","smooth"],"n3":"no"},"visible":["brew","taste","grind","result","email","thanks"],"active":{"n1":"filter","n2":["bold","bright","smooth"],"n3":"no"},"result":"filter"},
+    {"name":"press/no taste/yes","answers":{"n1":"press","n2":[],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":[]},"result":"fallback"},
+    {"name":"press/no taste/no","answers":{"n1":"press","n2":[],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":[]},"result":"fallback"},
+    {"name":"press/bold/yes","answers":{"n1":"press","n2":["bold"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold"]},"result":"fallback"},
+    {"name":"press/bold/no","answers":{"n1":"press","n2":["bold"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold"]},"result":"fallback"},
+    {"name":"press/bright/yes","answers":{"n1":"press","n2":["bright"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bright"]},"result":"fallback"},
+    {"name":"press/bright/no","answers":{"n1":"press","n2":["bright"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bright"]},"result":"fallback"},
+    {"name":"press/bold+bright/yes","answers":{"n1":"press","n2":["bold","bright"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold","bright"]},"result":"fallback"},
+    {"name":"press/bold+bright/no","answers":{"n1":"press","n2":["bold","bright"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold","bright"]},"result":"fallback"},
+    {"name":"press/smooth/yes","answers":{"n1":"press","n2":["smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["smooth"]},"result":"fallback"},
+    {"name":"press/smooth/no","answers":{"n1":"press","n2":["smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["smooth"]},"result":"fallback"},
+    {"name":"press/bold+smooth/yes","answers":{"n1":"press","n2":["bold","smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold","smooth"]},"result":"fallback"},
+    {"name":"press/bold+smooth/no","answers":{"n1":"press","n2":["bold","smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold","smooth"]},"result":"fallback"},
+    {"name":"press/bright+smooth/yes","answers":{"n1":"press","n2":["bright","smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bright","smooth"]},"result":"fallback"},
+    {"name":"press/bright+smooth/no","answers":{"n1":"press","n2":["bright","smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bright","smooth"]},"result":"fallback"},
+    {"name":"press/bold+bright+smooth/yes","answers":{"n1":"press","n2":["bold","bright","smooth"],"n3":"yes"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold","bright","smooth"]},"result":"fallback"},
+    {"name":"press/bold+bright+smooth/no","answers":{"n1":"press","n2":["bold","bright","smooth"],"n3":"no"},"visible":["brew","taste","result","email","thanks"],"active":{"n1":"press","n2":["bold","bright","smooth"]},"result":"fallback"}
+  ]
+}

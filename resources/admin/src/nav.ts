@@ -23,7 +23,7 @@ import type { LeadQuery } from './leads/api';
  * other side of it: a bookmark, a reload and an unknown hash are behaviour.
  */
 export type SectionId = 'optins' | 'analytics' | 'leads' | 'settings';
-export type SettingsGroup = 'experience' | 'connections' | 'data';
+export type SettingsGroup = 'experience' | 'connections' | 'data' | 'protection' | 'integrations';
 
 export interface Section {
   id: SectionId;
@@ -98,6 +98,7 @@ export interface ReportQuery {
 export interface AdminRoute {
   section: SectionId;
   editId?: string;
+  editorTab?: 'rules';
   returnTo: string;
   report: ReportQuery;
   leads: LeadQuery;
@@ -126,9 +127,10 @@ function returnHref(value: string | null): string {
     : hashFor('optins');
 }
 
-export const editorHref = (id: string, returnTo?: string): string =>
+export const editorHref = (id: string, returnTo?: string, tab?: 'rules'): string =>
   withQuery('optins', {
     edit: id,
+    tab,
     back: returnTo ? returnHref(returnTo) : undefined,
   });
 export const reportHref = (query: ReportQuery = {}): string =>
@@ -164,6 +166,7 @@ export function routeFrom(hash: string): AdminRoute {
   return {
     section,
     editId: section === 'optins' ? value('edit') : undefined,
+    editorTab: section === 'optins' && value('edit') && value('tab') === 'rules' ? 'rules' : undefined,
     returnTo: returnHref(params.get('back')),
     report: {
       ...(value('month') &&
@@ -188,7 +191,7 @@ export function routeFrom(hash: string): AdminRoute {
     },
     destinationId: value('destination'),
     settingsGroup: hash.replace(/^#/, '').split('?')[0] === 'destinations' || value('group') === 'connections'
-      ? 'connections' : value('group') === 'data' ? 'data' : 'experience',
+      ? 'connections' : value('group') === 'integrations' ? 'integrations' : value('group') === 'protection' ? 'protection' : value('group') === 'data' ? 'data' : 'experience',
     leadsView: value('view') === 'issues' ? 'issues' : 'submissions',
   };
 }

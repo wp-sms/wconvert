@@ -1,5 +1,7 @@
 # The free loader source carries no premium code
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** shared renderer and transport contracts can describe question data, while premium journey navigation, rule execution, and product behavior enter only through Pro's registered module. The Free bundle's higher-rung leakage and size checks remain hard gates.
+
 Premium rule modules live under **Pro's own tree**, and Pro's loader entry imports
 free's modules plus its own. There is **no mode flag and no tree-shaking**: dead
 premium code never enters the free build because it was never in free's source.

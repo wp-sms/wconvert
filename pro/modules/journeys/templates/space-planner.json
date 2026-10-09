@@ -1,0 +1,259 @@
+{
+  "id": "space-planner",
+  "name": "Space planner",
+  "display_type": "inline",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#f5f8f1",
+    "fg": "#332e28",
+    "muted": "#62564d",
+    "accent": "#34543b",
+    "accent-fg": "#ffffff",
+    "border": "#d9cfc3",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "100%",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "space",
+        "name": "Space and purpose",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "text": "Make room",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "text": "Small space.\nUseful choices.",
+                  "role": "headline"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "text": "Measure the clear width first. Check the full dimensions before ordering.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "bg": "#e1ebdf",
+                "pad": "1.5rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "question",
+                  "id": "n1",
+                  "label": "How much clear width is available?",
+                  "answer_type": "single",
+                  "required": true,
+                  "options": [
+                    {
+                      "value": "compact",
+                      "label": "20–30 cm"
+                    },
+                    {
+                      "value": "roomy",
+                      "label": "More than 30 cm"
+                    }
+                  ]
+                },
+                {
+                  "type": "question",
+                  "id": "n2",
+                  "label": "What would you like to do?",
+                  "answer_type": "single",
+                  "required": true,
+                  "options": [
+                    {
+                      "value": "grow",
+                      "label": "Grow a plant"
+                    },
+                    {
+                      "value": "organise",
+                      "label": "Organise small things"
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "label": "Find a starting point",
+                  "action": "next",
+                  "role": "next_label"
+                }
+              ]
+            }
+          ],
+          "basis": "16rem",
+          "ratio": "0.35"
+        }
+      },
+      {
+        "id": "match",
+        "name": "Ideas for your space",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "button",
+              "id": "n7",
+              "label": "Change the space or purpose",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "compact_plant",
+            "heading": "A compact planter",
+            "body": "Start with a planter no wider than 20 cm. Leave room for the plant to grow.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "compact"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "grow"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "roomy_plant",
+            "heading": "A pair of small planters",
+            "body": "Arrange a pair only where both fit with clearance. Check the combined dimensions.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "roomy"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "grow"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "compact_storage",
+            "heading": "A small catch-all tray",
+            "body": "A tray no wider than 20 cm keeps a few everyday items together.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "compact"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "organise"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "roomy_storage",
+            "heading": "An organising set",
+            "body": "A coordinated pair of trays can divide a wider surface into useful areas.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "roomy"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "organise"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Measure, then explore",
+            "body": "Check width, depth and clearance against each product. Ask the shop if you are unsure.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option"
+          }
+        ],
+        "products_required": true
+      }
+    ],
+    "submissions": []
+  }
+}

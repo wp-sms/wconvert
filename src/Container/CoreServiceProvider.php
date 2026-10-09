@@ -74,6 +74,7 @@ use WConvert\Rest\RestController;
 use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rest\TemplateCatalogController;
+use WConvert\Rest\TemplateTransferController;
 use WConvert\Template\Catalog\InstalledPacks;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\TemplateCatalog;
@@ -125,13 +126,17 @@ final class CoreServiceProvider implements ServiceProvider
      */
     public const REST_CONTROLLERS = [
         \WConvert\Rest\JourneyStatsController::class,
+        \WConvert\Rest\ProductStatsController::class,
+        \WConvert\Rest\ProductHealthController::class,
         OptinController::class,
         TemplateController::class,
         TemplateCatalogController::class,
+        TemplateTransferController::class,
         RuleController::class,
         ThemeController::class,
         GoalController::class,
         PlaybookController::class,
+        \WConvert\Rest\PickerController::class,
         CaptureController::class,
         BeaconController::class,
         LeadController::class,
@@ -140,10 +145,16 @@ final class CoreServiceProvider implements ServiceProvider
         MilestoneController::class,
         DestinationController::class,
         PrivacyController::class,
+        \WConvert\Rest\ProtectionController::class,
     ];
 
     public function register(ServiceContainer $container): void
     {
+        $container->register(\WConvert\Protection\Settings::class, static fn (ServiceContainer $c) => new \WConvert\Protection\Settings($c->resolve(OptionStore::class)));
+        $container->register(\WConvert\Protection\Diagnostics::class, static fn (ServiceContainer $c) => new \WConvert\Protection\Diagnostics($c->resolve(TransientStore::class)));
+        $container->register(\WConvert\Protection\Protection::class, static fn (ServiceContainer $c) => new \WConvert\Protection\Protection($c->resolve(\WConvert\Protection\Settings::class), $c->resolve(\WConvert\Protection\Diagnostics::class), new \WConvert\Protection\Verifier()));
+        $container->register(\WConvert\Rest\ProtectionController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProtectionController($c->resolve(\WConvert\Protection\Settings::class), $c->resolve(\WConvert\Protection\Diagnostics::class)));
+
         $container->register(ProPresence::class, static fn (): ProPresence => new WpProPresence());
         // Beside it rather than folded into it: a missing tier is buyable
         // from us and a missing plugin is not, and collapsing the two shows a
@@ -229,14 +240,22 @@ final class CoreServiceProvider implements ServiceProvider
             }
         );
 
+        $container->register(\WConvert\Discovery\SetupIndex::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\SetupIndex($c->resolve(TemplateLibrary::class), $c->resolve(ProPresence::class)));
+        $container->register(\WConvert\Discovery\CollectionLibrary::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\CollectionLibrary(WCONVERT_DIR, $c->resolve(PlaybookLibrary::class), $c->resolve(TemplateCatalog::class)));
+        $container->register(\WConvert\Rest\PickerController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\PickerController($c->resolve(\WConvert\Discovery\CollectionLibrary::class), $c->resolve(TemplateLibrary::class)));
+
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
         $container->register(PackValidator::class, static fn (): PackValidator => PackValidator::shipping());
         $container->register(InstalledPacks::class, static function (ServiceContainer $c): InstalledPacks {
             $uploads = wp_upload_dir(null, false);
-            return new InstalledPacks($uploads['basedir'] . '/wconvert-template-packs', $c->resolve(PackValidator::class));
+            return new InstalledPacks($uploads['basedir'] . '/wconvert-template-packs', $c->resolve(PackValidator::class), new \WConvert\Template\Catalog\VerifiedAssets($uploads['basedir'] . '/wconvert-template-images', $uploads['baseurl'] . '/wconvert-template-images'));
         });
         $container->register(TemplateCatalog::class, static fn (ServiceContainer $c): TemplateCatalog => new TemplateCatalog(
             $c->resolve(OptionStore::class), new WpCatalogTransport(), $c->resolve(PackValidator::class), $c->resolve(InstalledPacks::class)
+        ));
+        $container->register(TemplateTransferController::class, static fn (ServiceContainer $c): TemplateTransferController => new TemplateTransferController(
+            $c->resolve(PackValidator::class), $c->resolve(TemplateVocabulary::class), $c->resolve(TemplateLibrary::class),
+            $c->resolve(OptinRepository::class), $c->resolve(OptinController::class), $c->resolve(PrivacyGuidance::class)
         ));
         $container->register(TemplateCatalogController::class, static fn (ServiceContainer $c): TemplateCatalogController => new TemplateCatalogController($c->resolve(TemplateCatalog::class)));
 
@@ -422,7 +441,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): PlaybookController => new PlaybookController(
                 $c->resolve(PlaybookLibrary::class),
                 $c->resolve(GoalRegistry::class),
-                $c->resolve(Prefill::class)
+                $c->resolve(Prefill::class),
+                $c->resolve(\WConvert\Discovery\SetupIndex::class)
             )
         );
 
@@ -466,17 +486,20 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        $container->register(\WConvert\Rest\ProductHealthController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductHealthController($c->resolve(OptinRepository::class)));
+        $container->register(\WConvert\Rest\ProductStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductStatsController(new \WConvert\Stats\ProductStats($c->resolve(Connection::class))));
         $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class)));
 
         $container->register(
             CaptureController::class,
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
-                new \WConvert\Lead\JourneyCapture($c->resolve(Connection::class), $c->resolve(\WConvert\Stats\StatsRepository::class)),
+                new \WConvert\Lead\JourneyCapture($c->resolve(Connection::class), $c->resolve(\WConvert\Stats\StatsRepository::class), $c->resolve(DestinationStore::class)),
                 $c->resolve(OptinRepository::class),
                 new \WConvert\Lead\CaptureGrant(wp_salt('auth')),
                 $c->resolve(TemplateVocabulary::class),
-                $c->resolve(CaptureRateLimit::class)
+                $c->resolve(CaptureRateLimit::class),
+                $c->resolve(\WConvert\Protection\Protection::class)
             )
         );
 
@@ -562,7 +585,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(HealthStore::class),
                 $c->resolve(DeliveryFailures::class),
                 $c->resolve(Queue::class),
-                $c->resolve(DeliveryCount::class)
+                $c->resolve(DeliveryCount::class),
+                new \WConvert\Protection\ResourceSendGuard($c->resolve(Connection::class), $c->resolve(\WConvert\Protection\Diagnostics::class))
             )
         );
 
@@ -689,6 +713,8 @@ final class CoreServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        (new \WConvert\Stats\ProductStats($container->resolve(Connection::class)))->hooks();
+        add_action(\WConvert\Destination\SubmissionDispatcher::RECOVER, [new \WConvert\Protection\ResourceSendGuard($container->resolve(Connection::class), $container->resolve(\WConvert\Protection\Diagnostics::class)), 'prune']);
         // A plugin updated by overwriting its directory never fires an
         // activation hook, so the schema has to be able to catch up somewhere
         // other than activation.
@@ -786,6 +812,7 @@ final class CoreServiceProvider implements ServiceProvider
          * does not exist at all, and the visitor posting a capture or a beacon
          * is on a page WordPress may serve through any entry point.
          */
+        TemplateTransferController::hooks();
         add_action('rest_api_init', static function () use ($container): void {
             foreach (self::REST_CONTROLLERS as $controller) {
                 $container->resolve($controller)->registerRoutes();
@@ -832,6 +859,7 @@ final class CoreServiceProvider implements ServiceProvider
         // visitor's page; the worker attaches to an Action Scheduler hook,
         // which fires from a loopback request that is neither (#4).
         $container->resolve(PushWorker::class)->hooks();
+        \WConvert\Queue\RecentPushHistory::hooks();
         (new \WConvert\Destination\SubmissionDispatcher(
             $container->resolve(Connection::class), $container->resolve(\WConvert\Queue\Queue::class),
             $container->resolve(DestinationStore::class), $container->resolve(DestinationRegistry::class), $container->resolve(HealthStore::class)

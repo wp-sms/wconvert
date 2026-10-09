@@ -2,6 +2,8 @@
 
 **Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
 
+**Further amended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** paid loader caps are now 24,064 / 25,088 / 25,344 B for Basic / Pro / Elite. The Free loader and page/design caps above are unchanged. The JSON vocabulary now includes bounded questions, flat conditions, and result variants; executable journey behavior remains in the paid module.
+
 A template is a JSON node tree plus a token set, validated against a shared
 vocabulary manifest. It contains no HTML and no CSS. One renderer, shipped in the
 loader, owns the entire component vocabulary and every line of the stylesheet.
@@ -271,7 +273,7 @@ third-party ones. Under configuration they are properties of the one renderer.
   *Untouched by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md),
   and worth saying because that ADR introduces a card with no render on it. A
   **locked** card — a design free ships the advertisement for and not the design
-  — carries its facets in words and a link to a live preview on wconvert.com. It
+  — carries its facets in words and a link to a live preview on wconvert.io. It
   carries **no image at all**, so there is still nothing to produce and nothing
   to let go stale. What changed is when a real card renders: `TemplateCard`
   mounts its preview only while near the viewport, because forty on one screen
@@ -336,6 +338,10 @@ third-party ones. Under configuration they are properties of the one renderer.
   an admin notice: a rejection is an AUTHORING error, and a notice the merchant
   cannot act on is one they learn to dismiss.*
 - **Authoring is the settings panel plus a dev-only export**, not hand-written JSON.
+  *Amended by [ADR 0113](0113-template-files-replace-only-reviewed-draft-designs.md):
+  a separate merchant ZIP import/export now transfers validated design snapshots
+  and supported local images through the editor. The developer authoring export
+  remains separate; imported files never register library templates.*
   That makes the vocabulary self-testing: every shipped template is provably
   expressible in the panel, so we never ship a design the user cannot adjust.
   *Built in [#29](https://github.com/navidkashani/wconvert/issues/29). The export

@@ -36,20 +36,20 @@ async function commonChecks(page, direction) {
   await expect(page.getByRole('img', { name: 'VeronaLabs', exact: true })).toBeVisible();
   const layout = await page.evaluate(() => {
     const style = (selector, pseudo) => getComputedStyle(document.querySelector(selector), pseudo);
-    const header = style('.wc-navigation-row', '::before');
-    let headingSurface = document.querySelector('.wc-page-heading');
+    const header = style('.wconvert-navigation-row', '::before');
+    let headingSurface = document.querySelector('.wconvert-page-heading');
     while (headingSurface.parentElement && ['transparent', 'rgba(0, 0, 0, 0)'].includes(getComputedStyle(headingSurface).backgroundColor)) {
       headingSurface = headingSurface.parentElement;
     }
     return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      font: style('.wc-page-title').fontFamily,
+      font: style('.wconvert-page-title').fontFamily,
       headlineBackground: getComputedStyle(headingSurface).backgroundColor,
       divider: header.borderTopWidth,
       dividerStart: header.insetInlineStart,
       dividerEnd: header.insetInlineEnd,
-      footer: style('.wc-service-footer').backgroundColor,
-      publisherDecoration: style('.wc-publisher').textDecorationLine,
+      footer: style('.wconvert-service-footer').backgroundColor,
+      publisherDecoration: style('.wconvert-publisher').textDecorationLine,
       headers: [...document.querySelectorAll('[data-slot="region-header"]')].map((node) => {
         const s = getComputedStyle(node);
         return [s.paddingTop, s.paddingBottom];
@@ -58,13 +58,13 @@ async function commonChecks(page, direction) {
   });
   expect(layout.overflow).toBeLessThanOrEqual(1);
   expect(layout.font).toContain('DM Sans');
-  expect(layout.headlineBackground).toBe('rgb(234, 240, 237)');
+  expect(layout.headlineBackground).toBe('rgb(246, 245, 241)');
   expect(layout.divider).toBe('1px');
   expect(layout.dividerStart).toBe(layout.dividerEnd);
-  expect(layout.footer).toBe('rgb(24, 60, 64)');
+  expect(layout.footer).toBe('rgb(48, 39, 32)');
   expect(layout.publisherDecoration).toBe('none');
-  await page.locator('.wc-publisher').hover();
-  await expect(page.locator('.wc-publisher')).toHaveCSS('text-decoration-line', 'none');
+  await page.locator('.wconvert-publisher').hover();
+  await expect(page.locator('.wconvert-publisher')).toHaveCSS('text-decoration-line', 'none');
   for (const [top, bottom] of layout.headers) expect(top).toBe(bottom);
 }
 

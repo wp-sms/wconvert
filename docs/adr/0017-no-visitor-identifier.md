@@ -1,5 +1,7 @@
 # WConvert mints no visitor identifier
 
+**Extended by [ADR 0114](0114-analytics-exports-use-existing-site-tags.md):** The optional Pro integration passes allowlisted campaign events to an existing Google tag/GTM setup. WConvert still mints no visitor identifier. The site's existing analytics provider may collect its own identifiers and page/session metadata under the site's consent configuration; native counters remain separate.
+
 **Extended by [ADR 0102](0102-content-lock-is-an-optional-inline-capture-journey.md):** Content lock stores bounded Campaign-family unlock receipts with expiry days in site-scoped localStorage. No visitor identifier or submitted value is stored; storage failure leaves the current page usable.
 
 **WConvert never generates, stores or transmits a per-visitor identifier.** No
@@ -52,6 +54,9 @@ key something by a person; it is not. There is no visitor id, no Optin id and
 no user id in `wconvert_milestones`, and the check is written the way
 `bin/verify-stats.php` writes the address one — plant everything a request
 carries, drive the real path, and read the stored value back looking for it.*
+
+
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** Cart intelligence keeps only campaign-match booleans and public product suggestions in document memory for up to 30 seconds. It reads the existing Woo session and adds no browser identifier or persistent cart record.
 
 ## What this overturns
 

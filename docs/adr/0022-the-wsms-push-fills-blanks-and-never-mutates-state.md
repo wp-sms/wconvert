@@ -30,6 +30,15 @@ callers, different correct answers.
 
 ## Why this is not a merchant setting
 
+> **Narrowed by [ADR 0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md),
+> accepted but not yet implemented:** the integration plan adds a merchant choice
+> for updating eligible mapped **non-identity** values on adapters with verified
+> support. It does not permit overwriting email/phone identity, merging Contacts,
+> changing lifecycle state or removing membership. Keep existing details is the
+> default. The original argument below continues to prohibit identifier clobbering;
+> it is no longer a universal prohibition on explicit custom-answer updates.
+> WSMS keeps its current implementation until its safe supported fields are proven.
+
 WSMS exposes `on_duplicate` as an enum, so mirroring it on the [[Destination]] was
 available. It is the worst of the three: it turns *PII clobbering by an anonymous
 attacker* into a checkbox, offered to someone who cannot be expected to model the

@@ -5,6 +5,14 @@ here, explicitly declining to spend a third table on our behalf. The obvious
 design is a `wconvert_lead_deliveries` table at the per-(Lead × Destination)
 grain — the grain the queue already uses. We did not build it.
 
+> **Extended by [ADR 0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md),
+> accepted but not yet implemented:** recent per-submission/Destination attempts
+> will expose explicit WConvert outcomes through Action Scheduler logs. This
+> introduces neither a permanent delivery table nor a lifetime sent/failed fact.
+> Scheduler Completed means the callback returned; a provider result must be
+> recorded separately. Expired or inconclusive history is Unknown. Advisory
+> Destination health and bounded failure diagnostics remain.
+
 *Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): one Lead may
 receive an email signup and a later SMS signup. Each completed signup starts
@@ -135,6 +143,14 @@ refuse.*
   retries are exhausted, or with `retryable = false`. It degrades correctly:
   during a real outage it fills with redundant entries while health already tells
   the story.
+
+  > **Planned refinement under ADR 0110:** keep record rejection separate from
+  > Destination problems, but separate retry advice from health classification.
+  > Invalid credentials or settings require repair and can affect Destination
+  > health without being automatically retried like a temporary outage. The
+  > current `retryable` coupling remains implementation history until that slice
+  > ships; the plan does not reclassify every HTTP error generically.
+
 - **Health lives in its own non-autoloaded option**, separate from Destination
   configuration. Two jobs completing at once will lose an increment —
   `update_option` is a read-modify-write with no row lock. That race is tolerable
@@ -151,6 +167,12 @@ refuse.*
   `QueueInterface::schedule()` accordingly. Immediate dispatch stays immediate.
   The public capture endpoint's separate abuse limiter protects local form
   intake and does not meter Destination delivery.
+  *Amended by [ADR 0111](0111-spam-protection-precedes-capture.md): queued
+  resource emails now have a ten-minute guard per recipient/resource using
+  short-lived HMAC option keys and a transaction. This includes bulk re-push,
+  which skips a recent successful send. Other Destination types and explicit
+  admin test sends are unaffected. This abuse limit does not promise exactly-once
+  delivery or introduce per-Lead delivery state.*
 - **The lead-magnet Goal's metric is not read from delivery state.** #2 worded it
   as "Leads where the delivery fired", which has nothing per-Lead left to read
   once health is the whole record. *Resolved by

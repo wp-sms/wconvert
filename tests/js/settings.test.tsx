@@ -1,4 +1,4 @@
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, onTestFinished, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SiteAllowance } from '../../resources/admin/src/optins/SiteAllowance';
@@ -128,4 +128,30 @@ it('saves Campaign privacy guidance without disabling core privacy tools', async
 
   expect(privacy.savePrivacyGuidance).toHaveBeenCalledExactlyOnceWith(false);
   expect(await screen.findByText('Privacy guidance saved.')).toBeInTheDocument();
+});
+
+/**
+ * Free's one list of what Pro adds lives here, static and bundled, and the
+ * analytics category — a Pro page — is not offered at all (ADR 0116).
+ */
+it('lists what Pro adds on a free install and offers no Pro-only category', async () => {
+  render(<Settings group="experience" />);
+  expect(screen.getByRole('heading', { name: 'More with Pro' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Explore Pro/ })).toHaveAttribute('href', 'https://wconvert.io/pro/');
+  expect(screen.queryByRole('link', { name: /Analytics integrations/ })).not.toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
+});
+
+it('lands a free install deep-linked to analytics on the default group', async () => {
+  render(<Settings group="integrations" />);
+  expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
+  expect(screen.queryByText('Analytics integrations')).not.toBeInTheDocument();
+});
+
+it('keeps the analytics category and drops the Pro list on a paid install', () => {
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  onTestFinished(() => { delete window.wconvertAdmin; });
+  render(<Settings group="experience" />);
+  expect(screen.getByRole('link', { name: /Analytics integrations/ })).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: 'More with Pro' })).not.toBeInTheDocument();
 });

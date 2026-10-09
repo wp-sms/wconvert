@@ -26,7 +26,15 @@ import { describe, expect, it } from 'vitest';
  * Vitest 4's Browser Mode is what closes the gap properly, in a pull request of
  * its own.
  */
-const CSS = ['index.css', 'builder/editor.css', 'optins/campaigns.css', 'shell/header.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
+const CSS = ['index.css', 'builder/editor.css', 'builder/preview-test.css', 'optins/campaigns.css', 'shell/header.css', 'stats/report.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
+
+describe('journey choices', () => {
+  it('keeps unchecked controls wide enough when WordPress removes native appearance', () => {
+    const checkbox = /\.wconvert-journey-settings__check input[^{}]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    expect(checkbox).toMatch(/min-inline-size:\s*[^;0]/);
+    expect(checkbox).toMatch(/flex-shrink:\s*0/);
+  });
+});
 
 describe('the token row', () => {
   /**

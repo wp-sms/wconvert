@@ -218,6 +218,24 @@
     }
   },
   "conditions": {
+    "ad_blocking": {
+      "kind": "condition",
+      "tier": "pro",
+      "requires": null,
+      "params": {
+        "value": {
+          "control": "enum",
+          "options": [
+            "detected",
+            "not_detected"
+          ]
+        }
+      },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "suspend",
+      "substitute": null
+    },
     "device": {
       "kind": "condition",
       "tier": "free",
@@ -357,6 +375,97 @@
           "authored": true
         }
       },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_products": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "ids": {
+          "control": "product_set",
+          "authored": true
+        },
+        "operator": {
+          "control": "enum",
+          "options": [
+            "any",
+            "all",
+            "none"
+          ]
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_categories": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "ids": {
+          "control": "category_set",
+          "authored": true
+        },
+        "operator": {
+          "control": "enum",
+          "options": [
+            "any",
+            "all",
+            "none"
+          ]
+        },
+        "descendants": {
+          "control": "boolean"
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_quantity": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "range": {
+          "control": "quantity_range",
+          "authored": true
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_amount": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "range": {
+          "control": "money_range",
+          "authored": true
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    }
+  },
+  "requirements": {
+    "products_ready": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {},
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",

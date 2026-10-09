@@ -56,8 +56,9 @@ handling. Readiness does not override visitor targeting, schedules or frequency.
 
 The initial choices are delivered with the block-editor assets. The authenticated
 read-only `GET /wconvert/v1/content-lock-campaigns` refreshes them without reloading
-or saving the post. `Routes::canPlaceCampaign()` requires `edit_posts` or
-`edit_pages`; it grants no Campaign-management capability. Responses contain only
+or saving the post. `ContentLockCampaigns::canPlaceCampaign()` requires `edit_posts` or
+`edit_pages` *(moved from free's `Routes`, where nothing free called it, for the
+wp.org submission)*; it grants no Campaign-management capability. Responses contain only
 published inline IDs, names and ready/disabled/unavailable status, plus a management
 link for users who already have `manage_options`. They contain no drafts, designs,
 Destination details or Leads, and use `Cache-Control: no-store`. This is an explicit
@@ -112,9 +113,11 @@ is still the documented static set; Groups, Columns, synced patterns and third-p
 blocks are not promised compatible. Automatic insertion across posts stays deferred.
 The user-selected prototype was removed; plan section 19 records the decision.
 
-Content lock simulation uses the existing right-hand Campaign canvas on Display
-rules, with Locked, Unlocked and Form unavailable controls outside the scaled
-preview. At narrow editor widths it stacks below settings. It renders example
+Content lock simulation opens from Display rules through **Preview & test →
+Check the design**, with Locked, Unlocked and Form unavailable controls outside
+the scaled preview. The October 3 regression fix retains that placement context
+while the shared preview dialog is open and restores Display rules on close.
+It renders example
 content, not the linked WordPress page; its state is separate from the Campaign
 and the Design step. The form preview sends no capture or analytics requests and
 writes no unlock receipt. Setup details and a copyable enclosing shortcode remain
@@ -122,12 +125,16 @@ in placement help. Advanced documentation links are omitted until real WConvert
 docs exist. Actual page gating is checked on a published page; WordPress draft
 preview contexts intentionally remain readable.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Setup details and a copyable enclosing shortcode remain in placement help". There is no Setup details disclosure any more: the lock's setup is a settings card (lock the rest of an article; lock one section; the classic shortcode once published) with its three facts always visible beneath it._
+
 ## Acknowledged capture, never subscriber verification
 
 Only the existing acknowledged capture callback reveals success and records one
 Conversion. Generic click conversions, frequency `c` state, Destination delivery,
 email verification and provider membership never establish access. Correctable
-field/consent refusals retain the form and values. Network, server, malformed
+field/consent refusals retain the form and values. Cancelled, failed or unavailable
+CAPTCHA verification is also correctable: no submission has been accepted, so
+it keeps the content locked and permits retry (ADR 0111). Network, server, malformed
 acknowledgement and rate-limit failures expose the content with truthful feedback,
 without a success receipt or invented Conversion. Form values are never persisted
 by the locking module.

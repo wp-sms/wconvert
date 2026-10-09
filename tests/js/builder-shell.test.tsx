@@ -5,9 +5,10 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
+import { inlinePlacementControls } from '../../resources/admin/src/inlinePlacement';
 
 /**
  * The builder shell, against the four decisions #69 and #71 make about it that
@@ -21,9 +22,8 @@ import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../res
  *   that merge is unchanged. What is new beside it is **Structure**, which is
  *   the other view of the document Content already edits. Whether these editors
  *   reach the same screen is a fact about the product.
- * - **The preview is beside every tab.** It lived inside the settings panel, so
- *   editing a Trigger showed no preview at all — the exact failure the pinned
- *   column exists to end.
+ * - **Preview & test is available from every tab.** Design editing keeps its
+ *   canvas; Display rules and Destinations use dedicated settings workspaces.
  * - **This Optin's numbers are here.** *Is this change worth making?* is asked
  *   in the editor and was answerable two screens away, and the read is
  *   swallowed on failure, so an analytics outage must not cost anyone a Save.
@@ -43,6 +43,7 @@ const publishing = vi.hoisted(() => ({ publishOptin: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn() }));
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: () => <div aria-label="Journey map" /> }));
 
 /*
  * Spread over the real module, like the three below it. `DEGRADED_FROM` is a
@@ -245,7 +246,11 @@ beforeEach(() => {
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
 });
 
-const open = () => render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+// These existing cases exercise layout controls. Default editing has its own regression below.
+const open = async () => {
+  render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+};
 
 /**
  * A block row's own name button, as opposed to the three controls beside it
@@ -265,19 +270,19 @@ describe('the builder shell', () => {
       ...optin().config, display_type: 'inline', display_rules: displayPlan([{ type: 'page_load' }]),
       inline_placement: { position: 'after_content' },
     } }));
-    open();
-    const design = await screen.findByRole('tabpanel', { name: 'Design' });
+    await open();
+    const design = await screen.findByRole('tabpanel', { name: 'Theme & layout' });
     expect(within(design).queryByText('Automatically after content')).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Change inline placement' })).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     const rules = screen.getByRole('tabpanel', { name: 'Display rules' });
-    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display setup sections' })).getByRole('button', { name: /^Pages/ }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^Where does it show\?/ }));
     expect(within(rules).getByRole('heading', { name: 'Placement' })).toBeVisible();
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual')).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).queryByText('Manual')).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     expect(screen.getByRole('button', { name: 'Use manual placement' })).toBeVisible();
   });
@@ -311,16 +316,32 @@ describe('the builder shell', () => {
    * one nested inside this tab's own panel and `getAllByRole('tab')` cannot
    * tell them apart.
    */
-  it('offers three tabs, with the three rule surfaces under one of them', async () => {
-    open();
+  it('offers a persistent Journey tab alongside Design, Display rules and Destinations', async () => {
+    await open();
 
     const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
 
     expect(within(strip).getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
-      'Design',
+      'Edit campaign',
+      'Theme & layout',
       'Display rules',
       'Destinations',
     ]);
+  });
+
+  it('returns from Design to the selected Journey screen and open settings', async () => {
+    await open();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Edit campaign' }));
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
+    await userEvent.click(screen.getByRole('button', { name: 'Details Screen 1' }));
+    await userEvent.click(screen.getByText('Screen options', { exact: true }));
+    const inspector = screen.getByRole('region', { name: 'Selected screen settings' });
+    await userEvent.click(within(inspector).getByRole('button', { name: 'Theme & layout' }));
+    expect(screen.getByRole('tab', { name: 'Theme & layout' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByRole('region', { name: 'Selected screen settings' })).toBeNull();
+    await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+    expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBe(inspector);
+    expect(within(inspector).getByRole('textbox', { name: 'Screen name' })).toHaveValue('Details');
   });
 
   /**
@@ -332,13 +353,13 @@ describe('the builder shell', () => {
    * the row has to be a row.
    */
   it('lists every block of the design, layouts included, as a treegrid', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
 
-    expect(within(tree).getByRole('row', { name: /The form/ })).toBeInTheDocument();
+    expect(within(tree).getByRole('row', { name: /Details/ })).toBeInTheDocument();
     expect(within(tree).getByRole('row', { name: /Headline/ })).toBeInTheDocument();
     expect(within(tree).getByRole('row', { name: /Email address/ })).toBeInTheDocument();
   });
@@ -349,7 +370,7 @@ describe('the builder shell', () => {
    * than instead of it.
    */
   it('names a row by the words the block is showing, and states its place separately', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
@@ -366,7 +387,7 @@ describe('the builder shell', () => {
    * ability to write — which is why the tree can share it with the preview.
    */
   it('marks a block selected when its row is clicked', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Headline/));
@@ -380,7 +401,7 @@ describe('the builder shell', () => {
    * fifteen-block design.
    */
   it('keeps one tab stop across the whole tree', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
@@ -400,7 +421,7 @@ describe('the builder shell', () => {
    * the design top to bottom would have clicked.
    */
   it('opens with design settings and keeps Layers optional', async () => {
-    open();
+    await open();
     await screen.findByRole('button', { name: 'Browse designs and formats' });
     expect(screen.queryByRole('treegrid')).toBeNull();
     expect(screen.getByRole('heading', { name: 'Design', level: 4 })).toBeInTheDocument();
@@ -414,7 +435,7 @@ describe('the builder shell', () => {
    * the preview must not blink off and on for no reason they could name.
    */
   it('keeps the selected block while the merchant goes to the look and back', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Body text/));
@@ -445,7 +466,7 @@ describe('the builder shell', () => {
    * observable from here — it is on the browser pass with the rest of the CSS.
    */
   it('keeps the block open while the merchant is away editing the rules', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Body text/));
@@ -453,7 +474,7 @@ describe('the builder shell', () => {
     const strip = screen.getByRole('tablist', { name: 'What you are editing' });
 
     await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(within(strip).getByRole('tab', { name: 'Design' }));
+    await userEvent.click(within(strip).getByRole('tab', { name: 'Theme & layout' }));
 
     expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
@@ -472,12 +493,12 @@ describe('the builder shell', () => {
    * behind one button on a surface of its own (ADR 0043).
    */
   it('names the design in use and puts the gallery behind one button', async () => {
-    open();
+    await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     expect(await screen.findByText('How it appears')).toBeInTheDocument();
-    expect(screen.getByText('Popup')).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('Popup')).toBeInTheDocument();
     expect(screen.getByText('Centred over the page')).toBeInTheDocument();
     expect(screen.getByText('Design: Centred card')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
@@ -493,7 +514,7 @@ describe('the builder shell', () => {
         CARD,
       ],
     });
-    open();
+    await open();
 
     expect(await screen.findByText('Choose how this campaign appears')).toBeInTheDocument();
     expect(screen.getByText('Start with a design that fits “Grow my email list”. You can explore other formats in the library.')).toBeInTheDocument();
@@ -514,9 +535,9 @@ describe('the builder shell', () => {
    * takes rather than asking a second question in front of the first.
    */
   it('previews current content and puts replacement consequences beside Apply', async () => {
-    open();
+    await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
     await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
 
     const picker = within(await screen.findByRole('dialog'));
@@ -539,9 +560,9 @@ describe('the builder shell', () => {
    * merchant has no use for the library entry behind their popup.
    */
   it('keeps the library entry off the design tab unless WP_DEBUG is on', async () => {
-    open();
+    await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     expect(screen.queryByText(/Library entry/)).toBeNull();
   });
@@ -555,13 +576,13 @@ describe('the builder shell', () => {
    * headings — and the fourth, How often, is the section that had no author
    * anywhere before the rules panel was split into four.
    */
-  it('puts where, when, who and how often on that one tab', async () => {
-    open();
+  it('puts the five display questions on that one tab', async () => {
+    await open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Display rules' }));
 
-    for (const question of ['Pages', 'Audience', 'Opening moment', 'Schedule & limits']) {
-      expect(within(screen.getByRole('navigation', { name: 'Display setup sections' })).getByRole('button', { name: new RegExp(`^${question}`) })).toBeInTheDocument();
+    for (const question of ['Where does it show?', 'Who sees it?', 'When does it open?', 'How often?', 'Dates']) {
+      expect(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: new RegExp(`^${question.replace('?', '\\?')}`) })).toBeInTheDocument();
     }
   });
 
@@ -580,12 +601,51 @@ describe('the builder shell', () => {
    * whatever the merchant chose is the sharper test of.
    */
   it('opens the same preview on demand while rules are edited', async () => {
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Preview campaign' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+    expect(await screen.findByRole('dialog', { name: 'Preview & test' })).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+    expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+    expect(await screen.findByRole('dialog', { name: 'Preview & test' })).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
     expect(canvas).toHaveAttribute('data-width', 'narrow');
+  });
+
+  it('keeps content-lock states available in the design check opened from Display rules', async () => {
+    inlinePlacementControls.preview = ({ state }) => <p>Lock example: {state}</p>;
+    inlinePlacementControls.previewControls = ({ state, onStateChange }) => <select aria-label="Preview content lock" value={state} onChange={event => onStateChange(event.target.value as 'locked' | 'unlocked' | 'unavailable')}><option>locked</option><option>unlocked</option><option>unavailable</option></select>;
+    try {
+      builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
+      await open();
+      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+      const preview = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
+      await userEvent.click(preview.getByRole('button', { name: 'Check the design' }));
+      await userEvent.selectOptions(preview.getByRole('combobox', { name: 'Preview content lock' }), 'unavailable');
+      expect(preview.getByText('Lock example: unavailable')).toBeInTheDocument();
+      await userEvent.click(preview.getByRole('button', { name: 'Back to editor' }));
+      expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
+      await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+      const again = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
+      await userEvent.click(again.getByRole('button', { name: 'Try as a visitor' }));
+      await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
+      expect(screen.getByRole('tab', { name: 'Edit campaign' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
+    } finally {
+      delete inlinePlacementControls.preview;
+      delete inlinePlacementControls.previewControls;
+    }
   });
 
   /**
@@ -596,7 +656,7 @@ describe('the builder shell', () => {
    * inspector edits, which it did not before.
    */
   it('constrains the preview when the merchant asks for the narrow width', async () => {
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
     expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveAttribute('data-width', 'narrow');
   });
@@ -606,7 +666,7 @@ describe('the builder shell', () => {
    * reads as a broken panel rather than as "not yet".
    */
   it('says nothing about numbers for an Optin that was never published', async () => {
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
@@ -636,8 +696,9 @@ describe('the builder shell', () => {
       ],
     });
 
-    open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect((await screen.findAllByText('Email submissions')).length).toBeGreaterThan(0);
     expect(screen.getByText('1,000')).toBeInTheDocument();
@@ -665,8 +726,9 @@ describe('the builder shell', () => {
       ],
     });
 
-    open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     const headline = await screen.findByText('42');
 
@@ -697,8 +759,9 @@ describe('the builder shell', () => {
       ],
     });
 
-    open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await screen.findByText('The last 7 days')).toBeInTheDocument();
   });
@@ -712,8 +775,9 @@ describe('the builder shell', () => {
     builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
     stats.readDashboard.mockReturnValue(new Promise(() => undefined));
 
-    open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     // Past the whole-builder skeleton first, whose own "Loading…" is a
     // different state and would otherwise be what this matched.
@@ -733,7 +797,7 @@ describe('the builder shell', () => {
     builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
     stats.readDashboard.mockResolvedValue({ from: '', to: '', days: 30, goals: [] });
 
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
@@ -766,7 +830,7 @@ describe('the builder shell', () => {
     builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
     stats.readDashboard.mockRejectedValue(new Error('nope'));
 
-    open();
+    await open();
 
     expect(await screen.findByRole('button', { name: 'Save draft' })).toBeInTheDocument();
     expect(screen.queryByText('nope')).toBeNull();
@@ -803,21 +867,22 @@ describe('the builder shell', () => {
  */
 describe('the page-header band', () => {
   it('keeps draft actions together in the editor header', async () => {
-    open();
+    await open();
     const save = await screen.findByRole('button', { name: 'Save draft' });
     const header = document.querySelector('.wconvert-workspace__header');
     expect(header).toContainElement(save);
-    expect(header).toContainElement(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(header).toContainElement(screen.getByRole('button', { name: 'Preview' }));
+    expect(header).toContainElement(screen.getByRole('button', { name: /^Undo/ }));
+    expect(header).toContainElement(screen.getByRole('button', { name: 'Preview & test' }));
   });
 
   it('uses the WConvert mark instead of a visible wordmark', async () => {
-    open();
+    await open();
     await screen.findByRole('button', { name: 'Save draft' });
     const header = document.querySelector('.wconvert-workspace__header');
-    const mark = header?.querySelector('.wc-brand-mark');
+    const mark = header?.querySelector('.wconvert-brand-mark');
 
-    expect(mark).toHaveTextContent('w');
+    expect(mark?.tagName.toLowerCase()).toBe('svg');
+    expect(mark).toHaveAttribute('data-variant', 'default');
     expect(mark).toHaveAttribute('aria-hidden', 'true');
     expect(header).toContainElement(screen.getByText('WConvert'));
     expect(screen.getByText('WConvert')).toHaveClass('sr-only');
@@ -839,7 +904,7 @@ describe('the way out of the builder', () => {
 
     render(<OptinBuilder id={ID} onClose={closed} />);
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
+    await screen.findByRole('tab', { name: 'Edit campaign' });
     await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
 
     expect(closed).toHaveBeenCalled();
@@ -957,19 +1022,21 @@ describe('the summary', () => {
    * naming.
    */
   it('costs the screen one button until it is asked for', async () => {
-    open();
+    await open();
 
     expect(await screen.findByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
-    expect(screen.queryByText('On every page')).toBeNull();
+    expect(screen.queryByText('Entire site')).toBeNull();
     expect(screen.queryByText('Started from')).toBeNull();
   });
 
-  it('keeps the goal in the existing footer and its measurement in details', async () => {
-    open();
-    const goal = await screen.findByRole('button', { name: 'Goal: Grow my email list' });
-    expect(goal.closest('footer')).not.toBeNull();
+  it('keeps the goal and its measurement in header details', async () => {
+    await open();
+    const goal = await screen.findByRole('button', { name: 'Campaign actions' });
+    expect(goal.closest('header')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Goal: Grow my email list' })).toBeNull();
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     expect(await screen.findByRole('dialog', { name: 'Campaign details' })).toBeVisible();
     expect(screen.getByText('Grow my email list · counts Email submissions')).toBeVisible();
     await userEvent.keyboard('{Escape}');
@@ -983,7 +1050,7 @@ describe('the summary', () => {
    * header is for. As two rows among eight they read as two more properties.
    */
   it('says what the Optin is for, and what it will be judged on', async () => {
-    open();
+    await open();
     await summary();
 
     const dialog = await screen.findByRole('dialog');
@@ -1003,7 +1070,7 @@ describe('the summary', () => {
       }),
     );
 
-    open();
+    await open();
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
@@ -1029,7 +1096,7 @@ describe('the summary', () => {
       }),
     );
 
-    open();
+    await open();
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
@@ -1051,7 +1118,7 @@ describe('the summary', () => {
       }),
     );
 
-    open();
+    await open();
     await summary();
 
     expect(await screen.findByText('Suspended')).toBeInTheDocument();
@@ -1059,7 +1126,7 @@ describe('the summary', () => {
   });
 
   it('says Draft on an Optin that has never been published', async () => {
-    open();
+    await open();
     await summary();
 
     expect(await within(screen.getByRole('dialog')).findByText('Draft')).toBeInTheDocument();
@@ -1074,7 +1141,7 @@ describe('the summary', () => {
   it('keeps the rest of the summary when the goal registry does not answer', async () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
-    open();
+    await open();
 
     // Asserted before the dialog opens: it is modal, so everything outside it
     // is `aria-hidden` and a role query would find no Save button by design.
@@ -1083,17 +1150,17 @@ describe('the summary', () => {
     await summary();
 
     expect(await within(screen.getByRole('dialog')).findByText('Draft')).toBeInTheDocument();
-    expect(screen.getByText('On every page')).toBeInTheDocument();
+    expect(screen.getByText('Entire site')).toBeInTheDocument();
     expect(screen.queryByText(/counts Submissions/)).toBeNull();
   });
 
   /**
-   * The same four sentences the Display rules tab draws as its disclosure
-   * labels, from the same `summarise()` — so the two cannot come to word one
-   * axis differently, and a merchant can read the whole answer without opening
-   * the tab.
+   * The same five answers the Display rules tab draws in its menu, from the
+   * same `summarise()` — so the two cannot come to word one question
+   * differently, and a merchant can read the whole answer without opening the
+   * tab.
    */
-  it('reads out the four rule sentences without opening the rules tab', async () => {
+  it('reads out the five display answers without opening the rules tab', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: {
@@ -1104,14 +1171,15 @@ describe('the summary', () => {
       }),
     );
 
-    open();
+    await open();
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Pages')?.textContent).toBe('On every page');
-    expect(fact('Opening moment')?.textContent).toContain('8');
-    expect(fact('Audience')?.textContent).toBe('Everyone');
-    expect(fact('Schedule & limits')?.textContent).toContain('until they close it');
+    expect(fact('Where does it show?')?.textContent).toBe('Entire site');
+    expect(fact('When does it open?')?.textContent).toBe('After 8 seconds');
+    expect(fact('Who sees it?')?.textContent).toBe('Everyone');
+    expect(fact('How often?')?.textContent).toBe('Every page they see');
+    expect(fact('Dates')?.textContent).toBe('Runs until you pause it');
   });
 
   /**
@@ -1154,7 +1222,7 @@ describe('the summary', () => {
       }),
     );
 
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
 
@@ -1162,8 +1230,8 @@ describe('the summary', () => {
     // of no registered type on any install, and an unresolved key is our own
     // vocabulary rather than a merchant's word.
     expect(
-      await screen.findByText(/works well with a destination like WP SMS/),
-    ).toBeInTheDocument();
+      await screen.findByRole('button', { name: /WP SMS/ }),
+    ).toHaveAccessibleDescription('Suggested by your campaign setup');
     expect(screen.queryByText(/email_service_provider/)).toBeNull();
   });
 
@@ -1206,7 +1274,7 @@ describe('the summary', () => {
       }),
     );
 
-    open();
+    await open();
 
     await summary();
 
@@ -1216,8 +1284,46 @@ describe('the summary', () => {
     await userEvent.keyboard('{Escape}');
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
 
-    expect(await screen.findByRole('checkbox', { name: /WP SMS contacts/ })).toBeChecked();
-    expect(screen.queryByText(/The campaign setup this started from/)).toBeNull();
+    expect(await screen.findByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    expect(screen.queryByText('Suggested by your campaign setup')).toBeNull();
+  });
+
+  /**
+   * The Add picker re-reads the site's routes as it opens. That read used to
+   * reset the screen to loading, so the picker opened onto nothing at all.
+   */
+  it('keeps the routes in the Add picker while it re-reads them', async () => {
+    const route = { id: 'd1', type: 'wsms', label: 'WP SMS contacts', connection: null, settings: {}, target: null, availability: 'ready',
+      health: { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } };
+    destinations.readDestinations
+      .mockResolvedValueOnce({ destinations: [route], types: [] })
+      .mockReturnValue(new Promise(() => {}));
+    builder.getOptin.mockResolvedValue(optin());
+    await open();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Add destination' }));
+    expect(destinations.readDestinations).toHaveBeenCalledTimes(2);
+    expect(within(screen.getByRole('dialog', { name: 'Add a destination' })).getByRole('button', { name: /WP SMS contacts/ })).toBeVisible();
+  });
+
+  /** A failed re-read keeps the routes on screen and says so, with Retry (ADR 0060). */
+  it('says a re-read failed without dropping the routes on screen', async () => {
+    const route = { id: 'd1', type: 'wsms', label: 'WP SMS contacts', connection: null, settings: {}, target: null, availability: 'ready',
+      health: { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } };
+    destinations.readDestinations
+      .mockResolvedValueOnce({ destinations: [route], types: [] })
+      .mockRejectedValueOnce(new Error('The site did not answer.'))
+      .mockResolvedValue({ destinations: [route], types: [] });
+    builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, destinations: ['d1'] } }));
+    await open();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Add destination' }));
+    await userEvent.keyboard('{Escape}');
+    expect(await screen.findByText('The site did not answer.')).toBeVisible();
+    expect(screen.getByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    await waitFor(() => expect(screen.queryByText('The site did not answer.')).toBeNull());
+    expect(destinations.readDestinations).toHaveBeenCalledTimes(3);
   });
 });
 
@@ -1238,10 +1344,10 @@ describe('saving qualification choices without losing unfinished work', () => {
     builder.getOptin.mockResolvedValue(withChoices([
       { value: 'repair', label: 'Repair' }, { value: 'installation', label: 'Installation' },
     ]));
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(within(screen.getByRole('row', { name: /Service needed/ })).getAllByRole('button')[0]);
-    await userEvent.click(screen.getByText('Sent as: installation'));
+    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('Sent as: installation'));
     const value = screen.getByRole('textbox', { name: 'Value sent for choice 2' });
     await userEvent.clear(value);
     await userEvent.type(value, 'repair');
@@ -1250,7 +1356,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     expect(screen.getByRole('textbox', { name: 'Choice 2' })).toHaveValue('Installation');
     expect(value).toHaveValue('repair');
     expect(builder.saveOptin).not.toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
     await userEvent.clear(value);
     await userEvent.type(value, 'installation');
     await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), ' revised');
@@ -1264,7 +1370,7 @@ describe('saving qualification choices without losing unfinished work', () => {
 
   it('saves an intentionally empty choice list while publication remains blocked', async () => {
     builder.getOptin.mockResolvedValue(withChoices([]));
-    open();
+    await open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' unfinished');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText('Draft saved');
@@ -1284,7 +1390,7 @@ describe('whole-draft Undo and Redo', () => {
         display_type: 'floating_bar',
       },
     }));
-    open();
+    await open();
 
     expect(await screen.findByText('How it appears')).toBeInTheDocument();
     expect(screen.getByText('Floating bar')).toBeInTheDocument();
@@ -1294,12 +1400,12 @@ describe('whole-draft Undo and Redo', () => {
     expect(screen.getByText(/moves the page down/)).toBeVisible();
     expect(screen.getByText('Bar at the page edge · Top')).toBeInTheDocument();
     expect(document.querySelector('.wconvert-site')?.getAttribute('data-placement')).toBe('block_start');
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('radio', { name: 'Bottom' })).toBeChecked();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
@@ -1320,14 +1426,14 @@ describe('whole-draft Undo and Redo', () => {
 
   it('makes collect-only explicit and removes destination bindings in one undoable edit', async () => {
     builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, destinations: ['d1'] } }));
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
     await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
     expect(screen.getByText(/Automatic emails and texts need a separate sending setup/)).toBeVisible();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
-    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
       capture_mode: 'local', destinations: [],
@@ -1341,25 +1447,28 @@ describe('whole-draft Undo and Redo', () => {
         consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null },
     }], types: [] });
     builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, destinations: ['d1'] } }));
-    open();
+    await open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getAllByText('Schedule & limits')[0].closest('button') as HTMLElement);
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Stop after they submit the form' }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^How often\?/ }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'after they submit the form' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
-    await userEvent.click(await screen.findByRole('checkbox', { name: /Selected contacts/ }));
-    expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).not.toBeChecked();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).toBeChecked();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for Selected contacts' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove from this campaign' }));
+    // A draft edit, so no confirm: Undo is the way back.
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    expect(screen.queryByRole('article', { name: 'Selected contacts' })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+    expect(screen.getByRole('article', { name: 'Selected contacts' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getAllByText('Schedule & limits')[0].closest('button') as HTMLElement);
-    expect(screen.getByRole('checkbox', { name: 'Stop after they submit the form' })).toBeChecked();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^How often\?/ }));
+    expect(screen.getByRole('checkbox', { name: 'after they submit the form' })).toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
-    for (let index = 0; index < 3; index++) await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled();
+    for (let index = 0; index < 3; index++) await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText('Draft saved');
     expect(builder.saveOptin).toHaveBeenCalledExactlyOnceWith(ID, 'Welcome discount revised', {
@@ -1370,18 +1479,19 @@ describe('whole-draft Undo and Redo', () => {
   it('changes only the working draft when Undo follows publication', async () => {
     collectionMode = 'local';
     builder.getOptin.mockResolvedValue(optin());
-    open();
+    await open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     const dialog = within(await screen.findByRole('dialog'));
     await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
     await userEvent.click(await dialog.findByRole('button', { name: 'Done' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(publishing.publishOptin).toHaveBeenCalledTimes(1);
-    await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     await userEvent.click(screen.getByText('About draft history'));
     expect(await screen.findByText(/They do not change the published version or shared destination settings/)).toBeVisible();
   });
@@ -1389,6 +1499,9 @@ describe('whole-draft Undo and Redo', () => {
 
 describe('changing templates in the draft', () => {
   it('browses formats without editing, then applies format and design in one undoable edit', async () => {
+    // A floating bar is a paid format; a free install is not offered it (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     builder.getOptin.mockResolvedValue(optin({ config: {
       ...optin().config,
       display_type: 'floating_bar',
@@ -1401,7 +1514,7 @@ describe('changing templates in the draft', () => {
     }] });
     templates.getTemplateTrees.mockResolvedValue({ templates: [ENTRY, ALTERNATE] });
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     await userEvent.keyboard('{Escape}');
@@ -1413,11 +1526,11 @@ describe('changing templates in the draft', () => {
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
       .getByRole('button', { name: 'Preview design' }));
     await userEvent.click(picker.getByRole('button', { name: 'Switch to Inline form' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
       display_type: 'inline', template_id: ALTERNATE.id,
@@ -1438,7 +1551,7 @@ describe('changing templates in the draft', () => {
     ] });
     templates.getTemplateTrees.mockResolvedValue({ templates: [ENTRY, ALTERNATE] });
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
-    open();
+    await open();
 
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(screen.getByRole('dialog'));
@@ -1466,15 +1579,15 @@ describe('changing templates in the draft', () => {
   };
 
   it('does not add an Undo action just because the server returns a fresh object on Save', async () => {
-    open();
+    await open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' renamed');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText('Draft saved');
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });
@@ -1483,26 +1596,26 @@ describe('changing templates in the draft', () => {
     const prepared = { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens };
     loadAlternate();
     templates.prepareTemplate.mockResolvedValue(prepared);
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
     await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
     expect(picker.getByRole('heading', { name: ALTERNATE.name })).toHaveFocus();
-    await userEvent.click(picker.getByRole('button', { name: 'Mobile' }));
-    await userEvent.click(picker.getByRole('button', { name: 'Success screen' }));
+    await userEvent.click(picker.getByRole('radio', { name: 'Mobile' }));
+    await userEvent.click(picker.getByRole('radio', { name: ALTERNATE.tree.steps[1].name }));
     expect(templates.prepareTemplate).toHaveBeenCalledExactlyOnceWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
     await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id));
     expect(builder.saveOptin).not.toHaveBeenCalled();
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
     expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
@@ -1516,7 +1629,7 @@ describe('changing templates in the draft', () => {
   it('normalizes sample content using the selected design identity before applying it', async () => {
     loadAlternate();
     templates.prepareTemplate.mockImplementation((_id, tree) => Promise.resolve(tree));
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
@@ -1536,7 +1649,7 @@ describe('changing templates in the draft', () => {
   it('keeps the original draft while preparation fails and lets the merchant return to browsing', async () => {
     loadAlternate();
     templates.prepareTemplate.mockRejectedValue(new Error('The design could not be prepared. Try again.'));
-    open();
+    await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
@@ -1549,7 +1662,7 @@ describe('changing templates in the draft', () => {
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
     expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
@@ -1564,7 +1677,7 @@ describe('publishing from the editor', () => {
 
   it('keeps saved draft updates separate until the merchant publishes them', async () => {
     builder.getOptin.mockResolvedValue(optin({ published_at: '2026-09-01 00:00:00', has_unpublished_changes: true }));
-    open();
+    await open();
     expect(await screen.findByText('Unpublished changes')).toBeInTheDocument();
     const dialog = await review();
     expect(publishing.publishOptin).not.toHaveBeenCalled();
@@ -1580,7 +1693,7 @@ describe('publishing from the editor', () => {
   it('waits for the latest edits to save before promoting the saved snapshot', async () => {
     let accept!: (value: ReturnType<typeof optin>) => void;
     builder.saveOptin.mockImplementation(() => new Promise((resolve) => { accept = resolve; }));
-    open();
+    await open();
     await userEvent.type(await screen.findByLabelText('Name'), ' updated');
     const dialog = await review();
     await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
@@ -1594,7 +1707,7 @@ describe('publishing from the editor', () => {
 
   it('never publishes an older saved draft after the latest save is refused', async () => {
     builder.saveOptin.mockRejectedValue(new Error('This field is invalid.'));
-    open();
+    await open();
     await userEvent.type(await screen.findByLabelText('Name'), ' updated');
     const dialog = await review();
     await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
@@ -1607,7 +1720,7 @@ describe('publishing from the editor', () => {
 
   it('keeps a successfully saved draft after publication fails and retries only publication', async () => {
     publishing.publishOptin.mockRejectedValueOnce(new Error('Could not publish.'));
-    open();
+    await open();
     await userEvent.type(await screen.findByLabelText('Name'), ' updated');
     const dialog = await review();
     await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
@@ -1623,11 +1736,25 @@ describe('publishing from the editor', () => {
 it('prevents opening a second save path while a draft save is pending', async () => {
   let accept!: (value: ReturnType<typeof optin>) => void;
   builder.saveOptin.mockImplementation(() => new Promise((resolve) => { accept = resolve; }));
-  open();
+  await open();
   await userEvent.type(await screen.findByLabelText('Name'), ' updated');
   await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-  expect(screen.getByRole('button', { name: 'Campaign details' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeDisabled();
   expect(screen.getByRole('button', { name: 'Back to Campaigns' })).toBeDisabled();
   accept(optin({ name: 'Welcome discount updated' }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign details' })).toBeEnabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeEnabled());
+});
+
+
+it('starts with the actual campaign and shares screen selection between Edit and Flow', async () => {
+  render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  expect(await screen.findByRole('tab', { name: 'Edit campaign' })).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('region', { name: 'Design canvas' })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: 'Campaign screens' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute('aria-pressed', 'true');
+  await userEvent.click(screen.getByRole('button', { name: 'Flow' }));
+  expect(await screen.findByLabelText('Journey map')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+  expect(screen.getByRole('navigation', { name: 'Campaign screens' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
 });

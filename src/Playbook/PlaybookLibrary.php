@@ -238,6 +238,13 @@ final class PlaybookLibrary
             return RejectionReason::Malformed;
         }
 
+        $businesses = $entry['business_types'] ?? [];
+        if (!is_array($businesses) || !array_is_list($businesses)
+            || count(array_filter($businesses, static fn ($id): bool => is_string($id) && in_array($id, ['stores', 'services', 'publishers'], true))) !== count($businesses)
+            || count(array_unique($businesses)) !== count($businesses)) {
+            return RejectionReason::Malformed;
+        }
+
         $goal = is_string($entry['goal'] ?? null) ? Goal::tryFrom($entry['goal']) : null;
         $template = is_string($entry['template_id'] ?? null) ? $templates->find($entry['template_id']) : null;
 
@@ -458,6 +465,7 @@ final class PlaybookLibrary
             is_array($entry['destination_hint'] ?? null) ? $entry['destination_hint'] : [],
             is_string($entry['notes'] ?? null) ? $entry['notes'] : '',
             is_array($entry['collection'] ?? null) ? $entry['collection'] : null,
+            $entry['business_types'] ?? [],
         );
     }
 }

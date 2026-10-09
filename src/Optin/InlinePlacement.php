@@ -14,7 +14,7 @@ final class InlinePlacement
             return null;
         }
         $position = $value['position'] ?? null;
-        if (in_array($position, ['before_content', 'after_content'], true)) {
+        if (in_array($position, ['before_content', 'after_content', 'after_product_summary'], true)) {
             return ['position' => $position];
         }
         $paragraph = $value['paragraph'] ?? null;

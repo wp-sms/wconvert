@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "batch": "expansion",
+  "date": "2026-09-28",
+  "status": "technical-and-visual-review-complete",
+  "release_approval": false,
+  "reviewer": "Codex",
+  "campaign_layout_cases": 360,
+  "campaign_layout_findings": 0,
+  "library_cases": 2128,
+  "library_failures": 0,
+  "entries": [
+    {
+      "id": "cart-straight-away",
+      "revision": "a0badf76edbe609cef0fe99a162fabcc0588c85b66980c8bd489e8ff0fee63fd",
+      "design": "inline-cta",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "offer-panel"
+        ],
+        "reason": "Reuses a compact inline link instead of the existing delayed popup."
+      },
+      "screens_reviewed": [
+        "s1"
+      ]
+    },
+    {
+      "id": "cart-delivery-help",
+      "revision": "09532c67473787edd489f44b5b514589380876873811a75a2ea7031dec6a27dd",
+      "design": "inline-cart-nudge",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-cart-nudge"
+        ],
+        "reason": "Uses the existing cart nudge. Different page context and delivery guidance justify a setup, not another design."
+      },
+      "screens_reviewed": [
+        "s1"
+      ]
+    },
+    {
+      "id": "drop-alerts",
+      "revision": "09399da602e83c4bad8f56a9b6e72a694f0ff973c6e09a0f62788f5e4fff4682",
+      "design": "stacked-signup",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "journey-email-then-sms"
+        ],
+        "reason": "Reuses the existing standalone phone form; no second channel or extra journey step."
+      },
+      "screens_reviewed": [
+        "s1",
+        "s2"
+      ]
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "5039e192ecc88cf160f43e1244db779552ed85986b9d29ee9df5fd926fb751ee",
+      "design": "bar-countdown",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Uses the existing deadline bar because temporal information is the actual difference."
+      },
+      "screens_reviewed": [
+        "s1"
+      ]
+    },
+    {
+      "id": "product-care-guide",
+      "revision": "ca44a72ce972091673edbff9f37fe927984e67264e01d6a40b9fb3ec24a8f41d",
+      "design": "resource-index",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "project-notebook"
+        ],
+        "reason": "New index composition makes the contents visible in three short sections; a decorative cover alone cannot show that structure."
+      },
+      "screens_reviewed": [
+        "details",
+        "received"
+      ]
+    },
+    {
+      "id": "wholesale-enquiry",
+      "revision": "03de178d99f13853ed7d2234cb96fb14e42696ee1e740ba2d7fed67287debc8f",
+      "design": "service-docket",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "service-docket"
+        ],
+        "reason": "Reuses the service docket. Different qualification and follow-up needs justify the campaign, not a new layout."
+      },
+      "screens_reviewed": [
+        "details",
+        "received"
+      ]
+    },
+    {
+      "id": "venue-visit-request",
+      "revision": "365e5a77a5ca4b696b19d0f13bc69096e042d68c4211d4fe53eeef774f9de374",
+      "design": "appointment-note",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "portrait-frame"
+        ],
+        "reason": "New text-led invitation with optional qualification in a separate form panel; no portrait artwork or required name."
+      },
+      "screens_reviewed": [
+        "details",
+        "received"
+      ]
+    },
+    {
+      "id": "course-advice-request",
+      "revision": "be2ff72ae3114a15db6ee81ed55fd304600e6bde8807a71b08d825aec8ed632b",
+      "design": "appointment-note",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Deliberately reuses the venue invitation design. The answer choices, decision context and adviser workflow differ."
+      },
+      "screens_reviewed": [
+        "details",
+        "received"
+      ]
+    },
+    {
+      "id": "maintenance-letter",
+      "revision": "86c0694305b32e170e4d2a52a036c19dd4e929965f0e37b08f024dc364b23d93",
+      "design": "reading-desk",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "reading-desk"
+        ],
+        "reason": "Reuses the editorial desk. Cadence, ongoing consent and practical follow-up distinguish it from the renovation resource."
+      },
+      "screens_reviewed": [
+        "details",
+        "received"
+      ]
+    },
+    {
+      "id": "seasonal-service-link",
+      "revision": "8eeb2cb9ccd495cbcc63391332e701e43b2b8e21757a431d1422626d81c1f850",
+      "design": "slide-in-nudge",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-nudge"
+        ],
+        "reason": "Reuses the compact corner nudge for a service-information link; no new design count for seasonal copy."
+      },
+      "screens_reviewed": [
+        "s1"
+      ]
+    },
+    {
+      "id": "event-registration-link",
+      "revision": "811c66761418007be1c05ff834ab0b37465211629ef78d6953fd4d77fbb9db08",
+      "design": "agenda-card",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "resource-index"
+        ],
+        "reason": "New programme composition pairs a typographic invitation with a ruled agenda and a full-width external action. There is no resource-delivery form."
+      },
+      "screens_reviewed": [
+        "details"
+      ]
+    },
+    {
+      "id": "topic-reading-list",
+      "revision": "1b93ac71e0b8261b7637426ff3dbd39eca08e01703e18cb63711b477297145a8",
+      "design": "preference-card",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "reading-desk"
+        ],
+        "reason": "New preference-first form with a native select and a two-pane explanation; extra field is justified by the editorial workflow."
+      },
+      "screens_reviewed": [
+        "details",
+        "received"
+      ]
+    }
+  ]
+}

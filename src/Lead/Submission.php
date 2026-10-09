@@ -30,6 +30,8 @@ final class Submission
         public readonly ?string $email,
         public readonly ?string $phone,
         public readonly array $fields,
+        /** @var list<array<string, mixed>> Frozen question text, values and labels. */
+        public readonly array $questionAnswers = [],
     ) {
     }
 }

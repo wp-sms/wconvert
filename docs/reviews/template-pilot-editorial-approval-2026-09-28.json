@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "decision": "approved",
+  "scope": "First twelve campaign designs and direction; not release or measured conversion approval",
+  "source": "User: they are great, move forward",
+  "date": "2026-09-28",
+  "entries": [
+    {
+      "id": "studio-welcome",
+      "revision": "d6033358022164d9879718bf53484ebb7be9173be372472785ed3bd1dd8e0fda"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "8c654bfde9b88e0cd73855360ec1869a081bde31575bf503ed5394a9d951941c"
+    },
+    {
+      "id": "journey-email-then-sms",
+      "revision": "0d03614c902b902dc6cec33386f2e26d16ec0af4ca4d152e8663cd566d4c2bb1"
+    },
+    {
+      "id": "delivery-announcement",
+      "revision": "ce9ea852ff84f3416a443baf63da9d69a0f89560a29164f9aeb83cf2883fbb6a"
+    },
+    {
+      "id": "fullscreen-announcement",
+      "revision": "f8bf1d6da19a3f2940197245d0dde8afcc367d85801d2453a6cf6aaa65df3b09"
+    },
+    {
+      "id": "product-finder",
+      "revision": "c443f266e5e75d483cf3c4ec61f87bff4f787001768dcb3333b11ac2ce61743b"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "e082f6bde6d735a2a6815a1f1d76f06771b188d6bbf7a89fc17473d76cc96e0a"
+    },
+    {
+      "id": "photography-enquiry",
+      "revision": "16eb6485769cc931bb3f4a0bf71fe5ba66564c165361c45e14eb74d270609bd4"
+    },
+    {
+      "id": "consultation-corner",
+      "revision": "5a31f29f3ad1f0a28c81bb888f83ceecc1bbc97e41965807600880419f88c491"
+    },
+    {
+      "id": "project-planning-guide",
+      "revision": "eeef6eed7a01d15a15a27de70fbe69cdec2233f104c412f21c387fc4e1b4e67b"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "9eb124efb8960876cb79fce0873d919c20d122b5313751899507c3321f4ccc7f"
+    },
+    {
+      "id": "content-guide",
+      "revision": "9d96ffd0bb4aff64673a9c048715292666e6189aae1be7cc1b0a8ad7da676a4c"
+    }
+  ]
+}

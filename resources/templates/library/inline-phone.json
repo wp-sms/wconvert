@@ -51,7 +51,10 @@
                   "name": "phone",
                   "label": "Mobile number",
                   "placeholder": "+44 7700 900000",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#8a72fc"
+                  }
                 }
               ]
             },

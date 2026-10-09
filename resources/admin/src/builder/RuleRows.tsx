@@ -26,12 +26,12 @@ export interface Row {
   readonly onRemove: (() => void) | null;
 }
 
-export function RuleRows({ rows, empty }: { rows: readonly Row[]; empty: string }) {
+export function RuleRows({ rows, empty, attention = false }: { rows: readonly Row[]; empty: string; attention?: boolean }) {
   if (rows.length === 0) {
     // A description by role — *"Nowhere is excluded."* explains the list it
     // stands in for, and at body size it read as content rather than as the
     // absence of it (ADR 0037's `note`).
-    return <p className="wconvert-rules__empty text-note">{empty}</p>;
+    return <p className="wconvert-rules__empty text-note" data-attention={attention || undefined}>{empty}</p>;
   }
 
   return (

@@ -223,7 +223,7 @@ final class SlotRoles
     /** Copy scopes follow a submission's channel; other screens retain their stable identity.
      * @param array<string, mixed> $tree
      */
-    private static function scope(array $tree, int $index): string
+    public static function scope(array $tree, int $index): string
     {
         $screen = $tree['steps'][$index];
         if ($screen['kind'] === 'acknowledgement') { return 'acknowledgement'; }

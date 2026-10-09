@@ -58,6 +58,17 @@ final class PolicyTextTest extends TestCase
         $this->assertStringNotContainsString('We keep form submissions for', $text);
     }
 
+    public function testItNamesOnlyTheConfiguredAnalyticsProvider(): void
+    {
+        foreach (['plausible' => 'Plausible', 'gtag' => 'Google Analytics', 'gtm' => 'Google Analytics'] as $route => $provider) {
+            $GLOBALS['wconvertTestFilters'] = [];
+            add_filter('wconvert_analytics_privacy', static fn (): array => ['configured' => true, 'route' => $route]);
+            $text = $this->policy->content();
+            self::assertStringContainsString("existing {$provider} installation", $text);
+            self::assertStringNotContainsString($route === 'plausible' ? 'Google Analytics' : 'Plausible', $text);
+        }
+    }
+
     public function testItUsesReaderQuestionsAndKeepsMerchantInstructionsOutOfSuggestedCopy(): void
     {
         $text = $this->policy->content();

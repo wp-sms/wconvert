@@ -116,7 +116,7 @@ top layer does not enter the auction.
 - **`inline` Optins are outside this decision.** They render where they were
   embedded, so a clipping ancestor clips them whatever the container — measured
   identically across all eleven modes. That is a placement question, not a rendering
-  primitive one.
+  primitive one. The inline mount removes the renderer’s overlay height cap on every screen, so long embedded campaigns grow with the page rather than adding a second vertical scroll area.
 
 **Amended by [ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md):** this
 decision was measured on a popup only. `floating_bar` and `slide_in` must not be

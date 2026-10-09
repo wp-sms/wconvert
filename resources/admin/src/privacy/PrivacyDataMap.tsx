@@ -98,6 +98,8 @@ export function PrivacyDataMap() {
   return (
     <SettingsDisclosure title={title} summary={summary}>
       <RegionBody className="flex flex-col gap-5">
+      {data.analytics_integration?.configured && <p>{sprintf(__('External analytics is enabled. WConvert sends campaign IDs, public labels and outcome types through %s. It sends no form details; the existing tag can add its own identifiers and page context. Collection follows the configured consent policy.', 'wconvert'), data.analytics_integration.route === 'plausible' ? 'Plausible' : 'Google Analytics')}</p>}
+
         <section aria-labelledby="wconvert-stored-data">
           <h3 id="wconvert-stored-data" className="m-0 text-body font-medium">
             {__('Saved in WConvert', 'wconvert')}
@@ -106,7 +108,7 @@ export function PrivacyDataMap() {
             {__('Form submissions include answers, consent text, the Campaign, submission time and any name, email or phone entered. They do not include the page URL, IP address or browser details.', 'wconvert')}
           </Description>
           {data.retention_days === null ? (
-            <Alert className="mt-3 border-warning/30 bg-warning/5 text-warning">
+            <Alert className="mt-3 border-warning/30 bg-warning-surface text-warning">
               <TriangleAlert />
               <AlertTitle className="line-clamp-none">{__('Kept until you delete them', 'wconvert')}</AlertTitle>
               <AlertDescription className="text-warning">
@@ -134,11 +136,12 @@ export function PrivacyDataMap() {
               cookieDurationText(data.browser.cookie_fallback_days),
             )}
           </Description>
+          {data.browser.additional?.map(note => <Description className="mt-2" key={note}>{note}</Description>)}
           {data.browser.content_unlock != null && <Description className="mt-2">{__('Content locks remember successful access for 30 days in site-scoped local storage: up to 64 Campaign IDs and expiry days, with no contact details. Blocked storage limits remembering to this page.', 'wconvert')}</Description>}
           <Description className="mt-2">{__('Configured session limits use wcv_display_session_v1: at most 128 Campaign family counts, without contact details or a visitor ID. The least recently shown family is evicted first. Blocked storage limits pacing to the current page; browsers may copy or restore tab sessions.', 'wconvert')}</Description>
           {data.browser.reopen_session != null && <Description className="mt-2">{__('When a Pro reopen button is enabled, this tab also remembers the Campaign and reminder dismissals until its browser session ends. This session storage contains no contact details or visitor ID. Browsers may restore it when restoring tabs; blocked storage limits recovery to the current page.', 'wconvert')}</Description>}
           {data.browser.cart_recovery !== null && <Description className="mt-2">
-            {__('Cart recovery keeps the cart item count and total until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert')}
+            {__('Cart recovery keeps the cart item count and total until the WooCommerce cart session ends. The cookie does not store product or contact details. Rich cart rules use the existing WooCommerce session and keep only matches and public suggestions in page memory for up to 30 seconds. No cart contents or new visitor ID are saved. Cart reads use a separate 60-second rate-limit bucket containing a site-specific one-way IP hash.', 'wconvert')}
           </Description>}
         </section>
 
@@ -149,6 +152,7 @@ export function PrivacyDataMap() {
           <Description className="mt-1">
             {__('Daily Campaign totals record views, dismissals and completions, not individual visitors.', 'wconvert')}
           </Description>
+          {data.product_activity_retention_days && <Description className="mt-2">{sprintf(__('Product recommendations record daily counts by product and campaign, without visitor IDs. Product activity is kept for %d days and removed by scheduled cleanup. Campaign totals are kept separately.', 'wconvert'), data.product_activity_retention_days)}</Description>}
           <Description className="mt-2">
             {sprintf(
               /* translators: %s: a short duration such as “one minute”. */
@@ -163,6 +167,15 @@ export function PrivacyDataMap() {
               rateLimitText(data.capture_rate_limit_seconds),
             )}
           </Description>
+        </section>
+
+        <section className="border-t border-border pt-5">
+          <h3 className="m-0 text-body font-medium">{__('Spam protection services', 'wconvert')}</h3>
+          <Description className="mt-2">{data.protection_provider && data.protection_provider !== 'none'
+            ? sprintf(__('Configured provider: %s. Verification sends browser and network information to that provider; WConvert sends the verification token, not the contact fields.', 'wconvert'), data.protection_provider)
+            : __('No external bot verification provider is enabled.', 'wconvert')}</Description>
+          <Description className="mt-2">{__('Repeated resource emails use a ten-minute limit keyed by a site-specific one-way code of the recipient and resource. Expired codes are removed during scheduled maintenance. Protection diagnostics contain only approximate totals and expire after 24 hours.', 'wconvert')}</Description>
+          <a href={settingsHref('protection')} className="text-note underline">{__('Open spam protection', 'wconvert')}</a>
         </section>
 
         <section aria-labelledby="wconvert-destination-data" className="border-t border-border pt-5">

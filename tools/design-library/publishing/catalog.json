@@ -1,0 +1,86 @@
+{
+  "schema": 1,
+  "packs": [
+    {
+      "id": "stores-starts",
+      "name": "Stores starting points",
+      "description": "Reviewed campaign starting points for stores.",
+      "version": "1.1.0",
+      "setups": [
+        "edition-early-access",
+        "first-order-receipt",
+        "restock-announcements",
+        "specification-sheet"
+      ]
+    },
+    {
+      "id": "services-starts",
+      "name": "Services starting points",
+      "description": "Reviewed campaign starting points for services.",
+      "version": "1.0.0",
+      "setups": [
+        "cleaning-quote",
+        "home-repair-quote",
+        "renovation-callback",
+        "repair-advice-request",
+        "repair-assessment",
+        "website-review-enquiry"
+      ]
+    },
+    {
+      "id": "publishers-starts",
+      "name": "Publishers starting points",
+      "description": "Reviewed campaign starting points for publishers.",
+      "version": "1.1.1",
+      "setups": [
+        "editorial-weekly",
+        "reading-notes-guide",
+        "sunday-reading",
+        "writing-checklist",
+        "excerpt-window"
+      ]
+    },
+    {
+      "id": "homeware-care",
+      "name": "Care for handmade homeware",
+      "description": "An illustrated starting point for useful monthly homeware care notes.",
+      "version": "1.0.0",
+      "setups": [
+        "homeware-care-notes"
+      ]
+    }
+  ],
+  "collections": [
+    "service-enquiries",
+    "reader-relationships"
+  ],
+  "deferred": [
+    {
+      "setup": "sale-deadline",
+      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
+    },
+    {
+      "setup": "lighting-collection",
+      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
+    }
+  ],
+  "image_rights": {
+    "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152": {
+      "redistribution": true,
+      "source": "Original WConvert homeware-shelf.svg, extracted unchanged from product-shelf; GPL-2.0-or-later. Raster export: homeware-shelf.png. See pilot/assets/README.md.",
+      "reviewedBy": "Codex \u2014 source/provenance review, 2026-10-01",
+      "access": "free"
+    }
+  },
+  "artwork_exports": {
+    "e3834ed65909a2c8fd89a754b3cb400c2933231f9574538ce4001a6eecae9477": {
+      "path": "tools/design-library/pilot/assets/homeware-shelf.png",
+      "sha256": "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/homeware-artwork-export-2026-10-01.md",
+        "sha256": "2d12b2427955034e9d55691648f22a7d714f7f4717d7d1c0c41ee61e4c62fa30"
+      }
+    }
+  }
+}

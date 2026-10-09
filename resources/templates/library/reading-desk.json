@@ -1,0 +1,184 @@
+{
+  "id": "reading-desk",
+  "name": "Reading desk",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f5f1e6",
+    "fg": "#323e31",
+    "muted": "#323e31",
+    "accent": "#394b37",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.25rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "48rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "basis": "16rem",
+          "ratio": "0.5",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.75rem",
+                "gap": "1rem",
+                "bg": "#f5f1e6"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "A letter worth making time for"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "Less scrolling.\nMore reading."
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "One thoughtful essay every Sunday. Books, places and ideas that stay with you."
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.75rem",
+                "gap": "1rem",
+                "bg": "#e6eadf"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n4",
+                  "role": "eyebrow",
+                  "text": "The Sunday reading list"
+                },
+                {
+                  "type": "field",
+                  "id": "n5",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#8c7f68"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n6",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me the Sunday reading list. I can unsubscribe anytime.",
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n7",
+                  "role": "cta_label",
+                  "label": "Request the Sunday letter",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "Weekly. Free to read. Unsubscribe anytime.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n9",
+              "role": "eyebrow",
+              "text": "Thank you"
+            },
+            {
+              "type": "heading",
+              "id": "n10",
+              "role": "success_headline",
+              "text": "A slower Sunday starts here."
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "success_body",
+              "text": "We have received your request for the Sunday letter."
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ]
+  }
+}

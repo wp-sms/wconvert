@@ -37,6 +37,7 @@ export const CAPTURE_ATTRIBUTE = 'data-capture';
  * while looking like it is kept.
  */
 export const BEACON_ATTRIBUTE = 'data-beacon';
+export const PRODUCTS_ATTRIBUTE = 'data-products';
 
 /**
  * The allowance the whole site shares, as the same four fields an entry
@@ -78,6 +79,11 @@ export const TIMEZONE_ATTRIBUTE = 'data-tz';
  */
 export function captureEndpoint(): string | null {
   return attributeAt(CAPTURE_ATTRIBUTE);
+}
+
+/** WooCommerce's public Store Products read, emitted only for product quizzes. */
+export function productsEndpoint(filtered = false): string | null {
+  return attributeAt(filtered ? 'data-product-matches' : PRODUCTS_ATTRIBUTE);
 }
 
 /**

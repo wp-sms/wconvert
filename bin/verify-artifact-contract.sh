@@ -173,7 +173,18 @@ require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
 # function 0004 exists to prevent, arriving through a missing file".
 require_file public/loader/loader.js "the shipped loader is built, never committed — run the build" || true
 if [ "$slug" = "wconvert" ]; then
+    require_file public/protection/protection.js "protected forms need the isolated verification bundle" || true
     require_file public/phone/phone.js "phone campaigns need the built optional input bundle" || true
+fi
+
+if [ "$slug" = "wconvert-pro" ]; then
+    if [ -d "$TREE/modules/cart-recovery" ]; then
+        require_file modules/cart-recovery/public/commerce.js "cart intelligence runtime must be built" || true
+    fi
+    require_file modules/analytics/public/revenue.js "campaign sales tracking runtime must be built" || true
+    require_file docs/campaign-sales.html "campaign sales setup guide is linked from reports" || true
+    require_file public/analytics/analytics.js "the optional analytics adapter must be built" || true
+    require_file docs/analytics-integrations.html "the analytics setup guide is linked from settings" || true
 fi
 
 # THE ELIGIBILITY INSPECTOR, BOTH TIERS, AND PRO'S IS NOT OPTIONAL EITHER.
@@ -333,6 +344,21 @@ if [ "$tier" = "free" ]; then
         "the free artifact's PHP references Pro (namespace, or a pro/ path):" \
         "${SCAN_PATHS[@]}" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
 
+    # THE SHIPPED BUILD CONFIGS, which are free's tree too now that the ZIP
+    # carries them so a reviewer can rebuild public/ (.distignore says why).
+    # A root Vite config naming a `pro/` path is either one of Pro's configs
+    # the .distignore forgot, or a free config reaching into Pro — and in both
+    # cases `npm run build:free` in the unzipped plugin is a build that cannot
+    # run. Grepped, like (e): the literal is the thing, and no free config has
+    # a reason to spell it even in a comment.
+    for config in "$TREE"/vite*.mjs; do
+        [ -e "$config" ] || continue
+
+        if grep -q 'pro/' "$config"; then
+            fail "the free artifact ships $(basename "$config"), which names a pro/ path — a Pro build config, or a free one reaching into Pro"
+        fi
+    done
+
     if section_clean; then
         pass "no path under Pro's plugin directory"
     fi
@@ -363,10 +389,30 @@ if [ "$tier" = "free" ]; then
     # The sources behind the two shipped bundles, plus the renderer both of
     # them import (vite.config.admin.mjs aliases @renderer at it).
     require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
+    require_populated_dir "$TREE" resources/protection/src '*.ts' "verification bundle source ships with Free" || true
     require_populated_dir "$TREE" resources/phone/src '*.ts' "public/phone/phone.js is built from it" || true
     require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main-*.js is built from it" || true
     require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
     require_populated_dir "$TREE" resources/blocks/inline-optin/src '*.tsx' "public/blocks/inline-optin.js is built from it" || true
+
+    # WHAT REBUILDS THEM. Sources a reviewer cannot build are half of
+    # Guideline 4, and the repository is private, so the manifests and free's
+    # Vite configs ship: `npm ci && npm run build:free` and `composer install
+    # --no-dev` in the unzipped plugin reproduce public/ and vendor/. Each
+    # config here is one that writes into public/; the two factories they
+    # import come with them.
+    for build_file in package.json package-lock.json tsconfig.json composer.json composer.lock \
+        vite.admin-config.mjs vite.loader-config.mjs \
+        vite.config.admin.mjs vite.config.block.mjs vite.config.loader.mjs \
+        vite.config.inspector.mjs vite.config.phone.mjs vite.config.protection.mjs; do
+        require_file "$build_file" "the shipped bundles cannot be rebuilt from the download without it" || true
+    done
+
+    if [ -f "$TREE/package.json" ] && ! grep -q '"build:free"' "$TREE/package.json"; then
+        fail "package.json has no build:free script — the readme's rebuild instruction names it"
+    fi
+
+    require_file license.txt "the plugin's GPL-2.0 licence ships beside it" || true
 
     # Runtime data. Free reads each of these by a path constant, and a ZIP
     # missing one is a plugin that cannot draw a template or evaluate a rule.
@@ -417,7 +463,7 @@ verdict
 #      DESIGN in the free artifact, whatever the admin then does with it.
 #   2. A `tree` anywhere in locked.json. That file exists precisely to carry
 #      the CARD and not the design — a name, its facets and a link to a live
-#      preview on wconvert.com — so a tree in it is the trialware shape
+#      preview on wconvert.io — so a tree in it is the trialware shape
 #      arriving through the file written to prevent it.
 #
 # Grepped rather than parsed, deliberately. A shell program that decoded JSON
@@ -758,7 +804,10 @@ if [ "$tier" = "free" ]; then
         [ -e "$entry" ] || continue
 
         case "$(basename "$entry")" in
-            "$main_file"|uninstall.php|readme.txt|tiers.json|src|resources|public|vendor) ;;
+            "$main_file"|uninstall.php|readme.txt|license.txt|tiers.json|src|resources|public|vendor) ;;
+            # The build files a wp.org reviewer needs to rebuild public/ and vendor/.
+            composer.json|composer.lock|package.json|package-lock.json|tsconfig.json) ;;
+            vite.loader-config.mjs|vite.admin-config.mjs|vite.config.*.mjs) ;;
             *) fail "unexpected entry at the free artifact's root: $(basename "$entry") — add it to .distignore, or to the allowlist here if it must ship" ;;
         esac
     done

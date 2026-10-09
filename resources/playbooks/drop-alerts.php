@@ -12,6 +12,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'drop-alerts',
     'name' => __('New-release SMS alerts', 'wconvert'),
     'goal' => 'grow_sms_list',
@@ -19,10 +20,10 @@ return [
     'notes' => __('Use text updates for time-sensitive news. Say how often you will message, configure the connected service and keep the promise narrow.', 'wconvert'),
     'copy' => [
         'headline' => __('Text me when it drops', 'wconvert'),
-        'body' => __('One message when something new lands. Nothing else, ever.', 'wconvert'),
+        'body' => __('Text updates when a new collection is released.', 'wconvert'),
         'phone_label' => __('Mobile number', 'wconvert'),
         'phone_placeholder' => __('+44 7700 900000', 'wconvert'),
-        'cta_label' => __('Sign me up', 'wconvert'),
+        'cta_label' => __('Request release texts', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
             'text' => __('Send me new-release text alerts. %s', 'wconvert'),

@@ -32,9 +32,11 @@ final class DataMapTest extends TestCase
         );
 
         $this->assertSame([
+            'analytics_integration' => null,
             'retention_days' => null,
             'destinations' => [],
             'browser' => [
+                'additional' => [],
                 'key' => 'wcv1',
                 'display_session' => 'wcv_display_session_v1',
                 'local_storage_expiry_days' => null,
@@ -47,9 +49,22 @@ final class DataMapTest extends TestCase
                 'reopen_session' => null,
                 'cart_recovery' => null,
             ],
+            'product_activity_retention_days' => null,
             'beacon_rate_limit_seconds' => 60,
             'capture_rate_limit_seconds' => 600,
+            'protection_provider' => 'none',
+            'resource_send_limit_seconds' => 600,
         ], $map->summary());
+    }
+
+    /** Product activity is disclosed only where a module can record it (ADR 0116). */
+    public function testProductActivityIsDisclosedOnlyWhereAModuleCanRecordIt(): void
+    {
+        $options = new FakeOptionStore();
+        $map = new DataMap(new RetentionPeriod($options), new DestinationStore($options), new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()));
+        $this->assertNull($map->summary()['product_activity_retention_days']);
+        add_filter('wconvert_journeys', static fn (): bool => true);
+        $this->assertSame(90, $map->summary()['product_activity_retention_days']);
     }
 
     public function testConfiguredRoutesReportOnlyTheValuesTheyMayReceiveWithoutCredentials(): void

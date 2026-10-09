@@ -56,6 +56,7 @@ export interface StructureViewProps {
   readonly endsAt?: string;
 
   readonly onSetEndDate?: () => void;
+  readonly onPlacement?: () => void;
 
   readonly preview?: ReactNode;
 
@@ -86,6 +87,7 @@ export function StructureView({
   focus,
   endsAt,
   onSetEndDate,
+  onPlacement,
   preview,
   toolbar,
   checks,
@@ -288,6 +290,7 @@ export function StructureView({
                 template={template}
                 labels={labels}
                 path={selected}
+                revealContent={focus}
                 act={act}
                 onChange={onChange}
                 onSwap={(next, sentence) => {
@@ -296,6 +299,7 @@ export function StructureView({
                 }}
                 endsAt={endsAt}
                 onSetEndDate={onSetEndDate}
+                onPlacement={onPlacement}
                 look={look}
                 onSelect={onSelect}
                 onDesign={onDesign}

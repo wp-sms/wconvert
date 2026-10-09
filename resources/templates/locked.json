@@ -1,18 +1,52 @@
 {
-  "_note": "Designs Pro ships and free does not. Metadata only — no tree, ever. See src/Template/LockedTemplates.php.",
+  "_note": "Designs Pro ships and free does not. Metadata only \u2014 no tree, ever. See src/Template/LockedTemplates.php.",
   "_withdrawn": {
-    "popup-spin-to-win": "Withdrawn, not deferred. A wheel needs a per-visitor outcome, and the payload is baked into HTML the full-page cache serves byte-identically to every visitor — so either every segment's prize ships in the page source or none does (ADR 0025, \"no coupon minting, and not as a preference\"). One spin per visitor is a claim about a PERSON, and WConvert mints no visitor identifier (ADR 0017); wcv1 is a browser record, so a second browser is a second spin. And a stored outcome serves two purposes in two consent categories at once, which is the question ADR 0052 left open and ADR 0053 answers. This file is bundled advertising: a card for a design nobody can ever be given is a worse defect than one fewer card. See docs/adr/0053-the-spin-to-win-card-is-withdrawn.md, and do not re-add it without reopening ADR 0003 first."
+    "popup-spin-to-win": "Withdrawn, not deferred. A wheel needs a per-visitor outcome, and the payload is baked into HTML the full-page cache serves byte-identically to every visitor \u2014 so either every segment's prize ships in the page source or none does (ADR 0025, \"no coupon minting, and not as a preference\"). One spin per visitor is a claim about a PERSON, and WConvert mints no visitor identifier (ADR 0017); wcv1 is a browser record, so a second browser is a second spin. And a stored outcome serves two purposes in two consent categories at once, which is the question ADR 0052 left open and ADR 0053 answers. This file is bundled advertising: a card for a design nobody can ever be given is a worse defect than one fewer card. See docs/adr/0053-the-spin-to-win-card-is-withdrawn.md, and do not re-add it without reopening ADR 0003 first."
   },
   "designs": [
-    {"id":"fullscreen-editorial","name":"Fullscreen editorial","display_type":"fullscreen","tier":"basic","facets":{"shape":"stack","captures":["email"],"has_image":false}},
-    {"id":"fullscreen-split","name":"Fullscreen split","display_type":"fullscreen","tier":"basic","facets":{"shape":"split","captures":["email"],"has_image":false}},
-    {"id":"fullscreen-poster","name":"Fullscreen poster","display_type":"fullscreen","tier":"basic","facets":{"shape":"stack","captures":[],"has_image":false}},
+    {
+      "id": "fullscreen-editorial",
+      "name": "Fullscreen editorial",
+      "display_type": "fullscreen",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "fullscreen-split",
+      "name": "Fullscreen split",
+      "display_type": "fullscreen",
+      "tier": "basic",
+      "facets": {
+        "shape": "split",
+        "captures": [
+          "email"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "fullscreen-poster",
+      "name": "Fullscreen poster",
+      "display_type": "fullscreen",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
+    },
     {
       "id": "bar-announcement",
       "name": "Announcement bar",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/announcement-bar/",
+      "preview_url": "https://wconvert.io/designs/announcement-bar/",
       "facets": {
         "shape": "row",
         "captures": [],
@@ -24,7 +58,7 @@
       "name": "Bar with a field",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/bar-with-a-field/",
+      "preview_url": "https://wconvert.io/designs/bar-with-a-field/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -38,7 +72,7 @@
       "name": "Deadline bar",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/deadline-bar/",
+      "preview_url": "https://wconvert.io/designs/deadline-bar/",
       "facets": {
         "shape": "row",
         "captures": [],
@@ -50,7 +84,7 @@
       "name": "Corner card with a picture",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card-with-a-picture/",
+      "preview_url": "https://wconvert.io/designs/corner-card-with-a-picture/",
       "facets": {
         "shape": "split",
         "captures": [
@@ -64,7 +98,7 @@
       "name": "Two-column offer",
       "display_type": "popup",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/two-column-offer/",
+      "preview_url": "https://wconvert.io/designs/two-column-offer/",
       "facets": {
         "shape": "split",
         "captures": [
@@ -79,9 +113,9 @@
       "name": "Cart nudge",
       "display_type": "inline",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/cart-nudge/",
+      "preview_url": "https://wconvert.io/designs/cart-nudge/",
       "facets": {
-        "shape": "row",
+        "shape": "split",
         "captures": [],
         "has_image": false
       }
@@ -91,7 +125,7 @@
       "name": "Bar that hands over a code",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/bar-that-hands-over-a-code/",
+      "preview_url": "https://wconvert.io/designs/bar-that-hands-over-a-code/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -105,7 +139,7 @@
       "name": "Corner card with a code",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card-with-a-code/",
+      "preview_url": "https://wconvert.io/designs/corner-card-with-a-code/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -119,9 +153,9 @@
       "name": "Corner nudge",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-nudge/",
+      "preview_url": "https://wconvert.io/designs/corner-nudge/",
       "facets": {
-        "shape": "row",
+        "shape": "stack",
         "captures": [],
         "has_image": false
       }
@@ -131,7 +165,7 @@
       "name": "Corner card with reasons",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card-with-reasons/",
+      "preview_url": "https://wconvert.io/designs/corner-card-with-reasons/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -145,7 +179,7 @@
       "name": "Editorial split",
       "display_type": "popup",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/editorial-split/",
+      "preview_url": "https://wconvert.io/designs/editorial-split/",
       "facets": {
         "shape": "split",
         "captures": [
@@ -159,7 +193,7 @@
       "name": "Flash over a picture",
       "display_type": "popup",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/flash-over-a-picture/",
+      "preview_url": "https://wconvert.io/designs/flash-over-a-picture/",
       "facets": {
         "shape": "stack",
         "captures": [],
@@ -171,12 +205,207 @@
       "name": "Strip that hands over a code",
       "display_type": "inline",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/strip-that-hands-over-a-code/",
+      "preview_url": "https://wconvert.io/designs/strip-that-hands-over-a-code/",
       "facets": {
         "shape": "stack",
         "captures": [
           "email"
         ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "gift-edit",
+      "name": "Gift edit",
+      "display_type": "popup",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "space-planner",
+      "name": "Space planner",
+      "display_type": "inline",
+      "tier": "basic",
+      "facets": {
+        "shape": "split",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "kit-workbench",
+      "name": "Kit workbench",
+      "display_type": "fullscreen",
+      "tier": "basic",
+      "facets": {
+        "shape": "split",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "service-directory",
+      "name": "Service directory",
+      "display_type": "inline",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "project-route",
+      "name": "Project route",
+      "display_type": "popup",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "reading-path",
+      "name": "Reading path",
+      "display_type": "inline",
+      "tier": "basic",
+      "facets": {
+        "shape": "split",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "slide-in-question",
+      "name": "A question in the corner",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email",
+          "interest"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "session-card",
+      "name": "Studio invitation",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": true
+      }
+    },
+    {
+      "id": "split-notice",
+      "name": "Useful detail bar",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "margin-note",
+      "name": "Margin note",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "sample-envelope",
+      "name": "Sample envelope",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email",
+          "interest"
+        ],
+        "has_image": true
+      }
+    },
+    {
+      "id": "availability-note",
+      "name": "Availability note",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "panel",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "inline-signpost",
+      "name": "Inline signpost",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "callback-slip",
+      "name": "Callback slip",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "phone"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "launch-index",
+      "name": "Launch index bar",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "cart-accessories",
+      "name": "Selected accessories",
+      "display_type": "inline",
+      "tier": "elite",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "cart-additions",
+      "name": "Add useful extras",
+      "display_type": "inline",
+      "tier": "elite",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
         "has_image": false
       }
     }

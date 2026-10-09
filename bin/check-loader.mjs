@@ -12,8 +12,8 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14012 B; Basic 20480 B;
-//      Pro 20608 B; Elite 20784 B (ADR 0105), per build. It blocks rather than warns, and there is no
+//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14336 B; Basic 24832 B;
+//      Pro 26368 B; Elite 26624 B (ADR 0109), per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -87,13 +87,19 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * limit is about what every visitor of every matching page downloads, and that
  * bundle is enqueued only for an administrator who asked for it.
  */
-const FREE_BYTE_BUDGET = 14012;
+// ADR 0111: 256 B per rung for pre-capture verification after ADR 0110 events.
+// ADR 0124: Node 22 gzip normalization, +32 B; Free asset is byte-identical.
+const FREE_BYTE_BUDGET = 14624;
 // ADR 0103: shared journeys plus paid recovery/content access.
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
-const PAID_BYTE_BUDGET = 20480;
+// ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
+// ADR 0124: +160 B Basic/Pro and +448 B Elite; measured on Node 22.
+const PAID_BYTE_BUDGET = 25376;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
-const PRO_BYTE_BUDGET = 20608;
-const ELITE_BYTE_BUDGET = 20784;
+// ADR 0121: server-counted conversion notification adds a bounded renderer seam.
+const PRO_BYTE_BUDGET = 26944;
+// ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
+const ELITE_BYTE_BUDGET = 27616;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

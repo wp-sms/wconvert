@@ -6,12 +6,16 @@ import { capturedFields, compatibilityProblems } from '../../resources/admin/src
 import { destinationsSaid } from '../../resources/admin/src/builder/destinations';
 import { DestinationSettingsForm } from '../../resources/admin/src/destinations/DestinationSettingsForm';
 import { SendTestDialog } from '../../resources/admin/src/destinations/SendTestDialog';
-import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
+import type { Connection, Destination, DestinationType } from '../../resources/admin/src/destinations/api';
 import type { Template } from '../../resources/renderer/src/types';
 
-const { testSend } = vi.hoisted(() => ({ testSend: vi.fn() }));
-vi.mock('../../resources/admin/src/destinations/api', async (original) => ({ ...await original<object>(), testSend }));
-beforeEach(() => { testSend.mockReset().mockResolvedValue({ outcome: 'success', message: 'Accepted by MailPoet.' }); });
+const { testSend, saveConnection, readSelectedSchema } = vi.hoisted(() => ({ testSend: vi.fn(), saveConnection: vi.fn(), readSelectedSchema: vi.fn() }));
+vi.mock('../../resources/admin/src/destinations/api', async (original) => ({ ...await original<object>(), testSend, saveConnection, readSelectedSchema }));
+beforeEach(() => {
+  testSend.mockReset().mockResolvedValue({ outcome: 'success', message: 'Accepted by MailPoet.' });
+  saveConnection.mockReset();
+  readSelectedSchema.mockReset();
+});
 
 const route: Destination = {
   id: 'route', label: 'Newsletter', type: 'mailpoet', connection: null, settings: { lists: ['3'] }, target: 'News', availability: 'ready',
@@ -23,8 +27,66 @@ const type: DestinationType = { id: 'mailpoet', label: 'MailPoet', icon: 'mail',
   availability: 'ready', needs_connection: false, requirements: route.requirements!,
   settings_schema: { lists: { type: 'ids', label: 'Lists to add to', options: [{ value: '3', label: 'News' }] },
     interest_field: { type: 'select', label: 'Interest field', options: [{ value: 'cf_7', label: 'Service interest' }] } } };
+const remoteType: DestinationType = {
+  ...type, id: 'mailchimp', label: 'Mailchimp', tier: 'pro', requires: null, requires_label: null,
+  needs_connection: true, connection_schema: { api_key: { type: 'password', label: 'API key' } },
+  requirements: { ...type.requirements!, settings: { audiences: { label: 'Audience', type: 'ids' } } },
+  settings_schema: { audiences: { type: 'ids', label: 'Audience', options: [] } },
+};
+const account: Connection = { id: 'account-1', type: 'mailchimp', label: 'Main account', credentials: { api_key: true } };
 
 describe('provider-declared destination requirements', () => {
+  it('connects an account inside destination setup, then asks for its audience', async () => {
+    const onConfirm = vi.fn();
+    const onConnectionSaved = vi.fn();
+    saveConnection.mockResolvedValue({ connection: account });
+    readSelectedSchema.mockResolvedValue({ settings_schema: { audiences: {
+      type: 'ids', label: 'Audience', options: [{ value: 'audience-1', label: 'Newsletter' }],
+    } } });
+    render(<DestinationSettingsForm type={remoteType} connections={[]} busy={false} error={null}
+      onCancel={vi.fn()} onConfirm={onConfirm} onConnectionSaved={onConnectionSaved} />);
+
+    expect(screen.getByText('Connect Mailchimp to choose where leads go.')).toBeVisible();
+    expect(screen.queryByText(/Complete “Audience”/)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Connect Mailchimp' }));
+    await userEvent.type(screen.getByLabelText('API key'), 'test-key');
+    await userEvent.click(screen.getByRole('button', { name: 'Check and save account' }));
+    await waitFor(() => expect(onConnectionSaved).toHaveBeenCalledWith(account));
+    expect(saveConnection).toHaveBeenCalledWith({ type: 'mailchimp', label: 'Mailchimp', credentials: { api_key: 'test-key' } });
+    expect(await screen.findByRole('checkbox', { name: 'Newsletter' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Add destination' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Newsletter' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
+    expect(onConfirm).toHaveBeenCalledWith({ label: 'Mailchimp — Newsletter', connection: account.id, settings: { audiences: ['audience-1'] } });
+  });
+
+  it('keeps the destination name while connecting another account', async () => {
+    saveConnection.mockResolvedValue({ connection: { ...account, id: 'account-2', label: 'Second account' } });
+    readSelectedSchema.mockResolvedValue({ settings_schema: { audiences: { type: 'ids', label: 'Audience', options: [] } } });
+    render(<DestinationSettingsForm type={remoteType} connections={[account]} busy={false} error={null}
+      onCancel={vi.fn()} onConfirm={vi.fn()} />);
+    await userEvent.clear(screen.getByRole('textbox', { name: 'Name' }));
+    await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'Spring leads');
+    await userEvent.click(screen.getByRole('button', { name: 'Connect another Mailchimp account' }));
+    await userEvent.type(screen.getByLabelText('API key'), 'second-key');
+    await userEvent.click(screen.getByRole('button', { name: 'Check and save account' }));
+    expect(await screen.findByRole('textbox', { name: 'Name' })).toHaveValue('Spring leads');
+    expect(screen.getByText(/No Audience choices were found/)).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Add destination' })).toBeDisabled();
+  });
+
+  it('explains a failed audience lookup and lets the merchant retry it', async () => {
+    readSelectedSchema.mockRejectedValueOnce(new Error('Provider unavailable')).mockResolvedValue({ settings_schema: {
+      audiences: { type: 'ids', label: 'Audience', options: [{ value: 'audience-1', label: 'Newsletter' }] },
+    } });
+    render(<DestinationSettingsForm type={remoteType} connections={[account]} busy={false} error={null}
+      onCancel={vi.fn()} onConfirm={vi.fn()} />);
+    expect(await screen.findByText(/Could not load choices from this account/)).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Add destination' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Refresh choices' }));
+    expect(await screen.findByRole('checkbox', { name: 'Newsletter' })).toBeVisible();
+    expect(screen.queryByText(/Could not load choices/)).not.toBeInTheDocument();
+  });
   it('distinguishes missing email, optional email and satisfied capture requirements', () => {
     expect(compatibilityProblems(route, [{ name: 'phone', required: true }]).join(' ')).toContain('needs email address. Add it');
     expect(compatibilityProblems(route, [{ name: 'email', required: false }, { name: 'phone', required: false }]).join(' ')).toContain('field is optional');
@@ -40,7 +102,7 @@ describe('provider-declared destination requirements', () => {
   });
   it('uses saved setting requirements without accepting whitespace or numeric list IDs', () => {
     for (const lists of [[], [' '], [3], '3']) {
-      expect(compatibilityProblems({ ...route, settings: { lists } }, [{ name: 'email', required: true }]).join(' ')).toContain('Complete “Lists to add to”');
+      expect(compatibilityProblems({ ...route, settings: { lists } }, [{ name: 'email', required: true }]).join(' ')).toContain('Choose “Lists to add to”');
     }
     const magnet = { ...route, requirements: { capture_any_of: ['email'], settings: { file_url: { label: 'File URL', type: 'text' } }, fields: ['email'], mapped_fields: {} } };
     expect(compatibilityProblems(magnet, [{ name: 'phone', required: true }]).join(' ')).toContain('Complete “File URL”');

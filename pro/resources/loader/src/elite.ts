@@ -1,3 +1,4 @@
+import { registerQuizProducts } from '../../../modules/cart-recovery/loader/result-products';
 import { bootProLoader, presenter as proPresenter } from './tier';
 import { ELITE_MODULES } from './modules';
 import { narrowToArms } from '../../../modules/ab-testing/loader';
@@ -19,6 +20,7 @@ import { narrowToArms } from '../../../modules/ab-testing/loader';
  * survives being run at the wrong moment (ADR 0004) — is `tier.ts`'s, shared
  * so it cannot be got right at two rungs and wrong at the third.
  */
+registerQuizProducts();
 const loader = bootProLoader(ELITE_MODULES, narrowToArms);
 
 /**

@@ -14,29 +14,14 @@ use WP_REST_Response;
 
 defined('ABSPATH') || exit;
 
-/**
- * REST for the [[Playbook]] gallery, and for prefill.
- *
- * **Read-only, and prefill persists nothing.** Both routes are `GET`, which is
- * not a formality: a merchant who browses the gallery, prefills three drafts
- * and closes the tab has created nothing. What prefill returns is the body
- * `POST /wconvert/v1/optins` takes, and until someone posts it there is no
- * row.
- *
- * **The gallery filters on Goal only.** [[Display Type]] is not the primary
- * axis of the product — users arrive via a Goal, and the type is prefilled by
- * the chosen Playbook, selectable as an override and a filter afterwards
- * (CONTEXT.md, Display Type). Adding a second filter parameter here would make
- * it one.
- *
- * @since 0.1.0
- */
+/** Goal-scoped metadata, bounded prepared previews, and read-only draft preparation. */
 final class PlaybookController implements RestController
 {
     public function __construct(
         private readonly PlaybookLibrary $playbooks,
         private readonly GoalRegistry $goals,
         private readonly Prefill $prefill,
+        private readonly \WConvert\Discovery\SetupIndex $setups,
     ) {
     }
 
@@ -53,6 +38,12 @@ final class PlaybookController implements RestController
             ],
         ]);
 
+        register_rest_route(Routes::NAMESPACE, '/playbooks/previews', [[
+            'methods' => 'GET', 'callback' => [$this, 'previews'],
+            'permission_callback' => [Routes::class, 'canManage'],
+            'args' => ['goal' => ['required' => true, 'type' => 'string'], 'ids' => ['required' => true, 'type' => 'string']],
+        ]]);
+
         // Its own route rather than a parameter on the gallery above, because
         // it answers a different question: the gallery is what a merchant is
         // choosing BETWEEN, and this is the one they chose. Registered before
@@ -68,6 +59,8 @@ final class PlaybookController implements RestController
                     // Absent means "start from scratch", which skips the
                     // Playbook and never the Goal.
                     'playbook_id' => ['type' => 'string', 'sanitize_callback' => 'sanitize_key'],
+                    'revision' => ['type' => 'string'],
+                    'prepared_revision' => ['type' => 'string'],
                 ],
             ],
         ]);
@@ -85,47 +78,48 @@ final class PlaybookController implements RestController
         }
 
         return new WP_REST_Response(array_map(
-            fn (Playbook $playbook): array => $this->withItsDesign($playbook),
+            fn (Playbook $playbook): array => $this->metadata($playbook),
             FlagshipCollection::prioritize($this->playbooks->servicing($goal))
         ));
     }
 
-    /**
-     * One Playbook, and **the design it would prefill, with its words in it**.
-     *
-     * ========================================================================
-     * STEP 2 DREW A HEADING, A PARAGRAPH AND A BUTTON (#68, #79).
-     * ========================================================================
-     * The creation flow's second step is where a merchant chooses between
-     * ready-to-run starts, and it showed them as `ChoiceCard`s — while the
-     * product's whole claim is that there are no thumbnails anywhere in this
-     * flow because the REAL thing is cheap to draw (ADR 0010). The chooser now renders the real design and opens its draft directly.
-     *
-     * `Playbook::toArray()` carries `template_id`, `display_type` and `copy`
-     * and nothing has ever read them, because none of the three is a design:
-     * binding copy to [[Slot Role]]s is {@see Prefill}'s job and reproducing it
-     * in the browser would be a second implementation of the one thing that
-     * must not have two.
-     *
-     * **So this is prefill's own composition, called here.** What the chooser draws
-     * is byte-identical to what `POST /optins` would store — not similar to it, the same call — so a merchant cannot be shown
-     * a card and then handed something else.
-     *
-     * The cost is one tree per Playbook on a route that returns the handful
-     * servicing one [[Goal]]. That is a different question from the design
-     * LIBRARY, which is indexed precisely because it is not a handful
-     * (ADR 0043).
-     *
+    /** @return array<string, mixed> */
+    private function metadata(Playbook $playbook): array
+    {
+        $entry = $this->setups->entry($playbook);
+        $recommendation = FlagshipCollection::recommendation($playbook->id);
+        if ($recommendation !== null) $entry['recommendation'] = $recommendation;
+        return $entry;
+    }
+
+    public function previews(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $goal = $this->goal($request);
+        if ($goal instanceof WP_Error) return $goal;
+        $ids = array_values(array_unique(explode(',', (string) $request->get_param('ids'))));
+        if (count($ids) > 24) return new WP_Error('wconvert_preview_limit', __('Ask for at most 24 previews.', 'wconvert'), ['status' => 400]);
+        $entries = [];
+        foreach ($ids as $id) {
+            $playbook = $this->playbooks->find($id);
+            if ($playbook === null || $playbook->goal !== $goal) continue;
+            if ($this->metadata($playbook)['availability'] !== 'ready') continue;
+            $entries[] = $this->withItsDesign($playbook);
+        }
+        return new WP_REST_Response(['entries' => $entries]);
+    }
+
+    /** Actual Prefill output, requested only for visible cards or inspection.
      * @return array<string, mixed>
      */
     private function withItsDesign(Playbook $playbook): array
     {
-        $entry = $playbook->toArray();
+        $entry = $this->metadata($playbook);
         $recommendation = FlagshipCollection::recommendation($playbook->id);
         if ($recommendation !== null) {
             $entry['recommendation'] = $recommendation;
         }
         $draft = $this->prefill->fromPlaybook($playbook->id);
+        $entry['prepared_revision'] = hash('sha256', (string) wp_json_encode($draft, JSON_THROW_ON_ERROR));
         $config = $draft['config'] ?? null;
         $template = $config['template'] ?? null;
 
@@ -138,9 +132,8 @@ final class PlaybookController implements RestController
             ]));
         }
 
-        // Absent rather than empty where there is no design behind it: a
-        // Playbook naming a Template this install no longer ships still starts
-        // an Optin, and the card falls back to the words it always had.
+        // Keep the preview shape explicit. Unavailable designs are omitted by
+        // the caller and cannot start an Optin through the draft endpoint.
         if (is_array($template)) {
             $entry['template'] = $template;
         }
@@ -165,6 +158,13 @@ final class PlaybookController implements RestController
             return new WP_REST_Response($this->prefill->fromScratch($goal));
         }
 
+        $playbook = $this->playbooks->find($playbookId);
+        if ($playbook !== null) {
+            $entry = $this->metadata($playbook);
+            if ($entry['availability'] !== 'ready') return new WP_Error('wconvert_setup_unavailable', __('This design is not available on this site.', 'wconvert'), ['status' => 409]);
+            $revision = $request->get_param('revision');
+            if (is_string($revision) && !hash_equals($entry['revision'], $revision)) return new WP_Error('wconvert_setup_changed', __('This setup changed. Preview it again before creating a draft.', 'wconvert'), ['status' => 409]);
+        }
         $draft = $this->prefill->fromPlaybook($playbookId);
 
         if ($draft === null) {
@@ -181,6 +181,11 @@ final class PlaybookController implements RestController
                 __('That Campaign setup does not serve that Goal.', 'wconvert'),
                 ['status' => 400]
             );
+        }
+
+        $preparedRevision = $request->get_param('prepared_revision');
+        if (is_string($preparedRevision) && !hash_equals(hash('sha256', (string) wp_json_encode($draft, JSON_THROW_ON_ERROR)), $preparedRevision)) {
+            return new WP_Error('wconvert_prepared_setup_changed', __('Site settings changed this setup. Reload its preview before creating a draft.', 'wconvert'), ['status' => 409]);
         }
 
         return new WP_REST_Response($draft);

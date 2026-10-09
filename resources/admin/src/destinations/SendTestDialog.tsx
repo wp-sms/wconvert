@@ -88,9 +88,9 @@ export function SendTestDialog({
             <p className="mt-0">{__('Use an address you own. Depending on this destination, the test can create or update a contact, add it to selected lists or tags, or send an email.', 'wconvert')}</p>
             <p>{__('It creates no lead and changes no reports in WConvert. A successful handoff does not confirm subscription or inbox delivery.', 'wconvert')}</p>
           </div>
-          {error !== null && <p role="alert" className="m-0 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-destructive">{error}</p>}
+          {error !== null && <p role="alert" className="m-0 rounded-md border border-destructive/30 bg-destructive-surface p-3 text-destructive">{error}</p>}
           {result !== null && <p role={result.outcome === 'failed' ? 'alert' : 'status'}
-            className={`m-0 rounded-md border p-3 ${result.outcome === 'failed' ? 'border-destructive/30 bg-destructive/5 text-destructive' : 'border-border bg-surface'}`}>
+            className={`m-0 rounded-md border p-3 ${result.outcome === 'failed' ? 'border-destructive/30 bg-destructive-surface text-destructive' : 'border-border bg-surface'}`}>
             {result.message}
           </p>}
           <DialogFooter>

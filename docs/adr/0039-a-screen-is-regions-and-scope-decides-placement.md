@@ -93,6 +93,12 @@ region; a separate otherwise-empty toolbar would repeat the same section
 boundary. Per-destination Settings stays on its row. This does not move other
 region actions or change the reading screens' page-action cap.*
 
+*Amended by [0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s
+Destinations tab redesign: only **Add destination** remains on that heading —
+Refresh is gone, and per-destination Settings collapses with Send a test and
+Remove into each card's overflow menu, as the "one row" line above prescribes
+for more than two actions.*
+
 That table answers the open questions directly rather than by taste. Leads'
 Export CSV acts on the screen's whole log, so it is page-scoped and belongs
 beside the title. Analytics' range picker changes what one region shows, so it

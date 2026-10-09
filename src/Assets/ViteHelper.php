@@ -136,7 +136,9 @@ final class ViteHelper
         // own default — falls through to the SITE's WordPress version and the
         // script is served as `main-<hash>.js?ver=7.1`. Only `null` is the
         // absence of a version rather than a request for the default one, and
-        // the difference here is a blank admin screen.
+        // the difference here is a blank admin screen. The hash in the file's
+        // name is its version, so a release still busts every cache.
+        // phpcs:disable WordPress.WP.EnqueuedResourceParameters.MissingVersion -- see above: a `?ver` loads React twice.
         wp_enqueue_script(
             $handle,
             $distUrl . $entry,
@@ -144,12 +146,44 @@ final class ViteHelper
             null,
             true
         );
+        // phpcs:enable WordPress.WP.EnqueuedResourceParameters.MissingVersion
 
         self::serveAsModule($handle);
 
         wp_set_script_translations($handle, $textDomain);
+        self::chunkTranslations($handle, $distDir, $distUrl, $textDomain);
 
         return true;
+    }
+
+    /**
+     * The lazily loaded chunks' strings, handed to `wp.i18n` before the entry runs.
+     *
+     * ========================================================================
+     * A CATALOGUE IS PER FILE, AND THE BUILDER IS SEVERAL FILES.
+     * ========================================================================
+     * WordPress names a script's JSON catalogue after the md5 of the script's
+     * path, and wp.org's language packs make one per JavaScript file. So
+     * `wp_set_script_translations()` on the entry loads the entry's strings
+     * and none of the builder's — and the builder chunks are never enqueued,
+     * because the entry `import()`s them, so there is no handle of theirs for
+     * WordPress to print a catalogue against.
+     *
+     * Each chunk is therefore registered — never enqueued, so nothing prints
+     * its tag — purely so `load_script_textdomain()` can resolve its path, and
+     * its catalogue is merged into the entry's domain with `setLocaleData`.
+     * Merged rather than replaced: `setLocaleData` adds to the domain's data.
+     */
+    private static function chunkTranslations(string $handle, string $distDir, string $distUrl, string $textDomain): void
+    {
+        $chunks = glob($distDir . self::BUILDER_CHUNK);
+
+        foreach (is_array($chunks) ? $chunks : [] as $chunk) {
+            $chunkHandle = $handle . '-' . basename($chunk, '.js');
+            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- registered for its path only and never printed; see above.
+            wp_register_script($chunkHandle, $distUrl . basename($chunk), [], null, true);
+            self::inlineTranslations($handle, $textDomain, '', $chunkHandle);
+        }
     }
 
     /**
@@ -184,11 +218,14 @@ final class ViteHelper
      *
      * @param string $handle       The registered script the data is attached to.
      * @param string $textDomain   The SECOND domain, the one not bound to the handle.
-     * @param string $languagesDir Where that domain's `.json` catalogues live.
+     * @param string $languagesDir Where that domain's `.json` catalogues live,
+     *                             or '' for WordPress's own languages folder.
+     * @param string|null $source  The script whose catalogue is read, where it
+     *                             is not `$handle` — a lazily loaded chunk.
      */
-    public static function inlineTranslations(string $handle, string $textDomain, string $languagesDir): void
+    public static function inlineTranslations(string $handle, string $textDomain, string $languagesDir, ?string $source = null): void
     {
-        $json = load_script_textdomain($handle, $textDomain, $languagesDir);
+        $json = load_script_textdomain($source ?? $handle, $textDomain, $languagesDir);
 
         if (!is_string($json) || $json === '') {
             return;

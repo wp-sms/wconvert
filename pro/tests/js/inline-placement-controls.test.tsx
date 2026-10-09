@@ -1,14 +1,15 @@
 import { displayPlan } from '../../../tests/js/support/display-entry';
+import { ruleTypes } from '../../../tests/js/support/rule-types';
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect, it } from 'vitest';
+import { expect, it, onTestFinished, vi } from 'vitest';
 import PlacementSettings from '../../modules/inline-placement/admin/PlacementSettings';
 import { InlinePlacementSettings } from '@/inlinePlacement';
 import { PlacementGuidance } from '@/builder/PlacementGuidance';
 import type { RuleVocabulary } from '@/builder/api';
 
-const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [], bundles: [] } as unknown as RuleVocabulary;
+const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [] } as unknown as RuleVocabulary;
 
 it('groups the placement choices without repeating the section heading', () => {
   render(<PlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
@@ -18,21 +19,24 @@ it('groups the placement choices without repeating the section heading', () => {
   expect(screen.queryByText('Inline placement')).toBeNull();
 });
 
-it('makes trigger replacement and post-only defaults explicit, preserves other settings and can return to manual', async () => {
+it('names what switching to automatic changes elsewhere, preserves other settings and can return to manual', async () => {
   const user = userEvent.setup();
   function Editor() {
     const [config, setConfig] = useState<Record<string, unknown>>({ display_rules: displayPlan([{ type: 'time_on_page', seconds: 10 }], [{ type: 'device', value: ['mobile'] }]), targeting: { exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
-    return <><PlacementSettings optinId="example" published config={config} vocabulary={vocabulary} onChange={(patch) => setConfig({ ...config, ...patch })} /><output data-testid="config">{JSON.stringify(config)}</output></>;
+    return <><PlacementSettings optinId="example" published config={config} vocabulary={ruleTypes()} onChange={(patch) => setConfig({ ...config, ...patch })} /><output data-testid="config">{JSON.stringify(config)}</output></>;
   }
   render(<Editor />);
   await user.click(screen.getByRole('radio', { name: 'Automatic' }));
-  expect(screen.getByText(/replace existing triggers with page load/)).toBeInTheDocument();
+  const confirm = screen.getByRole('region', { name: 'Switch to automatic placement?' });
+  expect(within(confirm).getByText('When does it open?').closest('li')).toHaveTextContent('After 10 secondsRight away');
+  expect(within(confirm).getByText('Where does it show?').closest('li')).toHaveTextContent('Blog posts only');
+  expect(screen.getByText('Switch to automatic placement?')).toHaveFocus();
+  expect(screen.getByRole('radio', { name: 'Manual' })).toBeChecked();
   expect(screen.getByTestId('config')).toHaveTextContent('time_on_page');
-  await user.click(screen.getByRole('button', { name: 'Enable automatic placement' }));
-  expect(screen.getByRole('radio', { name: 'Automatic' })).toHaveFocus();
+  await user.click(screen.getByRole('button', { name: 'Switch to automatic placement' }));
   const current = () => JSON.parse(screen.getByTestId('config').textContent!);
   expect(current()).toMatchObject({ inline_placement: { position: 'after_content' }, display_rules: displayPlan([{ type: 'page_load' }], [{ type: 'device', value: ['mobile'] }]), targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
-  await user.selectOptions(screen.getByLabelText('Position in content'), 'after_paragraph');
+  await user.click(screen.getByRole('radio', { name: 'After a paragraph' }));
   await user.selectOptions(screen.getByLabelText('If there are fewer paragraphs'), 'skip');
   expect(current().inline_placement).toEqual({ position: 'after_paragraph', paragraph: 3, fallback: 'skip' });
   await user.clear(screen.getByLabelText('Paragraph number'));
@@ -45,20 +49,49 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   expect(current().display_rules.opening).toEqual({ mode: 'immediate' });
 });
 
-it('preserves deliberate page targeting and warns about incompatible triggers', async () => {
+it('switches without asking when nothing else would change, and keeps deliberate page targeting', async () => {
   const user = userEvent.setup();
   let changes: Record<string, unknown> = {};
-  render(<PlacementSettings optinId="example" published config={{ targeting: { include: [{ type: 'post', value: 99 }] }, rules: [{ type: 'page_load' }] }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
+  render(<PlacementSettings optinId="example" published config={{ targeting: { include: [{ type: 'post', value: 99 }] }, display_rules: displayPlan([{ type: 'page_load' }]) }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
   await user.click(screen.getByRole('radio', { name: 'Automatic' }));
-  expect(screen.queryByText(/posts only/)).toBeNull();
-  await user.click(screen.getByRole('button', { name: 'Enable automatic placement' }));
+  expect(screen.queryByRole('region', { name: /Switch to/ })).toBeNull();
+  expect(changes).toMatchObject({ inline_placement: { position: 'after_content' } });
   expect(changes).not.toHaveProperty('targeting');
 });
 
-it('Free explains availability without carrying the premium controls', () => {
+it('cancels a switch and keeps the method in use', async () => {
+  const user = userEvent.setup();
+  const onChange = vi.fn();
+  render(<PlacementSettings optinId="example" published config={{ display_rules: displayPlan([{ type: 'time_on_page', seconds: 10 }]) }} vocabulary={vocabulary} onChange={onChange} />);
+  await user.click(screen.getByRole('radio', { name: 'Content lock' }));
+  expect(within(screen.getByRole('region', { name: 'Switch to content lock?' })).queryByText('Where does it show?')).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Keep Manual' }));
+  expect(onChange).not.toHaveBeenCalled();
+  expect(screen.getByRole('radio', { name: 'Manual' })).toBeChecked();
+});
+
+it('offers the door when automatic placement no longer opens right away', async () => {
+  const user = userEvent.setup();
+  const onChange = vi.fn();
+  render(<PlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' }, display_rules: displayPlan([{ type: 'time_on_page', seconds: 10 }]) }} vocabulary={vocabulary} onChange={onChange} />);
+  expect(screen.getByRole('alert')).toHaveTextContent('Automatic placement needs “When does it open?” set to Right away.');
+  await user.click(screen.getByRole('button', { name: 'Set it to Right away' }));
+  expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ display_rules: expect.objectContaining({ opening: { mode: 'immediate' } }) }));
+});
+
+it('Free explains manual placement without carrying the premium controls', () => {
   render(<InlinePlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
-  expect(screen.getByText(/Automatic placement is included in Pro/)).toBeInTheDocument();
+  expect(screen.getByText('Place this Campaign with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.queryByText(/Pro/)).toBeNull();
   expect(screen.queryByRole('radio')).toBeNull();
+});
+
+/** Settings saved under Pro are explained without naming a product (ADR 0116). */
+it('Free explains retained automatic placement and content lock without selling either', () => {
+  render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' }, content_lock: { mode: 'hide' } }} vocabulary={vocabulary} onChange={() => undefined} />);
+  expect(screen.getByText('Content lock isn’t available on this site. The selected region stays readable.')).toBeInTheDocument();
+  expect(screen.getByText('Automatic placement isn’t available on this site. You can still place this Campaign manually with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.queryByText(/Pro/)).toBeNull();
 });
 
 it('Free can explicitly return a previously automatic campaign to manual placement', async () => {
@@ -70,6 +103,9 @@ it('Free can explicitly return a previously automatic campaign to manual placeme
 });
 
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
+  // A paid install; a free one falls back to manual placement (ADR 0116).
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   render(<PlacementGuidance optinId="example" displayType="inline" inlinePlacement={{ position: 'after_paragraph', paragraph: 3 }} published />);
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();
   expect(screen.queryByRole('textbox')).toBeNull();

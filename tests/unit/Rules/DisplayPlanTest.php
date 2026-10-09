@@ -41,6 +41,24 @@ final class DisplayPlanTest extends TestCase
         foreach ($cases as [$selector, $valid]) self::assertSame($valid, DisplayPlan::validSelector($selector), $selector);
     }
 
+    public function testAdBlockingRequiresADeclaredStatusAndRejectsContradictoryAllGroup(): void
+    {
+        $vocabulary = RuleVocabulary::fromManifest(__DIR__ . '/../../..');
+        $plan = ['audience' => ['mode' => 'groups', 'groups' => [[
+            'id' => 'group', 'match' => 'all', 'rules' => [
+                ['id' => 'detected', 'type' => 'ad_blocking', 'value' => 'detected'],
+            ],
+        ]]], 'opening' => ['mode' => 'immediate']];
+        self::assertSame([], DisplayPlan::issues($plan, $vocabulary));
+        $plan['audience']['groups'][0]['rules'][0]['value'] = 'maybe';
+        self::assertNotEmpty(DisplayPlan::issues($plan, $vocabulary));
+        $plan['audience']['groups'][0]['rules'][0]['value'] = 'detected';
+        $plan['audience']['groups'][0]['rules'][] = ['id' => 'clear', 'type' => 'ad_blocking', 'value' => 'not_detected'];
+        self::assertNotEmpty(DisplayPlan::issues($plan, $vocabulary));
+        $plan['audience']['groups'][0]['match'] = 'any';
+        self::assertSame([], DisplayPlan::issues($plan, $vocabulary));
+    }
+
     public function testContradictionsAreRepairableDraftsButCannotPublish(): void
     {
         $vocabulary = RuleVocabulary::fromManifest(__DIR__ . '/../../..');

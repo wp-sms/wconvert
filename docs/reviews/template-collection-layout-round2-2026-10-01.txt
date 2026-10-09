@@ -1,0 +1,21 @@
+528 rendered cases across 18 designs. 0 cases need attention (horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).
+
+Design	Cases	Overflow	Smallest control	Input text	Smallest text
+New collection early access	32	0	48	16	12
+Request a home repair quote	32	0	48	16	12
+Article-end Sunday reading list	32	0	48	16	12
+Show a real sale deadline	16	0	44.2	—	14
+Invite collection restock announcements	32	0	48	16	12
+Request a home cleaning estimate	32	0	48	16	12
+Request a renovation planning call	32	0	44.4	16	12
+Offer a weekly editorial letter	32	0	48	16	13
+Offer a seven-point writing checklist	32	0	48.8	16	12
+Request a non-urgent repair assessment	32	0	48	16	12
+Monthly care notes for handmade homeware	32	0	48	16	12
+Start a furniture repair enquiry	48	0	48	16	12
+Show a first-order offer code	16	0	50	—	12
+Offer a practical reading guide	32	0	48	16	12
+Invite a website review enquiry	32	0	48	16	12
+Introduce a lighting collection	16	0	50	—	12
+Help shoppers compare two sizes	16	0	50	—	12
+Let readers try a workbook exercise	32	0	48	16	12

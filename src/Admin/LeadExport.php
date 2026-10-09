@@ -73,7 +73,9 @@ final class LeadExport
         try {
             $input = [];
             foreach (['optin_id', 'identifier', 'search', 'purpose', 'lead_id', 'from', 'to', 'snapshot', 'group_identifier'] as $key) {
-                if (isset($_POST[$key])) $input[$key] = is_string($_POST[$key]) ? wp_unslash($_POST[$key]) : $_POST[$key];
+                // Nonce verified by check_admin_referer() above. A non-string
+                // stays a non-string, so LeadQuery still refuses it as invalid.
+                if (isset($_POST[$key])) $input[$key] = is_string($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : [];
             }
             $query = LeadQuery::fromInput($input);
         } catch (InvalidArgumentException $invalid) {
@@ -82,7 +84,8 @@ final class LeadExport
 
         nocache_headers();
         header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . self::filename() . '"');
+        $questions = isset($_POST['format']) && is_string($_POST['format']) && sanitize_key(wp_unslash($_POST['format'])) === 'questions';
+        header('Content-Disposition: attachment; filename="' . ($questions ? 'wconvert-question-answers.csv' : self::filename()) . '"');
 
         // `php://output` is the RESPONSE, not a file, which is the whole
         // point: the log can be large and the export streams it in keyset
@@ -101,7 +104,7 @@ final class LeadExport
         $handle = fopen('php://output', 'w');
 
         if ($handle !== false) {
-            $this->stream($handle, $query->optinId, $query);
+            $this->stream($handle, $query->optinId, $query, $questions);
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the php://output handle opened above, which the same sniff exempts.
             fclose($handle);
         }
@@ -114,14 +117,15 @@ final class LeadExport
      *
      * @param resource $handle
      */
-    public function stream($handle, ?string $optinId, ?LeadQuery $query = null): void
+    public function stream($handle, ?string $optinId, ?LeadQuery $query = null, bool $questions = false): void
     {
         // Read once, before the walk. Every batch labels its Leads from this,
         // and it includes soft-deleted Optins because their names are exactly
         // what the export has to carry (ADR 0002, ADR 0020).
         $names = $this->optins->names();
 
-        $this->csv->writeHeader($handle);
+        if ($questions) $this->csv->writeQuestionHeader($handle);
+        else $this->csv->writeHeader($handle);
 
         // The empty string sorts below every ULID, so the first batch starts at
         // the beginning without a branch for it.
@@ -135,7 +139,8 @@ final class LeadExport
                 return;
             }
 
-            $this->csv->writeRows($handle, $batch, $names);
+            if ($questions) $this->csv->writeQuestionRows($handle, $batch, $names);
+            else $this->csv->writeRows($handle, $batch, $names);
 
             $cursor = $batch[count($batch) - 1]->id;
         }

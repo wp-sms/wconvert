@@ -99,6 +99,8 @@ export const sameSpot = (a: Spot, b: Spot): boolean =>
  * hid the row would offer no way to say so.
  */
 export interface Block {
+  /** Named screen container; storage position does not imply capture timing. */
+  readonly screenName?: string;
   readonly path: Path;
   readonly type: string;
   /** A leaf holds words; a layout holds blocks. Read off the manifest. */
@@ -196,6 +198,7 @@ export function nodesOf(tree: TemplateTree): Block[] {
   // preview slot it points at must land on one `SlotKey` — and roles repeat, so
   // the name alone no longer identifies either (ADR 0051, {@link numbered}).
   return numbered(blocks).map(block => {
+    if (block.level === 1) return { ...block, screenName: tree.steps[Number(block.path[0])].name };
     const node = nodeAt(tree, block.path) as { submission?: string } | null;
     return block.action === 'submit' && node?.submission === tree.submissions[1]?.id && tree.submissions.length > 1
       ? { ...block, counts: false } : block;
@@ -301,9 +304,17 @@ export function withRemoved(tree: TemplateTree, path: Path): TemplateTree {
     return tree;
   }
 
-  return withChildren(tree, spot.parent, spot.key, (children) =>
+  const removedPaths = nodesOf(tree).filter(block => path.every((part, index) => block.path[index] === part));
+  const removedIds = new Set(removedPaths.flatMap(block => {
+    const node = nodeAt(tree, block.path);
+    return node && 'id' in node && node.id ? [node.id] : [];
+  }));
+  const next = withChildren(tree, spot.parent, spot.key, (children) =>
     children.filter((_child, at) => at !== spot.index),
   );
+  return !tree.graph ? next : { ...next, submissions: next.submissions.map(save => ({ ...save,
+    fields: save.fields.filter(id => !removedIds.has(id)), consents: save.consents.filter(id => !removedIds.has(id)),
+  })) };
 }
 
 /**

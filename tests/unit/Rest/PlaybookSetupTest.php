@@ -8,6 +8,7 @@ use WConvert\Goal\GoalRegistry;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rest\PlaybookController;
+use WConvert\Discovery\SetupIndex;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -34,7 +35,7 @@ final class PlaybookSetupTest extends TestCase
         ];
         $playbooks = PlaybookLibrary::fromEntries($entries, $templates, $vocabulary, $rules);
         $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
-        $controller = new PlaybookController($playbooks, new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill);
+        $controller = new PlaybookController($playbooks, new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new SetupIndex($templates, new FakeProPresence()));
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
         $response = $controller->index($request);
@@ -44,7 +45,9 @@ final class PlaybookSetupTest extends TestCase
         $this->assertSame('Recommended for stores', $cards[0]['recommendation']);
         $this->assertSame('Recommended for publishers', $cards[1]['recommendation']);
         $this->assertArrayNotHasKey('recommendation', $cards[2]);
-        $this->assertSame($prefill->fromPlaybook('welcome-discount')['config']['template'], $cards[0]['template']);
+        $this->assertArrayNotHasKey('template', $cards[0]);
+        $this->assertArrayNotHasKey('copy', $cards[0]);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $cards[0]['revision']);
     }
 
     public function testChooserFactsAreTheEffectivePrefillNotTheAuthoredPremiumRule(): void
@@ -63,12 +66,15 @@ final class PlaybookSetupTest extends TestCase
         $this->assertSame([], $playbooks->rejections());
         $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
         $controller = new PlaybookController($playbooks,
-            new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill);
+            new GoalRegistry(new FakeProPresence(), new FakeSitePresence()), $prefill, new SetupIndex($templates, new FakeProPresence()));
         $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
         $request->set_param('goal', 'grow_email_list');
         $response = $controller->index($request);
         $this->assertInstanceOf(WP_REST_Response::class, $response);
-        $entry = $response->get_data()[0];
+        $request->set_param('ids', 'third-party-start');
+        $preview = $controller->previews($request);
+        $this->assertInstanceOf(WP_REST_Response::class, $preview);
+        $entry = $preview->get_data()['entries'][0];
         $draft = $prefill->fromPlaybook('third-party-start');
         $this->assertNotNull($draft);
         $this->assertSame('exit_intent', $entry['rules'][0]['type'], 'Authoring provenance stays unchanged.');

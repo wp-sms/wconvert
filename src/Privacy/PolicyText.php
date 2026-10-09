@@ -62,9 +62,10 @@ final class PolicyText
             '<p>' . __('We do not add the page address, IP address or browser details to the saved form submission.', 'wconvert') . '</p>',
             '<h3>' . __('Browser storage and campaign statistics', 'wconvert') . '</h3>',
             '<p>' . sprintf(
-                /* translators: %s: the browser storage key used by WConvert. */
                 $browser['stores_ab_assignment']
+                    /* translators: %s: the browser storage key used by WConvert. */
                     ? __('Your browser remembers whether a campaign was shown, dismissed or completed, and which version was assigned during an A/B test. This avoids repeatedly showing the same campaign and keeps the assigned version consistent. The record is stored in local storage under the name %s. It remains until you clear the site data or the browser removes it.', 'wconvert')
+                    /* translators: %s: the browser storage key used by WConvert. */
                     : __('Your browser remembers whether a campaign was shown, dismissed or completed. This avoids repeatedly showing the same campaign. The record is stored in local storage under the name %s. It remains until you clear the site data or the browser removes it.', 'wconvert'),
                 '<code>' . esc_html($browser['key']) . '</code>'
             ) . '</p>',
@@ -74,8 +75,10 @@ final class PolicyText
                 $this->cookieDuration($browser['cookie_fallback_days'])
             ) . '</p>',
             '<p>' . __('When a Campaign uses a session limit, WConvert stores appearance counts under wcv_display_session_v1 in this tab’s session storage. It holds at most 128 Campaign families, evicting the least recently shown. It contains no contact details or visitor identifier. Browsers may copy or restore tab sessions; if storage is blocked, the limit lasts only on the current page.', 'wconvert') . '</p>',
+            ...array_map(static fn (string $note): string => '<p>' . esc_html($note) . '</p>', $browser['additional'] ?? []),
             ...($browser['cart_recovery'] !== null ? [
-                '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert') . '</p>',
+                '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. The cookie does not store product or contact details. Cart targeting also checks the current WooCommerce session. Only campaign matches and public product suggestions stay in page memory for up to 30 seconds; WConvert does not save cart contents or create a visitor identifier. These requests use a separate 60-second rate-limit bucket containing a site-specific one-way IP hash.', 'wconvert') . '</p>',
+                '<p>' . __('Adding a recommended product uses the existing WooCommerce session. To prevent duplicate additions, WConvert keeps temporary server records of the selected product and action status under site-specific hashed keys. These records expire after 30 minutes and are removed by scheduled cleanup. They are also removed when WConvert Pro is uninstalled.', 'wconvert') . '</p>',
             ] : []),
             ...($browser['content_unlock'] !== null ? [
                 '<p>' . __('Content locks remember a successful submission for the same Campaign in this browser for 30 days. This site-scoped local storage holds at most 64 Campaign IDs and expiry days, with no contact details or visitor identifier. If storage is blocked, access is remembered only on the current page.', 'wconvert') . '</p>',
@@ -83,6 +86,9 @@ final class PolicyText
             ...($browser['reopen_session'] !== null ? [
                 '<p>' . __('When a reopen button is enabled, WConvert uses session storage to remember the Campaign and your reminder dismissals in this browser tab. It contains no contact details or visitor identifier. It lasts for the browser page session; browsers may copy it to duplicated tabs or restore it when restoring a session. If storage is unavailable, recovery lasts only on the current page.', 'wconvert') . '</p>',
             ] : []),
+            ...($summary['product_activity_retention_days'] !== null ? ['<p>' . sprintf(
+                /* translators: %d: number of days product activity is kept. */
+                __('When product recommendations are active, WConvert also records daily counts of product cards shown, product links clicked and confirmed basket additions. These counts contain product and campaign IDs, with no visitor identifier or contact details. Product activity is kept for %d days and removed by scheduled cleanup; campaign totals are kept separately.', 'wconvert'), $summary['product_activity_retention_days']) . '</p>'] : []),
             '<p>' . __('WConvert records total campaign views, dismissals and completions by campaign and day. These totals are not linked to individual visitors.', 'wconvert') . '</p>',
             '<p>' . sprintf(
                 /* translators: %s: the short lifetime of the campaign-counting rate-limit record. */
@@ -94,7 +100,11 @@ final class PolicyText
                 __('To slow repeated form submissions, WConvert temporarily keeps a separate site-specific one-way hash of the IP address for each campaign for %s. The IP address itself is not saved.', 'wconvert'),
                 $this->shortDuration($summary['capture_rate_limit_seconds'])
             ) . '</p>',
-            '<p>' . __('WConvert does not use form submissions for automated decision-making or to build visitor profiles.', 'wconvert') . '</p>',
+            '<p>' . __('To limit repeated resource emails, WConvert keeps a site-specific one-way code derived from the recipient email and resource for a ten-minute sending window. Expired codes are cleaned up on the site’s scheduled maintenance runs. Protection activity is stored as approximate totals without form values for up to 24 hours.', 'wconvert') . '</p>',
+            ...($summary['protection_provider'] !== 'none' ? [
+                '<p>' . sprintf(/* translators: %s: configured bot verification provider. */ __('This site uses %s to verify form submissions. The provider receives browser and network information during verification. WConvert sends the verification token to that service, without the contact fields entered in the form.', 'wconvert'), esc_html($summary['protection_provider'])) . '</p>',
+            ] : []),
+            '<p>' . __('Form protection checks may refuse a submission. WConvert does not build visitor profiles from form submissions.', 'wconvert') . '</p>',
             '<h3>' . __('Who receives your information', 'wconvert') . '</h3>',
             $this->destinationDisclosure($summary['destinations']),
             '<p>' . __('Site administrators can also export form submissions to a CSV file. Connected services, exported files, email logs and backups keep separate copies and may follow different retention periods.', 'wconvert') . '</p>',
@@ -105,6 +115,15 @@ final class PolicyText
             '<p>' . __('Deleting a submission from WConvert does not automatically remove copies already sent to a connected service, included in an exported file or email log, or retained in a backup. Those copies are managed separately.', 'wconvert') . '</p>',
         ];
 
+        $analytics = apply_filters('wconvert_analytics_privacy', null);
+        if (is_array($analytics) && !empty($analytics['configured'])) {
+            $provider = ($analytics['route'] ?? '') === 'plausible' ? 'Plausible' : 'Google Analytics';
+            $sections[] = '<h3>' . __('External campaign analytics', 'wconvert') . '</h3><p>' . sprintf(
+                /* translators: %s: configured analytics provider name. */
+                __('We use our existing %s installation to measure campaign appearances and accepted outcomes. WConvert supplies campaign identifiers, public labels and outcome types, not your submitted contact details or answers. The existing analytics tag may attach its own identifiers and page information. Collection follows this site’s configured consent controls.', 'wconvert'),
+                $provider
+            ) . '</p>';
+        }
         return implode("\n", $sections);
     }
 

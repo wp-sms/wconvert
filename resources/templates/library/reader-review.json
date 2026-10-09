@@ -69,21 +69,22 @@
                     {
                       "type": "rating",
                       "id": "n2",
-                      "value": 5
+                      "value": 5,
+                      "hidden": true
                     },
                     {
                       "type": "heading",
                       "id": "n3",
                       "role": "headline",
-                      "text": "\u201cA little growing confidence.\u201d",
+                      "text": "A little growing confidence.",
                       "narrow": {
                         "heading-size": "1.625rem"
                       }
                     },
                     {
-                      "type": "row",
+                      "type": "stack",
                       "tokens": {
-                        "gap": "0.62rem"
+                        "gap": "0"
                       },
                       "children": [
                         {
@@ -91,7 +92,8 @@
                           "id": "n4",
                           "shape": "circle",
                           "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23e1e8d4'/%3E%3Ccircle cx='.5' cy='.37' r='.17' fill='%23b6c3a5'/%3E%3Ccircle cx='.5' cy='1.02' r='.35' fill='%23b6c3a5'/%3E%3C/svg%3E",
-                          "alt": "A photograph of the reader"
+                          "alt": "A photograph of the reader",
+                          "hidden": true
                         },
                         {
                           "type": "stack",
@@ -104,20 +106,22 @@
                               "id": "n5",
                               "size": "s",
                               "role": "body",
-                              "text": "Ellie R. \u00b7 Newsletter reader",
+                              "text": "Reader attribution",
                               "tokens": {
                                 "text-size": "1.167rem"
-                              }
+                              },
+                              "hidden": true
                             },
                             {
                               "type": "text",
                               "id": "n6",
                               "size": "m",
                               "role": "body",
-                              "text": "Sample review \u2014 replace with a real reader\u2019s words.",
+                              "text": "Add a verified reader review before enabling this proof.",
                               "tokens": {
                                 "text-size": "0.875rem"
-                              }
+                              },
+                              "hidden": true
                             }
                           ]
                         }
@@ -162,7 +166,10 @@
                       "name": "email",
                       "label": "Email address",
                       "placeholder": "you@example.com",
-                      "required": true
+                      "required": true,
+                      "tokens": {
+                        "border": "#7c8e62"
+                      }
                     },
                     {
                       "type": "consent",
@@ -254,7 +261,7 @@
                       "type": "heading",
                       "id": "n22",
                       "role": "success_headline",
-                      "text": "Let\u2019s grow\nfrom here.",
+                      "text": "Let’s grow\nfrom here.",
                       "narrow": {
                         "heading-size": "1.625rem"
                       }

@@ -75,6 +75,12 @@ case "$TARGET" in
     *) usage ;;
 esac
 
+# Collection approvals are bound to the actual renderer and prepared setups.
+# Rebuild this metadata before staging; stale reviews must not ship merely
+# because yesterday's generated JSON still exists. This does not rebuild the
+# production assets or publish a collection, and introduces no CI workflow.
+(cd "$REPO_ROOT" && npm run templates:collections:check)
+
 for tool in php zip; do
     command -v "$tool" >/dev/null 2>&1 || {
         echo "required command not found: $tool" >&2
@@ -277,10 +283,6 @@ build_one() {
 
         echo "  · composer dist"
         composer dist --working-dir="$stage" --quiet
-
-        # Action Scheduler's own agent and contributor docs are not part of a
-        # plugin; they would be the only Markdown inside vendor/.
-        find "$stage/vendor" -type f \( -name 'AGENTS.md' -o -name 'CLAUDE.md' \) -delete
     fi
 
     apply_distignore "$stage" "$source/.distignore"
@@ -322,5 +324,10 @@ build_every_tier() {
 case "$TARGET" in
     free) build_one . ;;
     pro)  build_every_tier ;;
-    all)  build_one . && build_every_tier ;;
+    # A function on the left of && ignores errexit throughout its body,
+    # including the artifact gate. Keep these as unconditional commands.
+    all)
+        build_one .
+        build_every_tier
+        ;;
 esac

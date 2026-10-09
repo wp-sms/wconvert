@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {"id":"project","name":"Project","kind":"input","content":{"type":"question","id":"q_project","label":"Project?","answer_type":"single","required":true,"options":[{"value":"garden","label":"Garden"},{"value":"balcony","label":"Balcony"}]}},
+    {"id":"size","name":"Garden size","kind":"input","when":{"match":"all","clauses":[{"question":"q_project","operator":"is","values":["garden"]}]},"content":{"type":"question","id":"q_size","label":"Size?","answer_type":"single","required":true,"options":[{"value":"small","label":"Small"},{"value":"large","label":"Large"}]}},
+    {"id":"detail","name":"Small garden detail","kind":"input","when":{"match":"all","clauses":[{"question":"q_size","operator":"is","values":["small"]}]},"content":{"type":"question","id":"q_detail","label":"Detail?","answer_type":"text","required":false,"options":[]}},
+    {"id":"result","name":"Result","kind":"result","content":{"type":"stack","children":[]},"results":[{"id":"garden","heading":"Garden","body":"Start here","product_ids":[],"when":{"match":"all","clauses":[{"question":"q_project","operator":"is","values":["garden"]}]}},{"id":"other","heading":"Other","body":"Start there","product_ids":[]}]}
+  ],
+  "cases": [
+    {"answers":{"q_project":"garden","q_size":"small","q_detail":"Sunny"},"active":{"q_project":"garden","q_size":"small","q_detail":"Sunny"},"visible":["project","size","detail","result"],"result":"garden"},
+    {"answers":{"q_project":"balcony","q_size":"small","q_detail":"Sunny"},"active":{"q_project":"balcony"},"visible":["project","result"],"result":"other"},
+    {"answers":{"q_project":"garden","q_size":"large","q_detail":"Sunny"},"active":{"q_project":"garden","q_size":"large"},"visible":["project","size","result"],"result":"garden"},
+    {"answers":{},"active":{},"visible":["project","result"],"result":"other"}
+  ]
+}

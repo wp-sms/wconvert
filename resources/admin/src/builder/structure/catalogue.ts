@@ -1,7 +1,11 @@
+import { commerceSupported } from '../../settings';
 import { __ } from '@wordpress/i18n';
 import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
-import { submissionScreen } from './journey';
+import { submissionScreen, walkNodes } from './journey';
+import { graphReaches } from './graph';
+import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
+import { journeysSupported } from '../../settings';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -80,7 +84,7 @@ export interface Addition {
  * passed `act ?? 'submit'` — the structure editor briefly offering a
  * click-metered Optin the wrong menu. There is nothing left to wait for.
  */
-export type ConvertingAct = 'submit' | 'click';
+export type ConvertingAct = 'submit' | 'click' | 'match' | 'add_to_cart';
 
 /**
  * Everything that may be added inside this parent, in the manifest's own order.
@@ -104,11 +108,23 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
     consulted `whyRefused` for every type, so a layout the guard refused was
     offered by the menu and then silently built nothing when pressed.
   */
-  return [...Object.keys(LEAVES), ...Object.keys(LAYOUTS)].map((type) => ({
+  return [...Object.keys(LEAVES).filter(offeredHere), ...Object.keys(LAYOUTS)].map((type) => ({
     type,
     leaf: LEAVES[type] !== undefined,
     refused: whyRefused(tree, type, at, act),
   }));
+}
+
+/**
+ * The one per-install exception to "the manifest decides": a `question` runs
+ * only where Pro registered journeys (its `journeys` module shipped), so a free install is not
+ * offered one at all — not even disabled, which would be an upsell by another
+ * name (ADR 0116). The manifest still declares it, because free's validator
+ * has to recognise one arriving in an import.
+ */
+function offeredHere(type: string): boolean {
+  if (type === 'products') return commerceSupported() === true;
+  return type !== 'question' || journeysSupported();
 }
 
 /**
@@ -142,18 +158,31 @@ function whyRefused(
   act: ConvertingAct,
 ): string | null {
   const screen = tree.steps[Number(at.parent[0])];
+  const products = tree.steps.some(step => walkNodes(step.content).some(node => node.type === 'products'));
+  if (type === 'products' && (tree.steps.length !== 1 || tree.submissions.length > 0 || tree.graph || buttonsIn(tree) > 0 || products)) return __('Use one product recommendation block as the action of a single offer screen.', 'wconvert');
+  if (products && ['button', 'field', 'question', 'consent'].includes(type)) return __('This campaign converts through its recommendations.', 'wconvert');
   if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
     return __('This design already has its converting link.', 'wconvert');
   }
   if (type === 'followup') {
     const primary = tree.submissions[0]?.id;
     const acceptedAt = submissionScreen(tree, primary);
-    if (acceptedAt < 0 || Number(at.parent[0]) <= acceptedAt) {
+    if (acceptedAt < 0 || !screen || (tree.graph
+      ? screen.id === tree.steps[acceptedAt].id || !graphReaches(tree.graph, tree.steps[acceptedAt].id, screen.id)
+      : Number(at.parent[0]) <= acceptedAt)) {
       return __('Resource links belong after capture.', 'wconvert');
     }
   }
   if ((type === 'field' || type === 'consent') && screen?.kind !== 'input') {
     return __('Add contact fields to a question screen.', 'wconvert');
+  }
+  if (type === 'question') {
+    const boundary = tree.steps.findIndex(item => item.kind === 'result' || walkNodes(item.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
+    if (screen?.kind !== 'input') return __('Add questions to a question screen.', 'wconvert');
+    if (!tree.graph && boundary >= 0 && Number(at.parent[0]) >= boundary) return __('Add questions on a screen before the result or contact submission.', 'wconvert');
+    if ((questionPath(tree, screen.id)?.count ?? 0) > MAX_PATH_QUESTIONS) return tree.graph
+      ? __('Adding here would put more than ten questions on one connected route. Use a separate branch or remove a question from that route.', 'wconvert')
+      : __('This journey already has ten questions.', 'wconvert');
   }
 
   if (type === 'field' && freeCapture(tree) === null) {
@@ -204,7 +233,7 @@ export function nodeFor(
   act: ConvertingAct,
   capture?: string,
 ): TemplateNode | null {
-  if (whyRefused(tree, type, at, act) !== null) {
+  if (!offeredHere(type) || whyRefused(tree, type, at, act) !== null) {
     return null;
   }
 
@@ -237,6 +266,14 @@ export function nodeFor(
     node.name = captures;
     node.required = captures !== 'interest';
     if (captures === 'interest') node.options = [];
+  }
+
+  if (type === 'products') { node.product_ids = []; node.exclude_cart = true; node.action = act === 'add_to_cart' ? 'add_to_cart' : 'link'; }
+  if (type === 'question') {
+    node.label = __('What matters most to you?', 'wconvert');
+    node.answer_type = 'single';
+    node.required = false;
+    node.options = [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }];
   }
 
   if (type === 'button') {
@@ -360,7 +397,7 @@ export function losesWordsOnSwitch(block: { type: string; role: string | null })
  * carries, and those are two vocabularies for one distinction that PHP already
  * keeps apart.
  */
-export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : 'submit');
+export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : act === 'match' ? 'next' : act === 'add_to_cart' ? 'add_to_cart' : 'submit');
 
 /** Every `action` a `button` may carry, in the order the acts are declared. */
 export const ACTIONS: readonly string[] = ['submit', 'link', 'next', 'back', 'skip', 'close'];

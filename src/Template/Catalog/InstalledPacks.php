@@ -17,7 +17,7 @@ final class InstalledPacks implements TemplateSource
     /** @var list<array<string, mixed>>|null */
     private ?array $cachedPacks = null;
 
-    public function __construct(private readonly string $directory, private readonly PackValidator $validator)
+    public function __construct(private readonly string $directory, private readonly PackValidator $validator, private readonly ?VerifiedAssets $assets = null)
     {
     }
 
@@ -31,12 +31,13 @@ final class InstalledPacks implements TemplateSource
         $packs = [];
         foreach (array_slice(glob($this->directory . '/*.json') ?: [], 0, 128) as $file) {
             if (!is_readable($file) || filesize($file) > PackValidator::MAX_BYTES) continue;
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             $json = file_get_contents($file);
             if ($json === false || basename($file) !== hash('sha256', $json) . '.json') continue;
             try {
                 $pack = $this->validator->decode($json);
                 $pack['digest'] = hash('sha256', $json);
-                $packs[] = $pack;
+                $packs[] = $this->withImages($pack);
             } catch (\RuntimeException $error) {
                 // A corrupt local file must not take the bundled library down.
                 continue;
@@ -57,6 +58,7 @@ final class InstalledPacks implements TemplateSource
             foreach ($pack['templates'] as $template) {
                 // The digest keeps every original baseline addressable, including
                 // two simultaneous installations of the same release identifier.
+                $template['design_key'] = 'pack:' . $pack['id'] . ':' . $template['id'];
                 $template['id'] = self::designId($pack, $template['id']);
                 $template['catalog_current'] = $current;
                 $entries[] = $template;
@@ -90,11 +92,32 @@ final class InstalledPacks implements TemplateSource
         return 'pack-' . substr($pack['digest'], 0, 24) . '-' . $id;
     }
 
+    /** Resolve only verified local images; normal library reads never fetch.
+     * @param array<string, mixed> $pack
+     * @return array<string, mixed> */
+    public function withImages(array $pack): array
+    {
+        if ($pack['assets'] === []) return $pack;
+        PackValidator::check($this->assets !== null, __('Image installation is unavailable.', 'wconvert'));
+        return PackImages::hydrate($pack, $this->assets->resolve($pack['digest'], $pack['assets']));
+    }
+
+    /** Preview downloads cache images, but do not register any designs.
+     * @param array<string, mixed> $pack
+     * @param callable(array<string, mixed>): string $download */
+    public function prepareImages(array $pack, callable $download): void
+    {
+        if ($pack['assets'] === []) return;
+        PackValidator::check($this->assets !== null, __('Image installation is unavailable.', 'wconvert'));
+        $this->assets->install($pack['digest'], $pack['assets'], $download);
+    }
+
     /** @return array<string, mixed> */
     public function install(string $json): array
     {
         $pack = $this->validator->decode($json);
         $pack['digest'] = hash('sha256', $json);
+        $pack = $this->withImages($pack);
         // Writes are rare and may race another request. Refresh before every
         // version decision so an older request-local snapshot cannot replace
         // a newer release another request just installed.
@@ -107,15 +130,24 @@ final class InstalledPacks implements TemplateSource
             if ($installed['id'] !== $pack['id']) continue;
             PackValidator::check(version_compare($pack['version'], $installed['version'], '>'), __('This pack version is already installed or has been replaced. Refresh the catalog.', 'wconvert'));
         }
-        PackValidator::check(is_dir($this->directory) || @mkdir($this->directory, 0755, true), __('The template folder could not be created. Check uploads permissions and retry.', 'wconvert'));
-        $temporary = @tempnam($this->directory, '.pack-');
+        PackValidator::check(wp_mkdir_p($this->directory), __('The template folder could not be created. Check uploads permissions and retry.', 'wconvert'));
+        // Asked first because tempnam() does not fail on an unwritable folder:
+        // it falls back to the system temp directory, and the rename() below
+        // would then be a move across filesystems.
+        PackValidator::check(wp_is_writable($this->directory), __('The template pack could not be written.', 'wconvert'));
+        $temporary = tempnam($this->directory, '.pack-');
         PackValidator::check($temporary !== false, __('The template pack could not be written.', 'wconvert'));
         try {
-            PackValidator::check(@file_put_contents($temporary, $json, LOCK_EX) === strlen($json), __('The template pack could not be written.', 'wconvert'));
-            PackValidator::check(@rename($temporary, $path), __('The template pack could not be installed.', 'wconvert'));
+            // Staged and renamed so a reader never sees half a pack. Not
+            // WP_Filesystem, whose move() is a copy and a delete on an FTP or
+            // SSH install — the half-written state this exists to rule out.
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- see above.
+            PackValidator::check(file_put_contents($temporary, $json, LOCK_EX) === strlen($json), __('The template pack could not be written.', 'wconvert'));
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- atomic within one folder; see above.
+            PackValidator::check(rename($temporary, $path), __('The template pack could not be installed.', 'wconvert'));
             $this->cachedPacks = null;
         } finally {
-            if (is_file($temporary)) unlink($temporary);
+            if (is_file($temporary)) wp_delete_file($temporary);
         }
         return $pack;
     }

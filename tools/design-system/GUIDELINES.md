@@ -19,16 +19,16 @@ create a screen-specific exception merely to reproduce a prototype measurement.
 
 **Harbor is the approved shared frame (ADR 0097).**
 
-1. **Brand header** — solid deep teal, with wordmark, Help,
+1. **Brand header** — solid espresso (deep teal before ADR 0130), with the mark, wordmark, Help,
    issue notifications and account entry. The top row is at least 78px.
    Four-section navigation sits on its own row, with the current section
-   underlined and a compact, bordered installed-plan badge at the opposite edge.
-2. **Light title area** — `h1`, useful description and page action on the mist
+   underlined in citron and a compact, bordered installed-plan badge at the opposite edge.
+2. **Light title area** — `h1`, useful description and page action on the warm-white
    canvas. Headline and CTA stay outside the dark header. The primary page
-   action is a solid teal button with a white label.
-3. **Main work area** — white work surfaces against mist. Campaign filters,
+   action is a solid espresso button with a paper label.
+3. **Main work area** — white work surfaces against the canvas. Campaign filters,
    controls, rows and metadata form a single sheet.
-4. **Service footer** — matching deep teal, shared WConvert mark and wordmark, plan
+4. **Service footer** — matching espresso, shared WConvert mark (inverse) and wordmark, plan
    badge, a useful resource link and Help. A quiet centered bottom row credits
    VeronaLabs with a muted monochrome logo. Publisher attribution has no hover
    underline; keyboard focus remains visible. Creation and the editor omit this reading-page footer.
@@ -93,15 +93,29 @@ colour.
 
 ## 5. Colour means something
 
-- **Teal `#205c57`** is the primary action/link color. **Deep teal `#183c40`**
-  frames the app; **mist `#EAF0ED`** is the canvas and work surfaces are white.
+- **Four roles (ADR 0130).**
+  - **Espresso `#302720`** is structure: text, buttons, and the header and
+    footer bands.
+  - **Ink blue `#1F5A6B`** (`--action`) is what you can act on: links,
+    selected tabs, chips and list items, checkboxes, the chart line and focus.
+    Links are also underlined.
+  - **Citron `#E2F475`** is the brand. It fills the `brand` button, on an
+    espresso edge, once per screen, and it is the signal on the espresso
+    frame: the active tab, the unread dot and focus. It is never text on a
+    light surface.
+  - **Ice blue `#E0EFF3`** is selection, info and the paid plan.
+
+  The canvas is a near-neutral warm white, **`#F6F5F1`**, and work surfaces
+  are white. It is deliberately less saturated than the site's paper.
 - **Surface roles are shared across screens.** Use `--card` (white) for cards,
-  including goals and monthly targets. Use `--surface` (`#F3F6F4`) for inset
-  content and table headers, `--secondary` for icon wells, and `--accent` for
-  interaction states. Do not tint whole cards nearly the same color as the canvas.
-  `--border` (`#CAD6CF`) separates surfaces; muted text is `#53675E`.
+  including goals and monthly targets. Use `--surface` (`#EFEDE8`) for inset
+  content and table headers, `--secondary` (ice) for selected states and icon
+  wells, and `--accent` for hover. Do not tint whole cards nearly the same color as the canvas.
+  `--border` (`#DEDAD1`) separates surfaces; muted text is `#6B6056`.
 - **Semantic colors retain their meaning**: destructive failure, success
-  converted, warning suspended or nearly-limit, info neutral fact. Status always
+  converted, warning suspended or nearly-limit, info neutral fact. Each one
+  has a `--*-surface` token. Never use a percentage wash of the hue: on this
+  warm palette, an amber wash is indistinguishable from the canvas. Status always
   includes text; do not use hue alone to distinguish it from the brand.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and
   card edges, which are decoration. `--input` draws the edge of a control,
@@ -155,6 +169,15 @@ tab stop and the set announced as a set, all from the browser. Radix's
 `ToggleGroup` buys behaviour the browser already gives, at bundle bytes this
 admin prints on every build.
 
+Template picker option strips use button-like chips: visually clip the native
+input, remove WordPress pseudo dots, and put selected and focus treatments on
+the label. Do not draw both a chip selection and a radio circle. Device and
+screen groups have an explicit gap; a long screen list uses a labeled select.
+Picker toolbars use the same 32px height for search, selects and buttons, with
+44px minimum targets for coarse pointers. Compare uses one shared checkbox
+treatment and a tray naming the selection. Pagination stays outside a scrolling
+gallery body, so it remains reachable without scrolling through every card.
+
 ## 8. The admin speaks only when it changes what you do next
 
 Before designing a message, ask: **if the merchant did not read this, what would
@@ -186,6 +209,27 @@ value shown beside it, an onboarding tour on a working screen.
 admin layers and overrides retained vendored animation classes. Focus, keyboard
 behavior and dismissal semantics remain unchanged. Verify computed styles in the
 browser, since a class-name test cannot establish the final cascade.
+
+Template discovery dialogs share `PickerDialogContent` / `PickerDialogHeader`
+with a single scroll body and a separate action footer. Back and Use/Install
+stay reachable in short and phone windows. Pack and collection pagination stays
+outside the scroll body. Use-case choices and screen exploration belong to
+inspection, never dropdowns on result cards. A single result keeps the ordinary
+card size. Long placement, measurement and journey guidance uses labeled
+progressive disclosure beside the preview. Dialog headers align to the start
+on every viewport; close controls have a 32px target (44px for coarse pointers).
+
+Creation cards open inspection before the draft action. Shared cards place the
+name and Save together, metadata on its own row, then Preview and Compare. Do
+not scatter these controls between metadata and actions. Full inspection starts
+at width fit with vertical scrolling for tall content; offer Fit entire design
+for an overview. Comparison retains equally sized fitted stages. Errors and
+recovery actions belong in the active modal, including an uncertain creation
+result. Country choices use names and searchable selection, not code entry.
+Keep collection introductions concise: one description in the header, stage
+and search controls alongside each other when space allows, and no redundant
+format filter for a single-format collection. Keep the page count visible for
+one page, but omit Previous/Next until there is another page to visit.
 
 ## 10. Tables
 
@@ -527,3 +571,170 @@ Not gaps. Each was decided:
 - New stylesheets must join the type/RTL source-contract checks. Verify actual
   WordPress at desktop and 360px, including keyboard selection, long labels,
   RTL and effective coarse-pointer target sizes. Source tests cannot prove layout.
+
+## 21. Editor cards, lists and disclosures
+
+These contracts apply in Edit, Flow inspectors, Theme & layout, Display rules,
+Destinations and their dialogs. See ADR 0108 for journey semantics; presentation
+must not imply that mutually exclusive paths are sequential visitor steps.
+
+### Ownership and cascade
+
+- Put the layout class on the element that owns the layout. A route list uses
+  `.wconvert-journey-routes__list`, not `.wconvert-journey-routes > ol`: adding a
+  visibility wrapper must not remove its reset, spacing or card treatment.
+  Direct-child selectors remain useful *inside* an owned component.
+- Generic native-control defaults must have lower specificity than component
+  classes. Use `:where()` for the generic element/attribute selector. Never let a
+  text-button reset erase a navigation card's padding, border or background.
+  Shared `data-slot` components retain their own variants.
+- Fix the owning rule in place. Do not append competing overrides for the same
+  property or add `!important` to conceal an ownership/specificity problem.
+  Use the existing utility-layer convention only when overriding important
+  Tailwind utilities deliberately, and document that boundary.
+- Control lists explicitly reset markers, margin and padding. Preserve list
+  semantics where WebKit suppresses them with `list-style: none`. Prose lists keep
+  their bullets. Show priority once; a fallback is “Everyone else”, not another
+  numbered decision. Never globally strip list markers to fix one component.
+
+### Card anatomy and text
+
+- Route cards use a white `--card` surface, `--border`, shared corner radius,
+  12px insets and 12px between cards. Expanded content has its own 12px inset and
+  one divider; avoid nested tinted panels for ordinary settings.
+- Route condition text uses the note role (13px, medium/semibold); its destination
+  uses the micro size (12px, normal weight). Keep explanation text secondary,
+  without shrinking actionable labels to the 9px metadata role.
+- Disclosure summaries are full clickable rows. Use one 16px chevron for custom
+  card disclosures; it changes direction when expanded. Plus/minus is for adding
+  and removing, not a second visual language for opening settings. Native
+  disclosure markers remain appropriate for simple text sections.
+- Use a fixed badge/icon column, `minmax(0, 1fr)` for the label, and a fixed
+  trailing indicator. Labels allow wrapping, including unbroken merchant text;
+  decorative icons never shrink. Do not truncate conditions needed to predict
+  the visitor's path.
+- Navigation cards show their title and context on separate lines. Action rows
+  wrap with an explicit gap and remain separated from the last card. Do not
+  align controls by inserting spaces or relying on paragraph margins.
+
+### Interaction and verification
+
+- Every enabled action has pointer feedback and visible keyboard focus. Hover
+  must not change geometry. Selected/open state remains identifiable; destructive
+  actions use the shared destructive treatment. Disabled controls keep their
+  disabled appearance and do not respond as enabled actions.
+- Native `details`/`summary` provides disclosure behavior. A custom button must
+  expose `aria-expanded`; decorative icons are hidden from assistive technology.
+  Follow the [WAI disclosure pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/).
+- Inspect the real WordPress cascade, including portal dialogs. Test a collapsed
+  and expanded route, fallback-only routing, grouped follow-ups, results, contact
+  fields, display-rule controls and destination selection. Include long labels,
+  a narrow inspector, keyboard focus and disabled/destructive actions.
+- Check reflow at 320 CSS pixels as well as desktop. The map may pan in two
+  dimensions; text/forms in its inspector must still wrap. See
+  [WCAG reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
+- Tests that render components in jsdom do not establish visual correctness.
+  Record real-browser computed styles and overflow checks for cascade defects,
+  together with the states actually inspected. Never describe a partial sample
+  as proof that every screen or locale is correct.
+
+
+## 22. Journey map hierarchy
+
+- Keep all cards and connections readable during selection and testing. Emphasize
+  relevant connections with stroke weight and selected cards with an outline;
+  never fade an entire card's text to imply that it is unrelated.
+- Below 80% zoom, show a larger-type summary within unchanged card geometry,
+  including on the selected card. Select a summary to inspect locally. Overview
+  is for orientation; use Show selected screen for detailed reading.
+- Keep zoom, its percentage, Fit journey, Show selected screen, View options and
+  Edit connections together in one wrapping toolbar. Grouping, previews, Tidy up
+  and keyboard-accessible pan actions belong in View options.
+- A follow-up group starts with its source, count, “ask every match” explanation
+  and named continuation. Show questions discloses the members; Edit individual
+  connections expands the graph. These are distinct actions.
+- A branching card summarizes the answer-path count and fallback. The editable
+  connections carry full condition labels without line clamping; the inspector
+  retains exact rules and priority.
+- Expose journey issues through one count/list and affected card/group markers.
+  Reuse the publication validators and their repair addresses. Repair opens the
+  exact existing control and offers Back to issues; an empty list does not prove
+  that all visitor cases have been tested.
+- Preview & test separates Check the design, Try as a visitor and Explore answer paths.
+  Predictions begin without assumed answers and stop at each unanswered question
+  or submission choice. Diagnostics appear progressively beside the form. Walkthroughs
+  highlight only reached transitions. Reset remains available, tree edits clear
+  stale map traces, and neither mode creates Leads or sends destination requests.
+- Keep the ordinary sequence horizontal. Place a proven optional detour below
+  its entry, with top/bottom ports and the shared continuation on the main row.
+  Vertical proximity must not imply that mutually exclusive paths both run.
+- Stack competing alternatives in separate lanes in priority order. Show the
+  shared result or submission once after those paths rejoin. Keep “ask every
+  match” groups distinct from “choose one path” branches.
+- Only simplify closed, single-entry paths with an identifiable rejoin. Keep
+  nested forks and external entries explicit; never infer visitor behavior from
+  a diagram's positions. Manual arrangements persist until Tidy up or a change
+  that requires a new layout.
+- Use meaningful condition labels and “Everyone else,” with numbers only when
+  priority distinguishes multiple conditional paths. Labels open the exact rule;
+  insertion buttons are separate. Prefer long straight segments over short
+  elbows beside cards. Keep full rules in the inspector and accessible labels.
+- Keep selection actions outside the pannable map, so they cannot obscure
+  nodes/lines. Selecting a small detour includes its rejoin when readable;
+  narrow or dense views prioritize the selected screen. Explicit “Show selected
+  screen” always focuses that screen alone.
+- Check simple sequences, one/multi-screen detours, ordered alternatives,
+  grouped follow-ups, expanded groups, shared endings, external entries, measured
+  long cards and RTL. Check actual browser framing at laptop sizes in addition
+  to pure layout tests. Overlapping manually moved cards still need repositioning.
+
+- Screen numbers are inventory positions, not visit order. Do not display them
+  on flow cards or the flow inspector; keep numbers only for genuine sequences
+  and branch priority. Names, screen type, Start and Paths rejoin orient the map.
+- Edge insertion uses “Add screen here”, revealed on path selection, hover or
+  keyboard focus (always available on touch). Its accessible name includes the
+  visible label and destination. Drawing a connection remains a separate mode.
+- Put the affected path and resulting source → new screen → destination at the
+  top of insertion dialogs. Explicitly state path-only scope. Update the preview
+  for a renamed screen, a closing screen, a changed location or an existing
+  screen connection. Never promise continuation for a closing screen.
+- Give distinct paths into a shared screen stable, separate attachment points
+  and approach lanes; do not merge their editable lines before the destination.
+- Prefer a central orthogonal corridor when clear; fall back to obstacle routing
+  when a card blocks it. Reserve measured label/action rectangles against cards,
+  including keyboard-revealed actions. If no safe location exists, keep controls
+  in the path inspector rather than covering content.
+
+### Merchant editing tasks
+
+- Add questions with an explicit answer type. If the chosen path is after contact
+  collection, explain the constraint and offer a named valid position. Never
+  silently redirect an explicit path insertion.
+- For independent follow-ups, show the source answer, position in the group and
+  shared continuation. Reorder both shown and skipped paths as one undoable edit;
+  dragging map cards changes layout only. Preserve custom order.
+- Lead deletion dialogs with the visitor outcome. Hide alternate continuation
+  controls for a unique safe continuation, but keep them available. Ambiguous
+  exits require an explicit choice. Optional signup removal includes its fields,
+  consent and configuration, with historical Leads preserved.
+- Stage new result rules until a heading and deliberate answer selection exist.
+  Opening or cancelling a dialog must not invent a matching rule. Keep the
+  fallback last and explain first-match priority.
+- Retiring a used answer must list the exclusive behavior being removed. Preserve
+  shared screens and protect contact collection. Mixed or negative conditions
+  require explicit repair; never broaden them automatically.
+- Offer Undo and a visitor walkthrough after structural changes. A test starts
+  from the real entry and must not claim reachability or delivery it did not
+  observe. Keep submission failure controls available under test details.
+- Carry the changed screen's name into the walkthrough and suggest cases from
+  its actual conditions, choices and result priority. Treat these as manual
+  checks; never fabricate answers or imply every suggested rule is reachable.
+- When a dependency review opens another screen's rule, provide a return action
+  that restores the pending choice or answer-type review, replacement selection,
+  disclosures and keyboard focus. Preserve the rule edits made during the detour.
+- Use shared input components inside dialogs, including locally staged forms.
+  Verify field heights and keyboard focus, narrow layouts and scrollable bodies.
+- Match service compatibility to the provider contract: SMS uses the `phone`
+  audience channel. Explain missing dependencies rather than presenting a falsely
+  empty provider list. Creating a shared destination and selecting it for a
+  campaign remain explicit, distinct actions.

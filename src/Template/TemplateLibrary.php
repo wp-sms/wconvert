@@ -125,7 +125,7 @@ final class TemplateLibrary
                 // **No `tree` is the whole discriminator.** A candidate with no
                 // tree is a design this install did not get, and the card for
                 // it is bundled metadata pointing at a live preview on
-                // wconvert.com ({@see LockedTemplates}).
+                // wconvert.io ({@see LockedTemplates}).
                 if (!is_array($candidate['tree'] ?? null)) {
                     if (!isset($locked[$id])) {
                         $locked[$id] = self::stub($id, $candidate, $vocabulary);
@@ -352,7 +352,7 @@ final class TemplateLibrary
         // backgrounds) are compared and matched by PictureTransfer below.
         $mine = MerchantsOwn::changedIn(
             $config['template']['tree'] ?? [],
-            $pickedBefore === null ? null : ($this->find($pickedBefore)['tree'] ?? null)
+            $pickedBefore === null ? [] : ($this->find($pickedBefore)['tree'] ?? null)
         );
 
         $config['template'] = [
@@ -365,7 +365,7 @@ final class TemplateLibrary
 
         $config['template'] = PictureTransfer::prepare(
             $heldTemplate,
-            $pickedBefore === null ? null : $this->find($pickedBefore),
+            $pickedBefore === null ? ['tree' => ['steps' => []], 'tokens' => []] : $this->find($pickedBefore),
             $config['template']
         )['template'];
 
@@ -421,7 +421,7 @@ final class TemplateLibrary
             'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields(), $normalized['tokens']),
             'tree' => $normalized['tree'],
             'tokens' => $normalized['tokens'],
-        ] + (isset($decoded['catalog_current']) ? ['catalog_current' => $decoded['catalog_current'] === true] : []);
+        ] + (isset($decoded['design_key']) ? ['design_key' => $decoded['design_key']] : []) + (isset($decoded['catalog_current']) ? ['catalog_current' => $decoded['catalog_current'] === true] : []);
     }
 
     /**
