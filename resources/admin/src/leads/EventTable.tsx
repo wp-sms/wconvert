@@ -1,239 +1,113 @@
-import { useRef, useState } from 'react';
-import { ChevronRight, ExternalLink } from 'lucide-react';
-import { captureTime } from './calendar';
+import { ChevronRight } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog';
-import {
   DataTable,
+  DataTableActions,
+  DataTableActionsColumn,
   DataTableBody,
   DataTableCell,
   DataTableColumn,
   DataTableHead,
   DataTableRow,
 } from '../shell/DataTable';
-import { editorHref, leadsHref } from '../nav';
+import { formatWhen } from '../lib/format';
 import type { Lead } from './api';
+import { CampaignLink, contactOf, titleOf, type CampaignName } from './LeadDetail';
 
-/** One compact row per capture; the original answers belong in its detail dialog. */
+/**
+ * One compact row per submission; the answers belong in its detail.
+ *
+ * It opens nothing itself. The log and a lead's history each own the one
+ * dialog the detail opens in, so a history never stacks a second modal over
+ * itself (ADR 0131). `data-lead` is how a history puts focus back on the row
+ * it came from.
+ *
+ * `showPerson` is off inside a lead's history, where every row shares the
+ * email or phone the dialog is already titled by.
+ */
 export function EventTable({
   leads,
   nameOf,
   returnTo,
   goalOf,
-  onRelated,
+  onOpen,
+  showPerson = true,
 }: {
   leads: Lead[];
-  nameOf: (id: string) => string;
+  nameOf: (id: string) => CampaignName;
   returnTo: string;
   goalOf?: (id: string) => string | undefined;
-  onRelated?: (identifier: string) => void;
+  onOpen: (lead: Lead, trigger: HTMLButtonElement) => void;
+  showPerson?: boolean;
 }) {
-  const [selected, setSelected] = useState<Lead | null>(null);
-  const trigger = useRef<HTMLButtonElement | null>(null);
   return (
-    <>
-      <DataTable>
-        <DataTableHead>
-          <DataTableColumn>{__('Submitted by', 'wconvert')}</DataTableColumn>
-          <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
-          <DataTableColumn>
-            {__('Captured details', 'wconvert')}
-          </DataTableColumn>
-          <DataTableColumn>{__('Submitted', 'wconvert')}</DataTableColumn>
-          <DataTableColumn>{__('Details', 'wconvert')}</DataTableColumn>
-        </DataTableHead>
-        <DataTableBody>
-          {leads.map((lead) => (
+    <DataTable>
+      <DataTableHead>
+        {showPerson && <DataTableColumn>{__('Submitted by', 'wconvert')}</DataTableColumn>}
+        <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
+        <DataTableColumn>{__('Details', 'wconvert')}</DataTableColumn>
+        <DataTableColumn>{__('Submitted', 'wconvert')}</DataTableColumn>
+        <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
+      </DataTableHead>
+      <DataTableBody>
+        {leads.map((lead) => {
+          const goal = goalOf?.(lead.optin_id);
+          const summary = lead.fields.message || lead.fields.interest_label;
+          return (
             <DataTableRow key={lead.id}>
-              <DataTableCell label={__('Submitted by', 'wconvert')}>
-                <LeadIdentity lead={lead} />
-                {lead.email && lead.phone && (
-                  <bdi
-                    dir="ltr"
-                    className="block text-note text-muted-foreground"
-                  >
-                    {lead.phone}
-                  </bdi>
-                )}
-              </DataTableCell>
+              {showPerson && (
+                <DataTableCell label={__('Submitted by', 'wconvert')}>
+                  <LeadIdentity lead={lead} />
+                </DataTableCell>
+              )}
               <DataTableCell label={__('Campaign', 'wconvert')}>
-                <a href={editorHref(lead.optin_id, returnTo)}>
-                  {nameOf(lead.optin_id)}
-                </a>
-                {goalOf?.(lead.optin_id) && <span className="mt-1 block text-note text-muted-foreground">{goalOf(lead.optin_id)}</span>}
+                <CampaignLink id={lead.optin_id} name={nameOf(lead.optin_id)} returnTo={returnTo} />
+                {goal && <span className="mt-1 block text-note text-muted-foreground">{goal}</span>}
               </DataTableCell>
-              <DataTableCell label={__('Captured details', 'wconvert')}>
-                <span className="line-clamp-2 max-w-sm break-words text-note text-muted-foreground">
-                  {lead.fields.message ||
-                    lead.fields.interest_label ||
-                    lead.fields.interest ||
-                    __('Contact details captured', 'wconvert')}
+              <DataTableCell label={__('Details', 'wconvert')}>
+                <span dir="auto" className="line-clamp-2 max-w-sm break-words text-note text-muted-foreground">
+                  {summary || '—'}
                 </span>
               </DataTableCell>
               <DataTableCell label={__('Submitted', 'wconvert')}>
-                <bdi dir="ltr" className="text-note">
-                  <time dateTime={lead.created_at.replace(' ', 'T')} title={lead.created_at}>{captureTime(lead.created_at)}</time>
-                </bdi>
+                <time className="text-note" dateTime={lead.created_at.replace(' ', 'T')} title={formatWhen(lead.created_at, 'detail')}>
+                  {formatWhen(lead.created_at, 'list')}
+                </time>
               </DataTableCell>
-              <DataTableCell label={__('Details', 'wconvert')}>
+              <DataTableActions>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  aria-label={sprintf(__('Open submission from %s', 'wconvert'), lead.fields.name || lead.email || lead.phone || lead.id)}
-                  onClick={(event) => {
-                    trigger.current = event.currentTarget;
-                    setSelected(lead);
-                  }}
+                  data-lead={lead.id}
+                  aria-label={sprintf(__('Open submission from %s', 'wconvert'), lead.fields.name?.trim() || titleOf(lead))}
+                  onClick={(event) => onOpen(lead, event.currentTarget)}
                 >
-                  {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4" />
+                  {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
                 </Button>
-              </DataTableCell>
+              </DataTableActions>
             </DataTableRow>
-          ))}
-        </DataTableBody>
-      </DataTable>
-      <Dialog
-        open={selected !== null}
-        onOpenChange={(open) => {
-          if (!open) setSelected(null);
-        }}
-      >
-        <DialogContent
-          className="max-h-[85dvh] overflow-auto sm:max-w-2xl"
-          onCloseAutoFocus={(event) => {
-            event.preventDefault();
-            if (trigger.current?.isConnected) trigger.current.focus();
-            else document.getElementById('wconvert-lead-search')?.focus();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>{__('Submission details', 'wconvert')}</DialogTitle>
-            <DialogDescription>
-              {__(
-                'Read the original answers and capture context.',
-                'wconvert',
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          {selected && (
-            <>
-              <div>
-                <LeadIdentity lead={selected} />
-                <p className="mb-0 mt-2 text-note text-muted-foreground"><time title={selected.created_at}>{captureTime(selected.created_at)}</time></p>
-              </div>
-              {selected.fields.message && <section className="border-y border-border py-5">
-                <h3 className="m-0 text-body font-semibold">{__('What they said', 'wconvert')}</h3>
-                <blockquote className="mx-0 mb-0 mt-3 border-s-2 border-action ps-4 whitespace-pre-wrap break-words">{selected.fields.message}</blockquote>
-              </section>}
-              {!!selected.question_answers?.length && <section className="border-y border-border py-5">
-                <h3 className="m-0 text-body font-semibold">{__('Answers', 'wconvert')}</h3>
-                <dl className="mt-3 flex flex-col gap-3">{selected.question_answers.map(answer => <div key={answer.id}>
-                  <dt className="font-medium">{answer.question}</dt>
-                  <dd className="m-0 break-words whitespace-pre-wrap">{(answer.labels.length ? answer.labels : answer.values).join(', ')}</dd>
-                </div>)}</dl>
-              </section>}
-              <section>
-                <h3 className="mb-3 mt-0 text-body font-semibold">{__('Capture context', 'wconvert')}</h3>
-                <a className="inline-flex items-center gap-2 text-link underline decoration-link/40 underline-offset-4 hover:decoration-current" href={editorHref(selected.optin_id, returnTo)}>{nameOf(selected.optin_id)}<ExternalLink aria-hidden="true" className="size-3" /></a>
-                {goalOf?.(selected.optin_id) && <p className="mb-0 mt-1 text-note text-muted-foreground">{goalOf(selected.optin_id)}</p>}
-              </section>
-              <dl className="m-0 flex flex-col gap-4">
-                {[
-                  ['email', selected.email],
-                  ['phone', selected.phone],
-                  ...Object.entries(selected.fields).filter(
-                    ([name]) =>
-                      name !== 'name' &&
-                      name !== 'message' &&
-                      name !== 'interest_label' &&
-                      !['consent_text', 'email_consent_text', 'sms_consent_text', 'email_accepted_at', 'sms_accepted_at'].includes(name),
-                  ),
-                ].map(
-                  ([name, value]) =>
-                    value && (
-                      <div key={name}>
-                        <dt className="text-note font-medium text-muted-foreground">
-                          {fieldLabel(name!)}
-                        </dt>
-                        <dd className="m-0 break-words whitespace-pre-wrap">
-                          {name === 'interest' &&
-                          selected.fields.interest_label ? (
-                            <>
-                              {selected.fields.interest_label}
-                              <span className="block text-note text-muted-foreground">
-                                {sprintf(
-                                  __('Sent value: %s', 'wconvert'),
-                                  value,
-                                )}
-                              </span>
-                            </>
-                          ) : (
-                            value
-                          )}
-                        </dd>
-                      </div>
-                    ),
-                )}
-              </dl>
-              {(selected.email || selected.phone) && <div className="rounded-md border border-border bg-surface p-4">
-                {onRelated ? <Button variant="link" className="h-auto p-0 text-start whitespace-normal" onClick={() => { const identifier = selected.email || selected.phone!; setSelected(null); onRelated(identifier); }}>{selected.email ? __('View submissions using this email', 'wconvert') : __('View submissions using this phone', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4" /></Button>
-                  : <a className="text-link underline decoration-link/40 underline-offset-4 hover:decoration-current" href={leadsHref({ identifier: selected.email || selected.phone! })}>{__('View submissions using this identifier', 'wconvert')}</a>}
-                <p className="mb-0 mt-1 text-note text-muted-foreground">{__('Search all retained captures, outside the current filters. These remain separate submissions, not a merged contact.', 'wconvert')}</p>
-              </div>}
-              <details className="rounded-md border border-border p-3">
-                <summary className="cursor-pointer font-medium">
-                  {__('Consent at capture', 'wconvert')}
-                </summary>
-                {selected.fields.email_consent_text || selected.fields.sms_consent_text ?
-                  (['email', 'sms'] as const).map(channel => selected.fields[`${channel}_consent_text`] && <section key={channel} className="mt-3">
-                    <h4 className="m-0 text-note font-medium">{channel === 'email' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert')}</h4>
-                    <p className="mb-0 break-words whitespace-pre-wrap text-note">{selected.fields[`${channel}_consent_text`]}</p>
-                    <p className="mb-0 text-note text-muted-foreground">{sprintf(__('Accepted: %s', 'wconvert'), selected.fields[`${channel}_accepted_at`] ?? '')}</p>
-                  </section>) : <p className="mb-0 break-words whitespace-pre-wrap text-note">
-                    {selected.fields.consent_text || __('No consent text was recorded with this submission.', 'wconvert')}
-                  </p>}
-                <p className="mb-0 text-note text-muted-foreground">{__('This records the wording at submission, not a current subscription status.', 'wconvert')}</p>
-              </details>
-              <div className="border-t border-border pt-3 text-note text-muted-foreground">
-                <span className="block">{__('Lead ID', 'wconvert')}</span>
-                <bdi dir="ltr" className="break-all">
-                  {selected.id}
-                </bdi>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-    </>
+          );
+        })}
+      </DataTableBody>
+    </DataTable>
   );
 }
 
-function fieldLabel(name: string): string {
-  switch (name) {
-    case 'email':
-      return __('Email', 'wconvert');
-    case 'phone':
-      return __('Phone', 'wconvert');
-    case 'message':
-      return __('Message', 'wconvert');
-    case 'interest':
-      return __('Interest', 'wconvert');
-    default:
-      return name.replaceAll('_', ' ');
-  }
-}
-
+/** The name leads; the email or phone sits under it, or leads itself where there is no name. */
 function LeadIdentity({ lead }: { lead: Lead }) {
-  const initials = lead.fields.name?.trim().split(/\s+/).map((part) => Array.from(part)[0]).slice(0, 2).join('').toLocaleUpperCase();
-  return <span className="flex items-center gap-3">
-    <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-note font-semibold text-action">{initials || '—'}</span>
-    <span className="min-w-0">{lead.fields.name && <span className="block font-medium">{lead.fields.name}</span>}<bdi dir="ltr" className="block break-all text-note text-muted-foreground">{lead.email ?? lead.phone ?? '—'}</bdi></span>
-  </span>;
+  const name = lead.fields.name?.trim() || null;
+  const contact = contactOf(lead);
+  const initials = name?.split(/\s+/).map((part) => Array.from(part)[0]).slice(0, 2).join('').toLocaleUpperCase();
+  return (
+    <span className="flex items-center gap-3">
+      <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-note font-semibold text-action">{initials || '—'}</span>
+      <span className="min-w-0">
+        {name !== null && <span dir="auto" className="block font-medium break-words">{name}</span>}
+        {contact !== null
+          ? <bdi dir="ltr" className={name !== null ? 'block break-all text-note text-muted-foreground' : 'block break-all font-medium'}>{contact}</bdi>
+          : name === null && <span className="block text-muted-foreground">{__('Unnamed lead', 'wconvert')}</span>}
+        {lead.email && lead.phone && <bdi dir="ltr" className="block break-all text-note text-muted-foreground">{lead.phone}</bdi>}
+      </span>
+    </span>
+  );
 }
