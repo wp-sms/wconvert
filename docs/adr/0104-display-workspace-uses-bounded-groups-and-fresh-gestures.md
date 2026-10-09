@@ -74,6 +74,8 @@ still appears in the verdict when collapsed. The window explicitly explains
 that values are pretend, results update automatically, and no real campaign
 opens or visit is recorded.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the tester is now "Test a visit". It reads one described visitor — page, device, account, what happened before this visit, date — against all five questions and says when the campaign would open. It no longer simulates gestures, time or scroll, and the collapsed "Other conditions" assumptions are gone: page, pacing and dates are fields the merchant fills in. The result stays in view beside the visitor, above it on narrow screens._
+
 The user explicitly approved a **1 KiB increase to the existing paid-loader cap**, from 19,456 to 20,480 bytes gzip, after measured safe minifier trials could not fit the added behavior. Free remains 14,012 bytes. CI remains a hard, flagless check per tier. Payload and per-design caps are unchanged. No simulation or admin UI code enters visitor bundles.
 
 > **Amended by [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** Basic remains at 20,480 bytes; Pro caps at 20,608 and Elite at 20,784 after the full phone-field integration. Free remains at 14,012 bytes. The optional phone asset has its own 16 KiB cap.

@@ -1761,49 +1761,60 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
   }
 }
 
-/* The sample tester is portaled outside the admin mount. Keep the verdict fixed
-   while only the visitor fields and optional assumptions scroll. */
+/* Test a visit: the visitor on the left, the result held in view on the right;
+   one column under 720px with the result on top. The dialog is portalled out
+   of #wconvert-admin, so two classes scope it the way the tab scopes its own. */
 .wconvert-sample-dialog { font-size: var(--text-body); }
-.wconvert-sample-header { padding: 1.25rem 3rem 1rem 1.25rem; flex: none; }
-[dir='rtl'] .wconvert-sample-header { padding-inline: 1.25rem 3rem; }
-.wconvert-sample-result { display: flex; align-items: flex-start; gap: .75rem; flex: none; margin: 0 1.25rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
-.wconvert-sample-result > svg { inline-size: 1.25rem; block-size: 1.25rem; flex: none; margin-block-start: .125rem; color: var(--muted-foreground); }
-.wconvert-sample-result[data-passes='true'] > svg { color: var(--success); }
-.wconvert-sample-result strong { display: block; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-sample-result p { margin: .25rem 0 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
-.wconvert-sample-body { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; }
-.wconvert-sample-body h3 { margin: 0 0 .375rem; font-size: var(--text-body); font-weight: 600; }
-.wconvert-sample-help { margin: 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
-.wconvert-sample-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 1rem; margin-block: 1rem; }
-.wconvert-sample-field { display: flex; flex-direction: column; gap: .5rem; min-inline-size: 0; }
-.wconvert-sample-field > div { display: flex; gap: .5rem; align-items: center; }
-.wconvert-sample-field input { min-inline-size: 0; max-inline-size: 8rem; }
-.wconvert-sample-field span { font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-sample-checks { display: flex; flex-direction: column; gap: .5rem; list-style: none; margin: .75rem 0 0; padding: 0; font-size: var(--text-note); }
-.wconvert-sample-checks li { display: flex; justify-content: space-between; gap: 1rem; padding-block-end: .5rem; border-block-end: 1px solid var(--border); }
-.wconvert-sample-checks li > span:last-child { flex: none; font-weight: 500; color: var(--muted-foreground); }
-.wconvert-sample-checks li > span[data-met='true'] { color: var(--primary); }
-.wconvert-sample-events { margin-block-start: 1rem; }
-.wconvert-sample-event-buttons { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .75rem; }
-.wconvert-sample-event-buttons button { white-space: normal; overflow-wrap: anywhere; block-size: auto; min-block-size: var(--control-height); }
-.wconvert-sample-facts { display: grid; gap: 1rem; margin-block-start: 1rem; }
-.wconvert-sample-facts label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(9rem, auto); gap: .5rem 1rem; align-items: center; }
-.wconvert-sample-facts select { min-inline-size: 0; max-inline-size: 100%; }
-.wconvert-sample-assumptions { border-block-start: 1px solid var(--border); padding-block-start: 1rem; }
-.wconvert-sample-assumptions summary { cursor: pointer; font-weight: 500; }
-.wconvert-sample-assumptions summary > span:last-child { margin-inline-start: .5rem; font-size: var(--text-note); font-weight: 400; color: var(--muted-foreground); }
-.wconvert-sample-assumption-body { display: flex; flex-direction: column; gap: .875rem; padding-block-start: 1rem; }
-.wconvert-sample-assumption-body label { display: flex; align-items: flex-start; gap: .625rem; line-height: 1.5; }
-.wconvert-sample-assumption-body input { flex: none; margin: .15rem 0 0; }
-.wconvert-sample-footer { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-block-start: 1px solid var(--border); padding: 1rem 1.25rem; }
-.wconvert-sample-footer p { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); line-height: 1.5; }
-.wconvert-sample-footer button { flex: none; }
+.wconvert-sample-dialog .wconvert-sample-header { padding-block: 1.25rem 1rem; padding-inline: 1.25rem 3rem; flex: none; }
+.wconvert-sample-dialog .wconvert-sample-body { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 1.25rem 1.25rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 28rem); grid-template-areas: 'visitor verdict'; align-items: start; gap: 1.5rem; }
+.wconvert-sample-dialog .wconvert-sample-verdict { grid-area: verdict; position: sticky; inset-block-start: 0; display: grid; gap: .75rem; }
+.wconvert-sample-dialog .wconvert-sample-visitor { grid-area: visitor; display: grid; gap: 1.5rem; min-inline-size: 0; }
+.wconvert-sample-dialog .wconvert-sample-visitor > h3 { margin: 0 0 -.75rem; font-size: var(--text-micro); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
+.wconvert-sample-dialog .wconvert-sample-visitor section h3 { margin: 0; font-size: var(--text-body); font-weight: 600; }
+.wconvert-sample-dialog .wconvert-sample-help { margin: 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
+.wconvert-sample-dialog .wconvert-sample-fields { display: grid; gap: .75rem; }
+.wconvert-sample-dialog .wconvert-sample-field { display: grid; grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); align-items: center; gap: .375rem 1rem; }
+.wconvert-sample-dialog .wconvert-sample-field > label { font-weight: 500; line-height: 1.4; }
+.wconvert-sample-dialog .wconvert-sample-field > :is(select, input) { inline-size: 100%; max-inline-size: 18rem; min-inline-size: 0; margin: 0; }
+
+.wconvert-sample-dialog .wconvert-sample-result { display: flex; align-items: flex-start; gap: .75rem; padding: 1rem; border: 1px solid color-mix(in srgb, var(--warning) 40%, var(--border)); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--warning) 8%, var(--card)); }
+.wconvert-sample-dialog .wconvert-sample-result[data-opens='true'] { border-color: color-mix(in srgb, var(--success) 40%, var(--border)); background: color-mix(in srgb, var(--success) 8%, var(--card)); }
+.wconvert-sample-dialog .wconvert-sample-result:not([data-opens]) { border-color: var(--border); background: var(--surface); }
+.wconvert-sample-dialog .wconvert-sample-result > svg { inline-size: 1.25rem; block-size: 1.25rem; flex: none; margin-block-start: .125rem; color: var(--warning); }
+.wconvert-sample-dialog .wconvert-sample-result[data-opens='true'] > svg { color: var(--success); }
+.wconvert-sample-dialog .wconvert-sample-result:not([data-opens]) > svg { color: var(--muted-foreground); }
+.wconvert-sample-dialog .wconvert-sample-result strong { display: block; font-size: var(--text-heading); font-weight: 600; line-height: 1.35; }
+.wconvert-sample-dialog .wconvert-sample-result p { margin: .25rem 0 0; font-size: var(--text-note); line-height: 1.5; color: var(--foreground); }
+
+/* The checklist: the stop card's rows, one divider, a 12px inset. */
+.wconvert-sample-dialog .wconvert-sample-checks { margin: 0; padding: 0; list-style: none; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); font-size: var(--text-note); }
+.wconvert-sample-dialog .wconvert-sample-checks li { display: grid; grid-template-columns: 16px minmax(0, 8.5rem) minmax(0, 1fr) auto; grid-template-areas: 'mark question answer change'; align-items: center; gap: 2px 10px; margin: 0; padding: 10px 12px; }
+.wconvert-sample-dialog .wconvert-sample-checks li + li { border-block-start: 1px solid var(--border); }
+.wconvert-sample-dialog .wconvert-sample-mark { grid-area: mark; inline-size: 16px; block-size: 16px; color: var(--muted-foreground); }
+.wconvert-sample-dialog .wconvert-sample-checks li[data-status='pass'] .wconvert-sample-mark { color: var(--success); }
+.wconvert-sample-dialog .wconvert-sample-checks li[data-status='info'] .wconvert-sample-mark { stroke-width: 6; }
+.wconvert-sample-dialog .wconvert-sample-checks li[data-status='fail'] .wconvert-sample-mark { color: var(--warning); }
+.wconvert-sample-dialog .wconvert-sample-question { grid-area: question; color: var(--muted-foreground); }
+.wconvert-sample-dialog .wconvert-sample-answer { grid-area: answer; font-weight: 500; color: var(--foreground); overflow-wrap: anywhere; }
+.wconvert-sample-dialog .wconvert-sample-checks li[data-status='fail'] .wconvert-sample-answer { color: var(--warning); }
+.wconvert-sample-dialog .wconvert-sample-change { grid-area: change; padding: 4px; border: 0; background: none; color: var(--primary); font: inherit; font-weight: 500; cursor: pointer; border-radius: 6px; }
+.wconvert-sample-dialog .wconvert-sample-change:hover { text-decoration: underline; }
+.wconvert-sample-dialog .wconvert-sample-change:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+
+.wconvert-sample-dialog .wconvert-sample-footer { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-block-start: 1px solid var(--border); padding: 1rem 1.25rem; }
+.wconvert-sample-dialog .wconvert-sample-footer p { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); line-height: 1.5; }
+.wconvert-sample-dialog .wconvert-sample-footer button { flex: none; }
+@media (max-width: 720px) {
+  .wconvert-sample-dialog .wconvert-sample-body { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'verdict' 'visitor'; }
+  .wconvert-sample-dialog .wconvert-sample-verdict { position: static; }
+}
 @media (max-width: 480px) {
-  .wconvert-sample-header { padding-block: 1rem .75rem; }
-  .wconvert-sample-result { padding: .75rem; }
-  .wconvert-sample-body { padding-block: 1rem; }
-  .wconvert-sample-facts label { grid-template-columns: minmax(0, 1fr); }
-  .wconvert-sample-footer { flex-wrap: wrap; gap: .5rem; padding-block: .75rem; }
+  .wconvert-sample-dialog .wconvert-sample-header { padding-block: 1rem .75rem; }
+  .wconvert-sample-dialog .wconvert-sample-body { padding-inline: 1rem; }
+  .wconvert-sample-dialog .wconvert-sample-field { grid-template-columns: minmax(0, 1fr); }
+  .wconvert-sample-dialog .wconvert-sample-checks li { grid-template-columns: 16px minmax(0, 1fr) auto; grid-template-areas: 'mark question change' '. answer change'; }
+  .wconvert-sample-dialog .wconvert-sample-field > :is(select, input) { max-inline-size: none; }
+  .wconvert-sample-dialog .wconvert-sample-footer { flex-wrap: wrap; gap: .5rem; padding-block: .75rem; }
 }
 
 /* Display choices explain the decision at the point where it is made. */

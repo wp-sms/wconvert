@@ -1,168 +1,196 @@
-import { useState } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { CheckCircle2, CircleDashed } from 'lucide-react';
-import { Input } from '../../components/ui/input';
-import { Label } from '../../components/ui/label';
+import { Check as CheckIcon, CheckCircle2, CircleAlert, Dot, LoaderCircle, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../components/ui/dialog';
-import { audienceMatches, audienceRules, groupMatches, openingMatches, openingRules, type Answer } from '../../../../loader/src/display-rules';
+import { audienceRules, type Answer } from '../../../../loader/src/display-rules';
 import { phraseOf } from './sentence';
 import type { Rule, RuleVocabulary } from '../api';
-import type { DisplayRulesValue } from './summaries';
+import { questions, type DisplayRulesValue } from './summaries';
+import type { SectionId } from './picks';
+import type { ConvertingAct } from '../structure/catalogue';
 import type { Template, ProductsNode } from '@renderer/types';
 import { nodesOf, nodeAt } from '../structure/tree';
-import { commerceSupported } from '../../settings';
+import { adminSettings, commerceSupported } from '../../settings';
 import { unlessFree } from '../../goals/availability';
+import { wallKey, wallNow } from '../../lib/wallTime';
+import { everyType } from './plan';
 import { SampleBasket, emptyBasket, useBasketPreview } from './SampleBasket';
+import { checkVisit, DATED, HISTORIES, historyLabel, isScheduled, pageChoices, type BasketCheck, type Check, type History, type Visitor } from './visit';
 
-/** Hypothetical facts only. This module has no storage, listeners, beacons or capture imports. */
-export default function SampleVisit({ value, vocabulary, onClose, template, cartRequired = false }: { value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void; template?: Template; cartRequired?: boolean }) {
-  const [basket, setBasket] = useState(emptyBasket);
-  const [answers, setAnswers] = useState<Record<string, Answer>>({});
-  const [adBlocking, setAdBlocking] = useState<'detected' | 'not_detected' | 'unknown' | 'pending'>('unknown');
-  const [seconds, setSeconds] = useState(0);
-  const [scroll, setScroll] = useState(0);
-  const [idle, setIdle] = useState(0);
-  const [page, setPage] = useState(true);
-  const [limits, setLimits] = useState(true);
-  const [pacing, setPacing] = useState(true);
-  const [completion, setCompletion] = useState(true);
-  const [goal, setGoal] = useState(true);
-  // The displayed result is the last simulated event. Any fact edit ends that
-  // event, so advancing the clock or changing eligibility cannot replay it.
-  const [gesture, setGesture] = useState<string | null>(null);
-  const change = <T,>(setter: (value: T) => void, next: T) => { setGesture(null); setter(next); };
-  const reset = () => {
-    setBasket(emptyBasket()); setAnswers({}); setAdBlocking('unknown'); setSeconds(0); setScroll(0); setIdle(0); setGesture(null);
-    setPage(true); setLimits(true); setPacing(true); setCompletion(true); setGoal(true);
-  };
+/** Rule types the visitor form asks about in its own words; any other audience rule is a plain yes or no. */
+const NATURAL = ['device', 'logged_in', 'role', 'referrer', 'query_param', 'time_of_day', 'ad_blocking'];
+const SOURCES = ['search', 'social', 'direct'];
+
+/**
+ * Test a visit: describe one visitor, read whether this campaign shows to them
+ * and when (ADR 0129). Hypothetical facts only — this module has no storage,
+ * listeners, beacons or capture imports, and nothing opens on the site.
+ */
+export default function SampleVisit({ value, vocabulary, onClose, onOpenSection, template, cartRequired = false, act = 'submit' }: {
+  value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void; onOpenSection?: (section: SectionId) => void;
+  template?: Template; cartRequired?: boolean; act?: ConvertingAct;
+}) {
   const plan = value.display_rules;
-  const rows = plan ? [...audienceRules(plan), ...openingRules(plan)] : [];
+  const audience = plan ? audienceRules(plan) : [];
+  const has = (type: string) => audience.some(rule => rule.type === type);
+  const pages = pageChoices(value, vocabulary);
+  const roleParam = vocabulary.targeting.find(type => type.type === 'role')?.params.value;
+  const roleValues = [...new Set([...(roleParam?.options.map(option => option.value) ?? []),
+    ...audience.filter(rule => rule.type === 'role').flatMap(rule => Array.isArray(rule.value) ? rule.value.map(String) : []), ...(value.targeting.roles ?? [])])];
+  const domains = [...new Set(audience.filter(rule => rule.type === 'referrer').flatMap(rule => Array.isArray(rule.in) ? rule.in.map(String) : []))]
+    .filter(source => !SOURCES.includes(source));
+  const scheduled = isScheduled(value.schedule);
+  const timezone = adminSettings()?.timezone;
+
+  const fresh = (): Visitor => ({
+    page: (pages.find(choice => choice.admitted) ?? pages[0]).value, device: 'desktop', signedIn: false, role: roleValues[0],
+    source: 'search', query: '', clock: wallNow(timezone).slice(11), adBlocking: 'no', history: 'new', daysAgo: value.frequency.cooldownDays ?? 7,
+  });
+  const [visitor, setVisitor] = useState(fresh);
+  const [basket, setBasket] = useState(emptyBasket);
+  const set = (patch: Partial<Visitor>) => setVisitor(previous => ({ ...previous, ...patch }));
+  const reset = () => { setVisitor(fresh()); setBasket(emptyBasket()); };
+
   const productPath = template ? nodesOf(template.tree).find(node => node.type === 'products' && !(nodeAt(template.tree, node.path) as { hidden?: boolean })?.hidden)?.path : undefined;
   const products = productPath && template ? nodeAt(template.tree, productPath) as ProductsNode : undefined;
-  const cartRules = rows.filter(rule => rule.type.startsWith('cart_'));
+  const cartRules = audience.filter(rule => rule.type.startsWith('cart_'));
   let requiredCartId = 'sample-required-cart';
   while (cartRules.some(rule => rule.id === requiredCartId)) requiredCartId += '-';
   if (cartRequired) cartRules.push({ id: requiredCartId, type: 'cart_has_items' });
   const usesBasket = cartRules.length > 0 || !!products;
   const basketEnabled = usesBasket && commerceSupported();
   const preview = useBasketPreview(basketEnabled, basket, cartRules, products);
-  const checkingBasket = basketEnabled && !preview.result && !preview.error;
-  const basketAllowed = !usesBasket || (basketEnabled && !!preview.result && preview.result.eligible && (!cartRequired || preview.result.rules[requiredCartId] === true));
-  const types = [...vocabulary.targeting, ...vocabulary.conditions, ...vocabulary.triggers];
-  const isGesture = (type: string) => ['exit_intent', 'scroll_up', 'click_element'].includes(type);
-  const read = (rule: { readonly [key: string]: unknown }): Answer => rule.type === 'time_on_page' ? seconds >= Number(rule.seconds)
-    : rule.type === 'scroll_depth' ? scroll >= Number(rule.percent) : rule.type === 'inactivity' ? Math.min(idle, seconds) >= Number(rule.seconds)
-      : isGesture(String(rule.type)) ? gesture === String(rule.id)
-        : String(rule.type).startsWith('cart_') && basketEnabled ? preview.result?.state === 'blocked' ? 'blocked' : preview.result?.rules[String(rule.id)] ?? false
-        : rule.type === 'ad_blocking' ? (adBlocking === 'detected' || adBlocking === 'not_detected') && adBlocking === rule.value : answers[String(rule.id)] ?? false;
-  const automaticValue = (type: string) => ['time_on_page', 'scroll_depth', 'inactivity'].includes(type);
-  const audience = plan ? audienceMatches(plan.audience, read) : false;
-  const opening = plan ? openingMatches(plan.opening, read, seconds) : false;
-  const automaticAllowed = plan?.opening.mode === 'click' || pacing;
-  const passes = basketAllowed && page && limits && completion && automaticAllowed && goal && audience === true && opening === true;
-  const timed = rows.filter(rule => automaticValue(rule.type));
-  const facts = rows.filter(rule => !(basketEnabled && rule.type.startsWith('cart_')) && rule.type !== 'ad_blocking' && !automaticValue(rule.type) && !isGesture(rule.type));
-  const hasAdBlocking = rows.some(rule => rule.type === 'ad_blocking');
-  const gestures = rows.filter(rule => isGesture(rule.type));
-  const minimum = plan?.opening.mode === 'automatic' ? plan.opening.minimum_seconds ?? 0 : 0;
-  const showTime = minimum > 0 || rows.some(rule => ['time_on_page', 'inactivity'].includes(rule.type));
-  const changedAssumptions = [page, limits, completion, pacing, goal].filter(allowed => !allowed).length;
-  const ResultIcon = passes ? CheckCircle2 : CircleDashed;
-  const reason = !plan ? __('Set up your display rules before testing a visit.', 'wconvert')
-    : !basketAllowed ? !basketEnabled ? unlessFree(__('Cart testing requires WConvert Pro and WooCommerce.', 'wconvert')) : preview.error ? __('The sample basket could not be checked.', 'wconvert') : !preview.result ? __('Checking the sample basket…', 'wconvert') : __('This basket does not meet the campaign’s cart requirements or has no eligible recommendations.', 'wconvert')
-    : !page ? __('This page is excluded from the campaign.', 'wconvert')
-      : !goal ? __('A required goal condition is not met.', 'wconvert')
-        : !limits ? __('The schedule or page conditions prevent opening.', 'wconvert')
-          : !completion ? __('Completion rules stop this visitor from seeing it again.', 'wconvert')
-            : !automaticAllowed ? __('Repeat limits stop another automatic appearance.', 'wconvert')
-              : audience !== true ? __('This visitor does not match your audience, or has not given the needed consent.', 'wconvert')
-                : minimum > seconds ? sprintf(__('The visitor needs at least %d seconds on the page.', 'wconvert'), minimum)
-                  : opening !== true ? __('The opening conditions below are not met yet.', 'wconvert')
-                    : __('This visitor meets your rules, using the assumptions below.', 'wconvert');
-  return <Dialog open onOpenChange={open => { if (!open) onClose(); }}>
-    <DialogContent className="wconvert-sample-dialog sm:max-w-2xl flex flex-col gap-0 p-0 overflow-hidden max-h-[calc(100dvh-2rem)]">
-      <DialogHeader className="wconvert-sample-header text-start">
-        <DialogTitle>{__('Test a sample visit', 'wconvert')}</DialogTitle>
-        <DialogDescription>{__('Describe a pretend visitor. The result updates automatically as you change the values.', 'wconvert')}</DialogDescription>
-      </DialogHeader>
-      <div className="wconvert-sample-result" data-passes={passes} role="status" aria-live="polite" aria-atomic="true">
-        <ResultIcon aria-hidden="true" />
-        <div><strong>{checkingBasket ? __('Checking…', 'wconvert') : passes ? __('Would show', 'wconvert') : __('Would not show', 'wconvert')}</strong><p>{reason}</p></div>
-      </div>
-      <div className="wconvert-sample-body">
-        {basketEnabled && <><SampleBasket value={basket} onChange={next => change(setBasket, next)} result={preview.result} error={preview.error} products={products} legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} />
-          {!!cartRules.length && <ul className="wconvert-sample-checks" aria-label={__('Cart conditions', 'wconvert')}>{cartRules.map(rule => <li key={String(rule.id)}><span>{phraseOf(rule as Rule, types).text}</span><span>{read(rule) === true ? __('Matches', 'wconvert') : read(rule) === 'blocked' ? __('Needs consent', 'wconvert') : __('Does not match', 'wconvert')}</span></li>)}</ul>}
-        </>}
+  const basketCheck: BasketCheck = !usesBasket ? { status: 'unused' }
+    : !basketEnabled ? { status: 'fail', reason: unlessFree(__('Cart testing requires WConvert Pro and WooCommerce.', 'wconvert')) }
+      : preview.error ? { status: 'fail', reason: __('The sample basket could not be checked.', 'wconvert') }
+        : !preview.result ? { status: 'checking' }
+          : !preview.result.eligible || (cartRequired && preview.result.rules[requiredCartId] !== true)
+            ? { status: 'fail', reason: __('This basket does not meet the campaign’s cart requirements or has no eligible recommendations.', 'wconvert') }
+            : { status: 'pass', answers: Object.fromEntries(cartRules.map(rule => [String(rule.id),
+              preview.result!.state === 'blocked' ? 'blocked' : preview.result!.rules[String(rule.id)] ?? false] as [string, Answer])) };
+  const result = checkVisit(value, vocabulary, visitor, basketCheck, act);
 
-        {(showTime || timed.length > 0 || gestures.length > 0) && <section aria-labelledby="wconvert-sample-activity">
-          <h3 id="wconvert-sample-activity">{__('Visitor activity', 'wconvert')}</h3>
-          {(showTime || timed.length > 0) && <>
-            <p className="wconvert-sample-help">{__('Enter pretend values — you do not need to wait or scroll.', 'wconvert')}</p>
-            <div className="wconvert-sample-fields">
-              {showTime && <SampleNumber id="wconvert-sample-time" label={__('Time on page', 'wconvert')} unit={__('seconds', 'wconvert')} value={seconds} onChange={next => change(setSeconds, next)} />}
-              {rows.some(rule => rule.type === 'scroll_depth') && <SampleNumber id="wconvert-sample-scroll" label={__('Page scrolled', 'wconvert')} unit="%" max={100} value={scroll} onChange={next => change(setScroll, next)} />}
-              {rows.some(rule => rule.type === 'inactivity') && <SampleNumber id="wconvert-sample-idle" label={__('Time without activity', 'wconvert')} unit={__('seconds', 'wconvert')} value={idle} onChange={next => change(setIdle, next)} />}
-            </div>
-            {rows.some(rule => rule.type === 'inactivity') && idle > seconds && <p className="wconvert-sample-help">{__('Inactive time is counted only up to the time on page.', 'wconvert')}</p>}
-            {(timed.length > 0 || minimum > 0) && <ul className="wconvert-sample-checks" aria-label={__('Opening and activity conditions', 'wconvert')}>
-              {timed.map(rule => <li key={String(rule.id)}><span>{phraseOf(rule as Rule, types).text}</span><span data-met={read(rule) === true}>{read(rule) === true ? __('Met', 'wconvert') : __('Not yet', 'wconvert')}</span></li>)}
-              {minimum > 0 && <li><span>{sprintf(__('Minimum %d seconds on the page', 'wconvert'), minimum)}</span><span data-met={seconds >= minimum}>{seconds >= minimum ? __('Met', 'wconvert') : __('Not yet', 'wconvert')}</span></li>}
-            </ul>}
-          </>}
-          {plan?.opening.mode === 'automatic' && plan.opening.rules.length > 1 && <p className="wconvert-sample-help">{plan.opening.match === 'all' ? __('All opening rules must match.', 'wconvert') : __('Any one opening rule can match.', 'wconvert')}</p>}
-          {gestures.length > 0 && <div className="wconvert-sample-events">
-            <p className="wconvert-sample-help">{__('Try an action with these values. If you change a value, try the action again.', 'wconvert')}</p>
-            <div className="wconvert-sample-event-buttons">{gestures.map(rule => <Button variant="outline" key={String(rule.id)} disabled={usesBasket && (!preview.result || preview.error)} onClick={() => { setIdle(0); setGesture(String(rule.id)); }}>
-              {rule.type === 'exit_intent' ? __('Simulate exit intent', 'wconvert') : rule.type === 'scroll_up' ? __('Simulate scroll back up', 'wconvert') : `${__('Simulate click', 'wconvert')}: ${String(rule.selector ?? '')}`}
-            </Button>)}</div>
-          </div>}
-        </section>}
-        {(facts.length > 0 || hasAdBlocking) && <section aria-labelledby="wconvert-sample-visitor">
-          <h3 id="wconvert-sample-visitor">{__('Visitor details', 'wconvert')}</h3>
-          <p className="wconvert-sample-help">{__('For this pretend visitor, choose whether each condition is true.', 'wconvert')}</p>
-          {hasAdBlocking && <label>{__('Ad-block status', 'wconvert')}
-            <select value={adBlocking} onChange={event => change(setAdBlocking, event.target.value as typeof adBlocking)}>
-              <option value="detected">{__('Detected', 'wconvert')}</option>
-              <option value="not_detected">{__('Not detected', 'wconvert')}</option>
-              <option value="unknown">{__('Unknown', 'wconvert')}</option>
-              <option value="pending">{__('Checking', 'wconvert')}</option>
-            </select>
-          </label>}
-          <div className="wconvert-sample-facts">{facts.map(rule => <label key={String(rule.id)}>
-            <span>{phraseOf(rule as Rule, types).text}</span><select value={String(read(rule))} onChange={event => change(setAnswers, { ...answers, [String(rule.id)]: event.target.value === 'blocked' ? 'blocked' : event.target.value === 'true' })}>
-              <option value="false">{__('Does not match', 'wconvert')}</option><option value="true">{__('Matches', 'wconvert')}</option><option value="blocked">{__('Consent not given', 'wconvert')}</option>
-            </select></label>)}</div>
-          {plan?.audience.mode === 'groups' && plan.audience.groups.length > 1 && <ul className="wconvert-sample-checks" aria-label={__('Audience groups', 'wconvert')}>
-            {plan.audience.groups.map((group, index) => <li key={group.id}><span>{sprintf(__('Audience group %d', 'wconvert'), index + 1)} ({group.match.toUpperCase()})</span><span>{groupMatches(group, read) === true ? __('Matches', 'wconvert') : groupMatches(group, read) === 'blocked' ? __('Needs consent', 'wconvert') : __('Does not match', 'wconvert')}</span></li>)}
-          </ul>}
-        </section>}
-        {plan?.opening.mode === 'immediate' && <p className="wconvert-sample-help">{__('This campaign opens immediately when the audience and other conditions allow it.', 'wconvert')}</p>}
-        <details className="wconvert-sample-assumptions">
-          <summary><span>{__('Other conditions', 'wconvert')}</span><span>{changedAssumptions ? sprintf(__('%d changed', 'wconvert'), changedAssumptions) : __('All allowed', 'wconvert')}</span></summary>
-          <div className="wconvert-sample-assumption-body">
-            <p className="wconvert-sample-help">{__('These are assumptions, not checks of your website. Leave them checked for a basic test; uncheck one to see how it blocks opening.', 'wconvert')}</p>
-            <label><input type="checkbox" checked={page} onChange={event => change(setPage, event.target.checked)} /><span>{__('Page is allowed', 'wconvert')}</span></label>
-            <label><input type="checkbox" checked={limits} onChange={event => change(setLimits, event.target.checked)} /><span>{__('Schedule and page conditions allow opening', 'wconvert')}</span></label>
-            <label><input type="checkbox" checked={completion} onChange={event => change(setCompletion, event.target.checked)} /><span>{__('Completion rules allow another appearance', 'wconvert')}</span></label>
-            <label><input type="checkbox" checked={pacing} onChange={event => change(setPacing, event.target.checked)} /><span>{__('Repeat limits allow another appearance', 'wconvert')}</span></label>
-            {plan?.opening.mode === 'click' && <p className="wconvert-sample-help">{__('Visitor clicks skip repeat limits. Audience, completion and the other conditions still apply.', 'wconvert')}</p>}
-            <label><input type="checkbox" checked={goal} onChange={event => change(setGoal, event.target.checked)} /><span>{__('Required goal conditions are met', 'wconvert')}</span></label>
+  const all = everyType(vocabulary);
+  const others = audience.filter(rule => !NATURAL.includes(rule.type) && !rule.type.startsWith('cart_'));
+  const asksAccount = has('logged_in') || has('role') || value.targeting.logged_in !== undefined || value.targeting.roles !== undefined;
+  const asksRole = has('role') || value.targeting.roles !== undefined;
+  const roleLabel = (role: string) => roleParam?.options.find(option => option.value === role)?.label ?? role;
+  const asked = questions();
+  const checking = result.checking === true;
+  const Headline = checking ? LoaderCircle : result.opens ? CheckCircle2 : CircleAlert;
+
+  return <Dialog open onOpenChange={open => { if (!open) onClose(); }}>
+    <DialogContent className="wconvert-sample-dialog sm:max-w-4xl flex flex-col gap-0 p-0 overflow-hidden max-h-[calc(100dvh-2rem)]">
+      <DialogHeader className="wconvert-sample-header text-start">
+        <DialogTitle>{__('Test a visit', 'wconvert')}</DialogTitle>
+        <DialogDescription>{__('Describe one visitor. You’ll see whether this campaign shows to them, and when. Nothing opens on your site.', 'wconvert')}</DialogDescription>
+      </DialogHeader>
+      <div className="wconvert-sample-body">
+        <aside className="wconvert-sample-verdict" aria-label={__('Result', 'wconvert')}>
+          <div className="wconvert-sample-result" data-opens={checking ? undefined : result.opens} role="status" aria-live="polite" aria-atomic="true">
+            <Headline aria-hidden="true" className={checking ? 'animate-spin motion-reduce:animate-none' : undefined} />
+            <div><strong>{result.headline}</strong>{result.reason && <p>{result.reason}</p>}</div>
           </div>
-        </details>
+          <ul className="wconvert-sample-checks">
+            {result.checks.map(row => <CheckRow key={row.section} row={row} question={asked[row.section]}
+              onChange={onOpenSection && (() => onOpenSection(row.section))} />)}
+          </ul>
+        </aside>
+
+        <section className="wconvert-sample-visitor" aria-labelledby="wconvert-sample-visitor">
+          <h3 id="wconvert-sample-visitor">{__('The visitor', 'wconvert')}</h3>
+          <div className="wconvert-sample-fields">
+            {pages.length > 1 && <Field label={__('Page they’re on', 'wconvert')}>{id =>
+              <select id={id} value={visitor.page} onChange={event => set({ page: event.target.value })}>
+                {pages.map(choice => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
+              </select>}</Field>}
+            <Field label={__('Device', 'wconvert')}>{id =>
+              <select id={id} value={visitor.device} onChange={event => set({ device: event.target.value as Visitor['device'] })}>
+                <option value="mobile">{__('Phone', 'wconvert')}</option>
+                <option value="tablet">{__('Tablet', 'wconvert')}</option>
+                <option value="desktop">{__('Computer', 'wconvert')}</option>
+              </select>}</Field>
+            {asksAccount && <Field label={__('Signed in', 'wconvert')}>{id =>
+              <select id={id} value={visitor.signedIn ? 'yes' : 'no'} onChange={event => set({ signedIn: event.target.value === 'yes' })}>
+                <option value="no">{__('No', 'wconvert')}</option>
+                <option value="yes">{__('Yes', 'wconvert')}</option>
+              </select>}</Field>}
+            {asksRole && visitor.signedIn && roleValues.length > 0 && <Field label={__('Role', 'wconvert')}>{id =>
+              <select id={id} value={visitor.role} onChange={event => set({ role: event.target.value })}>
+                {roleValues.map(role => <option key={role} value={role}>{roleLabel(role)}</option>)}
+              </select>}</Field>}
+            {has('referrer') && <Field label={__('Came from', 'wconvert')}>{id =>
+              <select id={id} value={visitor.source} onChange={event => set({ source: event.target.value })}>
+                <option value="search">{__('A search engine', 'wconvert')}</option>
+                <option value="social">{__('Social media', 'wconvert')}</option>
+                <option value="direct">{__('Typed the address (direct)', 'wconvert')}</option>
+                {domains.map(domain => <option key={domain} value={domain}>{domain}</option>)}
+                <option value="elsewhere">{__('Another site', 'wconvert')}</option>
+              </select>}</Field>}
+            {has('query_param') && <Field label={__('Page address', 'wconvert')}>{id =>
+              <input id={id} type="text" placeholder="?utm_source=newsletter" value={visitor.query} onChange={event => set({ query: event.target.value })} />}</Field>}
+            {has('time_of_day') && <Field label={__('Time on your site’s clock', 'wconvert')}>{id =>
+              <input id={id} type="time" value={visitor.clock} onChange={event => set({ clock: event.target.value })} />}</Field>}
+            {has('ad_blocking') && <Field label={__('Ad blocker', 'wconvert')}>{id =>
+              <select id={id} value={visitor.adBlocking} onChange={event => set({ adBlocking: event.target.value as Visitor['adBlocking'] })}>
+                <option value="no">{__('No', 'wconvert')}</option>
+                <option value="yes">{__('Yes', 'wconvert')}</option>
+                <option value="unknown">{__('Can’t tell', 'wconvert')}</option>
+              </select>}</Field>}
+            {others.map(rule => <Field key={String(rule.id)} label={sprintf(
+              /* translators: %s: a rule, e.g. “their cart is not empty”. */
+              __('Does this visitor match: %s?', 'wconvert'), phraseOf(rule as Rule, all).text)}>{id =>
+              <select id={id} value={visitor.answers?.[String(rule.id)] ? 'yes' : 'no'}
+                onChange={event => set({ answers: { ...visitor.answers, [String(rule.id)]: event.target.value === 'yes' } })}>
+                <option value="no">{__('No', 'wconvert')}</option>
+                <option value="yes">{__('Yes', 'wconvert')}</option>
+              </select>}</Field>)}
+            <Field label={__('Before this visit', 'wconvert')}>{id =>
+              <select id={id} value={visitor.history} onChange={event => set({ history: event.target.value as History })}>
+                {HISTORIES.map(history =>
+                  <option key={history} value={history}>{history === 'days-ago' ? __('Saw it on an earlier day', 'wconvert') : historyLabel(history, undefined, act)}</option>)}
+              </select>}</Field>
+            {DATED.includes(visitor.history) && <Field label={__('How many days ago', 'wconvert')}>{id =>
+              <input id={id} type="number" min={1} max={3650} value={visitor.daysAgo} onChange={event => set({ daysAgo: Math.max(1, Math.floor(Number(event.target.value)) || 1) })} />}</Field>}
+            {scheduled && <Field label={__('Visit date', 'wconvert')}>{id =>
+              <select id={id} value={visitor.date === undefined ? 'today' : 'pick'}
+                onChange={event => set({ date: event.target.value === 'today' ? undefined : wallKey(value.schedule.starts_at) ?? wallNow(timezone) })}>
+                <option value="today">{__('Today', 'wconvert')}</option>
+                <option value="pick">{__('Pick a date and time', 'wconvert')}</option>
+              </select>}</Field>}
+            {scheduled && visitor.date !== undefined && <Field label={__('Date and time', 'wconvert')}>{id =>
+              <input id={id} type="datetime-local" value={visitor.date?.replace(' ', 'T')}
+                onChange={event => { const date = wallKey(event.target.value); if (date) set({ date }); }} />}</Field>}
+          </div>
+          {basketEnabled && <SampleBasket value={basket} onChange={setBasket} result={preview.result} error={preview.error} products={products}
+            legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} />}
+        </section>
       </div>
       <div className="wconvert-sample-footer">
-        <p>{__('Uses your current draft. No real popup opens or visit is recorded.', 'wconvert')}</p>
-        <Button variant="outline" onClick={reset}>{__('Reset sample', 'wconvert')}</Button>
+        <p>{__('Uses your unsaved draft.', 'wconvert')}</p>
+        <Button variant="outline" onClick={reset}>{__('Reset', 'wconvert')}</Button>
       </div>
     </DialogContent>
   </Dialog>;
 }
 
-function SampleNumber({ id, label, unit, value, max, onChange }: { id: string; label: string; unit: string; value: number; max?: number; onChange: (next: number) => void }) {
-  return <div className="wconvert-sample-field"><Label htmlFor={id}>{label}</Label>
-    <div><Input id={id} type="number" min={0} max={max} value={value} aria-describedby={`${id}-unit`}
-      onChange={event => { const next = Number(event.target.value); onChange(Number.isFinite(next) ? Math.max(0, Math.min(max ?? Infinity, next)) : 0); }} />
-      <span id={`${id}-unit`}>{unit}</span></div>
-  </div>;
+function Field({ label, children }: { label: string; children: (id: string) => ReactNode }) {
+  const id = useId();
+  return <div className="wconvert-sample-field"><label htmlFor={id}>{label}</label>{children(id)}</div>;
+}
+
+function CheckRow({ row, question, onChange }: { row: Check; question: string; onChange?: () => void }) {
+  const Mark = row.status === 'pass' ? CheckIcon : row.status === 'fail' ? X : Dot;
+  const said = row.status === 'pass' ? __('Passes', 'wconvert') : row.status === 'fail' ? __('Stops it', 'wconvert') : __('Describes only', 'wconvert');
+  return <li data-status={row.status}>
+    <Mark className="wconvert-sample-mark" aria-hidden="true" />
+    <span className="sr-only">{said}: </span>
+    <span className="wconvert-sample-question">{question}</span>
+    <span className="wconvert-sample-answer">{row.text}</span>
+    {onChange && <button type="button" className="wconvert-sample-change" onClick={onChange}
+      aria-label={sprintf(
+        /* translators: %s: a display question, e.g. “Who sees it?”. */
+        __('Change: %s', 'wconvert'), question)}>{__('Change', 'wconvert')}</button>}
+  </li>;
 }
