@@ -61,6 +61,31 @@ describe('the block editor and PHP agree about what things are called', () => {
   });
 
   /**
+   * The picker's stylesheet is registered under the script's handle; a
+   * metadata `editorStyle` naming anything else loads nothing, and the picker
+   * draws unstyled with no error anywhere.
+   */
+  it('names the editor style handle PHP registers', () => {
+    const metadata = JSON.parse(read('resources/blocks/inline-optin/block.json'));
+    const php = read('src/Frontend/InlineOptinBlock.php');
+
+    expect(metadata.editorStyle).toBe(phpConstant(php, 'HANDLE'));
+    expect(php).toMatch(/wp_register_style\(\s*self::HANDLE/u);
+  });
+
+  /**
+   * **Refresh asks the route PHP registers.** A mismatch is a 404 that the
+   * picker reports as "Could not refresh campaigns", on every click, with
+   * nothing to say the two files stopped agreeing.
+   */
+  it('refreshes from the route PHP registers', () => {
+    const route = phpConstant(read('src/Frontend/InlineOptinBlock.php'), 'ROUTE');
+    const namespace = phpConstant(read('src/Rest/Routes.php'), 'NAMESPACE');
+
+    expect(read('resources/blocks/inline-optin/src/optins.ts')).toContain(`path: '/${namespace}${route}'`);
+  });
+
+  /**
    * The one attribute, which is the whole of what this block stores.
    * `render()` reads `optinId` off the saved attributes, and an editor saving
    * anything else renders an empty string on every page while looking correct
@@ -118,6 +143,29 @@ describe('the block editor and PHP agree about what things are called', () => {
    * screen in WConvert that shows a merchant either the tag or the id it
    * carries.
    */
+  /**
+   * **One prefix, so one search finds all three.** A merchant who types
+   * "WConvert" in the inserter finds the campaign block and both locks; the
+   * words a merchant reaches for first ("form", "inline") are keywords, so
+   * they find it too.
+   */
+  it('names all three blocks the same way in the inserter', () => {
+    const metadata = JSON.parse(read('resources/blocks/inline-optin/block.json'));
+
+    expect(metadata.title).toBe('WConvert campaign');
+    expect(metadata.keywords).toEqual(expect.arrayContaining(['wconvert', 'form', 'inline', 'popup-free']));
+    expect(read('src/Frontend/ContentRegion.php')).toContain(`'title' => __('WConvert content lock', 'wconvert')`);
+    expect(read('pro/modules/content-lock/src/ContentDivider.php')).toContain(`'title' => __('WConvert lock from here', 'wconvert')`);
+  });
+
+  /** The builder tells the merchant which block to add, by the name the inserter shows. */
+  it('names the block in placement help by its inserter title', () => {
+    const { title } = JSON.parse(read('resources/blocks/inline-optin/block.json'));
+
+    expect(read('resources/admin/src/builder/ManualPlacement.tsx')).toContain(`Add the “${title}” block`);
+    expect(read('resources/admin/src/builder/PlacementGuidance.tsx')).toContain(`Add the “${title}” block`);
+  });
+
   it('offers the shortcode tag PHP registers', () => {
     const tag = phpConstant(read('src/Frontend/InlineOptinShortcode.php'), 'TAG');
 

@@ -68,6 +68,52 @@ is the thing they came for the most visible thing, with one way forward?
     one Undo step; a deleted layer shows its own Undo; Campaign details says
     Results and carries the developer ID disclosure.
 
+### Settings
+18. **Settings opens where setup starts**, Connections & destinations, with
+    destinations before accounts; one "Connect an account" menu, and a
+    successful connect leads into adding that destination. A destination is a
+    compact card; its settings and recent sends open in dialogs (owner's ask).
+19. "Find a setting" lists settings, not categories, and focuses the control.
+    Phones get one category select instead of a 450px rail.
+20. Cancel appears only when a section has changes; Data & privacy leads with
+    retention (with 30/90/180/365-day presets); Analytics integrations shows
+    only its switch while off. The display cap's wording says it is for ever
+    (a period is deferred to its own change); phone input suggests a default
+    from the store address or site language, computed on read, nothing stored.
+
+### Leads and Analytics
+21. **One date control** (`shell/DateRangePicker`): a button naming the window
+    and its dates, opening presets (Today, Yesterday, Last 7/30/90 days, This
+    month, Last month) as native radios, Custom dates, and whatever qualifies
+    the window (Analytics' comparison). It replaces the Leads period select
+    and Analytics' period select and date-scope card.
+22. Analytics accepts a custom `from`/`to` window (validated, ≤366 days, never
+    past the site's today) and a labelled live Today; every other preset stays
+    complete-day (amends [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)).
+    A custom range is complete only when it ends before today and is compared
+    with the same number of days before; every report route (`ReportWindow`)
+    reads the same window, and the dashboard payload carries the site's
+    `today` so months and the picker's limit never come from the browser.
+23. A submission shows "Not sent" from the existing failure ring — never
+    "Sent" (ADR 0008) — and Sending issues leads with a verdict and counts.
+24. Goal cards add rate and change; stores with sales tracking get a Linked
+    sales hero card; A/B reports state the difference and whether there is
+    enough traffic, never a winner; monthly targets say whether they are on pace
+    (amends [0090](0090-monthly-targets-are-optional-benchmarks.md)). An impact
+    card with no goal, count or previous count is not drawn, on any site
+    (generalises [0127](0127-free-keeps-product-seams-not-product-reads.md)'s
+    cart rule); "Sending needs attention" comes before the numbers; "Today’s
+    activity appears tomorrow." is the one wording of that fact.
+
+### Shell and blocks
+25. Help holds help (Getting started, Guides, Contact support, What's new);
+    the bell shows a count and says "Everything is running" when it is, and
+    counts forms paused by spam protection; reading-page headings are tighter.
+26. The blocks are "WConvert campaign", "WConvert content lock" and "WConvert
+    lock from here"; the inline block lists drafts as refused choices, links to
+    create, manage and edit, and copies its shortcode — the shortcode is a
+    second place a campaign ID may appear (amends 0131 decision 4).
+
 ## Consequences
 
 - ADR 0112's "inspection is the sole creation-card action" now has one

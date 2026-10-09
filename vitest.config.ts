@@ -9,7 +9,7 @@ export default defineConfig({
       '@': resolve(import.meta.dirname, 'resources/admin/src'),
       '@block': resolve(import.meta.dirname, 'resources/blocks/inline-optin/src'),
       /*
-       * The two editor packages the block imports and this repo does not
+       * The editor packages the block imports and this repo does not
        * install (`resources/blocks/inline-optin/src/wordpress.d.ts` says why).
        * Aliased rather than `vi.mock()`ed: Vite resolves a specifier during
        * import-analysis, before any mock is applied, so mocking a module that
@@ -22,6 +22,7 @@ export default defineConfig({
       '@wordpress/element': 'react',
       '@wordpress/block-editor': resolve(import.meta.dirname, 'tests/js/support/wp-block-editor.tsx'),
       '@wordpress/components': resolve(import.meta.dirname, 'tests/js/support/wp-components.tsx'),
+      '@wordpress/compose': resolve(import.meta.dirname, 'tests/js/support/wp-compose.ts'),
     },
   },
   test: {

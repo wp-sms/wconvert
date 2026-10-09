@@ -51,8 +51,8 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`}>{inline ? __('Place this campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
       {inline && contentLock != null ? <>
-        <p>{__('Add the “WConvert Lock from here” divider and choose this campaign. Content after it stays locked until submission.', 'wconvert')}</p>
-        <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert Content lock” section instead. Use one lock per page.', 'wconvert')}</p>
+        <p>{__('Add the “WConvert lock from here” divider and choose this campaign. Content after it stays locked until submission.', 'wconvert')}</p>
+        <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert content lock” section instead. Use one lock per page.', 'wconvert')}</p>
         <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
         <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
       </> : automatic && !isFreeInstall() ? <>
@@ -65,8 +65,8 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
           <ol className="wconvert-placement__steps">
             <li>{__('Edit the page or post where you want the form to appear.', 'wconvert')}</li>
             <li>{optinName
-              ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “Inline Campaign” block and choose “%s”.', 'wconvert'), optinName)
-              : __('Add the “Inline Campaign” block and select this campaign by its name.', 'wconvert')}</li>
+              ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “WConvert campaign” block and choose “%s”.', 'wconvert'), optinName)
+              : __('Add the “WConvert campaign” block and select this campaign by its name.', 'wconvert')}</li>
             <li>{__('Update the page, then open it on your site to check the placement.', 'wconvert')}</li>
           </ol>
           <Shortcode optinId={optinId} />

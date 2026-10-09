@@ -15,13 +15,13 @@ export default function LockSettings({ optinId, published }: InlinePlacementProp
       <div className="wconvert-placement-row">
         <div className="wconvert-placement-row__text">
           <p className="wconvert-placement-row__title">{__('Lock the rest of an article', 'wconvert')}</p>
-          <p className="wconvert-display-hint">{__('Add a “WConvert Lock from here” divider to the article and choose this campaign. Everything below it is covered until the visitor signs up. Use one lock per page.', 'wconvert')}</p>
+          <p className="wconvert-display-hint">{__('Add a “WConvert lock from here” divider to the article and choose this campaign. Everything below it is covered until the visitor signs up. Use one lock per page.', 'wconvert')}</p>
         </div>
       </div>
       <div className="wconvert-placement-row">
         <div className="wconvert-placement-row__text">
           <p className="wconvert-placement-row__title">{__('Lock one section', 'wconvert')}</p>
-          <p className="wconvert-display-hint">{__('Wrap just that section in the WConvert Content lock block instead.', 'wconvert')}</p>
+          <p className="wconvert-display-hint">{__('Wrap just that section in the “WConvert content lock” block instead.', 'wconvert')}</p>
         </div>
       </div>
       {published && <div className="wconvert-placement-row">

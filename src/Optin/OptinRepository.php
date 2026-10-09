@@ -727,6 +727,57 @@ final class OptinRepository
     }
 
     /**
+     * The campaigns not on the site whose draft is of one [[Display Type]] —
+     * id and name, newest first.
+     *
+     * The block editor's picker lists these as refused choices ("draft,
+     * publish to place it"): a merchant who built an inline form and saved it
+     * goes to place it, and a picker that says "none" contradicts what they
+     * just did. The Display Type lives in the `config` blob (ADR 0001), so
+     * there is no short column to ask.
+     *
+     * **The LIKE does the narrowing in the database, and PHP does the
+     * deciding.** `wp_json_encode` writes the key as `"display_type":"inline"`
+     * with no spaces, so the pattern keeps every other draft's LONGTEXT on the
+     * server; the decode below is the authority, so a pattern that over-matches
+     * (a nested key of the same name) costs a row and never a wrong answer. The
+     * `LIMIT` caps what does come back. A draft past it is missing from a
+     * convenience list, not from the site.
+     *
+     * Parentless only: a test's arm is placed through its parent.
+     *
+     * @return list<array{id: string, name: string}>
+     */
+    public function draftsOfType(DisplayType $type, int $limit = 50): array
+    {
+        $rows = $this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT id, name, config, published_at, deleted_at, parent_id FROM %i'
+            . ' WHERE published_at IS NULL AND deleted_at IS NULL AND parent_id IS NULL AND config LIKE %s'
+            . ' ORDER BY id DESC LIMIT %d',
+            '%"display_type":"' . $type->value . '"%',
+            $limit
+        );
+        $drafts = [];
+
+        foreach ($rows as $row) {
+            if (($row['published_at'] ?? null) !== null || ($row['deleted_at'] ?? null) !== null || ($row['parent_id'] ?? null) !== null) {
+                continue;
+            }
+
+            $config = json_decode((string) ($row['config'] ?? ''), true);
+
+            if (!is_array($config) || DisplayType::of($config['display_type'] ?? 'popup') !== $type) {
+                continue;
+            }
+
+            $drafts[] = ['id' => (string) $row['id'], 'name' => (string) ($row['name'] ?? '')];
+        }
+
+        return array_slice($drafts, 0, $limit);
+    }
+
+    /**
      * Every Optin's published config, by id — **soft-deleted and unpublished
      * ones included.**
      *

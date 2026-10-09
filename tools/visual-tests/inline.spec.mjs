@@ -234,12 +234,12 @@ test('the Campaign picker loads in WordPress Widgets and Site Editor contexts', 
 
   await page.goto('/wp-admin/widgets.php');
   await expect.poll(() => page.evaluate(() => window.wp?.blocks?.getBlockType('wconvert/inline-optin')?.name ?? null)).toBe('wconvert/inline-optin');
-  await expect.poll(() => page.evaluate(() => Array.isArray(window.wconvertInlineOptins) ? window.wconvertInlineOptins.length : -1)).toBeGreaterThan(0);
+  await expect.poll(() => page.evaluate(() => Array.isArray(window.wconvertInlineOptins?.campaigns) ? window.wconvertInlineOptins.campaigns.length : -1)).toBeGreaterThan(0);
 
   await openFixture(page, 'widget', 'block');
   await page.goto('/wp-admin/site-editor.php');
   await expect.poll(() => page.evaluate(() => window.wp?.blocks?.getBlockType('wconvert/inline-optin')?.name ?? null)).toBe('wconvert/inline-optin');
-  await expect.poll(() => page.evaluate(() => Array.isArray(window.wconvertInlineOptins) ? window.wconvertInlineOptins.length : -1)).toBeGreaterThan(0);
+  await expect.poll(() => page.evaluate(() => Array.isArray(window.wconvertInlineOptins?.campaigns) ? window.wconvertInlineOptins.campaigns.length : -1)).toBeGreaterThan(0);
 });
 
 editorTest('goal-first inline setup enables automatic placement and publishes', async ({ page }, info) => {
@@ -437,7 +437,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   const published = page.waitForResponse(response => response.url().includes('/publish') && response.request().method() === 'POST');
   await publish.click(); expect((await published).ok()).toBe(true);
   await expect(page.getByRole('status')).toContainText('Saved and published');
-  await expect(page.getByRole('dialog')).toContainText('Add the “WConvert Lock from here” divider');
+  await expect(page.getByRole('dialog')).toContainText('Add the “WConvert lock from here” divider');
 });
 
 test.afterEach(async ({ page }, info) => {

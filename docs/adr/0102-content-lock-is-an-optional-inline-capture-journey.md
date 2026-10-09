@@ -85,7 +85,14 @@ The manual **Lock from here** divider is now implemented as
 block comment and no inner content. Writers retain ordinary top-level blocks
 before and after it. Native movement, deletion and Undo affect the marker; no
 saved article content is reparented or migrated. All Campaign setup and changes
-live in the inspector. Extra guidance is collapsed under Setup tips. The canvas always
+live in the inspector. ~~Extra guidance is collapsed under Setup tips.~~
+*Amended (2026-10-09, block editor review): Setup tips is gone. Both lock
+inspectors show one visible hint under the picker, "Draft previews stay
+unlocked. Check the published page in a private window.", because folded away
+it was the trap itself: a merchant previews a draft, sees it unlocked and
+concludes the lock is broken. The canvas boundary names the chosen campaign's
+state ("Campaign unpublished", "Content lock off for this campaign",
+"Campaign unavailable") instead of "Campaign needs attention".* The canvas always
 states that the rest of the article is included. Appended content is included.
 The marker is limited to one by the inserter; pasted duplicates are also checked.
 

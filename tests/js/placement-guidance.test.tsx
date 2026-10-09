@@ -51,7 +51,7 @@ describe('placing an inline Optin', () => {
 
   it('names the exact Optin to select when its name is provided', () => {
     render(<PlacementGuidance optinId={OPTIN} optinName="Friday newsletter" displayType="inline" published />);
-    expect(screen.getByText('Add the “Inline Campaign” block and choose “Friday newsletter”.')).toBeInTheDocument();
+    expect(screen.getByText('Add the “WConvert campaign” block and choose “Friday newsletter”.')).toBeInTheDocument();
   });
 
   it('copies the exact shortcode and retains focus on the completed action', async () => {
@@ -105,7 +105,7 @@ describe('placing an inline Optin', () => {
   });
 });
 
-describe('placing an inline Campaign in theme-owned areas', () => {
+describe('placing an inline campaign in theme-owned areas', () => {
   it('links block themes to the Site Editor and keeps the shortcode fallback', () => {
     window.wconvertAdmin = {
       exportUrl: '',

@@ -23,8 +23,9 @@ final class ContentLockCampaignsTest extends TestCase
         ]);
         $picker = new ContentLockCampaigns($set, $repo, InstalledRules::withPro());
         self::assertSame([
-            ['id' => 'ready', 'name' => 'ready', 'status' => 'ready'],
-            ['id' => 'ordinary', 'name' => 'ordinary', 'status' => 'disabled'],
+            // Unnamed goes out nameless; the editor says "Unnamed campaign" (ADR 0131).
+            ['id' => 'ready', 'name' => '', 'status' => 'ready'],
+            ['id' => 'ordinary', 'name' => '', 'status' => 'disabled'],
         ], $picker->campaigns());
         $set->replaceWith([]);
         self::assertSame([], $picker->campaigns());

@@ -23,12 +23,12 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
         <div className="wconvert-placement-row__text">
           <p className="wconvert-placement-row__title">{__('Block', 'wconvert')}</p>
           <p className="wconvert-display-hint">
-            {__('Add the “Inline Campaign” block where you want the form to appear.', 'wconvert')}
+            {__('Add the “WConvert campaign” block where you want the form to appear.', 'wconvert')}
             {blockTheme && <> {__('For a sidebar or footer, edit the template part that holds it.', 'wconvert')}</>}
             {widgets && <> {__('For a sidebar or footer, add a Text widget to that area and paste the shortcode below.', 'wconvert')}</>}
           </p>
         </div>
-        {destination && <Button asChild variant="outline" size="sm">
+        {destination && <Button asChild variant="outline">
           <a href={destination.url} target="_blank" rel="noopener noreferrer">
             {blockTheme ? __('Open Site Editor', 'wconvert') : __('Open Widgets', 'wconvert')}
             <ExternalLink aria-hidden="true" />
@@ -75,7 +75,7 @@ export function ShortcodeCopy({ value, label, help }: { value: string; label: st
     <div className="wconvert-placement__copy">
       <Input ref={input} id={id} value={value} readOnly aria-describedby={`${id}-help`}
         className="wconvert-placement__shortcode font-mono" onFocus={(event) => event.currentTarget.select()} />
-      <Button type="button" variant="outline" size="sm" disabled={status === 'copying'} onClick={() => { void copy(); }}>
+      <Button type="button" variant="outline" disabled={status === 'copying'} onClick={() => { void copy(); }}>
         {status === 'copied' ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
         {status === 'copied' ? __('Copied', 'wconvert') : __('Copy shortcode', 'wconvert')}
       </Button>

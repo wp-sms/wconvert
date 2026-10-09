@@ -56,6 +56,7 @@ final class InlineOptinBlockTest extends TestCase
     protected function tearDown(): void
     {
         unset($GLOBALS['wconvertTestWordPressVersion']);
+        $GLOBALS['wconvertTestCapabilities'] = [];
     }
 
     private function block(): InlineOptinBlock
@@ -175,18 +176,95 @@ final class InlineOptinBlockTest extends TestCase
         $id = $this->publishInline('Newsletter footer');
 
         $this->assertSame([['id' => $id, 'name' => 'Newsletter footer']], $this->offered());
+        $this->assertSame('published', $this->payload()['campaigns'][0]['status']);
     }
 
     /**
-     * A draft is not on any page, so it is not something to place. The
-     * published set is what answers that, and it is the same option the front
-     * end reads — so the picker cannot disagree with what the site serves.
+     * **A draft is listed, as a draft.** It is not on any page, so the editor
+     * refuses it — but a first-time owner who saved one and came to place it
+     * is told "publish to place it" rather than "none". Published is still
+     * answered by the published set, the same option the front end reads.
      */
-    public function testItOffersNoDraft(): void
+    public function testItListsAnInlineDraftAsADraft(): void
     {
-        $this->optins->create('Not published yet', 'grow_email_list', ['display_type' => 'inline', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
+        $draft = $this->optins->create('Spring signup', 'grow_email_list', ['display_type' => 'inline', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
 
         $this->assertSame([], $this->offered());
+        $this->assertSame(
+            [['id' => $draft->id, 'name' => 'Spring signup', 'status' => 'draft']],
+            array_map(static fn (array $c): array => ['id' => $c['id'], 'name' => $c['name'], 'status' => $c['status']], $this->payload()['campaigns'])
+        );
+    }
+
+    /** A draft of an overlay has no anchor to place, and a deleted draft is gone. */
+    public function testItListsNoOverlayDraftAndNoDeletedDraft(): void
+    {
+        $this->optins->create('Welcome popup', 'grow_email_list', ['display_type' => 'popup']);
+        $deleted = $this->optins->create('Old inline', 'grow_email_list', ['display_type' => 'inline']);
+        $this->optins->delete($deleted->id);
+
+        $this->assertSame([], $this->payload()['campaigns']);
+    }
+
+    /**
+     * **The doors out are a manager's only.** An Author can place the block
+     * but cannot open WConvert, so a Create or Edit link would land on "Sorry,
+     * you are not allowed"; null tells the editor to say who can help.
+     */
+    public function testOnlyAManagerIsGivenLinksIntoWConvert(): void
+    {
+        $id = $this->publishInline('Newsletter footer');
+
+        $GLOBALS['wconvertTestCapabilities'] = ['edit_posts'];
+        $author = $this->payload();
+
+        $this->assertNull($author['manageUrl']);
+        $this->assertNull($author['createUrl']);
+        $this->assertNull($author['campaigns'][0]['editUrl']);
+
+        $GLOBALS['wconvertTestCapabilities'] = ['manage_options', 'edit_posts'];
+        $manager = $this->payload();
+
+        $this->assertSame('https://example.test/wp-admin/admin.php?page=wconvert#optins', $manager['manageUrl']);
+        $this->assertSame('https://example.test/wp-admin/admin.php?page=wconvert#optins?new=1', $manager['createUrl']);
+        $this->assertSame('https://example.test/wp-admin/admin.php?page=wconvert#optins?edit=' . $id, $manager['campaigns'][0]['editUrl']);
+    }
+
+    /**
+     * Refresh reads the same list fresh, and anyone who can open the post
+     * editor may ask — the same capability as Pro's content lock picker.
+     */
+    public function testRefreshIsAnUncachedReadForWhoeverCanPlaceTheBlock(): void
+    {
+        $GLOBALS['wconvertTestRoutes'] = [];
+        $this->publishInline('Newsletter footer');
+        $block = $this->block();
+        $block->registerRoute();
+
+        $route = $GLOBALS['wconvertTestRoutes'][0];
+
+        $this->assertSame([\WConvert\Rest\Routes::NAMESPACE, InlineOptinBlock::ROUTE], [$route['namespace'], $route['route']]);
+        $this->assertSame('GET', $route['args']['methods']);
+        $this->assertSame([\WConvert\Rest\Routes::class, 'canPlaceCampaign'], $route['args']['permission_callback']);
+
+        $response = ($route['args']['callback'])();
+
+        $this->assertSame($block->choices(), $response->get_data());
+        $this->assertSame('no-store', $response->get_headers()['Cache-Control']);
+
+        foreach ([[], ['read'], ['edit_posts'], ['edit_pages']] as $caps) {
+            $GLOBALS['wconvertTestCapabilities'] = $caps;
+            $this->assertSame($caps === ['edit_posts'] || $caps === ['edit_pages'], \WConvert\Rest\Routes::canPlaceCampaign());
+        }
+    }
+
+    /** The picker's stylesheet is registered under the handle `block.json` names as its `editorStyle`. */
+    public function testItRegistersTheEditorStyleItsMetadataNames(): void
+    {
+        $this->block()->register();
+
+        $this->assertSame(InlineOptinBlock::HANDLE, $this->metadata()['editorStyle']);
+        $this->assertArrayHasKey(InlineOptinBlock::HANDLE, $GLOBALS['wconvertTestStyles']['registered']);
     }
 
     /**
@@ -237,14 +315,14 @@ final class InlineOptinBlockTest extends TestCase
 
     /**
      * An Optin with no name is still on the page, so a picker that omitted it
-     * could not place something the site is serving. The id is a poor label
-     * and it is the honest one.
+     * could not place something the site is serving. It goes out nameless and
+     * the editor labels it "Unnamed campaign": no ID on screen (ADR 0131).
      */
-    public function testAnUnnamedOptinIsOfferedUnderItsId(): void
+    public function testAnUnnamedOptinIsOfferedWithoutAName(): void
     {
         $id = $this->publishInline('');
 
-        $this->assertSame([['id' => $id, 'name' => $id]], $this->offered());
+        $this->assertSame([['id' => $id, 'name' => '']], $this->offered());
     }
 
     /**
@@ -292,13 +370,13 @@ final class InlineOptinBlockTest extends TestCase
     /**
      * What `provideTheOptinList()` put on `window`, decoded.
      *
-     * The private list is reached through the public surface that publishes
-     * it, rather than through reflection: what the editor gets is the JSON,
-     * and a shape that survives `wp_json_encode` is the thing worth asserting.
+     * The list is reached through the public surface that publishes it: what
+     * the editor gets is the JSON, and a shape that survives `wp_json_encode`
+     * is the thing worth asserting.
      *
-     * @return list<array{id: string, name: string}>
+     * @return array{campaigns: list<array{id: string, name: string, status: string, editUrl: ?string}>, manageUrl: ?string, createUrl: ?string}
      */
-    private function offered(): array
+    private function payload(): array
     {
         $GLOBALS['wconvertTestInlineScripts'] = [];
 
@@ -308,5 +386,18 @@ final class InlineOptinBlockTest extends TestCase
         $json = substr($printed, strlen('window.' . InlineOptinBlock::DATA . ' = '), -1);
 
         return json_decode($json, true);
+    }
+
+    /**
+     * The published campaigns the picker can place, as `{id, name}`.
+     *
+     * @return list<array{id: string, name: string}>
+     */
+    private function offered(): array
+    {
+        return array_values(array_map(
+            static fn (array $campaign): array => ['id' => $campaign['id'], 'name' => $campaign['name']],
+            array_filter($this->payload()['campaigns'], static fn (array $campaign): bool => $campaign['status'] === 'published')
+        ));
     }
 }

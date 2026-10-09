@@ -2,11 +2,11 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "wconvert/inline-optin",
-  "title": "Inline Campaign",
+  "title": "WConvert campaign",
   "category": "widgets",
   "icon": "feedback",
   "description": "Place a published inline campaign in a page, post, sidebar, or footer.",
-  "keywords": ["campaign", "optin", "form", "lead", "signup", "widget", "sidebar", "footer", "wconvert"],
+  "keywords": ["wconvert", "campaign", "inline", "form", "signup", "email", "newsletter", "lead", "optin", "popup-free", "widget", "sidebar", "footer"],
   "textdomain": "wconvert",
   "attributes": {
     "optinId": {
@@ -23,5 +23,6 @@
     "customClassName": false,
     "anchor": false
   },
-  "editorScript": "wconvert-inline-optin"
+  "editorScript": "wconvert-inline-optin",
+  "editorStyle": "wconvert-inline-optin"
 }

@@ -40,6 +40,21 @@ final class Routes
     }
 
     /**
+     * The block editor's campaign pickers, and the one read below
+     * {@see self::canManage()}.
+     *
+     * Whoever can open the post editor can place a block, so gating the
+     * picker's Refresh on the administration capability would give an Author
+     * a block whose list can never be refreshed and nothing that says why.
+     * What this answers is narrow on purpose — names, a status and, only for
+     * a manager, links into WConvert — never campaign management data.
+     */
+    public static function canPlaceCampaign(): bool
+    {
+        return current_user_can('edit_posts') || current_user_can('edit_pages');
+    }
+
+    /**
      * The capture endpoint, and it is public **by nature**.
      *
      * The visitor filling in a popup is not logged in and has no capability to

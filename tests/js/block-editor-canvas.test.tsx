@@ -1,6 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import apiFetch from '@wordpress/api-fetch';
+import { clipboard } from './support/wp-compose';
 
 /**
  * **What the block draws in the post editor's canvas.**
@@ -18,8 +20,9 @@ import userEvent from '@testing-library/user-event';
  * `@wordpress/components` and `@wordpress/block-editor` are not installed —
  * `resources/blocks/inline-optin/src/wordpress.d.ts` says why, and it is 393 MB
  * of dev tree for types. So they are stubbed here as the plainest HTML that
- * carries the same semantics: a `<select>` really is what `SelectControl`
- * renders, and a region with a heading really is what `Placeholder` renders.
+ * carries the same semantics: a labelled `combobox` really is what
+ * `ComboboxControl` renders, and a region with a heading really is what
+ * `Placeholder` renders.
  *
  * **What that buys and what it does not.** These assertions are about THIS
  * component's logic — which of three states it is in, whether it warns, what
@@ -30,14 +33,22 @@ import userEvent from '@testing-library/user-event';
 
 import { Edit } from '@block/Edit';
 
-
+vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 
 const NEWSLETTER = '01JQ0000000000000000000001';
 const SIDEBAR = '01JQ0000000000000000000002';
+const SPRING = '01JQ0000000000000000000003';
+const EDIT = (id: string) => `https://example.test/wp-admin/admin.php?page=wconvert#optins?edit=${id}`;
+const CREATE = 'https://example.test/wp-admin/admin.php?page=wconvert#optins?new=1';
 
-/** What `InlineOptinBlock::provideTheOptinList()` prints onto `window`. */
-function theSiteHasPublished(optins: { id: string; name: string }[] | undefined): void {
-  window.wconvertInlineOptins = optins;
+type Entry = { id: string; name: string; status: 'published' | 'draft'; editUrl: string | null };
+
+const published = (id: string, name: string): Entry => ({ id, name, status: 'published', editUrl: EDIT(id) });
+const draft = (id: string, name: string): Entry => ({ id, name, status: 'draft', editUrl: EDIT(id) });
+
+/** What `InlineOptinBlock::provideTheOptinList()` prints onto `window`, for a manager. */
+function theSiteHas(campaigns: Entry[], links: { manageUrl: string | null; createUrl: string | null } = { manageUrl: 'https://example.test/wp-admin/admin.php?page=wconvert#optins', createUrl: CREATE }): void {
+  window.wconvertInlineOptins = { campaigns, ...links };
 }
 
 function draw(optinId?: string) {
@@ -47,6 +58,13 @@ function draw(optinId?: string) {
 
   return setAttributes;
 }
+
+const options = () => [...screen.getByRole('combobox', { name: 'Campaign' }).querySelectorAll('option')];
+
+beforeEach(() => {
+  vi.mocked(apiFetch).mockReset();
+  clipboard.length = 0;
+});
 
 afterEach(() => {
   delete window.wconvertInlineOptins;
@@ -68,77 +86,181 @@ describe('the editor canvas', () => {
    * placeholder" is a claim about what is NOT drawn.
    */
   it('shows a labelled placeholder and never the Optin', () => {
-    theSiteHasPublished([{ id: NEWSLETTER, name: 'Newsletter footer' }]);
+    theSiteHas([published(NEWSLETTER, 'Newsletter footer')]);
 
     const { container } = render(<Edit attributes={{ optinId: NEWSLETTER }} setAttributes={vi.fn()} />);
 
-    expect(screen.getByRole('heading', { name: 'Inline Campaign' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'WConvert campaign' })).toBeInTheDocument();
     expect(container.querySelector('[data-wconvert-optin]')).toBeNull();
     expect(container.querySelector('.wc-close')).toBeNull();
     expect(screen.queryByRole('form')).not.toBeInTheDocument();
   });
 
-  it('offers the site’s published inline Optins by name, not by id', async () => {
-    theSiteHasPublished([
-      { id: SIDEBAR, name: 'Sidebar signup' },
-      { id: NEWSLETTER, name: 'Newsletter footer' },
-    ]);
+  it('offers the site’s published inline campaigns by name, not by id', async () => {
+    theSiteHas([published(SIDEBAR, 'Sidebar signup'), published(NEWSLETTER, 'Newsletter footer')]);
 
     const setAttributes = draw();
 
-    expect(
-      [...screen.getByRole('combobox').querySelectorAll('option')].map((o) => o.textContent),
-    ).toEqual(['Choose a campaign…', 'Sidebar signup', 'Newsletter footer']);
+    expect(options().map((o) => o.textContent)).toEqual(['Choose', 'Sidebar signup', 'Newsletter footer']);
 
-    await userEvent.selectOptions(screen.getByRole('combobox'), NEWSLETTER);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign' }), NEWSLETTER);
 
     expect(setAttributes).toHaveBeenCalledWith({ optinId: NEWSLETTER });
   });
 
   /**
-   * A fresh install has published nothing, and that is not an error — it is
-   * the ordinary first state, and it says where to go.
+   * GUIDELINES §8: never offer what will be refused — mark it before the
+   * click, with the reason. A first-time owner who saved a draft and came to
+   * place it sees it, and sees the one step left.
    */
-  it('says so when the site has published no inline Optin', () => {
-    theSiteHasPublished([]);
+  it('lists a draft as a refused choice that says why', () => {
+    theSiteHas([published(NEWSLETTER, 'Newsletter footer'), draft(SPRING, 'Spring signup')]);
+
+    const setAttributes = draw();
+    const spring = options().find((o) => o.value === SPRING);
+
+    expect(spring).toHaveTextContent('Spring signup — draft, publish to place it');
+    expect(spring).toBeDisabled();
+
+    // An editor whose combobox predates disabled options still cannot place it.
+    fireEvent.change(screen.getByRole('combobox', { name: 'Campaign' }), { target: { value: SPRING } });
+    expect(setAttributes).not.toHaveBeenCalled();
+  });
+
+  it('names an unnamed campaign without printing its id', () => {
+    theSiteHas([published(NEWSLETTER, '')]);
     draw();
 
-    expect(screen.getByRole('combobox')).toHaveDisplayValue('No published inline Campaigns');
-    expect(screen.getByText(/no published inline Campaign yet/i)).toBeInTheDocument();
+    expect(options().map((o) => o.textContent)).toContain('Unnamed campaign');
+    expect(document.body).not.toHaveTextContent(NEWSLETTER);
+  });
+
+  /**
+   * A fresh install has made nothing, and that is not an error — it is the
+   * ordinary first state, and it comes with the door.
+   */
+  it('offers to create one when the site has no inline campaign', () => {
+    theSiteHas([]);
+    draw();
+
+    expect(screen.getByText(/no inline campaign yet/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Create an inline campaign/ })).toHaveAttribute('href', CREATE);
+    expect(screen.getByRole('link', { name: /Create an inline campaign/ })).toHaveAttribute('target', '_blank');
+    expect(screen.getByRole('button', { name: 'Refresh campaigns' })).toBeEnabled();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('says the drafts need publishing when drafts are all there is', () => {
+    theSiteHas([draft(SPRING, 'Spring signup')]);
+    draw();
+
+    expect(screen.getByText('Your inline campaigns are drafts. Publish one, then choose it here.')).toBeInTheDocument();
+  });
+
+  /** An Author can place the block but cannot open WConvert, so there is no link to follow. */
+  it('names who can help where it has no link to offer', () => {
+    theSiteHas([], { manageUrl: null, createUrl: null });
+    draw();
+
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.getByText('Ask your administrator to publish an inline campaign.')).toBeInTheDocument();
+  });
+
+  /**
+   * A campaign published in another tab used to wait for an editor reload.
+   * Refresh asks the server again, and the post is not edited by it.
+   */
+  it('refreshes the list without reloading the editor', async () => {
+    theSiteHas([]);
+    vi.mocked(apiFetch).mockResolvedValue({ campaigns: [published(NEWSLETTER, 'Newsletter footer')], manageUrl: null, createUrl: null });
+    const setAttributes = draw();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
+
+    expect(apiFetch).toHaveBeenCalledWith({ path: '/wconvert/v1/inline-campaigns' });
+    expect(await screen.findByRole('status')).toHaveTextContent('Campaign choices updated.');
+    expect(options().map((o) => o.textContent)).toContain('Newsletter footer');
+    expect(setAttributes).not.toHaveBeenCalled();
+  });
+});
+
+describe('a placed campaign', () => {
+  it('offers its shortcode with Copy, and says when it was copied', async () => {
+    theSiteHas([published(NEWSLETTER, 'Newsletter footer')]);
+    draw(NEWSLETTER);
+
+    const shortcode = `[wconvert_optin id="${NEWSLETTER}"]`;
+
+    expect(screen.getByText(shortcode)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Copy shortcode' }));
+
+    expect(clipboard).toEqual([shortcode]);
+    expect(screen.getByRole('button', { name: 'Copied' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Shortcode copied.');
+  });
+
+  it('links back to the campaign in a new tab', () => {
+    theSiteHas([published(NEWSLETTER, 'Newsletter footer')]);
+    draw(NEWSLETTER);
+
+    const edit = screen.getByRole('link', { name: /Edit campaign/ });
+
+    expect(edit).toHaveAttribute('href', EDIT(NEWSLETTER));
+    expect(edit).toHaveAttribute('target', '_blank');
+  });
+
+  it('offers no edit link to someone who cannot open WConvert', () => {
+    window.wconvertInlineOptins = { campaigns: [{ ...published(NEWSLETTER, 'Newsletter footer'), editUrl: null }], manageUrl: null, createUrl: null };
+    draw(NEWSLETTER);
+
+    expect(screen.queryByRole('link', { name: /Edit campaign/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Copy shortcode' })).toBeInTheDocument();
   });
 });
 
 /**
  * **The id that stopped resolving**, which is the same shape however it
  * happened: unpublished, soft-deleted, or switched to another Display Type.
- * All three reach this component as an id that is not in the list, and all
- * three leave a block sitting in content nobody has edited.
+ * All three reach this component as an id that is not a published inline
+ * campaign, and all three leave a block sitting in content nobody has edited.
  */
-describe('an Optin id that no longer resolves', () => {
-  it('says so, rather than looking like a working block', () => {
-    theSiteHasPublished([{ id: SIDEBAR, name: 'Sidebar signup' }]);
+describe('a campaign id that no longer resolves', () => {
+  it('says so, without printing the id', () => {
+    theSiteHas([published(SIDEBAR, 'Sidebar signup')]);
     draw(NEWSLETTER);
 
-    expect(screen.getByRole('alert')).toHaveTextContent(NEWSLETTER);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'This campaign is no longer published inline, so this block shows nothing on the page. Republish it or choose another.',
+    );
     expect(screen.getByRole('alert')).toHaveAttribute('data-status', 'warning');
+    expect(document.body).not.toHaveTextContent(NEWSLETTER);
+    expect(screen.queryByRole('button', { name: 'Copy shortcode' })).not.toBeInTheDocument();
+  });
+
+  it('names the campaign when the list still knows it', () => {
+    theSiteHas([draft(NEWSLETTER, 'Newsletter footer')]);
+    draw(NEWSLETTER);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('“Newsletter footer” is no longer published inline');
   });
 
   /**
    * **It keeps the id.** "Newsletter footer was unpublished" is recoverable by
    * republishing it; an attribute silently reset to nothing is not, and the
-   * merchant would have no way of knowing which Optin the block used to name.
+   * merchant would have no way of knowing which campaign the block used to
+   * name.
    */
   it('keeps the stored id rather than clearing it', () => {
-    theSiteHasPublished([{ id: SIDEBAR, name: 'Sidebar signup' }]);
+    theSiteHas([published(SIDEBAR, 'Sidebar signup')]);
 
     const setAttributes = draw(NEWSLETTER);
 
     expect(setAttributes).not.toHaveBeenCalled();
   });
 
-  it('says nothing at all about a block that names no Optin yet', () => {
-    theSiteHasPublished([{ id: SIDEBAR, name: 'Sidebar signup' }]);
+  it('says nothing at all about a block that names no campaign yet', () => {
+    theSiteHas([published(SIDEBAR, 'Sidebar signup')]);
     draw();
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -151,37 +273,34 @@ describe('an Optin id that no longer resolves', () => {
  * ============================================================================
  * A JS optimizer strips the inline script, or a stale bundle is served, and
  * `window.wconvertInlineOptins` is simply not there. Reported as an empty
- * list, that made EVERY block on the site announce that its Optin was no
+ * list, that made EVERY block on the site announce that its campaign was no
  * longer published — while the front end went on rendering all of them
  * perfectly.
  *
  * A diagnostic that is confidently wrong is acted on: the merchant republishes
- * an Optin that was never unpublished. So this state claims nothing about any
- * id.
+ * a campaign that was never unpublished. So this state claims nothing about
+ * any id.
  */
 describe('when the list never arrived', () => {
-  it('does not accuse the block of naming a dead Optin', () => {
-    theSiteHasPublished(undefined);
+  it('does not accuse the block of naming a dead campaign', () => {
     draw(NEWSLETTER);
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('says the editor could not load them, and that the page is unaffected', () => {
-    theSiteHasPublished(undefined);
+  it('says so in two sentences, and that the page is unaffected', () => {
     draw(NEWSLETTER);
 
-    expect(screen.getByText(/could not load your list of Campaigns/i)).toBeInTheDocument();
-    expect(screen.getByText(/still shows on the page/i)).toBeInTheDocument();
-    expect(screen.getByRole('combobox')).toHaveDisplayValue('Campaigns unavailable');
+    expect(screen.getByText('Your campaigns couldn’t be loaded here. Blocks already on the page still work. Reload the editor.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Refresh campaigns' })).toBeEnabled();
   });
 
   /** Anything that is not the shape this reads is the same non-answer. */
   it('treats a global of the wrong type the same way', () => {
-    (window as unknown as { wconvertInlineOptins: unknown }).wconvertInlineOptins = 'nope';
+    (window as unknown as { wconvertInlineOptins: unknown }).wconvertInlineOptins = [{ id: NEWSLETTER, name: 'The old bare array' }];
     draw(NEWSLETTER);
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByText(/could not load your list of Campaigns/i)).toBeInTheDocument();
+    expect(screen.getByText(/couldn’t be loaded here/)).toBeInTheDocument();
   });
 });
