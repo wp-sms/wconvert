@@ -13,11 +13,9 @@
 # cannot (ADR 0029, checks c and d):
 #
 #   (c) The free artifact contains NO PATH UNDER PRO'S PLUGIN DIRECTORY.
-#   (d) The free artifact CONTAINS ITS UN-MINIFIED SOURCE TREE — which is what
-#       makes the readme's source claim true by construction, and what makes
-#       wp.org Guideline 4 compatible with Guideline 9. WSMS's .distignore
-#       strips its /resources while its readme still says sources ship there;
-#       that is the trap this deletes rather than inherits (ADR 0028).
+#   (d) The free artifact carries NO SOURCES AND NO BUILD FILES, and readme.txt
+#       links the public repository where they live. What does ship is the
+#       data `src/` reads by path (playbooks, templates, rules, ...).
 #   (e) No premium design in the free ZIP — the trialware gate (issue #7).
 #   (f) NO ARTIFACT CARRIES A HIGHER TIER'S MODULE, in PHP and in the built
 #       JavaScript — by its rule identifiers where it has them, and by the
@@ -218,11 +216,12 @@ require_matching_file "$TREE" public/admin 'main-*.js' "the admin bundle is buil
 require_matching_file "$TREE" public/admin 'builder-*.js' "the builder chunk is built, never committed — run the build" || true
 
 if [ "$tier" = "free" ]; then
-    # Free's wconvert.php requires vendor/autoload.php and renders an admin
-    # notice instead of booting when it is absent. It is also what check (c)
-    # inspects below, so a tree without it is a tree that check cannot speak
-    # for.
-    require_file vendor/autoload.php "free's plugin file cannot boot without Composer's autoloader" || true
+    # Free's wconvert.php requires packages/autoload.php (wp-scoper's, or the
+    # PSR-4 template's) and renders an admin notice instead of booting when it
+    # is absent. It is also what check (c) inspects below, so a tree without it
+    # is a tree that check cannot speak for. vendor/ carries Action Scheduler
+    # and nothing else — Composer's own autoloader does not ship.
+    require_file packages/autoload.php "free's plugin file cannot boot without its autoloader" || true
     # The ordinary inline block bundle belongs to Free.
     #
     # `inline` is the one Display Type that is not an overlay, so it is the one
@@ -320,8 +319,8 @@ if [ "$tier" = "free" ]; then
 
     collect_root_php "$TREE"
 
-    # vendor/composer/ ONLY, never vendor/ whole. The generated autoload maps
-    # are the artifact-level risk and they all live there; the rest of vendor/
+    # packages/ ONLY, never vendor/ whole. The generated autoload maps
+    # are the artifact-level risk and they all live there; vendor/
     # is third-party code whose own use of a `pro/` path would be a false
     # positive, and the fix for a false positive is always an exception —
     # the one thing this gate must not acquire (ADR 0029).
@@ -334,30 +333,15 @@ if [ "$tier" = "free" ]; then
     # pointing it at resources/ costs the walk and nothing else.
     SCAN_PATHS=("$TREE/src" "$TREE/resources")
 
-    if [ -d "$TREE/vendor/composer" ]; then
-        SCAN_PATHS+=("$TREE/vendor/composer")
+    if [ -d "$TREE/packages" ]; then
+        SCAN_PATHS+=("$TREE/packages")
     else
-        fail "vendor/composer/ is missing — the autoload map was not inspected"
+        fail "packages/ is missing — the autoload map was not inspected"
     fi
 
     run_scan "$SCRIPT_DIR" pro-php-scan.php \
         "the free artifact's PHP references Pro (namespace, or a pro/ path):" \
         "${SCAN_PATHS[@]}" ${ROOT_PHP[@]+"${ROOT_PHP[@]}"}
-
-    # THE SHIPPED BUILD CONFIGS, which are free's tree too now that the ZIP
-    # carries them so a reviewer can rebuild public/ (.distignore says why).
-    # A root Vite config naming a `pro/` path is either one of Pro's configs
-    # the .distignore forgot, or a free config reaching into Pro — and in both
-    # cases `npm run build:free` in the unzipped plugin is a build that cannot
-    # run. Grepped, like (e): the literal is the thing, and no free config has
-    # a reason to spell it even in a comment.
-    for config in "$TREE"/vite*.mjs; do
-        [ -e "$config" ] || continue
-
-        if grep -q 'pro/' "$config"; then
-            fail "the free artifact ships $(basename "$config"), which names a pro/ path — a Pro build config, or a free one reaching into Pro"
-        fi
-    done
 
     if section_clean; then
         pass "no path under Pro's plugin directory"
@@ -369,7 +353,7 @@ fi
 
 verdict
 
-# --- [4] (d) THE UN-MINIFIED SOURCE TREE -------------------------------------
+# --- [4] (d) NO SOURCES IN THE ZIP, THE READ-BY-PATH DATA IN IT --------------
 #
 # FREE ONLY, and the asymmetry is the point rather than an omission. Guideline
 # 4 is a wp.org obligation and Pro is not distributed there — but more than
@@ -386,30 +370,31 @@ verdict
 section
 
 if [ "$tier" = "free" ]; then
-    # The sources behind the two shipped bundles, plus the renderer both of
-    # them import (vite.config.admin.mjs aliases @renderer at it).
-    require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
-    require_populated_dir "$TREE" resources/protection/src '*.ts' "verification bundle source ships with Free" || true
-    require_populated_dir "$TREE" resources/phone/src '*.ts' "public/phone/phone.js is built from it" || true
-    require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main-*.js is built from it" || true
-    require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
-    require_populated_dir "$TREE" resources/blocks/inline-optin/src '*.tsx' "public/blocks/inline-optin.js is built from it" || true
-
-    # WHAT REBUILDS THEM. Sources a reviewer cannot build are half of
-    # Guideline 4, and the repository is private, so the manifests and free's
-    # Vite configs ship: `npm ci && npm run build:free` and `composer install
-    # --no-dev` in the unzipped plugin reproduce public/ and vendor/. Each
-    # config here is one that writes into public/; the two factories they
-    # import come with them.
-    for build_file in package.json package-lock.json tsconfig.json composer.json composer.lock \
-        vite.admin-config.mjs vite.loader-config.mjs \
-        vite.config.admin.mjs vite.config.block.mjs vite.config.loader.mjs \
-        vite.config.inspector.mjs vite.config.phone.mjs vite.config.protection.mjs; do
-        require_file "$build_file" "the shipped bundles cannot be rebuilt from the download without it" || true
+    # THE SOURCES AND THE BUILD FILES DO NOT SHIP. The ZIP carries the built
+    # bundles, and readme.txt's "Source code" section points at the public
+    # repository where `npm ci && npm run build` rebuilds them. A source
+    # directory or a Node/Composer manifest in the ZIP means .distignore lost a
+    # line, and the contract says so rather than letting the ZIP grow.
+    for source_dir in resources/admin resources/loader resources/protection resources/renderer \
+        resources/phone/src resources/blocks/inline-optin/src; do
+        if [ -e "$TREE/$source_dir" ]; then
+            fail "$source_dir ships in the free artifact — sources stay in the repository"
+        fi
     done
 
-    if [ -f "$TREE/package.json" ] && ! grep -q '"build:free"' "$TREE/package.json"; then
-        fail "package.json has no build:free script — the readme's rebuild instruction names it"
+    for build_file in package.json package-lock.json tsconfig.json composer.json composer.lock; do
+        if [ -e "$TREE/$build_file" ]; then
+            fail "$build_file ships in the free artifact — build files stay in the repository"
+        fi
+    done
+
+    if find_matches "$TREE" -maxdepth 1 -name 'vite*.mjs'; then
+        fail "a Vite config ships in the free artifact — build files stay in the repository"
+    fi
+
+    # With the sources out, the readme is how a reviewer finds them.
+    if ! grep -q 'https://github.com/wp-sms/wconvert' "$TREE/$readme" 2>/dev/null; then
+        fail "readme.txt does not link the public repository — the source claim has nowhere to point"
     fi
 
     require_file license.txt "the plugin's GPL-2.0 licence ships beside it" || true
@@ -437,7 +422,7 @@ if [ "$tier" = "free" ]; then
     require_populated_dir "$TREE" resources/playbooks '*.php' "WConvert\\Playbook\\PlaybookLibrary::PATH reads it" || true
 
     if section_clean; then
-        pass "the un-minified source tree ships, and so does the data src/ reads"
+        pass "no sources or build files ship, and the data src/ reads does"
     fi
 else
     echo "  ! (d) asserted nothing: Pro's loader source is free's plus its own (ADR 0028),"
@@ -804,10 +789,7 @@ if [ "$tier" = "free" ]; then
         [ -e "$entry" ] || continue
 
         case "$(basename "$entry")" in
-            "$main_file"|uninstall.php|readme.txt|license.txt|tiers.json|src|resources|public|vendor) ;;
-            # The build files a wp.org reviewer needs to rebuild public/ and vendor/.
-            composer.json|composer.lock|package.json|package-lock.json|tsconfig.json) ;;
-            vite.loader-config.mjs|vite.admin-config.mjs|vite.config.*.mjs) ;;
+            "$main_file"|uninstall.php|readme.txt|license.txt|tiers.json|src|resources|public|vendor|packages) ;;
             *) fail "unexpected entry at the free artifact's root: $(basename "$entry") — add it to .distignore, or to the allowlist here if it must ship" ;;
         esac
     done

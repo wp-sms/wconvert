@@ -137,11 +137,11 @@ final class ArtifactContractTest extends TestCase
     {
         return $this->tree([
             'wconvert.php' => "<?php\n// Requires at least: 6.8\n",
-            'readme.txt' => "=== WConvert ===\nRequires at least: 6.8\nStable tag: 1.0.0\n",
+            'readme.txt' => "=== WConvert ===\nRequires at least: 6.8\nStable tag: 1.0.0\nSource: https://github.com/wp-sms/wconvert\n",
             'vendor/woocommerce/action-scheduler/action-scheduler.php' => "<?php\n// Requires at least: 6.8\n",
             'src/Bootstrap.php' => "<?php\nnamespace WConvert;\nfinal class Bootstrap {}\n",
-            'vendor/autoload.php' => "<?php\n// composer\n",
-            'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
+            'packages/autoload.php' => "<?php\n// wp-scoper\n",
+            'packages/autoload-classmap.php' => "<?php\nreturn [];\n",
             'public/loader/loader.js' => "console.log('loader');\n",
             'public/protection/protection.js' => "console.log('protection');\n",
             'public/phone/phone.js' => "console.log('phone');\n",
@@ -157,13 +157,7 @@ final class ArtifactContractTest extends TestCase
             // registered whether or not this file exists; the ZIP is where
             // that has to be caught instead.
             'public/blocks/inline-optin.js' => "console.log('block');\n",
-            'resources/loader/src/main.ts' => "export const boot = () => {};\n",
-            'resources/protection/src/challenge.ts' => "export const verify = () => {};\n",
-            'resources/phone/src/main.ts' => "export const enhance = () => {};\n",
             'resources/phone/countries.json' => "[{\"code\":\"US\",\"name\":\"United States\"}]\n",
-            'resources/admin/src/main.tsx' => "export const App = () => null;\n",
-            'resources/renderer/src/render.ts' => "export const render = () => {};\n",
-            'resources/blocks/inline-optin/src/index.tsx' => "export const block = null;\n",
             'resources/blocks/inline-optin/block.json' => "{\"name\":\"wconvert/inline-optin\"}\n",
             'resources/rules/manifest.json' => "{\"targeting\":{}}\n",
             'resources/templates/manifest.json' => "{\"slots\":{}}\n",
@@ -177,30 +171,10 @@ final class ArtifactContractTest extends TestCase
             // What rebuilds the bundles above from the sources above. The
             // repository is private, so a reviewer's only route to
             // reproducing public/ is the ZIP itself.
-            ...self::FREE_BUILD_FILES,
             'license.txt' => "GNU GENERAL PUBLIC LICENSE\nVersion 2, June 1991\n",
             ...$overrides,
         ]);
     }
-
-    /**
-     * Free's build files, each as a staged free tree carries it.
-     */
-    private const FREE_BUILD_FILES = [
-        'package.json' => "{\"scripts\":{\"build:free\":\"vite build -c vite.config.admin.mjs\"}}\n",
-        'package-lock.json' => "{\"lockfileVersion\":3}\n",
-        'tsconfig.json' => "{\"compilerOptions\":{}}\n",
-        'composer.json' => "{\"name\":\"veronalabs/wconvert\"}\n",
-        'composer.lock' => "{\"packages\":[]}\n",
-        'vite.admin-config.mjs' => "export function adminConfig() {}\n",
-        'vite.loader-config.mjs' => "export function loaderConfig() {}\n",
-        'vite.config.admin.mjs' => "export default adminConfig({ entry: 'resources/admin/src/main.tsx', outDir: 'public/admin' });\n",
-        'vite.config.block.mjs' => "export default { build: { outDir: 'public/blocks' } };\n",
-        'vite.config.loader.mjs' => "export default loaderConfig({ entry: 'resources/loader/src/main.ts', outDir: 'public/loader' });\n",
-        'vite.config.inspector.mjs' => "export default loaderConfig({ entry: 'resources/loader/src/inspect/main.ts', outDir: 'public/inspector' });\n",
-        'vite.config.phone.mjs' => "export default loaderConfig({ entry: 'resources/phone/src/main.ts', outDir: 'public/phone' });\n",
-        'vite.config.protection.mjs' => "export default loaderConfig({ entry: 'resources/protection/src/challenge.ts', outDir: 'public/protection' });\n",
-    ];
 
     /**
      * @param array<string, string|null> $overrides
@@ -665,15 +639,15 @@ final class ArtifactContractTest extends TestCase
      * the free ZIP does not contain is a premium reference inside the free
      * artifact". This is the check that makes that sentence enforceable.
      */
-    public function testFailsWhenTheGeneratedComposerAutoloadMapNamesPro(): void
+    public function testFailsWhenTheGeneratedAutoloadMapNamesPro(): void
     {
         $result = $this->verify($this->stagedFree([
-            'vendor/composer/autoload_psr4.php' =>
-                "<?php\nreturn array('WConvert\\\\Pro\\\\' => array('/pro/src'), 'WConvert\\\\' => array('/src'));\n",
+            'packages/autoload-classmap.php' =>
+                "<?php\nreturn array('WConvert\\\\Pro\\\\Boot' => 'pro/src/Boot.php');\n",
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('autoload_psr4.php', $result['output']);
+        $this->assertStringContainsString('autoload-classmap.php', $result['output']);
     }
 
     /**
@@ -723,14 +697,15 @@ final class ArtifactContractTest extends TestCase
     }
 
     /**
-     * No vendor/composer/ is not "the autoload map is clean". It is an
+     * No packages/ is not "the autoload map is clean". It is an
      * artifact whose autoload map was never inspected — and, separately, a
      * free plugin that cannot boot.
      */
-    public function testFailsWhenThereIsNoComposerDirectoryToInspect(): void
+    public function testFailsWhenThereIsNoPackagesDirectoryToInspect(): void
     {
         $result = $this->verify($this->stagedFree([
-            'vendor/composer/autoload_psr4.php' => null,
+            'packages/autoload.php' => null,
+            'packages/autoload-classmap.php' => null,
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
@@ -751,51 +726,62 @@ final class ArtifactContractTest extends TestCase
     }
 
     // =========================================================================
-    // (d) THE UN-MINIFIED SOURCE TREE.
+    // (d) NO SOURCES AND NO BUILD FILES IN THE ZIP.
     // =========================================================================
 
     /**
-     * ========================================================================
-     * WSMS'S TRAP, WHICH ADR 0028 DELETES RATHER THAN INHERITS.
-     * ========================================================================
-     * WSMS's .distignore strips its /resources while its readme still says
-     * sources ship there. That is a readme making a claim the artifact does not
-     * keep, and nothing in WSMS's build notices. This is the test that makes
-     * the same line in our readme.txt true by construction.
+     * The sources and the build files stay in the repository, and readme.txt
+     * points at it. A source directory in the ZIP means .distignore lost a
+     * line.
      */
-    public function testFailsWhenTheLoaderSourceIsStrippedFromTheFreeTree(): void
+    public function testFailsWhenASourceDirectoryShipsInTheFreeTree(): void
     {
-        $result = $this->verify($this->stagedFree([
-            'resources/loader/src/main.ts' => null,
-        ]));
+        foreach ([
+            'resources/loader/src/main.ts',
+            'resources/protection/src/challenge.ts',
+            'resources/phone/src/main.ts',
+            'resources/admin/src/main.tsx',
+            'resources/renderer/src/render.ts',
+            'resources/blocks/inline-optin/src/index.tsx',
+        ] as $file) {
+            $result = $this->verify($this->stagedFree([$file => "export {};\n"]));
 
-        $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('resources/loader/src', $result['output']);
+            $this->assertSame(1, $result['status'], "$file shipped:\n" . $result['output']);
+            $this->assertStringContainsString('sources stay in the repository', $result['output']);
+        }
     }
 
-    /**
-     * **Sources nobody can build are half a source claim.** The repository is
-     * private, so every file `npm ci && npm run build:free` and `composer
-     * install --no-dev` need has to be in the ZIP.
-     */
-    public function testFailsWhenAFreeBuildFileIsStrippedFromTheFreeTree(): void
+    public function testFailsWhenABuildFileShipsInTheFreeTree(): void
     {
-        foreach (array_keys(self::FREE_BUILD_FILES) as $file) {
-            $result = $this->verify($this->stagedFree([$file => null]));
+        foreach (['package.json', 'package-lock.json', 'tsconfig.json', 'composer.json', 'composer.lock'] as $file) {
+            $result = $this->verify($this->stagedFree([$file => "{}\n"]));
 
-            $this->assertSame(1, $result['status'], "$file stripped:\n" . $result['output']);
+            $this->assertSame(1, $result['status'], "$file shipped:\n" . $result['output']);
             $this->assertStringContainsString($file, $result['output']);
         }
     }
 
-    public function testFailsWhenTheShippedPackageJsonCannotBuildFreeAlone(): void
+    public function testFailsWhenAViteConfigShipsInTheFreeTree(): void
     {
         $result = $this->verify($this->stagedFree([
-            'package.json' => "{\"scripts\":{\"build\":\"vite build\"}}\n",
+            'vite.config.loader.mjs' => "export default {};\n",
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('build:free', $result['output']);
+        $this->assertStringContainsString('Vite config', $result['output']);
+    }
+
+    /**
+     * With the sources out of the ZIP the readme is how a reviewer finds them.
+     */
+    public function testFailsWhenTheReadmeDoesNotLinkTheRepository(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'readme.txt' => "=== WConvert ===\nRequires at least: 6.8\nStable tag: 1.0.0\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('public repository', $result['output']);
     }
 
     public function testFailsWhenTheFreeTreeShipsNoLicence(): void
@@ -804,50 +790,6 @@ final class ArtifactContractTest extends TestCase
 
         $this->assertSame(1, $result['status'], $result['output']);
         $this->assertStringContainsString('license.txt', $result['output']);
-    }
-
-    /**
-     * A Pro build config the .distignore forgot — `vite.config.block-pro.mjs`
-     * did, once — or a free config reaching into Pro. Either way the free ZIP
-     * names a path it does not contain, and the rebuild fails.
-     */
-    public function testFailsWhenAShippedViteConfigNamesAProPath(): void
-    {
-        foreach ([
-            'vite.config.block-pro.mjs' => "export default { build: { outDir: resolve(import.meta.dirname, 'pro/public/blocks') } };\n",
-            'vite.config.loader.mjs' => "export default loaderConfig({ entry: 'pro/resources/loader/src/elite.ts', outDir: 'public/loader' });\n",
-        ] as $file => $contents) {
-            $result = $this->verify($this->stagedFree([$file => $contents]));
-
-            $this->assertSame(1, $result['status'], "$file:\n" . $result['output']);
-            $this->assertStringContainsString($file, $result['output']);
-        }
-    }
-
-    public function testFailsWhenTheAdminSourceIsStrippedFromTheFreeTree(): void
-    {
-        $result = $this->verify($this->stagedFree([
-            'resources/admin/src/main.tsx' => null,
-        ]));
-
-        $this->assertSame(1, $result['status'], $result['output']);
-    }
-
-    /**
-     * **An empty source directory is not a source directory.** A stage that
-     * created `resources/loader/src/` and copied nothing into it satisfies
-     * every existence check and publishes nothing, which is the shape "couldn't
-     * look" takes when a copy half-succeeds.
-     */
-    public function testFailsWhenTheSourceDirectoryExistsButHoldsNothing(): void
-    {
-        $tree = $this->stagedFree(['resources/loader/src/main.ts' => null]);
-        mkdir($tree . '/resources/loader/src', 0777, true);
-
-        $result = $this->verify($tree);
-
-        $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('nothing was inspected', $result['output']);
     }
 
     /**
@@ -966,26 +908,11 @@ final class ArtifactContractTest extends TestCase
         $this->assertStringContainsString('block.json', $result['output']);
     }
 
-    /**
-     * (d) again, for the third bundle. The readme claims every piece of
-     * JavaScript ships with its un-minified source, and the block is a piece
-     * of JavaScript.
-     */
-    public function testFailsWhenFreeShipsTheBlockBundleWithoutItsSource(): void
+    public function testFailsWhenFreeShipsNoAutoloader(): void
     {
         $result = $this->verify($this->stagedFree([
-            'resources/blocks/inline-optin/src/index.tsx' => null,
-        ]));
-
-        $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('resources/blocks/inline-optin/src', $result['output']);
-    }
-
-    public function testFailsWhenFreeShipsNoComposerAutoloader(): void
-    {
-        $result = $this->verify($this->stagedFree([
-            'vendor/autoload.php' => null,
-            'vendor/composer/autoload_psr4.php' => null,
+            'packages/autoload.php' => null,
+            'packages/autoload-classmap.php' => null,
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);

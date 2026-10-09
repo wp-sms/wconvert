@@ -269,6 +269,7 @@ build_one() {
         --exclude './.git' \
         --exclude './node_modules' \
         --exclude './vendor' \
+        --exclude './packages' \
         --exclude './dist' \
         . | tar -x -f - -C "$stage"
 
@@ -281,8 +282,23 @@ build_one() {
             return 1
         }
 
+        # Dev install first: wp-scoper is a dev dependency and runs on install,
+        # writing packages/autoload.php (the runtime autoloader, PSR-4 for src/
+        # plus any prefixed package). Then `composer dist` leaves only the
+        # production packages in vendor/, which .distignore trims to Action
+        # Scheduler.
+        echo "  · composer install (wp-scoper writes packages/)"
+        composer install --working-dir="$stage" --no-interaction --quiet
+
         echo "  · composer dist"
         composer dist --working-dir="$stage" --quiet
+
+        # The plugin loads packages/autoload.php. wp-scoper writes it even with
+        # no package to prefix; the template is the fallback if it ever does not.
+        if [ ! -f "$stage/packages/autoload.php" ]; then
+            mkdir -p "$stage/packages"
+            cp "$SCRIPT_DIR/autoload-template.php" "$stage/packages/autoload.php"
+        fi
     fi
 
     apply_distignore "$stage" "$source/.distignore"

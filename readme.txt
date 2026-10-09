@@ -111,8 +111,11 @@ None of that code is in this plugin.
 
 = Source code =
 
-Every script in this plugin is built from readable source code that ships
-inside the download, in the `resources/` folder:
+The admin screens, the visitor-facing loader and the editor block are built
+with React, TypeScript and Vite. The compiled files in `public/` are generated
+from the readable sources in the `resources/` folder of the [plugin's GitHub
+repository](https://github.com/wp-sms/wconvert), which also holds the build
+tools:
 
 * `public/loader/` and `public/inspector/` come from `resources/loader/src`
 * `public/admin/` comes from `resources/admin/src`
@@ -120,15 +123,8 @@ inside the download, in the `resources/` folder:
 * `public/phone/` comes from `resources/phone/src`
 * `public/protection/` comes from `resources/protection/src`
 
-The build files ship too (`package.json`, `package-lock.json`,
-`tsconfig.json`, the `vite.*.mjs` files, `composer.json` and `composer.lock`).
-To rebuild with Node.js 22 and Composer, run these in the plugin's folder:
-
-`npm ci && npm run build:free`
-
-`composer install --no-dev`
-
-The first rebuilds `public/` and the second rebuilds `vendor/`.
+To rebuild them, run `npm ci && npm run build:free` in a clone of the
+repository, using Node.js 22.
 
 == Installation ==
 

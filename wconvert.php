@@ -32,7 +32,13 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/src/constants.php';
 
-$wconvertAutoloader = __DIR__ . '/vendor/autoload.php';
+// The ZIP carries packages/autoload.php (wp-scoper's, or the PSR-4 template's) and
+// no vendor/autoload.php; a source checkout has only Composer's.
+$wconvertAutoloader = __DIR__ . '/packages/autoload.php';
+
+if (!is_file($wconvertAutoloader)) {
+    $wconvertAutoloader = __DIR__ . '/vendor/autoload.php';
+}
 
 if (!is_file($wconvertAutoloader)) {
     add_action('admin_notices', static function (): void {

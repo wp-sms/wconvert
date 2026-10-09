@@ -19,7 +19,8 @@
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-deprecation-rules": "^2.0",
     "phpunit/phpunit": "^10.5",
-    "szepeviktor/phpstan-wordpress": "^2.0"
+    "szepeviktor/phpstan-wordpress": "^2.0",
+    "veronalabs/wp-scoper": "^1.4"
   },
   "autoload": {
     "psr-4": {
@@ -30,6 +31,16 @@
     "psr-4": {
       "WConvert\\Tests\\Unit\\": "tests/unit/",
       "WConvert\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "wp-scoper": {
+      "namespace_prefix": "WConvert\\Deps",
+      "class_prefix": "WConvert_",
+      "constant_prefix": "WCONVERT_",
+      "packages": [],
+      "target_directory": "packages",
+      "update_call_sites": true
     }
   },
   "scripts": {
@@ -45,7 +56,8 @@
       "php": "8.1"
     },
     "allow-plugins": {
-      "phpstan/extension-installer": true
+      "phpstan/extension-installer": true,
+      "veronalabs/wp-scoper": true
     },
     "sort-packages": true
   }
