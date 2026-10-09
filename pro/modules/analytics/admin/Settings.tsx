@@ -1,13 +1,20 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { CircleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Alert, AlertTitle } from '@/components/ui/alert';
+import { AdminDialog, AdminDialogBody, AdminDialogClose, AdminDialogContent, AdminDialogFooter, AdminDialogHeader, AdminDialogTrigger } from '@/components/ui/admin-dialog';
 import { InfoTip } from '@/shell/InfoTip';
+import { CheckRow } from '@/shell/CheckRow';
+import { Disclosure } from '@/shell/Disclosure';
+import { Field } from '@/shell/Field';
+import { OptionStrip } from '@/shell/OptionStrip';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
 import { RegionSkeleton } from '@/shell/RegionSkeleton';
+import { SaveStatus, useSaveStatus } from '@/shell/SaveStatus';
 import { failed, messageOf, type Loadable } from '@/shell/loadable';
 import { useSettingsEditing, type SettingsEditing } from '@/settings-page/useSettingsEditing';
 import { path, type Response, type SettingsValue } from './api';
@@ -20,6 +27,8 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
   const [retry, setRetry] = useState(0);
   const [page, setPage] = useState('');
   const saveButton = useRef<HTMLButtonElement>(null);
+  const status = useSaveStatus();
+  const ids = useId();
   const response = loaded.status === 'ready' ? loaded.data : undefined;
   const dirty = !!value && JSON.stringify(value) !== JSON.stringify(response?.settings);
   useSettingsEditing(dirty, busy, onEditingStateChange);
@@ -33,13 +42,13 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
     return () => { active = false; };
   }, [retry]);
 
-  const change = (patch: Partial<SettingsValue>) => setValue(old => old ? { ...old, ...patch } : old);
+  const change = (patch: Partial<SettingsValue>) => { status.clear(); setValue(old => old ? { ...old, ...patch } : old); };
   const save = async () => {
     if (!value || busy) return;
-    setBusy(true); setError('');
+    setBusy(true); setError(''); status.clear();
     try {
       const next = await apiFetch<Response>({ path, method: 'POST', data: value });
-      setLoaded({ status: 'ready', data: next }); setValue(next.settings);
+      setLoaded({ status: 'ready', data: next }); setValue(next.settings); status.markSaved();
     } catch (reason) { setError(messageOf(reason)); }
     finally { setBusy(false); requestAnimationFrame(() => saveButton.current?.focus()); }
   };
@@ -47,8 +56,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
   const title = __('Analytics integrations', 'wconvert');
   if (loaded.status === 'failed') return <Region>
     <RegionHeader title={title} />
-    <RegionErrorState message={loaded.message} hint={__('Load the connection settings again.', 'wconvert')}
-      action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />
+    <RegionErrorState message={loaded.message} onRetry={() => setRetry(n => n + 1)} />
   </Region>;
   if (!response || !value) return <RegionSkeleton label={title} lines={4} />;
 
@@ -63,15 +71,21 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
   const paused = response.environment !== 'production';
   const needsReview = !response.site_matches && value.enabled;
   const testBlocked = dirty || busy || !response.asset_available;
+  // The sentence that says why Test setup is refused, so a keyboard user hears it with the button (§14).
+  const testReason = !response.asset_available ? `${ids}-asset` : dirty ? `${ids}-unsaved` : undefined;
 
   return <Region>
     <RegionHeader title={title} description={__('Track published campaigns through your existing analytics setup.', 'wconvert')} />
     {error && <RegionError message={error} />}
-    {!response.asset_available && <RegionError message={__('Analytics script missing. Reinstall WConvert Pro to restore it.', 'wconvert')} />}
     <RegionBody className="grid gap-5">
+      {/* A site problem, not a failed read: it stays until the files are restored. */}
+      {!response.asset_available && <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
+        <CircleAlert />
+        <AlertTitle id={`${ids}-asset`} className="line-clamp-none">{__('The analytics script is missing. Reinstall WConvert Pro to restore it.', 'wconvert')}</AlertTitle>
+      </Alert>}
       <fieldset disabled={busy} className="m-0 grid min-w-0 gap-5 border-0 p-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <label className="flex items-center gap-2 font-medium"><input type="checkbox" checked={value.enabled} onChange={e => change({ enabled: e.target.checked })} />{__('Enable analytics integration', 'wconvert')}</label>
+          <CheckRow className="font-medium" label={__('Enable analytics integration', 'wconvert')} checked={value.enabled} onChange={e => change({ enabled: e.target.checked })} />
           {paused && <Badge variant="warning">{__('Non-production site', 'wconvert')}</Badge>}
         </div>
         {paused && <p className="m-0 text-note text-muted-foreground">{__('Tracking is paused here. Diagnostics remain available.', 'wconvert')}</p>}
@@ -79,7 +93,7 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
 
         <Choices label={__('Connection method', 'wconvert')} value={value.route} onChange={route => change({ route, ...((route === 'plausible') !== plausible ? { consent: 'wp' as const } : {}) })}
           options={[['gtag', __('Google tag', 'wconvert')], ['gtm', __('Google Tag Manager', 'wconvert')], ['plausible', __('Plausible', 'wconvert')]]} />
-        {value.route === 'gtag' ? <div className="grid gap-2">
+        {value.route === 'gtag' ? <div className="grid gap-1.5">
           <div className="flex items-center gap-1"><label htmlFor="analytics-stream" className="font-medium">{__('Measurement ID', 'wconvert')}</label>
             <InfoTip label={__('About the Measurement ID', 'wconvert')}>{__('Use the G- ID of the web stream already installed on this site. WConvert does not install a Google tag.', 'wconvert')}</InfoTip>
           </div>
@@ -99,36 +113,28 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             : __('Your Google tag or GTM controls consent, including cookieless requests.', 'wconvert')}</p>
         </div>
 
-        <details className="border-t border-border pt-4">
-          <summary className="cursor-pointer text-body font-medium">{__('Advanced settings', 'wconvert')}</summary>
-          <div className="grid gap-4 pt-4">
-            <label className="flex items-start gap-2"><input type="checkbox" checked={value.dismissals} onChange={e => change({ dismissals: e.target.checked })} />{__('Track dismissals', 'wconvert')}</label>
-            <label className="flex items-start gap-2"><input type="checkbox" checked={value.exclude_managers} onChange={e => change({ exclude_managers: e.target.checked })} />{__('Exclude campaign managers', 'wconvert')}</label>
-            {value.route === 'gtm' && <label className="grid gap-2">{__('Data-layer name', 'wconvert')}<Input className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} /></label>}
-            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert')}{response.excluded > 0 && <> {sprintf(_n('%s published design is excluded.', '%s published designs are excluded.', response.excluded, 'wconvert'), String(response.excluded))}</>}</p>
-          </div>
-        </details>
+        <div className="border-t border-border pt-2">
+          <Disclosure variant="inline" title={__('Advanced settings', 'wconvert')} bodyClassName="gap-4">
+            <CheckRow label={__('Track dismissals', 'wconvert')} checked={value.dismissals} onChange={e => change({ dismissals: e.target.checked })} />
+            <CheckRow label={__('Exclude your team', 'wconvert')} hint={__('Visits by people who can manage campaigns are not tracked.', 'wconvert')}
+              checked={value.exclude_managers} onChange={e => change({ exclude_managers: e.target.checked })} />
+            {value.route === 'gtm' && <Field label={__('Data-layer name', 'wconvert')} htmlFor={`${ids}-layer`}>
+              <Input id={`${ids}-layer`} className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} />
+            </Field>}
+            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert')}{response.excluded > 0 && <> {sprintf(_n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert'), String(response.excluded))}</>}</p>
+          </Disclosure>
+        </div>
       </fieldset>
     </RegionBody>
     <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap items-center gap-3"><Dialog>
-        <DialogTrigger asChild><Button variant="outline" disabled={busy} aria-disabled={testBlocked || undefined} aria-describedby={dirty ? 'analytics-unsaved' : undefined}
-          onClick={event => { if (testBlocked) event.preventDefault(); }}>{__('Test setup', 'wconvert')}</Button></DialogTrigger>
-        <DialogContent>
-          <DialogHeader><DialogTitle>{__('Test analytics', 'wconvert')}</DialogTitle>
-            <DialogDescription>{__('Inspect a page with a campaign. Events stay local until you explicitly send a test.', 'wconvert')}</DialogDescription>
-          </DialogHeader>
-          <label className="grid gap-2">{__('Website page URL', 'wconvert')}<Input type="url" dir="ltr" value={page} onChange={e => setPage(e.target.value)} /></label>
-          {!testUrl && <p role="status" className="m-0 text-note">{__('Enter a URL on this website.', 'wconvert')}</p>}
-          <p className="m-0 text-note text-muted-foreground">{plausible ? __('Tests go to the site configured by your Plausible script. Use a dedicated test site, clear page caches, and verify WConvert Test in Plausible.', 'wconvert') : __('Use a test property and clear any page/CDN cache first. Verify receipt in GA DebugView.', 'wconvert')}</p>
-          <DialogFooter><DialogClose asChild><Button variant="outline">{__('Cancel', 'wconvert')}</Button></DialogClose>
-            {testUrl ? <Button asChild><a href={testUrl} target="_blank" rel="noreferrer">{__('Open diagnostics', 'wconvert')}</a></Button>
-              : <Button aria-disabled="true">{__('Open diagnostics', 'wconvert')}</Button>}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog><a className="text-note underline underline-offset-2" href={response.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
+      <div className="flex flex-wrap items-center gap-3"><AdminDialog>
+        <AdminDialogTrigger asChild><Button variant="outline" disabled={busy} aria-disabled={testBlocked || undefined} aria-describedby={testReason}
+          onClick={event => { if (testBlocked) event.preventDefault(); }}>{__('Test setup', 'wconvert')}</Button></AdminDialogTrigger>
+        <TestDialog page={page} onPage={setPage} testUrl={testUrl} plausible={plausible} />
+      </AdminDialog><a className="text-note underline underline-offset-2" href={response.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
       <div className="flex flex-wrap items-center gap-3">
-        {dirty && <span id="analytics-unsaved" className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert')}</span>}
+        {dirty && <span id={`${ids}-unsaved`} className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert')}</span>}
+        <SaveStatus saved={status.saved} />
         {dirty && <Button variant="ghost" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert')}</Button>}
         <Button ref={saveButton} disabled={busy || (!dirty && response.site_matches)} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save settings', 'wconvert')}</Button>
       </div>
@@ -136,15 +142,29 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
   </Region>;
 }
 
-/** Small exclusive choices use the shared native-radio chip treatment. */
-function Choices<T extends string>({ label, value, options, help, onChange }: { label: string; help?: ReactNode; value: T; options: [T, string][]; onChange(value: T): void }) {
+/** Diagnostics open on a page of this site; anything else is refused with its reason beside the button. */
+function TestDialog({ page, onPage, testUrl, plausible }: { page: string; onPage: (page: string) => void; testUrl: string; plausible: boolean }) {
   const id = useId();
+  return <AdminDialogContent size="sm">
+    <AdminDialogHeader title={__('Test analytics', 'wconvert')} meta={__('Inspect a page with a campaign. Events stay local until you send a test.', 'wconvert')} />
+    <AdminDialogBody className="grid content-start gap-4">
+      <Field label={__('Website page URL', 'wconvert')} htmlFor={`${id}-url`}>
+        <Input id={`${id}-url`} type="url" dir="ltr" value={page} aria-describedby={testUrl ? undefined : `${id}-refused`} onChange={e => onPage(e.target.value)} />
+      </Field>
+      <p className="m-0 text-note text-muted-foreground">{plausible ? __('Tests go to the site configured by your Plausible script. Use a dedicated test site, clear page caches, and verify WConvert Test in Plausible.', 'wconvert') : __('Use a test property and clear any page/CDN cache first. Verify receipt in GA DebugView.', 'wconvert')}</p>
+    </AdminDialogBody>
+    <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Cancel', 'wconvert')}</Button></AdminDialogClose>}
+      note={testUrl ? undefined : <span id={`${id}-refused`} role="status">{__('Enter a URL on this website.', 'wconvert')}</span>}>
+      {testUrl ? <Button asChild><a href={testUrl} target="_blank" rel="noreferrer">{__('Open diagnostics', 'wconvert')}</a></Button>
+        : <Button aria-disabled="true" aria-describedby={`${id}-refused`}>{__('Open diagnostics', 'wconvert')}</Button>}
+    </AdminDialogFooter>
+  </AdminDialogContent>;
+}
+
+/** Small exclusive choices: the shared OptionStrip, under a visible label that names the group. */
+function Choices<T extends string>({ label, value, options, help, onChange }: { label: string; help?: ReactNode; value: T; options: [T, string][]; onChange(value: T): void }) {
   return <div className="grid gap-2">
-    <div className="flex items-center gap-1"><span id={id} className="font-medium">{label}</span>{help}</div>
-    <div role="group" aria-labelledby={id} className="wconvert-option-strip">
-      {options.map(([key, name]) => <label key={key} className="py-2">
-        <input type="radio" name={id} value={key} checked={key === value} onChange={() => onChange(key)} />{name}
-      </label>)}
-    </div>
+    <div className="flex items-center gap-1"><span aria-hidden="true" className="font-medium">{label}</span>{help}</div>
+    <OptionStrip label={label} value={value} options={options.map(([key, name]) => ({ value: key, label: name }))} onChange={next => onChange(next as T)} />
   </div>;
 }

@@ -43,7 +43,7 @@ final class RevenueReport
                 if ($amount === null) $currencies[$currency]['unallocated_refunds']++;
                 else $currencies[$currency]['amount'] += $amount;
                 if (count($orders) < 50 && current_user_can('edit_shop_order', $order->get_id())) $orders[] = ['id' => $order->get_id(), 'campaign' => $credit['arm'], 'currency' => $currency,
-                    'amount' => $amount, 'paid' => $order->get_date_paid()->format('Y-m-d'), 'status' => wc_get_order_status_name($order->get_status()), 'refunded' => count($order->get_refunds()) > 0, 'url' => $order->get_edit_order_url()];
+                    'amount' => $amount, 'paid' => $order->get_date_paid()->format('Y-m-d'), 'status' => $order->get_status(), 'refunded' => count($order->get_refunds()) > 0, 'url' => $order->get_edit_order_url()];
             }
             if (count($batch) < 100) break;
         }

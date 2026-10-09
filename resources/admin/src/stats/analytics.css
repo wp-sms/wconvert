@@ -27,13 +27,14 @@
   color: var(--muted-foreground);
   font-size: var(--text-note);
 }
-.wa-eyebrow {
-  font-size: var(--text-micro) !important;
+/* Scoped like the paragraph rule it refines, so it wins without `!important`. */
+.wconvert-analytics .wa-eyebrow {
+  font-size: var(--text-micro);
   letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--muted-foreground);
   font-weight: 600;
-  margin-bottom: 8px !important;
+  margin-bottom: 8px;
 }
 .wa-intro {
   padding: 24px 0 15px;
@@ -56,9 +57,7 @@
   gap: 12px;
   flex-wrap: wrap;
 }
-.wa-header-actions select,
-.wa-table-tools select,
-.wa-table-tools input {
+.wa-header-actions select {
   height: var(--control-height);
   background: var(--card);
   border: 1px solid var(--input);
@@ -158,12 +157,13 @@
 .wa-impact-primary strong {
   color: var(--action);
 }
+/* A rise is good news; a fall is neutral text with its sign, never amber (§14). */
 .wa-change {
   font-size: var(--text-micro);
-  color: var(--success);
+  color: var(--muted-foreground);
 }
-.wa-change-down {
-  color: var(--warning);
+.wa-change-up {
+  color: var(--success);
 }
 .wa-section-heading {
   display: flex;
@@ -171,10 +171,6 @@
   align-items: center;
   gap: 14px;
   margin: 24px 0 14px;
-}
-.wa-section-heading > span {
-  font-size: var(--text-note);
-  color: var(--muted-foreground);
 }
 .wa-goal-grid {
   display: grid;
@@ -236,9 +232,6 @@
   flex-shrink: 0;
   color: var(--muted-foreground);
 }
-.wa-footnote {
-  margin-top: 20px !important;
-}
 .wa-panel {
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) + 2px);
@@ -252,23 +245,6 @@
   align-items: center;
   gap: 20px;
   margin: 18px 0 8px;
-}
-.wa-status {
-  display: inline-flex;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: var(--text-micro);
-  background: var(--success-surface);
-  color: var(--success);
-  white-space: nowrap;
-}
-.wa-status-paused {
-  background: var(--warning-surface);
-  color: var(--warning);
-}
-.wa-status-historical {
-  background: var(--muted);
-  color: var(--muted-foreground);
 }
 .wa-numbers {
   display: grid;
@@ -307,26 +283,6 @@
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-}
-.wa-metric-tabs {
-  display: flex;
-  gap: 3px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 3px;
-}
-.wa-metric-tabs button {
-  border: 0;
-  background: none;
-  font-size: var(--text-micro);
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: var(--muted-foreground);
-  cursor: pointer;
-}
-.wa-metric-tabs button[aria-pressed='true'] {
-  background: var(--muted);
-  color: var(--action);
 }
 .wa-chart-legend {
   display: flex;
@@ -383,27 +339,11 @@
 }
 .wa-daily {
   margin-top: 16px;
-  font-size: var(--text-note);
 }
-.wa-daily summary,
-.wa-help summary {
-  cursor: pointer;
-}
-.wa-daily > div {
-  max-height: 260px;
+/* Ninety days of rows scroll inside the fold rather than lengthening the page. */
+.wa-daily > .wconvert-disclosure__body {
+  max-block-size: 320px;
   overflow: auto;
-  margin-top: 12px;
-}
-.wa-daily table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.wa-daily th,
-.wa-daily td {
-  text-align: start;
-  padding: 8px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 400;
 }
 .wa-reconciliation {
   display: flex;
@@ -419,74 +359,20 @@
   width: 100%;
   font-size: var(--text-micro);
 }
-.wa-table-tools {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 15px 20px;
-  font-size: var(--text-note);
+.wa-campaigns {
+  margin: 18px 0;
 }
-.wa-table-tools input {
-  max-width: 250px;
-  min-width: 0;
-}
-.wa-table-tools > span {
-  margin-inline-start: auto;
-  color: var(--muted-foreground);
-}
-.wa-table-wrap {
-  overflow: auto;
-}
-.wa-campaign-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-note);
-}
-.wa-campaign-table thead th {
-  font-size: var(--text-micro);
-  font-weight: 500;
-  color: var(--muted-foreground);
-  background: var(--surface);
-  text-align: start;
-  padding: 11px 20px;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-.wa-campaign-table td,
-.wa-campaign-table tbody th {
-  padding: 17px 20px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-  text-align: start;
-  font-weight: 400;
-}
-.wa-campaign-table tr:last-child td,
-.wa-campaign-table tr:last-child th {
-  border-bottom: 0;
-}
-.wa-campaign-table .wa-numeric {
-  text-align: end;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.wa-campaign-table small {
-  display: block;
-  font-size: var(--text-micro);
-  color: var(--muted-foreground);
-  margin-top: 5px;
-}
-.wa-campaign-table th:first-child {
-  min-width: 200px;
-}
-.wa-campaign-table a {
+.wa-campaign-name {
   color: var(--action);
   font-weight: 500;
+  overflow-wrap: anywhere;
 }
-.wa-table-compare {
-  white-space: nowrap;
-}
-.wa-empty {
-  padding: 20px;
+.wa-cell-note {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-note);
+  font-weight: 400;
+  color: var(--muted-foreground);
 }
 .wconvert-analytics .wa-notice {
   background: var(--muted);
@@ -533,32 +419,16 @@
   margin: 18px 0;
 }
 .wa-help {
-  border-top: 1px solid var(--border);
   margin-top: 24px;
-  padding-top: 12px;
-  font-size: var(--text-note);
-  color: var(--muted-foreground);
-}
-.wa-help summary {
-  width: fit-content;
-  max-width: 100%;
-  color: var(--foreground);
-  font-weight: 500;
-}
-.wa-help summary:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 3px;
-}
-.wa-help-notes {
-  margin-top: 10px;
-  max-width: 110ch;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
 }
 .wa-help p {
   margin: 0;
+  max-width: 110ch;
   line-height: 1.6;
-}
-.wa-help p + p {
-  margin-top: 6px;
+  font-size: var(--text-note);
+  color: var(--muted-foreground);
 }
 .wa-help strong {
   color: var(--foreground);
@@ -608,15 +478,6 @@
   }
   .wa-trend {
     padding: 16px;
-  }
-  .wa-table-tools {
-    padding: 12px;
-  }
-  .wa-table-tools input {
-    width: 60%;
-  }
-  .wa-table-tools > span {
-    display: none;
   }
   .wa-experiment-link {
     flex-wrap: wrap;

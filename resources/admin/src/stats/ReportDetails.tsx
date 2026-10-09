@@ -1,10 +1,17 @@
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Pause, Play, Split } from 'lucide-react';
+import { ChartColumn, Pause, Play, Split } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { PageError } from '../shell/Region';
+import { Input } from '../components/ui/input';
+import { NativeSelect } from '../components/ui/native-select';
+import { PageError, Region } from '../shell/Region';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { EmptyState } from '../shell/EmptyState';
+import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { messageOf } from '../shell/loadable';
+import { StatusBadge } from '../optins/StatusBadge';
+import type { OptinStatus } from '../optins/api';
 import {
   destinationHref,
   editorHref,
@@ -19,12 +26,22 @@ import { formatCount, formatRate } from './format';
 import { families } from './reporting';
 import { ActivityChart } from './ActivityChart';
 
-const statusLabel = (status: OptinReport['status']) =>
-  status === 'published'
-    ? __('Published', 'wconvert')
-    : status === 'paused'
-      ? __('Paused', 'wconvert')
-      : __('Historical', 'wconvert');
+/**
+ * The report's three states in the campaign list's words (GUIDELINES §20): a
+ * campaign that is no longer published is a Draft, and one kept only for its
+ * results is Deleted. The report's own keys never reach the screen.
+ */
+const STATUS: Record<OptinReport['status'], OptinStatus> = {
+  published: 'published',
+  paused: 'draft',
+  historical: 'deleted',
+};
+
+/**
+ * A change against the previous period, with its sign. A fall is not amber:
+ * amber means the site is holding something back (§14), and a lower number is
+ * a fact, not a fault — so it reads as neutral text.
+ */
 export function Change({
   current,
   previous,
@@ -48,19 +65,16 @@ export function Change({
     );
   const delta = (current - previous) / previous;
   return (
-    <span className={`wa-change ${delta < 0 ? 'wa-change-down' : ''}`}>
-      {delta > 0 ? '↑ ' : delta < 0 ? '↓ ' : ''}
+    <span className={`wa-change ${delta > 0 ? 'wa-change-up' : ''}`}>
       {sprintf(
         __('%s vs previous period', 'wconvert'),
-        formatRate(Math.abs(delta)),
+        `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${formatRate(Math.abs(delta))}`,
       )}
     </span>
   );
 }
 function Status({ value }: { value: OptinReport['status'] }) {
-  return (
-    <span className={`wa-status wa-status-${value}`}>{statusLabel(value)}</span>
-  );
+  return <StatusBadge status={STATUS[value]} />;
 }
 function Totals({
   card,
@@ -84,7 +98,7 @@ function Totals({
         )}
       </div>
       <div>
-        <dt>{__('Times shown', 'wconvert')}</dt>
+        <dt>{__('Shown', 'wconvert')}</dt>
         <dd>{formatCount(numbers.impressions)}</dd>
         {previous && (
           <Change
@@ -100,7 +114,8 @@ function Totals({
         <dd>{formatRate(numbers.conversion_rate)}</dd>
         <small>
           {sprintf(
-            __('Actions ÷ appearances: %1$s / %2$s', 'wconvert'),
+            /* translators: 1: results, 2: times shown. */
+            __('%1$s ÷ %2$s shown', 'wconvert'),
             formatCount(numbers.conversions),
             formatCount(numbers.impressions),
           )}
@@ -141,7 +156,7 @@ export function GoalDetail({
           <p className="wa-eyebrow">
             {optin ? card.label : __('Goal report', 'wconvert')}
           </p>
-          <h2>{optin?.name ?? card.label}</h2>
+          <h2><bdi>{optin?.name ?? card.label}</bdi></h2>
         </div>
         {optin && <Status value={optin.status} />}
       </div>
@@ -159,7 +174,7 @@ export function GoalDetail({
       {optin?.status === 'paused' && (
         <p className="wa-notice">
           {__(
-            'This campaign is paused. It is not being shown. Its earlier results remain included below.',
+            'This campaign is a draft, so it is not shown. Its earlier results are below.',
             'wconvert',
           )}
         </p>
@@ -167,7 +182,7 @@ export function GoalDetail({
       {optin?.status === 'historical' && (
         <p className="wa-notice">
           {__(
-            'This deleted campaign is kept here for reporting. It is no longer shown and cannot be edited.',
+            'This campaign was deleted. Its results stay here, and it can no longer be edited.',
             'wconvert',
           )}
         </p>
@@ -189,11 +204,11 @@ export function GoalDetail({
       {numbers.deliveries !== null && (
         <div className="wa-panel wa-handoff">
           <div>
-            <p className="wa-eyebrow">{__('After capture', 'wconvert')}</p>
+            <p className="wa-eyebrow">{__('After submission', 'wconvert')}</p>
             <h3>{__('Email handoffs', 'wconvert')}</h3>
             <p className="wa-muted">
               {__(
-                'Send events may happen on a later day. Resends can count again; a difference is not a queue or failure count.',
+                'Sends can land on a later day and resends count again, so a difference is not a queue or failure count.',
                 'wconvert',
               )}
             </p>
@@ -215,7 +230,7 @@ export function GoalDetail({
             <b>{__('A/B comparison and variant history', 'wconvert')}</b>
             <p>
               {__(
-                'Each variant has its own results. Family totals are not added again.',
+                'Each variant has its own results, counted once in these totals.',
                 'wconvert',
               )}
             </p>
@@ -249,7 +264,6 @@ export function GoalDetail({
         <>
           <div className="wa-section-heading">
             <h3>{__('Campaign contributions', 'wconvert')}</h3>
-            <span>{__('Never-published drafts are excluded', 'wconvert')}</span>
           </div>
           <CampaignTable cards={[card]} payload={payload} query={query} />
         </>
@@ -269,7 +283,7 @@ function Reconciliation({ card }: { card: GoalReport }) {
               {status === 'published'
                 ? __('from published campaigns', 'wconvert')
                 : status === 'paused'
-                  ? __('from paused campaigns', 'wconvert')
+                  ? __('from draft campaigns', 'wconvert')
                   : __('from deleted campaigns', 'wconvert')}
             </span>
           )
@@ -305,58 +319,69 @@ export function CampaignTable({
       ),
     );
   return (
-    <div className="wa-panel">
-      <div className="wa-table-tools">
-        <input
+    <Region label={__('Campaign contributions', 'wconvert')} className="wa-campaigns">
+      <Toolbar
+        trailing={
+          <ToolbarCount>
+            {sprintf(
+              _n('%s campaign', '%s campaigns', groups.length, 'wconvert'),
+              formatCount(groups.length),
+            )}
+          </ToolbarCount>
+        }
+      >
+        <Input
+          type="search"
+          className="w-64 max-w-full"
           aria-label={__('Find a campaign', 'wconvert')}
           placeholder={__('Find a campaign…', 'wconvert')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <select
+        <NativeSelect
           aria-label={__('Campaign status', 'wconvert')}
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
           <option value="all">{__('All statuses', 'wconvert')}</option>
-          {(['published', 'paused', 'historical'] as const).map((s) => (
-            <option key={s} value={s}>
-              {statusLabel(s)}
-            </option>
-          ))}
-        </select>
-        <span>
-          {sprintf(
-            _n('%d campaign', '%d campaigns', groups.length, 'wconvert'),
-            groups.length,
-          )}
-        </span>
-      </div>
-      <div className="wa-table-wrap">
-        <table className="wa-campaign-table">
-          <caption className="sr-only">
-            {__('Campaign contributions', 'wconvert')}
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">{__('Campaign', 'wconvert')}</th>
-              {cards.length > 1 && (
-                <th scope="col">{__('Goal', 'wconvert')}</th>
-              )}
-              <th scope="col">{__('Status', 'wconvert')}</th>
-              <th scope="col">{__('Results', 'wconvert')}</th>
-              <th scope="col">{__('Shown', 'wconvert')}</th>
-              <th scope="col">{__('Rate', 'wconvert')}</th>
-              <th scope="col">
-                <span className="sr-only">{__('Actions', 'wconvert')}</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+          <option value="published">{__('Published', 'wconvert')}</option>
+          <option value="paused">{__('Draft', 'wconvert')}</option>
+          <option value="historical">{__('Deleted', 'wconvert')}</option>
+        </NativeSelect>
+      </Toolbar>
+      {groups.length === 0 ? (
+        <EmptyState
+          icon={ChartColumn}
+          title={__('No campaigns match', 'wconvert')}
+          action={
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearch('');
+                setStatus('all');
+              }}
+            >
+              {__('Clear filters', 'wconvert')}
+            </Button>
+          }
+        />
+      ) : (
+        <DataTable label={__('Campaign contributions', 'wconvert')}>
+          <DataTableHead>
+            <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
+            {cards.length > 1 && <DataTableColumn>{__('Goal', 'wconvert')}</DataTableColumn>}
+            <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
+            <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
+            <DataTableColumn numeric>{__('Shown', 'wconvert')}</DataTableColumn>
+            <DataTableColumn numeric>{__('Rate', 'wconvert')}</DataTableColumn>
+            <DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn>
+          </DataTableHead>
+          <DataTableBody>
             {groups.map(({ card, root, arms, numbers }) => (
-              <tr key={root.id}>
-                <th scope="row">
+              <DataTableRow key={root.id}>
+                <DataTableCell label={__('Campaign', 'wconvert')}>
                   <a
+                    className="wa-campaign-name"
                     href={reportHref({
                       month: payload.month,
                       days: payload.days,
@@ -367,52 +392,52 @@ export function CampaignTable({
                       compare: query.compare,
                     })}
                   >
-                    {root.name}
+                    <bdi>{root.name}</bdi>
                   </a>
                   {arms.length > 1 && (
-                    <small>{__('Includes variant history', 'wconvert')}</small>
+                    <small className="wa-cell-note">
+                      {__('Includes variant history', 'wconvert')}
+                    </small>
                   )}
-                </th>
-                {cards.length > 1 && <td>{card.label}</td>}
-                <td>
+                </DataTableCell>
+                {cards.length > 1 && (
+                  <DataTableCell label={__('Goal', 'wconvert')}>{card.label}</DataTableCell>
+                )}
+                <DataTableCell label={__('Status', 'wconvert')}>
                   <Status value={root.status} />
-                </td>
-                <td className="wa-numeric">
+                </DataTableCell>
+                <DataTableCell label={__('Results', 'wconvert')} numeric>
                   {formatCount(numbers.conversions)}
-                  <small>{card.result_label}</small>
-                </td>
-                <td className="wa-numeric">
+                  <small className="wa-cell-note">{card.result_label}</small>
+                </DataTableCell>
+                <DataTableCell label={__('Shown', 'wconvert')} numeric>
                   {formatCount(numbers.impressions)}
-                </td>
-                <td className="wa-numeric">
+                </DataTableCell>
+                <DataTableCell label={__('Rate', 'wconvert')} numeric>
                   {formatRate(numbers.conversion_rate)}
-                </td>
-                <td>
+                </DataTableCell>
+                <DataTableActions>
                   {arms.length > 1 && (
-                    <a
-                      className="wa-table-compare"
-                      href={reportHref({
-                        month: payload.month,
-                        days: payload.days,
-                        experiment: root.id,
-                        compare: query.compare,
-                      })}
-                    >
-                      {__('Compare variants', 'wconvert')}
-                    </a>
+                    <Button asChild variant="ghost">
+                      <a
+                        href={reportHref({
+                          month: payload.month,
+                          days: payload.days,
+                          experiment: root.id,
+                          compare: query.compare,
+                        })}
+                      >
+                        {__('Compare variants', 'wconvert')}
+                      </a>
+                    </Button>
                   )}
-                </td>
-              </tr>
+                </DataTableActions>
+              </DataTableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-      {groups.length === 0 && (
-        <p className="wa-empty">
-          {__('No campaigns match. Try another name or status.', 'wconvert')}
-        </p>
+          </DataTableBody>
+        </DataTable>
       )}
-    </div>
+    </Region>
   );
 }
 function CampaignActions({
@@ -425,18 +450,16 @@ function CampaignActions({
 }: DetailProps & { optin: OptinReport }) {
   const [confirm, setConfirm] = useState(false),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState<string | null>(null),
-    [notice, setNotice] = useState('');
+    [error, setError] = useState<string | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const reason = useId();
+  const draft = optin.status === 'paused';
   const run = async () => {
     setBusy(true);
     setError(null);
     try {
-      if (optin.status === 'paused') await publishOptin(optin.id);
+      if (draft) await publishOptin(optin.id);
       else await unpublishOptin(optin.id);
-      setNotice(
-        __('Campaign updated. Historical results are unchanged.', 'wconvert'),
-      );
       onRefresh();
     } catch (cause) {
       setError(messageOf(cause));
@@ -449,15 +472,9 @@ function CampaignActions({
       <div className="wa-actions">
         {card.action === 'submit' &&
           (payload.days === 0 ? (
-            <Button
-              variant="outline"
-              disabled
-              title={__(
-                'Capture history is available after this month has a complete day.',
-                'wconvert',
-              )}
-            >
-              {__('View captured leads', 'wconvert')}
+            // Refused, not busy: it keeps focus so the reason is reachable (§14).
+            <Button variant="outline" aria-disabled="true" aria-describedby={reason}>
+              {__('View submissions', 'wconvert')}
             </Button>
           ) : (
             <Button asChild variant="outline">
@@ -468,7 +485,7 @@ function CampaignActions({
                   to: payload.to,
                 })}
               >
-                {__('View captured leads', 'wconvert')}
+                {__('View submissions', 'wconvert')}
               </a>
             </Button>
           ))}
@@ -476,7 +493,7 @@ function CampaignActions({
           <>
             <Button asChild variant="outline">
               <a href={editorHref(optin.id, reportHref(query))}>
-                {__('Edit campaign', 'wconvert')}
+                {__('Open editor', 'wconvert')}
               </a>
             </Button>
             <Button
@@ -485,47 +502,47 @@ function CampaignActions({
               disabled={busy || disabled}
               onClick={() => setConfirm(true)}
             >
-              {optin.status === 'paused' ? (
-                <Play aria-hidden="true" />
-              ) : (
-                <Pause aria-hidden="true" />
-              )}
-              {optin.status === 'paused'
-                ? __('Resume campaign', 'wconvert')
-                : __('Pause campaign', 'wconvert')}
+              {draft ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+              {busy
+                ? draft
+                  ? __('Publishing…', 'wconvert')
+                  : __('Unpublishing…', 'wconvert')
+                : draft
+                  ? __('Publish campaign', 'wconvert')
+                  : __('Unpublish campaign', 'wconvert')}
             </Button>
           </>
         )}
       </div>
-      {error && <PageError message={error} />}{' '}
-      {notice && (
-        <p className="wa-muted" role="status">
-          {notice}
+      {card.action === 'submit' && payload.days === 0 && (
+        <p id={reason} className="wa-muted">
+          {__('Submissions open once this month has a complete day.', 'wconvert')}
         </p>
       )}
+      {error && <PageError message={error} />}
       <ConfirmDialog
         open={confirm}
         onOpenChange={setConfirm}
         title={
-          optin.status === 'paused'
-            ? __('Resume this campaign?', 'wconvert')
-            : __('Pause this campaign?', 'wconvert')
+          draft
+            ? __('Publish this campaign?', 'wconvert')
+            : __('Unpublish this campaign?', 'wconvert')
         }
         description={
-          optin.status === 'paused'
+          draft
             ? __(
-                'Resuming publishes the latest saved draft, including any edits made while paused. Review the campaign first if you do not want those edits to go live. Historical results stay unchanged.',
+                'This publishes the latest saved draft, including any edits made since it was unpublished. Its results stay in this report.',
                 'wconvert',
               )
             : __(
-                'This stops this design from appearing. Other A/B variants are separate designs and keep their own state. Its historical results stay available.',
+                'It stops showing on your site. Its results stay in this report, and other A/B variants keep their own state.',
                 'wconvert',
               )
         }
         confirmLabel={
-          optin.status === 'paused'
-            ? __('Publish and resume', 'wconvert')
-            : __('Pause campaign', 'wconvert')
+          draft
+            ? __('Publish campaign', 'wconvert')
+            : __('Unpublish campaign', 'wconvert')
         }
         onConfirm={() => {
           void run();
@@ -585,10 +602,10 @@ export function Experiment({
         <p className="wa-eyebrow">
           {__('A/B comparison and variant history', 'wconvert')}
         </p>
-        <h2>{family.root.name}</h2>
+        <h2><bdi>{family.root.name}</bdi></h2>
         <p className="wa-muted">
           {__(
-            'Results below cover the selected dates, including past uses of each design. They are not isolated test-round snapshots or a statistically proven winner.',
+            'Results cover the selected dates, including past uses of each design. They do not prove a winner.',
             'wconvert',
           )}
         </p>
@@ -597,7 +614,7 @@ export function Experiment({
         {family.arms.map((arm) => (
           <div className="wa-panel wa-arm" key={arm.id}>
             <div className="wa-detail-heading">
-              <h3>{arm.name}</h3>
+              <h3><bdi>{arm.name}</bdi></h3>
               <Status value={arm.status} />
             </div>
             <Totals
@@ -637,7 +654,7 @@ export function Experiment({
       </div>
       <p className="wa-notice">
         {__(
-          'Each variant is counted once in overall and Goal totals. Retired variants remain inspectable. Assignment is per browser record, not per unique person.',
+          'Each variant counts once in goal totals. Visitors are assigned per browser, not per person.',
           'wconvert',
         )}
       </p>
@@ -649,7 +666,7 @@ export function Experiment({
         }}
         title={sprintf(__('Use %s?', 'wconvert'), chosen?.name ?? '')}
         description={__(
-          'This design becomes the campaign. Other current variants are retired and their results remain available. This is your selection, not a statistically proven winner. An unpublished selected design stays unpublished.',
+          'This design becomes the campaign and the other variants are retired. Their results stay in this report. This is your choice, not a statistically proven winner, and an unpublished design stays unpublished.',
           'wconvert',
         )}
         confirmLabel={__('Use selected variant', 'wconvert')}

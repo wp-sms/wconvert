@@ -1,19 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ArrowUpRight, Check } from 'lucide-react';
 import { InfoTip } from '../shell/InfoTip';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog';
+  AdminDialog,
+  AdminDialogBody,
+  AdminDialogContent,
+  AdminDialogFooter,
+  AdminDialogHeader,
+} from '../components/ui/admin-dialog';
+import { Field } from '../shell/Field';
+import { PageError, Region, RegionErrorState } from '../shell/Region';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { reportHref } from '../nav';
 import { messageOf } from '../shell/loadable';
+import { formatDay, formatRange, siteLocale } from '../lib/format';
 import { formatCount } from './format';
-import { dateLabel, rangeLabel } from './reporting';
 import {
   readMonthlyTargets,
   saveMonthlyTargets,
@@ -67,7 +71,7 @@ export function useMonthlyTargets(enabled: boolean) {
 }
 
 export function monthLabel(month: string): string {
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(siteLocale(), {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
@@ -79,68 +83,55 @@ export function MonthlyTargets({
 }: {
   report: ReturnType<typeof useMonthlyTargets>;
 }) {
-  const { data, error, loading, refresh, accept } = report;
+  const { data, error, refresh, accept } = report;
   const [editing, setEditing] = useState(false);
-  const [notice, setNotice] = useState('');
   const editButton = useRef<HTMLButtonElement>(null);
   if (!data)
-    return (
-      <section
-        className="wa-targets-status"
-        aria-label={__('Monthly targets', 'wconvert')}
-      >
-        {error ? (
-          <>
-            <p role="alert">
-              {sprintf(
-                __('Could not load monthly targets. %s', 'wconvert'),
-                error,
-              )}
-            </p>
-            <Button variant="outline" size="sm" onClick={refresh}>
-              {__('Retry targets', 'wconvert')}
-            </Button>
-          </>
-        ) : (
-          <p role="status">{__('Loading monthly targets…', 'wconvert')}</p>
-        )}
-      </section>
+    return error ? (
+      <Region label={__('Monthly targets', 'wconvert')} className="wa-targets-failed">
+        <RegionErrorState
+          message={sprintf(__('Could not load monthly targets. %s', 'wconvert'), error)}
+          onRetry={refresh}
+        />
+      </Region>
+    ) : (
+      <RegionSkeleton label={__('Monthly targets', 'wconvert')} lines={3} />
     );
   const active = data.metrics.filter((m) => m.target !== null);
+  // Not refused while a refresh is failing: the editor freezes the month it
+  // opened on, and the server refuses a save for a month that has passed.
   const edit = (label: string) => (
-    <Button
-      ref={editButton}
-      variant="outline"
-      size="sm"
-      disabled={!!error}
-      onClick={() => {
-        setNotice('');
-        setEditing(true);
-      }}
-    >
+    <Button ref={editButton} variant="outline" onClick={() => setEditing(true)}>
       {label}
     </Button>
   );
   return (
     <section className="wa-targets" aria-labelledby="wa-targets-heading">
+      {error && (
+        // A refresh failed: the last accepted month stays on screen under it.
+        <PageError
+          message={sprintf(
+            __('Could not refresh targets. Showing the last loaded values. %s', 'wconvert'),
+            error,
+          )}
+          onRetry={refresh}
+        />
+      )}
       {active.length > 0 ? (
         <>
           <header className="wa-targets-heading">
             <div>
-              <p className="wa-eyebrow">
-                {__('Aim a little higher', 'wconvert')}
-              </p>
               <h2 id="wa-targets-heading">
                 {sprintf(__('%s targets', 'wconvert'), monthLabel(data.month))}
               </h2>
               <p className="wa-muted">
-                {rangeLabel(data.from, data.end)} ·{' '}
-                {__('All campaigns', 'wconvert')}
+                {formatRange(data.from, data.end)} ·{' '}
+                {__('all campaigns', 'wconvert')}
                 <br />
                 {data.through
                   ? sprintf(
                       __('Counted through %s', 'wconvert'),
-                      dateLabel(data.through),
+                      formatDay(data.through),
                     )
                   : __('No complete days yet this month', 'wconvert')}
               </p>
@@ -181,7 +172,7 @@ export function MonthlyTargets({
                       formatCount(percent),
                     )}
                   >
-                    <span style={{ width: `${Math.min(percent, 100)}%` }} />
+                    <span style={{ inlineSize: `${Math.min(percent, 100)}%` }} />
                   </div>
                   <div className="wa-target-percent">
                     <span>
@@ -192,7 +183,8 @@ export function MonthlyTargets({
                     </span>
                     {reached && (
                       <span className="wa-target-reached">
-                        {__('✓ Reached', 'wconvert')}
+                        <Check aria-hidden="true" />
+                        {__('Reached', 'wconvert')}
                       </span>
                     )}
                   </div>
@@ -218,7 +210,8 @@ export function MonthlyTargets({
                         metric.label,
                       )}
                     >
-                      {__('View results ↗', 'wconvert')}
+                      {__('View results', 'wconvert')}
+                      <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
                     </a>
                   </div>
                 </article>
@@ -226,53 +219,22 @@ export function MonthlyTargets({
             })}
           </div>
           <p className="wa-target-note">
-            {__(
-              'Targets keep their calendar month when report dates change. Reaching a target never pauses a campaign.',
-              'wconvert',
-            )}
+            {__('Targets keep their calendar month when the report dates change.', 'wconvert')}
           </p>
         </>
       ) : (
         <div className="wa-target-empty">
           <div>
-            <h2 id="wa-targets-heading">
-              {__('Have a number in mind?', 'wconvert')}
-            </h2>
+            <h2 id="wa-targets-heading">{__('Monthly targets', 'wconvert')}</h2>
             <p>
               {__(
-                'Try a monthly target, like 100 lead submissions.',
+                'Set a target for this month, such as 100 submissions, and track it here.',
                 'wconvert',
               )}
             </p>
           </div>
           {edit(__('Set a monthly target', 'wconvert'))}
         </div>
-      )}
-      {loading && (
-        <p className="wa-muted" role="status">
-          {__('Refreshing targets…', 'wconvert')}
-        </p>
-      )}
-      {error && (
-        <div className="wa-targets-status">
-          <p role="alert">
-            {sprintf(
-              __(
-                'Could not refresh targets. Showing the last loaded month and values. %s',
-                'wconvert',
-              ),
-              error,
-            )}
-          </p>
-          <Button variant="outline" size="sm" onClick={refresh}>
-            {__('Retry targets', 'wconvert')}
-          </Button>
-        </div>
-      )}
-      {notice && (
-        <p className="wa-target-note" role="status">
-          {notice}
-        </p>
       )}
       {editing && (
         <TargetEditor
@@ -285,12 +247,6 @@ export function MonthlyTargets({
           onSaved={(next) => {
             accept(next);
             setEditing(false);
-            setNotice(
-              __(
-                'Monthly targets saved. Campaigns and recorded results are unchanged.',
-                'wconvert',
-              ),
-            );
           }}
         />
       )}
@@ -315,37 +271,36 @@ function TargetEditor({
   const metrics = context.metrics.filter(
     (m) => m.available || m.target !== null,
   );
-  const [draft, setDraft] = useState<Record<string, string>>(() =>
+  const [start] = useState<Record<string, string>>(() =>
     Object.fromEntries(
       metrics.map((m) => [m.id, m.target === null ? '' : String(m.target)]),
     ),
   );
+  const [draft, setDraft] = useState(start);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [invalid, setInvalid] = useState<string[]>([]);
   const [reused, setReused] = useState(false);
+  const id = useId();
+  const dirty = metrics.some((m) => draft[m.id] !== start[m.id]);
+  const limit = sprintf(
+    __('Use a whole number from 1 to %s.', 'wconvert'),
+    formatCount(context.max_target),
+  );
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (saving) return;
     const values: Record<string, number> = {};
+    const wrong: string[] = [];
     for (const metric of metrics) {
       const text = draft[metric.id].trim();
       if (!text) continue;
       const value = Number(text);
-      if (
-        !Number.isSafeInteger(value) ||
-        value < 1 ||
-        value > context.max_target
-      ) {
-        setError(
-          __(
-            'Use whole positive counts within the displayed limit.',
-            'wconvert',
-          ),
-        );
-        return;
-      }
-      values[metric.id] = value;
+      if (!Number.isSafeInteger(value) || value < 1 || value > context.max_target) wrong.push(metric.id);
+      else values[metric.id] = value;
     }
+    setInvalid(wrong);
+    if (wrong.length > 0) return;
     setSaving(true);
     setError(null);
     try {
@@ -356,136 +311,116 @@ function TargetEditor({
     }
   };
   return (
-    <Dialog
+    <AdminDialog
       open
       onOpenChange={(open) => {
         if (!open && !saving) onClose();
       }}
     >
-      <DialogContent
-        className="wa-target-editor"
+      <AdminDialogContent
+        size="sm"
+        dirty={dirty && !saving}
         showCloseButton={!saving}
         onEscapeKeyDown={(event) => {
           if (saving) event.preventDefault();
         }}
-        onPointerDownOutside={(event) => event.preventDefault()}
+        onPointerDownOutside={(event) => {
+          if (saving) event.preventDefault();
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           onClosed();
         }}
       >
-        <DialogHeader>
-          <DialogTitle>
-            {sprintf(
-              __('Set %s targets', 'wconvert'),
-              monthLabel(context.month),
-            )}
-          </DialogTitle>
-          <DialogDescription>
-            {__(
-              'Choose optional targets across your site. Leave a field empty to remove its target, not its results.',
-              'wconvert',
-            )}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={submit}>
-          <p className="wa-target-editor-scope">
-            {rangeLabel(context.from, context.end)} ·{' '}
-            {__('All campaigns', 'wconvert')}
-            <br />
-            {__(
-              'Completed days only. Targets do not renew automatically.',
-              'wconvert',
-            )}
-          </p>
-          {Object.keys(context.previous_targets).length > 0 && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={saving}
-              onClick={() => {
-                setDraft(
-                  Object.fromEntries(
-                    metrics.map((m) => [
-                      m.id,
-                      context.previous_targets[m.id] === undefined
-                        ? ''
-                        : String(context.previous_targets[m.id]),
-                    ]),
-                  ),
-                );
-                setReused(true);
-              }}
-            >
-              {__('Reuse last month’s targets', 'wconvert')}
-            </Button>
-          )}
-          {reused && (
-            <p className="wa-target-note" role="status">
+        <AdminDialogHeader
+          title={sprintf(__('%s targets', 'wconvert'), monthLabel(context.month))}
+          meta={`${formatRange(context.from, context.end)} · ${__('all campaigns', 'wconvert')}`}
+        />
+        <form className="flex min-h-0 flex-1 flex-col" onSubmit={submit} noValidate>
+          <AdminDialogBody className="grid content-start gap-5">
+            <p className="m-0 text-note text-muted-foreground">
               {__(
-                'Last month’s values copied into this draft. Review them, then save.',
+                'Leave a field blank for no target. Results are kept either way, and targets do not carry over to next month.',
                 'wconvert',
               )}
             </p>
-          )}
-          {metrics.map((metric) => (
-            <label className="wa-target-field" key={metric.id}>
-              <span>
-                {metric.label}
-                <small>{metric.note}</small>
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={context.max_target}
-                step={1}
-                inputMode="numeric"
-                value={draft[metric.id]}
-                disabled={saving}
-                onChange={(event) =>
-                  setDraft({ ...draft, [metric.id]: event.target.value })
-                }
-              />
-            </label>
-          ))}
-          <p className="wa-target-note">
-            {sprintf(
-              __(
-                'Whole numbers from 1 to %s. Blank means no target. Saving replaces this month’s targets only.',
-                'wconvert',
-              ),
-              formatCount(context.max_target),
+            {Object.keys(context.previous_targets).length > 0 && (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={saving}
+                  onClick={() => {
+                    setDraft(
+                      Object.fromEntries(
+                        metrics.map((m) => [
+                          m.id,
+                          context.previous_targets[m.id] === undefined
+                            ? ''
+                            : String(context.previous_targets[m.id]),
+                        ]),
+                      ),
+                    );
+                    setInvalid([]);
+                    setReused(true);
+                  }}
+                >
+                  {__('Reuse last month’s targets', 'wconvert')}
+                </Button>
+                <span role="status" className="text-note text-muted-foreground">
+                  {reused ? __('Copied. Save to apply them.', 'wconvert') : ''}
+                </span>
+              </div>
             )}
-          </p>
-          {error && (
-            <p className="wa-target-save-error" role="alert">
-              {sprintf(
-                __(
-                  'Could not confirm the save. Your draft is kept. %s',
-                  'wconvert',
-                ),
+            {metrics.map((metric) => (
+              <Field
+                key={metric.id}
+                label={metric.label}
+                htmlFor={`${id}-${metric.id}`}
+                hint={metric.note}
+                hintId={`${id}-${metric.id}-hint`}
+                error={invalid.includes(metric.id) ? limit : undefined}
+              >
+                <Input
+                  id={`${id}-${metric.id}`}
+                  className="wa-target-input"
+                  type="number"
+                  min={1}
+                  max={context.max_target}
+                  step={1}
+                  inputMode="numeric"
+                  value={draft[metric.id]}
+                  disabled={saving}
+                  aria-describedby={`${id}-${metric.id}-hint`}
+                  aria-invalid={invalid.includes(metric.id) || undefined}
+                  onChange={(event) => {
+                    setDraft({ ...draft, [metric.id]: event.target.value });
+                    setReused(false);
+                  }}
+                />
+              </Field>
+            ))}
+          </AdminDialogBody>
+          <AdminDialogFooter
+            back={
+              <Button type="button" variant="outline" disabled={saving} onClick={onClose}>
+                {__('Cancel', 'wconvert')}
+              </Button>
+            }
+            error={
+              error &&
+              sprintf(
+                __('Could not save. Your draft is kept. %s', 'wconvert'),
                 error,
-              )}
-            </p>
-          )}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={saving}
-              onClick={onClose}
-            >
-              {__('Cancel', 'wconvert')}
-            </Button>
+              )
+            }
+          >
             <Button type="submit" disabled={saving}>
-              {saving
-                ? __('Saving…', 'wconvert')
-                : __('Save targets', 'wconvert')}
+              {saving ? __('Saving…', 'wconvert') : __('Save targets', 'wconvert')}
             </Button>
-          </DialogFooter>
+          </AdminDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AdminDialogContent>
+    </AdminDialog>
   );
 }

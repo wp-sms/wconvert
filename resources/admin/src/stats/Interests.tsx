@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { DashboardPayload } from './api';
 import { Region, RegionBody, RegionHeader, RegionError, RegionErrorState } from '../shell/Region';
-import { Button } from '../components/ui/button';
 interface Answers { questions: { question: string; multiple: boolean; answered: number; choices: { label: string; count: number }[] }[]; answered: number; choices: { label: string; count: number }[]; retained: number; truncated: boolean; from: string; to: string; }
 export function Interests({ id, period }: { id: string; period: DashboardPayload }) {
   const [stored, setData] = useState<Answers & { campaign: string }>();
@@ -28,14 +27,14 @@ export function Interests({ id, period }: { id: string; period: DashboardPayload
     return () => controller.abort();
   }, [id, days, month, from, to, retry]);
   if (days === 0 || (data && !data.answered && !data.questions?.length && !updating && !error)) return null;
-  if (!data && !error) return <RegionSkeleton label={__('Submitted interests', 'wconvert')} lines={3} />;
+  if (!data && !error) return <RegionSkeleton label={__('Answers', 'wconvert')} lines={3} />;
   const Failure = data ? RegionError : RegionErrorState;
   return <ReportTarget name="answers" label={__('Answers', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Submitted interests', 'wconvert')} level={3} icon={<ChartBar />} description={__('Answers saved with captured leads.', 'wconvert')} />
-    {error && <Failure message={__('Could not refresh interests. Answers below still use their displayed dates.', 'wconvert')} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />}
+    <RegionHeader title={__('Answers', 'wconvert')} level={3} icon={<ChartBar />} description={__('What visitors chose when they submitted this campaign.', 'wconvert')} />
+    {error && <Failure message={data ? __('Could not refresh answers. The answers below keep their dates.', 'wconvert') : __('Could not load answers.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
     {data && <><RegionBody>
-      <div className="wa-report-meta"><span>{rangeLabel(data.from, data.to)}</span><span>{__('By first capture date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
-      {data.truncated && <p className="wa-report-notice">{__('Showing the latest 1,000 retained submissions. Choose a shorter period for all answers.', 'wconvert')}</p>}
+      <div className="wa-report-meta"><span>{rangeLabel(data.from, data.to)}</span><span>{__('By submission date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
+      {data.truncated && <p className="wa-report-notice">{sprintf(__('Showing the latest %s submissions. Choose a shorter period for all answers.', 'wconvert'), formatCount(1000))}</p>}
       <div className="wa-answer-groups">
         {data.answered > 0 && <AnswerDistribution title={__('Selected interests', 'wconvert')} answered={data.answered} choices={data.choices} />}
         {data.questions?.map((question, i) => <AnswerDistribution key={i} title={question.question} answered={question.answered} choices={question.choices} multiple={question.multiple} />)}
@@ -43,7 +42,7 @@ export function Interests({ id, period }: { id: string; period: DashboardPayload
     </RegionBody>
     <ReportDisclosure title={__('About these answers', 'wconvert')}>
       <p>{__('Percentages use saved responses to each question. Anonymous answers are excluded.', 'wconvert')}</p>
-      <p>{__('Leads are included by their first capture date. Later answers are included. Changed labels stay separate; retention and erasure can change these totals.', 'wconvert')}</p>
+      <p>{__('Submissions are counted by the date they were made, including answers added later. Changed labels stay separate, and deleting old submissions can change these totals.', 'wconvert')}</p>
     </ReportDisclosure></>}
   </Region></ReportTarget>;
 }

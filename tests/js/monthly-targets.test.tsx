@@ -29,7 +29,7 @@ const payload = (): MonthlyTargetReport => ({
   metrics: [
     {
       id: 'leads',
-      label: 'Leads captured',
+      label: 'Submissions',
       unit: 'submissions',
       note: 'Submissions, not people.',
       actual: 34,
@@ -61,19 +61,19 @@ it('shows saved progress, edits explicitly, and links to the same calendar month
   api.save.mockResolvedValue(saved);
   render(<Screen />);
   expect(
-    await screen.findByRole('progressbar', { name: 'Leads captured' }),
+    await screen.findByRole('progressbar', { name: 'Submissions' }),
   ).toHaveAttribute('aria-valuenow', '34');
   expect(
-    screen.getByRole('link', { name: /View.*Leads captured/i }),
+    screen.getByRole('link', { name: /View.*Submissions/i }),
   ).toHaveAttribute('href', '#analytics?month=2026-09&impact=leads');
   expect(screen.queryByText('Cart return clicks')).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Edit targets' }));
   const dialog = screen.getByRole('dialog');
   await userEvent.clear(
-    within(dialog).getByRole('spinbutton', { name: /Leads captured/ }),
+    within(dialog).getByRole('spinbutton', { name: /Submissions/ }),
   );
   await userEvent.type(
-    within(dialog).getByRole('spinbutton', { name: /Leads captured/ }),
+    within(dialog).getByRole('spinbutton', { name: /Submissions/ }),
     '50',
   );
   expect(api.save).not.toHaveBeenCalled();
@@ -158,7 +158,7 @@ it('shows every saved metric, caps the bar above target, and handles the first d
   render(<Screen />);
   expect(await screen.findByText('120% of target')).toBeInTheDocument();
   expect(
-    screen.getByRole('progressbar', { name: 'Leads captured' }),
+    screen.getByRole('progressbar', { name: 'Submissions' }),
   ).toHaveAttribute('aria-valuenow', '100');
   expect(screen.getByText('20 above target')).toBeInTheDocument();
 });
@@ -169,12 +169,12 @@ it('discloses failed reads, retries, and keeps accepted values after a refresh f
   expect(await screen.findByRole('alert')).toHaveTextContent(
     'Could not load monthly targets',
   );
-  await userEvent.click(screen.getByRole('button', { name: 'Retry targets' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByText('34% of target')).toBeInTheDocument();
   api.read.mockRejectedValueOnce(new Error('Offline again'));
   fireEvent.focus(window);
   expect(await screen.findByRole('alert')).toHaveTextContent(
-    'Showing the last loaded month and values',
+    'Showing the last loaded values',
   );
   expect(screen.getByText('34% of target')).toBeInTheDocument();
 });
@@ -230,6 +230,33 @@ it('keeps the draft month frozen when the site month rolls over', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
   await userEvent.click(screen.getByRole('button', { name: 'Edit targets' }));
   expect(screen.getByRole('dialog')).toHaveTextContent(
-    'Set October 2026 targets',
+    'October 2026 targets',
   );
+});
+
+it('validates the field it is about, and asks before discarding typed input', async () => {
+  render(<Screen />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Edit targets' }));
+  const field = screen.getByRole('spinbutton', { name: /Submissions/ });
+  await userEvent.clear(field);
+  await userEvent.type(field, '0');
+  await userEvent.click(screen.getByRole('button', { name: 'Save targets' }));
+  expect(field).toHaveAttribute('aria-invalid', 'true');
+  expect(screen.getByRole('alert')).toHaveTextContent('Use a whole number from 1 to');
+  expect(api.save).not.toHaveBeenCalled();
+  await userEvent.keyboard('{Escape}');
+  expect(screen.getByText('Discard changes?')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
+  expect(field).toHaveValue(0);
+  await userEvent.keyboard('{Escape}');
+  await userEvent.click(screen.getByRole('button', { name: 'Discard' }));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('closes an untouched editor on Escape without asking', async () => {
+  render(<Screen />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Edit targets' }));
+  await userEvent.keyboard('{Escape}');
+  expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

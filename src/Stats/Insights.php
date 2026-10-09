@@ -31,7 +31,7 @@ final class Insights
                 if ($current['appearances'] === 0 && $report['days'] >= 7
                     && is_string($publishedAt) && $publishedAt < $report['from'] . ' 00:00:00') {
                     $rule = 'no_appearances';
-                    $title = __('No appearances recorded', 'wconvert');
+                    $title = __('Not shown in this period', 'wconvert');
                     $note = __('Review when and where this campaign can appear.', 'wconvert');
                 } elseif ($before !== null && $report['days'] >= 7 && ($report['previous']['days'] ?? 0) === $report['days']
                     && min($current['appearances'], $before['appearances']) >= 200
