@@ -78,9 +78,8 @@ function TabsList({
  * written, and reads 3.87:1 on the wconvert.io palette (ADR 0130) — under AA's
  * 4.5, on the label of an unselected tab, which is a control a merchant reads
  * before deciding to press it. `--muted-foreground` is 5.38:1 over the same
- * surface and is what
- * upstream's own `dark:text-muted-foreground` line intends for the other half
- * of the same component; ADR 0038 sets AA as the bar for this admin.
+ * surface and is what upstream's own `dark:text-muted-foreground` line intends
+ * for the other half of the same component; ADR 0038 sets AA as the bar for this admin.
  */
 function TabsTrigger({
   className,

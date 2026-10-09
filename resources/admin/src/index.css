@@ -6377,7 +6377,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
     select:not([multiple]):not([size]:not([size="1"])) {
     appearance: none !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2353675e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6056' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
     background-repeat: no-repeat !important;
     background-position: right 10px center !important;
     background-size: 16px 16px !important;

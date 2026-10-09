@@ -42,7 +42,7 @@ The names stay (ADR 0037). Only the values change.
 The frame (`shell/header.css`) is espresso too: `--frame-ink` `#302720`,
 `--frame-text` `#faf6ed`, `--frame-muted` `#c9bfb1`, `--frame-edge` `#4a3f36`,
 plus `--frame-tint` `#433830` for hover and the plan badge, `--frame-line`
-`#75685c` for outlined controls, and `--frame-signal` `#e2f475`. Every
+`#8a7d70` for outlined controls, and `--frame-signal` `#e2f475`. Every
 hardcoded teal in the frame now reads one of these.
 
 ## Espresso is the primary, and citron is only a signal
@@ -56,6 +56,15 @@ So citron appears only on the espresso frame, where it measures **12.13:1**:
 the active-tab underline, the unread-notification dot and the `:focus-visible`
 outline on the dark bands. It never fills a button and is never text on a light
 surface.
+
+Espresso has one cost. `--primary` is now the colour of body text (1.00:1
+between them), so colour alone no longer marks a link. Harbor's teal gave
+only a weak cue anyway, at 1.55:1 against its body text, which is under the
+3:1 WCAG 1.4.1 asks of colour-only links. So links are **underlined at rest**.
+The `link` variants of `Button` and `Badge` do it, and so do the bare anchors
+in the Leads detail panel. Links that carry an icon (the header help menu,
+the campaign footer) keep the icon as the cue. Selected states keep their
+fill or border change.
 
 Espresso also keeps ADR 0037's refusal of green intact. It is a near-black
 brown, a hue the semantic palette never uses, so green still means only
@@ -83,7 +92,8 @@ signal need 3:1 (1.4.11).
 
 Other pairs: `--secondary-foreground` on `#eee8dc` is 11.98:1, and muted text on
 it is 5.01:1. Paper on espresso (`--primary-foreground`) is 13.55:1. On the
-frame, `--frame-muted` is 8.05:1, citron is 12.13:1, and frame text on
+frame, `--frame-muted` is 8.05:1, citron is 12.13:1, `--frame-line` (the
+outline of the footer Help button) is 3.65:1, and frame text on
 `--frame-tint` is 10.54:1. `--success` on its own tints (`#eff6f0`, `#f0f9f2`)
 measures 5.58 and 5.70:1.
 

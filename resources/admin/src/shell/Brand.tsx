@@ -5,6 +5,7 @@ const TILE = 'M12 8h32c0 6.627 5.373 12 12 12v32c0 5.523-4.477 10-10 10H12C6.477
 const LETTER = 'M12 24h8l-.2 16L29 24h7l-.4 16L44 24h8L38 49h-8l.5-16L21 49h-8L12 24Z';
 const ESPRESSO = '#302720';
 const PAPER = '#faf6ed';
+const CITRON = '#e2f475';
 
 /**
  * The wconvert.io mark (ADR 0130), inline so it costs no request and stays
@@ -25,7 +26,7 @@ export function BrandMark({ variant = 'default', className }: { variant?: 'defau
     >
       <path fill={tile} d={TILE} />
       <path fill={letter} d={LETTER} />
-      <circle cx="56" cy="8" r="7" fill="#e2f475" stroke={ESPRESSO} strokeWidth="1.5" />
+      <circle cx="56" cy="8" r="7" fill={CITRON} stroke={ESPRESSO} strokeWidth="1.5" />
     </svg>
   );
 }

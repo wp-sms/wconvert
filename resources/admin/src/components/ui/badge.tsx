@@ -37,7 +37,8 @@ const badgeVariants = cva(
         outline:
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 [a&]:hover:underline",
+        // Underlined at rest: espresso --primary is the colour of body text (ADR 0130).
+        link: "text-primary underline-offset-4 [a&]:underline",
       },
     },
     defaultVariants: {

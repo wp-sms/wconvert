@@ -19,16 +19,16 @@ create a screen-specific exception merely to reproduce a prototype measurement.
 
 **Harbor is the approved shared frame (ADR 0097).**
 
-1. **Brand header** — solid deep teal, with wordmark, Help,
+1. **Brand header** — solid espresso (deep teal before ADR 0130), with the mark, wordmark, Help,
    issue notifications and account entry. The top row is at least 78px.
    Four-section navigation sits on its own row, with the current section
-   underlined and a compact, bordered installed-plan badge at the opposite edge.
-2. **Light title area** — `h1`, useful description and page action on the mist
+   underlined in citron and a compact, bordered installed-plan badge at the opposite edge.
+2. **Light title area** — `h1`, useful description and page action on the paper
    canvas. Headline and CTA stay outside the dark header. The primary page
-   action is a solid teal button with a white label.
-3. **Main work area** — white work surfaces against mist. Campaign filters,
+   action is a solid espresso button with a paper label.
+3. **Main work area** — white work surfaces against paper. Campaign filters,
    controls, rows and metadata form a single sheet.
-4. **Service footer** — matching deep teal, shared WConvert mark and wordmark, plan
+4. **Service footer** — matching espresso, shared WConvert mark (inverse) and wordmark, plan
    badge, a useful resource link and Help. A quiet centered bottom row credits
    VeronaLabs with a muted monochrome logo. Publisher attribution has no hover
    underline; keyboard focus remains visible. Creation and the editor omit this reading-page footer.

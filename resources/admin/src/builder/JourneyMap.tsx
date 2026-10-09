@@ -329,6 +329,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   }, [layoutRequest, measurements]);
   const rawEdges = useMemo<Edge[]>(() => tree.steps.flatMap((step, index) => {
     const paths = routesFor(tree, index);
+    // Literal --muted-foreground and --input: React Flow derives each marker's
+    // element id from its colour string, and `var(...)` would put parentheses in a `url(#…)`.
     const routes: Edge[] = paths
       .map((path, priority) => ({ id: 'id' in path && typeof path.id === 'string' ? path.id : `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
         sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'journey', reconnectable: tree.graph ? 'target' : false,

@@ -2,7 +2,7 @@
    Citron is the frame's signal colour: the active tab, the unread dot and focus. Muted text reads 8.05:1 on espresso. */
 #wconvert-admin .wconvert-panel {
   --frame-ink:#302720; --frame-text:#faf6ed; --frame-muted:#c9bfb1; --frame-edge:#4a3f36;
-  --frame-tint:#433830; --frame-line:#75685c; --frame-signal:#e2f475;
+  --frame-tint:#433830; --frame-line:#8a7d70; --frame-signal:#e2f475;
   --frame-gutter:48px; --page-action-height:3rem;
   min-block-size:calc(100dvh - var(--wp-admin--admin-bar--height, 32px)); display:flex; flex-direction:column;
 }
