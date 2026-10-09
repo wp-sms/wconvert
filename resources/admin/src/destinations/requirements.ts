@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { siteLocale } from '../lib/format';
 import type { Destination, DestinationRequirements, SettingsField } from './api';
 import type { Template, TemplateNode } from '@renderer/types';
 
@@ -75,11 +76,12 @@ export function captureProblems(destination: Destination, captures: readonly Cap
   // Capture itself always requires email or phone. A route can miss its own
   // optional identifier only when another identifier allows local capture.
   const canCaptureWithoutNeeded = captures.some((field) => ['email', 'phone'].includes(field.name) && !needed.includes(field.name));
-  const alternatives = needed.map(named).join(__(' or ', 'wconvert'));
+  // “email address or phone number” in the site's language, not a glued ' or '.
+  const alternatives = new Intl.ListFormat(siteLocale(), { type: 'disjunction' }).format(needed.map(named));
   if (needed.length > 0 && fields.length === 0) {
-    problems.push(sprintf(__('This destination needs %s. Add it to the form; current captures cannot be sent here.', 'wconvert'), alternatives));
+    problems.push(sprintf(/* translators: %s: what it needs, e.g. “email address or phone number”. */ __('This destination needs %s. Add it to the form, or submissions can’t be sent here.', 'wconvert'), alternatives));
   } else if (fields.length > 0 && canCaptureWithoutNeeded && !fields.some((field) => field.required)) {
-    problems.push(sprintf(__('This destination needs %s, but the field is optional. Captures without it are kept here and skipped by this destination.', 'wconvert'), alternatives));
+    problems.push(sprintf(/* translators: %s: what it needs, e.g. “email address”. */ __('This destination needs %s, but the field is optional. Submissions without it are kept in WConvert and not sent here.', 'wconvert'), alternatives));
   }
   for (const field of captures) {
     if (requirements.fields.includes(field.name)) continue;

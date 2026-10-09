@@ -46,7 +46,7 @@ describe('provider-declared destination requirements', () => {
     render(<DestinationSettingsForm type={remoteType} connections={[]} busy={false} error={null}
       onCancel={vi.fn()} onConfirm={onConfirm} onConnectionSaved={onConnectionSaved} />);
 
-    expect(screen.getByText('Connect Mailchimp to choose where leads go.')).toBeVisible();
+    expect(screen.getByText(/Connect a Mailchimp account to choose where leads go/)).toBeVisible();
     expect(screen.queryByText(/Complete “Audience”/)).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Connect Mailchimp' }));
     await userEvent.type(screen.getByLabelText('API key'), 'test-key');
@@ -136,7 +136,7 @@ describe('provider-declared destination requirements', () => {
     expect(screen.getByText('Live signup')).toBeInTheDocument();
     expect(screen.getByText('Live only')).toBeInTheDocument();
     expect(screen.getByText('Saved draft only')).toBeInTheDocument();
-    expect(screen.getByText(/Campaign Undo cannot reverse/)).toBeInTheDocument();
+    expect(screen.getByText(/Campaign Undo can’t reverse/)).toBeInTheDocument();
     expect(onConfirm).not.toHaveBeenCalled();
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Interest field' }), 'cf_7');
     await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
@@ -147,7 +147,7 @@ describe('provider-declared destination requirements', () => {
       connections={[]} busy={false} error={null} onCancel={vi.fn()} onConfirm={vi.fn()} />);
     expect(screen.getByRole('combobox', { name: 'Interest field' })).toHaveValue('cf_99');
     expect(screen.getByText(/The selected field for Interest is unavailable/)).toBeInTheDocument();
-    expect(screen.getByText(/Saved usage could not be read/)).toBeInTheDocument();
+    expect(screen.getByText(/Couldn’t read which campaigns use it/)).toBeInTheDocument();
   });
   it('requires an explicitly entered interest sample and describes the new-subscriber effect before sending', async () => {
     render(<SendTestDialog destination={{ ...route, settings: { lists: ['3'], interest_field: 'cf_7' } }} type={type}

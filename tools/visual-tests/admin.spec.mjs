@@ -5,7 +5,7 @@ const screens = [
   { route: 'optins', name: 'Campaigns', empty: 'Start with one good campaign.', full: 'Grow the list', retry: 'Try again' },
   { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Retry loading report' },
   { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Retry loading submissions' },
-  { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are saved in WConvert only', full: 'Welcome email', retry: 'Refresh' },
+  { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are kept in WConvert only', full: 'Welcome email', retry: 'Try again' },
 ];
 const modes = [
   { name: 'desktop', viewport: { width: 1440, height: 1100 } },
@@ -162,7 +162,8 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await page.keyboard.press('Escape');
       await page.getByRole('navigation', { name: 'WConvert sections' }).getByRole('link', { name: 'Settings', exact: true }).click();
       await page.getByRole('link', { name: 'Connections & destinations Accounts and where leads go', exact: true }).click();
-      await page.getByRole('button', { name: 'Settings', exact: true }).first().click();
+      // A card's settings are a disclosure, whose summary has no button role.
+      await page.locator('.wconvert-route-settings > summary').first().click();
       await expect(page.getByRole('textbox', { name: 'Name', exact: true }).first()).toBeVisible();
       await commonChecks(page, direction);
       await screenshot(page, info, 'destination-settings');

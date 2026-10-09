@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { DialogFooter } from '../components/ui/dialog';
+import { AdminDialogBody, AdminDialogFooter } from '../components/ui/admin-dialog';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Description } from '../shell/Description';
-import { RegionError } from '../shell/Region';
-import { ConnectionPicker, SettingsControl, fromDraft, isGroup, suggestedName, toDraft } from './settings';
+import { Field } from '../shell/Field';
+import { PageError } from '../shell/Region';
+import { ConnectionPicker, SettingsControl, fromDraft, isGroup, settingLabel, suggestedName, toDraft } from './settings';
 import type { Connection, Destination, DestinationType } from './api';
 import { readSelectedSchema } from './api';
 import { DestinationUsageNotice } from './DestinationUsageNotice';
@@ -19,17 +21,26 @@ import { ProviderMark } from './ProviderMark';
  *
  * Mounted only while the dialog is open, so `useState` seeds itself from the
  * type every time it opens — which is what keeps this out of an effect.
+ *
+ * **It draws the dialog's body and footer** (`AdminDialogBody`,
+ * `AdminDialogFooter`); the caller draws only the header. That is what lets
+ * the error sit beside the button that caused it, and lets connecting an
+ * account open in place with Back rather than as a dialog over this one (§9).
+ * `back` replaces the footer's Cancel where this is a step after a provider
+ * list.
  */
 export function DestinationSettingsForm({
   type,
   connections,
   busy,
   error,
+  back,
   onCancel,
   onConfirm,
   destination,
   submitDescription,
   onConnectionSaved,
+  onDirtyChange,
   focusField,
 }: {
   /** A setting key, or `connection`, to focus once the fields are drawn. */
@@ -41,6 +52,8 @@ export function DestinationSettingsForm({
   connections: readonly Connection[];
   busy: boolean;
   error: string | null;
+  /** The footer's start action — Back to the provider list — in place of Cancel. */
+  back?: ReactNode;
   onCancel: () => void;
   onConfirm: (draft: {
     label: string;
@@ -48,6 +61,8 @@ export function DestinationSettingsForm({
     settings: Record<string, unknown>;
   }) => void;
   onConnectionSaved?: (connection: Connection) => void;
+  /** Whether anything was changed, for the dialog's "Discard changes?". */
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const [draft, setDraft] = useState<Record<string, string>>(() =>
     toDraft(type.settings_schema, destination?.settings ?? {}),
@@ -72,6 +87,7 @@ export function DestinationSettingsForm({
   const [connection, setConnection] = useState<string | null>(destination?.connection ?? (connections.length === 1 ? connections[0].id : null));
   const [newAccount, setNewAccount] = useState<Connection | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [touched, setTouched] = useState(false);
   const accounts = newAccount && !connections.some((account) => account.id === newAccount.id)
     ? [...connections, newAccount] : connections;
   const selectedConnection = connection !== null && accounts.some((account) => account.id === connection) ? connection : null;
@@ -96,6 +112,12 @@ export function DestinationSettingsForm({
     }).finally(() => { if (active) setLoadingSchema(false); });
     return () => { active = false; };
   }, [type, selectedConnection, destination, refreshSchema]);
+  // Anything typed or chosen, or an account connected on the way — the
+  // dialog asks before Escape throws that away.
+  const [connectingDirty, setConnectingDirty] = useState(false);
+  const dirty = touched || newAccount !== null || (connecting && connectingDirty);
+  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange]);
   const label = named ?? suggestedName({ ...type, settings_schema: schema }, draft);
   const fields = Object.entries(schema);
   const id = (key: string) => `wconvert-add-${type.id}-${key}`;
@@ -109,86 +131,128 @@ export function DestinationSettingsForm({
     const control = field?.matches('input, select, textarea, button') ? field : field?.querySelector<HTMLElement>('input, select, textarea, button');
     if (control) { control.focus(); focused.current = true; }
   });
+  const cancel = back ?? <Button type="button" variant="outline" disabled={busy} onClick={onCancel}>{__('Cancel', 'wconvert')}</Button>;
+  const connect = sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect %s', 'wconvert'), type.label);
 
-  return (
-    <>
-      {connecting ? <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 font-medium"><ProviderMark type={type} />{sprintf(__('Connect %s', 'wconvert'), type.label)}</div>
-        <p className="m-0 text-note text-muted-foreground">{__('We check the account before saving it. You can reuse it for other destinations.', 'wconvert')}</p>
-        <ConnectionForm type={type} onCancel={() => setConnecting(false)} onSaved={(account) => {
+  /*
+   * **Connecting opens in place, with Back** — never a second dialog over
+   * this one (§9). The name and choices typed so far survive the trip,
+   * because this component stays mounted underneath it.
+   */
+  if (connecting) {
+    return (
+      <ConnectionForm type={type} onCancel={() => setConnecting(false)} onDirtyChange={setConnectingDirty}
+        back={<Button type="button" variant="outline" onClick={() => setConnecting(false)}>
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}
+        </Button>}
+        onSaved={(account) => {
           setNewAccount(account);
           setConnection(account.id);
           setConnecting(false);
           onConnectionSaved?.(account);
         }} />
-      </div> : noAccounts ? <>
-      <div className="flex flex-col items-start gap-3 rounded-md border border-border bg-muted/30 p-4">
-        <p className="m-0 text-body">{sprintf(__('Connect %s to choose where leads go.', 'wconvert'), type.label)}</p>
-        <Button type="button" variant="outline" onClick={() => setConnecting(true)}><ProviderMark type={type} />{sprintf(__('Connect %s', 'wconvert'), type.label)}</Button>
-      </div>
-      <DialogFooter><Button variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert')}</Button></DialogFooter>
-      </> : <>
-      {error !== null && <RegionError message={error} />}
-      {metadataError !== null && <RegionError message={metadataError} />}
-      {loadingSchema && <p role="status">{__('Loading destination choices…', 'wconvert')}</p>}
-      {type.needs_connection && selectedConnection !== null && <div><Button type="button" variant="outline" disabled={loadingSchema} onClick={() => setRefreshSchema((old) => old + 1)}>{__('Refresh choices', 'wconvert')}</Button></div>}
-      {destination && <div id={id('usage')}><DestinationUsageNotice usage={destination.usage} /></div>}
-      {problems.map((problem) => <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
+    );
+  }
 
-      <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={id('label')}>{__('Name', 'wconvert')}</Label>
-          <Input
-            id={id('label')}
-            type="text"
-            value={label}
-            onChange={(event) => setNamed(event.target.value)}
-          />
-          <Description>
-            {__('A name to recognize when choosing campaign destinations.', 'wconvert')}
-          </Description>
-        </div>
-
-        {type.needs_connection && (
-          <ConnectionPicker
-            id={id('connection')}
-            connections={accounts}
-            value={selectedConnection}
-            onChange={setConnection}
-          />
-        )}
-
-        {type.needs_connection && accounts.length > 0 && <Button type="button" variant="outline" className="self-start" onClick={() => setConnecting(true)}>
-          {sprintf(__('Connect another %s account', 'wconvert'), type.label)}
-        </Button>}
-
-        {(!type.needs_connection || selectedConnection !== null) && fields.map(([key, field]) => (
-          <div key={key} className="flex flex-col gap-1.5">
-            {/*
-              Labelled by association where the control is a GROUP, exactly as
-              the configured card does it: `<label for>` naming a
-              `div[role=group]` is inert, so the group points back here.
-            */}
-            <Label id={`${id(key)}-label`} htmlFor={isGroup(field) || (type.needs_connection && field.type === 'ids' && field.options?.length === 0) ? undefined : id(key)}>
-              {field.label}{type.requirements?.settings[key] ? __(' (required to send)', 'wconvert') : ''}
-            </Label>
-            {type.needs_connection && field.type === 'ids' && field.options?.length === 0
-              ? <Description>{sprintf(__('No %s choices were found in this account. Create one in %s, then refresh choices.', 'wconvert'), field.label, type.label)}</Description>
-              : <SettingsControl
-                id={id(key)}
-                field={field}
-                value={draft[key] ?? ''}
-                onChange={(value) => setDraft({ ...draft, [key]: value })}
-              />}
-            {field.description !== undefined && <Description>{field.description}</Description>}
+  if (noAccounts) {
+    return (
+      <>
+        <AdminDialogBody>
+          <div className="flex items-start gap-3 rounded-md border border-border bg-surface p-4">
+            <ProviderMark type={type} className="mt-0.5 size-5 shrink-0" />
+            <p className="m-0">
+              {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect a %s account to choose where leads go. One account can serve several destinations.', 'wconvert'), type.label)}
+            </p>
           </div>
-        ))}
-      </fieldset>
+        </AdminDialogBody>
+        <AdminDialogFooter back={cancel}>
+          <Button type="button" onClick={() => setConnecting(true)}>{connect}</Button>
+        </AdminDialogFooter>
+      </>
+    );
+  }
 
-      <DialogFooter>
-        <Button variant="outline" disabled={busy} onClick={onCancel}>
-          {__('Cancel', 'wconvert')}
-        </Button>
+  return (
+    <>
+      <AdminDialogBody>
+        <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
+          {destination && <div id={id('usage')}><DestinationUsageNotice usage={destination.usage} /></div>}
+
+          <Field label={__('Name', 'wconvert')} htmlFor={id('label')} hintId={id('label-hint')}
+            hint={__('What you’ll pick in a campaign’s Destinations tab.', 'wconvert')}>
+            <Input
+              id={id('label')}
+              type="text"
+              value={label}
+              aria-describedby={id('label-hint')}
+              onChange={(event) => { setNamed(event.target.value); setTouched(true); }}
+            />
+          </Field>
+
+          {type.needs_connection && (
+            <div className="flex flex-col items-start gap-1.5">
+              <div className="w-full">
+                <ConnectionPicker
+                  id={id('connection')}
+                  connections={accounts}
+                  value={selectedConnection}
+                  onChange={(value) => { setConnection(value); setTouched(true); }}
+                />
+              </div>
+              <div className="flex flex-wrap gap-x-4">
+                <Button type="button" variant="link" className="h-auto p-0" onClick={() => setConnecting(true)}>
+                  {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect another %s account', 'wconvert'), type.label)}
+                </Button>
+                {selectedConnection !== null && <Button type="button" variant="link" className="h-auto p-0" disabled={loadingSchema}
+                  onClick={() => setRefreshSchema((old) => old + 1)}>
+                  {loadingSchema ? __('Refreshing choices…', 'wconvert') : __('Refresh choices', 'wconvert')}
+                </Button>}
+              </div>
+            </div>
+          )}
+
+          {metadataError !== null && <PageError message={metadataError} onRetry={() => setRefreshSchema((old) => old + 1)} />}
+          {loadingSchema && <p role="status" className="m-0 text-note text-muted-foreground">
+            {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Loading choices from %s…', 'wconvert'), type.label)}
+          </p>}
+
+          {(!type.needs_connection || selectedConnection !== null) && fields.map(([key, field]) => {
+            const required = type.requirements?.settings[key] !== undefined;
+            const empty = type.needs_connection && field.type === 'ids' && field.options?.length === 0;
+            return (
+              <div key={key} className="flex min-w-0 flex-col gap-1.5">
+                {/*
+                  Labelled by association where the control is a GROUP, exactly as
+                  the configured card does it: `<label for>` naming a
+                  `div[role=group]` is inert, so the group points back here.
+                */}
+                <Label id={`${id(key)}-label`} htmlFor={isGroup(field) || empty ? undefined : id(key)}>
+                  {settingLabel(field.label, required)}
+                </Label>
+                {empty
+                  ? <Description>{sprintf(
+                    /* translators: 1: a setting's name, e.g. “Audience”. 2: a service, e.g. “Mailchimp”. */
+                    __('No %1$s choices were found in this account. Create one in %2$s, then refresh choices.', 'wconvert'),
+                    field.label, type.label,
+                  )}</Description>
+                  : <SettingsControl
+                    id={id(key)}
+                    field={field}
+                    value={draft[key] ?? ''}
+                    onChange={(value) => { setDraft({ ...draft, [key]: value }); setTouched(true); }}
+                  />}
+                {field.description !== undefined && <Description>{field.description}</Description>}
+              </div>
+            );
+          })}
+
+          {problems.length > 0 && <ul className="m-0 flex list-none flex-col gap-1 p-0 text-note text-warning">
+            {problems.map((problem) => <li key={problem}>{problem}</li>)}
+          </ul>}
+        </fieldset>
+      </AdminDialogBody>
+
+      <AdminDialogFooter back={cancel} error={error}>
         {/*
           **The button names the outcome**, as every confirm in this admin
           does: a merchant reading *Add destination* has been told what
@@ -205,10 +269,11 @@ export function DestinationSettingsForm({
             })
           }
         >
-          {destination === undefined ? __('Add destination', 'wconvert') : __('Save destination', 'wconvert')}
+          {busy
+            ? (destination === undefined ? __('Adding…', 'wconvert') : __('Saving…', 'wconvert'))
+            : (destination === undefined ? __('Add destination', 'wconvert') : __('Save destination', 'wconvert'))}
         </Button>
-      </DialogFooter>
-      </>}
+      </AdminDialogFooter>
     </>
   );
 }

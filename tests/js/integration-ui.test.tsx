@@ -223,13 +223,16 @@ describe('integration setup controls', () => {
 
     expect(screen.getByRole('button', { name: 'Connect Mailchimp' }).querySelector('img')).toHaveAttribute('alt', '');
 
-    await user.click(screen.getByRole('button', { name: 'Remove' }));
+    // Remove is the destructive item behind the row's ⋯ (§9).
+    await user.click(screen.getByRole('button', { name: 'Actions for Newsletter key' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Remove' }));
     const dialog = within(screen.getByRole('alertdialog'));
-    expect(dialog.getByText(/The saved credentials for “Newsletter key” will be removed/)).toBeVisible();
+    expect(dialog.getByText(/The saved credentials for “Newsletter key” are deleted from this site/)).toBeVisible();
     expect(api.deleteConnection).not.toHaveBeenCalled();
     await user.click(dialog.getByRole('button', { name: 'Cancel' }));
     expect(api.deleteConnection).not.toHaveBeenCalled();
-    await user.click(screen.getByRole('button', { name: 'Remove' }));
+    await user.click(screen.getByRole('button', { name: 'Actions for Newsletter key' }));
+    await user.click(screen.getByRole('menuitem', { name: 'Remove' }));
     await user.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Remove account' }));
     expect(api.deleteConnection).toHaveBeenCalledWith('account-1');
   });
