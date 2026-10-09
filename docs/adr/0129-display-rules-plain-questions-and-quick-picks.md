@@ -128,7 +128,8 @@ questions in screen order, each with a *Change* link to its section. The first
 that fails gives the one reason; otherwise it *Opens* with the sentence's own
 When phrase. Timing is described, never simulated, so When only describes —
 except that leaving alone can never open it on a touch screen, which it says.
-Amends [0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md)'s
+Site-wide limits ([0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md)) are not part of the answer;
+*How often?* already says they also apply. Amends [0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md)'s
 sample tester. Source: [visit](../../resources/admin/src/builder/rules/visit.ts).
 
 ## What was dropped

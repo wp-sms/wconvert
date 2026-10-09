@@ -1761,18 +1761,15 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
   }
 }
 
-/* The sample tester is portaled outside the admin mount. Keep the verdict fixed
-   while only the visitor fields and optional assumptions scroll. */
 /* Test a visit: the visitor on the left, the result held in view on the right;
    one column under 720px with the result on top. The dialog is portalled out
    of #wconvert-admin, so two classes scope it the way the tab scopes its own. */
 .wconvert-sample-dialog { font-size: var(--text-body); }
-.wconvert-sample-dialog .wconvert-sample-header { padding: 1.25rem 3rem 1rem 1.25rem; flex: none; }
-[dir='rtl'] .wconvert-sample-dialog .wconvert-sample-header { padding-inline: 1.25rem 3rem; }
+.wconvert-sample-dialog .wconvert-sample-header { padding-block: 1.25rem 1rem; padding-inline: 1.25rem 3rem; flex: none; }
 .wconvert-sample-dialog .wconvert-sample-body { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 1.25rem 1.25rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 28rem); grid-template-areas: 'visitor verdict'; align-items: start; gap: 1.5rem; }
 .wconvert-sample-dialog .wconvert-sample-verdict { grid-area: verdict; position: sticky; inset-block-start: 0; display: grid; gap: .75rem; }
 .wconvert-sample-dialog .wconvert-sample-visitor { grid-area: visitor; display: grid; gap: 1.5rem; min-inline-size: 0; }
-.wconvert-sample-dialog .wconvert-sample-visitor > h3 { margin: 0 0 -.75rem; font-size: var(--text-label); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
+.wconvert-sample-dialog .wconvert-sample-visitor > h3 { margin: 0 0 -.75rem; font-size: var(--text-micro); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); }
 .wconvert-sample-dialog .wconvert-sample-visitor section h3 { margin: 0; font-size: var(--text-body); font-weight: 600; }
 .wconvert-sample-dialog .wconvert-sample-help { margin: 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
 .wconvert-sample-dialog .wconvert-sample-fields { display: grid; gap: .75rem; }
@@ -1800,7 +1797,7 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-sample-dialog .wconvert-sample-question { grid-area: question; color: var(--muted-foreground); }
 .wconvert-sample-dialog .wconvert-sample-answer { grid-area: answer; font-weight: 500; color: var(--foreground); overflow-wrap: anywhere; }
 .wconvert-sample-dialog .wconvert-sample-checks li[data-status='fail'] .wconvert-sample-answer { color: var(--warning); }
-.wconvert-sample-dialog .wconvert-sample-change { grid-area: change; padding: 4px; border: 0; background: none; color: var(--primary); font: inherit; font-weight: 500; cursor: pointer; border-radius: 4px; }
+.wconvert-sample-dialog .wconvert-sample-change { grid-area: change; padding: 4px; border: 0; background: none; color: var(--primary); font: inherit; font-weight: 500; cursor: pointer; border-radius: 6px; }
 .wconvert-sample-dialog .wconvert-sample-change:hover { text-decoration: underline; }
 .wconvert-sample-dialog .wconvert-sample-change:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
 

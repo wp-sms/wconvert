@@ -64,10 +64,7 @@ Both scratch and bundled creation paths are checked after frequency normalizatio
 
 ## Diagnostics and size
 
-The lazy sample tester evaluates hypothetical draft facts with the same pure matcher. It cannot inspect a real URL, publish, submit or count a visit. Its events are deliberate simulations, not remembered Boolean eligibility.
-
-*Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the tester is now *Test a visit*. It reads one described visitor — page, device, account, history, date — against all five questions, and no longer simulates gestures, time or scroll: it says when the campaign would open rather than waiting for it.*
- The authenticated live inspector remains a distinct published-page diagnostic, with grouped outcomes, per-leaf consent, request account eligibility, minimum dwell and initial session allowance.
+The lazy sample tester evaluates hypothetical draft facts with the same pure matcher. It cannot inspect a real URL, publish, submit or count a visit. Its events are deliberate simulations, not remembered Boolean eligibility. The authenticated live inspector remains a distinct published-page diagnostic, with grouped outcomes, per-leaf consent, request account eligibility, minimum dwell and initial session allowance.
 
 The tester leads with a live verdict that stays visible while the inputs scroll.
 Only relevant visitor activity and condition inputs are shown; page, schedule,
@@ -76,6 +73,8 @@ section. Its summary indicates changed assumptions, and a blocking assumption
 still appears in the verdict when collapsed. The window explicitly explains
 that values are pretend, results update automatically, and no real campaign
 opens or visit is recorded.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the tester is now "Test a visit". It reads one described visitor — page, device, account, what happened before this visit, date — against all five questions and says when the campaign would open. It no longer simulates gestures, time or scroll, and the collapsed "Other conditions" assumptions are gone: page, pacing and dates are fields the merchant fills in. The result stays in view beside the visitor, above it on narrow screens._
 
 The user explicitly approved a **1 KiB increase to the existing paid-loader cap**, from 19,456 to 20,480 bytes gzip, after measured safe minifier trials could not fit the added behavior. Free remains 14,012 bytes. CI remains a hard, flagless check per tier. Payload and per-design caps are unchanged. No simulation or admin UI code enters visitor bundles.
 

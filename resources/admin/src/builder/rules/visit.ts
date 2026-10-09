@@ -21,6 +21,12 @@ import type { RuleVocabulary, Schedule, Targeting } from '../api';
  * simulated (ADR 0129).
  */
 
+/** What happened before this visit, in the order the field offers it. */
+export const HISTORIES = ['new', 'this-visit', 'days-ago', 'closed', 'converted'] as const;
+export type History = typeof HISTORIES[number];
+/** The histories that happened on an earlier day, and so ask how many days ago. */
+export const DATED: readonly History[] = ['days-ago', 'closed', 'converted'];
+
 /** The visitor, as described — every fact a rule on this campaign could ask about. */
 export interface Visitor {
   /** A {@see PageChoice} value. */
@@ -35,13 +41,21 @@ export interface Visitor {
   /** `HH:MM` on the site's clock. */
   readonly clock?: string;
   readonly adBlocking?: 'yes' | 'no' | 'unknown';
-  readonly history: 'new' | 'this-visit' | 'days-ago' | 'closed' | 'converted';
+  readonly history: History;
+  /** How long ago the last showing was, for a {@see DATED} history. */
   readonly daysAgo?: number;
   /** `YYYY-MM-DD HH:mm` on the site's clock; absent means now. */
   readonly date?: string;
   /** A plain yes or no, by rule id, for a rule with no natural field. */
   readonly answers?: Readonly<Record<string, boolean>>;
 }
+
+/** A role is a signed-in visitor's; the server never reads one off a guest. */
+const holdsRole = (visitor: Visitor, roles: readonly string[]): boolean =>
+  visitor.signedIn && visitor.role !== undefined && roles.includes(visitor.role);
+
+/** Has the campaign been given dates at all? */
+export const isScheduled = (schedule: Schedule): boolean => !!schedule.starts_at || !!schedule.ends_at;
 
 const strings = (value: unknown): string[] => (Array.isArray(value) ? value : [value])
   .filter((each): each is string => typeof each === 'string' && each !== '');
@@ -54,8 +68,7 @@ export function readRule(rule: Rule, visitor: Visitor, cart: Readonly<Record<str
   switch (rule.type) {
     case 'device': return strings(rule.in).includes(visitor.device);
     case 'logged_in': return rule.value === visitor.signedIn;
-    // A role is a signed-in visitor's; the server never reads one off a guest.
-    case 'role': return visitor.signedIn && visitor.role !== undefined && strings(rule.value).includes(visitor.role);
+    case 'role': return holdsRole(visitor, strings(rule.value));
     case 'referrer': return visitor.source !== undefined && strings(rule.in).includes(visitor.source);
     case 'query_param': {
       const key = typeof rule.key === 'string' ? rule.key.trim() : '';
@@ -88,11 +101,10 @@ const TODAY = 20_000;
  * it. A click skips the automatic pacing and keeps the conversion stop
  * (ADR 0104). The stop is named afterwards, only to say which one it was.
  */
-export function paced(frequency: Frequency, history: Visitor['history'], daysAgo: number | undefined, mode: 'immediate' | 'automatic' | 'click'): PacingStop | null {
+export function paced(frequency: Frequency, history: History, daysAgo: number | undefined, mode: 'immediate' | 'automatic' | 'click'): PacingStop | null {
+  const seen = { i: 1, l: history === 'this-visit' ? TODAY : TODAY - Math.max(0, daysAgo ?? 0) };
   const record: OptinRecord | undefined = history === 'new' ? undefined
-    : history === 'this-visit' ? { i: 1, l: TODAY }
-      : history === 'days-ago' ? { i: 1, l: TODAY - Math.max(0, daysAgo ?? 0) }
-        : history === 'closed' ? { i: 1, d: 1 } : { i: 1, c: 1 };
+    : history === 'closed' ? { ...seen, d: 1 } : history === 'converted' ? { ...seen, c: 1 } : seen;
   const converted = frequency.stopAfterConversion !== false && record?.c === 1;
   if (mode === 'click') return converted ? 'converted' : null;
   const session = history === 'this-visit' && frequency.maxPerSession !== undefined && frequency.maxPerSession <= 1;
@@ -159,7 +171,7 @@ export function pageChoices(value: DisplayRulesValue, vocabulary: RuleVocabulary
 }
 
 /** What happened before this visit, in the visitor field's words. */
-export function historyLabel(history: Visitor['history'], daysAgo: number | undefined, act: ConvertingAct = 'submit'): string {
+export function historyLabel(history: History, daysAgo: number | undefined, act: ConvertingAct = 'submit'): string {
   switch (history) {
     case 'new': return __('First time here', 'wconvert');
     case 'this-visit': return __('Saw it earlier this visit', 'wconvert');
@@ -249,7 +261,7 @@ export function checkVisit(value: DisplayRulesValue, vocabulary: RuleVocabulary,
   const { logged_in: signedIn, roles } = value.targeting;
   const audience = !plan ? false : audienceMatches(plan.audience, rule => readRule(rule, visitor, basket.answers));
   const account = (signedIn === undefined || signedIn === visitor.signedIn)
-    && (roles === undefined || (visitor.signedIn && visitor.role !== undefined && roles.includes(visitor.role)));
+    && (roles === undefined || holdsRole(visitor, roles));
   const who = !plan ? fail(__('Set up your display rules before testing a visit.', 'wconvert'))
     // Who is unanswered until the basket is; nothing after it decides first.
     : basket.status === 'checking' ? 'info'
@@ -269,7 +281,7 @@ export function checkVisit(value: DisplayRulesValue, vocabulary: RuleVocabulary,
   const stop = paced(value.frequency, visitor.history, visitor.daysAgo, opening?.mode ?? 'automatic');
   const often = stop === null ? 'pass' : fail(pacingReason(stop, summaryOf(summaries, 'how-often').text, act));
 
-  const scheduled = !!value.schedule.starts_at || !!value.schedule.ends_at;
+  const scheduled = isScheduled(value.schedule);
   const date = visitor.date ?? wallNow(adminSettings()?.timezone);
   const dates = !scheduled || inWindow(value.schedule, date) ? 'pass' : fail(__('It isn’t running on that date.', 'wconvert'));
 

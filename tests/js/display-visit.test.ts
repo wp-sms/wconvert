@@ -121,6 +121,12 @@ describe('how often, for what happened before this visit', () => {
     expect(paced({ stopAfterConversion: false }, 'converted', undefined, 'automatic')).toBeNull();
   });
 
+  it('still counts the days since a close or a sign-up when that stop is off', () => {
+    expect(paced({ stopAfterDismiss: false, cooldownDays: 7 }, 'closed', 2, 'automatic')).toBe('cooldown');
+    expect(paced({ stopAfterDismiss: false, cooldownDays: 7 }, 'closed', 8, 'automatic')).toBeNull();
+    expect(paced({ stopAfterConversion: false, cooldownDays: 7 }, 'converted', 0, 'automatic')).toBe('cooldown');
+  });
+
   it('lets a click open it whatever the pacing, but not after they signed up', () => {
     expect(paced({ maxPerSession: 1 }, 'this-visit', undefined, 'click')).toBeNull();
     expect(paced({ maxImpressions: 1 }, 'closed', undefined, 'click')).toBeNull();

@@ -16,7 +16,7 @@ import { unlessFree } from '../../goals/availability';
 import { wallKey, wallNow } from '../../lib/wallTime';
 import { everyType } from './plan';
 import { SampleBasket, emptyBasket, useBasketPreview } from './SampleBasket';
-import { checkVisit, historyLabel, pageChoices, type BasketCheck, type Check, type Visitor } from './visit';
+import { checkVisit, DATED, HISTORIES, historyLabel, isScheduled, pageChoices, type BasketCheck, type Check, type History, type Visitor } from './visit';
 
 /** Rule types the visitor form asks about in its own words; any other audience rule is a plain yes or no. */
 const NATURAL = ['device', 'logged_in', 'role', 'referrer', 'query_param', 'time_of_day', 'ad_blocking'];
@@ -40,7 +40,7 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
     ...audience.filter(rule => rule.type === 'role').flatMap(rule => Array.isArray(rule.value) ? rule.value.map(String) : []), ...(value.targeting.roles ?? [])])];
   const domains = [...new Set(audience.filter(rule => rule.type === 'referrer').flatMap(rule => Array.isArray(rule.in) ? rule.in.map(String) : []))]
     .filter(source => !SOURCES.includes(source));
-  const scheduled = !!value.schedule.starts_at || !!value.schedule.ends_at;
+  const scheduled = isScheduled(value.schedule);
   const timezone = adminSettings()?.timezone;
 
   const fresh = (): Visitor => ({
@@ -89,7 +89,7 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
       <div className="wconvert-sample-body">
         <aside className="wconvert-sample-verdict" aria-label={__('Result', 'wconvert')}>
           <div className="wconvert-sample-result" data-opens={checking ? undefined : result.opens} role="status" aria-live="polite" aria-atomic="true">
-            <Headline aria-hidden="true" className={checking ? 'animate-spin' : undefined} />
+            <Headline aria-hidden="true" className={checking ? 'animate-spin motion-reduce:animate-none' : undefined} />
             <div><strong>{result.headline}</strong>{result.reason && <p>{result.reason}</p>}</div>
           </div>
           <ul className="wconvert-sample-checks">
@@ -147,11 +147,11 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
                 <option value="yes">{__('Yes', 'wconvert')}</option>
               </select>}</Field>)}
             <Field label={__('Before this visit', 'wconvert')}>{id =>
-              <select id={id} value={visitor.history} onChange={event => set({ history: event.target.value as Visitor['history'] })}>
-                {(['new', 'this-visit', 'days-ago', 'closed', 'converted'] as const).map(history =>
+              <select id={id} value={visitor.history} onChange={event => set({ history: event.target.value as History })}>
+                {HISTORIES.map(history =>
                   <option key={history} value={history}>{history === 'days-ago' ? __('Saw it on an earlier day', 'wconvert') : historyLabel(history, undefined, act)}</option>)}
               </select>}</Field>
-            {visitor.history === 'days-ago' && <Field label={__('Days ago', 'wconvert')}>{id =>
+            {DATED.includes(visitor.history) && <Field label={__('How many days ago', 'wconvert')}>{id =>
               <input id={id} type="number" min={1} max={3650} value={visitor.daysAgo} onChange={event => set({ daysAgo: Math.max(1, Math.floor(Number(event.target.value)) || 1) })} />}</Field>}
             {scheduled && <Field label={__('Visit date', 'wconvert')}>{id =>
               <select id={id} value={visitor.date === undefined ? 'today' : 'pick'}

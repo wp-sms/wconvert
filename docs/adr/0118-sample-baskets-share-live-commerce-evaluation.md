@@ -44,6 +44,8 @@ Product results are labeled as an availability preview; the overall appearance
 verdict also requires the composed display rules and product eligibility. Cart
 recovery's nonempty-basket requirement is included in the sample.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the dialog is now "Test a visit". Page, pacing and dates are no longer assumptions — the merchant describes the visitor's page, what happened before this visit and the visit date, and the verdict reads them. The sample basket and its preview are unchanged and still answer the cart rules._
+
 The endpoint never reads or writes a shopper session, saves a draft, records a
 click/impression, or sends an external message. Responses are private/no-store.
 Sample facts and results live only in component memory and reset on closing.
