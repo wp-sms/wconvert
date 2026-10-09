@@ -4,7 +4,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { NativeSelect } from '@/components/ui/native-select';
+import { Field } from '@/shell/Field';
 import { type InlinePlacementProps } from '@/inlinePlacement';
 import type { Frequency, Targeting } from '@/builder/api';
 import { ManualPlacement } from '@/builder/ManualPlacement';
@@ -20,7 +21,7 @@ type Method = 'manual' | 'automatic' | 'lock';
 type Placement = { position: string; paragraph?: number; fallback?: string };
 
 /**
- * How an inline Campaign gets onto the page — the Placement part of *Where
+ * How an inline campaign gets onto the page — the Placement part of *Where
  * does it show?*. Drawn in the tab's own language: chips for the choice, a
  * settings card for what goes with it.
  *
@@ -82,11 +83,12 @@ export default function PlacementSettings({ optinId, published, config, vocabula
           <span className="wconvert-placement-confirm__to">{change.to}</span>
         </li>)}
       </ul>
-      <div className="wconvert-placement-confirm__actions">
-        <Button size="sm" onClick={() => apply(confirm)}>{confirm === 'lock' ? __('Switch to content lock', 'wconvert') : __('Switch to automatic placement', 'wconvert')}</Button>
-        <Button size="sm" variant="outline" onClick={() => setConfirm(false)}>{sprintf(
+      {/* Cancel first and the action last, as in every dialog; the toolbar scope sets their height. */}
+      <div className="wconvert-placement-confirm__actions wconvert-toolbar">
+        <Button variant="outline" onClick={() => setConfirm(false)}>{sprintf(
           /* translators: %s: the placement method in use, e.g. “Manual”. */
           __('Keep %s', 'wconvert'), methodName(method))}</Button>
+        <Button onClick={() => apply(confirm)}>{confirm === 'lock' ? __('Switch to content lock', 'wconvert') : __('Switch to automatic placement', 'wconvert')}</Button>
       </div>
     </section>}
 
@@ -126,24 +128,17 @@ function Automatic({ id, placement, compatible, priority, onPlacement, onPriorit
       {placement.position === 'after_paragraph' && !validParagraph && <p role="alert" className="wconvert-quick-picks__error">{__('Enter a whole paragraph number from 1 to 100.', 'wconvert')}</p>}
       {placement.position === 'after_product_summary' && <p className="wconvert-display-hint">{__('Classic WooCommerce themes only. For a block theme, choose Manual and add the block to the product template.', 'wconvert')}</p>}
     </div>
-    {placement.position === 'after_paragraph' && <div className="wconvert-display-fields">
-      <div><Label htmlFor={`${id}-fallback`}>{__('If there are fewer paragraphs', 'wconvert')}</Label>
-        <select id={`${id}-fallback`} value={placement.fallback ?? 'after_content'} onChange={event => onPlacement({ ...placement, fallback: event.target.value })}>
-          <option value="after_content">{__('Place it after the content', 'wconvert')}</option>
-          <option value="skip">{__('Don’t show it on that page', 'wconvert')}</option>
-        </select>
-      </div>
-    </div>}
-    <div className="wconvert-display-settings">
-      <div className="wconvert-placement-row">
-        <div className="wconvert-placement-row__text">
-          <Label htmlFor={`${id}-priority`} className="wconvert-placement-row__title">{__('Priority', 'wconvert')}</Label>
-          <p id={`${id}-priority-help`} className="wconvert-display-hint">{__('One automatic Campaign shows per page, the highest priority first. A Campaign placed by hand always comes first.', 'wconvert')}</p>
-        </div>
-        <Input id={`${id}-priority`} className="w-24" type="number" min={0} max={100} value={priority} aria-describedby={`${id}-priority-help`}
-          onChange={event => onPriority(Math.max(0, Math.min(100, Math.trunc(Number(event.target.value) || 0))))} />
-      </div>
-    </div>
+    {placement.position === 'after_paragraph' && <Field label={__('If there are fewer paragraphs', 'wconvert')} htmlFor={`${id}-fallback`}>
+      <NativeSelect id={`${id}-fallback`} className="self-start" value={placement.fallback ?? 'after_content'} onChange={event => onPlacement({ ...placement, fallback: event.target.value })}>
+        <option value="after_content">{__('Place it after the content', 'wconvert')}</option>
+        <option value="skip">{__('Don’t show it on that page', 'wconvert')}</option>
+      </NativeSelect>
+    </Field>}
+    <Field label={__('Priority', 'wconvert')} htmlFor={`${id}-priority`} hintId={`${id}-priority-help`}
+      hint={__('From 0 to 100. One automatic campaign shows per page, the highest priority first. A campaign placed by hand always comes first.', 'wconvert')}>
+      <Input id={`${id}-priority`} className="w-24" type="number" min={0} max={100} value={priority} aria-describedby={`${id}-priority-help`}
+        onChange={event => onPriority(Math.max(0, Math.min(100, Math.trunc(Number(event.target.value) || 0))))} />
+    </Field>
     <p className="wconvert-display-hint">{__('Using a page builder or a custom layout? Choose Manual instead.', 'wconvert')}</p>
   </div>;
 }

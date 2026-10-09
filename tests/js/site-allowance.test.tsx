@@ -14,9 +14,9 @@ const OFF = {
   stopAfterDismiss: false,
   stopAfterConversion: false,
 };
-const maxField = () => screen.getByLabelText(/Total campaign appearances/i);
+const maxField = () => screen.getByLabelText(/Show campaigns at most/i);
 const save = async () => {
-  if (!screen.queryByRole('alertdialog')) await userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
+  if (!screen.queryByRole('dialog')) await userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
   const confirm = screen.queryByRole('button', { name: 'Apply to all campaigns' });
   if (confirm) await userEvent.click(confirm);
 };
@@ -38,9 +38,9 @@ describe('explicit site-wide allowance drafts', () => {
     render(<SiteAllowance />);
     await screen.findByText('Read unavailable.');
     await userEvent.click(
-      screen.getByRole('button', { name: 'Retry loading display limits' }),
+      screen.getByRole('button', { name: 'Try again' }),
     );
-    expect(await screen.findByLabelText(/Total campaign appearances/i)).toHaveValue(
+    expect(await screen.findByLabelText(/Show campaigns at most/i)).toHaveValue(
       null,
     );
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
@@ -54,7 +54,7 @@ describe('explicit site-wide allowance drafts', () => {
     expect(maxField()).toHaveValue(null);
     expect(screen.getByLabelText(/Wait between campaigns/i)).toHaveValue(null);
     expect(
-      screen.getByText(/in addition to its own display rules/i),
+      screen.getByText(/on top of its own display rules/i),
     ).toBeVisible();
     expect(
       screen.getByRole('button', { name: 'Save display limits' }),
@@ -63,7 +63,7 @@ describe('explicit site-wide allowance drafts', () => {
   it('does not write on typing, blur or a switch; saves the whole answer once', async () => {
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/Total campaign appearances/i),
+      await screen.findByLabelText(/Show campaigns at most/i),
       '10',
     );
     await userEvent.click(screen.getByLabelText(/after a visitor closes/i));
@@ -77,7 +77,9 @@ describe('explicit site-wide allowance drafts', () => {
     expect(
       screen.getByRole('button', { name: 'Save display limits' }),
     ).toBeDisabled();
-    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(screen.getByText('Saved just now')).toBeVisible();
+    await userEvent.type(maxField(), '1');
+    expect(screen.queryByText('Saved just now')).not.toBeInTheDocument();
   });
   it('treats a cleared number as no limit, only on Save', async () => {
     api.readSiteAllowance.mockResolvedValue({ ...OFF, maxImpressions: 4 });
@@ -89,14 +91,32 @@ describe('explicit site-wide allowance drafts', () => {
     await save();
     expect(api.saveSiteAllowance).toHaveBeenCalledWith(OFF);
   });
-  it('never saves an invalid count', async () => {
+  it('never saves an invalid count, and says why beside the field', async () => {
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/Total campaign appearances/i),
+      await screen.findByLabelText(/Show campaigns at most/i),
       '0',
     );
     await save();
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole number of at least 1, or leave it empty.');
+    expect(maxField()).toHaveAttribute('aria-invalid', 'true');
+    expect(maxField()).toHaveFocus();
+  });
+  it('reviews the whole pending answer in the words the form uses', async () => {
+    render(<SiteAllowance />);
+    await userEvent.type(await screen.findByLabelText(/Show campaigns at most/i), '3');
+    await userEvent.click(screen.getByLabelText(/after a visitor converts/i));
+    await userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
+    const dialog = screen.getByRole('dialog', { name: 'Site-wide display limits' });
+    expect(dialog).toHaveTextContent('Show campaigns at most 3 times per visitor');
+    expect(dialog).toHaveTextContent('Stop showing campaigns after a visitor converts');
+    await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(api.saveSiteAllowance).not.toHaveBeenCalled();
+    // A triggerless dialog hands focus back to the Save that opened it.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Save display limits' })).toHaveFocus());
   });
   it('cancel restores numbers and switches without a write', async () => {
     api.readSiteAllowance.mockResolvedValue({ ...OFF, maxImpressions: 4 });
@@ -116,18 +136,18 @@ describe('explicit site-wide allowance drafts', () => {
     api.saveSiteAllowance.mockRejectedValueOnce(new Error('Read-only site.'));
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/Total campaign appearances/i),
+      await screen.findByLabelText(/Show campaigns at most/i),
       '10',
     );
     await save();
-    await screen.findByText('Read-only site.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Read-only site.');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(maxField()).toHaveValue(10);
-    expect(screen.getByText('Unsaved changes')).toBeVisible();
     await save();
     expect(
       screen.getByRole('button', { name: 'Save display limits' }),
     ).toBeDisabled();
-    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(screen.getByText('Saved just now')).toBeVisible();
   });
   it('locks the pending write against edits and double submission', async () => {
     let finish!: (value: unknown) => void;
@@ -138,7 +158,7 @@ describe('explicit site-wide allowance drafts', () => {
     );
     render(<SiteAllowance />);
     await userEvent.type(
-      await screen.findByLabelText(/Total campaign appearances/i),
+      await screen.findByLabelText(/Show campaigns at most/i),
       '10',
     );
     await save();

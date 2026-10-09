@@ -24,24 +24,29 @@ it('authors optional settings with on-demand help and without visitor storage or
   await user.click(screen.getByRole('checkbox', { name: 'Reopen button' }));
   await user.clear(screen.getByLabelText('Button text'));
   expect(screen.getByRole('alert')).toHaveTextContent('Enter button text');
+  expect(screen.getByLabelText('Button text')).toHaveAccessibleDescription('Enter button text before saving.');
   await user.type(screen.getByLabelText('Button text'), 'Get the offer');
   await user.selectOptions(screen.getByLabelText('Position', { exact: true }), 'block_start_inline_start');
   await user.click(screen.getByText('Colors and mobile'));
   await user.click(screen.getByRole('checkbox', { name: 'Show on mobile' }));
   expect(JSON.parse(screen.getByTestId('settings').textContent!)).toMatchObject({ label: 'Get the offer', placement: 'block_start_inline_start', mobile: { visible: false } });
+  // A color is the shared swatch and picker, showing the campaign's own until changed.
+  expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toHaveTextContent('#2563eb');
+  expect(screen.queryByRole('textbox', { name: /Background/ })).toBeNull();
+  expect(screen.queryByRole('button', { name: /back to the campaign’s own/ })).toBeNull();
   expect(screen.queryByRole('combobox', { name: 'Preview' })).toBeNull();
-  expect(screen.queryByText(/After visitors close this Campaign/)).toBeNull();
+  expect(screen.queryByText(/After a visitor closes this campaign/)).toBeNull();
   await user.click(screen.getByRole('button', { name: 'About reopen buttons' }));
-  expect(screen.getByText(/After visitors close this Campaign/)).toBeVisible();
+  expect(screen.getByText(/After a visitor closes this campaign/)).toBeVisible();
   await user.keyboard('{Escape}');
-  expect(screen.queryByText(/After visitors close this Campaign/)).toBeNull();
+  expect(screen.queryByText(/After a visitor closes this campaign/)).toBeNull();
   expect(save).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled();
   save.mockRestore();
 });
 
 it('Free explains retained settings and offers no premium authoring controls', () => {
   render(<EditionSettings value={{ label: 'Saved offer' }} template={template} onChange={vi.fn()} />);
-  expect(screen.getByText('This Campaign has a reopen button saved. It isn’t shown on this site.')).toBeInTheDocument();
+  expect(screen.getByText('This campaign has a reopen button saved. It isn’t shown on this site.')).toBeInTheDocument();
   expect(screen.queryByText(/Pro/)).toBeNull();
   expect(screen.queryByRole('checkbox')).toBeNull();
 });

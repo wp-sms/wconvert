@@ -1,18 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { allowanceSummary } from './allowanceSummary';
+import { ALLOWANCE_LABELS, allowanceLines } from './allowanceSummary';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel } from '../components/ui/alert-dialog';
+import {
+  AdminDialog,
+  AdminDialogBody,
+  AdminDialogClose,
+  AdminDialogContent,
+  AdminDialogFooter,
+  AdminDialogHeader,
+} from '../components/ui/admin-dialog';
 import {
   Region,
   RegionBody,
-  RegionError,
   RegionErrorState,
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { CheckRow } from '../shell/CheckRow';
+import { Field } from '../shell/Field';
+import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import {
   LOADING,
   failed,
@@ -40,17 +49,29 @@ const draftOf = (value: Allowance): Draft => ({
     value.maxImpressions === null ? '' : String(value.maxImpressions),
   cooldownDays: value.cooldownDays === null ? '' : String(value.cooldownDays),
 });
+const allowanceOf = (draft: Draft): Allowance => ({
+  ...draft,
+  maxImpressions: draft.maxImpressions === '' ? null : Number(draft.maxImpressions),
+  cooldownDays: draft.cooldownDays === '' ? null : Number(draft.cooldownDays),
+});
+/** Empty is "no limit"; anything else must be a whole number from 1. */
+const invalid = (value: string) =>
+  value !== '' && (!Number.isSafeInteger(Number(value)) || Number(value) < 1);
 
 /** Site-wide vetoes remain off by default. No control writes before Save. */
 export function SiteAllowance({
   onEditingStateChange,
 }: { onEditingStateChange?: SettingsEditing } = {}) {
+  const id = useId();
   const [allowance, setAllowance] = useState<Loadable<Allowance>>(LOADING);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [reviewing, setReviewing] = useState(false);
   const [retry, setRetry] = useState(0);
+  const status = useSaveStatus();
+  const saveButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     let active = true;
     setAllowance(LOADING);
@@ -75,130 +96,151 @@ export function SiteAllowance({
   const change = (next: Partial<Draft>) => {
     setDraft((held) => (held === null ? null : { ...held, ...next }));
     setError(null);
+    status.clear();
   };
-  const save = async (confirmed = false) => {
+  const invalidMax = checked && draft !== null && invalid(draft.maxImpressions);
+  const invalidWait = checked && draft !== null && invalid(draft.cooldownDays);
+  const review = () => {
     if (!draft || !dirty || saving) return;
-    if (
-      [draft.maxImpressions, draft.cooldownDays].some(
-        (value) =>
-          value !== '' &&
-          (!Number.isSafeInteger(Number(value)) || Number(value) < 1),
-      )
-    ) {
-      setError(
-        __(
-          'Enter a whole number of at least 1, or leave the field empty.',
-          'wconvert',
-        ),
-      );
+    setChecked(true);
+    if (invalid(draft.maxImpressions) || invalid(draft.cooldownDays)) {
+      document.getElementById(invalid(draft.maxImpressions) ? `${id}-max` : `${id}-wait`)?.focus();
       return;
     }
-    if (!confirmed) { setReviewing(true); return; }
+    setError(null);
+    setReviewing(true);
+  };
+  const save = async () => {
+    if (!draft || saving) return;
     setSaving(true);
     setError(null);
     try {
-      const next = await saveSiteAllowance({
-        ...draft,
-        maxImpressions:
-          draft.maxImpressions === '' ? null : Number(draft.maxImpressions),
-        cooldownDays:
-          draft.cooldownDays === '' ? null : Number(draft.cooldownDays),
-      });
+      const next = await saveSiteAllowance(allowanceOf(draft));
       setAllowance(ready(next));
       setDraft(draftOf(next));
+      setChecked(false);
       setReviewing(false);
+      status.markSaved();
     } catch (cause) {
       setError(messageOf(cause));
     } finally {
       setSaving(false);
     }
   };
+  const title = __('Display limits', 'wconvert');
   if (allowance.status === 'loading')
-    return (
-      <RegionSkeleton label={__('Display limits', 'wconvert')} lines={4} />
-    );
+    return <RegionSkeleton label={title} lines={4} />;
   if (allowance.status === 'failed')
     return (
       <Region>
-        <RegionErrorState message={allowance.message} />
-        <RegionFooter>
-          <Button
-            variant="outline"
-            onClick={() => setRetry((value) => value + 1)}
-          >
-            {__('Retry loading display limits', 'wconvert')}
-          </Button>
-        </RegionFooter>
+        <RegionHeader title={title} />
+        <RegionErrorState
+          message={allowance.message}
+          onRetry={() => setRetry((value) => value + 1)}
+        />
       </Region>
     );
+  const pending = draft === null ? [] : allowanceLines(allowanceOf(draft));
+  const wholeNumber = __('Enter a whole number of at least 1, or leave it empty.', 'wconvert');
   return (
     <Region>
       <RegionHeader
-        title={__('Visitor experience', 'wconvert')}
-        description={allowanceSummary(allowance.data)}
+        title={title}
+        description={__('These apply to every campaign, on top of its own display rules.', 'wconvert')}
       />
-      {error && !reviewing && <RegionError message={error} />}
       <form
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
-          void save();
+          review();
         }}
       >
         <RegionBody>
-          <p className="mt-0 rounded-md border border-border bg-secondary px-4 py-3 text-note text-muted-foreground">
-            {__(
-              'These limits apply to every Campaign, in addition to its own display rules.',
-              'wconvert',
-            )}
-          </p>
-          <fieldset disabled={saving} className="m-0 min-w-0 border-0 p-0">
+          <fieldset disabled={saving} className="m-0 flex min-w-0 flex-col gap-5 border-0 p-0">
             <legend className="sr-only">
               {__('Site-wide display limits', 'wconvert')}
             </legend>
-            <div className="flex flex-col divide-y divide-border">
-              <div className="flex flex-wrap items-center justify-between gap-4 py-5">
-                <div><label htmlFor="wconvert-site-max" className="font-medium">{__('Total campaign appearances per visitor', 'wconvert')}</label>
-                  <p className="mb-0 mt-1 text-note text-muted-foreground">{__('A site-wide total, not a daily limit. Leave blank for no extra cap.', 'wconvert')}</p></div>
-                <Input id="wconvert-site-max" className="w-28" type="number" min={1} step={1} placeholder={__('No limit', 'wconvert')} value={draft?.maxImpressions ?? ''} onChange={(event) => change({ maxImpressions: event.target.value })} />
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-4 py-5">
-                <div><label htmlFor="wconvert-site-cooldown" className="font-medium">{__('Wait between campaigns', 'wconvert')}</label>
-                  <p className="mb-0 mt-1 text-note text-muted-foreground">{__('Leave blank to add no site-wide waiting period.', 'wconvert')}</p></div>
-                <span className="flex items-center gap-2"><Input id="wconvert-site-cooldown" className="w-28" type="number" min={1} step={1} placeholder={__('None', 'wconvert')} value={draft?.cooldownDays ?? ''} onChange={(event) => change({ cooldownDays: event.target.value })} /><span>{__('days', 'wconvert')}</span></span>
-              </div>
-              <label htmlFor="wconvert-site-dismiss" className="flex items-start gap-3 py-5">
-                <input id="wconvert-site-dismiss" className="mt-1 size-4 shrink-0 accent-action" type="checkbox" checked={draft?.stopAfterDismiss ?? false} onChange={(event) => change({ stopAfterDismiss: event.target.checked })} />
-                <span className="font-medium">{__('Stop showing campaigns after a visitor closes one', 'wconvert')}<small className="mt-1 block text-note font-normal text-muted-foreground">{__('Applies across all campaigns, not only the one they closed.', 'wconvert')}</small></span>
-              </label>
-              <label htmlFor="wconvert-site-convert" className="flex items-start gap-3 py-5">
-                <input id="wconvert-site-convert" className="mt-1 size-4 shrink-0 accent-action" type="checkbox" checked={draft?.stopAfterConversion ?? false} onChange={(event) => change({ stopAfterConversion: event.target.checked })} />
-                <span className="font-medium">{__('Stop showing campaigns after a visitor converts', 'wconvert')}<small className="mt-1 block text-note font-normal text-muted-foreground">{__('A conversion can be a form submission or a campaign link click.', 'wconvert')}</small></span>
-              </label>
-            </div>
+            <Field
+              label={ALLOWANCE_LABELS.maxImpressions()}
+              htmlFor={`${id}-max`}
+              hint={__('A total across all campaigns, not per day. Leave empty for no limit.', 'wconvert')}
+              hintId={`${id}-max-hint`}
+              error={invalidMax ? wholeNumber : undefined}
+            >
+              <span className="flex items-center gap-2">
+                <Input id={`${id}-max`} className="w-28" type="number" inputMode="numeric" min={1} step={1}
+                  placeholder={__('No limit', 'wconvert')} aria-invalid={invalidMax || undefined}
+                  aria-describedby={`${id}-max-unit ${id}-max-hint`}
+                  value={draft?.maxImpressions ?? ''} onChange={(event) => change({ maxImpressions: event.target.value })} />
+                <span id={`${id}-max-unit`}>{__('times per visitor', 'wconvert')}</span>
+              </span>
+            </Field>
+            <Field
+              label={ALLOWANCE_LABELS.cooldownDays()}
+              htmlFor={`${id}-wait`}
+              hint={__('Leave empty for no wait.', 'wconvert')}
+              hintId={`${id}-wait-hint`}
+              error={invalidWait ? wholeNumber : undefined}
+            >
+              <span className="flex items-center gap-2">
+                <Input id={`${id}-wait`} className="w-28" type="number" inputMode="numeric" min={1} step={1}
+                  placeholder={__('None', 'wconvert')} aria-invalid={invalidWait || undefined}
+                  aria-describedby={`${id}-wait-unit ${id}-wait-hint`}
+                  value={draft?.cooldownDays ?? ''} onChange={(event) => change({ cooldownDays: event.target.value })} />
+                <span id={`${id}-wait-unit`}>{__('days', 'wconvert')}</span>
+              </span>
+            </Field>
+            <CheckRow
+              label={ALLOWANCE_LABELS.stopAfterDismiss()}
+              hint={__('Applies to every campaign, not only the one they closed.', 'wconvert')}
+              checked={draft?.stopAfterDismiss ?? false}
+              onChange={(event) => change({ stopAfterDismiss: event.target.checked })}
+            />
+            <CheckRow
+              label={ALLOWANCE_LABELS.stopAfterConversion()}
+              hint={__('A conversion is a form submission or a campaign link click.', 'wconvert')}
+              checked={draft?.stopAfterConversion ?? false}
+              onChange={(event) => change({ stopAfterConversion: event.target.checked })}
+            />
           </fieldset>
         </RegionBody>
-        <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-note text-muted-foreground">{dirty ? __('Unsaved changes', 'wconvert') : __('No unsaved changes', 'wconvert')}</span>
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" disabled={!dirty || saving} onClick={() => { setDraft(draftOf(allowance.data)); setError(null); }}>{__('Cancel changes', 'wconvert')}</Button>
-            <Button type="submit" disabled={!dirty || saving}>{saving ? __('Saving…', 'wconvert') : __('Save display limits', 'wconvert')}</Button>
-          </div>
+        <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
+          <SaveStatus saved={status.saved} />
+          <Button type="button" variant="outline" disabled={!dirty || saving} onClick={() => { setDraft(draftOf(allowance.data)); setError(null); setChecked(false); }}>{__('Cancel changes', 'wconvert')}</Button>
+          <Button ref={saveButton} type="submit" disabled={!dirty || saving}>{saving ? __('Saving…', 'wconvert') : __('Save display limits', 'wconvert')}</Button>
         </RegionFooter>
       </form>
-      <AlertDialog open={reviewing} onOpenChange={(open) => { if (!saving) setReviewing(open); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader><AlertDialogTitle>{__('Review shared changes', 'wconvert')}</AlertDialogTitle>
-            <AlertDialogDescription>{__('These display limits take effect across every campaign on this site. Campaign-specific rules still apply.', 'wconvert')}</AlertDialogDescription></AlertDialogHeader>
-          {draft && <dl className="m-0 grid grid-cols-2 gap-3 text-note">
-            <dt>{__('Total appearances per visitor', 'wconvert')}</dt><dd className="m-0">{draft.maxImpressions || __('No extra limit', 'wconvert')}</dd>
-            <dt>{__('Wait between campaigns (days)', 'wconvert')}</dt><dd className="m-0">{draft.cooldownDays || __('No extra wait', 'wconvert')}</dd>
-            <dt>{__('Stop after closing', 'wconvert')}</dt><dd className="m-0">{draft.stopAfterDismiss ? __('On', 'wconvert') : __('Off', 'wconvert')}</dd>
-            <dt>{__('Stop after conversion', 'wconvert')}</dt><dd className="m-0">{draft.stopAfterConversion ? __('On', 'wconvert') : __('Off', 'wconvert')}</dd>
-          </dl>}
-          {error && <p role="alert" className="text-destructive">{error}</p>}
-          <AlertDialogFooter><AlertDialogCancel disabled={saving}>{__('Keep editing', 'wconvert')}</AlertDialogCancel><Button disabled={saving} onClick={() => void save(true)}>{saving ? __('Saving…', 'wconvert') : __('Apply to all campaigns', 'wconvert')}</Button></AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AdminDialog open={reviewing} onOpenChange={(open) => { if (!saving) { setReviewing(open); setError(null); } }}>
+        <AdminDialogContent
+          size="sm"
+          onCloseAutoFocus={(event) => {
+            // There is no trigger for Radix to return to: back to Save while
+            // it still has something to save, else to the first limit.
+            event.preventDefault();
+            (saveButton.current?.disabled ? document.getElementById(`${id}-max`) : saveButton.current)?.focus();
+          }}
+        >
+          <AdminDialogHeader
+            title={__('Site-wide display limits', 'wconvert')}
+            meta={__('These take effect on every campaign. Each campaign’s own display rules still apply.', 'wconvert')}
+          />
+          <AdminDialogBody>
+            {pending.length === 0 ? (
+              <p className="m-0">{__('No site-wide limits. Each campaign uses its own display rules.', 'wconvert')}</p>
+            ) : (
+              <ul className="m-0 grid list-disc gap-1 ps-5">
+                {pending.map((line) => <li key={line}>{line}</li>)}
+              </ul>
+            )}
+          </AdminDialogBody>
+          <AdminDialogFooter
+            back={<AdminDialogClose asChild><Button variant="outline" disabled={saving}>{__('Keep editing', 'wconvert')}</Button></AdminDialogClose>}
+            error={error}
+          >
+            <Button disabled={saving} onClick={() => void save()}>{saving ? __('Saving…', 'wconvert') : __('Apply to all campaigns', 'wconvert')}</Button>
+          </AdminDialogFooter>
+        </AdminDialogContent>
+      </AdminDialog>
     </Region>
   );
 }

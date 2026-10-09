@@ -66,7 +66,10 @@ saved retention, configured destination types, browser-local state,
 anonymous-count rate limit and external-copy boundary using the shared
 settings-disclosure/loading/error vocabulary.
 It links back to the existing settings owners and does not add an overview,
-request inbox or separate compliance dashboard.*
+request inbox or separate compliance dashboard.* *Amended again by
+[ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): that disclosure is
+now an always-open region, "What visitor data is stored", drawn as a
+what / why / how-long table.*
 
 ## Submissions and operational recovery
 

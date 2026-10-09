@@ -17,13 +17,14 @@ export function MoreWithPro() {
       </h2>
       <ul className="m-0 grid list-disc gap-1 ps-4">
         <li>{__('Floating bars, slide-ins and fullscreen formats', 'wconvert')}</li>
-        <li>{__('Question journeys with personalised results', 'wconvert')}</li>
+        <li>{__('Question journeys with personalized results', 'wconvert')}</li>
         <li>{__('Exit intent and advanced targeting', 'wconvert')}</li>
         <li>{__('A/B testing', 'wconvert')}</li>
         <li>{__('Email marketing and analytics integrations', 'wconvert')}</li>
       </ul>
       <a className="mt-2 inline-flex items-center gap-1 underline" href={EXPLORE_PRO_URL} target="_blank" rel="noreferrer">
-        {sprintf(__('Explore %s', 'wconvert'), tierName('pro'))}<ExternalLink aria-hidden="true" className="size-3" />
+        {sprintf(/* translators: %s: the paid edition's name, e.g. “Pro”. */ __('Explore %s', 'wconvert'), tierName('pro'))}<ExternalLink aria-hidden="true" className="size-3 rtl:-scale-x-100" />
+        <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
       </a>
     </aside>
   );
