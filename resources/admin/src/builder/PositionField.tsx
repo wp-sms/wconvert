@@ -1,5 +1,6 @@
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { StyleValueInput } from './StyleValueInput';
 
 /** Only interpret positions we can round-trip; expressions stay editable as CSS. */
@@ -73,10 +74,9 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
               }} />
           </label>)}
       </div>}
-      <details className="wconvert-position__css" open={point === null ? true : undefined}>
-        <summary>{__('Custom CSS', 'wconvert')}</summary>
+      <Disclosure variant="inline" className="wconvert-position__css" open={point === null ? true : undefined} title={__('Custom CSS', 'wconvert')}>
         <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} value={shown} onCommit={onChange} />
-      </details>
+      </Disclosure>
     </div>}
   </div>;
 }

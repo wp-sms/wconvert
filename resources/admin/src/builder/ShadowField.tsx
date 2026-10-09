@@ -1,5 +1,6 @@
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { CodeXml } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ColorField } from './ColorField';
@@ -49,7 +50,7 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
       {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
       {(custom || !offered.includes(shown)) && <option value="__custom" disabled>{__('Custom', 'wconvert')}</option>}
     </select>
-    {shadow && <details className="wconvert-shadow-adjust"><summary>{__('Adjust shadow', 'wconvert')}</summary>
+    {shadow && <Disclosure variant="inline" className="wconvert-shadow-adjust" title={__('Adjust shadow', 'wconvert')}>
       <div className="wconvert-shadow-values">{(['x', 'y', 'blur', 'spread'] as const).map(key => <label key={key}>
         {{ x: __('Horizontal', 'wconvert'), y: __('Vertical', 'wconvert'), blur: __('Blur', 'wconvert'), spread: __('Spread', 'wconvert') }[key]}
         <span><StyleValueInput type="number" min={key === 'blur' ? 0 : undefined} value={String(shadow[key])} onCommit={next => {
@@ -59,7 +60,7 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
       </label>)}</div>
       <ColorField label={__('Shadow color', 'wconvert')} value={shadow.color} fallback={shadow.color} open={open} onOpenChange={onOpenChange} onChange={color => edit({ color })} />
       <label className="wconvert-shadow-inset"><input type="checkbox" checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />{__('Inner shadow', 'wconvert')}</label>
-    </details>}
+    </Disclosure>}
     {((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
       <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
     </div>}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { exportEntry, importEntry } from './entry';
 import type { TemplateEntry } from '../templates/api';
 import type { Template } from '@renderer/types';
@@ -21,8 +22,7 @@ export function DevExport({ entry, onChange }: { entry: TemplateEntry; onChange:
   const [refused, setRefused] = useState(false);
 
   return (
-    <details className="wconvert-export">
-      <summary>{__('Library entry (developers)', 'wconvert')}</summary>
+    <Disclosure variant="inline" className="wconvert-export" title={__('Library entry (developers)', 'wconvert')}>
       {/*
        * **The `<summary>` is not this control's name**, which is the whole
        * reason for the `aria-label`. A `<details>` summary labels the
@@ -69,6 +69,6 @@ export function DevExport({ entry, onChange }: { entry: TemplateEntry; onChange:
         </button>{' '}
         {refused && <span className="description">{__('That is not a library entry.', 'wconvert')}</span>}
       </p>
-    </details>
+    </Disclosure>
   );
 }

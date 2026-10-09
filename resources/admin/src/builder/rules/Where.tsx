@@ -120,7 +120,7 @@ function RuleList({ list, heading, empty, types, rules, onChange, attention = fa
       key: String(at),
       content:
         type === undefined ? (
-          <code>{rule.type}</code>
+          <span className="wconvert-rule__note">{__('A rule that is not available on this site.', 'wconvert')}</span>
         ) : (
           <>
             <strong>{type.label}</strong>{' '}

@@ -32,7 +32,7 @@ import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { PageError, Region, RegionErrorState } from '../shell/Region';
+import { PageError, Region, RegionErrorState, TryAgain } from '../shell/Region';
 import { Skeleton } from '../components/ui/skeleton';
 import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
@@ -54,7 +54,9 @@ import { DesignSettings } from './DesignSettings';
 import { InlinePlacementSettings, inlinePlacementLabel, inlinePlacementControls, ContentLockPreview, type ContentLockPreviewState } from '../inlinePlacement';
 import { ReopenPreview, reopenControls } from '../reopenControls';
 import { EditorCanvas, ScreenControls, DeviceControls, MobileAppearanceNote } from './EditorCanvas';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogHeader } from '../components/ui/admin-dialog';
+import { Disclosure } from '../shell/Disclosure';
+import { StatusBadge } from '../optins/StatusBadge';
 import { draftHistoryLabels, type DraftSnapshot } from './structure/draftEditLabel';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
 import { nearestTo, samePath, nodeAt } from './structure/tree';
@@ -88,7 +90,7 @@ import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type Connection, type Destination, type DestinationsPayload } from '../destinations/api';
 import { adminSettings, catalogConfigured } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
-import { createOptin, publishOptin } from '../optins/api';
+import { createOptin, publishOptin, statusOf } from '../optins/api';
 import { editorHref } from '../nav';
 import { BrandMark } from '../shell/Brand';
 import type { EditingState } from '../hooks/useAdminNavigation';
@@ -190,6 +192,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const [stats, setStats] = useState<Loadable<OptinNumbers | null>>(LOADING);
+  const [statsRead, setStatsRead] = useState(0);
 
   const [transfer, setTransfer] = useState<{ action: 'import' | 'export'; config: Config; name: string } | null>(null);
   const [imported, setImported] = useState(false);
@@ -260,7 +263,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     ? `${summaryOf(displayAxes, 'who').text} · ${summaryOf(displayAxes, 'when').text}`
     : __('Review display rules', 'wconvert');
   const destinationNames = bound.map(id => read(destinations)?.destinations.find(item => item.id === id)?.label).filter((name): name is string => !!name);
-  const destinationSummary = config?.capture_mode === 'local' ? __('Stored in WConvert', 'wconvert')
+  const destinationSummary = config?.capture_mode === 'local' ? __('Keep in WConvert only', 'wconvert')
     : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')
       : bound.length > 0 ? sprintf(_n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
         : __('No connected destinations', 'wconvert');
@@ -329,11 +332,15 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     listTemplates()
       .then(setGallery)
       .catch((cause: unknown) => setFatal(messageOf(cause)));
+  }, []);
+
+  const loadGoals = useCallback(() => {
+    setGoals(LOADING);
     listGoals()
       .then((entries) => setGoals(ready(entries)))
-
       .catch((cause: unknown) => setGoals(failed(cause)));
   }, []);
+  useEffect(loadGoals, [loadGoals]);
 
   useEffect(() => {
     const from = config?.playbook_id;
@@ -428,12 +435,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       return;
     }
 
+    setStats(LOADING);
     readDashboard(null)
       .then((payload) => setStats(ready(numbersByOptin(payload)[id] ?? null)))
-      // Swallowed, but not left LOADING: a failed read that kept the row
-      // reserved would be a skeleton pulsing over a working builder forever.
-      .catch(() => setStats(ready(null)));
-  }, [id, goal, publishedAt]);
+      // Not left LOADING, and not swallowed into "no numbers": a failed read is
+      // drawn in Campaign details with a way to try again (§13).
+      .catch((cause: unknown) => setStats(failed(cause)));
+  }, [id, goal, publishedAt, statsRead]);
 
   useEffect(() => {
     if (!dirty) {
@@ -796,15 +804,15 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           type="button"
           variant="ghost"
           size="icon-sm"
-          aria-label={backLabel ?? __('Back to Campaigns', 'wconvert')}
-          title={backLabel ?? __('Back to Campaigns', 'wconvert')}
+          aria-label={backLabel ?? __('Back to campaigns', 'wconvert')}
+          title={backLabel ?? __('Back to campaigns', 'wconvert')}
           onClick={leave}
         >
-          <ArrowLeft aria-hidden="true" />
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
         </Button>
         <BrandMark className="wconvert-workspace__brand-mark" />
         <span className="sr-only">{__('WConvert', 'wconvert')}</span>
-        <h1 className="sr-only">{name || __('Untitled Campaign', 'wconvert')}</h1>
+        <h1 className="sr-only">{name || __('Untitled campaign', 'wconvert')}</h1>
         <label className="sr-only" htmlFor="wconvert-optin-name">
           {__('Name', 'wconvert')}
         </label>
@@ -813,7 +821,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             id="wconvert-optin-name"
             className="wconvert-workspace__name"
             value={name}
-            placeholder={__('Untitled Campaign', 'wconvert')}
+            placeholder={__('Untitled campaign', 'wconvert')}
             disabled={busy}
             onChange={(event) => {
               coalescing.current = 'name';
@@ -829,7 +837,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             {busy
               ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
               : dirty
-                ? __('Unsaved changes', 'wconvert')
+                ? imported ? __('Design imported, not saved', 'wconvert') : __('Unsaved changes', 'wconvert')
                 : unpublishedChanges
                   ? __('Unpublished changes', 'wconvert')
                   : saved
@@ -843,8 +851,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           className="wconvert-workspace__navigation"
           aria-label={__('What you are editing', 'wconvert')}
         >
-          <TabsTrigger value="journey">{__('Edit campaign', 'wconvert')}</TabsTrigger>
-          <TabsTrigger value="design">{__('Theme & layout', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="journey">{__('Screens', 'wconvert')}</TabsTrigger>
+          <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
           <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
           <TabsTrigger ref={destinationsTab} value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
         </TabsList>
@@ -871,6 +879,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               : __('Save draft', 'wconvert')}
           </Button>
           <ReadinessDialog
+            name={name}
             captureMode={config.capture_mode === 'local' ? 'local' : 'connected'}
             optinId={id}
             optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges }}
@@ -916,7 +925,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         </div>
       </header>
       {error !== null && <PageError message={error} />}
-      {imported && <p role="status">{__('Design imported. Review it, then save your draft.', 'wconvert')}</p>}
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="journey" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
           <Activity mode={tab === 'journey' ? 'visible' : 'hidden'}>
@@ -1070,44 +1078,53 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           </div>
         </TabsContent>
       </div>
-      <Dialog open={details} onOpenChange={setDetails}>
-        <DialogContent className="wconvert-optin-details" onCloseAutoFocus={(event) => {
+      <AdminDialog open={details} onOpenChange={setDetails}>
+        <AdminDialogContent size="md" className="wconvert-optin-details" onCloseAutoFocus={(event) => {
           event.preventDefault();
           if (!changingGoal) detailsTrigger.current?.focus();
         }}>
-          <DialogHeader>
-            <DialogTitle>{__('Campaign details', 'wconvert')}</DialogTitle>
-            <DialogDescription>
-              {name || __('Untitled Campaign', 'wconvert')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="wconvert-details-status"><span>{publishedAt ? __('Published', 'wconvert') : __('Draft', 'wconvert')}</span><span>{dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : __('All edits saved', 'wconvert')}</span></div>
-          <div className="wconvert-details-section"><h3>{__('Goal', 'wconvert')}</h3>
-          <div className="mt-1 flex min-h-[1lh] flex-wrap items-center gap-x-2 text-note text-muted-foreground">
-            <span>{goalSaid(goalEntry, goal ?? '')}</span>
-
-            {goals.status === 'ready' &&
-              offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
-                <Button
-                  type="button"
-                  variant="link"
-                  size="sm"
-                  className="h-auto p-0 align-baseline"
-                  onClick={() => {
-                    setDetails(false);
-                    setChangingGoal(true);
-                  }}
-                >
-                  {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
-                </Button>
-              )}
-          </div>
-          </div>
-          {entryOfGoal?.outcome && <p className="text-note text-muted-foreground">{entryOfGoal.outcome.measurement}</p>}
-          <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
-          {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
-            <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
-              {numbers !== null ? (
+          <AdminDialogHeader
+            title={name || __('Untitled campaign', 'wconvert')}
+            badge={<StatusBadge status={statusOf({ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges })} />}
+            meta={dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : undefined}
+          />
+          <AdminDialogBody className="grid gap-4">
+            <section className="wconvert-details-section"><h3>{__('Goal', 'wconvert')}</h3>
+              <div className="flex min-h-[1lh] flex-wrap items-center gap-x-3 gap-y-2 text-note text-muted-foreground">
+                <span>{goalSaid(goalEntry, goal ?? '')}</span>
+                {goals.status === 'ready' &&
+                  offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setDetails(false);
+                        setChangingGoal(true);
+                      }}
+                    >
+                      {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
+                    </Button>
+                  )}
+              </div>
+              {entryOfGoal?.outcome && <p className="mt-2">{entryOfGoal.outcome.measurement}</p>}
+            </section>
+            <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
+            <section className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
+              {publishedAt === null ? (
+                <p>{__('Publish this campaign to start counting views and conversions.', 'wconvert')}</p>
+              ) : stats.status === 'loading' ? (
+                <>
+                  <StatRowSkeleton stats={3} />
+                  <Skeleton aria-hidden="true" className="mt-2 h-[1lh] w-28 text-body" />
+                </>
+              ) : stats.status === 'failed' ? (
+                <div className="grid justify-items-start gap-2">
+                  <p role="alert" className="text-destructive">{__('The numbers could not be loaded.', 'wconvert')}</p>
+                  <TryAgain onClick={() => setStatsRead((value) => value + 1)} />
+                </div>
+              ) : numbers === null ? (
+                <p>{__('Nothing recorded yet.', 'wconvert')}</p>
+              ) : (
                 <>
                   <StatRow>
                     <Stat
@@ -1116,7 +1133,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       value={formatCount(numbers.report.headline)}
                     />
                     <Stat
-                      label={__('Impressions', 'wconvert')}
+                      label={__('Shown', 'wconvert')}
                       value={formatCount(numbers.report.impressions)}
                     />
                     <Stat
@@ -1124,44 +1141,35 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       value={formatRate(numbers.report.conversion_rate)}
                     />
                   </StatRow>
-
-                  <p className="mt-2 mb-0 text-body text-muted-foreground">
+                  <p className="mt-2">
                     {sprintf(
                       _n('The last %s day', 'The last %s days', numbers.days, 'wconvert'),
-                      String(numbers.days),
+                      formatCount(numbers.days),
                     )}
                   </p>
                 </>
-              ) : (
-                <>
-                  <StatRowSkeleton stats={3} />
-
-                  <Skeleton aria-hidden="true" className="mt-2 h-[1lh] w-28 text-body" />
-                </>
               )}
-            </div>
-          )}
-          {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Campaign to start collecting impressions and conversions.', 'wconvert')}</p></div>}
-          {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
-          <details className="wconvert-details-history"><summary>{__('About draft history', 'wconvert')}</summary>
-          <p className="text-note text-muted-foreground">
-            {__('Undo and Redo cover this session’s draft edits: name, journey, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
-          </p>
-          </details>
-          {entry && adminSettings()?.dev === true && (
-            <details>
-              <summary>{__('Developer tools', 'wconvert')}</summary>
-              <PayloadMeter template={entry} />
-              <DevExport entry={entry} onChange={(next) => edit({ template: next })} />
-            </details>
-          )}
-        </DialogContent>
-      </Dialog>
+            </section>
+            {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
+            <Disclosure variant="inline" title={__('About draft history', 'wconvert')}>
+              <p className="m-0 text-note text-muted-foreground">
+                {__('Undo and Redo cover this session’s draft edits: name, screens, design, display rules and destination choices. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
+              </p>
+            </Disclosure>
+            {entry && adminSettings()?.dev === true && (
+              <Disclosure variant="inline" title={__('Developer tools', 'wconvert')}>
+                <PayloadMeter template={entry} />
+                <DevExport entry={entry} onChange={(next) => edit({ template: next })} />
+              </Disclosure>
+            )}
+          </AdminDialogBody>
+        </AdminDialogContent>
+      </AdminDialog>
       <ConfirmDialog
         open={leaving}
         onOpenChange={setLeaving}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Your changes to this Campaign will be lost.', 'wconvert')}
+        description={__('Your unsaved changes will be lost. The last saved draft and the published version stay as they are.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')}
         cancelLabel={__('Keep editing', 'wconvert')}
         returnFocusTo={back}
@@ -1176,7 +1184,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
           onClose={() => { setTransfer(null); changeGoal.current?.focus(); }}
           onApply={patch => {
-            if (config !== transfer.config) { setError(__('Your draft changed during import. Close the preview and review the file again.', 'wconvert')); return; }
+            if (config !== transfer.config) return __('Your draft changed during import. Close this and review the file again.', 'wconvert');
             edit(patch); setSelection(null); setStep(0); setImported(true); setTransfer(null); changeGoal.current?.focus();
           }} />
       </Suspense>}
@@ -1245,16 +1253,22 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         goals={goals}
         current={goal ?? ''}
         duplicate={!canChangeGoal}
+        onRetry={loadGoals}
+        // Both paths resolve or reject into the dialog, which stays open and
+        // shows a refusal beside its button rather than on the page behind it.
         onChange={(picked) => {
-          if (canChangeGoal) { void save(config ?? {}, picked); return; }
           setBusy(true);
-          void createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, config ?? {})
+          setError(null);
+          if (canChangeGoal) return persistDraft(config ?? {}, picked).finally(() => setBusy(false));
+          return createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, config ?? {})
             .then((created) => {
               onEditingStateChange?.({ dirty: false, busy: false });
               if (onCreated) onCreated(created.id);
               else window.location.hash = editorHref(created.id);
             })
-            .catch((cause: unknown) => setError(sprintf(__('The copied draft could not be confirmed. Check the Campaigns list before trying again. %s', 'wconvert'), messageOf(cause))))
+            .catch((cause: unknown) => {
+              throw new Error(sprintf(__('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+            })
             .finally(() => setBusy(false));
         }}
       />
@@ -1285,7 +1299,7 @@ function HistoryControls({
         disabled={!history.canUndo}
         onClick={history.undo}
       >
-        <Undo2 aria-hidden="true" />
+        <Undo2 aria-hidden="true" className="rtl:-scale-x-100" />
         <span className="sr-only">{label.undo}</span>
       </Button>
       <Button
@@ -1296,7 +1310,7 @@ function HistoryControls({
         disabled={!history.canRedo}
         onClick={history.redo}
       >
-        <Redo2 aria-hidden="true" />
+        <Redo2 aria-hidden="true" className="rtl:-scale-x-100" />
         <span className="sr-only">{label.redo}</span>
       </Button>
     </span>

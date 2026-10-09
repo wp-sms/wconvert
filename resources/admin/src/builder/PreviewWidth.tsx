@@ -1,10 +1,14 @@
-import { Monitor, Smartphone } from 'lucide-react';
 import { __ } from '@wordpress/i18n';
+import { OptionStrip } from '../shell/OptionStrip';
 
-/** Width simulation shared by static and interactive previews; it never remounts a form. */
+/**
+ * Width simulation shared by static and interactive previews; it never
+ * remounts a form. Drawn as the same `OptionStrip` the template picker's
+ * `PreviewControls` and the editor canvas use, so preview size looks one way
+ * everywhere (GUIDELINES §7).
+ */
 export function PreviewWidth({ mobile, onChange }: { mobile: boolean; onChange(mobile: boolean): void }) {
-  return <div className="wconvert-preview-width" role="group" aria-label={__('Preview width', 'wconvert')}>
-    <button type="button" aria-pressed={!mobile} onClick={() => onChange(false)}><Monitor aria-hidden="true" size={15} />{__('Desktop', 'wconvert')}</button>
-    <button type="button" aria-pressed={mobile} onClick={() => onChange(true)}><Smartphone aria-hidden="true" size={15} />{__('Mobile', 'wconvert')}</button>
-  </div>;
+  return <OptionStrip label={__('Preview size', 'wconvert')} value={mobile ? 'mobile' : 'desktop'}
+    options={[{ value: 'desktop', label: __('Desktop', 'wconvert') }, { value: 'mobile', label: __('Mobile', 'wconvert') }]}
+    onChange={value => onChange(value === 'mobile')} />;
 }

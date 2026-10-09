@@ -31,7 +31,7 @@ it.each(['default','answer'] as const)('previews and inserts on exactly the sele
 it('does not promise continuation when the merchant chooses to finish the path', () => {
   const edge = tree.graph!.edges.find(edge => edge.from === 'scope' && edge.kind === 'default')!;
   render(<Dialog open><DialogContent><GraphScreenInsert tree={tree} source="scope" kind="input" initialLocation={`edge:${edge.id}`} onInsert={()=>{}} onCancel={()=>{}} /></DialogContent></Dialog>);
-  fireEvent.click(screen.getByRole('button',{name:/Finish this path/}));
+  fireEvent.click(screen.getByRole('radio',{name:/Finish this path/}));
   const context=screen.getByLabelText('Resulting journey');
   expect(within(context).getByText('Ending')).toBeInTheDocument();
   expect(context).not.toHaveTextContent(tree.steps.find(step=>step.id===edge.to)!.name);

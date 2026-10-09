@@ -602,16 +602,16 @@ function Countdown({
     <div className="wconvert-slot__note">
       <p className="text-note">
         {spelled === null
-          ? __('This Campaign has no end date, so the clock will be empty on the page.', 'wconvert')
+          ? __('This campaign has no end date, so the clock will be empty on the page.', 'wconvert')
           : finished
             ? sprintf(
                 /* translators: %s: a date and time the Optin stopped running. */
-                __('Counted down to %s. This Campaign has already stopped running.', 'wconvert'),
+                __('Counted down to %s. This campaign has already stopped running.', 'wconvert'),
                 spelled,
               )
             : sprintf(
                 /* translators: %s: a date and time the Optin stops running. */
-                __('Counts down to %s — when this Campaign stops running.', 'wconvert'),
+                __('Counts down to %s — when this campaign stops running.', 'wconvert'),
                 spelled,
               )}
       </p>

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import manifest from '../../../templates/manifest.json';
 import { Button } from '../components/ui/button';
 
@@ -58,13 +59,12 @@ export function InterestOptions({ value, onEdit, onChange }: {
       <label className="wconvert-slot__key">{sprintf(__('Choice %d', 'wconvert'), at + 1)}
         <input ref={(input) => { labels.current[at] = input; }} type="text" value={option.label} maxLength={optionLimits.label_max_length} onChange={(event) => update(at, 'label', event.target.value)} />
       </label>
-      <details className="text-xs text-muted-foreground">
-        <summary className="cursor-pointer">{sprintf(__('Sent as: %s', 'wconvert'), option.value || __('not set', 'wconvert'))}</summary>
+      <Disclosure variant="inline" className="text-note text-muted-foreground" title={sprintf(__('Sent as: %s', 'wconvert'), option.value || __('not set', 'wconvert'))}>
         <label className="wconvert-slot__key mt-2">{sprintf(__('Value sent for choice %d', 'wconvert'), at + 1)}
           <input type="text" value={option.value} pattern={optionLimits.value_pattern} onChange={(event) => update(at, 'value', event.target.value)} />
         </label>
         <p className="description">{__('Use a unique value starting with a lowercase letter, followed by letters, numbers, hyphens or underscores. Changing the label keeps this value stable for connected services. Changing this value affects future submissions.', 'wconvert')}</p>
-      </details>
+      </Disclosure>
       <div className="flex flex-wrap gap-2">
         <Button type="button" variant="ghost" size="sm" disabled={at === 0} aria-label={sprintf(__('Move choice %d up', 'wconvert'), at + 1)} onClick={() => {
           focusAfterChange.current = at - 1;

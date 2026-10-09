@@ -8,6 +8,7 @@ import { ResultSettings } from '../../resources/admin/src/builder/JourneySetting
 import { GraphScreenInsert } from '../../resources/admin/src/builder/GraphScreenInsert';
 import { GraphScreenRemove } from '../../resources/admin/src/builder/GraphScreenRemove';
 import { Dialog, DialogContent } from '../../resources/admin/src/components/ui/dialog';
+import { AlertDialog, AlertDialogContent } from '../../resources/admin/src/components/ui/alert-dialog';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import enquiry from '../fixtures/journey-graph-enquiry.json';
@@ -64,7 +65,7 @@ it('stages result creation without inventing an answer rule', () => {
   render(<ResultSettings tree={quiz} step={quiz.steps.findIndex(step => step.kind === 'result')} onChange={change} />);
   fireEvent.click(screen.getByRole('button', { name: 'Add matching result' }));
   const modal = screen.getByRole('dialog');
-  expect(within(modal).getByRole('button', { name: 'Add result' })).toBeDisabled();
+  expect(within(modal).getByRole('button', { name: 'Add result' })).toHaveAttribute('aria-disabled', 'true');
   fireEvent.change(within(modal).getByLabelText('Result heading'), { target: { value: 'French press favourite' } });
   fireEvent.change(within(modal).getByLabelText('Question'), { target: { value: 'n1' } });
   expect(within(modal).getByLabelText('Answer')).toHaveValue('');
@@ -81,8 +82,8 @@ it('offers a valid question location without silently changing an explicit path'
   const source = value.graph!.entry;
   const edge = value.graph!.edges.find(item => item.from === source)!;
   render(dialog(<GraphScreenInsert tree={value} source={source} kind="input" initialLocation={`edge:${edge.id}`} onInsert={change} onCancel={() => {}} />));
-  fireEvent.click(screen.getByRole('button', { name: /Ask a question/ }));
-  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('radio', { name: /Ask a question/ }));
+  expect(screen.getByRole('button', { name: 'Add screen here' })).toHaveAttribute('aria-disabled', 'true');
   fireEvent.click(screen.getByRole('button', { name: `Add before ${value.steps.find(item => item.id === source)!.name}` }));
   fireEvent.change(screen.getByLabelText('Answer type'), { target: { value: 'text' } });
   fireEvent.click(screen.getByRole('button', { name: 'Add screen here' }));
@@ -90,12 +91,12 @@ it('offers a valid question location without silently changing an explicit path'
   expect(change.mock.calls[0][6]).toBe('text');
 });
 
-it('summarizes grouped deletion before exposing alternate continuations', () => {
-  render(dialog(<GraphScreenRemove tree={tree} screenId="garden" onRemove={() => {}} onCancel={() => {}} />));
+it('summarizes grouped deletion before exposing alternate continuations', async () => {
+  render(<AlertDialog open><AlertDialogContent><GraphScreenRemove tree={tree} screenId="garden" onRemove={() => {}} onCancel={() => {}} /></AlertDialogContent></AlertDialog>);
   expect(screen.getByLabelText('After removing')).toHaveTextContent('remaining matching follow-ups');
   expect(screen.queryByRole('combobox')).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Change continuation' }));
-  expect(screen.getByRole('combobox')).toHaveValue('indoors');
+  fireEvent.click(screen.getByText('Change continuation'));
+  expect(await screen.findByRole('combobox')).toHaveValue('indoors');
 });
 
 it('lists phone-capable providers for optional SMS instead of treating sms as a provider channel', async () => {

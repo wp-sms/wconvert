@@ -249,7 +249,7 @@ beforeEach(() => {
 // These existing cases exercise layout controls. Default editing has its own regression below.
 const open = async () => {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 };
 
 /**
@@ -271,7 +271,7 @@ describe('the builder shell', () => {
       inline_placement: { position: 'after_content' },
     } }));
     await open();
-    const design = await screen.findByRole('tabpanel', { name: 'Theme & layout' });
+    const design = await screen.findByRole('tabpanel', { name: 'Design' });
     expect(within(design).queryByText('Automatically after content')).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Change inline placement' })).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
@@ -280,8 +280,8 @@ describe('the builder shell', () => {
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^Where does it show\?/ }));
     expect(within(rules).getByRole('heading', { name: 'Placement' })).toBeVisible();
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
-    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).queryByText('Manual')).toBeNull();
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     expect(screen.getByRole('button', { name: 'Use manual placement' })).toBeVisible();
@@ -322,8 +322,8 @@ describe('the builder shell', () => {
     const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
 
     expect(within(strip).getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
-      'Edit campaign',
-      'Theme & layout',
+      'Screens',
+      'Design',
       'Display rules',
       'Destinations',
     ]);
@@ -331,15 +331,15 @@ describe('the builder shell', () => {
 
   it('returns from Design to the selected Journey screen and open settings', async () => {
     await open();
-    await userEvent.click(await screen.findByRole('tab', { name: 'Edit campaign' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Screens' }));
     await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
-    await userEvent.click(screen.getByRole('button', { name: 'Details Screen 1' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Details' }));
     await userEvent.click(screen.getByText('Screen options', { exact: true }));
     const inspector = screen.getByRole('region', { name: 'Selected screen settings' });
-    await userEvent.click(within(inspector).getByRole('button', { name: 'Theme & layout' }));
-    expect(screen.getByRole('tab', { name: 'Theme & layout' })).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(within(inspector).getByRole('button', { name: 'Open Design' }));
+    expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.queryByRole('region', { name: 'Selected screen settings' })).toBeNull();
-    await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Screens' }));
     expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBe(inspector);
     expect(within(inspector).getByRole('textbox', { name: 'Screen name' })).toHaveValue('Details');
   });
@@ -474,7 +474,7 @@ describe('the builder shell', () => {
     const strip = screen.getByRole('tablist', { name: 'What you are editing' });
 
     await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(within(strip).getByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(within(strip).getByRole('tab', { name: 'Design' }));
 
     expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
@@ -495,10 +495,10 @@ describe('the builder shell', () => {
   it('names the design in use and puts the gallery behind one button', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     expect(await screen.findByText('How it appears')).toBeInTheDocument();
-    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('Popup')).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Popup')).toBeInTheDocument();
     expect(screen.getByText('Centred over the page')).toBeInTheDocument();
     expect(screen.getByText('Design: Centred card')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
@@ -537,7 +537,7 @@ describe('the builder shell', () => {
   it('previews current content and puts replacement consequences beside Apply', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
     await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
 
     const picker = within(await screen.findByRole('dialog'));
@@ -562,7 +562,7 @@ describe('the builder shell', () => {
   it('keeps the library entry off the design tab unless WP_DEBUG is on', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     expect(screen.queryByText(/Library entry/)).toBeNull();
   });
@@ -602,18 +602,18 @@ describe('the builder shell', () => {
    */
   it('opens the same preview on demand while rules are edited', async () => {
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(await screen.findByRole('radio', { name: 'Mobile' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
     expect(await screen.findByRole('dialog', { name: 'Preview & test' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
-    await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Screens' }));
     expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
     expect(await screen.findByRole('dialog', { name: 'Preview & test' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
-    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
     expect(canvas).toHaveAttribute('data-width', 'narrow');
   });
@@ -627,19 +627,19 @@ describe('the builder shell', () => {
       await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
       await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
       const preview = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
-      await userEvent.click(preview.getByRole('button', { name: 'Check the design' }));
+      await userEvent.click(preview.getByRole('radio', { name: 'Check the design' }));
       await userEvent.selectOptions(preview.getByRole('combobox', { name: 'Preview content lock' }), 'unavailable');
       expect(preview.getByText('Lock example: unavailable')).toBeInTheDocument();
       await userEvent.click(preview.getByRole('button', { name: 'Back to editor' }));
       expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
-      await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+      await userEvent.click(screen.getByRole('tab', { name: 'Screens' }));
       expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
       await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
       await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
       const again = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
-      await userEvent.click(again.getByRole('button', { name: 'Try as a visitor' }));
+      await userEvent.click(again.getByRole('radio', { name: 'Try as a visitor' }));
       await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
-      expect(screen.getByRole('tab', { name: 'Edit campaign' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.getByRole('tab', { name: 'Screens' })).toHaveAttribute('aria-selected', 'true');
       expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
       expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
     } finally {
@@ -657,7 +657,7 @@ describe('the builder shell', () => {
    */
   it('constrains the preview when the merchant asks for the narrow width', async () => {
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(await screen.findByRole('radio', { name: 'Mobile' }));
     expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveAttribute('data-width', 'narrow');
   });
 
@@ -904,8 +904,8 @@ describe('the way out of the builder', () => {
 
     render(<OptinBuilder id={ID} onClose={closed} />);
 
-    await screen.findByRole('tab', { name: 'Edit campaign' });
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
+    await screen.findByRole('tab', { name: 'Screens' });
+    await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
 
     expect(closed).toHaveBeenCalled();
   });
@@ -916,7 +916,7 @@ describe('the way out of the builder', () => {
     render(<OptinBuilder id={ID} onClose={closed} />);
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
 
     expect(await screen.findByRole('alertdialog')).toBeInTheDocument();
     expect(closed).not.toHaveBeenCalled();
@@ -932,7 +932,7 @@ describe('the way out of the builder', () => {
     render(<OptinBuilder id={ID} onClose={closed} />);
 
     await userEvent.type(await screen.findByLabelText('Name'), '!');
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Discard changes' }));
 
     expect(closed).toHaveBeenCalled();
@@ -968,7 +968,7 @@ describe('the way out of the builder', () => {
     await userEvent.type(await screen.findByLabelText('Name'), '!');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText(/^Draft saved$/);
-    await userEvent.click(screen.getByRole('button', { name: 'Back to Campaigns' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
 
     expect(closed).toHaveBeenCalled();
   });
@@ -1037,7 +1037,7 @@ describe('the summary', () => {
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
-    expect(await screen.findByRole('dialog', { name: 'Campaign details' })).toBeVisible();
+    expect(await screen.findByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
     expect(screen.getByText('Grow my email list · counts Email submissions')).toBeVisible();
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(goal).toHaveFocus());
@@ -1078,13 +1078,11 @@ describe('the summary', () => {
   });
 
   /**
-   * **A [[Playbook]] this build cannot name still reaches the merchant.** The
-   * row follows the stored id and only the NAME waits for the lookup — an entry
-   * this install no longer ships, or one filed under a [[Goal]] since
-   * corrected, still started this Optin, and *"read-only is fine, invisible is
-   * not"* has to survive a lookup that answers nothing.
+   * **A [[Playbook]] this build cannot name is left out, not shown as its id**
+   * (ADR 0131: no IDs on screen). A stored slug told a merchant nothing they
+   * could act on; the measurement line above still says what the goal counts.
    */
-  it('shows the stored id where the playbook registry cannot name it', async () => {
+  it('shows no stored id where the playbook registry cannot name it (no IDs on screen)', async () => {
     goals.listPlaybooks.mockResolvedValue([]);
     builder.getOptin.mockResolvedValue(
       optin({
@@ -1100,7 +1098,8 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Started from:', { exact: false })).toHaveTextContent('welcome-discount');
+    expect(screen.queryByText(/Started from/)).toBeNull();
+    expect(screen.queryByText(/welcome-discount/)).toBeNull();
   });
 
   /**
@@ -1231,7 +1230,7 @@ describe('the summary', () => {
     // vocabulary rather than a merchant's word.
     expect(
       await screen.findByRole('button', { name: /WP SMS/ }),
-    ).toHaveAccessibleDescription('Suggested by your campaign setup');
+    ).toHaveAccessibleDescription('Suggested');
     expect(screen.queryByText(/email_service_provider/)).toBeNull();
   });
 
@@ -1321,7 +1320,7 @@ describe('the summary', () => {
     await userEvent.keyboard('{Escape}');
     expect(await screen.findByText('The site did not answer.')).toBeVisible();
     expect(screen.getByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await waitFor(() => expect(screen.queryByText('The site did not answer.')).toBeNull());
     expect(destinations.readDestinations).toHaveBeenCalledTimes(3);
   });
@@ -1347,7 +1346,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(within(screen.getByRole('row', { name: /Service needed/ })).getAllByRole('button')[0]);
-    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('Sent as: installation'));
+    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Sent as: installation'));
     const value = screen.getByRole('textbox', { name: 'Value sent for choice 2' });
     await userEvent.clear(value);
     await userEvent.type(value, 'repair');
@@ -1378,7 +1377,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     const dialog = within(await screen.findByRole('dialog'));
     expect(dialog.getByText(/Set up the interest choices/)).toBeVisible();
-    expect(dialog.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(dialog.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 });
 
@@ -1687,7 +1686,7 @@ describe('publishing from the editor', () => {
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await userEvent.click(dialog.getByRole('button', { name: 'Done' }));
     expect(screen.getByText('Published')).toBeInTheDocument();
-    expect((await review()).getByRole('button', { name: 'Publish changes' })).toBeDisabled();
+    expect((await review()).getByRole('button', { name: 'Publish changes' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('waits for the latest edits to save before promoting the saved snapshot', async () => {
@@ -1726,7 +1725,7 @@ describe('publishing from the editor', () => {
     await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
     expect(await dialog.findByRole('alert')).toHaveTextContent('Could not publish.');
     expect(dialog.queryByRole('button', { name: 'Save & publish' })).toBeNull();
-    await userEvent.click(dialog.getByRole('button', { name: 'Publish Campaign' }));
+    await userEvent.click(dialog.getByRole('button', { name: 'Publish campaign' }));
     await dialog.findByRole('button', { name: 'Done' });
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(publishing.publishOptin).toHaveBeenCalledTimes(2);
@@ -1740,7 +1739,7 @@ it('prevents opening a second save path while a draft save is pending', async ()
   await userEvent.type(await screen.findByLabelText('Name'), ' updated');
   await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
   expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeDisabled();
-  expect(screen.getByRole('button', { name: 'Back to Campaigns' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Back to campaigns' })).toBeDisabled();
   accept(optin({ name: 'Welcome discount updated' }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeEnabled());
 });
@@ -1748,13 +1747,13 @@ it('prevents opening a second save path while a draft save is pending', async ()
 
 it('starts with the actual campaign and shares screen selection between Edit and Flow', async () => {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  expect(await screen.findByRole('tab', { name: 'Edit campaign' })).toHaveAttribute('aria-selected', 'true');
+  expect(await screen.findByRole('tab', { name: 'Screens' })).toHaveAttribute('aria-selected', 'true');
   expect(screen.getByRole('region', { name: 'Design canvas' })).toBeInTheDocument();
   expect(screen.getByRole('navigation', { name: 'Campaign screens' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute('aria-pressed', 'true');
-  await userEvent.click(screen.getByRole('button', { name: 'Flow' }));
+  expect(screen.getByRole('radio', { name: 'Edit' })).toBeChecked();
+  await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
   expect(await screen.findByLabelText('Journey map')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+  await userEvent.click(screen.getByRole('radio', { name: 'Edit' }));
   expect(screen.getByRole('navigation', { name: 'Campaign screens' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
 });

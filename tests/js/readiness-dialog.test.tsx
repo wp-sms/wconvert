@@ -64,9 +64,20 @@ describe('reviewing before publishing', () => {
         when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: [] }] } },
     ] } } };
     await open({ template, onEditJourney });
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(screen.getByRole('button', { name: /Choose an answer for the path from “Interests” to “Balcony details”/ }));
     await waitFor(() => expect(onEditJourney).toHaveBeenCalledExactlyOnceWith({ screenId: 'interests', section: 'paths', edgeId: 'unfinished' }));
+  });
+
+  /** A refused Publish keeps focus and says why (§9); pressing it publishes nothing. */
+  it('names the campaign in the title and says why Publish is refused', async () => {
+    const { supplied } = await open({ name: 'Spring sale', template: { ...FORM, tree: { ...FORM.tree, steps: [] } } });
+    expect(screen.getByRole('dialog', { name: 'Spring sale' })).toBeInTheDocument();
+    const publish = screen.getByRole('button', { name: 'Publish campaign' });
+    expect(publish).not.toBeDisabled();
+    expect(publish).toHaveAccessibleDescription('Fix the items under “Before you can publish” first.');
+    await userEvent.click(publish);
+    expect(supplied.onPublish).not.toHaveBeenCalled();
   });
 
   it('links the inline placement recap to its placement settings', async () => {
@@ -91,11 +102,11 @@ describe('reviewing before publishing', () => {
 
   it('blocks a list campaign until a service is ready or collect-only is explicitly chosen', async () => {
     const { rerender, supplied } = await open({ captureMode: 'connected' });
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByText(/Before you can publish, connect a service/)).toBeVisible();
     rerender(<ReadinessDialog {...supplied} captureMode="local" />);
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
-    expect(screen.getByText(/Collect only: saved in Leads/)).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
+    expect(screen.getByText(/Keep in WConvert only: leads stay in Leads/)).toBeVisible();
   });
 
   it('keeps the same trigger for a sound design and one needing attention', () => {
@@ -109,7 +120,7 @@ describe('reviewing before publishing', () => {
 
   it.each([undefined, { tree: treeFixture({ steps: [] }), tokens: {} } as Template])('blocks a missing or empty design and routes to choosing one', async (template) => {
     const { supplied } = await open({ template });
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByText('Choose a design before publishing.')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Choose design' }));
     expect(supplied.onGoToDesign).toHaveBeenCalledOnce();
@@ -123,8 +134,8 @@ describe('reviewing before publishing', () => {
     ] }) };
     const { supplied } = await open({ template });
     expect(screen.getByText(/Nothing on this design counts as a conversion/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
     expect(supplied.onPublish).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: /Nothing on this design counts as a conversion/ }));
     expect(supplied.onEditDesign).toHaveBeenCalledOnce();
@@ -136,8 +147,8 @@ describe('reviewing before publishing', () => {
     await open({ template: LINK,
       ...(requirement === 'goal' ? { goal: ready({ ...GOAL, outcome: CAPTURE_OUTCOME }) } : { bound: ['forwarding-route'] }),
     });
-    expect(screen.getByText(requirement === 'goal' ? CAPTURE_OUTCOME.requirement : /This Campaign needs a form field to collect leads/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByText(requirement === 'goal' ? CAPTURE_OUTCOME.requirement : /This campaign needs a form field to collect leads/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('blocks an unfinished interest choice and opens the exact field for correction', async () => {
@@ -147,7 +158,7 @@ describe('reviewing before publishing', () => {
       { type: 'button', action: 'submit', label: 'Send' },
     ] }] }) };
     const { supplied } = await open({ template });
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(screen.getByRole('button', { name: /Set up the interest choices/ }));
     expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
     expect(supplied.onEditDesign).not.toHaveBeenCalled();
@@ -159,7 +170,7 @@ describe('reviewing before publishing', () => {
       { type: 'field', name: 'name' }, { type: 'button', action: 'submit', label: 'Send' },
     ] }] }) };
     const { supplied } = await open({ template });
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(screen.getByRole('button', { name: /Add an email or phone field/ }));
     expect(supplied.onEditDesign).toHaveBeenCalledOnce();
     expect(supplied.onPublish).not.toHaveBeenCalled();
@@ -169,12 +180,12 @@ describe('reviewing before publishing', () => {
     await open({ template: LINK });
     expect(screen.getByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
     expect(screen.getByText('Before you can publish')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('keeps a contrast warning advisory and routes its correction to design', async () => {
     const { supplied } = await open({ template: { ...FORM, tokens: { ...FORM.tokens, muted: '#ffffff' } } });
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
     await userEvent.click(screen.getByRole('button', { name: /too close to the background/ }));
     expect(supplied.onGoToDesign).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -184,14 +195,14 @@ describe('reviewing before publishing', () => {
     await open({ captureMode: 'connected' });
     expect(screen.getByText('No destination selected. Finish setup in Destinations.')).toBeVisible();
     expect(screen.queryByText(/You can export captured leads/)).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('allows saving leads locally with no forwarding route', async () => {
     const { supplied } = await open();
     expect(screen.getByText('New leads are saved in WConvert.')).toBeInTheDocument();
-    expect(screen.getByText(/Collect only: saved in Leads/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
+    expect(screen.getByText(/Keep in WConvert only: leads stay in Leads/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
     await waitFor(() => expect(supplied.onPublish).toHaveBeenCalledOnce());
   });
 
@@ -199,7 +210,7 @@ describe('reviewing before publishing', () => {
     await open({ bound: ['forwarding-route'], destinations: null });
     expect(screen.getByText(/Destination details could not be checked/)).toBeInTheDocument();
     expect(screen.getByText(/Publishing does not test delivery/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
   });
 
   it('shows a compact privacy review and opens the existing notice control', async () => {
@@ -217,7 +228,7 @@ describe('reviewing before publishing', () => {
 
     expect(screen.getByRole('heading', { name: 'Privacy' })).toBeInTheDocument();
     expect(screen.getByText('This form links to your Privacy Policy.')).toBeInTheDocument();
-    expect(screen.getByText('This starting point uses a privacy notice without a consent checkbox.')).toBeInTheDocument();
+    expect(screen.getByText('This form shows a privacy notice without a consent checkbox.')).toBeInTheDocument();
     expect(screen.queryByText(/no Privacy Policy page selected/)).toBeNull();
 
     await userEvent.click(screen.getByRole('button', { name: 'Edit notice' }));
@@ -246,8 +257,8 @@ describe('reviewing before publishing', () => {
     ] }, { type: 'stack', children: [] }] }) };
     const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
-    expect(screen.getByText('No consent checkbox is shown for this marketing list.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    expect(screen.getByText('No consent checkbox is shown for this mailing list.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
     await userEvent.click(screen.getByRole('button', { name: 'Edit consent' }));
     expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
   });
@@ -261,8 +272,8 @@ describe('reviewing before publishing', () => {
     ] }, { type: 'stack', children: [] }] }) };
     await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
-    expect(screen.getByText('Required consent is shown for this marketing list.')).toBeInTheDocument();
-    expect(screen.queryByText('No consent checkbox is shown for this marketing list.')).toBeNull();
+    expect(screen.getByText('Required consent is shown for this mailing list.')).toBeInTheDocument();
+    expect(screen.queryByText('No consent checkbox is shown for this mailing list.')).toBeNull();
   });
 
   it('keeps privacy guidance advisory and hides it when the site preference is off', async () => {
@@ -270,7 +281,7 @@ describe('reviewing before publishing', () => {
 
     expect(screen.getByText('No Privacy Policy notice is shown on this form.')).toBeInTheDocument();
     expect(screen.getByText(/WordPress has no Privacy Policy page selected/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
 
     rerender(<ReadinessDialog {...supplied} privacyGuidance={false} />);
     expect(screen.queryByRole('heading', { name: 'Privacy' })).toBeNull();
@@ -284,10 +295,10 @@ describe('publication progress and recovery', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save & publish' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not save your latest changes.');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Published version updated' })).toBeNull();
+    expect(screen.queryByText(/^Published\. Where and when/)).toBeNull();
     expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: 'Save & publish' }));
-    expect(await screen.findByRole('heading', { name: 'Published version updated' })).toBeInTheDocument();
+    expect(await screen.findByText(/^Published\. Where and when/)).toBeInTheDocument();
     expect(screen.queryByRole('alert')).toBeNull();
     expect(onPublish).toHaveBeenCalledTimes(2);
   });
@@ -296,7 +307,7 @@ describe('publication progress and recovery', () => {
     let finish: () => void = () => undefined;
     const onPublish = vi.fn(() => new Promise<void>((resolve) => { finish = resolve; }));
     const { supplied } = await open({ onPublish });
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByRole('button', { name: 'Publishing…' })).toBeDisabled();
     expect(within(dialog).getByRole('button', { name: 'Keep editing' })).toBeDisabled();
@@ -310,16 +321,16 @@ describe('publication progress and recovery', () => {
     expect(dialog).toBeInTheDocument();
     expect(onPublish).toHaveBeenCalledOnce();
     await act(async () => { finish(); });
-    expect(screen.getByRole('heading', { name: 'Published version updated' })).toBeInTheDocument();
+    expect(screen.getByText(/^Published\. Where and when/)).toBeInTheDocument();
   });
 
   it('offers inline placement after success and returns focus when Done closes the review', async () => {
     window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.org/blog/', inspectParam: 'wconvert-inspect' };
     await open({ displayType: 'inline' });
-    await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
-    expect(await screen.findByRole('heading', { name: 'Published version updated' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
+    expect(await screen.findByText(/^Published\. Where and when/)).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue('[wconvert_optin id="01JQ00000000000000000000AA"]');
-    expect(screen.queryByText(/Publish this Campaign first/)).toBeNull();
+    expect(screen.queryByText(/Publish this campaign first/)).toBeNull();
     expect(screen.getByRole('link', { name: 'Check your homepage' })).toHaveAttribute('href', 'https://example.org/blog/?wconvert-inspect=1');
     await userEvent.click(screen.getByRole('button', { name: 'Done' }));
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -329,8 +340,8 @@ describe('publication progress and recovery', () => {
   it('does not republish an unchanged live version, but still explains inline placement', async () => {
     await open({ displayType: 'inline', optin: { published_at: '2026-09-10T12:00:00Z', deleted_at: null, suspended: null, has_unpublished_changes: false } });
     expect(screen.getByText('Your saved draft matches the published version.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish changes' })).toBeDisabled();
-    expect(screen.getByRole('heading', { name: 'Place this Campaign on a page' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish changes' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('heading', { name: 'Place this campaign on a page' })).toBeInTheDocument();
   });
 });
 
@@ -353,7 +364,7 @@ describe('review actions return to the place that can resolve them', () => {
 
   it('opens the actual schedule control for a countdown warning', async () => {
     const { supplied } = await open({ template: design('deadline-panel') });
-    await userEvent.click(screen.getByRole('button', { name: /nothing says when this Campaign stops running/ }));
+    await userEvent.click(screen.getByRole('button', { name: /nothing says when this campaign stops running/ }));
     expect(supplied.onGoToSchedule).toHaveBeenCalledOnce();
     expect(supplied.onGoTo).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -379,7 +390,7 @@ it('offers a focused repair after the server refuses the live-product requiremen
   const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: null, capture_any_of: [] } };
   await open({ template, goal: ready(goal), goalId: goal.id, onEditJourney,
     onPublish: vi.fn().mockRejectedValue({ code: 'wconvert_optin_form_incomplete', message: 'WooCommerce is required.', data: { issue: 'products' } }) });
-  await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
   expect(await screen.findByRole('alert')).toHaveTextContent('WooCommerce is required.');
   await userEvent.click(screen.getByRole('button', { name: 'Review product requirements' }));
   expect(onEditJourney).toHaveBeenCalledWith({ screenId: 'result', section: 'content', focus: 'products-required' });
@@ -391,7 +402,7 @@ it('opens the exact unassigned consent block and blocks publication until it is 
   const template: Template = { ...original, tree: { ...original.tree, submissions: original.tree.submissions.map(save => ({ ...save, consents: [] })) } };
   const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: 'email', capture_any_of: [] } };
   const { supplied } = await open({ template, goal: ready(goal), goalId: goal.id });
-  expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   await userEvent.click(screen.getByRole('button', { name: 'Assign the consent checkbox to “Optional email signup” under Saved with.' }));
   const at = original.tree.steps.findIndex(step => step.id === 'email');
   expect(supplied.onGoTo).toHaveBeenCalledWith([at, 'children', 3]);

@@ -134,7 +134,7 @@ export function DestinationsEditor({
     <>
       <Region className="wconvert-destinations-region">
         {refreshError !== null && available.status === 'ready' && !local &&
-          <RegionError message={refreshError} action={<Button variant="outline" size="sm" onClick={onRefresh}>{__('Retry', 'wconvert')}</Button>} />}
+          <RegionError message={refreshError} onRetry={onRefresh} />}
 
         <RegionHeader title={title ?? __('Where leads go', 'wconvert')} level={3} description={subtitle}
           trailing={!local && cards.length > 0 ? add : undefined} />
@@ -147,9 +147,9 @@ export function DestinationsEditor({
           {primary && <div className="wconvert-destination-always">
             <Inbox aria-hidden="true" className="size-5 shrink-0 text-muted-foreground" />
             <div className="min-w-0">
-              <p className="m-0 font-medium">{__('Saved in WConvert Leads', 'wconvert')}</p>
+              <p className="m-0 font-medium">{__('Saved in Leads', 'wconvert')}</p>
               <Description>{local
-                ? __('Kept for review or export. Nothing is forwarded to another service.', 'wconvert')
+                ? __('Kept for review or export. Nothing is sent to another service.', 'wconvert')
                 : __('Every submission is saved here first, even if a destination fails.', 'wconvert')}</Description>
             </div>
             <span className="text-note font-semibold text-muted-foreground">{__('Always', 'wconvert')}</span>
@@ -157,12 +157,11 @@ export function DestinationsEditor({
 
           {local ? null
             : available.status === 'loading' ? <RowsSkeleton />
-            : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Your draft is unchanged.', 'wconvert')}
-                action={<Button variant="outline" onClick={onRefresh}>{__('Retry', 'wconvert')}</Button>} />
+            : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Your draft is unchanged.', 'wconvert')} onRetry={onRefresh} />
             : site.length === 0 ? (
               <div className="flex flex-col gap-2">
                 <p className="m-0 font-medium">{__('Choose a service to set up', 'wconvert')}</p>
-                {outcome && !handoffIssue && primary && <Description>{__('Leads stay in WConvert. Add a destination only if you want to forward them.', 'wconvert')}</Description>}
+                {outcome && !handoffIssue && primary && <Description>{__('Leads stay in WConvert. Add a destination only if you want to send them on.', 'wconvert')}</Description>}
                 <ProviderTiles types={types} rule={channel} suggested={suggested}
                   onChoose={(type, trigger) => { returnFocus.current = trigger; setSetup({ type: type.id }); }} />
               </div>
@@ -187,7 +186,7 @@ export function DestinationsEditor({
                 <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
                 <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>
               </div>
-              <Button variant="outline" size="sm" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
+              <Button variant="outline" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
                 {__('Remove missing destinations', 'wconvert')}
               </Button>
             </div>}

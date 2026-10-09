@@ -51,14 +51,13 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
   const read = fromRule(rule, types);
 
   if (read === null) {
-    // A type this install's vocabulary does not have. The raw type is the only
-    // honest thing left to show, and removing it is the only edit that can be
-    // offered — drawing controls for params nothing declares would invite the
-    // merchant to configure a rule nothing evaluates.
+    // A type this install's vocabulary does not have. Removing it is the only
+    // edit that can be offered — drawing controls for params nothing declares
+    // would invite the merchant to configure a rule nothing evaluates. Its key
+    // is not shown (ADR 0131: no raw keys on screen); the sentence says enough.
     return (
       <>
-        <code>{rule.type}</code>{' '}
-        <span className="wconvert-rule__note">{__('This rule is not available on this site.', 'wconvert')}</span>{' '}
+        <span className="wconvert-rule__note">{__('A rule that is not available on this site.', 'wconvert')}</span>{' '}
       </>
     );
   }

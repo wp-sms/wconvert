@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
+import { TryAgain } from '../shell/Region';
+import { Disclosure } from '../shell/Disclosure';
 import type { ResultProductFilter as Filter } from '@renderer/types';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
@@ -31,7 +33,7 @@ function CatalogChoice({ label, taxonomy, value, onChange }: { label: string; ta
     {(state.more || state.items.length > 8 || !!search) && <Input type="search" aria-label={sprintf(__('Search %s', 'wconvert'), label.toLowerCase())} placeholder={__('Search…', 'wconvert')} value={search} maxLength={100} onChange={event => setSearch(event.target.value)} />}
     {state.more && <small>{__('Search to narrow the list.', 'wconvert')}</small>}
     {!state.busy && !state.error && !state.items.length && <small>{__('No choices found. Try another search or add them in WooCommerce.', 'wconvert')}</small>}
-    {state.error && <p role="alert">{__('Choices could not load.', 'wconvert')} <Button variant="outline" type="button" onClick={() => setRetry(retry + 1)}>{__('Retry', 'wconvert')}</Button></p>}
+    {state.error && <p role="alert">{__('Choices could not load.', 'wconvert')} <TryAgain onClick={() => setRetry(retry + 1)} /></p>}
   </div>;
 }
 
@@ -52,7 +54,7 @@ export function LiveProductMatches({ filter }: { filter: Filter }) {
   }, [key, ready, retry]);
   if (!ready) return <p role="status">{__('Choose a category and complete each filter.', 'wconvert')}</p>;
   if (!state || state.key !== key) return <p role="status">{__('Loading matches…', 'wconvert')}</p>;
-  if (state.error) return <div><p role="alert">{__('Matches could not load. Check your category and filters, then retry.', 'wconvert')}</p><Button variant="outline" type="button" onClick={() => setRetry(retry + 1)}>{__('Retry', 'wconvert')}</Button></div>;
+  if (state.error) return <div><p role="alert">{__('Matches could not load. Check your category and filters, then try again.', 'wconvert')}</p><TryAgain onClick={() => setRetry(retry + 1)} /></div>;
   if (!state.items.length) return <p role="status">{__('No available matches. Visitors can use your fallback link.', 'wconvert')}</p>;
   const missingPins = (filter.pinned_ids ?? []).some(id => !filter.excluded_ids?.includes(id) && !state.items.some(item => item.id === id));
   return <>{missingPins && <p role="status">{__('A pinned product is unavailable or does not match. Other matches appear below.', 'wconvert')}</p>}<ul className="wc-products-list wconvert-product-matches">{state.items.map(product => <li key={product.id}>
@@ -84,8 +86,8 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
     {value.attributes.length < 3 && <Button variant="outline" disabled={!value.category_id || value.attributes.some(item => !item.taxonomy || !item.term_id)} onClick={() => onChange({ ...value, attributes: [...value.attributes, { taxonomy: '', term_id: 0 }] })}>{__('Add attribute filter', 'wconvert')}</Button>}
     <small>{__('Uses global WooCommerce attributes. Shoppers choose size or other options on the product page.', 'wconvert')}</small>
     {new Set(value.attributes.map(item => item.taxonomy)).size < value.attributes.length && <p role="alert">{__('Use each attribute only once.', 'wconvert')}</p>}
-    <details onToggle={event => setCuration(event.currentTarget.open)}>
-      <summary>{sprintf(__('Pin or exclude products (%1$d pinned, %2$d excluded)', 'wconvert'), value.pinned_ids?.length ?? 0, value.excluded_ids?.length ?? 0)}</summary>
+    <Disclosure variant="inline" onToggle={setCuration} title={__('Pin or exclude products', 'wconvert')}
+      summary={sprintf(__('%1$d pinned, %2$d excluded', 'wconvert'), value.pinned_ids?.length ?? 0, value.excluded_ids?.length ?? 0)}>
       {curation && <div className="wconvert-result-filter__body"><fieldset><legend>{__('Pinned products', 'wconvert')}</legend>
         <ProductPicker ids={value.pinned_ids ?? []} max={3} label={__('Find products to pin', 'wconvert')} actionLabel={__('Pin', 'wconvert')} help={__('Choose up to three. Shown first when available and matching all filters.', 'wconvert')} onChange={pinned_ids => onChange({ ...value, pinned_ids })} />
       </fieldset>
@@ -93,9 +95,9 @@ export function ResultProductFilter({ value, onChange }: { value: Filter; onChan
         <ProductPicker ids={value.excluded_ids ?? []} max={12} ordered={false} allowUnavailable label={__('Find products to exclude', 'wconvert')} actionLabel={__('Exclude', 'wconvert')} help={__('Choose up to twelve. Never shown in this result, even if pinned.', 'wconvert')} onChange={excluded_ids => onChange({ ...value, excluded_ids })} />
       </fieldset>
       </div>}
-    </details>
-    <details onToggle={event => setPreview(event.currentTarget.open)}><summary>{__('Preview matches', 'wconvert')}</summary>
+    </Disclosure>
+    <Disclosure variant="inline" onToggle={setPreview} title={__('Preview matches', 'wconvert')}>
       {preview && <div className="wconvert-result-filter__body"><LiveProductMatches filter={value} /><small>{__('Live catalog preview. No clicks or conversions are counted.', 'wconvert')}</small></div>}
-    </details>
+    </Disclosure>
   </div>;
 }

@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import type { TemplateLabels } from '../templates/api';
 import { slotsOf, withHidden, withValue } from './panel';
@@ -11,8 +12,7 @@ export function JourneyConsentSettings({ tree, step, labels, onChange }: {
 }) {
   const slots = slotsOf(tree).filter(slot => slot.path[0] === step && slot.type === 'consent');
   if (!slots.length) return null;
-  return <details className="wconvert-journey-settings wconvert-journey-consent-settings" aria-label={__('Consent on this screen', 'wconvert')}>
-    <summary>{__('Consent wording & visibility', 'wconvert')}</summary>
+  return <Disclosure variant="inline" className="wconvert-journey-settings wconvert-journey-consent-settings" title={__('Consent wording & visibility', 'wconvert')}>
     {slots.map(slot => <div key={slot.path.join('.')} className="wconvert-journey-consent">
       <SlotFields slot={slot} labels={labels}
         onValue={(key, value) => onChange(withValue(tree, slot.path, key, value), `consent:${slot.path.join('.')}:${key}`)}
@@ -24,5 +24,5 @@ export function JourneyConsentSettings({ tree, step, labels, onChange }: {
           onChange(next, typing ? `consent:${slot.path.join('.')}:sentence` : undefined);
         }} />
     </div>)}
-  </details>;
+  </Disclosure>;
 }

@@ -1,9 +1,10 @@
 import { useId, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Checkbox } from '../components/ui/checkbox';
+import { CheckRow } from '../shell/CheckRow';
 import { Description } from '../shell/Description';
 import { messageOf } from '../shell/loadable';
 import { previewMapping, testMapping } from '../destinations/api';
@@ -47,9 +48,8 @@ export function MappingTest({ destination, fields, sources, mapping }: {
     catch (cause) { setError(messageOf(cause)); }
     finally { setBusy(null); }
   };
-  return <details className="border-t border-border pt-3">
-    <summary className="cursor-pointer text-note font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">{__('Preview and test mapping', 'wconvert')}</summary>
-    <div className="flex min-w-0 flex-col gap-3 pt-3">
+  return <Disclosure variant="inline" className="border-t border-border" title={__('Preview and test mapping', 'wconvert')}>
+    <div className="flex min-w-0 flex-col gap-3">
       <Description>{__('Try sample answers before sending a test contact.', 'wconvert')}</Description>
       <fieldset disabled={busy !== null} className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0">
         <div className="flex flex-col gap-1.5"><Label htmlFor={`${id}-email`}>{__('Your test email', 'wconvert')}</Label>
@@ -59,11 +59,10 @@ export function MappingTest({ destination, fields, sources, mapping }: {
           {group.choices.length > 0 && <>
             <legend className="mb-2 text-body font-medium [overflow-wrap:anywhere]">{group.label}</legend>
             <div className="flex flex-wrap gap-2">
-              {group.choices.map((source) => <Label key={source.id} htmlFor={`${id}-${source.id}`} className="min-h-(--control-height) cursor-pointer rounded-md border border-border px-3 py-2 leading-snug focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring hover:bg-accent has-[[data-state=checked]]:border-action has-[[data-state=checked]]:bg-accent">
-                <Checkbox id={`${id}-${source.id}`} aria-label={`${__('Sample answer:', 'wconvert')} ${source.label}`} checked={sample[source.id] === true}
-                  onCheckedChange={(checked) => { invalidate(); setSample({ ...sample, [source.id]: checked === true }); }} />
-                <span className="min-w-0 [overflow-wrap:anywhere]">{source.choice?.label ?? source.label}</span>
-              </Label>)}
+              {group.choices.map((source) => <CheckRow key={source.id} id={`${id}-${source.id}`} aria-label={`${__('Sample answer:', 'wconvert')} ${source.label}`}
+                className="[overflow-wrap:anywhere]" checked={sample[source.id] === true}
+                onChange={(event) => { invalidate(); setSample({ ...sample, [source.id]: event.target.checked }); }}
+                label={source.choice?.label ?? source.label} />)}
             </div>
           </>}
           {group.answer && <div className="flex min-w-0 flex-col gap-1.5">
@@ -86,10 +85,10 @@ export function MappingTest({ destination, fields, sources, mapping }: {
         <Description>{__('A test sends a real contact and may add it to the selected audience or list and trigger automations. Use your own address.', 'wconvert')}</Description>
         <div><Button type="button" disabled={busy !== null || report?.outcome === 'success' || Object.keys(preview.mapped).length === 0} onClick={() => void sendDraft()}>{busy === 'send' ? __('Sending test contact…', 'wconvert') : __('Send test contact', 'wconvert')}</Button></div>
       </div>}
-      {error && <p role="alert" className="m-0 text-note text-warning">{error}</p>}
+      {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
       {report && <p role="status" className="m-0 text-note">{report.message}</p>}
     </div>
-  </details>;
+  </Disclosure>;
 }
 
 function MappingValue({ label, text }: { label: string; text: string | true }) {

@@ -2,14 +2,20 @@ import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter } from '../components/ui/admin-dialog';
+import { DialogDescription, DialogTitle } from '../components/ui/dialog';
 import { DestinationSettingsForm } from '../destinations/DestinationSettingsForm';
 import { saveDestination, type Connection, type Destination, type DestinationType } from '../destinations/api';
-import { isShown, renderingFor, tierProductName } from '../goals/availability';
-import { ProviderMark } from '../destinations/ProviderMark';
 import { messageOf } from '../shell/loadable';
+import { ProviderTiles } from './AddDestinationPicker';
 
-/** The shared route can be configured without leaving the Optin's draft. */
+/**
+ * The shared route can be configured without leaving the campaign's draft.
+ *
+ * A Medium `AdminDialog` (ADR 0131). The provider list is the same
+ * `ProviderTiles` the Add picker draws, and the settings form brings its own
+ * body and footer, so it is a direct child of the content rather than wrapped.
+ */
 export function DestinationSetupDialog({
   destination, initialType, focusField, types, connections, returnFocusTo, onClose, onSaved, onConnectionSaved,
 }: {
@@ -31,13 +37,12 @@ export function DestinationSetupDialog({
   const title = useRef<HTMLHeadingElement>(null);
   const description = useId();
   const type = types.find((candidate) => candidate.id === selected);
-  const offered = types.filter((candidate) => isShown(candidate.availability));
   useEffect(() => { if (focusField === undefined) title.current?.focus(); }, [selected, focusField]);
   const close = () => { if (!busy) onClose(); };
 
   return (
-    <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
-      <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-xl"
+    <AdminDialog open onOpenChange={(open) => { if (!open) close(); }}>
+      <AdminDialogContent size="md"
         showCloseButton={!busy}
         // The portal mounts after this component's effects, so the first
         // focus is taken here rather than in the effect below.
@@ -46,13 +51,16 @@ export function DestinationSetupDialog({
           event.preventDefault();
           returnFocusTo.current?.focus();
         }}>
-        <DialogHeader>
-          <DialogTitle className="m-0" ref={title} tabIndex={-1}>
-            {destination !== undefined ? sprintf(__('Edit %s', 'wconvert'), destination.label)
-              : type === undefined ? __('Add a destination', 'wconvert')
-              : sprintf(__('Add a %s destination', 'wconvert'), type.label)}
-          </DialogTitle>
-          <DialogDescription className="m-0" id={description}>
+        {/* The header is drawn here rather than by `AdminDialogHeader` because its title takes focus. */}
+        <div data-slot="dialog-header" className="wconvert-dialog__header">
+          <div className="wconvert-dialog__identity">
+            <DialogTitle className="wconvert-dialog__title leading-snug" ref={title} tabIndex={-1}>
+              {destination !== undefined ? <bdi>{destination.label}</bdi>
+                : type === undefined ? __('Add a destination', 'wconvert')
+                : sprintf(__('New %s destination', 'wconvert'), type.label)}
+            </DialogTitle>
+          </div>
+          <DialogDescription className="wconvert-dialog__meta" id={description}>
             {/*
               Editing says who else is affected in the usage notice below, so
               the description names the provider rather than saying it twice.
@@ -60,39 +68,26 @@ export function DestinationSetupDialog({
             {type?.needs_connection && !connections.some((account) => account.type === type.id)
               ? sprintf(__('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
               : destination !== undefined
-              ? type?.label ?? destination.type
+              ? type?.label ?? __('Destination', 'wconvert')
               : __('It is selected for this campaign when you save.', 'wconvert')}
           </DialogDescription>
-        </DialogHeader>
+          {type !== undefined && destination === undefined && (
+            <Button type="button" variant="outline" className="justify-self-start" disabled={busy}
+              onClick={() => { setSelected(null); setError(null); }}>
+              <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to providers', 'wconvert')}
+            </Button>
+          )}
+        </div>
 
         {type === undefined ? (
-          <ul className="m-0 list-none divide-y divide-border p-0" aria-label={__('Destination providers', 'wconvert')}>
-            {offered.map((candidate) => {
-              const rendering = renderingFor(candidate.availability, 'settings_list');
-              return (
-                <li key={candidate.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <span className="flex items-center gap-2 font-medium"><ProviderMark type={candidate} className="size-4 shrink-0" />{candidate.label}</span>
-                  {rendering === 'offer' ? (
-                    <Button variant="outline" size="sm" aria-label={sprintf(__('Choose %s', 'wconvert'), candidate.label)}
-                      onClick={() => setSelected(candidate.id)}>{__('Choose', 'wconvert')}</Button>
-                  ) : (
-                    <span className="text-note text-muted-foreground">
-                      {rendering === 'upsell'
-                        ? sprintf(__('Included with %s.', 'wconvert'), tierProductName(candidate.tier))
-                        : sprintf(__('Needs %s on this site.', 'wconvert'), candidate.requires_label ?? __('something this site does not have', 'wconvert'))}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-            {offered.length === 0 && <li className="text-muted-foreground">{__('No destination providers are available on this site.', 'wconvert')}</li>}
-          </ul>
-        ) : (
           <>
-            {destination === undefined && <Button variant="ghost" size="sm" className="justify-self-start" disabled={busy}
-              onClick={() => { setSelected(null); setError(null); }}>
-              <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Choose another provider', 'wconvert')}
-            </Button>}
+            <AdminDialogBody>
+              <ProviderTiles types={types} rule={null} suggested={[]} onChoose={(candidate) => setSelected(candidate.id)} />
+            </AdminDialogBody>
+            <AdminDialogFooter back={<Button type="button" variant="outline" onClick={close}>{__('Cancel', 'wconvert')}</Button>} />
+          </>
+        ) : (
+          <div className="wconvert-destination-setup__form">
             <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination} focusField={focusField}
               connections={connections.filter((connection) => connection.type === type.id)}
               onConnectionSaved={onConnectionSaved}
@@ -106,9 +101,9 @@ export function DestinationSetupDialog({
                   .catch((cause: unknown) => setError(messageOf(cause)))
                   .finally(() => setBusy(false));
               }} />
-          </>
+          </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </AdminDialogContent>
+    </AdminDialog>
   );
 }

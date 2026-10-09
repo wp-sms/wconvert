@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { TryAgain } from '../../shell/Region';
 import { readSiteAllowance, type SiteAllowance } from '../../optins/api';
 import { allowanceSummary, hasSiteLimits } from '../../optins/allowanceSummary';
-import { Button } from '../../components/ui/button';
 import { messageOf } from '../../shell/loadable';
 import { settingsHref } from '../../nav';
 
@@ -24,7 +24,7 @@ export function SiteLimitsNote() {
   return <aside className="wconvert-site-limits-note" aria-label={__('Site-wide limits', 'wconvert')}>
     {limits && <><strong>{__('Site-wide limits also apply', 'wconvert')}</strong><p>{allowanceSummary(limits)}</p></>}
     {error && <><p role="alert">{__('Could not check the site-wide limits.', 'wconvert')} {error}</p>
-      <Button size="sm" variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry checking limits', 'wconvert')}</Button></>}
+      <TryAgain onClick={() => setRetry((value) => value + 1)} /></>}
     <p>{__('A campaign cannot override these limits.', 'wconvert')} <a href={settingsHref()}>{__('Manage them in Settings', 'wconvert')}</a></p>
   </aside>;
 }

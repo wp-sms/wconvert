@@ -74,7 +74,7 @@ describe('Test a visit', () => {
     choose('Does this visitor match: some_future_rule?', 'yes');
     choose('Visit date', 'pick');
     expect(result()).toHaveTextContent('Opens after 15 seconds');
-    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Reset visitor' }));
     expect(screen.getByRole('combobox', { name: 'Signed in' })).toHaveValue('no');
     expect(screen.getByRole('combobox', { name: 'Visit date' })).toHaveValue('today');
     expect(result()).toHaveTextContent('Doesn’t open');

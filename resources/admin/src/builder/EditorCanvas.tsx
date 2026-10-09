@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { CircleHelp, Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
+import { CircleHelp, MousePointer2, X } from 'lucide-react';
+import { OptionStrip } from '../shell/OptionStrip';
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
@@ -46,28 +47,11 @@ export function DeviceControls({
   onChange: (width: PreviewWidth) => void;
 }) {
   return (
-    <div className="wconvert-device-controls"><div className="wconvert-segmented" aria-label={__('Preview width', 'wconvert')}>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title={__('Desktop preview', 'wconvert')}
-        aria-label={__('Desktop preview', 'wconvert')}
-        aria-pressed={width === 'own'}
-        onClick={() => onChange('own')}
-      >
-        <Monitor aria-hidden="true" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        title={__('Mobile preview', 'wconvert')}
-        aria-label={__('Mobile preview', 'wconvert')}
-        aria-pressed={width === 'narrow'}
-        onClick={() => onChange('narrow')}
-      >
-        <Smartphone aria-hidden="true" />
-      </Button>
-    </div>{width === 'narrow' && <MobileAppearanceNote />}</div>
+    // The same strip the template picker's preview and Preview & test use (§7).
+    <div className="wconvert-device-controls"><OptionStrip label={__('Preview size', 'wconvert')} value={width === 'narrow' ? 'mobile' : 'desktop'}
+      options={[{ value: 'desktop', label: __('Desktop', 'wconvert') }, { value: 'mobile', label: __('Mobile', 'wconvert') }]}
+      onChange={value => onChange(value === 'mobile' ? 'narrow' : 'own')} />
+      {width === 'narrow' && <MobileAppearanceNote />}</div>
   );
 }
 
@@ -220,7 +204,7 @@ export function EditorCanvas({
                     onClick={() =>
                       interactive
                         ? onClose && !completed ? onClose() : setDismissed(true)
-                        : setMessage(__('Visitors can always close this Campaign.', 'wconvert'))
+                        : setMessage(__('Visitors can always close this campaign.', 'wconvert'))
                     }
                   >
                     <X aria-hidden="true" />

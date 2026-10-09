@@ -31,7 +31,7 @@ it('names a question added after the combined enquiry save', () => {
   } }], graph: { ...original.graph!, edges: [...original.graph!.edges.map(edge => edge.id === 'submitted' ? { ...edge, to: 'late' } : edge),
     { id: 'late_end', from: 'late', to: 'received', kind: 'default' }] } };
   expect(journeyBoundaryIssues(tree, 'submit')).toEqual([{ key: 'question-after-save:late',
-    said: 'The questions on “Too late” come after “One enquiry” saves the answers. Move this screen before that save in Journey, or remove its questions.',
+    said: 'The questions on “Too late” come after “One enquiry” saves the answers. Move this screen before that save in Screens, or remove its questions.',
     repair: { screenId: 'late', section: 'content', focus: 'questions' } }]);
 });
 

@@ -17,7 +17,7 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
   const widgets = destination?.type === 'widgets';
 
   return <div className="wconvert-placement-panel">
-    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this Campaign first. The block and the shortcode only find published Campaigns.', 'wconvert')}</p>}
+    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this campaign first. The block and the shortcode only find published campaigns.', 'wconvert')}</p>}
     <div className="wconvert-display-settings">
       <div className="wconvert-placement-row">
         <div className="wconvert-placement-row__text">
