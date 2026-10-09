@@ -1,8 +1,9 @@
-import { __ } from '@wordpress/i18n';
 import { adminSettings } from '../settings';
-import { readable } from '../lib/wallTime';
 
-/** Calendar arithmetic uses the site's day, never the administrator's timezone. */
+/**
+ * Calendar arithmetic for the log's date presets, on the site's day, never the
+ * administrator's timezone. Showing a date is `lib/format`'s job.
+ */
 export function siteToday(now = Date.now(), timezone = adminSettings()?.timezone): string | null {
   if (!timezone) return null;
   const fixed = /^([+-])(\d{2}):(\d{2})$/.exec(timezone);
@@ -21,14 +22,4 @@ export function shiftDay(day: string, days: number): string {
   const value = new Date(`${day}T12:00:00Z`);
   value.setUTCDate(value.getUTCDate() + days);
   return value.toISOString().slice(0, 10);
-}
-
-export function captureTime(value: string, today = siteToday()): string {
-  const full = readable(value);
-  if (!full) return value;
-  const day = value.slice(0, 10);
-  const relative = today && (day === today ? __('Today', 'wconvert') : day === shiftDay(today, -1) ? __('Yesterday', 'wconvert') : null);
-  if (!relative) return full;
-  const time = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { timeZone: 'UTC', timeStyle: 'short' }).format(new Date(value.replace(' ', 'T') + 'Z'));
-  return `${relative}, ${time}`;
 }

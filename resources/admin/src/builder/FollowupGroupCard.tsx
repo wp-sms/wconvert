@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef } from 'react';
 import { Handle, Position, useStore, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import { followupGroupSource, type FollowupGroup } from './structure/followupGroups';
 import { JourneyIssueMarker } from './JourneyIssueMarker';
@@ -35,15 +36,14 @@ export const FollowupGroupCard = memo(function FollowupGroupCard({ id, data }: N
     <header><strong>{title}</strong><span>{samplePath === null ? sprintf(__('%d screens', 'wconvert'), group.screens.length)
       : sprintf(traceKind === 'visited' ? __('%1$d of %2$d visited', 'wconvert') : __('%1$d of %2$d predicted', 'wconvert'), group.screens.filter(index => samplePath.includes(index)).length, group.screens.length)}</span></header>
     <p>{unreachable ? __('Unreachable — connect an incoming path to show these screens.', 'wconvert') : __('Ask every match, one at a time. Skip the rest.', 'wconvert')}</p>
-    <details className="wconvert-followup-group__members nodrag">
-    <summary>{sprintf(__('Show %d questions', 'wconvert'), group.screens.length)}</summary>
+    <Disclosure variant="inline" className="wconvert-followup-group__members nodrag" title={sprintf(_n('Show %d question', 'Show %d questions', group.screens.length, 'wconvert'), group.screens.length)}>
     <ol className="nodrag nopan nowheel">{group.screens.map(index => <li key={tree.steps[index].id} className={samplePath !== null && !samplePath.includes(index) ? 'is-muted' : ''}>
       <button ref={selected === index ? selectedButton : undefined} type="button" className="nodrag" aria-pressed={selected === index} onClick={() => select(index)}>
         <span className="wconvert-followup-group__answer">{followupLabel(tree, tree.steps[index].when!)}</span><strong><bdi>{tree.steps[index].name}</bdi></strong>
         {samplePath !== null && <small>{traceKind === 'visited' ? samplePath.includes(index) ? __('Visited in this test', 'wconvert') : __('Not visited in this test', 'wconvert') : samplePath.includes(index) ? __('Shown for these answers', 'wconvert') : __('Skipped for these answers', 'wconvert')}</small>}
       </button>
-    </li>)}</ol></details>
-    <footer><span>{sprintf(__('Then: %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? group.next)}</span>
+    </li>)}</ol></Disclosure>
+    <footer><span>{sprintf(__('Then: %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? __('Removed screen', 'wconvert'))}</span>
       <button type="button" className="nodrag" onClick={() => expand(group)}>{__('Edit individual connections', 'wconvert')}</button>
     </footer>
     <JourneyIssueMarker issues={issues} onIssue={onIssue} />

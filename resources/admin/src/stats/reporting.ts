@@ -1,3 +1,4 @@
+import { formatDay, formatRange } from '../lib/format';
 import type { GoalReport, Numbers, OptinReport, DashboardPayload } from './api';
 
 /** Every stored arm is counted once; family totals are only a presentation. */
@@ -57,21 +58,8 @@ export function addNumbers(rows: Numbers[]): Numbers {
 }
 
 /** Dates are calendar labels from PHP, never shifted to the browser's zone. */
-export function dateLabel(day: string): string {
-  return new Intl.DateTimeFormat(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(`${day}T12:00:00Z`));
-}
-export const rangeLabel = (from: string, to: string) =>
-  new Intl.DateTimeFormat(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).formatRange(new Date(`${from}T12:00:00Z`), new Date(`${to}T12:00:00Z`));
+export const dateLabel = formatDay;
+export const rangeLabel = formatRange;
 
 /** Quoting alone does not prevent spreadsheet formulas in merchant-supplied names. */
 export function csvCell(value: string | number): string {
@@ -93,13 +81,13 @@ export function reportCSV(
       'Status',
       'Metric',
       'Results',
-      'Times shown',
+      'Shown',
       'Rate',
       'Emails accepted for sending',
       'From',
       'To',
       'Previous results',
-      'Previous times shown',
+      'Previous shown',
       'Previous rate',
       'Previous emails accepted for sending',
       'Previous from',

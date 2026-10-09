@@ -12,9 +12,11 @@ import {
 } from '../components/ui/alert-dialog';
 
 /**
- * A consequential decision, destructive by default. Publication passes the
- * primary variant: changing what visitors can see deserves confirmation,
- * without implying that publishing destroys a campaign.
+ * A consequential decision. **Red only for delete and remove** (ADR 0131):
+ * a caller that destroys something passes `variant="destructive"`, and every
+ * other confirm — publish, resume, pause, send again, a path change — keeps the
+ * primary button, because a red Publish told the merchant it would break
+ * something.
  *
  * **Nothing in this admin confirmed anything** until ADR 0039 — no `confirm(`,
  * no dialog, no "are you sure" anywhere in `resources/admin/src/`. That included
@@ -31,8 +33,7 @@ import {
  *
  * **The confirm button names the outcome**, never "OK" — a merchant reading
  * "Delete Welcome discount" on the button has been told what pressing it does
- * without having to have read the sentence above it. It is `destructive` by
- * default because that is what this component is for; the safe way out is the
+ * without having to have read the sentence above it. The safe way out is the
  * cancel, and it is the one focus lands on.
  *
  * Radix supplies the focus trap, Esc-to-close and the ARIA (ADR 0036). What is
@@ -53,7 +54,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  variant = 'destructive',
+  variant = 'default',
   cancelLabel,
   onConfirm,
   returnFocusTo,

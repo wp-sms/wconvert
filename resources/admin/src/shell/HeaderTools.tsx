@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Bell, CircleHelp, ExternalLink } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { readDestinations } from '../destinations/api';
 import { issueCount } from '../destinations/issueCount';
-import { listOptins, type OptinSummary } from '../optins/api';
+import { campaignName, listOptins, type OptinSummary } from '../optins/api';
+import { StatusBadge } from '../optins/StatusBadge';
 import { editorHref, sendingIssuesHref, settingsHref } from '../nav';
 import { tierName } from '../goals/availability';
-import { RegionError } from './Region';
+import { TryAgain } from './Region';
 import { RowsSkeleton } from './RowsSkeleton';
 import { messageOf } from './loadable';
 import { adminSettings } from '../settings';
@@ -23,11 +24,14 @@ export function HeaderTools() {
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const load = async () => {
+  const request = useRef(0);
+  const load = useCallback(async () => {
+    const current = ++request.current;
     setLoading(true);
     setError(null);
     try {
       const [campaigns, destinations] = await Promise.all([listOptins(), readDestinations()]);
+      if (current !== request.current) return;
       setNotices({
         campaigns: campaigns
           .flatMap((c) => [c, ...c.arms])
@@ -35,11 +39,21 @@ export function HeaderTools() {
         sending: issueCount(destinations),
       });
     } catch (cause) {
-      setError(messageOf(cause));
+      // A failed refresh keeps what the bell already knew (GUIDELINES §13).
+      if (current === request.current) setError(messageOf(cause));
     } finally {
-      setLoading(false);
+      if (current === request.current) setLoading(false);
     }
-  };
+  }, []);
+  // Read on load, not on open: the unread dot is the whole point of the bell,
+  // and a dot that only appears once the merchant has already looked says
+  // nothing at all.
+  useEffect(() => {
+    void load();
+    return () => {
+      request.current += 1;
+    };
+  }, [load]);
   const count = notices ? notices.campaigns.length + notices.sending : 0;
   return (
     <div className="wconvert-header-tools">
@@ -55,7 +69,7 @@ export function HeaderTools() {
       )}
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon-sm" aria-label={__('Help and support', 'wconvert')}>
+          <Button variant="ghost" size="icon-sm" aria-label={__('Help', 'wconvert')}>
             <CircleHelp aria-hidden="true" />
           </Button>
         </PopoverTrigger>
@@ -73,22 +87,34 @@ export function HeaderTools() {
             variant="ghost"
             size="icon-sm"
             className="wconvert-notifications-trigger"
-            aria-label={__('Notifications', 'wconvert')}
+            aria-label={
+              count > 0
+                ? sprintf(_n('Notifications, %d issue', 'Notifications, %d issues', count, 'wconvert'), count)
+                : __('Notifications', 'wconvert')
+            }
           >
             <Bell aria-hidden="true" />
-            {count > 0 && <span className="wconvert-notification-dot" />}
+            {count > 0 && <span className="wconvert-notification-dot" aria-hidden="true" />}
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="wconvert-header-popover wconvert-notifications">
           <h2>{__('Notifications', 'wconvert')}</h2>
-          {error && <RegionError message={sprintf(__('Notifications couldn’t load: %s', 'wconvert'), error)} action={<Button variant="outline" onClick={() => void load()}>{__('Try again', 'wconvert')}</Button>} />}
-          {loading && !notices ? <RowsSkeleton rows={2} /> : (
+          {error && (
+            <div role="alert" className="wconvert-notification">
+              <p>{sprintf(__('Notifications couldn’t load: %s', 'wconvert'), error)}</p>
+              <TryAgain onClick={() => void load()} busy={loading} />
+            </div>
+          )}
+          {loading && !notices && !error ? <RowsSkeleton rows={2} /> : (
             notices && (
               <>
-                {count === 0 && <p>{__('No known campaign or sending issues.', 'wconvert')}</p>}
+                {count === 0 && <p>{__('No campaign or sending issues.', 'wconvert')}</p>}
                 {notices.campaigns.map((c) => (
                   <div className="wconvert-notification" key={c.id}>
-                    <strong>{c.name}</strong>
+                    <div className="wconvert-notification__title">
+                      <strong>{campaignName(c)}</strong>
+                      <StatusBadge status="suspended" />
+                    </div>
                     <p>{c.suspended}</p>
                     <a href={editorHref(c.id)}>{__('Review campaign', 'wconvert')}</a>
                   </div>
@@ -119,11 +145,15 @@ export function HeaderTools() {
   );
 }
 
-/** Shared destinations keep header and footer help in sync. */
+/**
+ * **One Help**, opened from the header's ? and from the footer (ADR 0131):
+ * the same name and the same links in both, so neither reads as a second,
+ * different kind of help.
+ */
 export function HelpLinks() {
   return <>
-    <h2>{__('Help and support', 'wconvert')}</h2>
-    <a href={settingsHref('experience')}>{__('Visitor experience settings', 'wconvert')}</a>
+    <h2>{__('Help', 'wconvert')}</h2>
+    <a href={settingsHref('experience')}>{__('Visitor experience', 'wconvert')}</a>
     <a href={settingsHref('connections')}>{__('Connections & destinations', 'wconvert')}</a>
     <a href="https://wconvert.io/" target="_blank" rel="noreferrer">
       {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" />

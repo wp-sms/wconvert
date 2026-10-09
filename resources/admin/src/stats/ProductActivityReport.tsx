@@ -2,14 +2,13 @@ import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Package } from 'lucide-react';
-import { Button } from '../components/ui/button';
 import { Region, RegionBody, RegionHeader, RegionErrorState } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { EmptyState } from '../shell/EmptyState';
 import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '../shell/DataTable';
 import { ReportTarget } from './ReportNavigation';
 import { ReportDisclosure } from './ReportDisclosure';
-import { rangeLabel } from './reporting';
+import { formatDay, formatRange } from '../lib/format';
 import { formatCount } from './format';
 import type { DashboardPayload } from './api';
 import { productModuleActive } from '../settings';
@@ -51,12 +50,12 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
   if (report && !report.available && failure !== key) return null;
   return <ReportTarget name="products" label={__('Product activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Product activity', 'wconvert')} level={3} icon={<Package />} description={__('See which products shoppers notice and add.', 'wconvert')} />
-    {failure === key ? <RegionErrorState message={__('Could not load product activity.', 'wconvert')} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} /> : report && <>
+    {failure === key ? <RegionErrorState message={__('Could not load product activity.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} /> : report && <>
       <RegionBody>
-        <div className="wa-report-meta"><span>{rangeLabel(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}</div>
-        {report.since && <p className="wa-muted">{sprintf(__('Tracking started %s. Earlier product activity is unavailable.', 'wconvert'), rangeLabel(report.since, report.since))}</p>}
+        <div className="wa-report-meta"><span>{formatRange(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}</div>
+        {report.since && <p className="wa-muted">{sprintf(__('Tracking started %s. Earlier product activity is unavailable.', 'wconvert'), formatDay(report.since))}</p>}
         {!report.collecting && <p className="wa-report-notice">{__('Tracking is unavailable. Saved activity is still shown.', 'wconvert')}</p>}
-        {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(__('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), rangeLabel(report.recorded_from, report.to))}</p>}
+        {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(__('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
         {report.truncated ? <EmptyState icon={Package} title={__('Choose a shorter period', 'wconvert')}>{__('More than 100 products have activity. Narrow the dates to see a complete table.', 'wconvert')}</EmptyState>
           : report.days === 0 ? <EmptyState icon={Package} title={__('No complete days yet', 'wconvert')}>{__('Today’s activity will appear tomorrow.', 'wconvert')}</EmptyState>
           : !report.recorded_from ? <EmptyState icon={Package} title={__('No product data for these dates', 'wconvert')}>{__('Choose dates after tracking started and within the last 90 days.', 'wconvert')}</EmptyState>
@@ -64,7 +63,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
           : <DataTable className="wa-product-table" label={__('Recommended product activity', 'wconvert')}>
             <DataTableHead><DataTableColumn>{__('Product', 'wconvert')}</DataTableColumn>{[__('Shown', 'wconvert'), __('Clicked', 'wconvert'), __('Added', 'wconvert')].map(label => <DataTableColumn key={label} numeric>{label}</DataTableColumn>)}</DataTableHead>
             <DataTableBody>{report.rows.map(row => <DataTableRow key={row.id}>
-              <DataTableCell label={__('Product', 'wconvert')}><div><strong>{row.name}</strong><small className="block wa-muted">{sprintf(__('Product #%d', 'wconvert'), row.id)}</small></div></DataTableCell>
+              <DataTableCell label={__('Product', 'wconvert')}><strong><bdi>{row.name || __('Deleted product', 'wconvert')}</bdi></strong></DataTableCell>
               <DataTableCell numeric label={__('Shown', 'wconvert')}>{formatCount(row.shown)}</DataTableCell>
               <DataTableCell numeric label={__('Clicked', 'wconvert')}>{formatCount(row.clicked)}</DataTableCell>
               <DataTableCell numeric label={__('Added', 'wconvert')}>{formatCount(row.added)}</DataTableCell>
@@ -72,7 +71,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
           </DataTable>}
       </RegionBody>
       <ReportDisclosure title={__('What these numbers mean', 'wconvert')}>
-        <p>{__('Shown counts a visible product card. Clicked counts a product-page link. Each counts once per product per campaign appearance. Added counts WooCommerce-confirmed additions, not button presses or purchases.', 'wconvert')}</p>
+        <p>{__('Shown counts a visible product card. Clicked counts a product-page link. Each counts once per product each time the campaign is shown. Added counts WooCommerce-confirmed additions, not button presses or purchases.', 'wconvert')}</p>
         <p>{__('These are recorded actions, not unique shoppers. Totals can differ from campaign results. Product names are current; sales remain at campaign level.', 'wconvert')}</p>
         <p>{sprintf(__('Product activity is kept for %d days. Tracking can miss activity when blocked or inactive; the first day may be partial. Older campaign totals stay unchanged.', 'wconvert'), report.retention_days)}</p>
       </ReportDisclosure>

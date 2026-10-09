@@ -7,7 +7,7 @@
  * becomes "0%" on one screen and not another.
  */
 
-export const formatCount = (count: number) => new Intl.NumberFormat().format(count);
+export { formatCount } from '../lib/format';
 
 /**
  * A rate, or an em dash.
@@ -17,5 +17,4 @@ export const formatCount = (count: number) => new Intl.NumberFormat().format(cou
  * different and much worse thing to tell a merchant about an Optin that never
  * rendered.
  */
-export const formatRate = (rate: number | null) =>
-  rate === null ? '—' : `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 }).format(rate * 100)}%`;
+export { formatRate } from '../lib/format';

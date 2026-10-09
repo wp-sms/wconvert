@@ -81,7 +81,7 @@ export function BackLink({
       <Button ref={ref} variant="ghost" size="sm" className="-ms-3" onClick={onClose} disabled={disabled}>
         {/* Back is the other way in Persian; see {@see GoalScreen}'s footer. */}
         <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-        {label ?? __('All Campaigns', 'wconvert')}
+        {label ?? __('Back to Campaigns', 'wconvert')}
       </Button>
     </div>
   );

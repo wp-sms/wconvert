@@ -36,8 +36,8 @@ export function SubmissionSettings({ template, primaryChannel, config, available
     title={title}
     description={description}
     emptyText={channel === 'phone'
-      ? __('This signup is saved in WConvert only. Add an SMS service, or remove the optional SMS signup in Edit campaign.', 'wconvert')
-      : __('This signup is saved in WConvert only. Add an email service, or remove the optional email signup in Edit campaign.', 'wconvert')}
+      ? __('This signup is kept in WConvert only. Add an SMS service, or remove the optional SMS signup in Screens.', 'wconvert')
+      : __('This signup is kept in WConvert only. Add an email service, or remove the optional email signup in Screens.', 'wconvert')}
     channel={{ channel, strict: true }}
     template={template}
     submissionId={secondary.id}

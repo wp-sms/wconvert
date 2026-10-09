@@ -2,18 +2,21 @@ import type { MouseEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 
-/** Selection stays visible while browsing; comparison is available at two designs. */
+/**
+ * Selection stays visible while browsing; comparison is available at two.
+ * The count is said once, in the status, and the button is just the verb.
+ */
 export function ComparisonTray({ names, disabled = false, onCompare, onClear }: {
   names: string[]; disabled?: boolean;
   onCompare: (event: MouseEvent<HTMLButtonElement>) => void; onClear: () => void;
 }) {
   if (!names.length) return null;
-  return <aside className="wconvert-comparison-tray wconvert-toolbar" aria-label={__('Designs selected for comparison', 'wconvert')}>
+  return <aside className="wconvert-comparison-tray wconvert-toolbar" aria-label={__('Selected for comparison', 'wconvert')}>
     <div className="wconvert-comparison-tray__selection">
-      <strong role="status">{sprintf(__('%s of 2 designs selected', 'wconvert'), String(names.length))}</strong>
-      <span>{names.join(' · ')}</span>
+      <strong role="status">{sprintf(/* translators: %s: how many are selected, 1 or 2. */ __('%s of 2 selected', 'wconvert'), String(names.length))}</strong>
+      <span>{names.map((name, index) => <span key={`${index}:${name}`}>{index > 0 && ' · '}<bdi>{name}</bdi></span>)}</span>
     </div>
-    <Button disabled={disabled || names.length !== 2} onClick={onCompare}>{sprintf(__('Compare designs (%s/2)', 'wconvert'), String(names.length))}</Button>
-    <Button variant="outline" disabled={disabled} onClick={onClear}>{__('Clear comparison', 'wconvert')}</Button>
+    <Button variant="outline" disabled={disabled} onClick={onClear}>{__('Clear', 'wconvert')}</Button>
+    <Button disabled={disabled || names.length !== 2} onClick={onCompare}>{__('Compare', 'wconvert')}</Button>
   </aside>;
 }

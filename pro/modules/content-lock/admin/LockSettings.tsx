@@ -10,12 +10,12 @@ import { ShortcodeCopy } from '@/builder/ManualPlacement';
 export default function LockSettings({ optinId, published }: InlinePlacementProps) {
   const shortcode = `[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`;
   return <div className="wconvert-placement-panel">
-    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this Campaign first. The lock only finds published Campaigns.', 'wconvert')}</p>}
+    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this campaign first. The lock only finds published campaigns.', 'wconvert')}</p>}
     <div className="wconvert-display-settings">
       <div className="wconvert-placement-row">
         <div className="wconvert-placement-row__text">
           <p className="wconvert-placement-row__title">{__('Lock the rest of an article', 'wconvert')}</p>
-          <p className="wconvert-display-hint">{__('Add a “WConvert Lock from here” divider to the article and choose this Campaign. Everything below it is covered until the visitor signs up. Use one lock per page.', 'wconvert')}</p>
+          <p className="wconvert-display-hint">{__('Add a “WConvert Lock from here” divider to the article and choose this campaign. Everything below it is covered until the visitor signs up. Use one lock per page.', 'wconvert')}</p>
         </div>
       </div>
       <div className="wconvert-placement-row">

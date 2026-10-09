@@ -13,9 +13,9 @@ it('refreshes published choices without changing the saved selection or offering
   render(<CampaignPicker value="old" onChange={change} />);
   expect(screen.queryByText('Ordinary form')).toBeNull();
   vi.mocked(apiFetch).mockResolvedValue({ campaigns: [{ id: 'new', name: 'New bonus', status: 'ready' }], manageUrl: null });
-  await userEvent.click(screen.getByRole('button', { name: 'Refresh Campaigns' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
   expect(await screen.findByText(/no longer published as inline/i)).toBeVisible();
-  expect(screen.getByText('Previously selected Campaign')).toBeVisible();
+  expect(screen.getByText('Previously selected campaign')).toBeVisible();
   expect(screen.queryByRole('combobox', { name: 'Campaign' })).toBeNull();
   expect(change).not.toHaveBeenCalled();
   expect(screen.queryByRole('link', { name: /Campaigns/ })).toBeNull();
@@ -28,8 +28,8 @@ it('keeps the selection when refresh fails and distinguishes missing data from a
   expect(screen.getByText(/choices could not be loaded/)).toBeVisible();
   expect(screen.queryByText(/No published Content lock Campaigns/)).toBeNull();
   vi.mocked(apiFetch).mockRejectedValue(new Error('Offline'));
-  await userEvent.click(screen.getByRole('button', { name: 'Refresh Campaigns' }));
-  expect(await screen.findByText(/Could not refresh Campaigns/)).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
+  expect(await screen.findByText(/Could not refresh campaigns/)).toBeVisible();
   expect(change).not.toHaveBeenCalled();
 });
 
@@ -40,11 +40,11 @@ it('shows the full selected name and changes or clears it without changing conte
   const { rerender } = render(<CampaignPicker value="old" onChange={change} />);
   expect(screen.getByText(name)).toBeVisible();
   expect(screen.queryByRole('combobox', { name: 'Campaign' })).toBeNull();
-  await userEvent.click(screen.getByRole('button', { name: 'Change Campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Change campaign' }));
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign' }), 'new');
   expect(change).toHaveBeenLastCalledWith('new');
   rerender(<CampaignPicker value="new" onChange={change} />);
-  await userEvent.click(screen.getByRole('button', { name: 'Clear Campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Clear campaign' }));
   expect(change).toHaveBeenLastCalledWith('');
   rerender(<CampaignPicker value="" onChange={change} />);
   expect(screen.getByRole('combobox', { name: 'Campaign' })).toBeVisible();
@@ -52,7 +52,7 @@ it('shows the full selected name and changes or clears it without changing conte
 
 it.each([
   { status: 'unavailable' as const, selected: { id: 'saved', name: 'Temporarily unavailable bonus', status: 'unavailable' as const }, label: 'Temporarily unavailable bonus' },
-  { status: 'missing' as const, selected: null, label: 'Previously selected Campaign' },
+  { status: 'missing' as const, selected: null, label: 'Previously selected campaign' },
 ])('keeps a $status saved selection in a repairable name card', async ({ selected, label }) => {
   window.wconvertContentLockEditor = {
     campaigns: [...(selected ? [selected] : []), { id: 'ready', name: 'Ready bonus', status: 'ready' }],
@@ -62,11 +62,11 @@ it.each([
   const { rerender } = render(<CampaignPicker value="saved" onChange={change} />);
   expect(screen.getByText(label)).toBeVisible();
   expect(screen.queryByRole('combobox', { name: 'Campaign' })).toBeNull();
-  await userEvent.click(screen.getByRole('button', { name: 'Change Campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Change campaign' }));
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign' }), 'ready');
   expect(change).toHaveBeenLastCalledWith('ready');
   rerender(<CampaignPicker value="saved" onChange={change} />);
-  await userEvent.click(screen.getByRole('button', { name: 'Clear Campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Clear campaign' }));
   expect(change).toHaveBeenLastCalledWith('');
 });
 
@@ -74,11 +74,11 @@ it('moves keyboard focus into the picker after Change and back after Cancel', as
   window.wconvertContentLockEditor = { campaigns: [{ id: 'saved', name: 'Saved bonus', status: 'ready' }], manageUrl: null };
   render(<CampaignPicker value="saved" onChange={vi.fn()} />);
   const user = userEvent.setup();
-  screen.getByRole('button', { name: 'Change Campaign' }).focus();
+  screen.getByRole('button', { name: 'Change campaign' }).focus();
   await user.keyboard('{Enter}');
   expect(screen.getByRole('combobox', { name: 'Campaign' })).toHaveFocus();
   await user.click(screen.getByRole('button', { name: 'Cancel' }));
-  expect(screen.getByRole('button', { name: 'Change Campaign' })).toHaveFocus();
+  expect(screen.getByRole('button', { name: 'Change campaign' })).toHaveFocus();
 });
 
 it('honors a canvas request to focus settings once without refocusing on unrelated renders', () => {
@@ -91,7 +91,7 @@ it('honors a canvas request to focus settings once without refocusing on unrelat
   rerender(<CampaignPicker value="" onChange={change} focusRequested onFocusHandled={handled} />);
   expect(picker).toHaveFocus();
   expect(handled).toHaveBeenCalledOnce();
-  screen.getByRole('button', { name: 'Refresh Campaigns' }).focus();
+  screen.getByRole('button', { name: 'Refresh campaigns' }).focus();
   rerender(<CampaignPicker value="" onChange={change} focusRequested={false} onFocusHandled={handled} />);
   expect(picker).not.toHaveFocus();
   expect(handled).toHaveBeenCalledOnce();
@@ -107,12 +107,12 @@ it('keeps focus usable after selecting or clearing a Campaign without stealing i
   expect(screen.getByRole('combobox', { name: 'Campaign' })).not.toHaveFocus();
   const user = userEvent.setup();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Campaign' }), 'saved');
-  expect(screen.getByRole('button', { name: 'Change Campaign' })).toHaveFocus();
-  screen.getByRole('button', { name: 'Clear Campaign' }).focus();
+  expect(screen.getByRole('button', { name: 'Change campaign' })).toHaveFocus();
+  screen.getByRole('button', { name: 'Clear campaign' }).focus();
   await user.keyboard('{Enter}');
   expect(screen.getByRole('combobox', { name: 'Campaign' })).toHaveFocus();
   vi.mocked(apiFetch).mockResolvedValue(window.wconvertContentLockEditor);
-  await user.click(screen.getByRole('button', { name: 'Refresh Campaigns' }));
+  await user.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
   expect(await screen.findByRole('status')).toHaveTextContent('Campaign choices updated.');
   expect(screen.getByRole('combobox', { name: 'Campaign' })).not.toHaveFocus();
 });

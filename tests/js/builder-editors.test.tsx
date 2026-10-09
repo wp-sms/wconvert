@@ -152,7 +152,7 @@ describe('When', () => {
     setup(); await section('When does it open?');
     await userEvent.click(within(screen.getByRole('group', { name: 'Opens' })).getByRole('radio', { name: 'When they click' }));
     expect(screen.getByText(/Point to the button or link with an ID, class, tag or attribute selector/)).toBeVisible();
-    expect(document.querySelector('.wconvert-display-editor details:not(.wconvert-display-disclosure-card)')).toBeNull();
+    expect(document.querySelector('.wconvert-display-editor details:not(.wconvert-disclosure)')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Add a rule' }));
     const picker = screen.getByRole('dialog', { name: 'Choose a rule' });
     expect(within(picker).getByRole('button', { name: 'click_element' })).toBeInTheDocument();

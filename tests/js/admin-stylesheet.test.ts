@@ -30,9 +30,11 @@ const CSS = ['index.css', 'builder/editor.css', 'builder/preview-test.css', 'opt
 
 describe('journey choices', () => {
   it('keeps unchecked controls wide enough when WordPress removes native appearance', () => {
-    const checkbox = /\.wconvert-journey-settings__check input[^{}]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
-    expect(checkbox).toMatch(/min-inline-size:\s*[^;0]/);
-    expect(checkbox).toMatch(/flex-shrink:\s*0/);
+    // The one checkbox row owns the box's width; a component restating it is how
+    // fifteen rows drifted apart (ADR 0131).
+    const checkbox = /input:is\(\[type="checkbox"\], \[type="radio"\]\):not\(\.sr-only\) \{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    expect(checkbox).toMatch(/min-inline-size:\s*18px/);
+    expect(checkbox).toMatch(/flex:\s*0 0 18px/);
   });
 });
 
@@ -231,7 +233,11 @@ describe('the design picker', () => {
     expect(CSS).toContain(`${roots} .wconvert-segmented > :is([data-slot="button"])`);
     expect(CSS).toContain(`${roots}\n    :is(.wconvert-page-actions, .wconvert-toolbar`);
     expect(CSS).toMatch(new RegExp(`${roots.replace(/[[\]().*+?^$|\\-]/g, '\\$&')} :is\\(\\s*button,`));
-    expect(CSS).not.toContain(':where(#wconvert-admin,');
+    // Only the native checkbox/radio defaults yield their scope, so any
+    // component class beats them (ADR 0131, GUIDELINES §21).
+    for (const [, after] of CSS.matchAll(/:where\(#wconvert-admin,[^)]*\)\s*([^{]*)\{/g)) {
+      expect(after).toMatch(/\[type="checkbox"\], \[type="radio"\]/);
+    }
   });
 });
 
@@ -272,7 +278,6 @@ describe('the rules panel against the editor’s blanket rules', () => {
     // asked for `margin: 0` and rendered 12px; `.wconvert-locked__list` asked
     // for no marker indent and rendered 21px of one.
     '.wconvert-rules',
-    '.wconvert-allowance',
   ];
 
   it.each(BOXED)('carries the id on %s, or its margin silently loses', (selector) => {

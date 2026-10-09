@@ -70,16 +70,55 @@ beforeEach(() => {
   ]);
 });
 
-it('copies the full campaign ID from details without publishing', async () => {
+/**
+ * **The one ID on any screen sits behind "For developers"** (ADR 0131): the
+ * free page events carry a campaign's ID and nothing else, so it is there —
+ * folded away, and nowhere else in Details.
+ */
+it('copies the full campaign ID from the closed developer disclosure without publishing', async () => {
   const user = userEvent.setup();
   const write = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
   render(<OptinList onEdit={vi.fn()} onCreate={vi.fn()} />);
   await user.click(await screen.findByRole('button', { name: OPTIN.name }));
-  await user.click(screen.getByRole('button', { name: 'Copy campaign ID' }));
+  const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
+  const disclosure = within(dialog).getByText('For developers').closest('details')!;
+  expect(disclosure).not.toHaveAttribute('open');
+  // Nothing outside the disclosure prints the ID.
+  const outside = [...dialog.querySelectorAll('*')].filter((node) => !disclosure.contains(node) && node.childElementCount === 0);
+  expect(outside.some((node) => node.textContent?.includes(OPTIN.id))).toBe(false);
+  await user.click(within(dialog).getByText('For developers'));
+  await user.click(within(dialog).getByRole('button', { name: 'Copy ID' }));
   expect(write).toHaveBeenCalledWith(OPTIN.id);
-  expect(await screen.findByText('ID copied.')).toHaveAttribute('role', 'status');
+  expect(await within(dialog).findByText('Copied.')).toHaveAttribute('role', 'status');
   expect(optins.publishOptin).not.toHaveBeenCalled();
   write.mockRestore();
+});
+
+it('names an unnamed campaign without falling back to its ID', async () => {
+  optins.listOptins.mockResolvedValue([{ ...OPTIN, name: '' }]);
+  render(<OptinList onEdit={vi.fn()} />);
+  expect(await screen.findByRole('row', { name: 'Unnamed campaign' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'More actions for Unnamed campaign' })).toBeInTheDocument();
+  expect(screen.queryByText(OPTIN.id)).toBeNull();
+});
+
+it('still finds a campaign by a pasted ID it never shows', async () => {
+  optins.listOptins.mockResolvedValue([OPTIN, { ...OPTIN, id: '01JQ00000000000000000000ZZ', name: 'Other campaign' }]);
+  render(<OptinList onEdit={vi.fn()} />);
+  await screen.findByRole('row', { name: 'Other campaign' });
+  await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), OPTIN.id.toLowerCase());
+  expect(screen.getByRole('row', { name: OPTIN.name })).toBeInTheDocument();
+  expect(screen.queryByRole('row', { name: 'Other campaign' })).toBeNull();
+});
+
+it('names a failed action by its campaign, never by its ID', async () => {
+  optins.deleteOptin.mockRejectedValue(new Error('Already gone'));
+  render(<OptinList onEdit={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Delete campaign' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Delete campaign' }));
+  expect(await screen.findByText(`${OPTIN.name}: Already gone`)).toBeInTheDocument();
+  expect(screen.queryByText(new RegExp(OPTIN.id))).toBeNull();
 });
 
 it('a free install is never asked about products (ADR 0116)', async () => {
@@ -98,7 +137,7 @@ it('opens product warnings with the affected selection and an editor action', as
   render(<OptinList onEdit={edit} />);
   await userEvent.click(await screen.findByRole('button', { name: '1 product warning' }));
   const dialog = screen.getByRole('dialog');
-  expect(within(dialog).getByText('Published version · current catalog')).toBeInTheDocument();
+  expect(within(dialog).getByText('Checks the published version against today’s catalog.')).toBeInTheDocument();
   expect(within(dialog).getByText('Brewing')).toBeInTheDocument();
   await userEvent.click(within(dialog).getByRole('button', { name: 'Review products' }));
   expect(edit).toHaveBeenCalledWith(OPTIN.id);
@@ -109,12 +148,13 @@ it('selects the campaign ID for manual copying when clipboard permission is refu
   const write = vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
   render(<OptinList onEdit={vi.fn()} />);
   await user.click(await screen.findByRole('button', { name: OPTIN.name }));
-  await user.click(screen.getByRole('button', { name: 'Copy campaign ID' }));
-  expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy automatically');
+  await user.click(screen.getByText('For developers'));
+  await user.click(screen.getByRole('button', { name: 'Copy ID' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Couldn’t copy');
   const field = screen.getByRole('textbox', { name: 'Campaign ID' }) as HTMLInputElement;
   expect(field).toHaveFocus(); expect(field.value).toBe(OPTIN.id);
   expect(field.selectionStart).toBe(0); expect(field.selectionEnd).toBe(OPTIN.id.length);
-  expect(screen.queryByText('ID copied.')).not.toBeInTheDocument();
+  expect(screen.queryByText('Copied.')).not.toBeInTheDocument();
   write.mockRestore();
 });
 
@@ -140,8 +180,8 @@ describe('the four situations this screen has to answer', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Loading…');
-    expect(screen.queryByText('Start with one good campaign.')).toBeNull();
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading campaigns…');
+    expect(screen.queryByText('No campaigns yet')).toBeNull();
 
     land([OPTIN]);
 
@@ -158,7 +198,7 @@ describe('the four situations this screen has to answer', () => {
 
     render(<OptinList onEdit={() => undefined} onCreate={() => undefined} />);
 
-    expect(await screen.findByText('Start with one good campaign.')).toBeInTheDocument();
+    expect(await screen.findByText('No campaigns yet')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Create your first campaign/ })).toBeInTheDocument();
   });
 
@@ -169,7 +209,7 @@ describe('the four situations this screen has to answer', () => {
 
     expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
     // The component's default door, rather than nine call sites spelling it.
-    expect(screen.getByText('Try again. If the problem continues, reload the page.')).toBeInTheDocument();
+    expect(screen.getByText('If it keeps failing, reload the page.')).toBeInTheDocument();
   });
 });
 
@@ -233,28 +273,26 @@ describe('a row', () => {
   });
 
   /**
-   * And once it HAS answered, an id it does not name is shown raw — which is
-   * the only honest thing left, and is what the wait above protects.
+   * And once it HAS answered, an id it does not name says so in words. It used
+   * to print the stored key, which is the raw-key-on-screen ADR 0131 removes;
+   * blanking it would read as an Optin with no Goal at all.
    */
-  it('shows the raw id once the registry has answered and has no such Goal', async () => {
+  it('says "Unknown goal" once the registry has answered and has no such Goal', async () => {
     goals.listGoals.mockResolvedValue([]);
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText('grow_email_list')).toBeInTheDocument();
+    expect(await screen.findByText('Unknown goal')).toBeInTheDocument();
+    expect(screen.queryByText('grow_email_list')).toBeNull();
   });
 
-  /**
-   * An Optin holding a Goal this build does not have shows the raw value: it
-   * is the only honest thing left, and blanking it would read as an Optin with
-   * no Goal at all.
-   */
-  it('falls back to the stored value for a Goal this build does not have', async () => {
+  it('never prints the stored key of a Goal this build does not have', async () => {
     optins.listOptins.mockResolvedValue([{ ...OPTIN, goal: 'from_a_plugin_we_lack' }]);
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText('from_a_plugin_we_lack')).toBeInTheDocument();
+    expect(await screen.findByText('Unknown goal')).toBeInTheDocument();
+    expect(screen.queryByText(/from_a_plugin_we_lack/)).toBeNull();
   });
 
   /**
@@ -379,16 +417,17 @@ describe('the door into the eligibility inspector', () => {
    * A `RequestContext` cannot honestly be built from a URL — `url_to_postid()`
    * returns 0 for archives, terms, the blog index and the shop page — so the
    * merchant does not DESCRIBE a page to the inspector, they OPEN one
-   * (ADR 0048). The dialog's entire job is to feed `window.location`: there is
-   * no route behind it and no answer comes back to this screen.
+   * (ADR 0048). The dialog's entire job is to open that page: there is no
+   * route behind it and no answer comes back to this screen. It opens in a new
+   * tab, so the admin the merchant came from stays where it was.
    */
-  it('asks which page and navigates to it with the parameter on', async () => {
+  it('asks which page and opens it in a new tab with the parameter on', async () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
     window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
 
-    const assign = vi.fn();
-
-    Object.defineProperty(window, 'location', { value: { assign }, writable: true });
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    onTestFinished(() => open.mockRestore());
 
     render(<OptinList onEdit={() => undefined} />);
 
@@ -408,7 +447,27 @@ describe('the door into the eligibility inspector', () => {
     // The page's own query string survives: a merchant asking about
     // `?filter=sale` is asking about that page, and appending with a `?` would
     // produce a different one.
-    expect(assign).toHaveBeenCalledWith('https://example.test/shop?filter=sale&wconvert-inspect=1');
+    expect(open).toHaveBeenCalledWith('https://example.test/shop?filter=sale&wconvert-inspect=1', '_blank', 'noopener');
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  /** A page it cannot open says so beside the field, rather than doing nothing. */
+  it('keeps an address it cannot open and says why', async () => {
+    window.wconvertAdmin = { exportUrl: '', inspectParam: 'wconvert-inspect' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    onTestFinished(() => open.mockRestore());
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
+    await userEvent.type(await screen.findByLabelText('Page to open'), 'not a page');
+    await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Enter a full page address');
+    expect(screen.getByLabelText('Page to open')).toHaveValue('not a page');
+    expect(open).not.toHaveBeenCalled();
   });
 
   /**
@@ -457,10 +516,12 @@ describe('an A/B test on the list', () => {
     optins.listOptins.mockResolvedValue(A_TEST);
     render(<OptinList onEdit={vi.fn()} />);
     await user.click(await screen.findByRole('button', { name: ARM_B.name }));
-    await user.click(screen.getByRole('button', { name: 'Copy variant ID' }));
+    await user.click(screen.getByText('For developers'));
+    await user.click(screen.getByRole('button', { name: 'Copy ID' }));
     expect(write).toHaveBeenCalledWith(ARM_B.id);
     expect(screen.getByRole('textbox', { name: 'Variant ID' })).toHaveValue(ARM_B.id);
-    expect(screen.queryByRole('button', { name: 'Copy campaign ID' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: 'Campaign ID' })).not.toBeInTheDocument();
+    expect(screen.getByText(/their campaignId is the campaign this variant belongs to/)).toBeInTheDocument();
     write.mockRestore();
   });
 
@@ -468,7 +529,7 @@ describe('an A/B test on the list', () => {
     optins.listOptins.mockResolvedValue(A_TEST);
     render(<OptinList onEdit={() => undefined} />);
     await screen.findByRole('button', { name: OPTIN.name });
-    await userEvent.type(screen.getByRole('searchbox', { name: 'Search Campaigns' }), '(B)');
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), '(B)');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('radio', { name: 'Published' }));
@@ -511,7 +572,7 @@ describe('an A/B test on the list', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findAllByText(/A\/B test · 2 designs/)).toHaveLength(1);
+    expect(await screen.findAllByText(/A\/B test · 2 variants/)).toHaveLength(1);
   });
 
   /**
@@ -525,7 +586,7 @@ describe('an A/B test on the list', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    expect(await screen.findByText(/A\/B assignments use browser storage, not unique people/)).toBeInTheDocument();
+    expect(await screen.findByText(/A\/B tests split visitors by browser, not by person/)).toBeInTheDocument();
   });
 
   /**
@@ -540,7 +601,7 @@ describe('an A/B test on the list', () => {
 
     await screen.findByText('Welcome discount');
 
-    expect(screen.queryByText(/A\/B assignments use browser storage, not unique people/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/A\/B tests split visitors by browser, not by person/)).not.toBeInTheDocument();
   });
 
   /** A merchant is never asked to name the thing they think of as the other one. */
@@ -585,7 +646,7 @@ describe('an A/B test on the list', () => {
     expect(
       await screen.findByText('A/B testing is available with WConvert Pro.'),
     ).toBeInTheDocument();
-    expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /Add another variant|Create A\/B test/ })).not.toBeInTheDocument();
   });
 
   /** A free install's menu carries no A/B item at all — not even a note (ADR 0116). */
@@ -622,14 +683,14 @@ describe('an A/B test on the list', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await openTheMenuOn(/More actions for Welcome discount \(B\)/);
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this design' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this variant' }));
 
     expect(
-      await screen.findByText(/Other designs stop showing; their leads and results are kept/),
+      await screen.findByText(/The other variants stop showing; their leads and results are kept/),
     ).toBeInTheDocument();
     expect(optins.declareWinner).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Use this variant' }));
 
     expect(optins.declareWinner).toHaveBeenCalledWith(OPTIN.id, ARM_B.id);
   });
@@ -646,8 +707,8 @@ describe('an A/B test on the list', () => {
     render(<OptinList onEdit={() => undefined} />);
 
     await openTheMenuOn(/More actions for Welcome discount$/);
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this design' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Use this design' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Use this variant' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Use this variant' }));
 
     expect(optins.declareWinner).toHaveBeenCalledWith(OPTIN.id, OPTIN.id);
   });
@@ -665,10 +726,37 @@ describe('an A/B test on the list', () => {
 
     await openTheMenuOn(/More actions for Welcome discount \(B\)/);
 
-    expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /Add another variant|Create A\/B test/ })).not.toBeInTheDocument();
   });
 });
 
+
+/**
+ * Details is one Medium AdminDialog (ADR 0131, decision 6): the campaign and
+ * its status in the header, the period's numbers under one name each, and the
+ * report and the editor as the footer's two doors.
+ */
+it('draws Details as the campaign, its numbers, and two doors out', async () => {
+  stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 1234, impressions: 20000, conversion_rate: 0.0617 }] }] });
+  const onEdit = vi.fn();
+  render(<OptinList onEdit={onEdit} />);
+  await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
+  await userEvent.click(screen.getByRole('button', { name: /More actions/ }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Details' }));
+  const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
+  expect(dialog).toHaveAttribute('data-size', 'md');
+  expect(within(dialog).getByText('Draft')).toBeInTheDocument();
+  expect(within(dialog).getByText('Grow my email list')).toBeInTheDocument();
+  expect(within(dialog).getByRole('heading', { name: /Last 30 days/ })).toBeInTheDocument();
+  expect(within(dialog).getByText('1,234')).toBeInTheDocument();
+  expect(within(dialog).getByText('Shown')).toBeInTheDocument();
+  expect(within(dialog).getByText('6.2%')).toBeInTheDocument();
+  expect(within(dialog).queryByText('Times shown')).toBeNull();
+  const footer = dialog.querySelector('footer')!;
+  expect(within(footer).getByRole('link', { name: 'View report' })).toHaveAttribute('href', expect.stringContaining('optin='));
+  await userEvent.click(within(footer).getByRole('button', { name: 'Open editor' }));
+  expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
+});
 
 describe('the Campaigns workspace', () => {
   it('uses conversions and the server result unit, never the delivery headline', async () => {
@@ -725,8 +813,8 @@ it('does not describe a suspended saved version as live in details', async () =>
   await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
   const detail = await screen.findByRole('dialog', { name: OPTIN.name });
   expect(within(detail).getByText('Suspended')).toBeInTheDocument();
-  expect(within(detail).queryByText(/previous version is still live/)).toBeNull();
-  expect(within(detail).getByText(/Resolve the issue before this campaign can show again/)).toBeInTheDocument();
+  expect(within(detail).queryByText(/previous version is still published/)).toBeNull();
+  expect(within(detail).getByText(/Resolve the issue before it can show again/)).toBeInTheDocument();
 });
 
 it('retains accepted results, dates and drill-down links when a new period fails, then retries', async () => {
@@ -741,7 +829,7 @@ it('retains accepted results, dates and drill-down links when a new period fails
   await userEvent.click(screen.getByRole('button', { name: /More actions/ }));
   expect(await screen.findByRole('menuitem', { name: 'View submissions' })).toHaveAttribute('href', expect.stringContaining('from=2026-08-16'));
   await userEvent.keyboard('{Escape}');
-  await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(report).toHaveAttribute('href', expect.stringContaining('days=7')));
   expect(screen.queryByRole('alert')).toBeNull();
 });
@@ -753,7 +841,7 @@ it('makes preview and vocabulary failures recoverable without presenting missing
   expect(await screen.findByText(/Design previews couldn’t load/)).toHaveTextContent('Goal names couldn’t load');
   expect(screen.getByText('Goal unavailable')).toBeInTheDocument();
   expect(screen.queryByText(OPTIN.goal)).toBeNull();
-  await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
   await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
 });
@@ -827,7 +915,7 @@ it('retries a failed list refresh without repeating the successful mutation', as
   await userEvent.click(await screen.findByRole('menuitem', { name: 'Publish saved draft' }));
   await userEvent.click(screen.getByRole('button', { name: 'Publish saved draft' }));
   expect(await screen.findByText('List offline')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(screen.getByRole('row', { name: OPTIN.name })).toHaveTextContent('Published'));
   expect(optins.publishOptin).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('alert')).toBeNull();

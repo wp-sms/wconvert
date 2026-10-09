@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, RotateCcw } from 'lucide-react';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { chooseResult, type Answers } from '../../../loader/src/journey-rules';
 import type { TemplateTree } from '@renderer/types';
 import { submissionScreen } from './structure/journey';
@@ -81,12 +82,12 @@ export function JourneySample({ tree, onTrace, onSelect, onClose, onShowPath }: 
     <div className="wconvert-journey-sample__prediction">
       <h3>{__('Predicted path', 'wconvert')}</h3>
       <ol className="wconvert-journey-test__timeline">{path.indices.map((index, order) => <li key={tree.steps[index].id}>
-        <span className="wconvert-journey-test__number" aria-hidden="true">{order + 1}</span><div><button type="button" onClick={() => onSelect(index)}>{tree.steps[index].name}<ArrowRight aria-hidden="true" size={13} /></button>
+        <span className="wconvert-journey-test__number" aria-hidden="true">{order + 1}</span><div><button type="button" onClick={() => onSelect(index)}>{tree.steps[index].name}<ArrowRight aria-hidden="true" size={13} className="rtl:-scale-x-100" /></button>
         {path.waiting === index && <small>{__('Waiting for your choice', 'wconvert')}</small>}</div>
       </li>)}</ol>
-      {bypassed.length > 0 && <details className="wconvert-journey-sample__skipped"><summary>{__('Skipped for these answers', 'wconvert')}</summary>
+      {bypassed.length > 0 && <Disclosure variant="inline" className="wconvert-journey-sample__skipped" title={__('Skipped for these answers', 'wconvert')}>
         {bypassed.map(({ screen, index }) => <p key={screen.id}><strong>{screen.name}</strong><small>{skippedReason(index)}</small></p>)}
-      </details>}
+      </Disclosure>}
       {path.decisions.flatMap(decision => {
         if ('edge' in decision) {
           if (!tree.graph || !tree.graph.edges.some(edge => edge.from === decision.from && edge.kind === 'answer')) return [];
@@ -99,9 +100,9 @@ export function JourneySample({ tree, onTrace, onSelect, onClose, onShowPath }: 
       {selectedResult && <p className="wconvert-journey-sample__result">{sprintf(__('Result shown: %s', 'wconvert'), selectedResult.heading)}</p>}
       <p className="wconvert-journey-sample__boundary">{path.waiting === undefined ? __('Prediction complete. Try the form to check validation and the visitor experience.', 'wconvert') : __('The prediction stops where an answer or action is needed.', 'wconvert')}</p>
       {submitted.length > 0 && <p>{sprintf(_n('%d submission would be made with these choices.', '%d submissions would be made with these choices.', submitted.length, 'wconvert'), submitted.length)}</p>}
-      {onShowPath && <Button variant="outline" size="sm" onClick={() => onShowPath(path.indices, journeyTraceEdges(tree, path.decisions))}>{__('Show sample path on the map', 'wconvert')}<ArrowRight aria-hidden="true" /></Button>}
+      {onShowPath && <Button variant="outline" size="sm" onClick={() => onShowPath(path.indices, journeyTraceEdges(tree, path.decisions))}>{__('Show sample path on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
       <Button variant="ghost" size="sm" onClick={onClose}>{onShowPath ? __('Switch to visitor test', 'wconvert') : __('Close', 'wconvert')}</Button>
-      <small>{__('Predictions do not count as completed tests. No Leads or destination requests are created.', 'wconvert')}</small>
+      <small>{__('Predictions do not count as completed tests. No leads or destination requests are created.', 'wconvert')}</small>
     </div>
   </aside>;
 }

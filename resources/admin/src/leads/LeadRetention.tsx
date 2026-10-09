@@ -12,12 +12,14 @@ import {
 } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Skeleton } from '../components/ui/skeleton';
+import { Field } from '../shell/Field';
 import { RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
+import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { SettingsDisclosure } from '../shell/SettingsDisclosure';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { readRetention, saveRetention, type Retention } from './api';
+import { formatCount } from '../lib/format';
 import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
 
 interface Draft {
@@ -38,7 +40,7 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
   const [error, setError] = useState<string | null>(null);
   const [validation, setValidation] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const { saved, markSaved, clear: clearSaved } = useSaveStatus();
   const [confirmDays, setConfirmDays] = useState<number | null>(null);
   const foreverRadio = useRef<HTMLInputElement>(null);
   const automaticRadio = useRef<HTMLInputElement>(null);
@@ -73,14 +75,14 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
   const changeDraft = (next: Draft) => {
     setDraft(next);
     setValidation(null);
-    setSaved(false);
+    clearSaved();
   };
   const cancelChanges = () => {
     if (period === null || saving) return;
     setDraft(draftOf(period));
     setValidation(null);
     setError(null);
-    setSaved(false);
+    clearSaved();
     (period.days === null ? foreverRadio : automaticRadio).current?.focus();
   };
   const commit = async (days: number | null) => {
@@ -91,7 +93,7 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
       const current = await saveRetention(days);
       setRetention(ready(current));
       setDraft(draftOf(current));
-      setSaved(true);
+      markSaved();
       returnToSavedPolicy.current = true;
       setConfirmDays(null);
     } catch (cause) {
@@ -123,69 +125,64 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
     <>
       <SettingsDisclosure
         expanded={expanded}
-        title={expanded ? __('Data & privacy', 'wconvert') : __('How long leads are kept', 'wconvert')}
+        title={__('How long submissions are kept', 'wconvert')}
         summary={period === null
-          ? __('Lead retention settings', 'wconvert')
+          ? __('Loading…', 'wconvert')
           : period.days === null
             ? __('Kept until you delete them', 'wconvert')
             : sprintf(
-                _n('Automatically deleted after %d day', 'Automatically deleted after %d days', period.days, 'wconvert'),
-                period.days,
+                _n('Deleted automatically after %s day', 'Deleted automatically after %s days', period.days, 'wconvert'),
+                formatCount(period.days),
               )}
         attention={retention.status === 'failed' || error !== null}
       >
         {retention.status === 'loading' ? (
           <RegionBody className="flex flex-col gap-3">
-            <span role="status" className="sr-only">{__('Loading…', 'wconvert')}</span>
+            <span role="status" className="sr-only">{__('Loading how long submissions are kept…', 'wconvert')}</span>
             <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />
             <Skeleton aria-hidden="true" className="h-(--control-height) w-64 max-w-full" />
           </RegionBody>
         ) : retention.status === 'failed' ? (
-          <>
-            <RegionErrorState
-              message={retention.message}
-              hint={__('Try loading the retention settings again.', 'wconvert')}
-            />
-            <RegionFooter>
-              <Button variant="outline" onClick={() => setRetry((value) => value + 1)}>
-                {__('Retry loading retention', 'wconvert')}
-              </Button>
-            </RegionFooter>
-          </>
+          <RegionErrorState message={retention.message} onRetry={() => setRetry((value) => value + 1)} />
         ) : (
           <>
             {error !== null && confirmDays === null && <RegionError message={error} />}
             <RegionBody className="flex flex-col gap-3">
-              <p className="m-0 rounded-md border border-border bg-secondary p-4 text-note text-muted-foreground" id={`${id}-scope`}>
-                {__('Applies to leads from every Campaign. Copies already sent to destinations or exported are unaffected.', 'wconvert')}
+              <p className="m-0 rounded-md border border-border bg-surface p-4 text-note text-muted-foreground" id={`${id}-scope`}>
+                {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}
               </p>
-              <fieldset className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0" disabled={saving} aria-describedby={`${id}-scope`}>
-                <legend className="mb-4 pt-5 font-medium">{__('Keep captured submissions', 'wconvert')}</legend>
-                <label className="flex items-start gap-3 rounded-md border border-border p-4">
+              <fieldset className="wconvert-radio-cards" disabled={saving} aria-describedby={`${id}-scope`}>
+                <legend className="mb-4 pt-5 font-medium">{__('Keep submissions', 'wconvert')}</legend>
+                <label className="wconvert-radio-card">
                   <input
                     ref={foreverRadio}
-                    aria-label={__('Keep them until I delete them', 'wconvert')}
+                    aria-labelledby={`${id}-forever`}
                     type="radio"
                     name={`${id}-policy`}
                     checked={!draft.automatic}
                     onChange={() => changeDraft({ ...draft, automatic: false })}
                   />
-                  <span><span className="block font-medium">{__('Keep them until I delete them', 'wconvert')}</span><span className="mt-1 block text-note text-muted-foreground">{__('No automatic deletion schedule.', 'wconvert')}</span></span>
+                  <span><span id={`${id}-forever`}>{__('Keep them until I delete them', 'wconvert')}</span></span>
                 </label>
-                <label className="flex items-start gap-3 rounded-md border border-border p-4">
+                <label className="wconvert-radio-card">
                   <input
                     ref={automaticRadio}
-                    aria-label={__('Delete them automatically after', 'wconvert')}
+                    aria-labelledby={`${id}-automatic`}
+                    aria-describedby={`${id}-automatic-hint`}
                     type="radio"
                     name={`${id}-policy`}
                     checked={draft.automatic}
                     onChange={() => changeDraft({ ...draft, automatic: true })}
                   />
-                  <span><span className="block font-medium">{__('Delete them automatically after', 'wconvert')}</span><span className="mt-1 block text-note text-muted-foreground">{__('Older stored submissions are permanently removed.', 'wconvert')}</span></span>
+                  <span><span id={`${id}-automatic`}>{__('Delete them automatically after', 'wconvert')}</span><span id={`${id}-automatic-hint`}>{__('A daily cleanup permanently deletes older submissions.', 'wconvert')}</span></span>
                 </label>
                 {draft.automatic && (
-                  <div className="flex flex-col items-start gap-2 pl-6">
-                    <Label htmlFor={`${id}-days`}>{__('Retention period in days', 'wconvert')}</Label>
+                  <Field
+                    className="items-start ps-[39px]"
+                    label={__('Retention period in days', 'wconvert')}
+                    htmlFor={`${id}-days`}
+                    error={validation !== null && <span id={`${id}-validation`}>{validation}</span>}
+                  >
                     <Input
                       ref={daysInput}
                       id={`${id}-days`}
@@ -200,17 +197,15 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                       aria-describedby={validation !== null ? `${id}-validation` : undefined}
                       onChange={(event) => changeDraft({ ...draft, days: event.target.value })}
                     />
-                    {validation !== null && (
-                      <p id={`${id}-validation`} role="alert" className="m-0 text-note text-destructive">
-                        {validation}
-                      </p>
-                    )}
-                  </div>
+                  </Field>
                 )}
               </fieldset>
             </RegionBody>
             <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
-              <span className="text-note text-muted-foreground">{dirty ? __('Unsaved changes', 'wconvert') : __('No unsaved changes', 'wconvert')}</span>
+              <span className="flex flex-wrap gap-2">
+                {dirty && <span className="text-note text-muted-foreground">{__('Unsaved changes', 'wconvert')}</span>}
+                <SaveStatus saved={saved} />
+              </span>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" disabled={saving || !dirty} onClick={cancelChanges}>
                   {__('Cancel changes', 'wconvert')}
@@ -219,7 +214,6 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                   {saving ? __('Saving…', 'wconvert') : __('Save retention', 'wconvert')}
                 </Button>
               </div>
-              {saved && <span role="status" className="text-note">{__('Retention saved.', 'wconvert')}</span>}
             </RegionFooter>
           </>
         )}
@@ -240,14 +234,15 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
           <AlertDialogHeader>
             <AlertDialogTitle>
               {sprintf(
-                _n('Automatically delete leads older than %d day?', 'Automatically delete leads older than %d days?', confirmDays ?? 0, 'wconvert'),
-                confirmDays ?? 0,
+                _n('Delete submissions older than %s day?', 'Delete submissions older than %s days?', confirmDays ?? 0, 'wconvert'),
+                formatCount(confirmDays ?? 0),
               )}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {__('Existing and future leads older than this period will be permanently deleted during daily cleanup. Export a CSV first if you need them. This applies to every Campaign.', 'wconvert')}
+              {__('Existing and future submissions from every campaign are permanently deleted once they are older than this. Export a CSV first if you need them.', 'wconvert')}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <p className="m-0 text-note text-muted-foreground">{__('Campaign totals in analytics stay. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}</p>
           {error !== null && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={saving}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
@@ -262,8 +257,8 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
               {saving
                 ? __('Saving…', 'wconvert')
                 : sprintf(
-                    _n('Delete after %d day', 'Delete after %d days', confirmDays ?? 0, 'wconvert'),
-                    confirmDays ?? 0,
+                    _n('Delete after %s day', 'Delete after %s days', confirmDays ?? 0, 'wconvert'),
+                    formatCount(confirmDays ?? 0),
                   )}
             </AlertDialogAction>
           </AlertDialogFooter>

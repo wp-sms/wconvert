@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { isFreeInstall } from './goals/availability';
+import { humanize } from './lib/format';
 
 /**
  * User-facing facts for the closed Display Type vocabulary.
@@ -18,18 +19,18 @@ export function displayTypeLabel(type?: string): string {
     floating_bar: __('Floating bar', 'wconvert'),
     slide_in: __('Slide-in', 'wconvert'),
     fullscreen: __('Fullscreen', 'wconvert'),
-  } as Record<string, string>)[type ?? ''] ?? type ?? '';
+  } as Record<string, string>)[type ?? ''] ?? (type ? humanize(type) : __('Other format', 'wconvert'));
 }
 
 /** A placement-level explanation, deliberately not a promise about the Goal. */
 export function displayTypeDescription(type?: string): string {
   return ({
-    popup: __('Centred over the page', 'wconvert'),
+    popup: __('Centered over the page', 'wconvert'),
     inline: __('Inside the page', 'wconvert'),
     floating_bar: __('Bar at the page edge', 'wconvert'),
     slide_in: __('Panel in a page corner', 'wconvert'),
     fullscreen: __('Covers the browser viewport', 'wconvert'),
-  } as Record<string, string>)[type ?? ''] ?? type ?? '';
+  } as Record<string, string>)[type ?? ''] ?? '';
 }
 
 /** The formats free ships; every other one arrives with Pro's display-types module. */

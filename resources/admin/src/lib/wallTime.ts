@@ -229,9 +229,21 @@ export function readableHours(window: unknown): string | null {
   return `${at(fromHour, fromMinute)}\u2009\u2013\u2009${at(toHour, toMinute)}`;
 }
 
-/** What `<html lang>` says, or nothing — in which case `Intl` uses the browser's. */
-function documentLocale(): string | undefined {
+/**
+ * What `<html lang>` says, pinned to the Gregorian calendar — or the
+ * runtime's own language with that calendar when it says nothing.
+ *
+ * **The calendar is pinned because the periods are Gregorian.** `fa-IR`
+ * defaults to the Persian calendar, so a monthly target for October read
+ * "Mehr 1405" — a month that starts on September 23 — and WordPress itself
+ * prints Gregorian dates in every locale. Digits and month names still follow
+ * the site's language (ADR 0131).
+ */
+export function documentLocale(): string | undefined {
   const lang = typeof document === 'undefined' ? '' : document.documentElement.lang;
-
-  return lang === '' ? undefined : lang;
+  try {
+    return new Intl.Locale(lang === '' ? new Intl.DateTimeFormat().resolvedOptions().locale : lang, { calendar: 'gregory' }).toString();
+  } catch {
+    return lang === '' ? undefined : lang;
+  }
 }

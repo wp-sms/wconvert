@@ -3,7 +3,7 @@ import { ListChecks, Eye, TrendingDown } from 'lucide-react';
 import { ReportTarget } from './ReportNavigation';
 import { ReportDisclosure } from './ReportDisclosure';
 import { rangeLabel } from './reporting';
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Region, RegionHeader } from '../shell/Region';
 import { editorHref, reportHref, type ReportQuery } from '../nav';
@@ -19,6 +19,7 @@ export interface Insight {
 
 export function Insights({ items, query }: { items: Insight[]; query: ReportQuery }) {
   if (!items.length) return null;
+  const more = items.length - 3;
   return <ReportTarget name="attention" label={__('Needs attention', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Needs attention', 'wconvert')} level={3} icon={<ListChecks />} />
     <div className="wa-insights">{items.slice(0, 3).map(item => {
@@ -29,16 +30,16 @@ export function Insights({ items, query }: { items: Insight[]; query: ReportQuer
         <div className="wa-insight-main">
           <span className="wa-report-icon" aria-hidden="true"><Icon className="size-5" /></span>
           <div className="wa-insight-copy">
-            <a className="wa-report-identity" href={reportHref({ ...query, optinId: item.optin_id, goal: undefined, impact: undefined, experiment: undefined })}>{item.name}</a>
+            <a className="wa-report-identity" href={reportHref({ ...query, optinId: item.optin_id, goal: undefined, impact: undefined, experiment: undefined })}><bdi>{item.name}</bdi></a>
             <h4>{item.title}</h4><p className="wa-muted">{item.note}</p>
           </div>
-          <div className="wa-insight-fact"><span className="wa-muted">{metric === 'rate' ? __('This period', 'wconvert') : __('Times shown', 'wconvert')}</span>
+          <div className="wa-insight-fact"><span className="wa-muted">{metric === 'rate' ? __('This period', 'wconvert') : __('Shown', 'wconvert')}</span>
             <strong>{value(item.facts.current)}</strong>
             {item.facts.previous && <span className="wa-muted">{__('Previously', 'wconvert')} {value(item.facts.previous)}</span>}
           </div>
         </div>
         <div className="wa-insight-action wconvert-toolbar">
-          <Button asChild variant="outline"><a href={editorHref(item.optin_id, reportHref(query), item.action === 'display' ? 'rules' : undefined)}>{item.action === 'display' ? __('Review display rules', 'wconvert') : __('Edit campaign', 'wconvert')}</a></Button>
+          <Button asChild variant="outline"><a href={editorHref(item.optin_id, reportHref(query), item.action === 'display' ? 'rules' : undefined)}>{item.action === 'display' ? __('Review display rules', 'wconvert') : __('Open editor', 'wconvert')}</a></Button>
         </div>
         <ReportDisclosure title={__('View evidence', 'wconvert')}>
           <DataTable label={__('Insight evidence', 'wconvert')}>
@@ -50,5 +51,6 @@ export function Insights({ items, query }: { items: Insight[]; query: ReportQuer
         </ReportDisclosure>
       </article>;
     })}</div>
+    {more > 0 && <p className="wa-insights-more">{sprintf(_n('%s more campaign needs attention. Open a goal to see it.', '%s more campaigns need attention. Open a goal to see them.', more, 'wconvert'), formatCount(more))}</p>}
   </Region></ReportTarget>;
 }

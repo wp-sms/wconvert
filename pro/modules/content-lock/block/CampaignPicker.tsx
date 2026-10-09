@@ -39,12 +39,12 @@ export function CampaignStatus({ value, state }: { value: string; state: PickerS
   const { data } = state;
   const selected = data?.campaigns.find(item => item.id === value);
   return <>
-    {data === null && <Notice status="warning" isDismissible={false}>{__('Campaign choices could not be loaded. Try Refresh Campaigns.', 'wconvert')}</Notice>}
+    {data === null && <Notice status="warning" isDismissible={false}>{__('Campaign choices could not be loaded. Try Refresh campaigns.', 'wconvert')}</Notice>}
     {value && data !== null && selected?.status !== 'ready' && <Notice status="warning" isDismissible={false}>{!selected
-      ? __('This Campaign is no longer published as inline. Choose another or republish it. Content stays public.', 'wconvert')
+      ? __('This campaign is no longer published as inline. Choose another or republish it. Content stays public.', 'wconvert')
       : selected.status === 'disabled'
-        ? __('Enable Content lock and republish this Campaign, or choose another.', 'wconvert')
-        : __('This Campaign is unavailable. Content stays public.', 'wconvert')}</Notice>}
+        ? __('Enable Content lock and republish this campaign, or choose another.', 'wconvert')
+        : __('This campaign is unavailable. Content stays public.', 'wconvert')}</Notice>}
   </>;
 }
 
@@ -72,14 +72,14 @@ export function CampaignPickerFields({ value, onChange, state, focusRequested, o
   const options = ready.filter(item => item.id === value || item.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
     .map(item => ({ value: item.id, label: item.name }));
   // Preserve unavailable selections visibly. Refresh never edits the post.
-  if (value && selected?.status !== 'ready') options.unshift({ value, label: selected?.name ?? __('Previously selected Campaign', 'wconvert') });
+  if (value && selected?.status !== 'ready') options.unshift({ value, label: selected?.name ?? __('Previously selected campaign', 'wconvert') });
   return <div className="wconvert-lock-picker" ref={picker}>
     {value && !editing ? <div className="wconvert-lock-picker__selected">
       <span className="wconvert-lock-picker__label">{__('Campaign', 'wconvert')}</span>
-      <strong>{selected?.name ?? __('Previously selected Campaign', 'wconvert')}</strong>
+      <strong>{selected?.name ?? __('Previously selected campaign', 'wconvert')}</strong>
       <div className="wconvert-lock-picker__actions">
-        <Button ref={changeButton} variant="tertiary" aria-label={__('Change Campaign', 'wconvert')} onClick={() => { pendingFocus.current = 'picker'; setEditing(true); }}>{__('Change', 'wconvert')}</Button>
-        <Button variant="tertiary" aria-label={__('Clear Campaign', 'wconvert')} onClick={() => { pendingFocus.current = 'picker'; setFilter(''); setEditing(false); onChange(''); }}>{__('Clear', 'wconvert')}</Button>
+        <Button ref={changeButton} variant="tertiary" aria-label={__('Change campaign', 'wconvert')} onClick={() => { pendingFocus.current = 'picker'; setEditing(true); }}>{__('Change', 'wconvert')}</Button>
+        <Button variant="tertiary" aria-label={__('Clear campaign', 'wconvert')} onClick={() => { pendingFocus.current = 'picker'; setFilter(''); setEditing(false); onChange(''); }}>{__('Clear', 'wconvert')}</Button>
       </div>
     </div> : <>
       <ComboboxControl label={__('Campaign', 'wconvert')} value={value || null} options={options}
@@ -88,13 +88,13 @@ export function CampaignPickerFields({ value, onChange, state, focusRequested, o
     </>}
     <CampaignStatus value={value} state={state} />
     {data !== null && ready.length === 0 && <p>{data.campaigns.some(item => item.status === 'unavailable')
-      ? __('No Content lock Campaigns are available right now.', 'wconvert')
-      : __('No published Content lock Campaigns yet.', 'wconvert')}</p>}
-    <div className="wconvert-lock-picker__actions"><Button variant="tertiary" disabled={busy} onClick={() => { void refresh(); }}>{busy ? __('Refreshing…', 'wconvert') : __('Refresh Campaigns', 'wconvert')}</Button>
-    {data?.manageUrl ? <p><a href={data.manageUrl} target="_blank" rel="noopener noreferrer">{__('Manage Campaigns', 'wconvert')}<span className="screen-reader-text">{__(' (opens in a new tab)', 'wconvert')}</span></a></p>
-      : data && (ready.length === 0 || (value && selected?.status !== 'ready')) ? <p>{__('Ask your administrator to publish a Content lock Campaign.', 'wconvert')}</p> : null}</div>
+      ? __('No Content lock campaigns are available right now.', 'wconvert')
+      : __('No published Content lock campaigns yet.', 'wconvert')}</p>}
+    <div className="wconvert-lock-picker__actions"><Button variant="tertiary" disabled={busy} onClick={() => { void refresh(); }}>{busy ? __('Refreshing…', 'wconvert') : __('Refresh campaigns', 'wconvert')}</Button>
+    {data?.manageUrl ? <p><a href={data.manageUrl} target="_blank" rel="noopener noreferrer">{__('Manage campaigns', 'wconvert')}<span className="screen-reader-text">{__(' (opens in a new tab)', 'wconvert')}</span></a></p>
+      : data && (ready.length === 0 || (value && selected?.status !== 'ready')) ? <p>{__('Ask your administrator to publish a Content lock campaign.', 'wconvert')}</p> : null}</div>
     {result === 'updated' && <p role="status">{__('Campaign choices updated.', 'wconvert')}</p>}
-    {result === 'error' && <Notice status="error" isDismissible={false}>{__('Could not refresh Campaigns. Your selection is unchanged. Try again.', 'wconvert')}</Notice>}
+    {result === 'error' && <Notice status="error" isDismissible={false}>{__('Could not refresh campaigns. Your selection is unchanged. Try again.', 'wconvert')}</Notice>}
   </div>;
 }
 

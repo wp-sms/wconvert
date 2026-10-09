@@ -1,12 +1,12 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
 import Revenue from '../../modules/analytics/admin/Revenue';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 const period = { days: 7, from: '2026-09-24', to: '2026-09-30' };
-const report = { ...period, guide_url: '/guide', available: true, consent_ready: true, site_matches: true, settings: { enabled: true, since: '2026-09-01T00:00:00Z' }, complete: true, eligible_orders: 3, linked_orders: 1, currencies: [{ currency: 'USD', orders: 1, amount: 10, unallocated_refunds: 0 }], orders: [{ id: 42, campaign: 'offer', paid: '2026-09-25', status: 'Completed', refunded: false, amount: 10, currency: 'USD', url: '/order/42' }] };
+const report = { ...period, guide_url: '/guide', available: true, consent_ready: true, site_matches: true, settings: { enabled: true, since: '2026-09-01T00:00:00Z' }, complete: true, eligible_orders: 3, linked_orders: 1, currencies: [{ currency: 'USD', orders: 1, amount: 10, unallocated_refunds: 0 }], orders: [{ id: 42, campaign: 'offer', paid: '2026-09-25', status: 'completed', refunded: false, amount: 10, currency: 'USD', url: '/order/42' }] };
 it('retains accepted totals, dates and campaign links after a failed period change', async () => {
   vi.mocked(apiFetch).mockResolvedValueOnce(report);
   const view = render(<Revenue period={period} campaignNames={{ offer: 'Autumn offer' }} />);
@@ -25,6 +25,9 @@ it('keeps a confirmed tracking setting when the following report refresh fails',
   render(<Revenue period={period} />);
   await userEvent.click(await screen.findByText('Tracking & setup'));
   await userEvent.click(screen.getByRole('button', { name: 'Turn off tracking' }));
+  const confirm = screen.getByRole('alertdialog');
+  expect(confirm).toHaveTextContent('Orders already linked stay in this report.');
+  await userEvent.click(within(confirm).getByRole('button', { name: 'Turn off tracking' }));
   await screen.findByRole('alert');
   expect(screen.getAllByText('Tracking is off')).toHaveLength(2);
   expect(screen.getByRole('button', { name: 'Turn on tracking' })).toBeEnabled();
@@ -39,4 +42,23 @@ it('keeps currencies separate and explains an unavailable refund amount', async 
   expect(table).toHaveTextContent('A refund has no product allocation.');
   expect(screen.getAllByRole('cell', { name: 'Unavailable' })).toHaveLength(1);
   expect(screen.queryByText('Linked paid orders')).not.toBeInTheDocument();
+});
+
+it('shows linked orders in the store currency with readable status and date, and no campaign ID', async () => {
+  document.documentElement.lang = 'en-US';
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, orders: [
+    { ...report.orders[0], status: 'wc-processing', amount: 1240.5 },
+    { ...report.orders[0], id: 43, campaign: 'gone', status: 'wc-custom-review' },
+  ] });
+  render(<Revenue period={period} campaignNames={{ offer: 'Autumn offer' }} />);
+  await userEvent.click(await screen.findByText('View linked orders'));
+  const rows = within(screen.getByRole('table', { name: 'Linked orders' })).getAllByRole('row');
+  expect(rows[1]).toHaveTextContent('Processing');
+  expect(rows[1]).toHaveTextContent('$1,240.50');
+  expect(rows[1]).toHaveTextContent('Sep 25, 2026');
+  expect(rows[2]).toHaveTextContent('Other status');
+  expect(rows[2]).toHaveTextContent('Deleted campaign');
+  expect(rows[2]).not.toHaveTextContent('gone');
+  expect(within(rows[2]).queryByRole('link', { name: /Deleted campaign/ })).toBeNull();
+  expect(screen.getAllByText('$10.00', { selector: 'dd' })).toHaveLength(2);
 });

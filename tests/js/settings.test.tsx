@@ -21,6 +21,9 @@ const privacy = vi.hoisted(() => ({
   savePrivacyGuidance: vi.fn(),
 }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
+const request = vi.hoisted(() => vi.fn());
+vi.mock('@wordpress/api-fetch', () => ({ default: request }));
+const COUNTRIES = [{ code: 'AM', name: 'Armenia' }, { code: 'OM', name: 'Oman' }];
 const OFF = {
   maxImpressions: null,
   cooldownDays: null,
@@ -42,6 +45,7 @@ beforeEach(() => {
   });
   privacy.readPrivacyGuidance.mockResolvedValue({ enabled: true });
   privacy.savePrivacyGuidance.mockImplementation(async (enabled) => ({ enabled }));
+  request.mockReset().mockImplementation(async ({ data }: { data?: { country: string } }) => ({ country: data?.country ?? 'AM', countries: COUNTRIES }));
 });
 
 it('finds a settings category by the task without replacing the active form', async () => {
@@ -49,7 +53,7 @@ it('finds a settings category by the task without replacing the active form', as
   await userEvent.type(screen.getByRole('searchbox', { name: 'Find a setting' }), 'retention');
   expect(screen.getByRole('link', { name: /Data & privacy/ })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Visitor experience/ })).not.toBeInTheDocument();
-  expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Display limits' })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Back to Leads/ })).not.toBeInTheDocument();
 });
 
@@ -75,18 +79,18 @@ function SettingsHarness() {
 it('keeps unsaved settings mounted until category navigation is confirmed', async () => {
   window.history.replaceState({}, '', '#settings?group=experience');
   render(<SettingsHarness />);
-  await userEvent.type(await screen.findByLabelText(/Total campaign appearances/i), '3');
+  await userEvent.type(await screen.findByLabelText(/Show campaigns at most/i), '3');
   await userEvent.click(screen.getByRole('link', { name: /Data & privacy/i }));
   expect(await screen.findByRole('dialog')).toBeInTheDocument();
-  expect(screen.getByLabelText(/Total campaign appearances/i)).toHaveValue(3);
+  expect(screen.getByLabelText(/Show campaigns at most/i)).toHaveValue(3);
   await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
-  expect(screen.getByLabelText(/Total campaign appearances/i)).toHaveValue(3);
+  expect(screen.getByLabelText(/Show campaigns at most/i)).toHaveValue(3);
   expect(api.saveSiteAllowance).not.toHaveBeenCalled();
 });
 
 it('keeps site-wide limits as a complete draft until an explicit save', async () => {
   render(<SiteAllowance />);
-  const count = await screen.findByLabelText(/Total campaign appearances/i);
+  const count = await screen.findByLabelText(/Show campaigns at most/i);
   await userEvent.type(count, '10');
   await userEvent.click(screen.getByLabelText(/after a visitor closes/i));
   expect(api.saveSiteAllowance).not.toHaveBeenCalled();
@@ -94,7 +98,7 @@ it('keeps site-wide limits as a complete draft until an explicit save', async ()
     screen.getByRole('button', { name: 'Save display limits' }),
   );
   expect(api.saveSiteAllowance).not.toHaveBeenCalled();
-  expect(screen.getByRole('alertdialog', { name: 'Review shared changes' })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: 'Site-wide display limits' })).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Apply to all campaigns' }));
   expect(api.saveSiteAllowance).toHaveBeenCalledExactlyOnceWith({
     ...OFF,
@@ -104,30 +108,45 @@ it('keeps site-wide limits as a complete draft until an explicit save', async ()
   expect(
     screen.getByRole('button', { name: 'Save display limits' }),
   ).toBeDisabled();
-  expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+  expect(screen.getByText('Saved just now')).toBeInTheDocument();
+});
+
+it('saves the phone country only on Save, like every other settings section', async () => {
+  render(<Settings group="experience" />);
+  const picker = await screen.findByRole('button', { name: 'Default country Armenia' });
+  await userEvent.click(picker);
+  await userEvent.click(screen.getByRole('button', { name: 'Oman' }));
+  expect(request).not.toHaveBeenCalledWith(expect.objectContaining({ method: 'POST' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Save phone country' }));
+  expect(request).toHaveBeenCalledWith({ path: '/wconvert/v1/optins/phone-country', method: 'POST', data: { country: 'OM' } });
+  expect(await screen.findByRole('button', { name: 'Default country Oman' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Save phone country' })).toBeDisabled();
 });
 
 it('keeps the site-specific data map with retention and personal-data actions', async () => {
   render(<Settings group="data" />);
 
-  expect(await screen.findByRole('button', { name: /Where visitor data goes/ })).toHaveAttribute('aria-expanded', 'false');
-  expect(screen.getByRole('heading', { name: 'Data & privacy' })).toBeInTheDocument();
+  expect(await screen.findByRole('table', { name: 'What is stored' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Privacy guidance' })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Export and personal data' })).toBeInTheDocument();
 });
 
-it('saves Campaign privacy guidance without disabling core privacy tools', async () => {
+it('saves campaign privacy guidance without disabling core privacy tools', async () => {
   render(<Settings group="data" />);
 
-  const guidance = await screen.findByLabelText(/Show privacy guidance in the Campaign editor/);
+  const guidance = await screen.findByLabelText(/Show privacy guidance in the campaign editor/);
   expect(guidance).toBeChecked();
-  expect(screen.getByText(/Export, erasure, retention and WordPress Privacy Policy tools stay available/)).toBeInTheDocument();
+  expect(guidance).toHaveAccessibleDescription(/Export, erasure and retention work either way/);
 
   await userEvent.click(guidance);
   expect(privacy.savePrivacyGuidance).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('button', { name: 'Save privacy guidance' }));
 
   expect(privacy.savePrivacyGuidance).toHaveBeenCalledExactlyOnceWith(false);
-  expect(await screen.findByText('Privacy guidance saved.')).toBeInTheDocument();
+  expect(await screen.findByText('Saved just now')).toBeInTheDocument();
+  expect(screen.queryByText(/guidance saved/i)).not.toBeInTheDocument();
+  await userEvent.click(guidance);
+  expect(screen.queryByText('Saved just now')).not.toBeInTheDocument();
 });
 
 /**
@@ -139,12 +158,12 @@ it('lists what Pro adds on a free install and offers no Pro-only category', asyn
   expect(screen.getByRole('heading', { name: 'More with Pro' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Explore Pro/ })).toHaveAttribute('href', 'https://wconvert.io/pro/');
   expect(screen.queryByRole('link', { name: /Analytics integrations/ })).not.toBeInTheDocument();
-  expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Display limits' })).toBeInTheDocument();
 });
 
 it('lands a free install deep-linked to analytics on the default group', async () => {
   render(<Settings group="integrations" />);
-  expect(await screen.findByRole('heading', { name: 'Visitor experience' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Display limits' })).toBeInTheDocument();
   expect(screen.queryByText('Analytics integrations')).not.toBeInTheDocument();
 });
 

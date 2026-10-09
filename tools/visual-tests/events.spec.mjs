@@ -102,8 +102,9 @@ test('campaign details copy the ID by keyboard and admin previews remain silent'
   await page.getByRole('button', { name: 'Events email then SMS', exact: true }).first().click();
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   const dialog = page.getByRole('dialog');
-  await dialog.getByRole('button', { name: 'Copy campaign ID' }).focus(); await page.keyboard.press('Enter');
-  await expect(dialog.getByText('ID copied.', { exact: true })).toBeVisible();
+  await dialog.getByText('For developers', { exact: true }).click();
+  await dialog.getByRole('button', { name: 'Copy ID' }).focus(); await page.keyboard.press('Enter');
+  await expect(dialog.getByText('Copied.', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(id);
   expect(await kinds(page)).toEqual([]);
   await page.screenshot({ path: info.outputPath('copy-campaign-id.png') });

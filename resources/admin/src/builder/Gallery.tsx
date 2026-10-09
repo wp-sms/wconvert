@@ -4,7 +4,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { useShownAfterDelay } from '../shell/skeletonDelay';
-import { isShown, renderingFor, tierName } from '../goals/availability';
+import { isShown, renderingFor, tierName, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
 import { CompareSelection } from '../discovery/CompareSelection';
 import { TemplateCard } from './TemplateCard';
@@ -92,7 +92,7 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
   if (entry.facets.captures.length === 0) {
     if (fit.bound) {
       return __(
-        'This design captures nothing, so there would be no leads to send to this Campaign’s destinations.',
+        'This design collects nothing, so there would be no submissions to send to this campaign’s destinations.',
         'wconvert',
       );
     }
@@ -149,11 +149,11 @@ export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null 
 
   return entry.facets.act === 'click'
     ? __(
-        'Counts click-throughs instead of submissions — including everything this Campaign has already counted.',
+        'Counts click-throughs instead of submissions — including everything this campaign has already counted.',
         'wconvert',
       )
     : __(
-        'Counts submissions instead of click-throughs — including everything this Campaign has already counted.',
+        'Counts submissions instead of click-throughs — including everything this campaign has already counted.',
         'wconvert',
       );
 }
@@ -269,7 +269,7 @@ export function Gallery({
             }
             action={(describedBy) =>
               locked && !entry.preview_url ? (
-                <span className="text-sm text-muted-foreground">{__('Included in Pro', 'wconvert')}</span>
+                <span className="text-note text-muted-foreground">{sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('Available with %s.', 'wconvert'), tierProductName(entry.tier))}</span>
               ) : locked ? (
                 /*
                   **A link, never a `disabled` button.** The design is not on
@@ -283,7 +283,7 @@ export function Gallery({
                   wp-admin, and `target="_blank"` because it leaves a screen the
                   merchant is in the middle of using.
                 */
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline">
                   <a
                     href={entry.preview_url}
                     target="_blank"
@@ -297,7 +297,6 @@ export function Gallery({
               ) : onPreview !== undefined ? (
                 <Button
                   variant="outline"
-                  size="sm"
                   aria-describedby={describedBy}
                   disabled={busy}
                   onClick={() => onPreview(entry.id)}
@@ -314,7 +313,6 @@ export function Gallery({
                 */
                 <Button
                   variant={inUse ? 'secondary' : 'outline'}
-                  size="sm"
                   aria-describedby={describedBy}
                   disabled={busy}
                   aria-disabled={inUse || refused !== null}

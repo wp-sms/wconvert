@@ -34,7 +34,7 @@ describe('placing an inline Optin', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" published={false} />);
 
     expect(screen.getByText(/Add the/)).toHaveTextContent(`“${metadata.title}”`);
-    expect(screen.getByText(/Publish this Campaign first/)).toBeInTheDocument();
+    expect(screen.getByText(/Publish this campaign first/)).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
     expect(screen.getByRole('textbox')).toHaveAttribute('readonly');
     expect(screen.queryByRole('link')).toBeNull();
@@ -43,7 +43,7 @@ describe('placing an inline Optin', () => {
 
   it('keeps display conditions explicit after publishing and distinguishes the placement page', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" published />);
-    expect(screen.queryByText(/Publish this Campaign first/)).toBeNull();
+    expect(screen.queryByText(/Publish this campaign first/)).toBeNull();
     expect(screen.getByText(/display rules, schedule and visitor settings still decide/)).toBeInTheDocument();
     expect(screen.getByText(/also check the page where you placed its block or shortcode/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Check your homepage' })).toHaveAttribute('href', 'https://example.org/blog/?wconvert-inspect=1');
@@ -142,7 +142,7 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published={false} />);
 
-    expect(screen.getByText(/Publish this Campaign first/)).toHaveAttribute('data-attention', 'true');
+    expect(screen.getByText(/Publish this campaign first/)).toHaveAttribute('data-attention', 'true');
     expect(screen.queryByRole('link')).toBeNull();
   });
 });
@@ -162,7 +162,7 @@ describe('checking overlay placement', () => {
   it('does not offer the live-site inspector as a draft preview', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="popup" published={false} />);
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText(/After publishing, this Campaign can appear/)).toBeInTheDocument();
+    expect(screen.getByText(/After publishing, this campaign can appear/)).toBeInTheDocument();
     expect(screen.getByText(/editor preview shows your draft/)).toBeInTheDocument();
   });
 
@@ -193,13 +193,13 @@ describe('automatic placement saved on an install without Pro', () => {
   /** It describes manual placement and sells nothing (ADR 0116). */
   it('falls back to the manual steps on a free install', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
-    expect(screen.queryByText(/Pro places this Campaign/)).toBeNull();
+    expect(screen.queryByText(/After publishing, it is placed in matching/)).toBeNull();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
   });
 
   it('keeps the automatic explanation on a paid install', () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
-    expect(screen.getByText(/Pro places this Campaign/)).toBeInTheDocument();
+    expect(screen.getByText(/After publishing, it is placed in matching/)).toBeInTheDocument();
   });
 });

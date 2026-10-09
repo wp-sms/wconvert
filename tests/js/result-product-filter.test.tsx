@@ -30,7 +30,7 @@ it('does not fetch incomplete matches and explains empty and failed reads', asyn
   rerender(<LiveProductMatches filter={{ category_id: 8, attributes: [] }} />);
   await screen.findByRole('alert');
   vi.mocked(apiFetch).mockResolvedValueOnce([{ id: 1, name: 'Blue mug', permalink: '/mug' }]);
-  await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('link', { name: 'Blue mug' })).toHaveAttribute('href', '/mug');
 });
 
@@ -52,7 +52,7 @@ it('changes ordering without losing filters and loads curation only when opened'
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Product order' }), 'price_low');
   expect(onChange).toHaveBeenCalledWith({ ...original, order: 'price_low' });
   expect(vi.mocked(apiFetch).mock.calls.some(([args]) => args.path?.includes('/wc/store/'))).toBe(false);
-  await userEvent.click(screen.getByText('Pin or exclude products (1 pinned, 1 excluded)'));
+  await userEvent.click(screen.getByText('Pin or exclude products'));
   expect(await screen.findByLabelText('Find products to pin')).toBeInTheDocument();
   expect(screen.getByLabelText('Find products to exclude')).toBeInTheDocument();
 });
@@ -124,7 +124,7 @@ it('keeps the selection when names cannot load and retries in place', async () =
   expect(await screen.findByRole('alert')).toHaveTextContent('Your selection is kept');
   expect(screen.getByRole('button', { name: 'Remove: Product #3' })).toBeEnabled();
   vi.mocked(apiFetch).mockResolvedValueOnce([{ id: 3, name: 'Recovered name' }]);
-  await userEvent.click(screen.getByRole('button', { name: 'Retry names' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('button', { name: 'Remove: Recovered name' })).toBeEnabled();
   expect(onChange).not.toHaveBeenCalled();
 });

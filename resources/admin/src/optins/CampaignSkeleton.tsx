@@ -12,7 +12,7 @@ export function CampaignSkeleton() {
       <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
         <div className="wconvert-preview-button" aria-hidden="true"><Skeleton className="wconvert-campaign-thumbnail" /></div>
         <div className="min-w-0 flex-1">
-          {row === 0 && <span role="status" className="sr-only">{__('Loading…', 'wconvert')}</span>}
+          {row === 0 && <span role="status" className="sr-only">{__('Loading campaigns…', 'wconvert')}</span>}
           <Skeleton aria-hidden="true" className="w-32 max-w-full" style={{ blockSize: '1lh' }} />
           <Skeleton aria-hidden="true" className="mt-2 w-24 max-w-full" style={{ blockSize: '1lh' }} />
         </div>

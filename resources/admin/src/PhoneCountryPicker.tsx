@@ -1,20 +1,30 @@
 import { useId, useRef, useState, type KeyboardEvent } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Check, ChevronDown } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
 import { useDirection } from './hooks/useDirection';
+import { cn } from './lib/utils';
 
 export interface Country { code: string; name: string }
 
-/** One country control; the search lives inside its list, not beside the value. */
-export function PhoneCountryPicker({ label, value, countries, onChange, disabled = false, siteCountry }: {
+/**
+ * One country control; the search lives inside its list, not beside the value.
+ *
+ * `field` draws the label as a settings page's {@see Field} does — body size,
+ * 6px above the control. Without it the label is the editor inspector's small
+ * caption, which is the builder's own furniture (ADR 0066).
+ */
+export function PhoneCountryPicker({ label, value, countries, onChange, disabled = false, siteCountry, field = false, describedBy }: {
   label: string;
   value: string;
   countries: readonly Country[];
   onChange: (country: string) => void;
   disabled?: boolean;
   siteCountry?: string;
+  field?: boolean;
+  /** The id of a hint the trigger should announce. */
+  describedBy?: string;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -24,9 +34,11 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
   const direction = useDirection();
   const chosen = countries.find(country => country.code === value);
   const site = countries.find(country => country.code === siteCountry);
-  const shown = value === 'site'
-    ? site ? `${__('Use site setting', 'wconvert')} (${site.name})` : __('Use site setting', 'wconvert')
-    : chosen?.name ?? __('Choose a country', 'wconvert');
+  const siteChoice = site
+    /* translators: %s: the site's default country, e.g. “Armenia”. */
+    ? sprintf(__('Use site setting (%s)', 'wconvert'), site.name)
+    : __('Use site setting', 'wconvert');
+  const shown = value === 'site' ? siteChoice : chosen?.name ?? __('Choose a country', 'wconvert');
   const term = query.trim().toLocaleLowerCase();
   const matches = countries.filter(country => `${country.name} ${country.code}`.toLocaleLowerCase().includes(term));
   const showSite = siteCountry !== undefined && (!term || `${__('Use site setting', 'wconvert')} ${site?.name ?? ''} ${siteCountry}`.toLocaleLowerCase().includes(term));
@@ -54,12 +66,12 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
     else buttons[next]?.focus();
   };
 
-  return <div className="wconvert-phone-country-picker">
-    <span id={`${id}-label`} className="wconvert-phone-country-picker__label">{label}</span>
+  return <div className={cn('wconvert-phone-country-picker', field && 'gap-1.5')}>
+    <span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span>
     <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); }}>
       <PopoverTrigger asChild>
         <Button id={`${id}-trigger`} type="button" variant="outline" disabled={disabled}
-          aria-labelledby={`${id}-label ${id}-trigger`} className="wconvert-phone-country-picker__trigger">
+          aria-labelledby={`${id}-label ${id}-trigger`} aria-describedby={describedBy} className="wconvert-phone-country-picker__trigger">
           <span className="truncate">{shown}</span><ChevronDown aria-hidden="true" />
         </Button>
       </PopoverTrigger>
@@ -70,7 +82,7 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
           placeholder={__('Search countries…', 'wconvert')} onChange={event => setQuery(event.target.value)} />
         <div ref={results} className="wconvert-phone-country-picker__results">
           {showSite && <button type="button" onClick={() => choose('site')}>
-            <span>{__('Use site setting', 'wconvert')}{site ? ` (${site.name})` : ''}</span>{value === 'site' && <Check aria-hidden="true" />}
+            <span>{siteChoice}</span>{value === 'site' && <Check aria-hidden="true" />}
           </button>}
           {matches.map(country => <button type="button" key={country.code} onClick={() => choose(country.code)}>
             <span>{country.name}</span>{country.code === value && <Check aria-hidden="true" />}

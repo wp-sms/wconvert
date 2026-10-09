@@ -9,7 +9,7 @@ vi.mock('../../resources/admin/src/leads/api', () => api);
 const { LeadRetention } = await import('../../resources/admin/src/leads/LeadRetention');
 
 const forever = { days: null, max_days: 3650 };
-const disclosure = () => screen.getByRole('button', { name: /How long leads are kept/ });
+const disclosure = () => screen.getByRole('button', { name: /How long submissions are kept/ });
 const automatic = () => screen.getByRole('radio', { name: 'Delete them automatically after' });
 const keep = () => screen.getByRole('radio', { name: 'Keep them until I delete them' });
 const days = () => screen.getByRole('spinbutton', { name: 'Retention period in days' });
@@ -41,7 +41,7 @@ describe('explicit lead retention', () => {
     api.readRetention.mockReturnValue(new Promise<Retention>((done) => { resolve = done; }));
     render(<LeadRetention />);
     await userEvent.click(disclosure());
-    expect(screen.getByRole('status')).toHaveTextContent('Loading…');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading how long submissions are kept…');
     expect(screen.queryByRole('radio')).toBeNull();
     await act(async () => { resolve(forever); });
     expect(keep()).toBeChecked();
@@ -53,7 +53,7 @@ describe('explicit lead retention', () => {
     render(<LeadRetention />);
     expect(await screen.findByRole('alert')).toHaveTextContent('Retention could not be read.');
     expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
-    await userEvent.click(screen.getByRole('button', { name: 'Retry loading retention' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await screen.findByRole('radio', { name: 'Keep them until I delete them' });
     expect(api.readRetention).toHaveBeenCalledTimes(2);
     expect(screen.queryByRole('alert')).toBeNull();
@@ -76,18 +76,22 @@ describe('explicit lead retention', () => {
   it('names and saves the exact chosen period only after destructive confirmation', async () => {
     await open();
     const dialog = await propose('30');
-    expect(dialog).toHaveAccessibleName('Automatically delete leads older than 30 days?');
-    expect(dialog).toHaveTextContent('Existing and future leads');
-    expect(dialog).toHaveTextContent('This applies to every Campaign.');
+    expect(dialog).toHaveAccessibleName('Delete submissions older than 30 days?');
+    expect(dialog).toHaveTextContent('Existing and future submissions from every campaign');
+    // A destructive confirm says what survives (ADR 0131).
+    expect(dialog).toHaveTextContent('Campaign totals in analytics stay.');
     expect(within(dialog).getByRole('button', { name: 'Cancel' })).toHaveFocus();
     expect(api.saveRetention).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 30 days' }));
     await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
     expect(api.saveRetention).toHaveBeenCalledExactlyOnceWith(30);
-    expect(disclosure()).toHaveTextContent('Automatically deleted after 30 days');
-    expect(screen.getByRole('status')).toHaveTextContent('Retention saved.');
+    expect(disclosure()).toHaveTextContent('Deleted automatically after 30 days');
+    expect(screen.getByRole('status')).toHaveTextContent('Saved just now');
     expect(save()).toBeDisabled();
     expect(automatic()).toHaveFocus();
+    // Only ever true: the next edit clears it.
+    await userEvent.click(keep());
+    expect(screen.getByRole('status')).toHaveTextContent('');
   });
 
   it('keeps a confirmation cancellation editable and restores focus without saving', async () => {
@@ -120,7 +124,7 @@ describe('explicit lead retention', () => {
     await userEvent.clear(days());
     await userEvent.type(days(), '30');
     await userEvent.click(keep());
-    expect(disclosure()).toHaveTextContent('Automatically deleted after 120 days');
+    expect(disclosure()).toHaveTextContent('Deleted automatically after 120 days');
     await userEvent.click(screen.getByRole('button', { name: 'Cancel changes' }));
     expect(automatic()).toBeChecked();
     expect(automatic()).toHaveFocus();
@@ -144,10 +148,10 @@ describe('explicit lead retention', () => {
     api.readRetention.mockResolvedValue({ ...forever, days: 120 });
     await open();
     const dialog = await propose('7');
-    expect(dialog).toHaveAccessibleName('Automatically delete leads older than 7 days?');
+    expect(dialog).toHaveAccessibleName('Delete submissions older than 7 days?');
     expect(api.saveRetention).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 7 days' }));
-    await waitFor(() => expect(disclosure()).toHaveTextContent('Automatically deleted after 7 days'));
+    await waitFor(() => expect(disclosure()).toHaveTextContent('Deleted automatically after 7 days'));
     expect(api.saveRetention).toHaveBeenCalledExactlyOnceWith(7);
   });
 
@@ -158,9 +162,9 @@ describe('explicit lead retention', () => {
     const dialog = await propose('30');
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 30 days' }));
     expect(await within(dialog).findByRole('alert')).toHaveTextContent('The retention change could not be saved.');
-    expect(screen.getByRole('alertdialog')).toHaveAccessibleName('Automatically delete leads older than 30 days?');
+    expect(screen.getByRole('alertdialog')).toHaveAccessibleName('Delete submissions older than 30 days?');
     // The summary behind the dialog must still describe the saved policy.
-    expect(screen.getByText('Automatically deleted after 120 days')).toBeInTheDocument();
+    expect(screen.getByText('Deleted automatically after 120 days')).toBeInTheDocument();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
     expect(days()).toHaveValue(30);
     expect(save()).toHaveFocus();
@@ -168,7 +172,7 @@ describe('explicit lead retention', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Delete after 30 days' }));
     await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
     expect(api.saveRetention.mock.calls).toEqual([[30], [30]]);
-    expect(disclosure()).toHaveTextContent('Automatically deleted after 30 days');
+    expect(disclosure()).toHaveTextContent('Deleted automatically after 30 days');
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
@@ -186,7 +190,7 @@ describe('explicit lead retention', () => {
     expect(screen.getByText('Kept until you delete them')).toBeInTheDocument();
     await act(async () => { resolve({ ...forever, days: 30 }); });
     await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
-    expect(disclosure()).toHaveTextContent('Automatically deleted after 30 days');
+    expect(disclosure()).toHaveTextContent('Deleted automatically after 30 days');
   });
 
   it('turns deletion off only with an explicit save, without a destructive confirmation', async () => {
@@ -194,7 +198,7 @@ describe('explicit lead retention', () => {
     await open();
     await userEvent.click(keep());
     expect(api.saveRetention).not.toHaveBeenCalled();
-    expect(disclosure()).toHaveTextContent('Automatically deleted after 120 days');
+    expect(disclosure()).toHaveTextContent('Deleted automatically after 120 days');
     await userEvent.click(save());
     await waitFor(() => expect(disclosure()).toHaveTextContent('Kept until you delete them'));
     expect(api.saveRetention).toHaveBeenCalledExactlyOnceWith(null);
@@ -211,7 +215,7 @@ describe('explicit lead retention', () => {
     await userEvent.click(save());
     expect(await screen.findByRole('alert')).toHaveTextContent('Save failed.');
     expect(keep()).toBeChecked();
-    expect(disclosure()).toHaveTextContent('Automatically deleted after 120 days');
+    expect(disclosure()).toHaveTextContent('Deleted automatically after 120 days');
     expect(save()).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel changes' }));
     expect(days()).toHaveValue(120);

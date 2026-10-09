@@ -4,12 +4,13 @@ import { Button } from '../components/ui/button';
 import {
   Region,
   RegionBody,
-  RegionError,
   RegionErrorState,
   RegionFooter,
   RegionHeader,
 } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { CheckRow } from '../shell/CheckRow';
+import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { messageOf } from '../shell/loadable';
 import {
   readPrivacyGuidance,
@@ -20,7 +21,7 @@ import {
   type SettingsEditing,
 } from '../settings-page/useSettingsEditing';
 
-/** Site-wide progressive disclosure for Campaign privacy authoring. */
+/** Site-wide progressive disclosure for campaign privacy authoring. */
 export function PrivacyGuidanceSettings({
   onEditingStateChange,
 }: { onEditingStateChange?: SettingsEditing } = {}) {
@@ -29,7 +30,7 @@ export function PrivacyGuidanceSettings({
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [savedNotice, setSavedNotice] = useState(false);
+  const status = useSaveStatus();
   const [retry, setRetry] = useState(0);
 
   useEffect(() => {
@@ -56,12 +57,11 @@ export function PrivacyGuidanceSettings({
     if (draft === null || !dirty || saving) return;
     setSaving(true);
     setSaveError(null);
-    setSavedNotice(false);
     try {
       const current = await savePrivacyGuidance(draft);
       setSaved(current.enabled);
       setDraft(current.enabled);
-      setSavedNotice(true);
+      status.markSaved();
     } catch (cause) {
       setSaveError(messageOf(cause));
     } finally {
@@ -69,81 +69,53 @@ export function PrivacyGuidanceSettings({
     }
   };
 
+  const title = __('Privacy guidance', 'wconvert');
   if (saved === null || draft === null) {
     if (loadingError !== null) {
       return (
         <Region>
-          <RegionHeader title={__('Data & privacy', 'wconvert')} />
-          <RegionErrorState
-            message={loadingError}
-            hint={__('Try loading privacy guidance again.', 'wconvert')}
-          />
-          <RegionFooter>
-            <Button variant="outline" onClick={() => setRetry((value) => value + 1)}>
-              {__('Retry loading privacy guidance', 'wconvert')}
-            </Button>
-          </RegionFooter>
+          <RegionHeader title={title} />
+          <RegionErrorState message={loadingError} onRetry={() => setRetry((value) => value + 1)} />
         </Region>
       );
     }
 
-    return <RegionSkeleton label={__('Data & privacy', 'wconvert')} lines={3} />;
+    return <RegionSkeleton label={title} lines={2} />;
   }
 
   return (
     <Region>
-      <RegionHeader
-        title={__('Data & privacy', 'wconvert')}
-        description={__('Choose how much privacy help appears while creating Campaigns.', 'wconvert')}
-      />
-      {saveError !== null && <RegionError message={saveError} />}
+      <RegionHeader title={title} />
       <RegionBody>
-        <label className="flex items-start gap-3 py-2" htmlFor="wconvert-privacy-guidance">
-          <input
-            id="wconvert-privacy-guidance"
-            className="mt-1 size-4 shrink-0 accent-action"
-            type="checkbox"
-            checked={draft}
-            disabled={saving}
-            onChange={(event) => {
-              setDraft(event.target.checked);
-              setSaveError(null);
-              setSavedNotice(false);
-            }}
-          />
-          <span className="font-medium">
-            {__('Show privacy guidance in the Campaign editor', 'wconvert')}
-            <small className="mt-1 block text-note font-normal text-muted-foreground">
-              {__('Adds a short Privacy Policy notice to new Campaign setups and checks it before publishing.', 'wconvert')}
-            </small>
-          </span>
-        </label>
-        <p className="mb-0 mt-4 rounded-md border border-border bg-secondary px-4 py-3 text-note text-muted-foreground">
-          {__('Turning this off only simplifies future Campaign drafts and the editor. Export, erasure, retention and WordPress Privacy Policy tools stay available.', 'wconvert')}
-        </p>
+        <CheckRow
+          label={__('Show privacy guidance in the campaign editor', 'wconvert')}
+          hint={__('Adds a short privacy notice to new campaigns and checks it before publishing. Export, erasure and retention work either way.', 'wconvert')}
+          checked={draft}
+          disabled={saving}
+          onChange={(event) => {
+            setDraft(event.target.checked);
+            setSaveError(null);
+            status.clear();
+          }}
+        />
       </RegionBody>
-      <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-note text-muted-foreground">
-          {dirty ? __('Unsaved changes', 'wconvert') : __('No unsaved changes', 'wconvert')}
-        </span>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={!dirty || saving}
-            onClick={() => {
-              setDraft(saved);
-              setSaveError(null);
-              setSavedNotice(false);
-            }}
-          >
-            {__('Cancel changes', 'wconvert')}
-          </Button>
-          <Button type="button" disabled={!dirty || saving} onClick={() => void save()}>
-            {saving ? __('Saving…', 'wconvert') : __('Save privacy guidance', 'wconvert')}
-          </Button>
-        </div>
-        {savedNotice && <span role="status" className="text-note">{__('Privacy guidance saved.', 'wconvert')}</span>}
+      <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
+        {saveError !== null && <p role="alert" className="m-0 text-note text-destructive">{saveError}</p>}
+        <SaveStatus saved={status.saved} />
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!dirty || saving}
+          onClick={() => {
+            setDraft(saved);
+            setSaveError(null);
+          }}
+        >
+          {__('Cancel changes', 'wconvert')}
+        </Button>
+        <Button type="button" disabled={!dirty || saving} onClick={() => void save()}>
+          {saving ? __('Saving…', 'wconvert') : __('Save privacy guidance', 'wconvert')}
+        </Button>
       </RegionFooter>
     </Region>
   );

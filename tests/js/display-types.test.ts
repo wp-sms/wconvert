@@ -41,12 +41,12 @@ describe('display type vocabulary', () => {
   });
 
   it('explains where each format appears and preserves extension formats', () => {
-    expect(displayTypeDescription('popup')).toBe('Centred over the page');
+    expect(displayTypeDescription('popup')).toBe('Centered over the page');
     expect(displayTypeDescription('inline')).toBe('Inside the page');
     expect(displayTypeDescription('floating_bar')).toBe('Bar at the page edge');
     expect(displayTypeDescription('slide_in')).toBe('Panel in a page corner');
     expect(displayTypeDescription('fullscreen')).toBe('Covers the browser viewport');
-    expect(displayTypeLabel('extension_format')).toBe('extension_format');
-    expect(displayTypeDescription('extension_format')).toBe('extension_format');
+    expect(displayTypeLabel('extension_format')).toBe('Extension format');
+    expect(displayTypeDescription('extension_format')).toBe('');
   });
 });

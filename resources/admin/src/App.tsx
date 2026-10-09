@@ -9,6 +9,7 @@ import { Dashboard } from './stats/Dashboard';
 import { Destinations } from './destinations/Destinations';
 import { readDestinations } from './destinations/api';
 import { issueCount } from './destinations/issueCount';
+import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
@@ -79,7 +80,7 @@ export function App() {
         onClose={() => navigate(route.returnTo)} />
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')}
-        description={__('Your changes to this Campaign will be lost.', 'wconvert')}
+        description={__('Changes since your last save will be lost. The saved campaign stays as it is.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </>;
@@ -91,11 +92,13 @@ export function App() {
       pageTitle={section === 'leads' && route.leadsView === 'issues' ? __('Sending issues', 'wconvert') : undefined}
       actions={section === 'optins' && !creating ? createButton : section === 'leads'
         ? route.leadsView === 'issues'
-          ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" />{__('Back to submissions', 'wconvert')}</a></Button>
+          ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to Leads', 'wconvert')}</a></Button>
           : sendingCount !== null && sendingCount > 0
-            ? <Button asChild variant="outline" className="border-warning/40 text-warning hover:bg-warning-surface hover:text-warning"><a href={sendingIssuesHref()}>
+            // The count is destinations with a known problem, not undelivered
+            // submissions; the amber badge is the shared "held back" colour.
+            ? <Button asChild variant="outline"><a href={sendingIssuesHref()}>
               <TriangleAlert aria-hidden="true" />{__('Sending issues', 'wconvert')}
-              <span className="rounded-full bg-warning-surface px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>
+              <Badge variant="warning" className="tabular-nums">{sendingCount}</Badge>
             </a></Button>
             : undefined
         : undefined}>
@@ -114,7 +117,7 @@ export function App() {
       </>}
       {section === 'settings' && <Settings key={navigation.hash} group={route.settingsGroup} destinationId={route.destinationId} onEditingStateChange={navigation.onEditingStateChange} />}
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
-        title={__('Leave without saving?', 'wconvert')} description={__('Your unsaved settings changes will be lost.', 'wconvert')}
+        title={__('Leave without saving?', 'wconvert')} description={__('Changes since your last save will be lost. What you saved stays as it is.', 'wconvert')}
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </Shell>

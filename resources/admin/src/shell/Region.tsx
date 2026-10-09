@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { CircleAlert } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Button } from '../components/ui/button';
 import { Description } from './Description';
 import { cn } from '../lib/utils';
 
@@ -155,7 +156,8 @@ export function RegionFooter({ className, children }: { className?: string; chil
  * succeeds, so there is no path where a merchant hides a failure and then
  * reads the stale data underneath it as current.
  */
-export function RegionError({ message, action }: { message: string; action?: ReactNode }) {
+export function RegionError({ message, action, onRetry }: { message: string; action?: ReactNode; onRetry?: () => void }) {
+  const retry = action ?? (onRetry && <TryAgain onClick={onRetry} />);
   return (
     <div className="border-b border-border px-4 py-2.5">
       <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
@@ -171,7 +173,7 @@ export function RegionError({ message, action }: { message: string; action?: Rea
           belongs.
         */}
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
-        {action && <AlertDescription>{action}</AlertDescription>}
+        {retry && <AlertDescription>{retry}</AlertDescription>}
       </Alert>
     </div>
   );
@@ -192,17 +194,18 @@ export function RegionError({ message, action }: { message: string; action?: Rea
  * better one to offer. Pass a local retry as `action` so the explanation and
  * its recovery control stay together instead of asking the user to reload.
  */
-export function RegionErrorState({ message, hint, action }: { message: string; hint?: string; action?: ReactNode }) {
+export function RegionErrorState({ message, hint, action, onRetry }: { message: string; hint?: string; action?: ReactNode; onRetry?: () => void }) {
+  const retry = action ?? (onRetry && <TryAgain onClick={onRetry} />);
   return (
     <RegionBody>
       <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
         <AlertDescription>
-          {hint ?? (action ? __('Try again. If the problem continues, reload the page.', 'wconvert') : __('Reload the page to try again.', 'wconvert'))}
+          {hint ?? (retry ? __('If it keeps failing, reload the page.', 'wconvert') : __('Reload the page to try again.', 'wconvert'))}
         </AlertDescription>
       </Alert>
-      {action && <div className="mt-4">{action}</div>}
+      {retry && <div className="mt-4">{retry}</div>}
     </RegionBody>
   );
 }
@@ -227,11 +230,25 @@ export function RegionErrorState({ message, hint, action }: { message: string; h
  * succeeds, so a merchant cannot hide it and read the stale data under it as
  * current.
  */
-export function PageError({ message }: { message: string }) {
+export function PageError({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
       <CircleAlert />
       <AlertTitle className="line-clamp-none">{message}</AlertTitle>
+      {onRetry && <AlertDescription><TryAgain onClick={onRetry} /></AlertDescription>}
     </Alert>
+  );
+}
+
+/**
+ * **One retry vocabulary** (ADR 0131): "Try again", beside the failure it
+ * answers. "Retry", "Retry loading report", "Refresh" and "Reload" had each
+ * grown on one screen.
+ */
+export function TryAgain({ onClick, busy = false }: { onClick: () => void; busy?: boolean }) {
+  return (
+    <Button type="button" variant="outline" disabled={busy} onClick={onClick}>
+      {busy ? __('Trying again…', 'wconvert') : __('Try again', 'wconvert')}
+    </Button>
   );
 }

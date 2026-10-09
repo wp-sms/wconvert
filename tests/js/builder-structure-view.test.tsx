@@ -195,7 +195,7 @@ beforeEach(() => {
  */
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
   await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 }
@@ -210,7 +210,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
   await screen.findByRole('button', { name: 'Browse designs and formats' });
 }
 
@@ -814,7 +814,7 @@ describe('the inspector', () => {
     scroller.scrollTop = 280;
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'heading-weight' }), '700');
     expect(scroller.scrollTop).toBe(280);
-    await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
     expect(scroller.scrollTop).toBe(280);
     await select('Body text');
     expect(scroller.scrollTop).toBe(0);
@@ -1163,8 +1163,8 @@ describe('the verdict', () => {
   it('is readable from every tab, including the ones that cannot cause it', async () => {
     await designLook();
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
-    await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(screen.getByRole('radio', { name: /Keep in WConvert only/ }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1256,7 +1256,7 @@ describe('undo and redo', () => {
     expect(keepEditing).toHaveFocus();
     await userEvent.keyboard('{Meta>}z{/Meta}');
     await userEvent.keyboard('{Control>}z{/Control}');
-    expect(screen.getByRole('dialog', { name: 'Review & publish' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeInTheDocument();
     await userEvent.click(keepEditing);
 
     expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
@@ -1821,7 +1821,7 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Counts down to .*2099.* — when this campaign stops running\./)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1830,7 +1830,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('This Campaign has no end date, so the clock will be empty on the page.'),
+      within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('This campaign has no end date, so the clock will be empty on the page.'),
     ).toBeInTheDocument();
   });
 
@@ -1844,7 +1844,7 @@ describe('a countdown’s inspector', () => {
 
     await openTheClock();
 
-    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
   });
 
   /**
@@ -2002,12 +2002,12 @@ describe('adaptive editor and signup deletion', () => {
     const config = { template_id: ENTRY.id, template: journey, submission_settings: { 'sms-signup': { destination_ids: ['sms-route'] } } };
     builder.getOptin.mockResolvedValue(optin({ config }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Edit screens & conditions' }));
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Remove signup screens' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(1);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});

@@ -1,11 +1,12 @@
-/* A confirmation that names what else changes: the question, from, to. */
+/* A confirmation that names what else changes: the question, from, to. A
+ * neutral question, so a neutral inset (§6) rather than the warning colors. */
 #wconvert-admin .wconvert-display .wconvert-placement-confirm {
   display: grid;
   gap: .75rem;
   padding: 12px;
-  border: 1px solid var(--warning);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--warning-surface);
+  background: var(--surface);
 }
 #wconvert-admin .wconvert-display .wconvert-placement-confirm__title { margin: 0; color: var(--foreground); font-size: var(--text-body); font-weight: 600; }
 #wconvert-admin .wconvert-display .wconvert-placement-confirm__title:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

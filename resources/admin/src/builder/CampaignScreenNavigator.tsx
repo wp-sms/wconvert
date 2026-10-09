@@ -1,4 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { CircleHelp, FileText, Flag, GitBranch, Mail, Sparkles } from 'lucide-react';
 import type { TemplateTree } from '@renderer/types';
 import { graphDisplayOrder } from './structure/graph';
@@ -34,9 +35,9 @@ export function CampaignScreenNavigator({ tree, step, onSelect, onFlow }: {
     </button>;
   };
   const renderGroup = (group: typeof groups[number]) => <section key={group.id} aria-label={sprintf(__('Follow-ups: %s', 'wconvert'), owners.has(group.id) ? tree.steps[owners.get(group.id)!].name : tree.steps[group.screens[0]].name)}>
-    <details open={group.screens.includes(step) || owners.get(group.id) === step}><summary><strong>{sprintf(_n('%d follow-up question', '%d follow-up questions', group.screens.length, 'wconvert'), group.screens.length)}</strong><small>{__('Ask every match, one at a time.', 'wconvert')}</small></summary>
+    <Disclosure variant="inline" open={group.screens.includes(step) || owners.get(group.id) === step} title={sprintf(_n('%d follow-up question', '%d follow-up questions', group.screens.length, 'wconvert'), group.screens.length)} summary={__('Ask every match, one at a time.', 'wconvert')}>
     {group.screens.map(index => item(index, true))}
-    <p>{sprintf(__('Then: %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? '')}</p></details>
+    <p>{sprintf(__('Then: %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? '')}</p></Disclosure>
   </section>;
   return <nav className="wconvert-campaign-screens" aria-label={__('Campaign screens', 'wconvert')}>
     <div className="wconvert-campaign-screens__heading"><strong>{__('Screens', 'wconvert')}</strong><button type="button" onClick={onFlow}>{__('View flow', 'wconvert')}</button></div>

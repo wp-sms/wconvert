@@ -1,6 +1,7 @@
 import * as React from "react"
 import { XIcon } from "lucide-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
+import { __ } from "@wordpress/i18n"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -73,7 +74,7 @@ function DialogContent({
             className="absolute end-3 top-3 flex size-8 items-center justify-center rounded-md opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{__("Close", "wconvert")}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
@@ -111,7 +112,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
+          <Button variant="outline">{__("Close", "wconvert")}</Button>
         </DialogPrimitive.Close>
       )}
     </div>
@@ -139,7 +140,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("m-0 text-sm text-muted-foreground", className)}
+      className={cn("m-0 text-note text-muted-foreground", className)}
       {...props}
     />
   )

@@ -15,14 +15,14 @@ function EditableCampaign() {
 it('retries a failed status read without losing the campaign preferences', async () => {
   vi.mocked(apiFetch).mockRejectedValueOnce({ message: 'Cannot read site analytics' });
   render(<EditableCampaign />);
-  expect(screen.getByRole('status')).toHaveTextContent('Loading Site analytics');
+  expect(screen.getByRole('status')).toHaveTextContent('Loading site analytics');
   await screen.findByText('Cannot read site analytics');
-  expect(screen.queryByText(/Loading Site analytics/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Loading site analytics/)).not.toBeInTheDocument();
 
   fireEvent.click(screen.getByRole('radio', { name: 'Off for this campaign' }));
   fireEvent.change(screen.getByLabelText('Public analytics label (optional)'), { target: { value: 'Updated offer' } });
   vi.mocked(apiFetch).mockResolvedValueOnce({ settings: { enabled: false } });
-  fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   await screen.findByText('External analytics is off. Campaign sales has a separate site setting.');
 
   expect(screen.queryByText('Cannot read site analytics')).not.toBeInTheDocument();

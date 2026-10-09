@@ -288,12 +288,12 @@ export function BlockRow({
               {isConvertingAct(block) && (
                 <span
                   className="wconvert-block__chip wconvert-block__chip--counted"
-                  title={__('This Campaign’s conversions are counted on this block.', 'wconvert')}
+                  title={__('This campaign’s conversions are counted on this block.', 'wconvert')}
                 >
                   {__('counted', 'wconvert')}
                   <span className="sr-only">
                     {' '}
-                    {__('— this Campaign’s conversions are counted on this block.', 'wconvert')}
+                    {__('— this campaign’s conversions are counted on this block.', 'wconvert')}
                   </span>
                 </span>
               )}

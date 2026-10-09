@@ -35,7 +35,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
             <DialogTitle>{packs ? __('Template packs','wconvert') : __('Browse designs', 'wconvert')}</DialogTitle>
 
           </div>
-          <DialogDescription>{packs ? __('Add approved designs to your library, then preview before applying.','wconvert') : __('Choose a layout and review your content before replacing this draft’s design.','wconvert')}</DialogDescription>
+          <DialogDescription>{packs ? __('Packs add designs to your library.','wconvert') : __('Review a design with your content before it replaces this draft’s design.','wconvert')}</DialogDescription>
           {onCatalogInstalled && <OptionStrip label={__('Library source','wconvert')} value={packs ? 'packs' : 'designs'} disabled={picker.busy}
             options={[{value:'designs',label:__('Your designs','wconvert')},{value:'packs',label:__('Template packs','wconvert')}]}
             onChange={value=>setPacks(value==='packs')} />}

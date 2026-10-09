@@ -33,7 +33,7 @@ it('uses a failed region with retry instead of leaving loading copy beside an er
   render(<Settings />);
   await screen.findByText('Cannot load settings');
   expect(screen.queryByText(/Loading Google Analytics/)).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   await screen.findByLabelText('Enable analytics integration');
 });
 it('keeps diagnostics closed for unsaved changes and lets the merchant discard them', async () => {
@@ -61,4 +61,22 @@ it('sets up Plausible without Google fields and asks for a fresh consent choice 
   expect(apiFetch).toHaveBeenLastCalledWith(expect.objectContaining({ method: 'POST', data: expect.objectContaining({ route: 'plausible', consent: 'wp' }) }));
   fireEvent.click(screen.getByRole('button', { name: 'Test setup' }));
   expect(screen.getByText(/Tests go to the site configured by your Plausible script/)).toBeInTheDocument();
+});
+
+it('says “Saved just now” beside Save after a save, and clears it on the next edit', async () => {
+  render(<Settings />);
+  fireEvent.click(await screen.findByLabelText('Enable analytics integration'));
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...saved, settings: { ...saved.settings, enabled: true } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
+  expect(await screen.findByText('Saved just now')).toBeInTheDocument();
+  fireEvent.click(screen.getByLabelText('Track dismissals'));
+  expect(screen.queryByText('Saved just now')).not.toBeInTheDocument();
+});
+
+it('names why diagnostics are refused when the analytics script is missing', async () => {
+  vi.mocked(apiFetch).mockResolvedValue({ ...saved, asset_available: false });
+  render(<Settings />);
+  const test = await screen.findByRole('button', { name: 'Test setup' });
+  expect(test).toHaveAttribute('aria-disabled', 'true');
+  expect(test).toHaveAccessibleDescription(/analytics script is missing/);
 });

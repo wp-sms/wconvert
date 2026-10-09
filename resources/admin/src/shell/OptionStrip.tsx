@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { formatCount } from '../lib/format';
 
 /** Native one-of-N choices: one tab stop and browser-owned arrow navigation. */
 export function OptionStrip({ label, value, options, onChange, disabled = false, className = '' }: {
@@ -10,7 +11,7 @@ export function OptionStrip({ label, value, options, onChange, disabled = false,
     {options.map(option => <label key={option.value}>
       <input type="radio" name={name} value={option.value} checked={value === option.value} disabled={disabled || option.disabled}
         onChange={() => onChange(option.value)} />
-      <span>{option.label}</span>{option.count !== undefined && <span aria-hidden="true" className="wconvert-picker__option-count">{option.count}</span>}
+      <span>{option.label}</span>{option.count !== undefined && <span aria-hidden="true" className="wconvert-picker__option-count">{formatCount(option.count)}</span>}
     </label>)}
   </div>;
 }

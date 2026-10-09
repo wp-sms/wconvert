@@ -245,6 +245,37 @@ const changeGoal = async () => {
 // THE LINE IN THE BAND.
 // =============================================================================
 
+describe('the numbers in Campaign details', () => {
+  /** A failed read is drawn as a failure with one way out, never as "no numbers" (§13). */
+  it('says the numbers could not load and tries again in place', async () => {
+    builder.getOptin.mockResolvedValue(optin({ published_at: '2026-09-14 10:00:00', can_change_goal: false }));
+    stats.readDashboard.mockRejectedValueOnce(new Error('offline'));
+    open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
+    const details = within(await screen.findByRole('dialog', { name: 'Welcome discount' }));
+    const alert = await details.findByText('The numbers could not be loaded.');
+    expect(alert).toHaveAttribute('role', 'alert');
+    // Each failed read in the dialog carries its own door, beside its own sentence.
+    await userEvent.click(within(alert.parentElement!).getByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(details.queryByText('The numbers could not be loaded.')).toBeNull());
+    expect(stats.readDashboard).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('the goal picker after a failed read', () => {
+  it('says the goals could not load, rather than that there are none', async () => {
+    const { ChangeGoalDialog } = await import('../../resources/admin/src/builder/ChangeGoalDialog');
+    const { failed } = await import('../../resources/admin/src/shell/loadable');
+    const onRetry = vi.fn();
+    render(<ChangeGoalDialog open onOpenChange={vi.fn()} goals={failed(new Error('offline'))} current="grow_email_list" onChange={vi.fn()} onRetry={onRetry} />);
+    expect(screen.getByText('The goals could not be loaded.')).toBeInTheDocument();
+    expect(screen.queryByText(/No other goals/)).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(onRetry).toHaveBeenCalledOnce();
+  });
+});
+
 describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
@@ -277,18 +308,19 @@ describe('the goal in Optin details', () => {
   });
 
   /**
-   * **A registry that answered nothing still names the Optin's Goal**, as the
-   * id it stores — `OptinList`'s rule: the raw value is the only honest thing
-   * left, and blanking it would read as an Optin with no Goal at all.
+   * **A registry that answered nothing still says the Optin has a Goal**, but
+   * never as the id it stores (ADR 0131): blanking it would read as an Optin
+   * with no Goal at all, and a raw key tells a merchant nothing.
    */
-  it('falls back to the stored id where this build cannot name the goal', async () => {
+  it('says the goal is unavailable, never its stored id, where this build cannot name it', async () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    expect(await within(screen.getByRole('dialog')).findByText('grow_email_list')).toBeInTheDocument();
+    expect(await within(screen.getByRole('dialog')).findByText('Goal unavailable')).toBeInTheDocument();
+    expect(within(screen.getByRole('dialog')).queryByText('grow_email_list')).toBeNull();
   });
 
   /**
@@ -456,7 +488,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
 
     expect(await screen.findByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   /** And a goal whose product IS the click-through says nothing at all. */
@@ -472,7 +504,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
 
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
     expect(screen.queryByText(/will never collect any/)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
   });
 });
 
@@ -499,7 +531,7 @@ describe('confirming the change', () => {
     await pick('Promote a sale or offer');
 
     expect(await screen.findByText(/keep reporting history stable/)).toBeInTheDocument();
-    expect(screen.getByText(/Undo cannot reverse this saved change/)).toBeInTheDocument();
+    expect(screen.getByText(/Undo cannot reverse this/)).toBeInTheDocument();
   });
 
   /**
@@ -555,7 +587,10 @@ describe('confirming the change', () => {
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
     await pick('Promote a sale or offer');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
-    await screen.findByText('The goal change was refused.');
+    // The refusal stays in the dialog, beside the button that caused it.
+    expect(await within(screen.getByRole('dialog')).findByRole('alert')).toHaveTextContent('The goal change was refused.');
+    expect(screen.getByRole('button', { name: 'Save draft and change goal' })).toBeEnabled();
+    await userEvent.keyboard('{Escape}');
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
@@ -564,7 +599,7 @@ describe('confirming the change', () => {
   it('writes nothing when the merchant backs out', async () => {
     open();
     await pick('Promote a sale or offer');
-    await userEvent.click(screen.getByRole('button', { name: 'Pick a different goal' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to goals' }));
 
     expect(builder.saveOptin).not.toHaveBeenCalled();
     expect(screen.getByText('Grow my email list')).toBeInTheDocument();

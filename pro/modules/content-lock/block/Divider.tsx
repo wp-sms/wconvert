@@ -57,7 +57,7 @@ registerBlockType(DIVIDER_BLOCK, {
       <BlockControls group="other"><ToolbarButton disabled={!canRemove} onClick={() => removeBlocks([clientId])}>{__('Remove divider, keep content', 'wconvert')}</ToolbarButton></BlockControls>
       <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts here', 'wconvert')}</strong><span>{selected?.name ?? (value ? __('Campaign needs attention', 'wconvert') : __('Not set up', 'wconvert'))}</span></div>
       <p className="wconvert-lock-divider__scope">{__('Everything below, to the end of this article.', 'wconvert')}</p>
-      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose Campaign', 'wconvert')}</Button> : <CampaignStatus value={value} state={state} />}
+      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert')}</Button> : <CampaignStatus value={value} state={state} />}
       {problem ? <Notice status={hasContent ? 'warning' : 'info'} isDismissible={false}>{problem}{unsupported && <Button variant="secondary" onClick={() => selectBlock(unsupported.clientId)}>{__('Find unsupported block', 'wconvert')}</Button>}</Notice>
         : <span className="wconvert-lock-divider__count">{!hasContent ? __('Add content below to lock it.', 'wconvert') : sprintf(_n('%d block below', '%d blocks below', remaining.length, 'wconvert'), remaining.length)}</span>}
     </div>;

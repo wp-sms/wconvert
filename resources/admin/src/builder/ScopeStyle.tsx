@@ -1,4 +1,5 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import { Button } from '../components/ui/button';
 import { ClipboardCopy, ClipboardPaste } from 'lucide-react';
 import { AA_NORMAL, PAIR_READERS, READABLE_PAIRS, contrastOf, pairKey } from './contrast';
@@ -67,10 +68,9 @@ export function ScopeStyle({
 
   return (
     <div className="wconvert-scope">
-      <details className="wconvert-style-context">
-        <summary>{width === 'narrow' ? __('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert') : __('Editing desktop', 'wconvert')}
-          {mobileOverrides.length > 0 && <span> · {sprintf(__('%d mobile setting(s)', 'wconvert'), mobileOverrides.length)}</span>}
-        </summary>
+      <Disclosure variant="inline" className="wconvert-style-context"
+        title={width === 'narrow' ? __('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert') : __('Editing desktop', 'wconvert')}
+        summary={mobileOverrides.length > 0 ? sprintf(_n('%d mobile setting', '%d mobile settings', mobileOverrides.length, 'wconvert'), mobileOverrides.length) : undefined}>
         <Description>
           {sprintf(
             __('Appearance for %s. Unchanged values follow the surrounding design.', 'wconvert'),
@@ -81,7 +81,7 @@ export function ScopeStyle({
           ? __('No mobile overrides on this element. It follows the surrounding design.', 'wconvert')
           : sprintf(__('Mobile settings: %s', 'wconvert'), mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))}</p>
         {width === 'narrow' && mobileOverrides.length > 0 && <Button type="button" variant="ghost" size="xs" className="mt-1" onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, 'narrow') })}>{__('Reset this element’s mobile overrides', 'wconvert')}</Button>}
-      </details>
+      </Disclosure>
 
       <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
 
@@ -127,8 +127,7 @@ export function ScopeStyle({
             </div>
           </section>
         ))}
-      <details className="wconvert-style-advanced">
-        <summary>{__('Copy or paste styles', 'wconvert')}</summary>
+      <Disclosure variant="inline" className="wconvert-style-advanced" title={__('Copy or paste styles', 'wconvert')}>
         <div className="wconvert-scope__clipboard">
           <Button
             type="button"
@@ -154,11 +153,11 @@ export function ScopeStyle({
               }
             >
               <ClipboardPaste aria-hidden="true" />
-              {sprintf(__('Paste %d setting(s)', 'wconvert'), Object.keys(copied).length)}
+              {sprintf(_n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length)}
             </Button>
           )}
         </div>
-      </details>
+      </Disclosure>
     </div>
   );
 }
@@ -312,29 +311,5 @@ function ScopeContrast({
         </li>
       ))}
     </ul>
-  );
-}
-
-export function ScopeJson({
-  scope,
-  name,
-  width,
-}: {
-  scope: Scope;
-
-  name: string;
-  width: WidthBag;
-}) {
-  const stored = {
-    ...(Object.keys(scope.tokens).length === 0 ? {} : { tokens: scope.tokens }),
-    ...(Object.keys(scope.narrow).length === 0 ? {} : { narrow: scope.narrow }),
-  };
-  const count = Object.keys(width === 'narrow' ? scope.narrow : scope.tokens).length;
-
-  return (
-    <details className="wconvert-scope__json">
-      <summary>{sprintf(__('What is stored on %1$s (%2$d)', 'wconvert'), name, count)}</summary>
-      <pre>{JSON.stringify(stored, null, 2)}</pre>
-    </details>
   );
 }

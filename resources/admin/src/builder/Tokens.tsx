@@ -1,5 +1,6 @@
 import { useId, useState, type CSSProperties, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { TryAgain } from '../shell/Region';
 import { SpacingField } from './SpacingField';
 import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
@@ -999,7 +1000,7 @@ function FontField({
           <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-font-popover">
             <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search site and system fonts…', 'wconvert')} /></label>
             {site === null && <p role="status">{__('Loading site fonts…', 'wconvert')}</p>}
-            {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <button type="button" onClick={read}>{__('Retry', 'wconvert')}</button></p>}
+            {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <TryAgain onClick={read} /></p>}
             <div className="wconvert-fonts" role="group" aria-labelledby={named}>
               {theirs.length > 0 && (
                 <>

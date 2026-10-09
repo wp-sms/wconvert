@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 
 const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
@@ -37,7 +37,12 @@ beforeEach(() => {
   privacy.readDataMap.mockResolvedValue(MAP);
 });
 
-const disclosure = () => screen.getByRole('button', { name: /Where visitor data goes/ });
+const storedTable = () => screen.findByRole('table', { name: 'What is stored' });
+const rowWith = (table: HTMLElement, text: RegExp) => {
+  const row = within(table).getAllByRole('row').find((each) => text.test(each.textContent ?? ''));
+  if (!row) throw new Error(`No row matches ${text}`);
+  return row;
+};
 
 it.each([
   ['plausible', 'Plausible', 'Google Analytics'],
@@ -46,65 +51,85 @@ it.each([
 ])('names the configured recipient for %s analytics', async (route, provider, otherProvider) => {
   privacy.readDataMap.mockResolvedValue({ ...MAP, analytics_integration: { configured: true, route } });
   render(<PrivacyDataMap />);
-  fireEvent.click(disclosure());
-  const description = await screen.findByText(/External analytics is enabled/);
-  expect(description).toHaveTextContent(`through ${provider}.`);
-  expect(description).not.toHaveTextContent(otherProvider);
+  const sent = await screen.findByRole('table', { name: 'Sent to other services' });
+  const row = rowWith(sent, /Analytics/);
+  expect(row).toHaveTextContent(provider);
+  expect(row).not.toHaveTextContent(otherProvider);
+  expect(row).toHaveTextContent(/No form details/);
 });
 
-it('explains where visitor data goes in direct merchant language', async () => {
+it('answers what is stored, why and for how long, as a table', async () => {
   render(<PrivacyDataMap />);
 
-  expect(disclosure()).toHaveAttribute('aria-expanded', 'false');
-  fireEvent.click(disclosure());
-  await screen.findByText('Newsletter subscribers');
-  expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
-  const region = disclosure().closest('section');
-  expect(region).not.toBeNull();
-  if (region === null) return;
-  expect(within(region).getByRole('heading', { name: 'Saved in WConvert' })).toBeVisible();
-  expect(within(region).getByText(/Form submissions include answers, consent text/i)).toBeVisible();
-  expect(within(region).getByText(/do not include the page URL, IP address or browser details/i)).toBeVisible();
-  expect(within(region).getByText(/Automatic deletion is off/i)).toBeVisible();
-  expect(within(region).getByRole('heading', { name: 'Saved in the visitor’s browser' })).toBeVisible();
-  expect(within(region).getByText(/until the visitor or browser clears it/i)).toBeVisible();
-  expect(within(region).getByText(/up to one year/i)).toBeVisible();
-  expect(within(region).getByRole('heading', { name: 'Campaign totals and form protection' })).toBeVisible();
-  expect(within(region).getByText(/not individual visitors/i)).toBeVisible();
-  expect(within(region).getByText(/one minute/i)).toBeVisible();
-  expect(within(region).getByText(/each Campaign for 10 minutes/i)).toBeVisible();
-  expect(within(region).getByRole('heading', { name: 'Sent to other services' })).toBeVisible();
-  expect(within(region).getByText('Newsletter subscribers')).toBeVisible();
-  expect(within(region).getByText('MailPoet')).toBeVisible();
-  expect(within(region).getByText(/Can receive: Email address, Name, Interest answer/i)).toBeVisible();
-  expect(within(region).getByRole('heading', { name: 'Copies you must manage separately' })).toBeVisible();
-  expect(within(region).getByText(/For a deletion request, remove those copies separately/i)).toBeVisible();
+  const table = await storedTable();
+  expect(within(table).getAllByRole('columnheader').map((each) => each.textContent)).toEqual(['What is stored', 'Why', 'How long']);
+  const submissions = rowWith(table, /Form submissions/);
+  expect(submissions).toHaveTextContent(/In WConvert/);
+  expect(submissions).toHaveTextContent(/Until you delete them/);
+  expect(within(submissions).getAllByRole('cell').map((cell) => cell.getAttribute('data-label'))).toEqual(['What is stored', 'Why', 'How long']);
+  expect(rowWith(table, /Daily totals per campaign/)).toHaveTextContent(/Not individual visitors/);
+  expect(rowWith(table, /saw, closed or completed/)).toHaveTextContent(/In the visitor’s browser/);
+  expect(rowWith(table, /one-way code made from the IP address, not/)).toHaveTextContent(/One minute/);
+  expect(rowWith(table, /IP address, per campaign/)).toHaveTextContent(/10 minutes/);
+  // Modules this site does not run add no rows.
+  expect(within(table).queryByText(/reopen button/i)).toBeNull();
+  expect(within(table).queryByText(/item count/i)).toBeNull();
+
+  const sent = screen.getByRole('table', { name: 'Sent to other services' });
+  const newsletter = rowWith(sent, /Newsletter subscribers/);
+  expect(newsletter).toHaveTextContent('MailPoet');
+  expect(newsletter).toHaveTextContent('Email address, Name, Interest answer');
+  expect(screen.getByText(/doesn’t delete copies at these services/)).toBeVisible();
 });
 
-it('shows a shape-matched loading state without claiming the site has no destinations', () => {
+it('folds the fine print away, closed', async () => {
+  render(<PrivacyDataMap />);
+  await storedTable();
+  const detail = screen.getByText('More detail').closest('details');
+  expect(detail).not.toHaveAttribute('open');
+  expect(within(detail as HTMLElement).getByText(/a cookie keeps the display history for up to 365 days/)).toBeInTheDocument();
+});
+
+it('adds rows only for the storage this site actually uses', async () => {
+  privacy.readDataMap.mockResolvedValue({
+    ...MAP,
+    retention_days: 90,
+    product_activity_retention_days: 400,
+    resource_send_limit_seconds: 600,
+    browser: { ...MAP.browser, stores_ab_assignment: true, reopen_session: 'wcv_teaser1:', content_unlock: 'wcv_unlock1:',
+      cart_recovery: { key: 'c', expires_with_cart_session: true, contains_item_count: true, contains_cart_total: true, contains_contact_details: false } },
+  });
+  render(<PrivacyDataMap />);
+  const table = await storedTable();
+  expect(rowWith(table, /Form submissions/)).toHaveTextContent('90 days after submission');
+  expect(rowWith(table, /A\/B test version/)).toBeInTheDocument();
+  expect(rowWith(table, /reopen buttons/)).toHaveTextContent(/browser session ends/);
+  expect(rowWith(table, /content locks/)).toHaveTextContent('30 days');
+  expect(rowWith(table, /item count and total/)).toHaveTextContent(/cart session ends/);
+  expect(rowWith(table, /product and campaign/)).toHaveTextContent('400 days');
+  expect(rowWith(table, /recipient and the resource/)).toHaveTextContent('10 minutes');
+});
+
+it('shows a loading state without claiming the site has no destinations', () => {
   privacy.readDataMap.mockReturnValue(new Promise(() => undefined));
 
   render(<PrivacyDataMap />);
 
-  expect(disclosure()).toHaveAttribute('aria-expanded', 'false');
-  fireEvent.click(disclosure());
   expect(screen.getByRole('status')).toHaveTextContent('Loading');
   expect(screen.queryByText(/No destinations are set up/)).not.toBeInTheDocument();
 });
 
-it('gives an empty configured-route list a direct way to connections', async () => {
-  privacy.readDataMap.mockResolvedValue({ ...MAP, retention_days: 90, destinations: [] });
+it('gives an empty destination list a direct way to connections', async () => {
+  privacy.readDataMap.mockResolvedValue({ ...MAP, destinations: [] });
 
   render(<PrivacyDataMap />);
 
-  fireEvent.click(disclosure());
-  expect(await screen.findByText(/deleted automatically 90 days after they are submitted/i)).toBeVisible();
-  expect(screen.queryByText('Kept until you delete them')).not.toBeInTheDocument();
-  expect(screen.getByText(/No destinations are set up/)).toBeVisible();
+  expect(await screen.findByText(/No destinations are set up/)).toBeVisible();
   expect(screen.getByRole('link', { name: 'Set up a destination' })).toHaveAttribute('href', '#settings?group=connections');
+  expect(screen.queryByRole('table', { name: 'Sent to other services' })).toBeNull();
 });
 
-it('keeps an unavailable configured route visible without guessing its fields', async () => {
+it('keeps an unavailable destination visible without guessing its fields or printing its key', async () => {
   privacy.readDataMap.mockResolvedValue({
     ...MAP,
     destinations: [{
@@ -115,18 +140,30 @@ it('keeps an unavailable configured route visible without guessing its fields', 
 
   render(<PrivacyDataMap />);
 
-  fireEvent.click(disclosure());
-  expect(await screen.findByText('Old automation')).toBeVisible();
-  expect(screen.getByText(/cannot show which information it receives/i)).toBeVisible();
-  expect(screen.queryByText(/Can receive:/)).not.toBeInTheDocument();
+  const sent = await screen.findByRole('table', { name: 'Sent to other services' });
+  const row = rowWith(sent, /Old automation/);
+  expect(row).toHaveTextContent(/isn’t available on this site/);
+  expect(row).not.toHaveTextContent('removed-provider');
 });
 
-it('keeps a failed read inside the data-flow region and names a recovery', async () => {
-  privacy.readDataMap.mockRejectedValue({ message: 'Privacy details are unavailable.' });
+it('names a mapped-answers field rather than printing its key', async () => {
+  privacy.readDataMap.mockResolvedValue({
+    ...MAP,
+    destinations: [{ ...MAP.destinations[0], fields: ['email', 'mapped form/quiz answers', 'some_future_field'] }],
+  });
+  render(<PrivacyDataMap />);
+  const sent = await screen.findByRole('table', { name: 'Sent to other services' });
+  expect(rowWith(sent, /Newsletter/)).toHaveTextContent('Email address, Mapped form and quiz answers, Other answers');
+  expect(sent).not.toHaveTextContent('some_future_field');
+});
+
+it('keeps a failed read inside the region and offers Try again', async () => {
+  privacy.readDataMap.mockRejectedValueOnce({ message: 'Privacy details are unavailable.' });
 
   render(<PrivacyDataMap />);
 
-  await waitFor(() => expect(screen.getByText('Privacy details are unavailable.')).toBeVisible());
-  expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
-  expect(screen.getByText('Reload the page to try again.')).toBeVisible();
+  expect(await screen.findByText('Privacy details are unavailable.')).toBeVisible();
+  expect(screen.getByRole('heading', { name: 'What visitor data is stored' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(await storedTable()).toBeInTheDocument();
 });

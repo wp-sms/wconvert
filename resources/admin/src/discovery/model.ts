@@ -13,7 +13,28 @@ export function siteDay(epoch: number, timezone: string, offset: number): string
   }
 }
 
-export const designKey = (entry: { design_key?: string; template_id?: string; id: string }) =>
+/** The last day of an event stored with an exclusive end, as `YYYY-MM-DD`. */
+export function lastDay(endExclusive: string): string {
+  const day = new Date(`${endExclusive}T12:00:00Z`);
+  day.setUTCDate(day.getUTCDate() - 1);
+  return [day.getUTCFullYear(), String(day.getUTCMonth() + 1).padStart(2, '0'), String(day.getUTCDate()).padStart(2, '0')].join('-');
+}
+
+/**
+ * The site's time zone as words — "Central European Time", not
+ * `Europe/Berlin`. A WordPress fixed offset (`+03:30`) reads as "GMT+03:30".
+ * Something Intl cannot name comes back empty rather than raw.
+ */
+export function zoneName(timezone: string, locale?: string): string {
+  try {
+    return new Intl.DateTimeFormat(locale, { timeZone: timezone || 'UTC', timeZoneName: 'longGeneric' })
+      .formatToParts(Date.now()).find(part => part.type === 'timeZoneName')?.value ?? '';
+  } catch {
+    return '';
+  }
+}
+
+export const designKey =(entry: { design_key?: string; template_id?: string; id: string }) =>
   entry.design_key ?? `registered:${entry.template_id ?? entry.id}`;
 export const groupKey = (entry: PlaybookEntry) => `${designKey(entry)}:${startingPointDisplayType(entry)}`;
 export function groupSetups(entries: readonly PlaybookEntry[]): Map<string, PlaybookEntry[]> {

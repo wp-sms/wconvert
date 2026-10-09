@@ -1,6 +1,5 @@
 import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
-import { CheckStrip } from '../../resources/admin/src/builder/CheckStrip';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, within } from '@testing-library/react';
@@ -167,7 +166,7 @@ beforeEach(() => {
  */
 async function style(row: RegExp) {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
   await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
@@ -355,7 +354,7 @@ describe('the Style half of the inspector', () => {
 describe('the narrow bag, through the width switch', () => {
   /** Put the preview — and therefore the inspector — on the narrow width. */
   async function narrow() {
-    await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
   }
 
   it('says which width it is setting, because the controls are identical', async () => {
@@ -425,7 +424,7 @@ describe('the narrow bag, through the width switch', () => {
 
     // `pad` is the one the narrow bag names; `bg` is inherited from the box's
     // own wide bag, which is a different sentence.
-    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('Mobile override')).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Mobile override')).toBeInTheDocument();
     expect(document.querySelector('.wconvert-scope__from [data-set="here"]')).toBeNull();
   });
 });
@@ -563,60 +562,7 @@ describe('the readability readout at a scope', () => {
 
     await style(/Colored box/);
 
-    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Quiet text on Background/)).toBeInTheDocument();
-  });
-});
-
-describe('the checks strip', () => {
-  /**
-   * ==========================================================================
-   * SILENCE HAD TO BECOME LEGIBLE, BECAUSE A SCOPE CAN BREAK AA IN ONE PRESS.
-   * ==========================================================================
-   * The readiness verdict reads out what is WRONG. A screen that says nothing
-   * has either checked six things and liked them or checked nothing, and a
-   * merchant repainting a box cannot tell those apart — so the checks are
-   * listed whether they pass or not, each named for what is true when it does.
-   */
-  it('names every check the design is held to, passing or not', async () => {
-    render(<CheckStrip problems={[]} onGoTo={vi.fn()}/>);
-
-    const strip = await screen.findByRole('list', { name: 'Checks on this design' });
-
-    expect(within(strip).getAllByRole('listitem')).toHaveLength(5);
-    expect(within(strip).getByText('Readable')).toBeInTheDocument();
-    expect(within(strip).getByText('Counts something')).toBeInTheDocument();
-  });
-
-  /**
-   * ==========================================================================
-   * A WARNING NOBODY CAN TRACE IS A WARNING PEOPLE LEARN TO DISMISS.
-   * ==========================================================================
-   * The six are not one kind of thing: two are refusals the server makes at the
-   * write, two are rules the vocabulary or the renderer imposes, and two are
-   * nothing but this file's own opinion about what will cost the merchant
-   * later. *The save will refuse this* and *nothing will ever mention this
-   * again* are the two ends of that, and a chip that looks identical for both
-   * teaches a merchant to ignore both (ADR 0042 rule 2).
-   */
-  it('cites what enforces each one, passing or not', async () => {
-    render(<CheckStrip problems={[]} onGoTo={vi.fn()}/>);
-
-    const strip = await screen.findByRole('list', { name: 'Checks on this design' });
-
-    /*
-      **A NAME on the chip and the sentence in the tooltip**, which is where
-      the two lengths come apart: spelling only the long form put
-      `OptinController::refuseADesignThatCapturesNothing()` on screen six times
-      across two lines in a monospace register, and it read as debug output
-      rather than as *six checks pass*.
-    */
-    expect(within(strip).getAllByText('OptinController')).toHaveLength(1);
-    expect(within(strip).getByText('ADR 0052')).toBeInTheDocument();
-    expect(within(strip).getByTitle(/counts to the Campaign/)).toBeInTheDocument();
-    // Every chip, not only the failing ones: *six checks pass* is legible only
-    // if a reader can see what was doing the checking.
-    expect(within(strip).getAllByRole('listitem')).toHaveLength(5);
-    expect(within(strip).getAllByText(/^(ADR \d+|OptinController|render\.ts|SlotRoles)$/)).toHaveLength(5);
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Quiet text on Background/)).toBeInTheDocument();
   });
 });
 
@@ -655,7 +601,7 @@ describe('the tree’s override count', () => {
     );
 
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
@@ -681,7 +627,7 @@ describe('full width', () => {
    */
   it('starts folded, and hides wp-admins chrome only when asked', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     const toggle = await screen.findByRole('button', { name: 'Full width' });
 
@@ -699,7 +645,7 @@ describe('full width', () => {
   /** A mode with no keyboard way out is a trap. */
   it('leaves on Escape', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
     await userEvent.keyboard('{Escape}');
@@ -714,7 +660,7 @@ describe('full width', () => {
    */
   it('remembers the choice across a visit', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
 
@@ -728,7 +674,7 @@ describe('full width', () => {
    */
   it('puts the chrome back when the builder unmounts', async () => {
     const { unmount } = render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
 

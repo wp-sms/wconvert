@@ -44,8 +44,8 @@ registerBlockType(LOCK_BLOCK, {
       <BlockControls group="other">
         <ToolbarButton disabled={!canUnwrap} onClick={() => replaceBlocks(clientId, content)}>{__('Remove lock, keep content', 'wconvert')}</ToolbarButton>
       </BlockControls>
-      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts', 'wconvert')}</strong><span>{selected?.name ?? (value ? __('Campaign needs attention', 'wconvert') : __('Choose a Campaign', 'wconvert'))}</span></div>
-      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose Campaign', 'wconvert')}</Button> : <CampaignStatus value={value} state={state} />}
+      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts', 'wconvert')}</strong><span>{selected?.name ?? (value ? __('Campaign needs attention', 'wconvert') : __('Choose a campaign', 'wconvert'))}</span></div>
+      {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert')}</Button> : <CampaignStatus value={value} state={state} />}
       {count > 1 && <Notice status="warning" isDismissible={false}>{__('Use one Content lock region per page. Additional regions stay readable. Remove extra locks while keeping their content.', 'wconvert')}</Notice>}
       {!supportedContent(content) && <Notice status="warning" isDismissible={false}>{__('This region includes unsupported blocks. Keep forms, media embeds and complex layouts outside the lock.', 'wconvert')}</Notice>}
       <InnerBlocks allowedBlocks={ALLOWED_BLOCKS} template={[["core/paragraph", { placeholder: __('Write or paste the content to reveal…', 'wconvert') }]]} />

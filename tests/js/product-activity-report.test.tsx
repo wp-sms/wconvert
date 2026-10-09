@@ -16,6 +16,7 @@ it('shows product actions and explains the shorter recorded period', async () =>
   expect(screen.getByRole('columnheader', { name: 'Added' })).toBeTruthy();
   expect(screen.getByText(/Earlier product activity is unavailable/)).toBeTruthy();
   expect(screen.queryByText(/The rest of this period/)).toBeNull();
+  expect(screen.queryByText(/#42/)).toBeNull();
 });
 it('suppresses an incomplete table instead of presenting a partial ranking', async () => {
   api.mockResolvedValue({ ...data, truncated: true }); render(<ProductActivityReport id="campaign" period={period} />);

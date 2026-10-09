@@ -1,13 +1,18 @@
-import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '../components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog';
+  AdminDialog,
+  AdminDialogBody,
+  AdminDialogClose,
+  AdminDialogContent,
+  AdminDialogFooter,
+  AdminDialogHeader,
+} from '../components/ui/admin-dialog';
+import { ProviderTiles } from './ProviderTiles';
 import { DestinationSettingsForm } from './DestinationSettingsForm';
+import { ProviderMark } from './ProviderMark';
 import type { Connection, DestinationType } from './api';
 
 /**
@@ -28,39 +33,42 @@ import type { Connection, DestinationType } from './api';
  * together, before it exists.
  *
  * ============================================================================
- * A MODAL, BY ADR 0042 RULE 7'S OWN TEST.
+ * ONE MEDIUM DIALOG, TWO STEPS, AND BACK BETWEEN THEM.
  * ============================================================================
- * *"Something that owns the screen until it is answered"* — opened
- * deliberately, answered, closed. The alternative was a Destination created
- * empty and edited in place, which is the shape that produced defect 2 and is
- * what a merchant meets today.
+ * The provider list is the campaign editor's own {@see ProviderTiles}, so a
+ * service reads and refuses the same way wherever a route is started. Step two
+ * has Back to that list in its footer: it used to be a dead end that had to be
+ * closed and reopened to pick another service.
  *
  * **Controlled, and `returnFocusTo` rather than a `DialogTrigger`**, for the
  * reason {@see ConfirmDialog} writes out: a triggerless dialog has nothing to
  * restore focus to, and closing one leaves a keyboard merchant on `<body>` at
- * the top of the document. The caller retains the Add button across both
- * steps, so closing either step returns to the same stable trigger.
+ * the top of the document.
  *
  * It stays open on a failed save and closes on one that worked, because the
  * merchant's typed name is in it — dropping the dialog on a 500 would make
- * them type it again to find out whether the second attempt fails too.
+ * them type it again to find out whether the second attempt fails too. And it
+ * asks before Escape throws typed input away (`dirty`).
  */
 export function AddDestinationDialog({
   type,
   choosing = false,
-  children,
+  types,
   connections,
   busy,
   error,
   returnFocusTo,
   onOpenChange,
+  onChoose,
+  onBack,
   onConfirm,
   onConnectionSaved,
 }: {
   /** The selected service, or null while choosing or closed. */
   type: DestinationType | null;
   choosing?: boolean;
-  children?: ReactNode;
+  /** Every type the payload carries; the tiles hide what a free install cannot buy. */
+  types: readonly DestinationType[];
   /** Every Connection on the site — this filters to the type's own. */
   connections: readonly Connection[];
   busy: boolean;
@@ -68,6 +76,8 @@ export function AddDestinationDialog({
   error: string | null;
   returnFocusTo: RefObject<HTMLElement | null>;
   onOpenChange: (open: boolean) => void;
+  onChoose: (type: DestinationType) => void;
+  onBack: () => void;
   onConfirm: (draft: {
     label: string;
     connection: string | null;
@@ -76,16 +86,22 @@ export function AddDestinationDialog({
   onConnectionSaved?: (connection: Connection) => void;
 }) {
   const content = useRef<HTMLDivElement>(null);
+  const [dirty, setDirty] = useState(false);
   useEffect(() => {
-    // Selecting a service replaces the focused chooser button inside the
-    // same dialog. Move into the new form rather than leaving focus on body.
-    if (type !== null) content.current?.querySelector<HTMLInputElement>('input')?.focus();
+    // Choosing a service replaces the focused tile inside the same dialog,
+    // and Back replaces the form: move into what replaced it rather than
+    // leaving focus on <body>.
+    const target = type === null ? 'button.wconvert-provider-tile' : '.wconvert-dialog__body input';
+    content.current?.querySelector<HTMLElement>(target)?.focus();
   }, [type]);
+
   return (
-    <Dialog open={choosing || type !== null} onOpenChange={onOpenChange}>
-      <DialogContent
+    <AdminDialog open={choosing || type !== null} onOpenChange={(open) => { if (!open && busy) return; onOpenChange(open); }}>
+      <AdminDialogContent
         ref={content}
-        className="max-h-[85dvh] overflow-y-auto sm:max-w-xl"
+        size="md"
+        dirty={type !== null && dirty}
+        showCloseButton={!busy}
         onCloseAutoFocus={(event) => {
           const node = returnFocusTo.current;
 
@@ -95,54 +111,49 @@ export function AddDestinationDialog({
           }
         }}
       >
-        <DialogHeader>
-          <p className="m-0 text-note text-muted-foreground">{type === null
-            ? __('Choose a service', 'wconvert')
-            : __('Set up destination', 'wconvert')}</p>
-          <DialogTitle>
-            {type === null
-              ? __('Add a destination', 'wconvert')
-              : sprintf(
-                  /* translators: %s: a destination type, e.g. “MailPoet”. */
-                  __('Add a %s destination', 'wconvert'),
-                  type.label,
-                )}
-          </DialogTitle>
-          {/*
-            **The one sentence, and it is the one that explains the model**
-            (ADR 0042 rule 2). A merchant who does not know they may add a
-            second MailPoet route will not go looking for the button that is
-            now enabled — and *"how do I send this Optin to a specific list?"*
-            is the question this whole screen failed to answer.
-          */}
-          <DialogDescription>
-            {type === null
-              ? __('Choose a service to send submissions to. Next, you’ll give this destination a name and choose its settings.', 'wconvert')
-              : type.needs_connection && !connections.some((account) => account.type === type.id)
-                ? sprintf(__('Connect %s, then name this destination and choose where submissions should go.', 'wconvert'), type.label)
-                : __('Give this destination a name and choose where submissions should go. You’ll select it in a campaign afterward.', 'wconvert')}
-          </DialogDescription>
-        </DialogHeader>
+        <AdminDialogHeader
+          title={type === null
+            ? __('Add a destination', 'wconvert')
+            : <span className="flex min-w-0 items-center gap-2">
+              <ProviderMark type={type} className="size-5 shrink-0" />
+              <span className="truncate">{sprintf(/* translators: %s: a service, e.g. “MailPoet”. */ __('New %s destination', 'wconvert'), type.label)}</span>
+            </span>}
+          /*
+            **The one sentence that explains the model** (ADR 0042 rule 2): a
+            merchant who does not know they may add a second MailPoet route
+            will not go looking for it.
+          */
+          meta={type === null
+            ? __('Choose a service. You can add more than one destination for the same service.', 'wconvert')
+            : __('Name it and choose where submissions go. You’ll pick it in a campaign afterward.', 'wconvert')}
+        />
 
         {/*
           Keyed by the type, so opening MailPoet after WP SMS seeds a fresh
-          draft rather than editing the last one's. The body is unmounted with
-          the dialog anyway; the key is what covers a caller that swaps the
-          type without closing.
+          draft rather than editing the last one's.
         */}
-        {type === null ? children : (
+        {type === null ? <>
+          <AdminDialogBody>
+            <ProviderTiles types={types} rule={null} suggested={[]} onChoose={(chosen) => onChoose(chosen)} />
+          </AdminDialogBody>
+          <AdminDialogFooter back={<AdminDialogClose asChild><Button type="button" variant="outline">{__('Cancel', 'wconvert')}</Button></AdminDialogClose>} />
+        </> : (
           <DestinationSettingsForm
             key={type.id}
             type={type}
             connections={connections.filter((connection) => connection.type === type.id)}
             busy={busy}
             error={error}
+            back={<Button type="button" variant="outline" disabled={busy} onClick={onBack}>
+              <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}
+            </Button>}
             onCancel={() => onOpenChange(false)}
             onConfirm={onConfirm}
             onConnectionSaved={onConnectionSaved}
+            onDirtyChange={setDirty}
           />
         )}
-      </DialogContent>
-    </Dialog>
+      </AdminDialogContent>
+    </AdminDialog>
   );
 }

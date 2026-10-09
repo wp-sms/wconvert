@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 
 const baseURL = 'http://127.0.0.1:9413';
 const screens = [
-  { route: 'optins', name: 'Campaigns', empty: 'Start with one good campaign.', full: 'Grow the list', retry: 'Try again' },
-  { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Retry loading report' },
-  { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Retry loading submissions' },
-  { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are saved in WConvert only', full: 'Welcome email', retry: 'Refresh' },
+  { route: 'optins', name: 'Campaigns', empty: 'No campaigns yet', full: 'Grow the list', retry: 'Try again' },
+  { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Try again' },
+  { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Try again' },
+  { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are kept in WConvert only', full: 'Welcome email', retry: 'Try again' },
 ];
 const modes = [
   { name: 'desktop', viewport: { width: 1440, height: 1100 } },
@@ -151,7 +151,7 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await page.getByRole('navigation', { name: 'WConvert sections' }).getByRole('link', { name: 'Leads', exact: true }).click();
       const open = page.getByRole('button', { name: /^Open submission from/ }).first();
       await open.click();
-      await layerChecks(page, page.getByRole('dialog', { name: 'Submission details', exact: true }));
+      await layerChecks(page, page.getByRole('dialog'));
       await screenshot(page, info, 'submission-details');
       await page.keyboard.press('Escape');
       await expect(open).toBeFocused();
@@ -162,11 +162,12 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await page.keyboard.press('Escape');
       await page.getByRole('navigation', { name: 'WConvert sections' }).getByRole('link', { name: 'Settings', exact: true }).click();
       await page.getByRole('link', { name: 'Connections & destinations Accounts and where leads go', exact: true }).click();
-      await page.getByRole('button', { name: 'Settings', exact: true }).first().click();
+      // A card's settings are a disclosure, whose summary has no button role.
+      await page.locator('.wconvert-route-settings > summary').first().click();
       await expect(page.getByRole('textbox', { name: 'Name', exact: true }).first()).toBeVisible();
       await commonChecks(page, direction);
       await screenshot(page, info, 'destination-settings');
-      await page.getByRole('button', { name: 'Need a hand? Help and resources' }).click();
+      await page.getByRole('button', { name: 'Need a hand? Help' }).click();
       await layerChecks(page, page.getByRole('dialog'));
       await screenshot(page, info, 'footer-help');
       completed = true;

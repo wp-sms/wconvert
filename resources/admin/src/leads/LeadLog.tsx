@@ -1,37 +1,43 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Download, Inbox, RefreshCw, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { ChevronRight, Download, Inbox, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { InfoTip } from '../shell/InfoTip';
 import { Button } from '../components/ui/button';
-import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { NativeSelect } from '../components/ui/native-select';
+import { AdminDialog, AdminDialogContent } from '../components/ui/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
-import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { CheckRow } from '../shell/CheckRow';
+import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { Disclosure } from '../shell/Disclosure';
 import { EmptyState } from '../shell/EmptyState';
+import { Field } from '../shell/Field';
+import { OptionStrip } from '../shell/OptionStrip';
 import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { canExport, eraseIdentifier, exportLeads, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
+import { formatCount, formatDay, formatRange, formatWhen } from '../lib/format';
+import { canExport, eraseIdentifier, exportLeads, readLog, type Lead, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
+import { LeadDetail, framed, submissionCount, type CampaignName } from './LeadDetail';
+import { LeadHistory } from './LeadHistory';
 import { journeysSupported } from '../settings';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
-import { leadsHref } from '../nav';
+import { hashFor, leadsHref } from '../nav';
 import { siteToday, shiftDay } from './calendar';
 import { listGoals } from '../goals/api';
 
-const ALL_OPTINS = 'all';
 const EMPTY_QUERY: LeadQuery = {};
 const queryKeyOf = (query: LeadQuery) => JSON.stringify({ order: query.order, optinId: query.optinId || undefined,
   search: query.search || undefined, purpose: query.purpose || undefined,
   identifier: query.identifier || undefined, leadId: query.leadId || undefined,
   from: query.from || undefined, to: query.to || undefined });
-const submissionCount = (count: number) => sprintf(_n('%s submission', '%s submissions', count, 'wconvert'), String(count));
+
+/** What the log's one dialog is showing: a single submission, or a lead's history. */
+type Opened = { kind: 'submission'; lead: Lead } | { kind: 'history'; group: LeadGroup; query: LeadPage };
 
 export interface LeadLogProps {
   onRefresh?: () => void;
@@ -39,7 +45,7 @@ export interface LeadLogProps {
   onQueryChange?: (query: LeadQuery) => void;
 }
 
-/** History remains a log of immutable capture events. Grouping never changes its headline count. */
+/** History remains a log of immutable submissions. Grouping never changes its headline count. */
 export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [localQuery, setLocalQuery] = useState<LeadQuery>(EMPTY_QUERY);
   const [privateQuery, setPrivateQuery] = useState<Pick<LeadQuery, 'search' | 'identifier'>>({});
@@ -57,11 +63,12 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
   const [retry, setRetry] = useState(0);
-  const [optins, setOptins] = useState<OptinSummary[]>([]);
+  const [optins, setOptins] = useState<OptinSummary[] | null>(null);
   const [goals, setGoals] = useState<Record<string, string>>({});
   const [namesError, setNamesError] = useState<string | null>(null);
   const [namesRetry, setNamesRetry] = useState(0);
-  const [selectedGroup, setSelectedGroup] = useState<{ group: LeadGroup; query: LeadPage } | null>(null);
+  const [opened, setOpened] = useState<Opened | null>(null);
+  const trigger = useRef<HTMLElement | null>(null);
   const [erasureOpen, setErasureOpen] = useState(false);
   const [erasurePreview, setErasurePreview] = useState<{ identifier: string; submissions: number; snapshot: string } | null>(null);
   const [erasing, setErasing] = useState(false);
@@ -97,15 +104,23 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     void listGoals().then((entries) => { if (active) setGoals(Object.fromEntries(entries.map((entry) => [entry.id, entry.label]))); }).catch(() => { /* Missing purpose metadata must never invent a label. */ });
     return () => { active = false; };
   }, [namesRetry]);
-  const goalsByOptin = useMemo(() => new Map(optins.map((optin) => [optin.id, goals[optin.goal]])), [optins, goals]);
-  const goalOf = (id: string) => goalsByOptin.get(id);
-  const names = useMemo(() => new Map(optins.map((optin) => [optin.id, optin.name])), [optins]);
-  const nameOf = (id: string) => names.get(id) || id;
+  const goalsByOptin = useMemo(() => new Map((optins ?? []).map((optin) => [optin.id, goals[optin.goal]])), [optins, goals]);
+  const goalOf = useCallback((id: string) => goalsByOptin.get(id), [goalsByOptin]);
+  // Soft-deleted campaigns are in the list, so a name missing from a loaded
+  // list is a campaign that is gone — never shown as its ID (ADR 0131).
+  const names = useMemo(() => optins === null ? null : new Map(optins.map((optin) => [optin.id, optin.name.trim() || __('Unnamed campaign', 'wconvert')])), [optins]);
+  const nameOf = useCallback((id: string): CampaignName => names === null ? undefined : names.get(id) ?? null, [names]);
   const changeQuery = (next: LeadQuery) => {
     const { search, identifier, ...bookmarkable } = next;
     setPrivateQuery({ search, identifier });
+    setErasureNotice(null);
     if (onQueryChange) onQueryChange(bookmarkable);
     else setLocalQuery(bookmarkable);
+  };
+  const seeAll = (contact: string) => {
+    setOpened(null);
+    setGrouped(false);
+    changeQuery({ identifier: contact });
   };
   const data = log.status === 'ready' ? log.data : null;
   const csv = data !== null && canExport();
@@ -120,6 +135,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     ? exactIdentifierScope(applied.query)
     : null;
   const erasureCsv = erasurePreview !== null && canExport();
+  const oldestFirst = applied.query.order === 'oldest';
   const next = () => {
     if (!data?.next_cursor) return;
     setPaging({ scope, cursor: data.next_cursor, snapshot: data.snapshot,
@@ -129,9 +145,19 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     const held = paging.previous;
     setPaging({ ...paging, cursor: held[held.length - 1], previous: held.slice(0, -1) });
   };
+  const open = (next: Opened, button: HTMLElement) => {
+    trigger.current = button;
+    setOpened(next);
+  };
+  // One outage is one door: a log retry also re-reads the campaign names when
+  // those failed with it, rather than drawing a second "Try again" above it.
+  const retryLog = () => {
+    setRetry((value) => value + 1);
+    if (namesError !== null) setNamesRetry((value) => value + 1);
+  };
 
   return <div className="flex flex-col gap-5">
-    <PageAction><Button variant="outline" disabled={updating} onClick={() => { setPaging({ scope, previous: [] }); setRetry((value) => value + 1); onRefresh?.(); }}><RefreshCw aria-hidden="true" />{__('Refresh submissions', 'wconvert')}</Button></PageAction>
+    <PageAction><Button variant="outline" disabled={updating} onClick={() => { setPaging({ scope, previous: [] }); retryLog(); onRefresh?.(); }}><RefreshCw aria-hidden="true" />{__('Refresh submissions', 'wconvert')}</Button></PageAction>
     {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query)}>
       <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
     </Button></PageAction>}
@@ -139,130 +165,131 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       <Download aria-hidden="true" />{__('Export question answers', 'wconvert')}
     </Button></PageAction>}
     <Region label={__('Submissions', 'wconvert')}>
-      <RegionBody>
-        <div role="group" aria-label={__('Submission purpose', 'wconvert')} className="mb-4 flex flex-wrap gap-2">
-          {[{ value: undefined, label: __('All submissions', 'wconvert') }, { value: 'subscribers' as const, label: __('Subscriber collection', 'wconvert') }, { value: 'enquiries' as const, label: __('Enquiries', 'wconvert') }].map(({ value, label }) => <label key={value ?? 'all'} className="cursor-pointer">
-            <input type="radio" className="peer sr-only" name="wconvert-submission-purpose" value={value ?? 'all'} checked={requested.purpose === value} onChange={() => changeQuery({ ...requested, purpose: value })} />
-            <span className="inline-flex min-h-(--control-height-sm) items-center rounded-sm px-3 py-1 font-medium text-muted-foreground hover:bg-muted peer-checked:bg-secondary peer-checked:text-action peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring">{label}{data?.purpose_counts && <span className="ms-2 rounded-sm bg-muted px-1.5 text-note tabular-nums" title={__('Counts use the applied search, campaign and dates.', 'wconvert')}>{data.purpose_counts[value ?? 'all']}</span>}</span>
-          </label>)}
-        </div>
-        <HistoryFilters key={queryKey} query={requested} optins={optins} onApply={changeQuery} />
+      <RegionBody className="flex flex-col gap-4">
+        <OptionStrip
+          label={__('Submission purpose', 'wconvert')}
+          value={requested.purpose ?? 'all'}
+          options={[
+            { value: 'all', label: __('All submissions', 'wconvert'), count: data?.purpose_counts?.all },
+            { value: 'subscribers', label: __('Subscribers', 'wconvert'), count: data?.purpose_counts?.subscribers },
+            { value: 'enquiries', label: __('Enquiries', 'wconvert'), count: data?.purpose_counts?.enquiries },
+          ]}
+          onChange={(value) => changeQuery({ ...requested, purpose: value === 'subscribers' || value === 'enquiries' ? value : undefined })}
+        />
+        <HistoryFilters query={requested} optins={optins} onApply={changeQuery} />
       </RegionBody>
       <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-1"><ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>
         {submissionCount(data.submissions)}
       </ToolbarCount><InfoTip label={__('About this count and export', 'wconvert')}>
           <p className="m-0 font-medium">{scopeDescription(applied.query, nameOf)}</p>
-          <p>{__('The total counts submissions, never people.', 'wconvert')}</p>
-          <p className="mb-0 text-muted-foreground">{__('CSV includes all retained matching submissions captured before this view loaded, across all pages. Grouping does not change the export.', 'wconvert')}</p>
-      </InfoTip>{privacyIdentifier !== null && <Button variant="outline" size="sm" className="text-destructive" onClick={() => {
+          <p className="mb-0 text-muted-foreground">{__('Export includes every matching submission on all pages, as of when this list loaded. Grouping doesn’t change it.', 'wconvert')}</p>
+      </InfoTip>{privacyIdentifier !== null && <Button variant="outline" onClick={() => {
         setErasurePreview(null);
         setErasureError(null);
         setErasureOpen(true);
         void readLog({ identifier: privacyIdentifier, grouped: false }).then((preview) => {
           setErasurePreview({ identifier: privacyIdentifier, submissions: preview.submissions, snapshot: preview.snapshot });
         }).catch((cause: unknown) => setErasureError(messageOf(cause)));
-      }}><Trash2 aria-hidden="true" />{__('Delete matching submissions', 'wconvert')}</Button>}</div>}>
-        <span className="wconvert-check"><Checkbox id="wconvert-lead-grouped" checked={grouped}
-          onCheckedChange={(checked) => setGrouped(checked === true)} />
-        <Label htmlFor="wconvert-lead-grouped">{__('Group by email or phone', 'wconvert')}</Label></span>
-
+      }}><Trash2 aria-hidden="true" />{__('Delete this lead', 'wconvert')}</Button>}</div>}>
+        <CheckRow label={__('Group by email or phone', 'wconvert')} checked={grouped} onChange={(event) => setGrouped(event.currentTarget.checked)} />
       </Toolbar>
       {updating && <RegionBody><p role="status" className="m-0 text-note">{data ? __('Updating submissions…', 'wconvert') : __('Loading submissions…', 'wconvert')}</p></RegionBody>}
-      {showingPrevious && <RegionBody><p className="m-0 text-note">{__('The table and export still show the last successful filters until the new results load.', 'wconvert')}</p></RegionBody>}
+      {showingPrevious && <RegionBody><p className="m-0 text-note">{__('Showing the previous results until the new ones load.', 'wconvert')}</p></RegionBody>}
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
-      {error !== null && data !== null && <RegionError message={error} />}
-      {namesError !== null && <RegionError message={namesError} />}
-      {log.status !== 'failed' && (error !== null || namesError !== null) && <RegionBody><Button variant="outline" onClick={() => {
-        if (error !== null) setRetry((value) => value + 1);
-        if (namesError !== null) setNamesRetry((value) => value + 1);
-      }}>{__('Retry loading submissions', 'wconvert')}</Button></RegionBody>}
-      {log.status === 'failed' ? <RegionErrorState message={log.message} action={<Button variant="outline" disabled={updating} onClick={() => {
-        setRetry((value) => value + 1);
-        if (namesError !== null) setNamesRetry((value) => value + 1);
-      }}>{__('Retry loading submissions', 'wconvert')}</Button>} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
+      {error !== null && data !== null && <RegionError message={error} onRetry={retryLog} />}
+      {namesError !== null && log.status !== 'failed' && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
+      {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : hasAppliedFilters ? __('No matching submissions', 'wconvert') : __('No submissions yet', 'wconvert')}
           action={hasAppliedFilters ? <Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>
-            : <Button asChild variant="outline"><a href="#optins">{__('Go to Campaigns', 'wconvert')}</a></Button>}>
-          {applied.query.leadId ? __('This ID may no longer be retained, or another filter may exclude it. Captures removed by retention or privacy tools cannot be recovered here.', 'wconvert')
-            : hasAppliedFilters ? __('Try another search, date period or Campaign, or clear the filters.', 'wconvert')
-              : __('A row appears the moment a visitor submits a published Campaign.', 'wconvert')}
+            : <Button asChild variant="outline"><a href={hashFor('optins')}>{__('Go to campaigns', 'wconvert')}</a></Button>}>
+          {applied.query.leadId ? __('Retention or a privacy request may have deleted it, or another filter excludes it.', 'wconvert')
+            : hasAppliedFilters ? __('Try another search, period or campaign.', 'wconvert')
+              : __('Submissions appear here when a visitor fills in a published campaign.', 'wconvert')}
         </EmptyState>
       ) : shownGrouped ? <DataTable>
-        <DataTableHead><DataTableColumn>{__('Identifier', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Submissions', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last submitted', 'wconvert')}</DataTableColumn><DataTableColumn>{__('History', 'wconvert')}</DataTableColumn></DataTableHead>
+        <DataTableHead><DataTableColumn>{__('Email or phone', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Submissions', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last submitted', 'wconvert')}</DataTableColumn><DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn></DataTableHead>
         <DataTableBody>{data.groups.map((group) => <DataTableRow key={group.identifier}>
-          <DataTableCell label={__('Identifier', 'wconvert')}><bdi dir="ltr">{group.identifier}</bdi></DataTableCell>
-          <DataTableCell label={__('Submissions', 'wconvert')} numeric>{submissionCount(group.submissions)}</DataTableCell>
-          <DataTableCell label={__('Last submitted', 'wconvert')}><bdi dir="ltr">{group.latest_at ?? '—'}</bdi></DataTableCell>
-          <DataTableCell label={__('History', 'wconvert')}><Button variant="link" size="sm" onClick={() => setSelectedGroup({ group, query: applied.query })}>{__('View submissions', 'wconvert')}</Button></DataTableCell>
+          <DataTableCell label={__('Email or phone', 'wconvert')}><bdi dir="ltr" className="break-all">{group.identifier}</bdi></DataTableCell>
+          <DataTableCell label={__('Submissions', 'wconvert')} numeric>{formatCount(group.submissions)}</DataTableCell>
+          <DataTableCell label={__('Last submitted', 'wconvert')}>{group.latest_at === null ? '—' : <time className="text-note" dateTime={group.latest_at.replace(' ', 'T')} title={formatWhen(group.latest_at, 'detail')}>{formatWhen(group.latest_at, 'list')}</time>}</DataTableCell>
+          <DataTableActions><Button variant="ghost" aria-label={sprintf(__('Open submissions from %s', 'wconvert'), group.identifier)} onClick={(event) => open({ kind: 'history', group, query: applied.query }, event.currentTarget)}>
+            {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
+          </Button></DataTableActions>
         </DataTableRow>)}</DataTableBody>
-      </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} goalOf={goalOf} returnTo={leadsHref(applied.query)} onRelated={(identifier) => { setGrouped(false); changeQuery({ identifier }); }} />}
-      {data !== null && rows > 0 && <RegionFooter>
+      </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} goalOf={goalOf} returnTo={leadsHref(applied.query)} onOpen={(lead, button) => open({ kind: 'submission', lead }, button)} />}
+      {data !== null && rows > 0 && (applied.page > 1 || data.next_cursor !== null) && <RegionFooter>
         <div className="flex w-full flex-wrap items-center justify-between gap-3">
-          <span>{sprintf(shownGrouped
-            ? _n('Page %1$d · %2$d identifier group shown. Total above counts all matching submissions.', 'Page %1$d · %2$d identifier groups shown. Total above counts all matching submissions.', rows, 'wconvert')
-            : _n('Page %1$d · %2$d submission shown.', 'Page %1$d · %2$d submissions shown.', rows, 'wconvert'), applied.page, rows)}</span>
-          <div className="flex gap-2"><Button variant="outline" size="sm" disabled={updating || showingPrevious || applied.page <= 1} onClick={previous}>{applied.query.order === 'oldest' ? __('Previous', 'wconvert') : __('Newer', 'wconvert')}</Button>
-            <Button variant="outline" size="sm" disabled={updating || showingPrevious || !data.next_cursor} onClick={next}>{applied.query.order === 'oldest' ? __('Next', 'wconvert') : __('Older', 'wconvert')}</Button></div>
+          <span>{sprintf(__('Page %s', 'wconvert'), formatCount(applied.page))}</span>
+          <div className="flex gap-2"><Button variant="outline" disabled={updating || showingPrevious || applied.page <= 1} onClick={previous}>{oldestFirst ? __('Older', 'wconvert') : __('Newer', 'wconvert')}</Button>
+            <Button variant="outline" disabled={updating || showingPrevious || !data.next_cursor} onClick={next}>{oldestFirst ? __('Newer', 'wconvert') : __('Older', 'wconvert')}</Button></div>
         </div>
       </RegionFooter>}
     </Region>
     <RetentionSummary refreshKey={retry} />
-      <Dialog open={selectedGroup !== null} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
-      <DialogContent className="max-h-[85dvh] overflow-auto sm:max-w-5xl">
-        <DialogHeader><DialogTitle>{__('Submission history', 'wconvert')}</DialogTitle><DialogDescription>{selectedGroup?.group.identifier}</DialogDescription></DialogHeader>
-        {selectedGroup !== null && <GroupEvents key={`${selectedGroup.group.identifier}:${selectedGroup.query.snapshot}`} group={selectedGroup.group} query={selectedGroup.query} nameOf={nameOf} goalOf={goalOf} onRelated={(identifier) => { setSelectedGroup(null); setGrouped(false); changeQuery({ identifier }); }} />}
-      </DialogContent>
-      </Dialog>
-      <AlertDialog open={erasureOpen} onOpenChange={(open) => { if (!erasing) setErasureOpen(open); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{sprintf(__('Permanently delete %s?', 'wconvert'), erasurePreview?.identifier ?? privacyIdentifier ?? '')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {erasurePreview === null ? __('Checking every retained submission carrying this identifier…', 'wconvert') : sprintf(
-                _n(
-                  'This deletes the retained submission directly carrying this identifier across every Campaign.',
-                  'This deletes all %s retained submissions directly carrying this identifier across every Campaign.',
-                  erasurePreview.submissions,
-                  'wconvert',
-                ),
-                String(erasurePreview.submissions),
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <p className="m-0 text-note text-muted-foreground">{__('Only WConvert’s copies are deleted. Handle copies in destinations, email logs, downloaded CSV files and backups separately.', 'wconvert')}</p>
-          {erasureCsv && <Button variant="link" className="h-auto justify-start p-0 text-note underline underline-offset-2" onClick={() => {
-            if (erasurePreview !== null) exportLeads({ identifier: erasurePreview.identifier, snapshot: erasurePreview.snapshot });
-          }}>{__('Export these submissions before deleting', 'wconvert')}</Button>}
-          {erasureError !== null && <p role="alert" className="m-0 text-note text-destructive">{erasureError}</p>}
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={erasing}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={erasing || erasurePreview === null}
-              onClick={(event) => {
-                event.preventDefault();
-                if (erasurePreview === null) return;
-                setErasing(true);
-                setErasureError(null);
-                void eraseIdentifier(erasurePreview.identifier).then((result) => {
-                  setErasureOpen(false);
-                  setErasurePreview(null);
-                  setErasureNotice(sprintf(
-                    _n('%s submission was permanently deleted from WConvert. Check destinations, exports and backups separately.', '%s submissions were permanently deleted from WConvert. Check destinations, exports and backups separately.', result.removed, 'wconvert'),
-                    String(result.removed),
-                  ));
-                  setPaging({ scope, previous: [] });
-                  setRetry((value) => value + 1);
-                  onRefresh?.();
-                }).catch((cause: unknown) => setErasureError(messageOf(cause))).finally(() => setErasing(false));
-              }}
-            >
-              {erasing ? __('Deleting…', 'wconvert') : __('Permanently delete', 'wconvert')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>;
+    <AdminDialog open={opened !== null} onOpenChange={(isOpen) => { if (!isOpen) setOpened(null); }}>
+      <AdminDialogContent size="md" onCloseAutoFocus={(event) => {
+        // "See all from" re-renders the table, so the row that opened the
+        // dialog can be gone; the search is the next place a hand would be.
+        event.preventDefault();
+        if (trigger.current?.isConnected) trigger.current.focus();
+        else document.getElementById('wconvert-lead-search')?.focus();
+      }}>
+        {opened?.kind === 'submission' && <LeadDetail lead={opened.lead} campaign={nameOf(opened.lead.optin_id)} goal={goalOf(opened.lead.optin_id)}
+          returnTo={leadsHref(applied.query)} backLabel={__('All leads', 'wconvert')} onBack={() => setOpened(null)} onSeeAll={seeAll} />}
+        {opened?.kind === 'history' && <LeadHistory key={`${opened.group.identifier}:${opened.query.snapshot}`} group={opened.group} query={opened.query}
+          filtered={queryKeyOf(opened.query) !== '{}'} nameOf={nameOf} goalOf={goalOf} onClose={() => setOpened(null)} onSeeAll={seeAll} />}
+      </AdminDialogContent>
+    </AdminDialog>
+    <AlertDialog open={erasureOpen} onOpenChange={(isOpen) => { if (!erasing) setErasureOpen(isOpen); }}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{framed(__('Delete every submission from %s?', 'wconvert'), erasurePreview?.identifier ?? privacyIdentifier ?? '')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {erasurePreview === null ? __('Counting their submissions…', 'wconvert') : sprintf(
+              _n(
+                'This permanently deletes %s submission, from every campaign.',
+                'This permanently deletes all %s submissions, from every campaign.',
+                erasurePreview.submissions,
+                'wconvert',
+              ),
+              formatCount(erasurePreview.submissions),
+            )}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <p className="m-0 text-note text-muted-foreground">{__('Campaign totals in analytics stay. Copies already sent to destinations, exported files and backups aren’t touched; remove those separately.', 'wconvert')}</p>
+        {erasureCsv && <Button variant="outline" className="self-start" onClick={() => {
+          if (erasurePreview !== null) exportLeads({ identifier: erasurePreview.identifier, snapshot: erasurePreview.snapshot });
+        }}><Download aria-hidden="true" />{__('Export them first', 'wconvert')}</Button>}
+        {erasureError !== null && <p role="alert" className="m-0 text-note text-destructive">{erasureError}</p>}
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={erasing}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            disabled={erasing || erasurePreview === null}
+            onClick={(event) => {
+              event.preventDefault();
+              if (erasurePreview === null) return;
+              setErasing(true);
+              setErasureError(null);
+              void eraseIdentifier(erasurePreview.identifier).then((result) => {
+                setErasureOpen(false);
+                setErasurePreview(null);
+                setErasureNotice(sprintf(
+                  _n('%s submission deleted. Copies in destinations, exports and backups aren’t affected.', '%s submissions deleted. Copies in destinations, exports and backups aren’t affected.', result.removed, 'wconvert'),
+                  formatCount(result.removed),
+                ));
+                setPaging({ scope, previous: [] });
+                retryLog();
+                onRefresh?.();
+              }).catch((cause: unknown) => setErasureError(messageOf(cause))).finally(() => setErasing(false));
+            }}
+          >
+            {erasing ? __('Deleting…', 'wconvert') : __('Delete permanently', 'wconvert')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </div>;
 }
 
 /** Privacy erasure is identifier-wide; ordinary filters must never narrow it. */
@@ -274,91 +301,127 @@ function exactIdentifierScope(query: LeadPage): string | null {
   return query.identifier;
 }
 
-function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: OptinSummary[]; onApply: (query: LeadQuery) => void }) {
-  const [optinId, setOptinId] = useState(query.optinId ?? '');
-  const [search, setSearch] = useState(query.leadId ?? query.identifier ?? query.search ?? '');
-  const [from, setFrom] = useState(query.from ?? '');
-  const [to, setTo] = useState(query.to ?? '');
-  const [order, setOrder] = useState(query.order ?? 'newest');
+type Period = 'all' | '7' | '30' | 'custom';
+
+/** The preset a date pair spells, decided on the site's day. */
+function periodOf(from: string, to: string, today: string | null): Period {
+  if (!from && !to) return 'all';
+  if (today && to === today && from === shiftDay(today, -6)) return '7';
+  if (today && to === today && from === shiftDay(today, -29)) return '30';
+  return 'custom';
+}
+
+function periodLabel(from: string | undefined, to: string | undefined, today: string | null): string | null {
+  const period = periodOf(from ?? '', to ?? '', today);
+  if (period === 'all') return null;
+  if (period === '7') return __('Last 7 days', 'wconvert');
+  if (period === '30') return __('Last 30 days', 'wconvert');
+  if (from && to) return formatRange(from, to);
+  return from ? sprintf(__('From %s', 'wconvert'), formatDay(from)) : sprintf(__('Until %s', 'wconvert'), formatDay(to ?? ''));
+}
+
+interface Draft { search: string; optinId: string; from: string; to: string; order: 'newest' | 'oldest'; custom: boolean }
+
+const draftOf = (query: LeadQuery): Draft => ({ search: query.leadId ?? query.identifier ?? query.search ?? '', optinId: query.optinId ?? '',
+  from: query.from ?? '', to: query.to ?? '', order: query.order ?? 'newest', custom: false });
+
+/**
+ * **One apply model** (ADR 0131): a choice applies the moment it is made, and
+ * what is typed applies on Enter — the search, or a custom date when the field
+ * is left. Every change applies the whole form as it stands, so a search typed
+ * and not yet sent is never dropped by picking a campaign.
+ *
+ * The draft follows the applied query rather than being remounted by it, so
+ * a select keeps focus through the read its own change started.
+ */
+function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: OptinSummary[] | null; onApply: (query: LeadQuery) => void }) {
+  const [draft, setDraft] = useState<Draft>(() => draftOf(query));
   const [expanded, setExpanded] = useState(Boolean(query.from || query.to || query.order));
-  const today = siteToday();
-  const [customDates, setCustomDates] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  return <form className="flex flex-col gap-3" onSubmit={(event) => {
-    event.preventDefault();
-    if (from && to && from > to) { setError(__('The end date must be on or after the start date.', 'wconvert')); return; }
-    const term = search.trim();
+  // The purpose strip sits outside this form; its change must not reset a draft.
+  const syncKey = queryKeyOf({ ...query, purpose: undefined });
+  const [synced, setSynced] = useState(syncKey);
+  if (synced !== syncKey) {
+    setSynced(syncKey);
+    setDraft(draftOf(query));
+    setError(null);
+    if (query.from || query.to || query.order) setExpanded(true);
+  }
+  const today = siteToday();
+  const period: Period = draft.custom ? 'custom' : periodOf(draft.from, draft.to, today);
+  const apply = (next: Draft) => {
+    setDraft(next);
+    if (next.from && next.to && next.from > next.to) { setError(__('The end date must be on or after the start date.', 'wconvert')); return; }
+    const term = next.search.trim();
+    // A pasted submission ID still finds its row, though no screen shows one.
     const id = /^[0-9A-HJKMNP-TV-Z]{26}$/i.test(term) ? term.toUpperCase() : undefined;
     const identifier = !id && (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(term) || /^(\+|00)[\d\s()-]+$/.test(term)) ? term : undefined;
+    const built: LeadQuery = { order: next.order === 'oldest' ? 'oldest' : undefined, optinId: next.optinId || undefined, purpose: query.purpose, identifier,
+      search: term && !id && !identifier ? term : undefined, leadId: id, from: next.from || undefined, to: next.to || undefined };
     setError(null);
-    onApply({ order: order === 'oldest' ? 'oldest' : undefined, optinId: optinId || undefined, purpose: query.purpose, identifier, search: term && !id && !identifier ? term : undefined, leadId: id, from: from || undefined, to: to || undefined });
-  }}>
-    <div className="flex flex-wrap items-end gap-3">
-      <div className="min-w-0 basis-64 flex-1"><Label htmlFor="wconvert-lead-search">{__('Search submissions', 'wconvert')}</Label>
-        <Input id="wconvert-lead-search" type="search" maxLength={254} value={search} onChange={(event) => setSearch(event.target.value)} placeholder={__('Name, email, phone, message or Lead ID', 'wconvert')} /></div>
-      <div><Label htmlFor="wconvert-lead-optin">{__('Campaign', 'wconvert')}</Label><Select value={optinId || ALL_OPTINS} onValueChange={(value) => setOptinId(value === ALL_OPTINS ? '' : value)}>
-        <SelectTrigger id="wconvert-lead-optin" className="min-w-44 max-w-64"><SelectValue /></SelectTrigger><SelectContent>
-          <SelectItem value={ALL_OPTINS}>{__('All Campaigns', 'wconvert')}</SelectItem>
-          {optinId && !optins.some((optin) => optin.id === optinId) && <SelectItem value={optinId}>{optinId}</SelectItem>}
-          {optins.map((optin) => <SelectItem key={optin.id} value={optin.id}>{optin.name || optin.id}</SelectItem>)}
-        </SelectContent></Select></div>
-      <Button type="button" variant="outline" aria-expanded={expanded} aria-controls="wconvert-history-filters" onClick={() => setExpanded(!expanded)}><SlidersHorizontal aria-hidden="true" />{__('Filters', 'wconvert')}{(query.from || query.to || query.order) && <span aria-label={__('Active filters', 'wconvert')}> ·</span>}</Button>
-      <Button type="submit" variant="outline"><Search aria-hidden="true" />{__('Apply filters', 'wconvert')}</Button>
-      {(search || optinId || from || to || query.purpose || query.order) && <Button type="button" variant="link" onClick={() => { setSearch(''); setOptinId(''); setFrom(''); setTo(''); setOrder('newest'); setCustomDates(false); setError(null); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}
-    </div>
-    <div id="wconvert-history-filters" hidden={!expanded}>
-      <div className="flex flex-wrap items-end gap-4 rounded-md bg-surface p-4">
-        <div><Label htmlFor="wconvert-lead-period">{__('Captured within', 'wconvert')}</Label>
-          <select id="wconvert-lead-period" className="h-9 rounded-md border border-input bg-card px-3" value={customDates ? 'custom' : !from && !to ? 'all' : today && to === today && from === shiftDay(today, -6) ? '7' : today && to === today && from === shiftDay(today, -29) ? '30' : 'custom'} onChange={(event) => { const value = event.target.value; setCustomDates(value === 'custom'); if (value === 'all') { setFrom(''); setTo(''); } else if (value !== 'custom' && today) { setFrom(shiftDay(today, 1 - Number(value))); setTo(today); } }}>
-            <option value="all">{__('All retained submissions', 'wconvert')}</option><option value="7" disabled={!today}>{__('Last 7 days, including today', 'wconvert')}</option><option value="30" disabled={!today}>{__('Last 30 days, including today', 'wconvert')}</option><option value="custom">{__('Custom dates', 'wconvert')}</option>
-          </select>
-        </div>
-      <div><Label htmlFor="wconvert-lead-from">{__('From', 'wconvert')}</Label><Input id="wconvert-lead-from" className="w-40" type="date" value={from} onChange={(event) => { setFrom(event.target.value); setCustomDates(true); }} /></div>
-      <div><Label htmlFor="wconvert-lead-to">{__('To', 'wconvert')}</Label><Input id="wconvert-lead-to" className="w-40" type="date" value={to} min={from || undefined} onChange={(event) => { setTo(event.target.value); setCustomDates(true); }} /></div>
+    if (queryKeyOf(built) !== queryKeyOf(query)) onApply(built);
+  };
+  const summary = [periodLabel(query.from, query.to, today), query.order === 'oldest' ? __('Oldest first', 'wconvert') : null].filter(Boolean).join(' · ');
+  const missing = draft.optinId !== '' && !(optins ?? []).some((optin) => optin.id === draft.optinId);
 
-        <div><Label htmlFor="wconvert-lead-order">{__('Order', 'wconvert')}</Label><select id="wconvert-lead-order" className="h-9 rounded-md border border-input bg-card px-3" value={order} onChange={(event) => setOrder(event.target.value)}><option value="newest">{__('Newest first', 'wconvert')}</option><option value="oldest">{__('Oldest first', 'wconvert')}</option></select></div>
-        <p className="m-0 basis-full text-note text-muted-foreground">{__('Dates include both days. Grouped results are ordered by the latest submission in each group.', 'wconvert')}</p>
-      </div>
+  return <form className="flex flex-col gap-3" aria-label={__('Filter submissions', 'wconvert')} onSubmit={(event) => { event.preventDefault(); apply(draft); }}>
+    <div className="flex flex-wrap items-end gap-3">
+      <Field label={__('Search submissions', 'wconvert')} htmlFor="wconvert-lead-search" className="basis-64 flex-1">
+        <div className="flex gap-2">
+          <Input id="wconvert-lead-search" type="search" maxLength={254} value={draft.search} onChange={(event) => setDraft({ ...draft, search: event.target.value })} placeholder={__('Name, email, phone or message', 'wconvert')} />
+          <Button type="submit" variant="outline"><Search aria-hidden="true" />{__('Search', 'wconvert')}</Button>
+        </div>
+      </Field>
+      <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin">
+        <NativeSelect id="wconvert-lead-optin" className="w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
+          <option value="">{__('All campaigns', 'wconvert')}</option>
+          {missing && <option value={draft.optinId}>{optins === null ? __('Selected campaign', 'wconvert') : __('Deleted campaign', 'wconvert')}</option>}
+          {(optins ?? []).map((optin) => <option key={optin.id} value={optin.id}>{optin.name.trim() || __('Unnamed campaign', 'wconvert')}</option>)}
+        </NativeSelect>
+      </Field>
+      {queryKeyOf(query) !== '{}' && <Button type="button" variant="link" onClick={() => { setError(null); setDraft(draftOf({})); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}
     </div>
+    <Disclosure variant="inline" title={__('More filters', 'wconvert')} summary={expanded ? undefined : summary || undefined} open={expanded} onToggle={setExpanded}>
+      <div className="flex flex-wrap items-end gap-4">
+        <Field label={__('Period', 'wconvert')} htmlFor="wconvert-lead-period">
+          <NativeSelect id="wconvert-lead-period" value={period} onChange={(event) => {
+            const value = event.target.value as Period;
+            if (value === 'custom') setDraft({ ...draft, custom: true });
+            else if (value === 'all') apply({ ...draft, custom: false, from: '', to: '' });
+            else if (today) apply({ ...draft, custom: false, from: shiftDay(today, 1 - Number(value)), to: today });
+          }}>
+            <option value="all">{__('Any time', 'wconvert')}</option>
+            <option value="7" disabled={!today}>{__('Last 7 days', 'wconvert')}</option>
+            <option value="30" disabled={!today}>{__('Last 30 days', 'wconvert')}</option>
+            <option value="custom">{__('Custom dates', 'wconvert')}</option>
+          </NativeSelect>
+        </Field>
+        {period === 'custom' && <>
+          <Field label={__('From', 'wconvert')} htmlFor="wconvert-lead-from">
+            <Input id="wconvert-lead-from" className="w-40" type="date" value={draft.from} aria-describedby="wconvert-lead-dates" onChange={(event) => setDraft({ ...draft, custom: true, from: event.target.value })} onBlur={() => apply(draft)} />
+          </Field>
+          <Field label={__('To', 'wconvert')} htmlFor="wconvert-lead-to">
+            <Input id="wconvert-lead-to" className="w-40" type="date" value={draft.to} min={draft.from || undefined} aria-describedby="wconvert-lead-dates" onChange={(event) => setDraft({ ...draft, custom: true, to: event.target.value })} onBlur={() => apply(draft)} />
+          </Field>
+        </>}
+        <Field label={__('Order', 'wconvert')} htmlFor="wconvert-lead-order">
+          <NativeSelect id="wconvert-lead-order" value={draft.order} onChange={(event) => apply({ ...draft, order: event.target.value === 'oldest' ? 'oldest' : 'newest' })}>
+            <option value="newest">{__('Newest first', 'wconvert')}</option>
+            <option value="oldest">{__('Oldest first', 'wconvert')}</option>
+          </NativeSelect>
+        </Field>
+      </div>
+      {period === 'custom' && <p id="wconvert-lead-dates" className="mb-0 mt-2 text-note text-muted-foreground">{__('Both days are included.', 'wconvert')}</p>}
+    </Disclosure>
     {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
   </form>;
 }
 
-function scopeDescription(query: LeadQuery, nameOf: (id: string) => string): string {
-  const parts = [query.optinId ? nameOf(query.optinId) : __('All Campaigns', 'wconvert'),
-    query.purpose === 'subscribers' ? __('Subscriber collection', 'wconvert') : query.purpose === 'enquiries' ? __('Enquiries', 'wconvert') : undefined,
-    query.leadId || query.identifier || query.search,
-    query.from || query.to ? sprintf(__('%1$s to %2$s', 'wconvert'), query.from || __('the beginning', 'wconvert'), query.to || __('now', 'wconvert')) : __('All dates', 'wconvert')];
+function scopeDescription(query: LeadQuery, nameOf: (id: string) => CampaignName): string {
+  const campaign = query.optinId ? nameOf(query.optinId) : __('All campaigns', 'wconvert');
+  const parts = [campaign === null ? __('Deleted campaign', 'wconvert') : campaign ?? __('Selected campaign', 'wconvert'),
+    query.purpose === 'subscribers' ? __('Subscribers', 'wconvert') : query.purpose === 'enquiries' ? __('Enquiries', 'wconvert') : undefined,
+    query.leadId ? __('One submission', 'wconvert') : query.identifier || query.search,
+    periodLabel(query.from, query.to, siteToday()) ?? __('Any time', 'wconvert')];
   return sprintf(__('Showing: %s', 'wconvert'), parts.filter(Boolean).join(' · '));
-}
-
-
-function GroupEvents({ group, query, nameOf, goalOf, onRelated }: { group: LeadGroup; query: LeadPage; nameOf: (id: string) => string; goalOf: (id: string) => string | undefined; onRelated: (identifier: string) => void }) {
-  const [cursor, setCursor] = useState<string | undefined>();
-  const [previous, setPrevious] = useState<(string | undefined)[]>([]);
-  const [data, setData] = useState<LeadLogPayload | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [retry, setRetry] = useState(0);
-  const filter = useMemo(() => ({ ...query, includeCounts: false, groupIdentifier: group.identifier, grouped: false, cursor }), [query, group.identifier, cursor]);
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    void readLog(filter).then((next) => { if (active) { setData(next); setError(null); } })
-      .catch((cause: unknown) => { if (active) setError(messageOf(cause)); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
-  }, [filter, retry]);
-  const csv = canExport();
-  return <div className="flex flex-col gap-4">
-    <p>{submissionCount(data?.submissions ?? group.submissions)}{__(' within the selected filters. These are capture events, not a contact profile.', 'wconvert')}</p>
-    {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter)}><Download aria-hidden="true" />{__('Export these submissions', 'wconvert')}</Button>}
-    {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter, 'questions')}><Download aria-hidden="true" />{__('Export question answers', 'wconvert')}</Button>}
-    {loading && <p role="status">{__('Loading submissions…', 'wconvert')}</p>}
-    {error && <div><p role="alert">{error}</p><Button variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry', 'wconvert')}</Button></div>}
-    {data !== null && data.leads.length === 0 && <p>{__('No retained submissions match this group and these filters.', 'wconvert')}</p>}
-    {data !== null && <EventTable leads={data.leads} nameOf={nameOf} goalOf={goalOf} onRelated={onRelated} returnTo={leadsHref(query)} />}
-    <div className="flex justify-end gap-2"><Button variant="outline" disabled={loading || error !== null || previous.length === 0} onClick={() => { setCursor(previous[previous.length - 1]); setPrevious(previous.slice(0, -1)); }}>{query.order === 'oldest' ? __('Previous submissions', 'wconvert') : __('Newer submissions', 'wconvert')}</Button>
-      <Button variant="outline" disabled={loading || error !== null || !data?.next_cursor} onClick={() => { setPrevious([...previous, cursor]); setCursor(data?.next_cursor ?? undefined); }}>{query.order === 'oldest' ? __('Next submissions', 'wconvert') : __('Older submissions', 'wconvert')}</Button></div>
-  </div>;
 }

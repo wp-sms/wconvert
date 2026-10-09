@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { formatWhen } from '../lib/format';
 import { CircleMinus, MoreHorizontal, Pencil, Send } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
@@ -67,12 +68,12 @@ export function DestinationCard({
       <div className="wconvert-destination-card__main">
         <ProviderMark type={type} className="wconvert-destination-card__mark" />
         <div className="min-w-0">
-          <h4 id={`${id}-name`} className="m-0 text-body font-semibold [overflow-wrap:anywhere]">{destination.label}</h4>
+          <h4 id={`${id}-name`} className="m-0 text-body font-semibold [overflow-wrap:anywhere]"><bdi>{destination.label || __('Unnamed destination', 'wconvert')}</bdi></h4>
           <p className="wconvert-destination-card__meta">
             {type !== undefined && <span>{type.label}</span>}
             {target !== null && <span>{target}</span>}
             {destination.health.last_success_at !== null && destination.health.consecutive_failures === 0 &&
-              <span>{sprintf(/* translators: %s: a date and time. */ __('Last sent %s', 'wconvert'), destination.health.last_success_at)}</span>}
+              <span>{sprintf(/* translators: %s: when, e.g. “Today, 2:22 PM” or “Oct 3”. */ __('Last sent %s', 'wconvert'), formatWhen(destination.health.last_success_at, 'list'))}</span>}
           </p>
           {automatic.length > 0 && status.state !== 'needs_setup' &&
             <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(/* translators: %s: contact fields, e.g. “email and name”. */ __('Sends %s automatically.', 'wconvert'), listWithAnd(automatic))}</Description>}

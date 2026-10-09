@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { measuresOf } from './themes';
 import { StyleValueInput } from './StyleValueInput';
+import { NativeSelect } from '../components/ui/native-select';
 
 const UNITS = ['px', 'rem', 'em', '%', 'ch', 'vw', 'vh'];
 
@@ -37,12 +38,12 @@ export function MeasurementValue({ id, label, value, fallback, standard, onChang
           className="wconvert-token__exact min-w-0 flex-1"
           aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
           onCommit={(amount) => write(index, amount, unit)} />
-        <select className="w-auto h-6 min-h-6 py-0 text-xs" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
+        <NativeSelect className="w-auto" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
           onChange={(event) => write(index, String(part.amount), event.target.value)}>
           {unit !== '' && !UNITS.includes(unit) && <option value={unit}>{unit}</option>}
           {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}
           {UNITS.map((option) => <option key={option} value={option}>{option}</option>)}
-        </select>
+        </NativeSelect>
       </div>;
     })}
   </div>;

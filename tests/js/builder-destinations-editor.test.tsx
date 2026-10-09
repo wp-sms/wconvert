@@ -119,7 +119,7 @@ describe('the cards this campaign sends to', () => {
 
   it('always shows that leads are saved in WConvert first', () => {
     listed([destination({ id: 'a', label: 'Newsletter signups' })], ['a']);
-    expect(screen.getByText('Saved in WConvert Leads')).toBeVisible();
+    expect(screen.getByText('Saved in Leads')).toBeVisible();
     expect(screen.getByText('Every submission is saved here first, even if a destination fails.')).toBeVisible();
   });
 
@@ -149,7 +149,7 @@ describe('the cards this campaign sends to', () => {
       health: { last_success_at: '2026-10-08 09:12', last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } })]),
     ['a'], [], { template: form([{ name: 'email', required: true }, { name: 'name', required: false }]) });
     expect(within(card('Newsletter signups')).getByText('Sends email and name automatically.')).toBeVisible();
-    expect(within(card('Newsletter signups')).getByText('Last sent 2026-10-08 09:12')).toBeVisible();
+    expect(within(card('Newsletter signups')).getByText(/^Last sent (?!2026-10-08)/)).toBeVisible();
     expect(within(card('Newsletter signups')).getByText('Success recorded')).toBeVisible();
   });
 
@@ -229,7 +229,7 @@ describe('health, on the card that has it', () => {
   /** Free keeps the saved route and names no product (ADR 0116). */
   it('names no product for a locked route on a free install', () => {
     listed([destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' })], ['a'], [type({ id: 'paid', label: 'Paid', tier: 'pro' })]);
-    expect(within(card('Paid route')).getByText('This destination type isn’t available on this site, so captures are kept here, not sent.')).toBeVisible();
+    expect(within(card('Paid route')).getByText('This destination type isn’t available on this site, so submissions are kept in WConvert and not sent.')).toBeVisible();
     expect(within(card('Paid route')).getByText('Not available')).toBeVisible();
     expect(within(card('Paid route')).queryByText(/WConvert Pro/)).toBeNull();
   });
@@ -265,7 +265,7 @@ describe('the actions on a card', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Actions for Newsletter signups' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Send a test' }));
     const dialog = within(screen.getByRole('dialog'));
-    expect(dialog.getByRole('heading', { name: 'Send a test to Newsletter signups' })).toBeVisible();
+    expect(dialog.getByRole('heading', { name: 'Newsletter signups' })).toBeVisible();
     expect(dialog.getByLabelText('Test email address')).toHaveValue('owner@example.com');
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
     expect(api.testSend).toHaveBeenCalledExactlyOnceWith('a', 'owner@example.com');
@@ -345,7 +345,7 @@ describe('adding a route', () => {
     const bound = dialog.getByRole('button', { name: /Newsletter signups/ });
     const wrong = dialog.getByRole('button', { name: /Email only list/ });
     expect(bound).toHaveAttribute('aria-disabled', 'true');
-    expect(bound).toHaveAccessibleDescription(/Already sending\./);
+    expect(bound).toHaveAccessibleDescription(/Already added\./);
     expect(wrong).toHaveAttribute('aria-disabled', 'true');
     expect(wrong).toHaveAccessibleDescription(/Doesn’t take phone numbers\./);
     await userEvent.click(bound);
@@ -384,7 +384,7 @@ describe('adding a route', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
     await userEvent.click(within(screen.getByRole('list', { name: 'Destination providers' })).getByRole('button', { name: /MailPoet/ }));
     const dialog = within(screen.getByRole('dialog'));
-    expect(dialog.getByRole('heading', { name: 'Add a MailPoet destination' })).toHaveFocus();
+    expect(dialog.getByRole('heading', { name: 'New MailPoet destination' })).toHaveFocus();
     expect(dialog.getByText('It is selected for this campaign when you save.')).toBeVisible();
     await userEvent.click(dialog.getByRole('checkbox', { name: 'Newsletter' }));
     await userEvent.click(dialog.getByRole('button', { name: 'Add destination' }));
@@ -400,7 +400,7 @@ describe('adding a route', () => {
     editor(ready([]), [], [provider], { onChange, suggested: ['mailpoet'] });
     expect(screen.getByText('Choose a service to set up')).toBeVisible();
     const tile = screen.getByRole('button', { name: /MailPoet/ });
-    expect(tile).toHaveAccessibleDescription('Suggested by your campaign setup');
+    expect(tile).toHaveAccessibleDescription('Suggested');
     await userEvent.click(tile);
     const dialog = within(screen.getByRole('dialog'));
     expect(api.saveDestination).toHaveBeenCalledTimes(0);
@@ -471,7 +471,7 @@ describe('what this save point needs before publishing', () => {
   it('makes a required unfinished handoff explicit without selecting a destination', () => {
     const onChange = vi.fn();
     editor(ready([]), [], [], { outcome: CAPTURE_OUTCOME, onChange });
-    expect(screen.getByRole('status')).toHaveTextContent('Before you can publish, connect a service or choose “Collect only in WConvert”.');
+    expect(screen.getByRole('status')).toHaveTextContent('Before you can publish, connect a service or choose “Keep in WConvert only”.');
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -483,7 +483,7 @@ describe('what this save point needs before publishing', () => {
 
   it('keeps forwarding optional for an enquiry with no handoff requirement', () => {
     editor(ready([]), [], [], { outcome: { ...CAPTURE_OUTCOME, audience_channel: null } });
-    expect(screen.getByText('Leads stay in WConvert. Add a destination only if you want to forward them.')).toBeVisible();
+    expect(screen.getByText('Leads stay in WConvert. Add a destination only if you want to send them on.')).toBeVisible();
     expect(screen.queryByText(/Before you can publish/)).not.toBeInTheDocument();
   });
 
@@ -495,7 +495,7 @@ describe('what this save point needs before publishing', () => {
 
   it('says nothing is forwarded when the campaign collects only in WConvert', () => {
     editor(ready([destination({ id: 'a', label: 'Newsletter' })]), [], [], { outcome: CAPTURE_OUTCOME, local: true });
-    expect(screen.getByText('Kept for review or export. Nothing is forwarded to another service.')).toBeVisible();
+    expect(screen.getByText('Kept for review or export. Nothing is sent to another service.')).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Add destination' })).toBeNull();
     expect(screen.queryByText(/Before you can publish/)).toBeNull();
   });
@@ -521,7 +521,7 @@ describe('the three states of the destinations read', () => {
     editor(failed(new Error('The site did not answer.')), [], [], { onRefresh });
     expect(screen.getByText('The site did not answer.')).toBeInTheDocument();
     expect(screen.queryByText('Loading…')).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(onRefresh).toHaveBeenCalledOnce();
   });
 
