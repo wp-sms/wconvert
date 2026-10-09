@@ -231,8 +231,7 @@ it('lists no premium pack on a free install, beside the packs it can install', a
   expect(await screen.findByText('Reading pack')).toBeVisible();
   expect(screen.queryByText('Premium pack')).not.toBeInTheDocument();
   expect(screen.queryByText('Pro')).not.toBeInTheDocument();
-  expect(screen.getByText('1 pack')).toBeVisible();
-  expect(screen.getByText('1 matching pack')).toBeVisible();
+  expect(screen.getByRole('status')).toHaveTextContent('1 pack');
 });
 
 it('counts no premium pack on a free install that is offered nothing else', async () => {

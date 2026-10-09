@@ -66,10 +66,12 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
 
   return <>
     {nested
-      ? <div className="wconvert-design-detail__header"><h3 ref={heading} tabIndex={-1}>{title}</h3></div>
+      ? <div className="wconvert-design-detail__header wconvert-picker-settings__header">
+        <h3 ref={heading} tabIndex={-1}>{title}</h3>
+        <p className="m-0 text-note text-muted-foreground">{meta}</p>
+      </div>
       : <AdminDialogHeader title={title} meta={meta} />}
     <AdminDialogBody className="wconvert-picker-settings">
-      {nested && <p className="m-0 text-note text-muted-foreground">{meta}</p>}
       {!data ? picker.error
         ? <RegionErrorState message={picker.error} onRetry={() => { void picker.reload(); }} />
         : <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading preferences…', 'wconvert')}</p>

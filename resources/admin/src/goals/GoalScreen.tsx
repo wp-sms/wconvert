@@ -431,14 +431,17 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
             : sprintf(__('%1$s of %2$s setups', 'wconvert'), formatCount(entries.length), formatCount(allEntries.length))
           : playbooks.status === 'loading' ? __('Loading campaign setups…', 'wconvert') : __('Campaign setups could not be loaded.', 'wconvert')}</span>
         <MoreFilters active={hiddenFilters} open={filtersOpen} onToggle={setFiltersOpen}>
-          <div className="wconvert-picker__filter-row wconvert-picker__secondary">
-            {businesses.size > 0 && <label className="flex items-center gap-2 text-note">{__('Business', 'wconvert')}
+          {/* Labels above their controls in one aligned grid, the way a form reads (GUIDELINES §7, Field). */}
+          <div className="wconvert-filter-grid">
+            {businesses.size > 0 && <label className="wconvert-filter-field">
+              <span>{__('Business', 'wconvert')}</span>
               <select className="wconvert-picker__select" value={businessId} disabled={starting !== null} onChange={(event) => { setBusinessId(event.target.value); setPage(0); }}>
                 <option value="all">{__('All businesses', 'wconvert')}</option>
                 {[...businesses].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
               </select>
             </label>}
-            <label className="flex items-center gap-2 text-note">{__('Source', 'wconvert')}
+            <label className="wconvert-filter-field">
+              <span>{__('Source', 'wconvert')}</span>
               <select className="wconvert-picker__select" ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
                 <option value="all">{__('All campaign setups', 'wconvert')}</option>
                 <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
@@ -446,12 +449,13 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
                 {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
               </select>
             </label>
-          </div>
-          <div className="wconvert-picker__filter-row">
-            <CheckRow label={<SavedLabel count={picker.data?.preferences.saved.length ?? 0} />} checked={savedOnly} disabled={starting !== null || !picker.data}
-              onChange={(event) => { setSavedOnly(event.target.checked); setPage(0); }} />
-            {allEntries.some(entry => entry.availability && entry.availability !== 'ready') && <CheckRow label={__('Available on this site', 'wconvert')} checked={availableOnly} disabled={starting !== null}
-              onChange={(event) => { setAvailableOnly(event.target.checked); setPage(0); }} />}
+            <fieldset className="wconvert-filter-field">
+              <legend>{__('Show', 'wconvert')}</legend>
+              <CheckRow label={<SavedLabel count={picker.data?.preferences.saved.length ?? 0} />} checked={savedOnly} disabled={starting !== null || !picker.data}
+                onChange={(event) => { setSavedOnly(event.target.checked); setPage(0); }} />
+              {allEntries.some(entry => entry.availability && entry.availability !== 'ready') && <CheckRow label={__('Available on this site', 'wconvert')} checked={availableOnly} disabled={starting !== null}
+                onChange={(event) => { setAvailableOnly(event.target.checked); setPage(0); }} />}
+            </fieldset>
           </div>
         </MoreFilters>
       </div>

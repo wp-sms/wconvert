@@ -49,11 +49,8 @@
 #wconvert-admin .wconvert-family-toggle[aria-expanded=true] .wconvert-family-toggle__chevron { transform:rotate(180deg); }
 #wconvert-admin .wconvert-campaign-row.is-arm .wconvert-campaign-identity { padding-inline-start:20px; border-inline-start:2px solid var(--border); }
 
-#wconvert-admin .wconvert-campaign-pagination { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:12px; padding:12px 24px; border-block-start:1px solid var(--border); font-size:var(--text-note); }
-#wconvert-admin .wconvert-campaign-footer { display:flex; align-items:center; justify-content:space-between; gap:8px 12px; flex-wrap:wrap; padding:18px 24px; border-block-start:1px solid var(--border); color:var(--muted-foreground); font-size:var(--text-micro); }
-#wconvert-admin .wconvert-campaign-footer .wconvert-campaign-footer__link { display:flex; align-items:center; gap:5px; min-block-size:2rem; padding:0; border:0; background:none; color:var(--action); font:inherit; font-size:var(--text-note); text-decoration:none; cursor:pointer; }
-#wconvert-admin .wconvert-campaign-footer .wconvert-campaign-footer__link:hover { text-decoration-line:underline; text-underline-offset:3px; }
-#wconvert-admin .wconvert-campaign-footer svg { inline-size:13px; block-size:13px; }
+#wconvert-admin .wconvert-campaign-pagination { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:12px; color:var(--foreground); font-size:var(--text-note); }
+#wconvert-admin .wconvert-campaign-footer { display:flex; align-items:center; justify-content:space-between; gap:8px 12px; flex-wrap:wrap; padding:12px 24px; min-block-size:3.5rem; border-block-start:1px solid var(--border); color:var(--muted-foreground); font-size:var(--text-note); }
 #wconvert-admin .wconvert-campaign-test-note { flex-basis:100%; margin:0; color:var(--muted-foreground); font-size:var(--text-note); }
 
 .wconvert-campaign-menu { inline-size:224px; max-inline-size:calc(100vw - 16px); }
@@ -129,6 +126,6 @@
   .wconvert-campaign-detail-stats { grid-template-columns:1fr; gap:8px; }
 }
 @media(max-width:600px) {
-  #wconvert-admin :is(.wconvert-campaign-filterbar,.wconvert-campaign-toolbar,.wconvert-campaign-footer,.wconvert-campaign-pagination,.wconvert-campaign-table tr) { padding-inline:18px; }
+  #wconvert-admin :is(.wconvert-campaign-filterbar,.wconvert-campaign-toolbar,.wconvert-campaign-footer,.wconvert-campaign-table tr) { padding-inline:18px; }
   #wconvert-admin .wconvert-campaign-thumbnail { inline-size:70px; block-size:54px; }
 }

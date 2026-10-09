@@ -233,9 +233,12 @@ it('orders Data & privacy by use: retention, the data map, requests, then guidan
   await screen.findByRole('heading', { name: 'Privacy guidance' });
   await screen.findByRole('radio', { name: 'Delete them automatically after' });
   const content = screen.getByRole('table', { name: 'What is stored' }).closest('.max-w-\\[900px\\]') as HTMLElement;
+  // The data map is a closed card between retention and requests (ADR 0132).
   expect(within(content).getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent)).toEqual([
-    'How long submissions are kept', 'What visitor data is stored', 'Export and personal data', 'Privacy guidance',
+    'How long submissions are kept', 'Export and personal data', 'Privacy guidance',
   ]);
+  const map = within(content).getByText('What visitor data is stored').closest('details')!;
+  expect(map.compareDocumentPosition(within(content).getByRole('heading', { name: 'Export and personal data' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   // Retention is open, not a disclosure to find.
   expect(screen.queryByRole('button', { name: /How long submissions are kept/ })).not.toBeInTheDocument();
   expect(screen.getByText(/Download submissions as CSV in/)).toHaveTextContent('Download submissions as CSV in Leads');

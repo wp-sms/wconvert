@@ -17,7 +17,6 @@ import {
   Plus,
   Search,
   Split,
-  Stethoscope,
   Trash2,
   Trophy,
   Upload,
@@ -46,7 +45,6 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import { leadsHref, reportHref } from '../nav';
 import { readDashboard, type DashboardPayload } from '../stats/api';
 import { formatCount, formatRange, formatRate, labelOf } from '../lib/format';
-import { InspectDialog } from './InspectDialog';
 import {
   campaignName,
   createVariant,
@@ -123,7 +121,6 @@ export function OptinList({
     }
   }, [busy, onEdit]);
   const [decision, setDecision] = useState<Decision | null>(null);
-  const [inspecting, setInspecting] = useState(false);
   const [selected, setSelected] = useState<OptinSummary | null>(null);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<'all' | OptinStatus>('all');
@@ -624,43 +621,33 @@ export function OptinList({
                 </DataTableBody>}
               </DataTable>
             )}
-            {lastPage > 0 && (
-              <nav className="wconvert-toolbar wconvert-campaign-pagination" aria-label={__('Campaign pages', 'wconvert')}>
-                <Button variant="outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
-                  <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-                  {__('Previous', 'wconvert')}
-                </Button>
-                <span aria-live="polite" aria-atomic="true">
-                  {sprintf(__('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
-                </span>
-                <Button variant="outline" disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>
-                  {__('Next', 'wconvert')}
-                  <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
-                </Button>
-              </nav>
-            )}
-            <div className="wconvert-footer wconvert-campaign-footer">
+            {/* One line: how many and over which dates, then the pages. */}
+            {list.status === 'ready' && !empty && <div className="wconvert-footer wconvert-campaign-footer">
               <span>
-                {list.status === 'ready' && !empty && sprintf(
-                  _n('%d campaign', '%d campaigns', visible.length, 'wconvert'),
-                  visible.length,
-                )}
-                {list.status === 'ready' && !empty && report && <> · {formatRange(report.from, report.to)}</>}
+                {sprintf(_n('%d campaign', '%d campaigns', visible.length, 'wconvert'), visible.length)}
+                {report && <> · {formatRange(report.from, report.to)}</>}
               </span>
-              {/*
-                The inspector explains every campaign on whichever page it is
-                given, so it is the list's question, not one row's.
-              */}
-              <button type="button" className="wconvert-campaign-footer__link" aria-haspopup="dialog" onClick={() => setInspecting(true)}>
-                <Stethoscope aria-hidden="true" />
-                {__('Why isn’t a campaign showing?', 'wconvert')}
-              </button>
+              {lastPage > 0 && (
+                <nav className="wconvert-toolbar wconvert-campaign-pagination" aria-label={__('Campaign pages', 'wconvert')}>
+                  <Button variant="outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
+                    <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
+                    {__('Previous', 'wconvert')}
+                  </Button>
+                  <span aria-live="polite" aria-atomic="true">
+                    {sprintf(__('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
+                  </span>
+                  <Button variant="outline" disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>
+                    {__('Next', 'wconvert')}
+                    <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
+                  </Button>
+                </nav>
+              )}
               {shown.some((c) => c.arms.length > 0) && (
                 <p className="wconvert-campaign-test-note">
                   {__('A/B tests split visitors by browser, not by person.', 'wconvert')}
                 </p>
               )}
-            </div>
+            </div>}
           </>
         )}
       </Region>
@@ -688,7 +675,6 @@ export function OptinList({
         onClose={() => setSelected(null)}
         returnFocus={returnFocus}
       />
-      <InspectDialog open={inspecting} onOpenChange={setInspecting} />
       <ConfirmDialog
         variant={decision?.kind === 'delete' ? 'destructive' : 'default'}
         open={decision !== null}

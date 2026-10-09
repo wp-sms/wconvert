@@ -664,8 +664,10 @@ Not gaps. Each was decided:
   destination) are lowercase mid-sentence; capitals start a title, a button
   or a sentence. US spelling.
 - **More than two row actions go in a ⋯ menu**, with icons and labels. A
-  row menu holds actions on that row; a question about the whole list (Check
-  visibility) is a link in the list's footer.
+  row menu holds actions on that row. A list's foot is one line: its count,
+  dates and pages (ADR 0132).
+- **An inline disclosure's chevron sits beside its words**, not at the far end
+  of the row; a card disclosure keeps the whole-row trigger (ADR 0132).
 - **One primary action per screen, even when empty.** An empty list carries
   its own Create button, so the page header drops its copy until a row exists.
 - **A filter chip that would filter to nothing is not offered.** Status chips

@@ -409,83 +409,6 @@ describe('saved changes awaiting publication', () => {
   });
 });
 
-describe('the door into the eligibility inspector', () => {
-  /**
-   * ==========================================================================
-   * IT ASKS WHICH PAGE, AND THEN GOES THERE. IT NEVER EVALUATES ONE.
-   * ==========================================================================
-   * A `RequestContext` cannot honestly be built from a URL — `url_to_postid()`
-   * returns 0 for archives, terms, the blog index and the shop page — so the
-   * merchant does not DESCRIBE a page to the inspector, they OPEN one
-   * (ADR 0048). The dialog's entire job is to open that page: there is no
-   * route behind it and no answer comes back to this screen. It opens in a new
-   * tab, so the admin the merchant came from stays where it was.
-   */
-  it('asks which page and opens it in a new tab with the parameter on', async () => {
-    optins.listOptins.mockResolvedValue([OPTIN]);
-    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
-    onTestFinished(() => { delete window.wconvertAdmin; });
-
-    const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    onTestFinished(() => open.mockRestore());
-
-    render(<OptinList onEdit={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Why isn’t a campaign showing?' }));
-
-    const field = await screen.findByLabelText('Page to open');
-
-    // Prefilled from `home_url()` rather than from `location.origin`, so a
-    // subdirectory install lands on the SITE rather than on the domain root.
-    expect(field).toHaveValue('https://example.test/');
-
-    await userEvent.clear(field);
-    await userEvent.type(field, 'https://example.test/shop?filter=sale');
-    await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
-
-    // The page's own query string survives: a merchant asking about
-    // `?filter=sale` is asking about that page, and appending with a `?` would
-    // produce a different one.
-    expect(open).toHaveBeenCalledWith('https://example.test/shop?filter=sale&wconvert-inspect=1', '_blank', 'noopener');
-    expect(screen.queryByRole('dialog')).toBeNull();
-  });
-
-  /** A page it cannot open says so beside the field, rather than doing nothing. */
-  it('keeps an address it cannot open and says why', async () => {
-    window.wconvertAdmin = { exportUrl: '', inspectParam: 'wconvert-inspect' };
-    onTestFinished(() => { delete window.wconvertAdmin; });
-    const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    onTestFinished(() => open.mockRestore());
-
-    render(<OptinList onEdit={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Why isn’t a campaign showing?' }));
-    await userEvent.type(await screen.findByLabelText('Page to open'), 'not a page');
-    await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('Enter a full page address');
-    expect(screen.getByLabelText('Page to open')).toHaveValue('not a page');
-    expect(open).not.toHaveBeenCalled();
-  });
-
-  /**
-   * **The cache sentence is on the dialog, not in the panel.**
-   * `DONOTCACHEPAGE` is set during PHP, and a full-page cache holding a file
-   * for that URL answers before PHP runs at all — so the symptom is that no
-   * panel appears, and a warning inside the panel is one nobody could read.
-   */
-  it('warns about the cache where the merchant can still read it', async () => {
-    optins.listOptins.mockResolvedValue([OPTIN]);
-    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
-
-    render(<OptinList onEdit={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Why isn’t a campaign showing?' }));
-
-    expect(await screen.findByText(/a cache is serving that page before WordPress runs/)).toBeInTheDocument();
-  });
-});
-
 /**
  * =============================================================================
  * A TEST IS ONE CAMPAIGN WITH ARMS UNDER IT, NEVER TWO CAMPAIGNS.
@@ -947,4 +870,13 @@ it('retries a failed list refresh without repeating the successful mutation', as
   await waitFor(() => expect(screen.getByRole('row', { name: OPTIN.name })).toHaveTextContent('Published'));
   expect(optins.publishOptin).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('alert')).toBeNull();
+});
+
+it('puts the count, the dates and the pages on one line, and no inspector door', async () => {
+  const many = Array.from({ length: 13 }, (_, at) => ({ ...OPTIN, id: `01JQ0000000000000000000${String(at).padStart(3, '0')}`, name: `Campaign ${at}` }));
+  optins.listOptins.mockResolvedValue(many);
+  render(<OptinList onEdit={() => undefined} />);
+  const pages = await screen.findByRole('navigation', { name: 'Campaign pages' });
+  expect(pages.closest('.wconvert-campaign-footer')).toHaveTextContent('13 campaigns');
+  expect(screen.queryByRole('button', { name: /Why isn’t a campaign showing/ })).toBeNull();
 });

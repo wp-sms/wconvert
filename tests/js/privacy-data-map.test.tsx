@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
@@ -58,8 +59,16 @@ it.each([
   expect(row).toHaveTextContent(/No form details/);
 });
 
+it('stays closed until asked, saying how much it holds', async () => {
+  render(<PrivacyDataMap />);
+  const summary = (await screen.findByText('What visitor data is stored')).closest('summary')!;
+  expect(summary.closest('details')).not.toHaveAttribute('open');
+  expect(summary).toHaveTextContent(/kinds? of data kept/);
+});
+
 it('answers what is stored, why and for how long, as a table', async () => {
   render(<PrivacyDataMap />);
+  await userEvent.click((await screen.findByText('What visitor data is stored')).closest('summary')!);
 
   const table = await storedTable();
   expect(within(table).getAllByRole('columnheader').map((each) => each.textContent)).toEqual(['What is stored', 'Why', 'How long']);
@@ -123,6 +132,7 @@ it('gives an empty destination list a direct way to connections', async () => {
   privacy.readDataMap.mockResolvedValue({ ...MAP, destinations: [] });
 
   render(<PrivacyDataMap />);
+  await userEvent.click((await screen.findByText('What visitor data is stored')).closest('summary')!);
 
   expect(await screen.findByText(/No destinations are set up/)).toBeVisible();
   expect(screen.getByRole('link', { name: 'Set up a destination' })).toHaveAttribute('href', '#settings?group=connections');

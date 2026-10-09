@@ -238,19 +238,23 @@ export function PrivacyDataMap() {
   const service = __('Service', 'wconvert');
   const receives = __('Receives', 'wconvert');
 
+  // Reference for the policy writer, not a daily setting: closed by default,
+  // with its size said on the closed row (ADR 0132).
   return (
-    <Region>
-      <RegionHeader
-        title={title}
-        description={__('What this site keeps, and why. Rows follow your current setup.', 'wconvert')}
-        // The text WConvert adds to WordPress's privacy-policy guide: the
-        // merchant reading this table is the one writing that policy.
-        trailing={(
-          <a className="inline-flex items-center gap-1 text-note underline underline-offset-2" href="options-privacy.php?tab=policyguide" data-setting="privacy-policy-text">
-            {__('Suggested privacy-policy text', 'wconvert')}<ArrowRight aria-hidden="true" className="size-3.5 rtl:-scale-x-100" />
-          </a>
-        )}
-      />
+    <Disclosure variant="card" className="wconvert-data-map" bodyClassName="wconvert-data-map__body" title={title}
+      summary={sprintf(
+        /* translators: 1: kinds of data kept, 2: services that receive data. */
+        _n('%1$s kind of data kept · %2$s', '%1$s kinds of data kept · %2$s', stored.length, 'wconvert'),
+        formatCount(stored.length),
+        sprintf(_n('%s service receives data', '%s services receive data', recipients.length, 'wconvert'), formatCount(recipients.length)),
+      )}>
+      <RegionBody className="flex flex-wrap items-center justify-between gap-2">
+        <Description>{__('What this site keeps, and why. Rows follow your current setup.', 'wconvert')}</Description>
+        {/* The text WConvert adds to WordPress's privacy-policy guide: the merchant reading this is the one writing that policy. */}
+        <a className="inline-flex items-center gap-1 text-note underline underline-offset-2" href="options-privacy.php?tab=policyguide" data-setting="privacy-policy-text">
+          {__('Suggested privacy-policy text', 'wconvert')}<ArrowRight aria-hidden="true" className="size-3.5 rtl:-scale-x-100" />
+        </a>
+      </RegionBody>
       <DataTable label={what}>
         <DataTableHead>
           <DataTableColumn>{what}</DataTableColumn>
@@ -329,6 +333,6 @@ export function PrivacyDataMap() {
           </ul>
         </Disclosure>
       </RegionBody>
-    </Region>
+    </Disclosure>
   );
 }

@@ -21,9 +21,10 @@ is the thing they came for the most visible thing, with one way forward?
    All, the statuses in use and the selected one.
 3. **A count is read against what it is out of.** A row's result adds its rate
    and how often it was shown; "Most results" sorts by it.
-4. **A row menu holds actions on that row.** Check visibility explains every
-   campaign on a page, so it is the list's footer link ("Why isn't a campaign
-   showing?"), replacing a third copy of the Visitor experience link.
+4. **A row menu holds actions on that row.** Check visibility left the row
+   menus; after review the owner removed the list's door to it too, and the
+   list's foot is one line: the count, the dates and the pages (amends
+   [0048](0048-the-eligibility-inspector-runs-on-the-real-page.md)).
 5. The owner chose not to add a "Today" line to Campaigns.
 
 ### Create a campaign
@@ -106,10 +107,16 @@ is the thing they came for the most visible thing, with one way forward?
     activity appears tomorrow." is the one wording of that fact.
 
 ### Shell and blocks
-25. Help holds help (Getting started, Guides, Contact support, What's new);
+25. **Polish after review:** inline disclosures keep their chevron beside the
+    words; More filters opens one inset panel with captioned fields; a
+    measure's amount and unit are one joined control under its slider; the
+    editor's preloader is the editor's own frame; Data & privacy's data map is
+    closed by default; the Needs attention card leads with what is wrong and
+    puts the fix and its evidence on one row.
+26. Help holds help (Getting started, Guides, Contact support, What's new);
     the bell shows a count and says "Everything is running" when it is, and
     counts forms paused by spam protection; reading-page headings are tighter.
-26. The blocks are "WConvert campaign", "WConvert content lock" and "WConvert
+27. The blocks are "WConvert campaign", "WConvert content lock" and "WConvert
     lock from here"; the inline block lists drafts as refused choices, links to
     create, manage and edit, and copies its shortcode — the shortcode is a
     second place a campaign ID may appear (amends 0131 decision 4).

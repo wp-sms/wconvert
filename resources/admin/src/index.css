@@ -1943,7 +1943,17 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__facet > span { margin-inline-end: 0.25rem; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-picker__option-count { font-size: var(--text-note); opacity: 0.65; font-variant-numeric: tabular-nums; }
 .wconvert-picker__filter[aria-pressed='true'] { color: var(--action); border-color: var(--action); background: var(--muted); }
-.wconvert-picker__extra { max-block-size: 30dvh; overflow-y: auto; }
+/* What More filters opens: one inset panel, not loose rows under the toggle. */
+.wconvert-picker__extra { max-block-size: 40dvh; overflow-y: auto; }
+/* Beats the inline disclosure's own body padding by owning the pair, not by !important (§21). */
+.wconvert-disclosure.wconvert-picker__more > .wconvert-picker__extra { display: grid; gap: 1rem; margin-block-start: .25rem; padding: 1rem 1.25rem; border-radius: var(--radius); background: var(--surface); }
+.wconvert-filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); align-items: start; gap: 1rem 1.5rem; }
+.wconvert-filter-field { display: grid; gap: .375rem; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.wconvert-filter-field > span, #wconvert-admin .wconvert-filter-field > legend { padding: 0; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; line-height: var(--text-micro--line-height, 1.4); letter-spacing: .04em; text-transform: uppercase; }
+/* A legend sits outside the fieldset's flow; floating it lines it up with the other captions. */
+#wconvert-admin .wconvert-filter-field > legend { float: inline-start; inline-size: 100%; margin-block-end: .375rem; }
+#wconvert-admin fieldset.wconvert-filter-field > label { min-block-size: 2rem; display: flex; align-items: center; clear: both; }
+.wconvert-filter-field > select { inline-size: 100%; max-inline-size: none; background-color: var(--card); }
 .wconvert-picker__active { gap: 0.375rem; }
 .wconvert-picker__active-filter { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
 .wconvert-picker__active-filter:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
@@ -4875,7 +4885,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * two.
  */
 #wconvert-admin
-  :is(.wconvert-slot__key, .wconvert-token, .wconvert-slot__shown) {
+  :is(.wconvert-slot__key, .wconvert-token) {
   font-size: var(--text-label);
   line-height: var(--text-label--line-height);
   letter-spacing: var(--text-label--letter-spacing);
@@ -4982,6 +4992,8 @@ body:has(#wconvert-admin) #wpbody-content {
  * margin it used to carry was the gap to the first field and is now a trailing
  * gap inside the card.
  */
+/* A control, so `note`, not the 11px furniture role (§4); the box sits beside its words (CheckRow). */
+#wconvert-admin .wconvert-slot__shown { display: flex; align-items: center; gap: 8px; font-size: var(--text-note); }
 .wconvert-slot__shown {
   /*
    * **The `<label>` wraps the checkbox, so the row is the target.** A 16px box
@@ -6255,7 +6267,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-pack-detail__starts { margin-block-end: .625rem; font-size: var(--text-note); }
 .wconvert-pack-detail__starts ul { padding-inline-start: 1.25rem; margin: 0; }
 .wconvert-pack-detail__starts p { margin: 0; color: var(--muted-foreground); }
-.wconvert-packs .wconvert-picker__controls { padding-inline: 0; margin-block-end: 1rem; }
+.wconvert-packs .wconvert-picker__controls { padding: 0 0 1rem; margin-block-end: 1.25rem; background: transparent; }
 @media (max-width: 639px) {
   .wconvert-packs__grid { grid-template-columns: minmax(0, 1fr); }
   .wconvert-pack-detail__next { align-items: stretch; }
@@ -6432,10 +6444,13 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-collection__open:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
 .wconvert-picker__notice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: 1rem; font-size: var(--text-note); }
 .wconvert-picker__pagination { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); font-size: var(--text-note); }
-.wconvert-picker-settings { display: flex; flex-direction: column; gap: 1.5rem; }
-.wconvert-picker-settings__section { display: grid; gap: .75rem; min-inline-size: 0; }
-.wconvert-picker-settings__section + .wconvert-picker-settings__section { padding-block-start: 1.5rem; border-block-start: 1px solid var(--border); }
-.wconvert-picker-settings__section > h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-picker-settings { display: flex; flex-direction: column; gap: 1.25rem; }
+/* Nested in a library: title and its one line together, then the sections (ADR 0132). */
+.wconvert-picker-settings__header { flex-direction: column; align-items: flex-start; gap: .25rem; border-block-end: 1px solid var(--border); }
+.wconvert-picker-settings__section { display: grid; gap: .625rem; min-inline-size: 0; }
+.wconvert-picker-settings__section + .wconvert-picker-settings__section { padding-block-start: 1.25rem; border-block-start: 1px solid var(--border); }
+/* Section names are captions under the dialog's title, not a second title of the same size. */
+.wconvert-picker-settings__section > h3 { margin: 0; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
 .wconvert-picker-settings fieldset { display: grid; gap: .25rem; min-inline-size: 0; border: 0; margin: 0; padding: 0; }
 .wconvert-picker-settings legend { padding: 0; margin-block-end: .25rem; font-size: var(--text-body); font-weight: 500; }
 .wconvert-picker-settings__choices { display: flex; flex-wrap: wrap; column-gap: 1.5rem; }
@@ -6617,6 +6632,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-disclosure--card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
 .wconvert-disclosure--card[open] > .wconvert-disclosure__body { border-block-start: 1px solid var(--border); }
 .wconvert-disclosure--inline > summary { min-block-size: 2rem; padding: 6px 0; border-radius: var(--radius-md); }
+/* An inline disclosure's chevron sits by its words, not across the page from them (ADR 0132). */
+.wconvert-disclosure.wconvert-disclosure--inline > summary { grid-template-columns: auto 16px; justify-content: start; gap: 6px; }
 .wconvert-disclosure--inline > summary:hover { background: transparent; color: var(--action); }
 .wconvert-disclosure--inline > .wconvert-disclosure__body { padding: 4px 0 0; }
 @media (pointer: coarse) { .wconvert-disclosure--inline > summary { min-block-size: 2.75rem; } }
@@ -6763,3 +6780,43 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-date-picker__custom > button { grid-column: 1 / -1; justify-self: end; }
 .wconvert-date-picker__footer { padding-block-start: .75rem; border-block-start: 1px solid var(--border); }
 @media (pointer: coarse) { .wconvert-date-picker__presets > label { min-block-size: 2.75rem; } }
+
+/*
+ * The builder before its chunk lands (shell/BuilderSkeleton): its own frame,
+ * header, tabs and three panes, drawn here because editor.css arrives with it.
+ */
+#wconvert-admin .wconvert-builder-skeleton { display: flex; flex-direction: column; block-size: calc(100dvh - var(--wp-admin--admin-bar--height, 32px)); min-block-size: 560px; overflow: hidden; background: var(--card); }
+#wconvert-admin .wconvert-builder-skeleton__header { display: flex; align-items: center; gap: 10px; min-block-size: 65px; padding: 10px 18px; border-block-start: 3px solid var(--primary); border-block-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__back .-ms-3 { margin-inline-start: 0; }
+#wconvert-admin .wconvert-builder-skeleton__mark { inline-size: 28px; block-size: 28px; flex: none; }
+#wconvert-admin .wconvert-builder-skeleton__spacer { flex: 1; }
+#wconvert-admin .wconvert-builder-skeleton__tabs { display: flex; gap: 4px; padding: 6px 18px; border-block-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__body { display: grid; grid-template-columns: 240px minmax(0, 1fr) 320px; flex: 1; min-block-size: 0; }
+#wconvert-admin .wconvert-builder-skeleton__list { display: grid; align-content: start; gap: 8px; padding: 16px; border-inline-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-builder-skeleton__canvas { display: grid; place-items: center; padding: 32px; background: var(--surface); }
+#wconvert-admin .wconvert-builder-skeleton__design { inline-size: min(100%, 520px); aspect-ratio: 16 / 10; border-radius: var(--radius); background: var(--card); }
+#wconvert-admin .wconvert-builder-skeleton__panel { display: grid; align-content: start; gap: 18px; padding: 18px; border-inline-start: 1px solid var(--border); }
+@media (max-width: 1000px) {
+  #wconvert-admin .wconvert-builder-skeleton__body { grid-template-columns: minmax(0, 1fr); }
+  #wconvert-admin :is(.wconvert-builder-skeleton__list, .wconvert-builder-skeleton__panel) { display: none; }
+}
+@media (max-width: 640px) {
+  #wconvert-admin .wconvert-builder-skeleton__action { display: none; }
+}
+
+/* Data & privacy's data map is a card disclosure whose body runs edge to edge, like a region's. */
+#wconvert-admin .wconvert-data-map { background: var(--card); }
+#wconvert-admin .wconvert-disclosure.wconvert-data-map > .wconvert-data-map__body { padding: 0; border-block-start: 1px solid var(--border); }
+
+/*
+ * A measure's amount and unit are one value: joined, one height, the unit's
+ * chevron beside its word (ADR 0132). The slider keeps the row above.
+ */
+#wconvert-admin .wconvert-measure-input { display: flex; inline-size: 100%; min-inline-size: 0; }
+#wconvert-admin .wconvert-measure-input > input { flex: 1 1 auto; inline-size: auto; min-inline-size: 3rem; margin: 0; border-start-end-radius: 0; border-end-end-radius: 0; }
+@layer utilities {
+  /* The inspector's control rules are important utilities, so the joined unit states its own the same way. */
+  #wconvert-admin .wconvert-measure-input > select.wconvert-measure-input__unit { flex: none !important; inline-size: auto !important; block-size: var(--control-height-sm) !important; min-block-size: var(--control-height-sm) !important; margin-block: 0 !important; margin-inline: -1px 0 !important; padding-inline: 8px 24px !important; border-start-start-radius: 0 !important; border-end-start-radius: 0 !important; background-color: var(--surface) !important; background-position: right 6px center !important; }
+  #wconvert-admin .wconvert-measure-input > select.wconvert-measure-input__unit:dir(rtl) { background-position: left 6px center !important; }
+  #wconvert-admin .wconvert-measure-input > input { block-size: var(--control-height-sm) !important; min-block-size: var(--control-height-sm) !important; }
+}

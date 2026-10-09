@@ -1872,7 +1872,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-path-disclosure__body>.wconvert-journey-settings { margin: 0; padding: 0; border: 0; }
 .wconvert-journey-used-by button,.wconvert-journey-answer-repair>div>button { display: grid; gap: 3px; inline-size: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
 .wconvert-journey-used-by button small,.wconvert-journey-answer-repair>div>button small { color: var(--muted-foreground); font-weight: 400; }
-.wconvert-journey-capture-field { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.wconvert-journey-capture-field { border: 1px solid var(--border); border-radius: var(--radius); }
 
 .wconvert-journey-capture-field label+label { margin-block-start: 10px; }
 .wconvert-journey-capture-field>small { display: block; margin-block-start: 10px; color: var(--muted-foreground); }
@@ -2261,3 +2261,4 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-result-filter__body .wconvert-product-matches { margin: 0; }
 .wconvert-journey-settings__products > [data-slot='button'], .wconvert-result-filter > [data-slot='button'], .wconvert-result-filter fieldset > [data-slot='button'] { justify-self: start; }
 #wconvert-admin .wconvert-result-products select { font-size: var(--text-body); }
+

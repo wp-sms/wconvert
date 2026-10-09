@@ -535,26 +535,16 @@ function DashboardContent({
       {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} reference={referenceOf(payload)} />}
       {payload && payload.goals.length > 0 && (
         <Disclosure variant="inline" title={__('How these numbers work', 'wconvert')} className="wa-help">
-          <p>
-            <strong>{__('Submissions:', 'wconvert')}</strong>{' '}
-            {__('One per form fill, even with several destinations. Repeat submissions count again, so they are not unique people or confirmed subscribers.', 'wconvert')}
-          </p>
-          <p>
-            <strong>{__('Clicks:', 'wconvert')}</strong>{' '}
-            {__('Offer and cart clicks show interest, not confirmed purchases or recovered revenue.', 'wconvert')}
-          </p>
-          <p>
-            <strong>{__('Rates:', 'wconvert')}</strong>{' '}
-            {__('Submissions or clicks ÷ shown. For example, 5 submissions from 100 shown = 5%. A dash means the campaign was not shown; embedded forms count when they come into view.', 'wconvert')}
-          </p>
-          <p>
-            <strong>{__('Email handoffs:', 'wconvert')}</strong>{' '}
-            {__('Emails accepted for sending, not confirmed inbox arrivals or downloads. Counted on the send day, which may be later than the submission. Resends can count again.', 'wconvert')}
-          </p>
-          <p>
-            <strong>{__('History:', 'wconvert')}</strong>{' '}
-            {__('Past totals stay when a campaign is unpublished or deleted, or when old submissions are removed. A campaign’s goal stays fixed after it is first published.', 'wconvert')}
-          </p>
+          {/* A glossary to scan: the term, then one short line (ADR 0132). */}
+          <dl className="wa-help-terms">
+            {[
+              [__('Submissions', 'wconvert'), __('One per form fill. Repeats count again, so not unique people or confirmed subscribers.', 'wconvert')],
+              [__('Clicks', 'wconvert'), __('Offer and cart clicks show interest, not purchases or recovered revenue.', 'wconvert')],
+              [__('Rates', 'wconvert'), __('Submissions or clicks ÷ shown: 5 from 100 shown is 5%. A dash means not shown.', 'wconvert')],
+              [__('Email handoffs', 'wconvert'), __('Emails accepted for sending, counted on the send day — not inbox arrivals or downloads.', 'wconvert')],
+              [__('History', 'wconvert'), __('Totals stay when a campaign is unpublished or deleted, or old submissions are removed.', 'wconvert')],
+            ].map(([term, meaning]) => <div key={term}><dt>{term}</dt><dd>{meaning}</dd></div>)}
+          </dl>
         </Disclosure>
       )}
     </div>

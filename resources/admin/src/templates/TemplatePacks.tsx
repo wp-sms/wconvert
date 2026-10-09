@@ -109,7 +109,19 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
 
   return <div className="wconvert-packs">
     <PickerDialogBody ref={list} role="region" aria-label={__('Template packs', 'wconvert')} aria-busy={busy}>
-      {status && listed.length > 0 && <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search template packs','wconvert')} value={query} onChange={setQuery} disabled={busy} /><label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>setSort(event.target.value)}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label></div><OptionStrip label={__('Pack availability','wconvert')} value={source} disabled={busy} onChange={setSource} options={[{value:'all',label:__('All packs','wconvert')},{value:'installed',label:__('Installed','wconvert')},{value:'available',label:__('Available to install','wconvert')}]} /><p className="m-0 text-note" role="status">{sprintf(_n('%s matching pack','%s matching packs',shown.length,'wconvert'),formatCount(shown.length))}</p></div>}
+      {/* The libraries' two rows (ADR 0132): search and sort; then availability and the count. */}
+      {status && listed.length > 0 && <div className="wconvert-picker__controls wconvert-toolbar">
+        <div className="wconvert-picker__search-row">
+          <PickerSearch label={__('Search template packs','wconvert')} value={query} onChange={setQuery} disabled={busy} />
+          <select className="wconvert-picker__select" aria-label={__('Sort template packs','wconvert')} value={sort} onChange={event=>setSort(event.target.value)}>
+            <option value="recommended">{__('Recommended first','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option>
+          </select>
+        </div>
+        <div className="wconvert-picker__facet">
+          <OptionStrip label={__('Pack availability','wconvert')} value={source} disabled={busy} onChange={setSource} options={[{value:'all',label:__('All packs','wconvert')},{value:'installed',label:__('Installed','wconvert')},{value:'available',label:__('Available to install','wconvert')}]} />
+          <span className="wconvert-picker__count" role="status">{sprintf(_n('%s pack','%s packs',shown.length,'wconvert'),formatCount(shown.length))}</span>
+        </div>
+      </div>}
       {work === 'previewing' && <p role="status" className="m-0 text-note">{__('Opening pack…', 'wconvert')}</p>}
       {status === null ? busy ? <PacksSkeleton />
         : <RegionErrorState message={error ?? __('Packs could not be loaded.', 'wconvert')} onRetry={loadAgain} /> : <>
