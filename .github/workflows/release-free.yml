@@ -83,7 +83,7 @@ jobs:
   guard:
     name: '[0] Guard'
     if: startsWith(github.event.release.tag_name, 'free-v')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -173,7 +173,7 @@ jobs:
   build:
     name: '[2] Build the free ZIP'
     needs: [guard, php-tests, frontend-tests]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -234,7 +234,7 @@ jobs:
   plugin-check:
     name: '[3] Plugin Check (pinned)'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -280,7 +280,7 @@ jobs:
       github.event.release.prerelease == false &&
       vars.RELEASE_PUBLISH_ENABLED == 'true' &&
       vars.PUBLISH_WPORG == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     environment:
       name: wordpress-org
@@ -319,7 +319,7 @@ jobs:
   attach_zip:
     name: 'Attach the ZIP to the release'
     needs: [guard, build, plugin-check]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 5
     permissions:
       contents: write
@@ -345,7 +345,7 @@ jobs:
     name: '[5] What shipped'
     needs: [guard, build, plugin-check, publish_wporg]
     if: always() && needs.guard.result != 'skipped'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 5
     steps:
       - name: Write the summary

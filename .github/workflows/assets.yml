@@ -38,7 +38,7 @@ jobs:
   assets:
     name: Update readme and assets on WordPress.org
     if: vars.RELEASE_PUBLISH_ENABLED == 'true' && vars.PUBLISH_WPORG == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     environment:
       name: wordpress-org
