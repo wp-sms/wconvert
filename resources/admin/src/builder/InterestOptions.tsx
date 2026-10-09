@@ -59,7 +59,7 @@ export function InterestOptions({ value, onEdit, onChange }: {
       <label className="wconvert-slot__key">{sprintf(__('Choice %d', 'wconvert'), at + 1)}
         <input ref={(input) => { labels.current[at] = input; }} type="text" value={option.label} maxLength={optionLimits.label_max_length} onChange={(event) => update(at, 'label', event.target.value)} />
       </label>
-      <Disclosure variant="inline" className="text-note text-muted-foreground" title={sprintf(__('Sent as: %s', 'wconvert'), option.value || __('not set', 'wconvert'))}>
+      <Disclosure variant="inline" className="text-note text-muted-foreground" title={sprintf(__('Saved as: %s', 'wconvert'), option.value || __('not set', 'wconvert'))}>
         <label className="wconvert-slot__key mt-2">{sprintf(__('Value sent for choice %d', 'wconvert'), at + 1)}
           <input type="text" value={option.value} pattern={optionLimits.value_pattern} onChange={(event) => update(at, 'value', event.target.value)} />
         </label>

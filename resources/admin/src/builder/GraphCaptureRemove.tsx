@@ -26,7 +26,7 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
       {plan.reason ? <p role="status">{plan.reason}</p> : plan.routes.map((route, index) => <div className="wconvert-graph-insert__summary" key={route.from}>
         {route.preferred ? <p><strong>{sprintf(__('After removing: continue to %s.', 'wconvert'), name(route.preferred))}</strong></p> : <label htmlFor={`${id}-${index}`}>{route.from === tree.graph?.entry ? __('New first screen', 'wconvert')
           : sprintf(__('Paths entering “%s” continue at', 'wconvert'), name(route.from))}</label>}
-        {route.incoming.length > 0 && <p>{sprintf(__('From: %s. Incoming conditions and priority stay the same.', 'wconvert'), [...new Set(route.incoming.map(edge => name(edge.from)))].join(', '))}</p>}
+        {route.incoming.length > 0 && <p>{sprintf(__('From: %s. Incoming conditions and order stay the same.', 'wconvert'), [...new Set(route.incoming.map(edge => name(edge.from)))].join(', '))}</p>}
         {!route.preferred && <select id={`${id}-${index}`} value={destinations[route.from] ?? route.preferred} onChange={event => setDestinations({ ...destinations, [route.from]: event.target.value })}>
           <option value="" disabled>{__('Choose a continuation…', 'wconvert')}</option>
           {route.targets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}

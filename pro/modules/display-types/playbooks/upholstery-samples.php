@@ -20,7 +20,7 @@ return [
                     'label' => __('How it feels', 'wconvert'),
                 ], [
                     'value' => 'colour',
-                    'label' => __('Matching a colour', 'wconvert'),
+                    'label' => __('Matching a color', 'wconvert'),
                 ], [
                     'value' => 'care',
                     'label' => __('Everyday care', 'wconvert'),

@@ -13,7 +13,7 @@ it('draws stored connections from graph IDs rather than adjacent array positions
   expect(routesFor(tree, 3)).toEqual([]);
 });
 
-it('shows answer branches in priority order before Everyone else', () => {
+it('shows answer branches in priority order before All other answers', () => {
   const base = fixture as unknown as TemplateTree;
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: [...base.graph!.edges,
     { id: 'answer_a', from: 'interests', to: 'indoors', kind: 'answer', when: {

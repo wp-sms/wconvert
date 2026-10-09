@@ -336,7 +336,6 @@ describe('the builder shell', () => {
     await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
     await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
     await userEvent.click(screen.getByRole('button', { name: 'Details' }));
-    await userEvent.click(screen.getByText('Screen options', { exact: true }));
     const inspector = screen.getByRole('region', { name: 'Selected screen settings' });
     await userEvent.click(within(inspector).getByRole('button', { name: 'Open Design' }));
     expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true');
@@ -502,7 +501,7 @@ describe('the builder shell', () => {
     expect(await screen.findByText('How it appears')).toBeInTheDocument();
     expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Popup')).toBeInTheDocument();
     expect(screen.getByText('Centered over the page')).toBeInTheDocument();
-    expect(screen.getByText('Design: Centred card')).toBeInTheDocument();
+    expect(screen.getByText('Design: Centered card')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
   });
@@ -1346,7 +1345,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(within(screen.getByRole('row', { name: /Service needed/ })).getAllByRole('button')[0]);
-    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Sent as: installation'));
+    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Saved as: installation'));
     const value = screen.getByRole('textbox', { name: 'Value sent for choice 2' });
     await userEvent.clear(value);
     await userEvent.type(value, 'repair');

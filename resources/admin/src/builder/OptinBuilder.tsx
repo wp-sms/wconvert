@@ -64,7 +64,7 @@ import { Disclosure } from '../shell/Disclosure';
 import { StatusBadge } from '../optins/StatusBadge';
 import { draftHistoryLabels, type DraftSnapshot } from './structure/draftEditLabel';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
-import { nearestTo, samePath, nodeAt } from './structure/tree';
+import { nearestTo, samePath } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
@@ -690,7 +690,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     entry === null ? null : (
       <EditorCanvas
         template={canvasTemplate!}
-        name={chosenName(templateId, templates)}
         step={step}
         width={width}
         selected={selection === null ? null : keyOf(selection.path)}
@@ -968,7 +967,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             editorTools={<DeviceControls width={width} onChange={setWidth} />}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
-            elementPanel={selection && nodeAt(entry.tree, selection.path)?.type !== 'question' ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act}
+            elementPanel={selection && selection.path.length > 1 ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act} onBack={() => setSelection(null)}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={next => edit({ template: next })}
               endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement} onSelect={chooseFromTree}
               onDesign={() => { setTab('design'); designSettings(); }} onShowLayers={() => { setTab('design'); setShowLayers(true); setDrawer('layers'); }}

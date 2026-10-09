@@ -321,7 +321,7 @@ describe('how often', () => {
    * number is real, stored and inert.
    */
   it('names the priority on an overlay and never on an inline Optin', () => {
-    expect(howOftenSummary({}, 10, true).text).toMatch(/priority 10$/);
+    expect(howOftenSummary({}, 10, true).text).toMatch(/shows before others \(10\)$/);
     expect(howOftenSummary({}, 10, false).text).not.toMatch(/priority/);
     expect(howOftenSummary({}, 0, true).text).not.toMatch(/priority/);
   });

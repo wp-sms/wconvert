@@ -659,8 +659,11 @@ Not gaps. Each was decided:
   "identifier". **Send** and **send again**, never push or re-push. **Shown**
   is the one name for impressions. **Keep in WConvert only** is the one name
   for local mode. Editor tabs are **Screens · Design · Display rules ·
-  Destinations**, and a journey's link to another screen is the **next
-  screen**, never a destination. Domain nouns (campaign, goal, lead,
+  Destinations** (one **Edit** tab replaces the first two, ADR 0134), and a
+  journey's link to another screen is a **path** to the **next screen**, never
+  a destination or a connection. The rest of the editor's words are
+  `CONTEXT.md`'s list: Look, Screen, Path, Follow-up question, Show only if…,
+  Form, All other answers, Then. Domain nouns (campaign, goal, lead,
   destination) are lowercase mid-sentence; capitals start a title, a button
   or a sentence. US spelling.
 - **More than two row actions go in a ⋯ menu**, with icons and labels. A
@@ -801,10 +804,10 @@ must not imply that mutually exclusive paths are sequential visitor steps.
 
 - Screen numbers are inventory positions, not visit order. Do not display them
   on flow cards or the flow inspector; keep numbers only for genuine sequences
-  and branch priority. Names, screen type, Start and Paths rejoin orient the map.
+  and a path's top-to-bottom order. Names, screen type and Start orient the map.
 - Edge insertion uses “Add screen here”, revealed on path selection, hover or
   keyboard focus (always available on touch). Its accessible name includes the
-  visible label and destination. Drawing a connection remains a separate mode.
+  visible label and destination. Drawing a path remains a separate mode.
 - Put the affected path and resulting source → new screen → destination at the
   top of insertion dialogs. Explicitly state path-only scope. Update the preview
   for a renamed screen, a closing screen, a changed location or an existing

@@ -91,8 +91,8 @@ it('names incomplete question text and answers by stable question identity', () 
 
 it('locates missing result headings and conditions instead of allowing a generic server refusal', () => {
   const tree: TemplateTree = { ...base, steps: [...base.steps, { id: 'result', name: 'Your match', kind: 'result', content: { type: 'stack', children: [] },
-    results: [{ id: 'first', heading: '', body: '', product_ids: [] }, { id: 'fallback', heading: 'Everyone else', body: '', product_ids: [] }] }] };
+    results: [{ id: 'first', heading: '', body: '', product_ids: [] }, { id: 'fallback', heading: 'All other answers', body: '', product_ids: [] }] }] };
   const issues = journeyReadinessIssues(tree);
   expect(issues.find(issue => issue.key === 'result-heading:result:first')?.repair).toEqual({ screenId: 'result', section: 'content', resultId: 'first', focus: 'result-heading' });
-  expect(issues.find(issue => issue.key === 'result:result:0')?.said).toContain('Only Everyone else is unconditional');
+  expect(issues.find(issue => issue.key === 'result:result:0')?.said).toContain('Only the last one, for all other answers, has none');
 });

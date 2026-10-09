@@ -57,7 +57,6 @@ export function DeviceControls({
 
 export function EditorCanvas({
   template,
-  name,
   step,
   width,
   selected,
@@ -67,7 +66,6 @@ export function EditorCanvas({
   screen,
 }: {
   template: Template;
-  name: string;
   step: number;
   width: PreviewWidth;
   selected: SlotKey | null;
@@ -120,11 +118,7 @@ export function EditorCanvas({
   return (
     <section className="wconvert-canvas" data-width={width} aria-label={__('Design canvas', 'wconvert')}>
       <div className="wconvert-canvas__bar">
-        <span>
-          {name}
-          <span aria-hidden="true">›</span>
-          {screen?.label ?? template.tree.steps[shown]?.name}
-        </span>
+        <span>{screen?.label ?? template.tree.steps[shown]?.name}</span>
         <label>
           <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
           <span>{width === 'narrow' ? __('Mobile', 'wconvert') : __('Desktop', 'wconvert')}</span>

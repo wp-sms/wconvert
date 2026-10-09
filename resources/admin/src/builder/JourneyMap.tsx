@@ -49,9 +49,6 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   const submit = content.find(node => node.type === 'button' && 'action' in node && node.action === 'submit');
   const capture = submit && 'submission' in submit ? tree.submissions.find(item => item.id === submit.submission) : undefined;
   const heading = content.find(node => node.type === 'heading');
-  const incoming = tree.graph ? new Set(tree.graph.edges.filter(edge => edge.to === screen.id).map(edge => edge.from)).size
-    : tree.steps.slice(0, index).filter((item, at) => (item.paths ?? (tree.steps[at + 1] ? [{ to: tree.steps[at + 1].id }] : []))
-      .some(path => path.to === screen.id)).length;
   const paths = routesFor(tree, index);
   const updateInternals = useUpdateNodeInternals();
   const handles = `${detourTarget ?? ''}:${detourEntry}:${editingConnections}:${incomingPorts.join(',')}:${paths.map(path => path.to).join(',')}`;
@@ -60,7 +57,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   const branching = paths.some(path => 'kind' in path ? path.kind === 'answer' : !!path.when);
   const answerCount = paths.filter(path => 'kind' in path ? path.kind === 'answer' : !!path.when).length;
   const hasFallback = paths.some(path => 'kind' in path ? path.kind === 'default' : !path.when);
-  const pathSummary = `${sprintf(_n('%d answer path', '%d answer paths', answerCount, 'wconvert'), answerCount)} · ${hasFallback ? __('Everyone else', 'wconvert') : __('No fallback', 'wconvert')}`;
+  const pathSummary = `${sprintf(_n('%d answer path', '%d answer paths', answerCount, 'wconvert'), answerCount)} · ${hasFallback ? __('All other answers', 'wconvert') : __('Nothing for all other answers yet', 'wconvert')}`;
   const missingContinuation = !!tree.graph && !paths.some(path => 'kind' in path && path.kind === 'default');
   const canDraw = tree.graph ? screen.kind !== 'acknowledgement' && (missingContinuation
     ? screen.kind !== 'result' || branching : graphChoiceSources(tree, screen.id).length > 0)
@@ -72,8 +69,8 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   const KindIcon = screen.kind === 'acknowledgement' ? Check : screen.kind === 'result' ? Flag : question ? CircleHelp : savesDetails ? Send : FileText;
   return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}${overview ? ' is-overview' : ''}`}>
     {overview && <button type="button" className="wconvert-flow-node__overview" aria-label={sprintf(__('Open %s', 'wconvert'), screen.name)} onClick={() => select(index)}>
-      <small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : ''}{incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
-      {screen.when && <span>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</span>}
+      <small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
+      {screen.when && <span>{sprintf(__('Only if %s', 'wconvert'), conditionText(tree, screen.when))}</span>}
       {branching && <span>{__('Choose one path', 'wconvert')} · {pathSummary}</span>}
       {savesDetails && <span>{capture?.required === false ? __('Optional signup', 'wconvert') : __('Details saved here', 'wconvert')}</span>}
       {screen.kind === 'result' && <span>{sprintf(__('%d possible results', 'wconvert'), screen.results?.length ?? 0)}</span>}
@@ -86,13 +83,13 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
     {detourEntry && <Handle id="detour-in" type="target" position={Position.Top} isConnectable={false} />}
     {detourTarget && <Handle id="detour-out" type="source" position={Position.Bottom} isConnectable={false} />}
     <button type="button" className="wconvert-flow-node__main" onClick={() => select(index)}>
-      <div className="wconvert-flow-node__heading"><span className="wconvert-flow-node__type-icon" aria-hidden="true"><KindIcon /></span><div><small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong></div></div>
+      <div className="wconvert-flow-node__heading"><span className="wconvert-flow-node__type-icon" aria-hidden="true"><KindIcon /></span><div><small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong></div></div>
       {question && 'label' in question && question.label !== screen.name ? <span><bdi>{String(question.label)}</bdi></span> : heading && 'text' in heading && heading.text !== screen.name ? <span><bdi>{String(heading.text)}</bdi></span> : null}
-      {screen.when && <em>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</em>}
+      {screen.when && <em>{sprintf(__('Only if %s', 'wconvert'), conditionText(tree, screen.when))}</em>}
       {unreachable && <em>{__('Unreachable — connect an incoming path', 'wconvert')}</em>}
-      {screen.kind === 'result' && <span>{sprintf(__('%d possible results · first match wins', 'wconvert'), screen.results?.length ?? 0)}</span>}
+      {screen.kind === 'result' && <span>{sprintf(__('%d possible results · the first that matches, top to bottom', 'wconvert'), screen.results?.length ?? 0)}</span>}
     </button>
-    {screen.kind === 'result' && <Disclosure variant="inline" className="wconvert-flow-node__results nodrag" title={__('Possible results', 'wconvert')}><ol>{screen.results?.map((result, at) => <li key={result.id}><strong>{result.heading}</strong><small>{result.when ? sprintf(__('Priority %d', 'wconvert'), at + 1) : __('Everyone else', 'wconvert')}</small></li>)}</ol></Disclosure>}
+    {screen.kind === 'result' && <Disclosure variant="inline" className="wconvert-flow-node__results nodrag" title={__('Possible results', 'wconvert')}><ol>{screen.results?.map(result => <li key={result.id}><strong>{result.heading}</strong>{!result.when && <small>{__('All other answers', 'wconvert')}</small>}</li>)}</ol></Disclosure>}
     {preview && <div className="wconvert-flow-node__preview" aria-hidden="true"><small>{__('Screen preview', 'wconvert')}</small><strong><bdi>{heading && 'text' in heading ? String(heading.text) : screen.name}</bdi></strong>
       {question && 'options' in question && <span>{question.options?.slice(0, 2).map(option => option.label).join(' · ')}</span>}
     </div>}
@@ -107,7 +104,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       {goToDestinations && <button type="button" className="nodrag" onClick={goToDestinations}>{__('Edit destinations', 'wconvert')}</button>}
     </div>}
     {branching && <div className="wconvert-flow-node__paths">
-      <small>{paths.length > 2 ? __('First matching path wins', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('Choose one path', 'wconvert')}</small>
+      <small>{paths.length > 2 ? __('The first path that matches, top to bottom', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('Choose one path', 'wconvert')}</small>
       <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>{pathSummary}</button>
       {paths.map((path, priority) => (groupedTargets.get(path.to) ?? path.to) !== detourTarget && <Handle
         key={'id' in path ? String(path.id) : `${path.to}-${priority}`} id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false}
@@ -219,7 +216,7 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
             <DropdownMenuItem onSelect={() => pan(-1)}>{__('Pan to later screens', 'wconvert')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done connecting', 'wconvert') : __('Edit connections', 'wconvert')}</button>}
+        {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done editing paths', 'wconvert') : __('Edit paths', 'wconvert')}</button>}
       </div>
     </Panel>
 
@@ -335,7 +332,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     const routes: Edge[] = paths
       .map((path, priority) => ({ id: 'id' in path && typeof path.id === 'string' ? path.id : `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
         sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'journey', reconnectable: tree.graph ? 'target' : false,
-        label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('Everyone else', 'wconvert') : `${paths.length > 2 ? `${priority + 1}. ` : ''}${path.when ? conditionText(tree, path.when) : ''}` : undefined,
+        label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('All other answers', 'wconvert') : `${paths.length > 2 ? `${priority + 1}. ` : ''}${path.when ? conditionText(tree, path.when) : ''}` : undefined,
         markerEnd: { type: MarkerType.ArrowClosed, color: '#6b6056', width: 15, height: 15 },
         style: { stroke: '#6b6056', strokeWidth: 2 } }));
     const hidden = hiddenFor(tree, index);
@@ -412,7 +409,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
       proOptions={{ hideAttribution: true }}
       nodesFocusable={false} edgesFocusable={false} nodesConnectable={editingConnections} edgesReconnectable={editingConnections}
-      ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Connections can also be edited in Next screen settings.', 'wconvert') }}
+      ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Paths can also be edited in Next screen settings.', 'wconvert') }}
       minZoom={mapMinZoom} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
       onNodeClick={(event, node) => { if (node.type === 'screen' && !(event.target instanceof Element && event.target.closest('button'))) onSelect(tree.steps.findIndex(step => step.id === node.id)); }}
       onEdgeClick={(_, edge) => { const data = edge.data as { sourceIndex?: number; priority?: number | 'hidden' } | undefined; if (data?.sourceIndex !== undefined) onSelectPath(data.sourceIndex, data.priority ?? 0); }}

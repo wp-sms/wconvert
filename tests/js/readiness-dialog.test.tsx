@@ -441,7 +441,7 @@ it('opens the exact unassigned consent block and blocks publication until it is 
   const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: 'email', capture_any_of: [] } };
   const { supplied } = await open({ template, goal: ready(goal), goalId: goal.id });
   expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-  await userEvent.click(screen.getByRole('button', { name: 'Assign the consent checkbox to “Optional email signup” under Saved with.' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Assign the consent checkbox to “Optional email signup” under Saved by.' }));
   const at = original.tree.steps.findIndex(step => step.id === 'email');
   expect(supplied.onGoTo).toHaveBeenCalledWith([at, 'children', 3]);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

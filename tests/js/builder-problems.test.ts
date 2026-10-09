@@ -154,7 +154,7 @@ describe('colors a visitor cannot read', () => {
   it('names the pair that fails, and only the ones that do', () => {
     const problems = said(withTokens({ muted: '#d4d4d8' }));
 
-    expect(problems).toEqual([expect.stringMatching(/quiet text/i)]);
+    expect(problems).toEqual([expect.stringMatching(/lighter text/i)]);
   });
 
   /**
@@ -245,7 +245,7 @@ describe('the order they are reported in', () => {
     const problems = said(broken);
 
     expect(problems[0]).toMatch(/report zero forever/);
-    expect(problems.at(-1)).toMatch(/quiet text/i);
+    expect(problems.at(-1)).toMatch(/lighter text/i);
   });
 });
 

@@ -20,7 +20,7 @@ it('does not choose a fallback or infer a later answer before the merchant answe
   expect(onShowPath).toHaveBeenLastCalledWith([0], []);
   await user.click(screen.getByRole('checkbox', { name: 'Indoors' }));
   expect(onTrace).toHaveBeenLastCalledWith([0, 2]);
-  expect(screen.getByText('Interests: 1 path wins; later matches are ignored.')).toBeInTheDocument();
+  expect(screen.getByText('Interests: visitors take “1”; later matches are ignored.')).toBeInTheDocument();
   expect(screen.getByRole('radio', { name: 'Bright' })).not.toBeChecked();
   expect(screen.queryByText(/Prediction complete/)).not.toBeInTheDocument();
 });

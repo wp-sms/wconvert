@@ -16,8 +16,8 @@ export function GraphScreenActions({ tree, step, onChange }: { tree: TemplateTre
   return <Disclosure variant="inline" className="wconvert-journey-arrival" title={__('Duplicate or move', 'wconvert')}>
     <Button type="button" size="sm" variant="outline" disabled={!!reason} onClick={() => { const next = duplicateGraphScreen(tree, screen.id); if (next !== tree) onChange(next, next.steps.length - 1); }}>{__('Duplicate after this screen', 'wconvert')}</Button>
     {reason && <p>{reason}</p>}
-    {!grouped && !reason && locations.length === 0 && <p>{__('This screen cannot be moved here. Use Next screen to change its connections.', 'wconvert')}</p>}
-    {locations.length > 0 && <><label className="wconvert-journey__field">{__('Move to connection', 'wconvert')}<select value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a connection…', 'wconvert')}</option>{locations.map(location => <option key={location.id} value={location.id}>{location.label}</option>)}</select></label>
+    {!grouped && !reason && locations.length === 0 && <p>{__('This screen cannot be moved here. Use Next screen to change its paths.', 'wconvert')}</p>}
+    {locations.length > 0 && <><label className="wconvert-journey__field">{__('Move to path', 'wconvert')}<select value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a path…', 'wconvert')}</option>{locations.map(location => <option key={location.id} value={location.id}>{location.label}</option>)}</select></label>
       <p>{__('Moves this screen between the selected screens and reconnects its old path. You can undo this.', 'wconvert')}</p>
       <Button type="button" size="sm" variant="outline" disabled={!locations.some(location => location.id === target)} onClick={() => { const next = moveGraphScreen(tree, screen.id, target.slice(5)); if (next !== tree) { onChange(next, step); setTarget(''); } }}>{__('Move screen', 'wconvert')}</Button></>}
   </Disclosure>;

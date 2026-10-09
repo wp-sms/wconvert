@@ -13,9 +13,9 @@ export function changeTestGuide(tree: TemplateTree, screenId: string): string[] 
   if (screen.when) cases.push(sprintf(__('Try matching and non-matching answers for: %s.', 'wconvert'), conditionText(tree, screen.when)));
   const routes = tree.graph ? tree.graph.edges.filter(edge => edge.from === screenId && edge.kind === 'answer') : screen.paths ?? [];
   for (const route of routes) if (route.when) cases.push(sprintf(__('Try this answer path: %s.', 'wconvert'), conditionText(tree, route.when)));
-  if (routes.some(route => route.when)) cases.push(__('Also try Everyone else. If several paths match, confirm the first one wins.', 'wconvert'));
+  if (routes.some(route => route.when)) cases.push(__('Also try an answer no path names. If several paths match, confirm visitors take the top one.', 'wconvert'));
   for (const result of screen.results ?? []) if (result.when) cases.push(sprintf(__('Check “%1$s” with: %2$s.', 'wconvert'), result.heading, conditionText(tree, result.when)));
-  if (screen.results?.length) cases.push(__('Try answers matching several results, then none. Check priority and the Everyone else result.', 'wconvert'));
+  if (screen.results?.length) cases.push(__('Try answers matching several results, then none. Check the order and the result for all other answers.', 'wconvert'));
   const questions = walkNodes(screen.content).filter((node): node is QuestionNode & { id: string } => node.type === 'question' && 'id' in node && typeof node.id === 'string');
   for (const question of questions) {
     const choices = question.options?.slice(0, 2).map(option => `“${option.label}”`) ?? [];

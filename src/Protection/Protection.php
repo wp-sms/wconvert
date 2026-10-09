@@ -30,7 +30,7 @@ final class Protection
         if (!is_string($body['verification_token'] ?? null) || $body['verification_token'] === '') {
             return ['challenge' => ['url' => rest_url('wconvert/v1/protection/challenge'), 'asset' => WCONVERT_URL . 'public/protection/protection.js',
                 'title' => __('Verify your submission', 'wconvert'), 'cancel' => __('Cancel verification', 'wconvert'),
-                'cancelled' => __('Verification cancelled. Submit again to retry.', 'wconvert'),
+                'cancelled' => __('Verification canceled. Submit again to retry.', 'wconvert'),
                 'failed' => __('Verification failed. Please try again.', 'wconvert'),
                 'loading' => __('Loading verification…', 'wconvert')]];
         }

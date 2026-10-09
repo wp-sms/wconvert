@@ -318,7 +318,7 @@ export function howOftenSummary(
   return {
     text: sprintf(
       /* translators: 1: the allowance, e.g. “Every time, until they close it”. 2: a priority number. */
-      __('%1$s · priority %2$d', 'wconvert'),
+      __('%1$s · shows before others (%2$d)', 'wconvert'),
       text,
       priority,
     ),

@@ -165,7 +165,7 @@ final class TemplateLabels
              * two of them.
              */
             /* translators: a layout — a picture with blocks on it, the first at its top edge and the last at its bottom. */
-            'media' => __('Picture box', 'wconvert'),
+            'media' => __('Image box', 'wconvert'),
         ];
     }
 
@@ -758,8 +758,8 @@ final class TemplateLabels
         return [
             'bg' => __('Background', 'wconvert'),
             'fg' => __('Text', 'wconvert'),
-            'muted' => __('Quiet text', 'wconvert'),
-            'accent' => __('Button', 'wconvert'),
+            'muted' => __('Lighter text', 'wconvert'),
+            'accent' => __('Button color', 'wconvert'),
             'accent-fg' => __('Button text', 'wconvert'),
             'border' => __('Borders', 'wconvert'),
             /* translators: the background colour of a text box a visitor types into. Separate from the design's own background, so a form on a dark panel stays readable. */
@@ -823,13 +823,13 @@ final class TemplateLabels
     {
         return [
             'image-position.left top' => __('Top left', 'wconvert'),
-            'image-position.center top' => __('Top centre', 'wconvert'),
+            'image-position.center top' => __('Top center', 'wconvert'),
             'image-position.right top' => __('Top right', 'wconvert'),
-            'image-position.left center' => __('Centre left', 'wconvert'),
-            'image-position.center' => __('Centre', 'wconvert'),
-            'image-position.right center' => __('Centre right', 'wconvert'),
+            'image-position.left center' => __('Center left', 'wconvert'),
+            'image-position.center' => __('Center', 'wconvert'),
+            'image-position.right center' => __('Center right', 'wconvert'),
             'image-position.left bottom' => __('Bottom left', 'wconvert'),
-            'image-position.center bottom' => __('Bottom centre', 'wconvert'),
+            'image-position.center bottom' => __('Bottom center', 'wconvert'),
             'image-position.right bottom' => __('Bottom right', 'wconvert'),
             /*
              * ====================================================================
@@ -843,11 +843,11 @@ final class TemplateLabels
              * icons mirror automatically; these words label their tooltips.
              */
             /* translators: a text alignment. This is the LOGICAL start of the line, so it reads “Right” in a right-to-left locale. */
-            'align.start' => __('Left', 'wconvert'),
+            'align.start' => __('Start', 'wconvert'),
             /* translators: a text alignment. */
-            'align.center' => __('Centre', 'wconvert'),
+            'align.center' => __('Center', 'wconvert'),
             /* translators: a text alignment. This is the LOGICAL end of the line, so it reads “Left” in a right-to-left locale. */
-            'align.end' => __('Right', 'wconvert'),
+            'align.end' => __('End', 'wconvert'),
 
             /*
              * **Every stack here is system-available**, which is a constraint

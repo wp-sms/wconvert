@@ -50,5 +50,5 @@ export function graphChangeImpact(before: TemplateTree, after: TemplateTree): st
     messages.push(sprintf(__('A connected path could reach %1$s without saving at %2$s. Visitors on that path would not submit those details. Review the rules and test the path before publishing.', 'wconvert'),
       `“${name(bypass.endingId)}”`, bypass.saving.map(screen => `“${screen.name}”`).join(', ')));
   }
-  return messages.length ? [...messages, __('Undo restores the previous connections.', 'wconvert')].join(' ') : null;
+  return messages.length ? [...messages, __('Undo restores the previous paths.', 'wconvert')].join(' ') : null;
 }

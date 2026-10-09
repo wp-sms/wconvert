@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import LABELS_FIXTURE from '../fixtures/template-labels.json';
 import { resolve } from 'node:path';
 import { useState, type ReactElement } from 'react';
 import { fireEvent, render as renderBase, screen, within } from '@testing-library/react';
@@ -75,9 +76,9 @@ const LABELS: TemplateLabels = {
   // to the key, which is what a build whose vocabulary is ahead of its
   // translations actually shows.
   tokenValues: {
-    'align.start': 'Left',
-    'align.center': 'Centre',
-    'align.end': 'Right',
+    'align.start': LABELS_FIXTURE.tokenValues['align.start'],
+    'align.center': LABELS_FIXTURE.tokenValues['align.center'],
+    'align.end': LABELS_FIXTURE.tokenValues['align.end'],
     'shadow.none': 'None',
     'shadow.0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.1)': 'Flat',
     'shadow.0 4px 12px -2px rgba(15, 23, 42, 0.12), 0 12px 32px -8px rgba(15, 23, 42, 0.18)': 'Raised',
@@ -87,8 +88,8 @@ const LABELS: TemplateLabels = {
   tokens: {
     bg: 'Background',
     fg: 'Text',
-    muted: 'Quiet text',
-    accent: 'Button',
+    muted: LABELS_FIXTURE.tokens.muted,
+    accent: LABELS_FIXTURE.tokens.accent,
     'accent-fg': 'Button text',
     width: 'Width',
     pad: 'Inner spacing',
@@ -407,7 +408,7 @@ describe('the contrast readout', () => {
       />,
     );
 
-    const failing = screen.getByText('Quiet text on Background').closest('li');
+    const failing = screen.getByText('Lighter text on Background').closest('li');
 
     expect(failing).toHaveAttribute('data-state', 'fail');
     expect(failing).toHaveTextContent('Under AA');
@@ -534,10 +535,10 @@ describe('a token the manifest offers choices for', () => {
     expect(within(group).getAllByRole('radio')).toHaveLength(4);
     // The design ships `center`, so that is the one checked on arrival — and
     // Custom is not, because the value IS one of the offered three.
-    expect(within(group).getByRole('radio', { name: 'Centre' })).toBeChecked();
+    expect(within(group).getByRole('radio', { name: 'Center' })).toBeChecked();
     expect(within(group).getByRole('radio', { name: 'Custom' })).not.toBeChecked();
 
-    await userEvent.click(within(group).getByRole('radio', { name: 'Right' }));
+    await userEvent.click(within(group).getByRole('radio', { name: 'End' }));
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ align: 'end' }) }),
@@ -753,7 +754,7 @@ describe('a color the panel cannot parse', () => {
     );
 
     expect(screen.queryByRole('button', { name: /Choose a color for Button$/ })).toBeNull();
-    expect(screen.getByLabelText('Button')).toHaveValue('var(--brand)');
+    expect(screen.getByLabelText('Button color')).toHaveValue('var(--brand)');
   });
 });
 

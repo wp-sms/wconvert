@@ -24,7 +24,7 @@ describe('editing qualification choices', () => {
     expect(screen.getByRole('textbox', { name: 'Choice 1' })).toHaveFocus();
     await user.keyboard('{Enter}');
     expect(screen.getByRole('textbox', { name: 'Choice 1' })).toHaveValue('Installation');
-    expect(screen.getByText('Sent as: installation')).toBeInTheDocument();
+    expect(screen.getByText('Saved as: installation')).toBeInTheDocument();
   });
 
   it('focuses the nearest surviving answer after removal and Add choice after removing the last', async () => {
@@ -46,7 +46,7 @@ describe('editing qualification choices', () => {
     await user.type(label, 'Emergency repair');
     expect(label).toHaveFocus();
     expect(label).toHaveValue('Emergency repair');
-    expect(screen.getByText('Sent as: repair')).toBeInTheDocument();
+    expect(screen.getByText('Saved as: repair')).toBeInTheDocument();
   });
 });
 

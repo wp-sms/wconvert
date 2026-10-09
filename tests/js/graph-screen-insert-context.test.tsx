@@ -14,7 +14,7 @@ it.each(['default','answer'] as const)('previews and inserts on exactly the sele
   const insert = vi.fn((location, type, _name, when, hidden) => { changed = addGraphScreen(tree, location, type, when, hidden); });
   render(<Dialog open><DialogContent><GraphScreenInsert tree={tree} source="scope" kind="input" initialLocation={`edge:${edge.id}`} onInsert={insert} onCancel={() => {}} /></DialogContent></Dialog>);
   const context = screen.getByLabelText('Resulting journey');
-  if (kind === 'default') expect(context).toHaveTextContent('Everyone else path');
+  if (kind === 'default') expect(context).toHaveTextContent('Path for all other answers');
   expect(context).toHaveTextContent('Only visitors taking this path will see the new screen.');
   expect(context).toHaveTextContent(tree.steps.find(step => step.id === edge.to)!.name);
   expect(context.compareDocumentPosition(screen.getByRole('textbox',{name:'Question'})) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

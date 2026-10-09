@@ -44,7 +44,7 @@ export const FollowupGroupCard = memo(function FollowupGroupCard({ id, data }: N
       </button>
     </li>)}</ol></Disclosure>
     <footer><span>{sprintf(__('Then: %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? __('Removed screen', 'wconvert'))}</span>
-      <button type="button" className="nodrag" onClick={() => expand(group)}>{__('Edit individual connections', 'wconvert')}</button>
+      <button type="button" className="nodrag" onClick={() => expand(group)}>{__('Edit individual paths', 'wconvert')}</button>
     </footer>
     <JourneyIssueMarker issues={issues} onIssue={onIssue} />
     <Handle id={detourTarget ? "detour-out" : "out"} type="source" position={detourTarget ? Position.Bottom : rtl ? Position.Left : Position.Right} isConnectable={false} />

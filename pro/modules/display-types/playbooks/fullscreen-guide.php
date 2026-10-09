@@ -11,7 +11,7 @@ return [
     'copy' => [
         'eyebrow' => __('A practical field guide', 'wconvert'),
         'headline' => __("Make room\nfor better work.", 'wconvert'),
-        'body' => __('Seven practical ways to organise a calmer working week.', 'wconvert'),
+        'body' => __('Seven practical ways to organize a calmer working week.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Request the guide', 'wconvert'),

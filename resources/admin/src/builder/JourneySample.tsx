@@ -46,14 +46,14 @@ export function JourneySample({ tree, onTrace, onSelect, onClose, onShowPath }: 
     }
     const screen = tree.steps[index];
     return path.progress.states[index] === 'hidden' && screen.when
-      ? sprintf(__('Its show condition did not match: %s.', 'wconvert'), conditionText(tree, screen.when))
+      ? sprintf(__('Its “Show only if…” did not match: %s.', 'wconvert'), conditionText(tree, screen.when))
       : __('A different path was chosen.', 'wconvert');
   };
   return <aside className="wconvert-journey-sample wconvert-journey-sample--explorer" aria-label={__('Sample visitor', 'wconvert')}>
     <div className="wconvert-journey-sample__choices">
       <span className="wconvert-preview-test__eyebrow">{__('Hypothetical answers', 'wconvert')}</span>
       <h3>{__('Which path would they take?', 'wconvert')}</h3>
-      <p>{__('Choose answers to reveal the next steps. This predicts a route; it does not run the form or test delivery.', 'wconvert')}</p>
+      <p>{__('Choose answers to reveal the next steps. This predicts a path; it does not run the form or test delivery.', 'wconvert')}</p>
       <Button variant="ghost" size="sm" onClick={() => { setAnswers({}); setUnanswered([]); setActions({}); }}><RotateCcw aria-hidden="true" />{__('Reset sample answers', 'wconvert')}</Button>
       {questions.map(question => <fieldset key={question.id}><legend>{question.label}</legend>
         {question.answer_type === 'text' ? <Input aria-label={question.label} value={typeof answers[question.id] === 'string' ? answers[question.id] as string : ''}
@@ -91,11 +91,11 @@ export function JourneySample({ tree, onTrace, onSelect, onClose, onShowPath }: 
       {path.decisions.flatMap(decision => {
         if ('edge' in decision) {
           if (!tree.graph || !tree.graph.edges.some(edge => edge.from === decision.from && edge.kind === 'answer')) return [];
-          return [<p className="wconvert-journey-sample__decision" key={decision.edge}>{sprintf(__('%1$s: %2$s path wins; later matches are ignored.', 'wconvert'), tree.steps.find(screen => screen.id === decision.from)?.name ?? decision.from, decision.kind === 'default' ? __('Everyone else', 'wconvert') : String((decision.priority ?? 0) + 1))}</p>];
+          return [<p className="wconvert-journey-sample__decision" key={decision.edge}>{sprintf(__('%1$s: visitors take “%2$s”; later matches are ignored.', 'wconvert'), tree.steps.find(screen => screen.id === decision.from)?.name ?? decision.from, decision.kind === 'default' ? __('All other answers', 'wconvert') : String((decision.priority ?? 0) + 1))}</p>];
         }
         const screen = tree.steps[decision.from];
         if (decision.kind !== 'route' || !screen.paths || screen.paths.length < 2) return [];
-        return [<p className="wconvert-journey-sample__decision" key={screen.id}>{sprintf(__('%1$s: %2$s path wins; later matches are ignored.', 'wconvert'), screen.name, decision.priority === screen.paths.length - 1 ? __('Everyone else', 'wconvert') : String((decision.priority ?? 0) + 1))}</p>];
+        return [<p className="wconvert-journey-sample__decision" key={screen.id}>{sprintf(__('%1$s: visitors take “%2$s”; later matches are ignored.', 'wconvert'), screen.name, decision.priority === screen.paths.length - 1 ? __('All other answers', 'wconvert') : String((decision.priority ?? 0) + 1))}</p>];
       })}
       {selectedResult && <p className="wconvert-journey-sample__result">{sprintf(__('Result shown: %s', 'wconvert'), selectedResult.heading)}</p>}
       <p className="wconvert-journey-sample__boundary">{path.waiting === undefined ? __('Prediction complete. Try the form to check validation and the visitor experience.', 'wconvert') : __('The prediction stops where an answer or action is needed.', 'wconvert')}</p>

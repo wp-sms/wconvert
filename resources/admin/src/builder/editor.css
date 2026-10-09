@@ -233,6 +233,38 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   background: white;
   border: 0;
 }
+#wconvert-admin .wconvert-inspector__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 12px 14px 0;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--action);
+  font-size: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+}
+#wconvert-admin .wconvert-inspector__back span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#wconvert-admin .wconvert-inspector__back svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+#wconvert-admin .wconvert-inspector__back:hover {
+  background: var(--surface);
+}
+#wconvert-admin .wconvert-inspector__back:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
 #wconvert-admin .wconvert-inspector__breadcrumbs {
   display: flex;
   flex-wrap: wrap;
@@ -1197,6 +1229,17 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-pane__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 17px 24px; border-block-end: 1px solid var(--border); flex: none; }
 .wconvert-journey-pane__heading .wconvert-journey-dialog__selected { margin: 0; }
 .wconvert-journey-pane__heading small { display: block; margin-block-start: 3px; font-size: var(--text-label); color: var(--muted-foreground); }
+.wconvert-journey-pane__heading .wconvert-journey-dialog__selected>div { min-inline-size: 0; flex: 1; }
+/* Reads as the screen's title until hovered or focused; the box is Tailwind's, overridden on the element. */
+#wconvert-admin .wconvert-journey-pane__heading input.wconvert-journey-pane__name { padding: 3px 6px; margin-inline-start: -7px; font-size: var(--text-note); font-weight: 600; }
+.wconvert-journey-pane--element { padding: 0; }
+.wconvert-screen-actions { min-inline-size: 200px; }
+.wconvert-journey-pane__menu { display: grid; place-items: center; inline-size: 32px; block-size: 32px; flex: none; border: 0; border-radius: 6px; background: none; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-journey-pane__menu:hover { background: var(--surface); color: var(--foreground); }
+.wconvert-journey-pane__menu:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.wconvert-journey-pane__menu svg { inline-size: 16px; block-size: 16px; }
+.wconvert-screen-actions__reason { max-inline-size: 260px; margin: 4px 8px 6px; font-size: var(--text-micro); color: var(--muted-foreground); }
+.wconvert-screen-submits { margin: 0 0 14px; padding: 9px 12px; border-radius: var(--radius); background: var(--secondary); font-size: var(--text-note); }
 .wconvert-journey-pane__close { display: grid; place-items: center; flex: none; inline-size: 28px; block-size: 28px; border: 0; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
 .wconvert-journey-pane__close:hover { background: var(--surface); color: var(--foreground); }
 .wconvert-journey-pane__close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

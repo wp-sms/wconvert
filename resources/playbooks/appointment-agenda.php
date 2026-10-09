@@ -15,7 +15,7 @@ return [
         'body' => [__('Ask about a planning consultation.', 'wconvert'), __('Your room and the changes you have in mind.', 'wconvert'), __('The format, any fee and a suitable time.', 'wconvert')],
         'interest_label' => __('What would help? (optional)', 'wconvert'),
         'interest_placeholder' => __('Choose a topic', 'wconvert'),
-        'interest_options' => ['options' => [['value' => 'layout', 'label' => __('Planning the layout', 'wconvert')], ['value' => 'colour', 'label' => __('Choosing colours and materials', 'wconvert')], ['value' => 'unsure', 'label' => __('Help deciding where to start', 'wconvert')]]],
+        'interest_options' => ['options' => [['value' => 'layout', 'label' => __('Planning the layout', 'wconvert')], ['value' => 'colour', 'label' => __('Choosing colors and materials', 'wconvert')], ['value' => 'unsure', 'label' => __('Help deciding where to start', 'wconvert')]]],
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'consent_text' => __('Reply to my consultation enquiry.', 'wconvert'),

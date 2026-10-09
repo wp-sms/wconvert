@@ -42,7 +42,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     const screenId = budget.screens[budget.screens.length - 1];
     const names = budget.screens.map(id => tree.steps.find(screen => screen.id === id)?.name ?? id).join(' → ');
     issues.push({ key: 'question-path-limit',
-      said: sprintf(__('This connected route contains %1$d questions; the limit is ten: %2$s. Remove questions or move them to a separate branch.', 'wconvert'), budget.count, names),
+      said: sprintf(__('This path asks %1$d questions; the limit is ten: %2$s. Remove questions or move them to a separate path.', 'wconvert'), budget.count, names),
       repair: { screenId, section: 'content', focus: 'questions' } });
   }
   const incomplete = (condition: QuestionCondition | undefined) => !condition || !condition.clauses.length
@@ -120,7 +120,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       }
       if (!result.when) {
         if (index < (screen.results?.length ?? 0) - 1) issues.push({ key: `result:${screen.id}:${index}`,
-          said: sprintf(__('Choose a condition for result %1$d on “%2$s”. Only Everyone else is unconditional.', 'wconvert'), index + 1, screen.name),
+          said: sprintf(__('Choose a condition for result %1$d on “%2$s”. Only the last one, for all other answers, has none.', 'wconvert'), index + 1, screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id } });
         return;
       }

@@ -19,7 +19,7 @@ it('keeps a child follow-up on the shared continuation until custom routing is r
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(item => item.id === 'garden')} onChange={change} onInsert={() => {}} />);
   expect(screen.getByRole('combobox', { name: 'After the relevant questions' })).toHaveValue('contact');
   expect(screen.queryByRole('combobox', { name: 'Continue at' })).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Custom routing…' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
   expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveValue('indoors');
   expect(change).not.toHaveBeenCalled();
 });
