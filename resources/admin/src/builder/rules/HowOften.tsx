@@ -79,8 +79,8 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
 
     {overlay && <DisclosureCard title={__('If several popups are ready at once', 'wconvert')}
       /* translators: %d: a priority number. */
-      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(__('Priority %d', 'wconvert'), priority)}>
-      <label className="wconvert-display-inline-field" htmlFor="wconvert-priority">{__('Give this one priority', 'wconvert')}
+      current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(__('Shown first (%d)', 'wconvert'), priority)}>
+      <label className="wconvert-display-inline-field" htmlFor="wconvert-priority">{__('Show this one first', 'wconvert')}
         <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />
       </label>

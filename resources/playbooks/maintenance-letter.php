@@ -8,7 +8,7 @@ return [
     'name' => __('Offer monthly home maintenance notes', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'reading-desk',
-    'notes' => __('Embed after a maintenance article. Connect your email destination and prepare the monthly programme. This is an ongoing newsletter, not an appointment reminder or emergency advice service.', 'wconvert'),
+    'notes' => __('Embed after a maintenance article. Connect your email destination and prepare the monthly program. This is an ongoing newsletter, not an appointment reminder or emergency advice service.', 'wconvert'),
     'copy' => [
         'eyebrow' => [__('Small jobs, thoughtfully timed', 'wconvert'), __('The monthly home note', 'wconvert'), __('Thank you', 'wconvert')],
         'headline' => __('A little care.

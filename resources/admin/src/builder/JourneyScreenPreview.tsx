@@ -29,7 +29,7 @@ export function JourneyScreenPreview({ template, step, onEdit, onTest, embedded 
     {!!screen.results?.length && <div className="wconvert-journey-screen-preview__result">
       <label htmlFor={id}>{__('Result to preview', 'wconvert')}</label>
       <select id={id} value={result?.id ?? ''} onChange={event => setResultId(event.target.value)}>
-        {screen.results.map((item, index) => <option key={item.id} value={item.id}>{item.heading || sprintf(__('Result %d', 'wconvert'), index + 1)}{!item.when ? ` · ${__('Everyone else', 'wconvert')}` : ''}</option>)}
+        {screen.results.map((item, index) => <option key={item.id} value={item.id}>{item.heading || sprintf(__('Result %d', 'wconvert'), index + 1)}{!item.when ? ` · ${__('All other answers', 'wconvert')}` : ''}</option>)}
       </select>
     </div>}
     <div className="wconvert-journey-screen-preview__stage"><div data-mobile={mobile} className="wconvert-journey-screen-preview__screen" inert>

@@ -8,7 +8,7 @@ return [
     'goal' => 'grow_email_list',
     'template_id' => 'quieter-frequency',
     'business_types' => ['stores'],
-    'notes' => __('Offer a real editorial programme on about and maker-story pages. Assign someone to write the monthly note.', 'wconvert'),
+    'notes' => __('Offer a real editorial program on about and maker-story pages. Assign someone to write the monthly note.', 'wconvert'),
     'copy' => [
         'eyebrow' => [
             __('The making of things', 'wconvert'),

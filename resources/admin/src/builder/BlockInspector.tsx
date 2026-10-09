@@ -261,11 +261,11 @@ function contentBody({
     <>
       {['field', 'consent'].includes(block.type) && <CaptureOwnership tree={template.tree} path={path} onChange={tree => onChange({ ...template, tree })} />}
       {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <label className="wconvert-slot__key">
-        {__('Save point', 'wconvert')}
+        {__('Form', 'wconvert')}
         <select value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
-          <option value="">{__('Choose a save point', 'wconvert')}</option>
+          <option value="">{__('Choose a form', 'wconvert')}</option>
           {template.tree.submissions.filter(s => node?.action !== 'skip' || !s.required).map((s, index) => <option key={s.id} value={s.id}>
-            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(__('Save point %d', 'wconvert'), index + 1)}
+            {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(__('Form %d', 'wconvert'), index + 1)}
           </option>)}
         </select>
       </label>}

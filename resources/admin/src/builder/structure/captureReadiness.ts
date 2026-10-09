@@ -26,7 +26,7 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
   }
   for (const button of buttons.filter(button => ['submit', 'skip'].includes(button.node.action ?? ''))) {
     const save = tree.submissions.find(save => save.id === button.node.submission);
-    if (!save || (button.node.action === 'skip' && save.required)) add(sprintf(__('Choose a valid save point for this button on “%s”. No thanks can only skip an optional save.', 'wconvert'), tree.steps[Number(button.path[0])].name), button.path);
+    if (!save || (button.node.action === 'skip' && save.required)) add(sprintf(__('Choose a valid form for this button on “%s”. No thanks can only skip an optional form.', 'wconvert'), tree.steps[Number(button.path[0])].name), button.path);
   }
   for (const [index, save] of tree.submissions.entries()) {
     const submits = buttons.filter(button => button.node.action === 'submit' && button.node.submission === save.id);
@@ -36,11 +36,11 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
         const node = nodeAt(tree, block.path);
         return node && 'id' in node && node.id && save.fields.includes(node.id);
       });
-      if (field) add(sprintf(__('The details on “%s” have no Save button. Add one and select its save point.', 'wconvert'), tree.steps[Number(field.path[0])].name), [field.path[0]]);
+      if (field) add(sprintf(__('The details on “%s” have no Save button. Add one and choose its form.', 'wconvert'), tree.steps[Number(field.path[0])].name), [field.path[0]]);
       continue;
     }
     const screen = tree.steps[at];
-    if (submits.length > 1) add(sprintf(__('Keep one Save button for “%s”. Remove this extra button or choose its intended save point.', 'wconvert'), screen.name), submits[1].path);
+    if (submits.length > 1) add(sprintf(__('Keep one Save button for “%s”. Remove this extra button or choose its form.', 'wconvert'), screen.name), submits[1].path);
     const skips = buttons.filter(button => button.node.action === 'skip' && button.node.submission === save.id);
     if (!save.required && !skips.length) add(sprintf(__('Add a No thanks button to “%s” so visitors can skip this optional signup.', 'wconvert'), screen.name), [at]);
     if (!save.required && skips.some(button => button.path[0] !== at)) add(sprintf(__('Move this No thanks button onto “%s”, beside its Save button.', 'wconvert'), screen.name), skips.find(button => button.path[0] !== at)!.path);
@@ -59,8 +59,8 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
     if (!consents.length) {
       const existing = blocks.find(block => block.type === 'consent' && block.path[0] === at);
       if (existing) missingConsentAssignments.add(existing.path.join('.'));
-      add(sprintf(existing ? __('Assign the consent checkbox to “%s” under Saved with.', 'wconvert')
-        : __('Add a consent checkbox for “%s” and choose this screen under Saved with.', 'wconvert'), screen.name), existing?.path ?? [at]);
+      add(sprintf(existing ? __('Assign the consent checkbox to “%s” under Saved by.', 'wconvert')
+        : __('Add a consent checkbox for “%s” and choose this screen under Saved by.', 'wconvert'), screen.name), existing?.path ?? [at]);
     }
   }
   for (const block of blocks.filter(block => block.type === 'consent')) {
@@ -73,7 +73,7 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
       continue;
     }
     if (!node.text?.trim()) add(sprintf(__('Write the consent wording on “%s” so visitors know what they are agreeing to.', 'wconvert'), name), block.path);
-    if (ownership.owners.length !== 1 && !missingConsentAssignments.has(block.path.join('.'))) add(sprintf(__('Choose one save point under Saved with for the consent checkbox on “%s”.', 'wconvert'), name), block.path);
+    if (ownership.owners.length !== 1 && !missingConsentAssignments.has(block.path.join('.'))) add(sprintf(__('Choose one form under Saved by for the consent checkbox on “%s”.', 'wconvert'), name), block.path);
     else {
       const choice = ownership.choices.find(choice => choice.id === ownership.owners[0]?.id);
       if (choice?.reason) add(choice.reason, block.path);

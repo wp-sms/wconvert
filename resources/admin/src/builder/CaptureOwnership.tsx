@@ -11,16 +11,16 @@ export function CaptureOwnership({ tree, path, onChange }: {
   const state = captureOwnership(tree, path);
   if (!state) return null;
   return <section className="wconvert-group">
-    <label className="wconvert-slot__key">{__('Saved with', 'wconvert')}
+    <label className="wconvert-slot__key">{__('Saved by', 'wconvert')}
       <select aria-describedby={description} value={state.owners.length === 1 ? state.owners[0].id : ''}
         onChange={event => onChange(withCaptureOwner(tree, path, event.target.value))}>
-        <option value="">{__('Choose a save point', 'wconvert')}</option>
+        <option value="">{__('Choose a form', 'wconvert')}</option>
         {state.choices.map(choice => <option key={choice.id} value={choice.id} disabled={!!choice.reason}>{choice.name}</option>)}
       </select>
     </label>
     <p id={description} className="description">{state.key === 'consents'
-      ? __('This checkbox is accepted only when the visitor submits this save point. Each signup needs its own consent.', 'wconvert')
-      : __('This detail is saved only when the visitor submits this save point. Continuing to another screen keeps it as a draft.', 'wconvert')}</p>
+      ? __('This checkbox is accepted only when the visitor submits this form. Each signup needs its own consent.', 'wconvert')
+      : __('This detail is saved only when the visitor submits this form. Continuing to another screen keeps it as a draft.', 'wconvert')}</p>
     {state.owners.length > 1 && <p role="status">{__('This element belongs to more than one save. Choose the one that should accept it.', 'wconvert')}</p>}
     {state.choices.filter(choice => choice.reason).map(choice => <p key={choice.id} className="description">{choice.reason}</p>)}
     {!state.choices.length && <p>{__('Add a signup screen in Screens before assigning this element.', 'wconvert')}</p>}

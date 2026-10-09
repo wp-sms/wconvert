@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 
 return [
     'id' => 'gift-message-enquiry',
-    'name' => __('Ask about a personalised gift message', 'wconvert'),
+    'name' => __('Ask about a personalized gift message', 'wconvert'),
     'goal' => 'collect_enquiries',
     'template_id' => 'appointment-note',
     'business_types' => ['stores'],

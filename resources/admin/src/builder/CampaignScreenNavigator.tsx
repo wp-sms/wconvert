@@ -34,7 +34,7 @@ export function CampaignScreenNavigator({ tree, step, issues = [], onIssue, onSe
       <TriangleAlert aria-hidden="true" size={12} />{here.length}</button>;
     return <div key={screen.id} className="wconvert-campaign-screens__row"><button type="button" aria-current={step === index ? 'true' : undefined} onClick={() => onSelect(index)}>
       <Icon aria-hidden="true" size={16} /><span>
-        {path && <small className="wconvert-campaign-screens__path">{path.kind === 'answer' && path.when ? followupLabel(tree, path.when) : __('Everyone else', 'wconvert')}</small>}
+        {path && <small className="wconvert-campaign-screens__path">{path.kind === 'answer' && path.when ? followupLabel(tree, path.when) : __('All other answers', 'wconvert')}</small>}
         {nested && screen.when && <small className="wconvert-campaign-screens__answer">{followupLabel(tree, screen.when)}</small>}
         <strong>{screen.name}</strong>
         {unreachable.has(screen.id) ? <small>{__('Not connected', 'wconvert')}</small> : screen.when && !nested ? <small>{conditionText(tree, screen.when)}</small>

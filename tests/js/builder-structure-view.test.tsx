@@ -1,4 +1,5 @@
 import { displayPlan } from './support/display-entry';
+import LABELS_FIXTURE from '../fixtures/template-labels.json';
 import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
@@ -96,7 +97,7 @@ const LABELS = {
     split: 'Side by side',
     grid: 'Equal columns',
     panel: 'Colored box',
-    media: 'Picture box',
+    media: LABELS_FIXTURE.layouts.media,
   },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
@@ -724,7 +725,7 @@ describe('adding a block', () => {
     const first = screen.getByRole('menuitem', { name: 'Heading' });
     first.focus();
     await userEvent.keyboard('{End}');
-    expect(screen.getByRole('menuitem', { name: /^Picture box/ })).toHaveFocus();
+    expect(screen.getByRole('menuitem', { name: /^Image box/ })).toHaveFocus();
     await userEvent.keyboard('{Home}{ArrowDown}');
     expect(screen.getByRole('menuitem', { name: 'Overline' })).toHaveFocus();
   });
@@ -765,9 +766,10 @@ describe('adding a block', () => {
       'Side by side',
       'Equal columns',
       'Colored box',
+      'Image box',
     ]) {
       expect(
-        await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b`) }),
+        await screen.findByRole('menuitem', { name: new RegExp(`^${kind}\\b(?! box)`) }),
       ).toBeInTheDocument();
     }
   });
@@ -989,13 +991,13 @@ describe('the inspector', () => {
     await structure();
     await select('Consent wording');
 
-    const shown = inspector('Consent wording').getByRole('checkbox', { name: 'Show this' });
+    const shown = inspector('Consent wording').getByRole('checkbox', { name: 'Visible' });
 
     expect(shown).not.toBeChecked();
 
     await userEvent.click(shown);
 
-    expect(inspector('Consent wording').getByRole('checkbox', { name: 'Show this' })).toBeChecked();
+    expect(inspector('Consent wording').getByRole('checkbox', { name: 'Visible' })).toBeChecked();
   });
 
   /**
@@ -1504,7 +1506,7 @@ describe('what a row shows about itself', () => {
     // The row's own label button, which is what selects — not the ⋯ menu
     // beside it, which also carries the block's name.
     await userEvent.click(within(row('Fine print')).getAllByRole('button')[0]);
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Show this' }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Visible' }));
 
     expect(row('Fine print')).toHaveAttribute('data-hidden', 'true');
     expect(within(row('Fine print')).getByText('Hidden')).toBeInTheDocument();

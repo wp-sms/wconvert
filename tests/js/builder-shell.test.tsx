@@ -1346,7 +1346,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     await open();
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(within(screen.getByRole('row', { name: /Service needed/ })).getAllByRole('button')[0]);
-    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Sent as: installation'));
+    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Saved as: installation'));
     const value = screen.getByRole('textbox', { name: 'Value sent for choice 2' });
     await userEvent.clear(value);
     await userEvent.type(value, 'repair');

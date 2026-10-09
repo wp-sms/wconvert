@@ -28,10 +28,10 @@ it('centres only the selected screen when explicitly requested, without fitting 
 it('keeps the route label out of the insert button and suppresses the duplicate SVG label', () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
   const edit = vi.fn();
-  render(<JourneyMapEdge {...({ id: 'else', label: 'Everyone else', data: { edit, insert: mocks.insert, targetName: 'Contact details' } } as unknown as ComponentProps<typeof JourneyMapEdge>)} />);
+  render(<JourneyMapEdge {...({ id: 'else', label: 'All other answers', data: { edit, insert: mocks.insert, targetName: 'Contact details' } } as unknown as ComponentProps<typeof JourneyMapEdge>)} />);
   const insert = screen.getByRole('button', { name: 'Add screen here, before Contact details' });
-  expect(insert).not.toHaveTextContent('Everyone else');
-  const label = screen.getByRole('button', { name: 'Edit path: Everyone else' });
+  expect(insert).not.toHaveTextContent('All other answers');
+  const label = screen.getByRole('button', { name: 'Edit path: All other answers' });
   expect(label.parentElement).toBe(insert.parentElement);
   fireEvent.click(label);
   expect(edit).toHaveBeenCalledOnce();
@@ -62,7 +62,7 @@ it('requires explicit connection editing and guards callbacks as well as handles
   expect(mocks.flow.mock.calls.at(-1)?.[0].nodesConnectable).toBe(false);
   mocks.flow.mock.calls.at(-1)?.[0].onConnect({ source: 'interests', target: 'contact', sourceHandle: 'new' });
   expect(connect).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole('button', { name: 'Edit connections' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Edit paths' }));
   expect(mocks.flow.mock.calls.at(-1)?.[0].nodesConnectable).toBe(true);
   mocks.flow.mock.calls.at(-1)?.[0].onConnect({ source: 'interests', target: 'contact', sourceHandle: 'new' });
   expect(connect).toHaveBeenCalledWith('interests', 'contact');

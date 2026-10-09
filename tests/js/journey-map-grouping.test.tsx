@@ -43,7 +43,7 @@ it('labels disconnected follow-ups in both grouped and expanded maps and keeps t
   await user.click(screen.getByText('Show 3 questions'));
   await user.click(screen.getByRole('button', { name: /Garden details$/ }));
   expect(select).toHaveBeenCalledWith(tree.steps.findIndex(item => item.id === 'garden'));
-  await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
+  await user.click(screen.getByRole('button', { name: 'Edit individual paths' }));
   expect(screen.getAllByText('Unreachable — connect an incoming path')).toHaveLength(3);
 });
 
@@ -61,9 +61,9 @@ it.each(['ltr', 'rtl'])('keeps card content and path arrows aligned with the %s 
     expect(cards.length).toBeGreaterThan(0);
     cards.forEach(card => expect(card).toHaveAttribute('dir', direction));
     const arrow = direction === 'rtl' ? '←' : '→';
-    expect(screen.getByRole('button', { name: '1 answer path · Everyone else' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '1 answer path · All other answers' })).toBeInTheDocument();
     const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
-    expect(edges.some(edge => edge.label === 'Everyone else' && edge.target === changed.steps.find(step => step.name === 'Your business interests')?.id)).toBe(true);
+    expect(edges.some(edge => edge.label === 'All other answers' && edge.target === changed.steps.find(step => step.name === 'Your business interests')?.id)).toBe(true);
     expect(screen.getByRole('button', { name: `When hidden ${arrow} Send one combined enquiry` })).toBeInTheDocument();
     const firstX = canvas.nodes.find(node => node.id === 'scope')!.position.x;
     const endingX = canvas.nodes.find(node => node.id === 'received')!.position.x;
@@ -85,7 +85,7 @@ it('summarizes independent follow-ups and expands to the exact original nodes an
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.map(edge => [edge.source, edge.target])).toContainEqual(['interests', 'followups:garden']);
   expect(edges.find(edge => edge.target === 'followups:garden')?.reconnectable).toBe(false);
-  await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
+  await user.click(screen.getByRole('button', { name: 'Edit individual paths' }));
   expect(screen.getAllByTestId('map-node')).toHaveLength(6);
   expect(canvas.nodes.map(node => node.id)).toEqual(['interests', 'garden', 'indoors', 'balcony', 'contact', 'received']);
   expect(screen.queryByText('Ask every match, one at a time. Skip the rest.')).not.toBeInTheDocument();
@@ -111,7 +111,7 @@ it('keeps members grouped until connections are explicitly inspected', async () 
   const garden = tree.steps.findIndex(step => step.id === 'garden');
   rerender(<JourneyMap {...props} selected={garden} />);
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
-  await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
+  await user.click(screen.getByRole('button', { name: 'Edit individual paths' }));
   expect(canvas.nodes.some(node => node.id === 'garden')).toBe(true);
   await user.click(screen.getByRole('button', { name: 'View options' }));
   await user.click(screen.getByRole('menuitem', { name: 'Group follow-ups' }));
@@ -240,7 +240,7 @@ it.each(['ltr', 'rtl'])('pans to later screens in %s without zooming or changing
 
 it('highlights a tested hidden continuation when it shares the visible default line', async () => {
   render(<JourneyMap tree={tree} selected={null} samplePath={[2, 4, 0]} sampleEdges={['start', 'garden_hidden', 'indoor_hidden', 'balcony_next']} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  await userEvent.click(screen.getByRole('button', { name: 'Edit individual connections' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Edit individual paths' }));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.find(edge => edge.id === 'garden_next')?.style?.strokeWidth).toBe(3.5);
   expect(edges.find(edge => edge.id === 'indoor_next')?.style?.strokeWidth).toBe(3.5);
@@ -266,7 +266,7 @@ it('connects an optional grouped follow-up through its vertical handles and keep
   expect(join.position.x).toBeGreaterThan(entry.position.x);
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.find(edge => edge.id === 'optional-group')).toMatchObject({ sourceHandle: 'detour-out', targetHandle: 'detour-in' });
-  expect(edges.find(edge => edge.id === 'start')).toMatchObject({ label: 'Everyone else', target: 'contact' });
+  expect(edges.find(edge => edge.id === 'start')).toMatchObject({ label: 'All other answers', target: 'contact' });
 });
 
 

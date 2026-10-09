@@ -1,4 +1,5 @@
 import { treeFixture } from './support/journey';
+import LABELS_FIXTURE from '../fixtures/template-labels.json';
 import { CLICK_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -98,7 +99,7 @@ const LABELS = {
     split: 'Side by side',
     grid: 'Equal columns',
     panel: 'Colored box',
-    media: 'Picture box',
+    media: LABELS_FIXTURE.layouts.media,
   },
   layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
@@ -116,7 +117,8 @@ const LABELS = {
   placeholders: {},
   params: { submit: 'Sends the form', link: 'Goes somewhere else' },
   tokenValues: {},
-  tokens: { bg: 'Background', fg: 'Text', muted: 'Quiet text', accent: 'Button' },
+  // The words a merchant sees are `TemplateLabels::all()`'s, never a second spelling.
+  tokens: { bg: LABELS_FIXTURE.tokens.bg, fg: LABELS_FIXTURE.tokens.fg, muted: LABELS_FIXTURE.tokens.muted, accent: LABELS_FIXTURE.tokens.accent },
 };
 
 const GOALS = [
@@ -558,7 +560,7 @@ describe('the readability readout at a scope', () => {
     await style(/Colored box/);
 
     // `muted` on this box's ground is 1.1:1 and would have been reported.
-    expect(screen.queryByText(/Quiet text on Background/)).toBeNull();
+    expect(screen.queryByText(/Lighter text on Background/)).toBeNull();
   });
 
   it('still says it where the box holds something that reads it', async () => {
@@ -589,7 +591,7 @@ describe('the readability readout at a scope', () => {
 
     await style(/Colored box/);
 
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Quiet text on Background/)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Lighter text on Background/)).toBeInTheDocument();
   });
 });
 

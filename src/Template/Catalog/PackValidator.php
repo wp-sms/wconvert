@@ -277,7 +277,7 @@ final class PackValidator
         if ($type === 'followup' || ($type === 'code' && ($node['copy'] ?? false) === true)) $requiredCapabilities[] = 'success-actions:1';
         if ($type === 'field' && ($node['name'] ?? null) === 'interest') $requiredCapabilities[] = 'enquiry-choice:1';
         if ($type === 'field') {
-            self::check(isset($node['name']) && is_string($node['label'] ?? null) && trim($node['label']) !== '', __('This design has an unlabelled field.', 'wconvert'));
+            self::check(isset($node['name']) && is_string($node['label'] ?? null) && trim($node['label']) !== '', __('This design has an unlabeled field.', 'wconvert'));
         }
         if ($type === 'question') {
             self::check(CaptureJourney::identifier($node['id'] ?? null) && is_string($node['label'] ?? null)

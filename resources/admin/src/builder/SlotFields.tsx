@@ -260,7 +260,7 @@ export function SlotFields({
         panel where the eye lands first.
       */}
       {slot.hideable && (
-        <CheckRow className="wconvert-slot__shown" label={__('Show this', 'wconvert')}
+        <CheckRow className="wconvert-slot__shown" label={__('Visible', 'wconvert')}
           checked={!slot.hidden} onChange={(event) => onHidden(!event.target.checked)} />
       )}
     </>

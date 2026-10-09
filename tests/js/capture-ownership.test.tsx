@@ -31,7 +31,7 @@ describe('explicit capture ownership', () => {
     expect(screen.getByRole('tab', { name: 'Style' })).toHaveAttribute('aria-selected', 'true');
     rerender(<BlockInspector {...props} revealContent={{ path }} />);
     expect(screen.getByRole('tab', { name: 'Content' })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('combobox', { name: 'Saved with' })).toBeVisible();
+    expect(screen.getByRole('combobox', { name: 'Saved by' })).toBeVisible();
   });
   it('repairs an unowned field without changing paths, identities or other capture settings', () => {
     const tree = structuredClone(split) as TemplateTree;
@@ -70,10 +70,10 @@ describe('explicit capture ownership', () => {
       return <><CaptureOwnership tree={draft} path={path} onChange={setDraft} /><output aria-label="Accepted consent">{draft.submissions[0].consents.join(',')}</output></>;
     }
     render(<Editor />);
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Saved with' }), 'coffee-signup');
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Saved by' }), 'coffee-signup');
     expect(screen.getByLabelText('Accepted consent')).toHaveTextContent('n22');
-    expect(screen.getByRole('combobox', { name: 'Saved with' })).toHaveValue('coffee-signup');
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Saved with' }), '');
+    expect(screen.getByRole('combobox', { name: 'Saved by' })).toHaveValue('coffee-signup');
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Saved by' }), '');
     expect(screen.getByLabelText('Accepted consent')).toBeEmptyDOMElement();
   });
 });
@@ -101,7 +101,7 @@ describe('capture review repairs', () => {
     expect(captureReadiness({ ...current, tree: withValue(current.tree, path, 'hidden', true) }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/Show the consent checkbox/), path }));
     const unowned = { ...current, tree: withCaptureOwner(current.tree, path, '') };
     expect(captureReadiness(unowned, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/Assign the consent checkbox/), path }));
-    expect(captureReadiness(unowned, 'email').filter(issue => /Saved with/.test(issue.said))).toHaveLength(1);
+    expect(captureReadiness(unowned, 'email').filter(issue => /Saved by/.test(issue.said))).toHaveLength(1);
   });
   it('links a missing skip button to the exact optional signup screen', () => {
     const current = template();
@@ -112,6 +112,6 @@ describe('capture review repairs', () => {
     const current = template();
     const skip = nodesOf(current.tree).find(block => block.action === 'skip')!;
     expect(captureReadiness({ ...current, tree: withValue(current.tree, skip.path, 'action', 'next') }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/both Continue and Save/), path: skip.path }));
-    expect(captureReadiness({ ...current, tree: withValue(current.tree, skip.path, 'submission', 'missing') }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/Choose a valid save point/), path: skip.path }));
+    expect(captureReadiness({ ...current, tree: withValue(current.tree, skip.path, 'submission', 'missing') }, 'email')).toContainEqual(expect.objectContaining({ said: expect.stringMatching(/Choose a valid form/), path: skip.path }));
   });
 });

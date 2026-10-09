@@ -133,9 +133,9 @@ it('clears stale branch instructions when Undo restores the prior draft', async 
   }
   render(<HistoryEditor />);
   await user.click(await screen.findByRole('button', { name: 'Draw test branch' }));
-  expect(screen.getByText(/Answer path added after the existing priorities/)).toBeInTheDocument();
+  expect(screen.getByText(/Answer path added after the existing paths/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Undo fixture edit' }));
-  expect(screen.queryByText(/Answer path added after the existing priorities/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Answer path added after the existing paths/)).not.toBeInTheDocument();
 });
 
 it.each(['followup', 'branch'] as const)('starts a %s from Next screen without confusing skip and branch semantics', async intent => {
@@ -145,7 +145,7 @@ it.each(['followup', 'branch'] as const)('starts a %s from Next screen without c
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(await screen.findByRole('button', { name: 'Select first screen' }));
   await user.click(screen.getByRole('radio', { name: 'Next screen' }));
-  const action = intent === 'followup' ? 'Add conditional follow-up' : 'Add branch';
+  const action = intent === 'followup' ? 'Add conditional follow-up' : 'Add path';
   await user.click(screen.getByRole('button', { name: action }));
   expect(screen.getByRole('radio', { name: intent === 'followup' ? 'Ask a relevant follow-up' : 'Take a different path' })).toBeChecked();
   expect(screen.getByRole('button', { name: 'Add screen here' })).toHaveAttribute('aria-disabled', 'true');
@@ -173,7 +173,7 @@ it('opens a drawn graph branch for repair without guessing its condition', async
   await user.click(await screen.findByRole('button', { name: 'Draw test branch' }));
   expect(draft().graph!.edges.at(-1)).toMatchObject({ from: 'interests', to: 'contact', kind: 'answer',
     when: { clauses: [{ question: 'n1', values: [''] }] } });
-  expect(screen.getByText(/Answer path added after the existing priorities/)).toBeInTheDocument();
+  expect(screen.getByText(/Answer path added after the existing paths/)).toBeInTheDocument();
   expect(screen.getByText('Check 1 of 1')).toBeInTheDocument();
   expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
 });
@@ -607,8 +607,8 @@ it('shows readable screen conditions and edits one result at a time', async () =
   expect(screen.queryByRole('textbox', { name: 'Heading' })).toBeNull();
   await user.tab();
   await user.keyboard('{Enter}');
-  expect(screen.getByRole('button', { name: /Everyone else Default/ })).toHaveAttribute('aria-expanded', 'true');
-  expect(screen.getByRole('region', { name: /Everyone else/ })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /All other answers When no other result matches/ })).toHaveAttribute('aria-expanded', 'true');
+  expect(screen.getByRole('region', { name: /All other answers/ })).toBeInTheDocument();
   expect(screen.getByLabelText('Heading')).toHaveValue('Other');
   await user.clear(screen.getByLabelText('Heading'));
   await user.type(screen.getByLabelText('Heading'), 'A place to start');
@@ -831,7 +831,7 @@ it('explains a branched result timing restriction and opens the named paths for 
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
   expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeDisabled();
-  expect(screen.getByText(/Move any answer branches after both screens first/)).toBeInTheDocument();
+  expect(screen.getByText(/Move any answer paths after both screens first/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Review Your result' }));
   expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
@@ -1112,7 +1112,7 @@ it('restores the pending answer review after editing a referenced branch', async
   const review = screen.getByRole('region', { name: 'Review answer uses' });
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'press');
   await user.click(within(review).getByText('Stop offering this answer…'));
-  await user.click(within(review).getByRole('button', { name: /Your taste Branch 1/ }));
+  await user.click(within(review).getByRole('button', { name: /Your taste Path 1/ }));
   expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Answer' }), 'press');
   const repaired = draft();
@@ -1153,7 +1153,7 @@ it('offers sample answers in Preview & test and clears its predicted path when t
   const view = render(<JourneyEditor {...props} />);
   const dialog = await screen.findByRole('dialog', { name: 'Preview & test' });
   await user.click(within(dialog).getByRole('radio', { name: 'Try answers' }));
-  expect(within(dialog).getByText(/This predicts a route/)).toBeInTheDocument();
+  expect(within(dialog).getByText(/This predicts a path/)).toBeInTheDocument();
   await user.click(within(dialog).getByRole('button', { name: 'Show sample path on the map' }));
   expect(screen.getByText('Showing the path for your sample answers')).toBeInTheDocument();
   expect(props.onChange).not.toHaveBeenCalled();
@@ -1194,7 +1194,7 @@ it('offers a free install linear screens only, with no question, condition or pa
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   expect(screen.queryByRole('button', { name: 'Try answers' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /^Next screen/ })).not.toBeInTheDocument();
-  expect(screen.queryByText('Show this screen when…')).not.toBeInTheDocument();
+  expect(screen.queryByText('Show only if…')).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
   expect(screen.getByRole('menuitem', { name: 'Add offer screen' })).toBeInTheDocument();
   for (const name of ['Add question screen', 'Add relevant follow-up', 'Let answers choose the next screen']) {

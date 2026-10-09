@@ -40,13 +40,13 @@ export function graphInsertionLocations(tree: TemplateTree) {
       if (!target) continue;
       const path = edge.kind === 'hidden' ? __('When hidden', 'wconvert') : edge.kind === 'answer'
         ? sprintf(__('Answer path %d', 'wconvert'), answers.indexOf(edge) + 1)
-        : answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert');
+        : answers.length ? __('All other answers', 'wconvert') : __('Continue', 'wconvert');
       locations.push({ id: `edge:${edge.id}`, source: source.id, target: target.id,
         sharedHidden: edge.kind === 'default' && outgoing.some(item => item.kind === 'hidden' && item.to === edge.to),
         label: sprintf(__('%1$s — %2$s — to %3$s', 'wconvert'), source.name, path, target.name),
         detail: edge.kind === 'answer' && edge.when ? conditionText(tree, edge.when)
           : edge.kind === 'hidden' ? __('Used when the source screen is skipped.', 'wconvert')
-          : answers.length ? __('Used when none of the answer paths match.', 'wconvert') : __('Visitors continue along this connection.', 'wconvert'),
+          : answers.length ? __('Used when none of the answer paths match.', 'wconvert') : __('Visitors continue along this path.', 'wconvert'),
         choices: choices.filter(question => edge.kind !== 'hidden' || !ownQuestions.has(question.id)),
         canAsk: !tree.submissions.length || tree.steps.some(screen => screen.kind === 'result')
           || captures.some(screen => graphReaches(graph, edge.to, screen.id)),
@@ -59,7 +59,7 @@ export function graphInsertionLocations(tree: TemplateTree) {
 export function insertionUnavailable(location: ReturnType<typeof graphInsertionLocations>[number], kind: GraphScreenKind): string | null {
   if (kind === 'ending' && location.id === 'entry') return __('Choose a path to finish after the first screen.', 'wconvert');
   if (kind !== 'content' && kind !== 'ending' && !location.canAsk) return __('Ask this question before visitors submit their details so its answer is saved with them.', 'wconvert');
-  if (kind === 'followup' && !location.choices.length) return __('Choose a connection after a choice question.', 'wconvert');
+  if (kind === 'followup' && !location.choices.length) return __('Choose a path after a choice question.', 'wconvert');
   return null;
 }
 
