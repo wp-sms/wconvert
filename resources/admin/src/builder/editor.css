@@ -905,7 +905,47 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 .wconvert-launch-review__success svg { width: 20px; flex: none; }
 .wconvert-launch-review__footer { padding: 12px 20px; border-top: 1px solid var(--border); background: var(--muted); }
 .wconvert-launch-review__footer p { margin: 0 0 8px; }
+.wconvert-capture-mode { margin: 0 0 12px; padding: 0; border: 0; min-inline-size: 0; }
+.wconvert-capture-mode__legend { padding: 0; margin-block-end: 8px; font-weight: 600; }
 .wconvert-capture-mode > p { margin-block: 10px 0; }
+.wconvert-capture-mode__options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); gap: 8px; }
+.wconvert-capture-mode__option { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+.wconvert-capture-mode__option input { position: relative; z-index: 1; margin-block-start: 3px; accent-color: var(--action); }
+.wconvert-capture-mode__option label { cursor: pointer; }
+/* The label covers the card, so a click anywhere on it picks the option. */
+.wconvert-capture-mode__option label::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+.wconvert-capture-mode__option:has(input:checked) { border-color: var(--action); background: var(--ice); }
+.wconvert-capture-mode__option:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-capture-mode:disabled .wconvert-capture-mode__option { opacity: .6; }
+.wconvert-capture-mode:disabled .wconvert-capture-mode__option label { cursor: default; }
+
+/* Destinations tab: one card per route this campaign sends to. */
+.wconvert-destinations-region + .wconvert-destinations-region { margin-block-start: 16px; }
+.wconvert-destination-always { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: var(--radius-md); background: var(--surface); }
+.wconvert-destination-callout { margin: 0; padding: 10px 12px; border-radius: var(--radius-md); background: var(--warning-surface); color: var(--foreground); border-inline-start: 3px solid var(--warning); font-size: var(--text-note); line-height: var(--text-note--line-height); }
+.wconvert-destination-card { container-type: inline-size; min-inline-size: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+.wconvert-destination-card__main { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px; }
+.wconvert-destination-card__mark { inline-size: 28px; block-size: 28px; flex: none; }
+.wconvert-destination-card__meta { display: flex; flex-wrap: wrap; gap: 0 8px; margin: 0; color: var(--muted-foreground); font-size: var(--text-note); line-height: var(--text-note--line-height); }
+.wconvert-destination-card__meta > span { overflow-wrap: anywhere; }
+.wconvert-destination-card__meta > span + span::before { content: '·'; margin-inline-end: 8px; }
+.wconvert-destination-card__side { display: flex; align-items: center; gap: 4px; }
+.wconvert-destination-card__issue { display: grid; gap: 8px; margin: 0 12px 12px; padding: 10px 12px; border-radius: var(--radius-md); font-size: var(--text-note); line-height: var(--text-note--line-height); color: var(--foreground); overflow-wrap: anywhere; }
+.wconvert-destination-card__issue--warn { background: var(--warning-surface); }
+.wconvert-destination-card__issue--bad { background: var(--destructive-surface); }
+.wconvert-destination-card__extra { padding: 0 12px 12px; margin-block-start: -12px; }
+/* At side-panel width the badge and menu drop under the name rather than squeezing it. */
+@container (max-width: 26rem) {
+  .wconvert-destination-card__main { grid-template-columns: auto minmax(0, 1fr); }
+  .wconvert-destination-card__side { grid-column: 2; justify-content: space-between; }
+}
+.wconvert-provider-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(12rem, 100%), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.wconvert-provider-tile, .wconvert-picker-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; inline-size: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.wconvert-picker-row { grid-template-columns: auto minmax(0, 1fr) auto; padding: 8px 10px; border-radius: var(--radius-md); }
+.wconvert-provider-tile:hover:not([aria-disabled='true']), .wconvert-picker-row:hover:not([aria-disabled='true']) { background: var(--accent); }
+.wconvert-provider-tile[aria-disabled='true'], .wconvert-picker-row[aria-disabled='true'] { cursor: not-allowed; color: var(--muted-foreground); }
+.wconvert-provider-tile:focus-visible, .wconvert-picker-row:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-picker-label { margin: 0; font-size: var(--text-label); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
 .wconvert-launch-review__buttons { display: flex; justify-content: flex-end; gap: 8px; }
 .wconvert-placement__steps { padding-inline-start: 20px; list-style: decimal; }
 .wconvert-placement__steps li { margin-block: 8px; }

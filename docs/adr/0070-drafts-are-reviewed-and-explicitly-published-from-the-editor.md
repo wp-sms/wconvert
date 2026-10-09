@@ -37,18 +37,33 @@ same schema controls and settings conversion as the existing destination Add
 dialog. Add and Refresh sit on this editor region's heading; this is the narrow
 placement amendment recorded in [0039](0039-a-screen-is-regions-and-scope-decides-placement.md).
 
+*Amended by [0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s
+Destinations tab redesign: Refresh is gone — the Add picker re-reads the
+site's routes each time it opens, and a failed read offers Retry in place.
+Per-route Settings moved into each bound card's actions menu, beside Send a
+test and Remove from this campaign.*
+
 Rows identify the named destination, its provider and its resolved target.
 Creating a destination updates the site's list and asks the merchant to select
-its checkbox. It never binds the route silently. Binding and removing a missing
+its checkbox. It never binds the route silently.
+
+*Amended by [0074](0074-destinations-declare-requirements-and-show-shared-usage.md):
+a route created from a Campaign is **selected for it in the same draft edit**,
+so Undo removes the binding (the shared route itself stays). The dialog says so
+before saving — "It is selected for this campaign when you save" — which is
+what keeps it from being silent. Only bound routes are drawn, as cards.* Binding and removing a missing
 reference change this Optin's draft. Saving destination settings changes the
 shared site destination immediately, including for published Optins using it;
 the dialog and Save action explain that scope. It is not part of draft Undo. Selected ids are undoable draft edits under
 [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md); shared destination settings and published configuration are not.
 
 A failed settings save preserves typed values and offers another attempt.
-Closing returns focus to Add or the route's Settings control. Refresh does not
+Closing returns focus to Add or the route's Settings control (*amended:* to
+the card's actions menu, or to a new route's card once it is created). Refresh does not
 leave the editor, and a failed read must not be interpreted as an empty site or
-as proof that bound routes were deleted. No test send, re-push or Contact
+as proof that bound routes were deleted. (*Amended:* there is no Refresh
+button; the re-read the Add picker makes keeps the routes on screen, and a
+failed one is reported above them with Retry.) No test send, re-push or Contact
 operation is performed by setup.
 
 ## Review states what it can establish

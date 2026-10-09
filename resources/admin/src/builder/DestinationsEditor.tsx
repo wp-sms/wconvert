@@ -1,244 +1,224 @@
 import { useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Plug, Plus, RefreshCw, Settings2 } from 'lucide-react';
+import { Inbox, Plug, Plus } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { DestinationSetupDialog } from './DestinationSetupDialog';
+import { DestinationCard } from './DestinationCard';
+import { listWithAnd } from './rules/sentence';
+import { AddDestinationPicker, ProviderTiles, type ChannelRule } from './AddDestinationPicker';
 import { Description } from '../shell/Description';
-import { Toolbar } from '../shell/Toolbar';
 import { EmptyState } from '../shell/EmptyState';
-import {
-  Region,
-  RegionBody,
-  RegionErrorState,
-  RegionFooter,
-  RegionHeader,
-} from '../shell/Region';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
-import { isFreeInstall, tierProductName } from '../goals/availability';
 import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
-import { ProviderMark } from '../destinations/ProviderMark';
-import { targetSaid } from '../destinations/settings';
+import { SendTestDialog } from '../destinations/SendTestDialog';
+import { capturedFields, contactFieldNames } from '../destinations/requirements';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
-import { capturedFields, compatibilityProblems } from '../destinations/requirements';
 import type { Template } from '@renderer/types';
-import { ExtraAnswerMapping, hasExtraAnswers, UnsupportedAnswerMapping } from './ExtraAnswerMapping';
 
 /**
- * Which [[Destination]]s this [[Optin]] pushes to.
+ * Where one save point of this [[Optin]] sends its [[Lead]]s, and whether that
+ * is working.
  *
  * A Campaign binds shared Destination ids. Its optional extra-answer map is
  * stored beside the binding and frozen with the accepted submission. Basic
  * contact fields remain provider-owned and need no merchant mapping.
  *
- * A Destination whose type is not `ready` is still shown and still bindable —
- * the binding is a decision the merchant made, and unbinding it because a
- * plugin was deactivated for an afternoon would lose it silently. It is the
- * DISPATCH that skips it, on every capture, and self-heals when the dependency
- * comes back (ADR 0027 draws the same line for a suspended [[Condition]]).
+ * ============================================================================
+ * ONLY THE BOUND ROUTES ARE DRAWN.
+ * ============================================================================
+ * This listed every site route as a checkbox, so a site with twelve showed
+ * twelve and the two this Campaign used had to be found among them — with the
+ * warnings of the other ten beside them. Now each bound route is a card with
+ * the Settings screen's own health badge, and **Add destination** opens a
+ * picker over the rest. A route created from here is selected in the same
+ * draft edit, so Undo removes it (ADR 0074).
  *
- * ============================================================================
- * IT NO LONGER FETCHES. THE SCREEN DOES.
- * ============================================================================
- * The list is site-level configuration rather than a function of this Optin, so
- * it was read here, once. {@see ReadinessPanel} needs the same payload to say
- * where the Leads go and whether anything is failing — and two components
- * fetching one list is two round trips, two failure paths, and two moments at
- * which one of them is holding a stale answer.
+ * A Destination whose type is not `ready` is still shown and still bound — the
+ * binding is a decision the merchant made, and unbinding it because a plugin
+ * was deactivated for an afternoon would lose it silently. It is the DISPATCH
+ * that skips it, on every capture, and self-heals when the dependency comes
+ * back (ADR 0027 draws the same line for a suspended [[Condition]]).
+ *
+ * The site's list is read by the screen, not here: {@see ReadinessPanel} needs
+ * the same payload, and two components fetching one list is two failure paths.
  */
 export interface DestinationsEditorProps {
   readonly outcome?: OutcomeContract;
   readonly template?: Template;
   readonly bound: readonly string[];
   /**
-   * The site's Destinations, in the three states a read has.
-   *
-   * **This was `readonly Destination[] | null`, and `null` meant two things.**
-   * Its own comment said so: *in flight* AND *after one that failed*. The read
-   * is `.then(setDestinations).catch(…)` and this branched
-   * `available === null ? 'Loading…' : …`, so a failed fetch left the tab
-   * showing a placeholder that would never resolve.
-   *
-   * The reasoning around it was right and the type could not carry it: falling
-   * back to `[]` was deliberately declined, because *"an empty one would read
-   * as 'you have none' rather than 'we could not ask'"*. `Loadable` is the
-   * union the rest of the admin already uses, and it makes the confusion
-   * unrepresentable rather than merely fixed.
+   * The site's Destinations, in the three states a read has. A failed read is
+   * never shown as an empty site, nor as proof that bound routes were deleted.
    */
   readonly available: Loadable<readonly Destination[]>;
   /**
-   * The types those routes run over, for the two absences that are not one.
-   *
-   * A `Destination` carries the resolved [[Availability]] and nothing about
-   * WHY, so this row could say only *"not running here"* — one sentence for
-   * *you have not bought the tier* and *this site is missing a plugin*. That
-   * is the collapse `Destinations` and `AddRule` both warn against in comments
-   * and ADR 0026 exists to stop: it is how a paying customer is shown an
-   * advertisement and a merchant is offered a licence we do not sell.
+   * The types those routes run over, for the two absences that are not one —
+   * *you have not bought the tier* and *this site is missing a plugin* (ADR 0026).
    */
   readonly types: readonly DestinationType[];
   /**
-   * What the [[Playbook]] this Optin started from expected, in words — or null
-   * where it started from none, or named nothing this install can say
-   * anything about.
-   *
-   * **Written by prefill since prefill shipped, and read by nothing until
-   * now.** It travels to this screen because this is where the decision it is
-   * about gets made: *"the playbook captures an email address and expects a
-   * destination like WP SMS"* is an instruction while nothing is bound, and
-   * history the moment something is — which is why the caller passes it only in
-   * the first case (ADR 0042 rule 2).
+   * Type ids the [[Playbook]] this Optin started from works well with, tagged
+   * *Suggested* where a new route is set up.
    */
-  readonly hint: string | null;
+  readonly suggested?: readonly string[];
   readonly onChange: (bound: string[]) => void;
   readonly connections: readonly Connection[];
+  /** Re-reads the site's routes: when the picker opens, and to retry a failed read. */
   readonly onRefresh: () => void;
+  /** Why the last re-read failed, while the routes from before it stay on screen. */
+  readonly refreshError?: string | null;
   readonly onSaved: (destinations: readonly Destination[]) => void;
   readonly onConnectionSaved?: (connection: Connection) => void;
   readonly mappings?: Readonly<Record<string, Record<string, string>>>;
   readonly onMappingChange?: (destinationId: string, map: Record<string, string>) => void;
+  /** The save point these routes receive. The template's first submission unless named. */
+  readonly submissionId?: string;
+  /** The audience this save point subscribes, if any, for what the picker refuses. */
+  readonly channel?: ChannelRule | null;
+  readonly title?: string;
+  readonly description?: string;
+  /** What an empty selection means for this save point. */
+  readonly emptyText?: string;
+  /** The main save point shows the always-on Lead log row and the publish requirement. */
+  readonly primary?: boolean;
+  /** "Collect only in WConvert": no routes, and the Lead log row says what that means. */
+  readonly local?: boolean;
+  /** The visible email suggestion for a test send. Sending always requires an explicit address. */
+  readonly testEmail?: string | null;
 }
+
+type Setup = { destination?: Destination; type?: string; focusField?: string } | null;
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound, available, types, hint, connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome, mappings = {}, onMappingChange,
+  bound, available, types, suggested = [], connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome,
+  mappings = {}, onMappingChange, submissionId, channel = null, refreshError = null, title, description, emptyText, primary = true, local = false, testEmail = null,
 }: DestinationsEditorProps) {
-  const [setup, setSetup] = useState<'add' | Destination | null>(null);
-  const [addedIds, setAddedIds] = useState<string[]>([]);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
+  const [setup, setSetup] = useState<Setup>(null);
+  const [testing, setTesting] = useState<Destination | null>(null);
+  const [focusId, setFocusId] = useState<string | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const missing = available.status === 'ready'
-    ? bound.filter((id) => !available.data.some((destination) => destination.id === id)) : [];
-  const handoffIssue = outcome && available.status === 'ready'
-    ? outcomeHandoffIssue(outcome, bound, available.data) : null;
+  const addButton = useRef<HTMLButtonElement>(null);
+  const submission = submissionId ?? template?.tree.submissions[0]?.id ?? '';
+  const site = available.status === 'ready' ? available.data : [];
+  const cards = bound.map((id) => site.find((destination) => destination.id === id)).filter((each): each is Destination => each !== undefined);
+  const missing = available.status === 'ready' ? bound.filter((id) => !site.some((destination) => destination.id === id)) : [];
+  const handoffIssue = primary && outcome && available.status === 'ready' ? outcomeHandoffIssue(outcome, bound, site) : null;
+  const names = contactFieldNames();
+  const saved = capturedFields(template, submission).filter((field) => field.name in names).map((field) => names[field.name]);
+  /* translators: %s: the contact fields a signup collects, e.g. “email and name”. */
+  const subtitle = description ?? (saved.length > 0 ? sprintf(__('Receives %s from this signup.', 'wconvert'), listWithAnd(saved)) : undefined);
+  const typeOf = (destination: Destination) => types.find((type) => type.id === destination.type);
+
+  const openPicker = (trigger: HTMLElement) => {
+    returnFocus.current = trigger;
+    onRefresh();
+    setPicking(true);
+  };
+  const add = (
+    <Button ref={addButton} variant="outline" size="sm" disabled={available.status !== 'ready'} onClick={(event) => openPicker(event.currentTarget)}>
+      <Plus aria-hidden="true" />{__('Add destination', 'wconvert')}
+    </Button>
+  );
+  const remove = (id: string) => {
+    onChange(bound.filter((each) => each !== id));
+    // The card that held focus is gone; Add — on the heading, or in the empty
+    // state once the last card goes — is the next thing on this region.
+    requestAnimationFrame(() => addButton.current?.focus());
+  };
 
   return (
     <>
-      <Region>
-        <RegionHeader title={__('Send leads to', 'wconvert')} level={3}
-          description={bound.length > 0
-            ? sprintf(__('%d selected', 'wconvert'), bound.length)
-            : __('No destinations selected', 'wconvert')} />
-        <Toolbar>
-            <Button variant="outline" disabled={available.status === 'loading'} onClick={onRefresh}>
-              <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
-            </Button>
-            <Button disabled={available.status !== 'ready'} onClick={(event) => {
-              returnFocus.current = event.currentTarget;
-              setNotice(null);
-              setSetup('add');
-            }}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>
-        </Toolbar>
+      <Region className="wconvert-destinations-region">
+        {refreshError !== null && available.status === 'ready' && !local &&
+          <RegionError message={refreshError} action={<Button variant="outline" size="sm" onClick={onRefresh}>{__('Retry', 'wconvert')}</Button>} />}
 
-        {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p>{available.status === 'ready' && available.data.filter(item => addedIds.includes(item.id) && !bound.includes(item.id)).map(item => <Button key={item.id} type="button" size="sm" variant="outline" onClick={() => onChange([...bound, item.id])}>{sprintf(__('Select %s for this campaign', 'wconvert'), item.label)}</Button>)}</RegionBody>}
-        {handoffIssue && <RegionBody className="border-b border-border"><Description>{handoffIssue}</Description></RegionBody>}
+        <RegionHeader title={title ?? __('Where leads go', 'wconvert')} level={3} description={subtitle}
+          trailing={!local && cards.length > 0 ? add : undefined} />
 
-        {available.status === 'loading' ? <RowsSkeleton />
-          : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Refresh to retry. Your draft is unchanged.', 'wconvert')} />
-          : available.data.length === 0 ? (
-            <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>
-              {outcome && !handoffIssue
-                ? __('Leads stay in WConvert. Add a destination only if you want to forward them.', 'wconvert')
-                : __('Add a destination, then select it for this Campaign.', 'wconvert')}
-            </EmptyState>
-          ) : (
-            <RegionBody>
-              <ul className="wconvert-choices">
-                {available.data.map((destination) => {
-                  const said = targetSaid(destination.target);
-                  const compatibility = template ? compatibilityProblems(destination, capturedFields(template)) : [];
-                  const automaticNames: Record<string, string> = { email: __('email', 'wconvert'), name: __('name', 'wconvert'), phone: __('phone', 'wconvert') };
-                  const automatic = template ? capturedFields(template)
-                    .filter((field) => ['email', 'name', 'phone'].includes(field.name) && destination.requirements?.fields.includes(field.name))
-                    .map((field) => automaticNames[field.name]) : [];
-                  const automaticText = automatic.length === 2
-                    ? sprintf(__('%1$s and %2$s', 'wconvert'), automatic[0], automatic[1])
-                    : automatic.length === 3
-                      ? sprintf(__('%1$s, %2$s and %3$s', 'wconvert'), automatic[0], automatic[1], automatic[2])
-                      : automatic[0] ?? '';
-                  const control = `wconvert-bind-${destination.id}`;
-                  const type = types.find((candidate) => candidate.id === destination.type);
-                  const missingConnection = type?.needs_connection === true
-                    && !connections.some((connection) => connection.id === destination.connection && connection.type === destination.type);
-                  const description = [type ? `${control}-provider` : null, said === null ? null : `${control}-target`,
-                    destination.availability === 'ready' ? null : `${control}-availability`,
-                    missingConnection ? `${control}-connection` : null,
-                    compatibility.length ? `${control}-compatibility` : null].filter(Boolean).join(' ');
-                  return (
-                    <li key={destination.id} className="min-w-0">
-                      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
-                        <input id={control} type="checkbox" className="mt-1" aria-describedby={description || undefined}
-                          checked={bound.includes(destination.id)} onChange={(event) => onChange(event.target.checked
-                            ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
-                        <div className="min-w-0">
-                          <label htmlFor={control} className="inline-flex items-center gap-2 text-body font-medium">{type && <ProviderMark type={type} className="size-4 shrink-0" />}{destination.label}</label>
-                          <div className="flex flex-wrap gap-x-2">
-                            {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
-                            {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
-                          </div>
-                          {bound.includes(destination.id) && automatic.length > 0 &&
-                            <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
-                          {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
-                            {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
-                          </ul>}
-                          {missingConnection && <Description as="span" id={`${control}-connection`} className="block text-warning">
-                            {__('Account connection needed. Open Settings to connect.', 'wconvert')}
-                          </Description>}
-                          {destination.availability !== 'ready' && (
-                            <Description as="span" id={`${control}-availability`} className="block text-warning">
-                              {destination.availability === 'locked' && isFreeInstall()
-                                ? __('This destination type isn’t available on this site, so captures are kept here, not sent.', 'wconvert')
-                                : destination.availability === 'locked'
-                                ? sprintf(__('Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), tierProductName(type?.tier))
-                                : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
-                            </Description>
-                          )}
-                        </div>
-                        {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
-                          onClick={(event) => {
-                            returnFocus.current = event.currentTarget;
-                            setNotice(null);
-                            setSetup(destination);
-                          }}><Settings2 aria-hidden="true" />{__('Settings', 'wconvert')}</Button>}
-                      </div>
-                      {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
-                        <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)}
-                          onSettings={(trigger) => { returnFocus.current = trigger; setNotice(null); setSetup(destination); }} />}
-                      {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
-                        <UnsupportedAnswerMapping />}
-                    </li>
-                  );
-                })}
-              </ul>
-            </RegionBody>
-          )}
-
-        {missing.length > 0 && <RegionBody className="border-t border-border">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning-surface p-3">
-            <div>
-              <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
-              <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
-              {__('Remove missing destinations', 'wconvert')}
-            </Button>
-          </div>
+        {handoffIssue && !local && <RegionBody className="border-b border-border">
+          <p role="status" className="wconvert-destination-callout">{handoffIssue}</p>
         </RegionBody>}
 
-        {hint !== null && <RegionFooter><details className="text-note">
-          <summary className="cursor-pointer">{__('Setup guidance', 'wconvert')}</summary>
-          <Description className="mt-2">{hint}</Description>
-        </details></RegionFooter>}
+        <RegionBody className="flex flex-col gap-3">
+          {primary && <div className="wconvert-destination-always">
+            <Inbox aria-hidden="true" className="size-5 shrink-0 text-muted-foreground" />
+            <div className="min-w-0">
+              <p className="m-0 font-medium">{__('Saved in WConvert Leads', 'wconvert')}</p>
+              <Description>{local
+                ? __('Kept for review or export. Nothing is forwarded to another service.', 'wconvert')
+                : __('Every submission is saved here first, even if a destination fails.', 'wconvert')}</Description>
+            </div>
+            <span className="text-note font-semibold text-muted-foreground">{__('Always', 'wconvert')}</span>
+          </div>}
+
+          {local ? null
+            : available.status === 'loading' ? <RowsSkeleton />
+            : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Your draft is unchanged.', 'wconvert')}
+                action={<Button variant="outline" onClick={onRefresh}>{__('Retry', 'wconvert')}</Button>} />
+            : site.length === 0 ? (
+              <div className="flex flex-col gap-2">
+                <p className="m-0 font-medium">{__('Choose a service to set up', 'wconvert')}</p>
+                {outcome && !handoffIssue && primary && <Description>{__('Leads stay in WConvert. Add a destination only if you want to forward them.', 'wconvert')}</Description>}
+                <ProviderTiles types={types} rule={channel} suggested={suggested}
+                  onChoose={(type, trigger) => { returnFocus.current = trigger; setSetup({ type: type.id }); }} />
+              </div>
+            ) : cards.length === 0 ? (
+              <EmptyState icon={Plug} title={__('No destinations selected', 'wconvert')}
+                action={<Button ref={addButton} variant="outline" onClick={(event) => openPicker(event.currentTarget)}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>}>
+                {emptyText ?? __('Leads stay in WConvert. Add a destination to also send them to your email or SMS service.', 'wconvert')}
+              </EmptyState>
+            ) : cards.map((destination) => (
+              <DestinationCard key={destination.id} destination={destination} type={typeOf(destination)} template={template}
+                submissionId={submission} connections={connections} mapping={mappings[destination.id] ?? {}}
+                focusOnMount={focusId === destination.id}
+                onEdit={(trigger, focusField) => { returnFocus.current = trigger; setSetup({ destination, focusField }); }}
+                onTest={(trigger) => { returnFocus.current = trigger; setTesting(destination); }}
+                onRemove={() => remove(destination.id)}
+                onMappingChange={onMappingChange ? (map) => onMappingChange(destination.id, map) : undefined} />
+            ))}
+
+          {missing.length > 0 && !local &&
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning-surface p-3">
+              <div>
+                <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
+                <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
+                {__('Remove missing destinations', 'wconvert')}
+              </Button>
+            </div>}
+        </RegionBody>
       </Region>
-      {setup !== null && <DestinationSetupDialog destination={setup === 'add' ? undefined : setup}
+
+      {picking && <AddDestinationPicker destinations={site} types={types} connections={connections} bound={bound} rule={channel}
+        suggested={suggested} returnFocusTo={returnFocus}
+        description={title === undefined ? __('Choose one you already use, or set up a new one.', 'wconvert')
+          /* translators: %s: the signup this route is for, e.g. “Optional SMS signup”. */
+          : sprintf(__('For %s. Choose one you already use, or set up a new one.', 'wconvert'), title)}
+        onClose={() => setPicking(false)}
+        onPick={(id) => { returnFocus.current = null; setFocusId(id); setPicking(false); onChange([...bound, id]); }}
+        onCreate={(type) => { setPicking(false); setSetup({ type: type.id }); }} />}
+
+      {setup !== null && <DestinationSetupDialog destination={setup.destination} initialType={setup.type} focusField={setup.focusField}
         types={types} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
         onSaved={(destinations) => {
-          if (setup === 'add' && available.status === 'ready') setAddedIds(destinations.filter(item => !available.data.some(old => old.id === item.id)).map(item => item.id));
+          if (setup.destination === undefined) {
+            const created = destinations.filter((item) => !site.some((old) => old.id === item.id)).map((item) => item.id);
+            if (created.length > 0) {
+              returnFocus.current = null;
+              setFocusId(created[0]);
+              onChange([...bound, ...created.filter((id) => !bound.includes(id))]);
+            }
+          }
           onSaved(destinations);
-          setNotice(setup === 'add'
-            ? __('Destination added. Select it to use it for this campaign.', 'wconvert')
-            : __('Destination updated for all campaigns using it.', 'wconvert'));
         }} />}
+
+      {testing !== null && <SendTestDialog destination={testing} type={typeOf(testing)} initialEmail={testEmail} settingsDirty={false}
+        returnFocusTo={returnFocus} onClose={() => setTesting(null)} onSent={() => undefined} />}
     </>
   );
 }

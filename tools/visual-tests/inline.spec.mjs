@@ -346,6 +346,25 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // product's explicit local lead-storage choice so this test can publish
   // without inventing a destination or mutating an external account.
   await page.getByRole('tab', { name: 'Destinations', exact: true }).click();
+  // The tab is cards and tiles rather than a checkbox list: it must hold at
+  // the widest admin and at phone width, in both directions, with no
+  // horizontal scroll on the page or inside the tab.
+  const destinationsPanel = page.getByRole('tabpanel', { name: 'Destinations', exact: true });
+  await expect(destinationsPanel.getByText('Saved in WConvert Leads', { exact: true })).toBeVisible();
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const direction of ['ltr', 'rtl']) {
+      await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      await expect.poll(() => destinationsPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
+      const always = await destinationsPanel.locator('.wconvert-destination-always').boundingBox();
+      const panelBox = await destinationsPanel.boundingBox();
+      expect(always && panelBox && always.x >= panelBox.x - 1 && always.x + always.width <= panelBox.x + panelBox.width + 1).toBe(true);
+      await page.screenshot({ path: info.outputPath(`destinations-${width}-${direction}.png`), fullPage: true });
+    }
+  }
+  await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
+  await page.setViewportSize({ width: 782, height: 900 });
   const collectOnly = page.getByRole('radio', { name: 'Collect only in WConvert', exact: true });
   await collectOnly.click();
   await expect(collectOnly).toBeChecked();

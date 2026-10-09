@@ -1,45 +1,60 @@
-import { useRef, useState } from 'react';
-import { DestinationSetupDialog } from './DestinationSetupDialog';
-import { Button } from '../components/ui/button';
 import { __ } from '@wordpress/i18n';
+import { DestinationsEditor } from './DestinationsEditor';
+import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
-import { ExtraAnswerMapping, hasExtraAnswers, UnsupportedAnswerMapping } from './ExtraAnswerMapping';
 
-export function SubmissionSettings({ template, primaryChannel, config, destinations, onChange, types = [], connections = [], onSaved, onConnectionSaved }: {
-  types?: readonly DestinationType[]; connections?: readonly Connection[]; onSaved?(destinations: readonly Destination[]): void; onConnectionSaved?(connection: Connection): void;
-  template?: Template; primaryChannel?: string | null; config: Record<string, unknown>; destinations: readonly Destination[];
+/**
+ * The optional second signup's routes, in the same cards as the main one.
+ *
+ * It subscribes the other channel, so only routes that take that channel can
+ * be added — the rule publish enforces on the server. Its selection and its
+ * extra-answer map live under its own submission id.
+ */
+export function SubmissionSettings({ template, primaryChannel, config, available, onChange, types = [], connections = [], onSaved, onConnectionSaved, onRefresh, refreshError = null, testEmail = null }: {
+  types?: readonly DestinationType[]; connections?: readonly Connection[];
+  onSaved(destinations: readonly Destination[]): void; onConnectionSaved?(connection: Connection): void; onRefresh(): void;
+  template?: Template; primaryChannel?: string | null; config: Record<string, unknown>; available: Loadable<readonly Destination[]>;
+  testEmail?: string | null; refreshError?: string | null;
   onChange(config: Record<string, unknown>): void;
 }) {
-  const [setup, setSetup] = useState<Destination | true | null>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
   const secondary = template?.tree.submissions[1];
   if (!secondary) return null;
   const channel = primaryChannel === 'phone' || primaryChannel === 'sms' ? 'email' : 'phone';
+  const title = channel === 'phone' ? __('Optional SMS signup', 'wconvert') : __('Optional email signup', 'wconvert');
+  const description = __('Visitors can skip this signup. Only destinations chosen here receive it.', 'wconvert');
+  if (config.capture_mode === 'local') {
+    return <Region className="wconvert-destinations-region"><RegionHeader title={title} level={3} description={description} />
+      <RegionBody><p className="m-0 text-note">{__('Signups are saved only in WConvert.', 'wconvert')}</p></RegionBody></Region>;
+  }
   const settings = (config.submission_settings ?? {}) as Record<string, { destination_ids?: string[] }>;
   const bound = settings[secondary.id]?.destination_ids ?? [];
-  const available = destinations.filter(d => d.requirements?.audience_channels?.includes(channel));
   const mappings = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
-  return <fieldset className="space-y-2 border rounded-md p-4">
-    <legend>{channel === 'phone' ? __('Optional SMS signup', 'wconvert') : __('Optional email signup', 'wconvert')}</legend>
-    <p>{__('Visitors can skip this signup. Their primary signup remains saved. This step saves its own details only when submitted.', 'wconvert')}</p>
-    {config.capture_mode === 'local' ? <p>{__('Signups are saved only in WConvert.', 'wconvert')}</p> : <>
-      <p>{__('Only the services selected here receive this signup. Delivery of the primary signup is not repeated.', 'wconvert')}</p>
-      {available.length === 0 && <div><p>{channel === 'phone' ? __('No SMS destination is set up. Add an SMS service, collect only in WConvert, or remove the optional SMS signup in Edit campaign.', 'wconvert') : __('No email destination is set up. Add an email service, collect only in WConvert, or remove the optional email signup in Edit campaign.', 'wconvert')}</p>{onSaved && <Button ref={trigger} type="button" variant="outline" onClick={() => setSetup(true)}>{channel === 'phone' ? __('Set up SMS destination', 'wconvert') : __('Set up email destination', 'wconvert')}</Button>}</div>}
-      {available.map(d => <div key={d.id}><label className="block"><input type="checkbox" checked={bound.includes(d.id)} onChange={event => {
-        const next = event.target.checked ? [...bound, d.id] : bound.filter(id => id !== d.id);
-        onChange({
-          submission_settings: { ...settings, [secondary.id]: { ...settings[secondary.id], destination_ids: next } },
-          integration_mappings: { ...mappings, [secondary.id]: Object.fromEntries(Object.entries(mappings[secondary.id] ?? {}).filter(([id]) => next.includes(id))) },
-        });
-      }} /> {d.label}</label>
-        {bound.includes(d.id) && template && types.find((type) => type.id === d.type)?.supports_mapping &&
-          <ExtraAnswerMapping providerLabel={types.find((type) => type.id === d.type)?.label} destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })}
-            onSettings={onSaved ? (button) => { trigger.current = button; setSetup(d); } : undefined} />}
-        {bound.includes(d.id) && template && types.some((type) => type.id === d.type && !type.supports_mapping) && hasExtraAnswers(template, secondary.id) &&
-          <UnsupportedAnswerMapping />}
-      </div>)}
-    </>}
-    {setup && onSaved && <DestinationSetupDialog destination={setup === true ? undefined : setup} types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={trigger} onClose={() => setSetup(null)} onSaved={onSaved} />}
-  </fieldset>;
+  return <DestinationsEditor
+    primary={false}
+    title={title}
+    description={description}
+    emptyText={channel === 'phone'
+      ? __('This signup is saved in WConvert only. Add an SMS service, or remove the optional SMS signup in Edit campaign.', 'wconvert')
+      : __('This signup is saved in WConvert only. Add an email service, or remove the optional email signup in Edit campaign.', 'wconvert')}
+    channel={{ channel, strict: true }}
+    template={template}
+    submissionId={secondary.id}
+    bound={bound}
+    available={available}
+    types={types}
+    connections={connections}
+    testEmail={testEmail}
+    onRefresh={onRefresh}
+    refreshError={refreshError}
+    onSaved={onSaved}
+    onConnectionSaved={onConnectionSaved}
+    mappings={mappings[secondary.id] ?? {}}
+    onChange={(next) => onChange({
+      submission_settings: { ...settings, [secondary.id]: { ...settings[secondary.id], destination_ids: next } },
+      integration_mappings: { ...mappings, [secondary.id]: Object.fromEntries(Object.entries(mappings[secondary.id] ?? {}).filter(([id]) => next.includes(id))) },
+    })}
+    onMappingChange={(destinationId, map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [destinationId]: map } } })}
+  />;
 }

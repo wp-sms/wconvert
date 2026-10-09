@@ -30,7 +30,30 @@ Contact. Provider availability, a missing Connection, incomplete settings and
 form compatibility remain separate facts. A nonempty file URL is not a check
 of its validity, reachability or inbox delivery.
 
-The editor checks its current template against selected routes. An absent
+The editor checks its current template against selected routes.
+
+> **Amended by the Destinations tab redesign:** the editor draws **only
+> the bound routes**, one card each, never the site's whole list — so every
+> warning it shows is about this Campaign. Each card carries the Settings
+> screen's status badge from one shared helper (`destinations/status.tsx`):
+> Failing, Not available, the tier with a lock, Paused, **Needs setup** (new:
+> an empty required setting or a missing account), Not used yet, Success
+> recorded. Under the badge sits at most one issue with its fix — Finish setup
+> opens settings at the empty field; Failing links to Leads → Sending issues;
+> otherwise the form-fit problems below. Each card also offers Send a test,
+> under the test contract further down, and Remove, which is a draft edit with
+> no confirm. **Add destination** opens a picker: site routes in one click,
+> refused with a reason when already bound or for the wrong audience channel,
+> and providers to set up a new one. The optional second signup uses the same
+> editor over its own submission. Shared usage is shown in the edit dialog,
+> not on the card. This amends the editor placement in
+> [0039](0039-a-screen-is-regions-and-scope-decides-placement.md) (Refresh
+> removed), the setup rules in
+> [0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md)
+> (a route created here is selected), and the Builder — Destinations row of
+> [0060](0060-a-screen-is-four-situations-and-they-are-answered-the-same-way.md).
+
+An absent
 identifier is explained differently from an optional one: optional email with a
 phone field may produce valid local captures that the email-only route skips.
 Capture itself always requires email or phone, so a form offering only optional
@@ -98,7 +121,9 @@ published snapshots do not count as live use. It is one admin query, with no new
 table, index, stored flag or public-page read.
 
 Both in-editor setup and the Destinations page show this list before shared
-settings. The note explains that unsaved editor changes are excluded and saving
+settings. In the editor's dialog the list replaces the generic "changes affect
+every campaign" description, so the shared-change warning is said once, and
+it is what the Save button is described by. The note explains that unsaved editor changes are excluded and saving
 affects live use immediately. Unknown usage is reported as unread, not as no
 users. Selecting a route remains an Optin draft edit; saving the shared route is
 outside that draft's Undo, as stated by

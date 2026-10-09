@@ -1,19 +1,19 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { listWithAnd } from './rules/sentence';
-import type { Destination, DestinationType } from '../destinations/api';
+import type { Destination } from '../destinations/api';
 import { compatibilityProblems, type CapturedField } from '../destinations/requirements';
 
 /**
  * What the builder says about this [[Optin]]'s [[Destination]]s: where the
- * [[Lead]]s go, what is stopping them getting there, and what the [[Playbook]]
- * expected — the last of which nothing read at all until now.
+ * [[Lead]]s go, what is stopping them getting there, and which types the
+ * [[Playbook]] expected.
  *
  * ============================================================================
  * NAMED FOR THE SUBJECT, NOT FOR EITHER OF THE TWO SCREENS THAT READ IT.
  * ============================================================================
- * The readiness panel takes the first two sentences and the Destinations tab
- * takes the third, so a file named for either would fit half of itself. What
- * every function here has in common is the noun.
+ * The readiness panel takes the sentences and the Destinations tab takes the
+ * hint, so a file named for either would fit half of itself. What every
+ * function here has in common is the noun.
  *
  * ============================================================================
  * PURE, BECAUSE THE SENTENCES ARE THE PART WORTH PINNING.
@@ -29,11 +29,14 @@ import { compatibilityProblems, type CapturedField } from '../destinations/requi
  * The [[Playbook]]'s [[Destination]] hint, as `Prefill` stored it.
  *
  * ============================================================================
- * IT HAS BEEN WRITTEN SINCE PREFILL SHIPPED AND READ BY NOTHING.
+ * IT WAS WRITTEN SINCE PREFILL SHIPPED AND READ BY NOTHING.
  * ============================================================================
  * `Prefill::fromPlaybook()` copies it into `config`, `PublishedProjection`
  * deliberately strips it on the way to the browser because it is authoring
- * state — and no screen has ever opened it. So a merchant who started from
+ * state. The Destinations tab now reads its `types`, tagging those providers
+ * *Suggested by your campaign setup*; `fields` is kept as stored and read by
+ * nothing, since the form-fit warnings already say what a route needs. Before
+ * that, no screen opened it at all — so a merchant who started from
  * *Welcome discount* was told, in the Playbook's own notes, that the trade is
  * an address for a discount, and then met a Destinations tab that said nothing
  * about which Destination the Playbook was written for.
@@ -67,120 +70,6 @@ export function hintIn(config: Record<string, unknown>): DestinationHint | null 
 
 const strings = (value: unknown): readonly string[] =>
   Array.isArray(value) ? value.filter((each): each is string => typeof each === 'string') : [];
-
-/**
- * What the [[Playbook]] expected, in the merchant's words — or null where it
- * expected nothing this install can say anything about.
- *
- * ============================================================================
- * IT NAMES THE TYPES THIS INSTALL HAS, AND SILENTLY DROPS THE ONES IT DOES NOT.
- * ============================================================================
- * A hint names Destination TYPES, and a Playbook is written for every install
- * rather than for this one — so it may name a type only [[Pro]] supplies, and
- * `welcome-discount` names one (`email_service_provider`) that no registry
- * member has at all. Printing an unresolved key at a merchant is printing our
- * own vocabulary at them, and there is nothing here that could translate it:
- * the words for a type come from the type, and a type this install does not
- * have has no words.
- *
- * **The FIELDS are the half that always means something**, which is why they
- * lead. `email`, `name` and `phone` are the closed capture vocabulary, named by
- * `TemplateLabels::fields()` on every install — so the sentence survives an
- * install that can name none of the types.
- *
- * ============================================================================
- * IT READS AS GUIDANCE, AND IT USED TO READ AS A WARNING.
- * ============================================================================
- * *"The playbook this started from **expects** a destination like WP SMS"* is
- * a sentence about an unmet requirement, printed at a merchant who may have
- * configured exactly the right thing and merely not bound it yet — and there
- * is no requirement: a [[Standalone]] install with nothing configured is a
- * fully working install, because the [[Lead]] log is written first and always.
- *
- * So two things change with what is CONFIGURED, which is why the configured
- * Destinations are a parameter:
- *
- * - **A type the hint named is already configured → the type half is dropped.**
- *   The expectation is met; repeating it is a permanent line that changes
- *   nothing about what the merchant does next (ADR 0042 rule 2). What is left
- *   is the field half, which is still guidance.
- * - **Nothing is configured at all → the sentence ends with where to go.**
- *   That one does change what you do next, so it is said — and only then.
- */
-export function hintSaid(
-  hint: DestinationHint | null,
-  types: readonly DestinationType[],
-  fields: Record<string, string>,
-  configured: readonly Destination[],
-): string | null {
-  if (hint === null) {
-    return null;
-  }
-
-  const captured = hint.fields.map((field) => fields[field] ?? field);
-  // Met by TYPE and never by count: a merchant with a lead-magnet email
-  // configured has not met a hint that named WP SMS, and telling them they
-  // have would drop the one sentence that was worth printing.
-  const met = hint.types.some((type) =>
-    configured.some((destination) => destination.type === type),
-  );
-  const named = met
-    ? []
-    : hint.types
-        .map((type) => types.find((each) => each.id === type)?.label)
-        .filter((label): label is string => label !== undefined);
-
-  if (captured.length === 0 && named.length === 0) {
-    return null;
-  }
-
-  if (named.length === 0) {
-    return sprintf(
-      /* translators: %s: what a Playbook captures, e.g. “Email address”. */
-      __('The campaign setup this started from captures %s.', 'wconvert'),
-      listWithAnd(captured),
-    );
-  }
-
-  const nowhere = configured.length === 0;
-
-  if (captured.length === 0) {
-    return nowhere
-      ? sprintf(
-          /* translators: %s: one or more destination types, e.g. “WP SMS”. */
-          __(
-            'The campaign setup this started from works well with a destination like %s. Add a destination here.',
-            'wconvert',
-          ),
-          listWithAnd(named),
-        )
-      : sprintf(
-          /* translators: %s: one or more destination types, e.g. “WP SMS”. */
-          __('The campaign setup this started from works well with a destination like %s.', 'wconvert'),
-          listWithAnd(named),
-        );
-  }
-
-  return nowhere
-    ? sprintf(
-        /* translators: 1: what it captures, e.g. “Email address”. 2: destination types, e.g. “WP SMS”. */
-        __(
-          'The campaign setup this started from captures %1$s, and works well with a destination like %2$s. Add a destination here.',
-          'wconvert',
-        ),
-        listWithAnd(captured),
-        listWithAnd(named),
-      )
-    : sprintf(
-        /* translators: 1: what it captures, e.g. “Email address”. 2: destination types, e.g. “WP SMS”. */
-        __(
-          'The campaign setup this started from captures %1$s, and works well with a destination like %2$s.',
-          'wconvert',
-        ),
-        listWithAnd(captured),
-        listWithAnd(named),
-      );
-}
 
 /** Where this Optin's Leads go, and anything wrong with getting them there. */
 export interface DestinationsSaid {

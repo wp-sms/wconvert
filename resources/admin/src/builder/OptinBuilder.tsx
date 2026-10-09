@@ -41,7 +41,7 @@ import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
-import { hintIn, hintSaid } from './destinations';
+import { hintIn } from './destinations';
 import { planFrom } from './rules/plan';
 import { summarise, summaryOf } from './rules/summaries';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
@@ -85,7 +85,7 @@ import {
 } from '../templates/api';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
-import { readDestinations, type Connection, type DestinationsPayload } from '../destinations/api';
+import { readDestinations, type Connection, type Destination, type DestinationsPayload } from '../destinations/api';
 import { adminSettings, catalogConfigured } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin } from '../optins/api';
@@ -205,6 +205,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [playbook, setPlaybook] = useState<Loadable<string | null>>(LOADING);
 
   const [destinations, setDestinations] = useState<Loadable<DestinationsPayload>>(LOADING);
+  /** A re-read that failed while routes were on screen: they stay, and this says so (ADR 0060). */
+  const [destinationsStale, setDestinationsStale] = useState<string | null>(null);
 
   const [privacyGuidance, setPrivacyGuidance] = useState(false);
 
@@ -354,10 +356,19 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const destinationRequest = useRef(0);
   const refreshDestinations = useCallback(() => {
     const request = ++destinationRequest.current;
-    setDestinations(LOADING);
+    // A refresh keeps the routes on screen (ADR 0060): the Add picker refreshes
+    // as it opens, and must not blank itself while the answer arrives. Only a
+    // read with nothing to keep shows loading; a failed re-read keeps the
+    // routes and reports itself beside them.
+    setDestinations((current) => current.status === 'ready' ? current : LOADING);
+    setDestinationsStale(null);
     void readDestinations()
       .then((payload) => { if (request === destinationRequest.current) setDestinations(ready(payload)); })
-      .catch((cause: unknown) => { if (request === destinationRequest.current) setDestinations(failed(cause)); });
+      .catch((cause: unknown) => {
+        if (request !== destinationRequest.current) return;
+        setDestinations((current) => current.status === 'ready' ? current : failed(cause));
+        setDestinationsStale(messageOf(cause));
+      });
   }, []);
   useEffect(() => {
     const requests = destinationRequest;
@@ -720,36 +731,33 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     setDestinations((current) => current.status === 'ready'
       ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
   };
+  const destinationsSaved = (updated: readonly Destination[]) => {
+    destinationRequest.current++;
+    setDestinations((current) => current.status === 'ready'
+      ? ready({ ...current.data, destinations: [...updated] }) : current);
+  };
+  const routes: Loadable<readonly Destination[]> = destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations;
+  const localCapture = captureOutcome?.audience_channel != null && config.capture_mode === 'local';
+  const hint = hintIn(config);
   const destinationEditor = <>
             {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
-            {captureOutcome?.audience_channel && config.capture_mode === 'local' ? null :
             <DestinationsEditor
               outcome={captureOutcome}
               template={template}
               bound={bound}
-              available={
-                destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations
-              }
+              local={localCapture}
+              title={template?.tree.submissions[1] ? __('Main signup', 'wconvert') : undefined}
+              available={routes}
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}
+              testEmail={read(destinations)?.test_sample?.email ?? null}
+              channel={captureOutcome?.audience_channel ? { channel: captureOutcome.audience_channel, strict: false } : null}
+              suggested={[...(hint?.types ?? []), ...(captureOutcome?.destination_type ? [captureOutcome.destination_type] : [])]}
               onConnectionSaved={connectionSaved}
               onRefresh={refreshDestinations}
-              onSaved={(updated) => {
-                destinationRequest.current++;
-                setDestinations((current) => current.status === 'ready'
-                  ? ready({ ...current.data, destinations: [...updated] }) : current);
-              }}
-              hint={
-                bound.length > 0
-                  ? null
-                  : hintSaid(
-                      hintIn(config),
-                      read(destinations)?.types ?? [],
-                      gallery.labels.fields,
-                      read(destinations)?.destinations ?? [],
-                    )
-              }
+              refreshError={destinationsStale}
+              onSaved={destinationsSaved}
               onChange={(next) => {
                 const current = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
                 const submissionId = template?.tree.submissions[0]?.id;
@@ -764,8 +772,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 if (submissionId) edit({ integration_mappings: { ...current, [submissionId]: { ...current[submissionId], [destinationId]: map } } });
               }}
             />
-            }
-            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onConnectionSaved={connectionSaved} onSaved={updated => { destinationRequest.current++; setDestinations(current => current.status === 'ready' ? ready({ ...current.data, destinations: [...updated] }) : current); }} template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onConnectionSaved={connectionSaved}
+              onSaved={destinationsSaved} onRefresh={refreshDestinations} refreshError={destinationsStale} testEmail={read(destinations)?.test_sample?.email ?? null}
+              template={template} primaryChannel={captureOutcome?.audience_channel} config={config}
+              available={routes} onChange={edit} />
   </>;
 
   return (
