@@ -39,6 +39,10 @@ const api = vi.hoisted(() => ({
 }));
 
 vi.mock('../../resources/admin/src/destinations/api', () => api);
+const leadsApi = vi.hoisted(() => ({ readLog: vi.fn() }));
+vi.mock('../../resources/admin/src/leads/api', async (original) => ({ ...(await original<typeof import('../../resources/admin/src/leads/api')>()), ...leadsApi }));
+const optinsApi = vi.hoisted(() => ({ listOptins: vi.fn() }));
+vi.mock('../../resources/admin/src/optins/api', async (original) => ({ ...(await original<typeof import('../../resources/admin/src/optins/api')>()), ...optinsApi }));
 
 const { Destinations } = await import('../../resources/admin/src/destinations/Destinations');
 
@@ -169,16 +173,13 @@ const regionFor = (heading: HTMLElement): HTMLElement => {
 };
 
 /**
- * A card's settings are the one collapsible (§21), a `<summary>` rather than
- * a button, so they are found by their title.
+ * Opens a card's settings — its **Edit** dialog, titled with the route's name
+ * — and returns the dialog. They used to fold open under every card.
  */
-const settingsToggle = (scope: HTMLElement): HTMLElement =>
-  within(scope).getByText('Settings', { selector: '.wconvert-disclosure__title' }).closest('summary')!;
-
-const openAllSettings = async () => {
-  for (const title of await screen.findAllByText('Settings', { selector: '.wconvert-disclosure__title' })) {
-    await userEvent.click(title.closest('summary')!);
-  }
+const edit = async (route: string): Promise<HTMLElement> => {
+  const card = regionFor(await screen.findByRole('heading', { name: route }));
+  await userEvent.click(within(card).getByRole('button', { name: 'Edit' }));
+  return screen.findByRole('dialog', { name: route });
 };
 
 /** Opens a card's ⋯ and picks one of its actions. */
@@ -265,10 +266,19 @@ describe('the destinations screen', () => {
     // Health is still clean, and says so, beside a Lead that will never land.
     expect(screen.getByText(/Last sent/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'WP SMS contacts' })).toHaveAttribute('href', destinationHref(HEALTHY.id));
-    expect(screen.getByRole('link', { name: 'View submission' })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));
+    // A verdict first, and a count on the route that rejected it.
+    expect(screen.getByText(/1 submission not sent since/)).toBeInTheDocument();
+    expect(screen.getByText(/1 not sent/)).toBeInTheDocument();
     // No ID on screen (ADR 0131), and no raw timestamp.
     expect(screen.queryByText(/01J0000000BBBBBBBBBBBBBBBB/)).toBeNull();
     expect(screen.queryByText('2026-08-25 11:00:00')).toBeNull();
+    // The submission opens over the list rather than leaving it.
+    leadsApi.readLog.mockResolvedValue({ submissions: 1, grouped: false, leads: [{ id: '01J0000000BBBBBBBBBBBBBBBB', optin_id: 'c1', email: 'kenji@example.jp', phone: null, fields: {}, created_at: '2026-08-25 11:00:00', consent: {} }], groups: [], next_cursor: null, snapshot: 's' });
+    optinsApi.listOptins.mockResolvedValue([{ id: 'c1', name: 'Grow the list', arms: [] }]);
+    await userEvent.click(screen.getByRole('button', { name: 'View submission' }));
+    const dialog = await screen.findByRole('dialog');
+    expect(await within(dialog).findByText('kenji@example.jp')).toBeInTheDocument();
+    expect(leadsApi.readLog).toHaveBeenCalledWith({ leadId: '01J0000000BBBBBBBBBBBBBBBB' });
   });
 
   it('explains an unavailable type rather than offering to sell it', async () => {
@@ -402,6 +412,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    await edit('WP SMS contacts');
 
     expect(await screen.findByText(/Which tags/)).toBeInTheDocument();
     expect(screen.getByText(/Added, never removed\./)).toBeInTheDocument();
@@ -423,7 +434,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('Lead magnet email');
 
     // A URL input, a text input and a textarea — one per declared field.
     expect(await screen.findByLabelText(/Link to the file/)).toHaveAttribute('type', 'url');
@@ -441,7 +452,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('Lead magnet email');
 
     expect(await screen.findByLabelText(/Link to the file/)).toHaveValue('https://example.com/guide.pdf');
     expect(screen.getByLabelText(/Message/)).toHaveValue('Here you go: {link}');
@@ -461,11 +472,11 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('Lead magnet email');
 
     await userEvent.clear(await screen.findByLabelText(/Subject line/));
     await userEvent.type(screen.getByLabelText(/Subject line/), 'Your guide');
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
@@ -487,7 +498,7 @@ describe('the destinations screen', () => {
    */
   it('still round-trips the WSMS tag list as a list of ids', async () => {
     render(<Destinations />);
-    await openAllSettings();
+    await edit('WP SMS contacts');
 
     const input = await screen.findByLabelText(/Tags to add/);
 
@@ -495,7 +506,7 @@ describe('the destinations screen', () => {
 
     await userEvent.clear(input);
     await userEvent.type(input, 'tag-7, tag-9 ,');
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
@@ -524,7 +535,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('MailPoet');
 
     // By NAME. A merchant never sees `3` or `4`.
     const newsletter = await screen.findByLabelText('Newsletter');
@@ -534,7 +545,7 @@ describe('the destinations screen', () => {
     expect(offers).not.toBeChecked();
 
     await userEvent.click(offers);
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
@@ -568,10 +579,10 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('MailPoet');
 
     await userEvent.click(await screen.findByLabelText('Offers'));
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
@@ -601,6 +612,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    await edit('MailPoet');
 
     expect(await screen.findByLabelText(/Lists to add to/)).toHaveValue('3');
   });
@@ -625,6 +637,7 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
+    await edit('WP SMS contacts');
 
     expect(await screen.findByLabelText(/Something new/)).toHaveAttribute('type', 'text');
   });
@@ -643,9 +656,9 @@ describe('the destinations screen', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('WP SMS contacts');
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Save' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
@@ -689,74 +702,83 @@ describe('the destinations screen', () => {
     api.saveDestination.mockReturnValue(new Promise(() => {}));
 
     render(<Destinations />);
-    await openAllSettings();
 
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     const magnet = regionFor(screen.getByRole('heading', { name: 'Lead magnet email' }));
+    const dialog = within(await edit('WP SMS contacts'));
 
-    await userEvent.click(within(wsms).getByRole('button', { name: 'Save' }));
+    await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
-      expect(within(wsms).getByRole('button', { name: 'Saving…' })).toBeDisabled();
+      expect(dialog.getByRole('button', { name: 'Saving…' })).toBeDisabled();
     });
-    expect(within(wsms).getByRole('button', { name: 'Actions for WP SMS contacts' })).toBeDisabled();
+    // Escape cannot drop a save in flight.
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('dialog', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    // The modal hides the page from the accessibility tree, hence `hidden`.
+    expect(within(wsms).getByRole('button', { name: 'Actions for WP SMS contacts', hidden: true })).toBeDisabled();
+    expect(within(wsms).getByRole('button', { name: 'Edit', hidden: true })).toBeDisabled();
 
-    // The other Destination is untouched — its Save and its ⋯ still work.
-    expect(within(magnet).getByRole('button', { name: 'Save' })).not.toBeDisabled();
-    expect(within(magnet).getByRole('button', { name: 'Actions for Lead magnet email' })).not.toBeDisabled();
-  });
-
-  it('keeps navigation and the first route busy when a second route finishes first', async () => {
-    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
-    let finishFirst!: () => void;
-    api.saveDestination.mockImplementation(({ id }: { id: string }) => id === HEALTHY.id
-      ? new Promise<void>((resolve) => { finishFirst = resolve; }) : Promise.resolve());
-    const editing = vi.fn();
-    render(<Destinations onEditingStateChange={editing} />);
-    await openAllSettings();
-    const first = within(regionFor(screen.getByRole('heading', { name: 'WP SMS contacts' })));
-    const second = within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' })));
-    await userEvent.click(first.getByRole('button', { name: 'Save' }));
-    await userEvent.click(second.getByRole('button', { name: 'Save' }));
-    await waitFor(() => expect(second.getByRole('button', { name: 'Save' })).toBeEnabled());
-    expect(first.getByRole('button', { name: 'Saving…' })).toBeDisabled();
-    // Said beside the Save that did it, and only there.
-    expect(second.getByText('Saved just now')).toBeInTheDocument();
-    expect(first.queryByText('Saved just now')).toBeNull();
-    expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: true }));
-    await act(async () => finishFirst());
-    await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: false })));
+    // The other Destination is untouched — its Edit and its ⋯ still work.
+    expect(within(magnet).getByRole('button', { name: 'Edit', hidden: true })).toBeEnabled();
+    expect(within(magnet).getByRole('button', { name: 'Actions for Lead magnet email', hidden: true })).toBeEnabled();
   });
 
   /**
-   * **A failure renders in the region that produced it.** The shipped version
-   * held one `error` and rendered it in a region of its own above all the
-   * others, so a failed save on the third Destination reported at the top of
-   * the screen and the merchant had to guess which row it was about — the
-   * placement failure ADR 0039 exists to name.
+   * **"Saved just now", beside the Save that did it** (ADR 0131), and the
+   * dialog stays open: a merchant fixing one field often has a second. The
+   * form is re-seeded from the saved route, so the next Escape asks about
+   * the next edit, not one already saved.
    */
-  it('reports a failed save in the destination that failed, and nowhere else', async () => {
+  it('says it saved beside Save, stays open, and asks again only about a later edit', async () => {
+    api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
+    let finish!: () => void;
+    api.saveDestination.mockImplementation(() => new Promise<void>((resolve) => { finish = resolve; }));
+    const editing = vi.fn();
+    render(<Destinations onEditingStateChange={editing} />);
+    const dialog = within(await edit('WP SMS contacts'));
+    await userEvent.type(dialog.getByRole('textbox', { name: 'Name' }), ' edited');
+    await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ dirty: true })));
+    await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
+    await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: true })));
+    await act(async () => finish());
+    expect(await dialog.findByText('Saved just now')).toBeVisible();
+    expect(api.saveDestination).toHaveBeenCalledWith(expect.objectContaining({ id: HEALTHY.id, label: 'WP SMS contacts edited' }));
+    expect(dialog.getByRole('button', { name: 'Done' })).toBeVisible();
+    await waitFor(() => expect(editing).toHaveBeenLastCalledWith(expect.objectContaining({ busy: false, dirty: false })));
+
+    // Nothing unsaved, so Escape just closes — no "Discard changes?".
+    await userEvent.type(dialog.getByRole('textbox', { name: 'Tags to add' }), ', more');
+    expect(dialog.queryByText('Saved just now')).toBeNull();
+    await userEvent.keyboard('{Escape}');
+    expect(dialog.getByText('Discard changes?')).toBeVisible();
+  });
+
+  /**
+   * **A failed save is said beside the Save that failed**, in the dialog that
+   * still holds the draft — never at the top of the page, and never on a card
+   * after the draft it was about has been dismissed (ADR 0039).
+   */
+  it('reports a failed save beside its Save and keeps the draft', async () => {
     api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
     api.saveDestination.mockRejectedValue(new Error('That file link is not reachable.'));
 
     render(<Destinations />);
-    await openAllSettings();
+    const dialog = within(await edit('Lead magnet email'));
 
-    const magnet = regionFor(await screen.findByRole('heading', { name: 'Lead magnet email' }));
+    await userEvent.clear(dialog.getByLabelText(/Subject line/));
+    await userEvent.type(dialog.getByLabelText(/Subject line/), 'Your guide');
+    await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
 
-    await userEvent.click(within(magnet).getByRole('button', { name: 'Save' }));
-
-    await waitFor(() => {
-      expect(within(magnet).getByText('That file link is not reachable.')).toBeInTheDocument();
-    });
-
-    // Once, in that one region. Not above the page, and not beside the
-    // Destination that is delivering fine.
+    expect(await dialog.findByRole('alert')).toHaveTextContent('That file link is not reachable.');
+    expect(dialog.getByLabelText(/Subject line/)).toHaveValue('Your guide');
+    expect(dialog.queryByText('Saved just now')).toBeNull();
     expect(screen.getAllByText('That file link is not reachable.')).toHaveLength(1);
-    expect(
-      within(regionFor(screen.getByRole('heading', { name: 'WP SMS contacts' })))
-        .queryByText('That file link is not reachable.'),
-    ).not.toBeInTheDocument();
+
+    // Cancel is the explicit discard; only Escape, ✕ and an outside click ask.
+    await userEvent.click(dialog.getByRole('button', { name: 'Cancel' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(screen.queryByText('That file link is not reachable.')).toBeNull();
   });
 
   /**
@@ -772,7 +794,6 @@ describe('the destinations screen', () => {
     api.saveDestination.mockResolvedValue(undefined);
 
     render(<Destinations />);
-    await openAllSettings();
 
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
 
@@ -783,10 +804,8 @@ describe('the destinations screen', () => {
 
     // Saving anything at all re-reads the payload, and the report is a fact
     // about the moment before that read.
-    await userEvent.click(
-      within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' })))
-        .getByRole('button', { name: 'Save' }),
-    );
+    const dialog = within(await edit('Lead magnet email'));
+    await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(screen.queryByText(/queued to send again/)).not.toBeInTheDocument();
@@ -943,7 +962,7 @@ describe('a destination is a named route', () => {
    */
   it('renames a configured route', async () => {
     render(<Destinations />);
-    await openAllSettings();
+    await edit('MailPoet');
 
     const name = await screen.findByLabelText('Name');
 
@@ -951,7 +970,7 @@ describe('a destination is a named route', () => {
 
     await userEvent.clear(name);
     await userEvent.type(name, 'Newsletter signups');
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save destination' }));
 
     await waitFor(() => {
       expect(api.saveDestination).toHaveBeenCalledWith(
@@ -975,17 +994,22 @@ describe('a destination is a named route', () => {
     });
 
     render(<Destinations />);
-    await openAllSettings();
+    await edit('MailPoet');
 
     expect(await screen.findByLabelText('Name')).toHaveValue('MailPoet');
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save destination' })).toBeInTheDocument();
   });
 
-  /** Where the leads land, first, on the card that configures the route. */
-  it('says where a configured route lands', async () => {
+  /**
+   * Where the leads land, under the name — and the type only where it is not
+   * the name already ("MailPoet / MailPoet" said one thing twice).
+   */
+  it('says where a configured route lands, without repeating its name', async () => {
     render(<Destinations />);
 
-    expect(await screen.findByText('Sending to Newsletter.')).toBeInTheDocument();
+    const card = regionFor(await screen.findByRole('heading', { name: 'MailPoet' }));
+    expect(within(card).getByText('Newsletter')).toBeVisible();
+    expect(within(card).getAllByText(/MailPoet/)).toHaveLength(1);
   });
 
   /**
@@ -1019,7 +1043,7 @@ describe('a destination is a named route', () => {
 
     render(<Destinations />);
 
-    expect(await screen.findByText('Not pointed at anything yet.')).toBeInTheDocument();
+    expect(await screen.findByText('Not pointed at anything')).toBeInTheDocument();
   });
 });
 
@@ -1052,8 +1076,49 @@ describe('what a never-used destination says', () => {
 
     render(<Destinations />);
 
-    expect(await screen.findByText('Not used yet')).toBeInTheDocument();
+    // Bound, or bindings unknown, and never sent: true either way.
+    expect(await screen.findByText('No sends yet')).toBeInTheDocument();
     expect(screen.queryByText('Nothing has been pushed here yet.')).toBeNull();
+  });
+
+  /**
+   * **"Not used yet" said two things.** A route no campaign has chosen is not
+   * waiting for a submission; it is waiting for the merchant — so the badge
+   * says which, and the card says where to go next.
+   */
+  it('says a route no campaign uses is not in a campaign, and where to choose it', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [WSMS_READY],
+      destinations: [{ ...HEALTHY, usage: [], health: { ...HEALTHY.health, last_success_at: null } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('Not in a campaign')).toBeInTheDocument();
+    expect(screen.getByText(/Not in a campaign yet/)).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Go to campaigns' })).toHaveAttribute('href', '#optins');
+    expect(screen.queryByText('No sends yet')).toBeNull();
+  });
+
+  it('says who uses a route and how many of them are live', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [LEAD_MAGNET],
+      destinations: [{ ...LEAD_MAGNET_BOUND, label: 'Welcome email', usage: [
+        { id: 'a', name: 'Spring guide', draft: false, live: true },
+        { id: 'b', name: 'Winter guide', draft: true, live: false },
+      ] }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('Lead magnet email · Used by 2 campaigns (1 live)')).toBeVisible();
+    // Working, not "Success recorded": the record is the Last sent line.
+    expect(screen.getByText('Working')).toBeVisible();
+    expect(screen.queryByRole('link', { name: 'Go to campaigns' })).toBeNull();
   });
 
   /** And the one that says something the badge does not still shows. */
@@ -1210,28 +1275,35 @@ describe('testing a destination', () => {
     // The destructive palette is what the screen reserves for a real failure.
     expect(note.closest('[class*="destructive"]')).toBeNull();
   });
-  it('keeps health visible while settings are closed and preserves edits on reopening', async () => {
+  /**
+   * **The card is health; the settings are a dialog.** Nothing to edit is
+   * drawn on the card, Edit opens the route's own dialog — titled with its
+   * name, its badge and its type — and Cancel discards the draft and returns
+   * focus to Edit.
+   */
+  it('keeps the card to health and edits in a dialog that Cancel discards', async () => {
     api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
     render(<Destinations />);
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
-    const settings = settingsToggle(region);
-    expect(settings.closest('details')).not.toHaveAttribute('open');
+    expect(within(region).queryByRole('textbox', { name: 'Name' })).toBeNull();
     expect(within(region).queryByRole('button', { name: 'Send again' })).toBeNull();
-    expect(within(region).getByRole('textbox', { name: 'Name' })).not.toBeVisible();
     expect(within(region).getByText(/Last sent/)).toBeVisible();
-    await userEvent.click(settings);
-    const name = within(region).getByRole('textbox', { name: 'Name' });
-    expect(name).toBeVisible();
+    const editButton = within(region).getByRole('button', { name: 'Edit' });
+    expect(editButton).toHaveAccessibleDescription('WP SMS contacts');
+    await userEvent.click(editButton);
+    const dialog = screen.getByRole('dialog', { name: 'WP SMS contacts' });
+    // The meta line is the type; the usage notice says who else is affected.
+    expect(dialog).toHaveAccessibleDescription('WP SMS contacts');
+    expect(within(dialog).getByText('Working')).toBeVisible();
+    expect(within(dialog).getByText('Campaigns using this destination')).toBeVisible();
+    const name = within(dialog).getByRole('textbox', { name: 'Name' });
     await userEvent.clear(name);
     await userEvent.type(name, 'Newsletter signups');
-    await userEvent.click(settings);
-    await userEvent.click(settings);
-    expect(within(region).getByRole('textbox', { name: 'Name' })).toHaveValue('Newsletter signups');
-    await userEvent.click(within(region).getByRole('button', { name: 'Cancel' }));
-    expect(settings).toHaveFocus();
-    expect(settings.closest('details')).not.toHaveAttribute('open');
-    await userEvent.click(settings);
-    expect(within(region).getByRole('textbox', { name: 'Name' })).toHaveValue('WP SMS contacts');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(editButton).toHaveFocus();
+    await userEvent.click(editButton);
+    expect(within(screen.getByRole('dialog')).getByRole('textbox', { name: 'Name' })).toHaveValue('WP SMS contacts');
     expect(api.saveDestination).not.toHaveBeenCalled();
   });
 
@@ -1244,7 +1316,9 @@ describe('testing a destination', () => {
     expect(dialog.getByRole('heading', { name: 'WP SMS contacts' })).toBeVisible();
     expect(screen.getByRole('dialog')).toHaveAccessibleDescription('WP SMS contacts · tag-7');
     expect(dialog.getByRole('textbox', { name: 'Test email address' })).toHaveValue('merchant@example.com');
-    expect(dialog.getByRole('button', { name: 'Send test' })).toHaveAccessibleDescription(/Only this email address.*create or update a contact.*does not confirm subscription or inbox delivery/);
+    // One sentence of effect; what a success does not prove is the result's to say.
+    expect(dialog.getByRole('button', { name: 'Send test' })).toHaveAccessibleDescription(/^Only this email address.*Use an address you own\. The test really sends — it may add a contact or send an email — but creates no lead\.$/);
+    expect(screen.queryByText(/inbox delivery/)).toBeNull();
     expect(api.testSend).not.toHaveBeenCalled();
     expect(api.testConnection).not.toHaveBeenCalled();
     expect(api.rePush).not.toHaveBeenCalled();
@@ -1291,15 +1365,14 @@ describe('testing a destination', () => {
     expect(api.testSend).not.toHaveBeenCalled();
   });
 
-  it('preserves the sample on transport failure and explains that unsaved settings are excluded', async () => {
+  it('preserves the sample on transport failure', async () => {
     api.testSend.mockRejectedValueOnce({ message: 'The request failed. Try again.' });
     render(<Destinations />);
-    const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
-    await userEvent.click(settingsToggle(region));
-    await userEvent.type(within(region).getByRole('textbox', { name: 'Tags to add' }), ', another-tag');
-    await choose('WP SMS contacts', 'Send a test', region);
+    await choose('WP SMS contacts', 'Send a test');
     const dialog = within(screen.getByRole('dialog'));
-    expect(dialog.getByText(/Uses the saved settings/)).toBeVisible();
+    // Settings are edited in a modal of their own, so a test from the card
+    // can only ever be of the saved route — there is no unsaved draft to warn of.
+    expect(dialog.queryByText(/Uses the saved settings/)).toBeNull();
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
     expect(await dialog.findByRole('alert')).toHaveTextContent('The request failed. Try again.');
     expect(dialog.getByRole('textbox', { name: 'Test email address' })).toHaveValue('merchant@example.com');
@@ -1325,23 +1398,19 @@ describe('testing a destination', () => {
     expect(dialog.getByRole('button', { name: 'Done' })).toBeEnabled();
   });
 
-  it('does not erase a failed settings save when a test of the saved route succeeds', async () => {
-    api.saveDestination.mockRejectedValueOnce({ message: 'Your settings were not saved.' });
+  it('leaves what the test answered on the card it was about', async () => {
     api.testSend.mockResolvedValue({ outcome: 'success', message: 'The saved route accepted the sample.' });
+    api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, test_sample: { email: 'merchant@example.com', fields: ['email'] } });
     render(<Destinations />);
     const card = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
-    const region = within(card);
-    await userEvent.click(settingsToggle(card));
-    await userEvent.type(region.getByRole('textbox', { name: 'Name' }), ' edited');
-    await userEvent.click(region.getByRole('button', { name: 'Save' }));
-    expect(await region.findByText('Your settings were not saved.')).toBeVisible();
-    expect(region.queryByText('Saved just now')).toBeNull();
     await choose('WP SMS contacts', 'Send a test', card);
     const dialog = within(screen.getByRole('dialog'));
     await userEvent.click(dialog.getByRole('button', { name: 'Send test' }));
     await userEvent.click(await dialog.findByRole('button', { name: 'Done' }));
-    expect(region.getByText('Your settings were not saved.')).toBeVisible();
-    expect(region.getByRole('textbox', { name: 'Name' })).toHaveValue('WP SMS contacts edited');
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(within(card).getByText('The saved route accepted the sample.')).toBeVisible();
+    expect(within(regionFor(screen.getByRole('heading', { name: 'Lead magnet email' }))).queryByText('The saved route accepted the sample.')).toBeNull();
+    expect(within(card).getByRole('button', { name: 'Actions for WP SMS contacts' })).toHaveFocus();
   });
 
 });
@@ -1349,14 +1418,14 @@ describe('testing a destination', () => {
 describe('destination recovery entry points', () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it('offers recovery beside skipped submissions with Settings still closed', async () => {
+  it('offers recovery beside skipped submissions, on the card itself', async () => {
     api.readDestinations.mockResolvedValue({ ...TWO_DESTINATIONS, destinations: [{
       ...HEALTHY, health: { ...HEALTHY.health, skipped_captures: 12, last_skipped_at: '2026-08-25 12:00:00' },
     }] });
     api.rePush.mockResolvedValue({ jobs: 12, capped: false, since: HEALTHY.health.last_success_at });
     render(<Destinations />);
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
-    expect(settingsToggle(region).closest('details')).not.toHaveAttribute('open');
+    expect(screen.queryByRole('dialog')).toBeNull();
     const replay = within(region).getByRole('button', { name: 'Send again' });
     expect(replay).toHaveAccessibleDescription(/since its last success/);
     expect(api.rePush).not.toHaveBeenCalled();
@@ -1390,9 +1459,10 @@ describe('destination recovery entry points', () => {
     const heading = await screen.findByRole('heading', { name: 'Lead magnet email' });
     // Finding the rendered heading can precede the effect that moves focus.
     await waitFor(() => expect(heading).toHaveFocus());
-    const region = regionFor(heading);
-    await waitFor(() => expect(settingsToggle(region).closest('details')).toHaveAttribute('open'));
-    expect(within(region).getByRole('textbox', { name: 'Link to the file' })).toHaveValue('https://example.com/guide.pdf');
+    // Focused, not opened: a link to a route is not a request to edit it, and
+    // the card's own issue line carries the fix where there is one.
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(within(regionFor(heading)).getByRole('button', { name: 'Edit' })).toBeVisible();
     expect(api.rePush).not.toHaveBeenCalled();
     expect(api.testSend).not.toHaveBeenCalled();
   });
@@ -1405,7 +1475,7 @@ describe('destination recovery entry points', () => {
     expect(await screen.findByText('This destination is no longer available')).toBeVisible();
     expect(screen.getByText('Removed destination')).toBeVisible();
     expect(screen.queryByText('removed-route')).toBeNull();
-    expect(screen.getByRole('link', { name: 'View submission' })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));
+    expect(screen.getByRole('button', { name: 'View submission' })).toHaveAttribute('aria-haspopup', 'dialog');
     expect(screen.getByRole('link', { name: 'Show all destinations' })).toHaveAttribute('href', destinationHref());
   });
 
@@ -1422,19 +1492,30 @@ describe('destination recovery entry points', () => {
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });
 
-  it('reads recent sends only when asked, with readable times and words', async () => {
+  /**
+   * **Recent sends are a dialog behind ⋯, read only when asked**, and each
+   * row leads to the submission it was for — outcome and time alone left the
+   * merchant nowhere to go from "Needs attention".
+   */
+  it('reads recent sends only when asked, with readable times, words and the submission', async () => {
     api.readDestinations.mockResolvedValue(TWO_DESTINATIONS);
     api.readRecentAttempts.mockRejectedValueOnce({ message: 'Recent sends could not be read.' })
-      .mockResolvedValueOnce({ attempts: [{ id: 1, lead: 'l', submission: 's', attempt: 2, at: '2026-08-25 12:00:00', status: 'done', outcome: 'retry_scheduled' }] });
+      .mockResolvedValueOnce({ attempts: [{ id: 1, lead: '01J0000000BBBBBBBBBBBBBBBB', submission: 's', attempt: 2, at: '2026-08-25 12:00:00', status: 'done', outcome: 'retry_scheduled' }] });
     render(<Destinations />);
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     expect(api.readRecentAttempts).not.toHaveBeenCalled();
-    await userEvent.click(within(region).getByText('Recent sends', { selector: '.wconvert-disclosure__title' }).closest('summary')!);
-    expect(await within(region).findByText('Recent sends could not be read.')).toBeVisible();
-    await userEvent.click(within(region).getByRole('button', { name: 'Try again' }));
-    expect(await within(region).findByText('Will retry')).toBeVisible();
-    expect(within(region).getByText(/^Aug 25/)).toBeVisible();
-    expect(within(region).queryByText(/Attempt/)).toBeNull();
+    await choose('WP SMS contacts', 'Recent sends', region);
+    const dialog = within(await screen.findByRole('dialog', { name: 'WP SMS contacts' }));
+    expect(await dialog.findByText('Recent sends could not be read.')).toBeVisible();
+    await userEvent.click(dialog.getByRole('button', { name: 'Try again' }));
+    expect(await dialog.findByText('Will retry')).toBeVisible();
+    expect(dialog.getByText(/Aug 25/)).toBeVisible();
+    expect(dialog.queryByText(/Attempt/)).toBeNull();
+    expect(dialog.getByRole('link', { name: 'View submission' })).toHaveAttribute('href', leadsHref({ leadId: '01J0000000BBBBBBBBBBBBBBBB' }));
+    expect(screen.queryByText(/01J0000000BBBBBBBBBBBBBBBB/)).toBeNull();
+    await userEvent.click(dialog.getByRole('button', { name: 'Done' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(within(region).getByRole('button', { name: 'Actions for WP SMS contacts' })).toHaveFocus();
   });
 
   it('retries an initial read failure without issuing a recovery or test action', async () => {
@@ -1535,6 +1616,201 @@ describe('adding a destination', () => {
     render(<Destinations />);
     expect(await screen.findByText('Leads are kept in WConvert only')).toBeVisible();
     // No account region where nothing on the site needs an account.
-    expect(screen.queryByText('Connected accounts')).toBeNull();
+    expect(screen.queryByRole('heading', { name: 'Accounts' })).toBeNull();
+  });
+
+  /**
+   * **An empty screen carries its own way forward** (§20, ADR 0039): the
+   * button sat in a page header the merchant had already read past, and the
+   * heading drops its copy until a route exists — one primary action.
+   */
+  it('puts Add in the empty state, and only there', async () => {
+    render(<Destinations />);
+    const empty = (await screen.findByText('Leads are kept in WConvert only')).closest('section')!;
+    expect(screen.getAllByRole('button', { name: 'Add a destination' })).toHaveLength(1);
+    await userEvent.click(within(empty).getByRole('button', { name: 'Add a destination' }));
+    expect(await screen.findByRole('dialog', { name: 'Add a destination' })).toBeVisible();
+  });
+
+  /**
+   * **Add no longer closes into nothing.** The new route's card takes focus,
+   * and says what it still needs — a campaign — with the way there.
+   */
+  it('focuses the new card after Add and points it at the campaigns', async () => {
+    const NEW = { ...LEAD_MAGNET_BOUND, id: '01J0000000NNNNNNNNNNNNNNNN', label: 'Welcome email', usage: [], health: { ...HEALTHY.health, last_success_at: null } };
+    api.saveDestination.mockResolvedValue({ destinations: [NEW] });
+    render(<Destinations />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Add a destination' }));
+    api.readDestinations.mockResolvedValue({ types: [MAILPOET_READY, LEAD_MAGNET], destinations: [NEW], connections: [], failures: [] });
+    await userEvent.click(await screen.findByRole('button', { name: 'Lead magnet email' }));
+    const dialog = within(screen.getByRole('dialog'));
+    await userEvent.type(dialog.getByLabelText(/Link to the file/), 'https://example.com/guide.pdf');
+    await userEvent.click(dialog.getByRole('button', { name: 'Add destination' }));
+    const heading = await screen.findByRole('heading', { name: 'Welcome email' });
+    await waitFor(() => expect(heading).toHaveFocus());
+    const card = regionFor(heading);
+    expect(within(card).getByText(/Lead magnet email · Not in a campaign yet/)).toBeVisible();
+    expect(within(card).getByRole('link', { name: 'Go to campaigns' })).toHaveAttribute('href', '#optins');
+  });
+});
+
+/**
+ * ============================================================================
+ * THE PAGE IS FOR DESTINATIONS; ACCOUNTS ARE THE MEANS.
+ * ============================================================================
+ * Destinations come first with Add on their own heading, accounts follow them
+ * behind one Connect menu, and the page header carries nothing on Settings.
+ */
+describe('the order of the screen', () => {
+  const REMOTE = { ...MAILPOET_READY, id: 'mailchimp', label: 'Mailchimp', needs_connection: true, connection_schema: { api_key: { type: 'password', label: 'API key' } } };
+  const BREVO = { ...REMOTE, id: 'brevo', label: 'Brevo' };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.readDestinations.mockResolvedValue({ types: [WSMS_READY, REMOTE, BREVO], destinations: [HEALTHY], connections: [], failures: [] });
+  });
+
+  it('draws destinations before accounts, with Add on the destinations heading and no Refresh', async () => {
+    render(<Destinations />);
+    const destinations = await screen.findByRole('heading', { name: 'Destinations' });
+    const accounts = await screen.findByRole('heading', { name: 'Accounts' });
+    expect(destinations.compareDocumentPosition(accounts) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText('Sign in once per service. Destinations above use these accounts.')).toBeVisible();
+    const add = screen.getByRole('button', { name: 'Add a destination' });
+    expect(add.compareDocumentPosition(screen.getByRole('heading', { name: 'WP SMS contacts' })) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^Refresh/ })).toBeNull();
+    // Nothing wrong, so nothing to check.
+    expect(screen.queryByRole('link', { name: /sending issue/ })).toBeNull();
+    // One door, not one per service.
+    expect(screen.queryByRole('button', { name: 'Connect Mailchimp' })).toBeNull();
+  });
+
+  it('links to the sending issues only when there are some, and counts them', async () => {
+    api.readDestinations.mockResolvedValue({ types: [WSMS_READY], destinations: [
+      { ...HEALTHY, health: { ...HEALTHY.health, consecutive_failures: 2, last_error: 'Timeout' } },
+    ], connections: [], failures: [] });
+    render(<Destinations />);
+    expect(await screen.findByRole('link', { name: '1 sending issue' })).toHaveAttribute('href', '#leads?view=issues');
+  });
+
+  it('keeps Refresh on the sending issues view, and never says Refreshing on a first load', async () => {
+    let answer!: (value: unknown) => void;
+    api.readDestinations.mockReturnValueOnce(new Promise((resolve) => { answer = resolve; }));
+    render(<Destinations mode="issues" />);
+    expect(screen.getByRole('button', { name: 'Refresh' })).toBeDisabled();
+    expect(screen.queryByText('Refreshing…')).toBeNull();
+    await act(async () => answer({ types: [WSMS_READY], destinations: [HEALTHY], connections: [], failures: [] }));
+    expect(await screen.findByRole('button', { name: 'Refresh' })).toBeEnabled();
+  });
+
+  /**
+   * **A connection ends on its next step.** Pasting a key used to close the
+   * dialog into nothing — the account sends nowhere until a destination runs
+   * over it — so the result offers that destination, with the account chosen.
+   */
+  it('connects an account from one menu, then offers a destination over it', async () => {
+    const ACCOUNT = { id: 'account-1', type: 'mailchimp', label: 'Mailchimp', credentials: { api_key: true } };
+    api.saveConnection.mockResolvedValue({ connection: ACCOUNT });
+    render(<Destinations />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Connect an account' }));
+    expect(screen.getByRole('menuitem', { name: 'Brevo' })).toBeInTheDocument();
+    api.readDestinations.mockResolvedValue({ types: [WSMS_READY, REMOTE, BREVO], destinations: [HEALTHY], connections: [ACCOUNT], failures: [] });
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Mailchimp' }));
+    const connect = within(screen.getByRole('dialog', { name: 'Connect Mailchimp' }));
+    await userEvent.type(connect.getByLabelText('API key'), 'key');
+    await userEvent.click(connect.getByRole('button', { name: 'Check and save account' }));
+    const result = within(await screen.findByRole('dialog', { name: 'Mailchimp' }));
+    expect(result.getByRole('status')).toHaveTextContent('Connected. Add a destination to choose where in Mailchimp new leads go.');
+    await userEvent.click(result.getByRole('button', { name: 'Add a Mailchimp destination' }));
+    const add = within(await screen.findByRole('dialog', { name: 'New Mailchimp destination' }));
+    expect(add.getByRole('combobox')).toHaveValue('account-1');
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    // Back reaches the service list rather than dead-ending.
+    await userEvent.click(add.getByRole('button', { name: 'Back' }));
+    expect(await screen.findByRole('dialog', { name: 'Add a destination' })).toBeVisible();
+  });
+
+  it('closes an edit of an existing account without offering a new destination', async () => {
+    const ACCOUNT = { id: 'account-1', type: 'mailchimp', label: 'Main account', credentials: { api_key: true } };
+    api.readDestinations.mockResolvedValue({ types: [REMOTE], destinations: [], connections: [ACCOUNT], failures: [] });
+    api.saveConnection.mockResolvedValue({ connection: ACCOUNT });
+    render(<Destinations />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for Main account' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Edit' }));
+    const dialog = within(screen.getByRole('dialog', { name: 'Main account' }));
+    await userEvent.click(dialog.getByRole('button', { name: 'Check and save account' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(screen.queryByRole('button', { name: /Add a Mailchimp destination/ })).toBeNull();
+  });
+});
+
+/**
+ * ============================================================================
+ * "NEEDS SETUP" IS A BADGE AND A LINE, AND IT IS A SENDING ISSUE WHEN LIVE.
+ * ============================================================================
+ */
+describe('a route that needs setup', () => {
+  const NEEDS = {
+    types: [{ ...LEAD_MAGNET, requirements: { capture_any_of: ['email'], settings: { file_url: { label: 'Link to the file', type: 'url' } }, fields: ['email'], mapped_fields: {} } }],
+    destinations: [{ ...LEAD_MAGNET_BOUND, label: 'Welcome email', settings: { ...LEAD_MAGNET_BOUND.settings, file_url: '' },
+      health: { ...HEALTHY.health, last_success_at: null }, usage: [{ id: 'a', name: 'Spring guide', draft: false, live: true }] }],
+    connections: [],
+    failures: [],
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    api.readDestinations.mockResolvedValue(NEEDS);
+  });
+
+  /** §8: status true of a row is a badge. The box under it said it again. */
+  it('says why in one unboxed line, with Finish setup opening Edit at the empty field', async () => {
+    render(<Destinations />);
+    const card = regionFor(await screen.findByRole('heading', { name: 'Welcome email' }));
+    expect(within(card).getByText('Needs setup')).toBeVisible();
+    const line = within(card).getByText(/Complete “Link to the file” before this destination can send\./);
+    expect(line.closest('[data-slot="alert"], [role="status"]')).toBeNull();
+    await userEvent.click(within(line).getByRole('button', { name: 'Finish setup' }));
+    const dialog = within(await screen.findByRole('dialog', { name: 'Welcome email' }));
+    await waitFor(() => expect(dialog.getByLabelText(/Link to the file/)).toHaveFocus());
+    // Save is refused, and says why, until the route could send.
+    const save = dialog.getByRole('button', { name: 'Save destination' });
+    expect(save).toHaveAttribute('aria-disabled', 'true');
+    expect(save).toHaveAccessibleDescription(/Complete “Link to the file” before this destination can send\./);
+    await userEvent.click(save);
+    expect(api.saveDestination).not.toHaveBeenCalled();
+    await userEvent.type(dialog.getByLabelText(/Link to the file/), 'https://example.com/guide.pdf');
+    expect(save).not.toHaveAttribute('aria-disabled');
+  });
+
+  it('keeps the boxed alert for an outage', async () => {
+    api.readDestinations.mockResolvedValue({ ...NEEDS, destinations: [{ ...NEEDS.destinations[0], health: { ...HEALTHY.health, consecutive_failures: 2, last_error: 'Timeout' } }] });
+    render(<Destinations />);
+    expect((await screen.findByText(/2 failures in a row/)).closest('[role="status"]')).not.toBeNull();
+  });
+
+  it('is listed with the sending issues while a live campaign uses it', async () => {
+    const counted = vi.fn();
+    render(<Destinations mode="issues" onIssueCount={counted} />);
+    expect(await screen.findByRole('heading', { name: 'Welcome email' })).toBeVisible();
+    expect(screen.queryByText('No known sending issues')).toBeNull();
+    await waitFor(() => expect(counted).toHaveBeenLastCalledWith(1));
+    // No Finish setup on the issues view: its door is the card's footer link.
+    expect(screen.queryByRole('button', { name: 'Finish setup' })).toBeNull();
+    expect(screen.getByRole('link', { name: 'Fix sending setup' })).toHaveAttribute('href', destinationHref(LEAD_MAGNET_BOUND.id));
+  });
+
+  /** A lead-magnet email has no account, and still could be added unable to send. */
+  it('refuses to add a route of any type while a required setting is empty', async () => {
+    api.readDestinations.mockResolvedValue({ ...NEEDS, destinations: [] });
+    render(<Destinations />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Add a destination' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Lead magnet email' }));
+    const dialog = within(screen.getByRole('dialog'));
+    const add = dialog.getByRole('button', { name: 'Add destination' });
+    expect(add).toHaveAttribute('aria-disabled', 'true');
+    expect(add).toHaveAccessibleDescription('Complete “Link to the file” before this destination can send.');
+    await userEvent.click(add);
+    expect(api.saveDestination).not.toHaveBeenCalled();
   });
 });

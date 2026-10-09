@@ -11,7 +11,8 @@ export const ALLOWANCE_LABELS = {
   maxImpressions: () => __('Show campaigns at most', 'wconvert'),
   cooldownDays: () => __('Wait between campaigns', 'wconvert'),
   stopAfterDismiss: () => __('Stop showing campaigns after a visitor closes one', 'wconvert'),
-  stopAfterConversion: () => __('Stop showing campaigns after a visitor converts', 'wconvert'),
+  // Permanent, like the cap: "never … again" so nobody reads it as a pause.
+  stopAfterConversion: () => __('Never show campaigns again to a visitor who converts', 'wconvert'),
 };
 
 /** Each limit the site sets, as one line, in the form's order. */
@@ -19,7 +20,7 @@ export function allowanceLines(allowance: Allowance): string[] {
   const lines: (string | null)[] = [
     allowance.maxImpressions === null ? null : sprintf(
       /* translators: %s: a number of times. */
-      _n('Show campaigns at most %s time per visitor', 'Show campaigns at most %s times per visitor', allowance.maxImpressions, 'wconvert'),
+      _n('Show campaigns at most %s time to each visitor, ever', 'Show campaigns at most %s times to each visitor, ever', allowance.maxImpressions, 'wconvert'),
       formatCount(allowance.maxImpressions),
     ),
     allowance.cooldownDays === null ? null : sprintf(

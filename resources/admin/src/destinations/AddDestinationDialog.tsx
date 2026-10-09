@@ -52,6 +52,7 @@ import type { Connection, DestinationType } from './api';
  */
 export function AddDestinationDialog({
   type,
+  connection = null,
   choosing = false,
   types,
   connections,
@@ -66,6 +67,11 @@ export function AddDestinationDialog({
 }: {
   /** The selected service, or null while choosing or closed. */
   type: DestinationType | null;
+  /**
+   * The account to start on — the one just connected from Accounts, whose
+   * next step is a route over it. Null leaves the form's own choice.
+   */
+  connection?: string | null;
   choosing?: boolean;
   /** Every type the payload carries; the tiles hide what a free install cannot buy. */
   types: readonly DestinationType[];
@@ -87,28 +93,31 @@ export function AddDestinationDialog({
 }) {
   const content = useRef<HTMLDivElement>(null);
   const [dirty, setDirty] = useState(false);
+  const open = choosing || type !== null;
   useEffect(() => {
     // Choosing a service replaces the focused tile inside the same dialog,
     // and Back replaces the form: move into what replaced it rather than
-    // leaving focus on <body>.
+    // leaving focus on <body>. Not while closing: the content outlives the
+    // close by a commit, and focusing a tile in it took focus back from the
+    // card an Add had just created.
+    if (!open) return;
     const target = type === null ? 'button.wconvert-provider-tile' : '.wconvert-dialog__body input';
     content.current?.querySelector<HTMLElement>(target)?.focus();
-  }, [type]);
+  }, [type, open]);
 
   return (
-    <AdminDialog open={choosing || type !== null} onOpenChange={(open) => { if (!open && busy) return; onOpenChange(open); }}>
+    <AdminDialog open={open} onOpenChange={(open) => { if (!open && busy) return; onOpenChange(open); }}>
       <AdminDialogContent
         ref={content}
         size="md"
         dirty={type !== null && dirty}
         showCloseButton={!busy}
         onCloseAutoFocus={(event) => {
-          const node = returnFocusTo.current;
-
-          if (node !== null && node !== undefined) {
-            event.preventDefault();
-            node.focus();
-          }
+          // Always taken over: after an Add that worked the ref is emptied,
+          // because focus belongs on the new route's card — and Radix's own
+          // restore runs a tick later, after that card has taken it.
+          event.preventDefault();
+          returnFocusTo.current?.focus();
         }}
       >
         <AdminDialogHeader
@@ -139,8 +148,9 @@ export function AddDestinationDialog({
           <AdminDialogFooter back={<AdminDialogClose asChild><Button type="button" variant="outline">{__('Cancel', 'wconvert')}</Button></AdminDialogClose>} />
         </> : (
           <DestinationSettingsForm
-            key={type.id}
+            key={`${type.id}-${connection ?? ''}`}
             type={type}
+            initialConnection={connection ?? undefined}
             connections={connections.filter((connection) => connection.type === type.id)}
             busy={busy}
             error={error}

@@ -89,7 +89,11 @@ export function SendTestDialog({
                 onChange={(event) => { setInterest(event.target.value); edited(); }} aria-describedby={`${id}-interest-help`} />
             </Field>}
             <p id={`${id}-effect`} className="m-0 text-note text-muted-foreground">
-              {__('Use an address you own: the test can create or update a contact, add it to lists or tags, or send an email. It creates no lead in WConvert, and a success does not confirm subscription or inbox delivery.', 'wconvert')}
+              {/*
+                One sentence of effect. What a success does NOT prove is the
+                result's to say, beside the result, not a caveat read first.
+              */}
+              {__('Use an address you own. The test really sends — it may add a contact or send an email — but creates no lead.', 'wconvert')}
             </p>
             {settingsDirty && <p className="m-0 text-note text-warning">{__('Uses the saved settings. Save your changes first to test them.', 'wconvert')}</p>}
             {result !== null && <TestReportAlert report={result} />}

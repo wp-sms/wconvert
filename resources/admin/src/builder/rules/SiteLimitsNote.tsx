@@ -25,6 +25,6 @@ export function SiteLimitsNote() {
     {limits && <><strong>{__('Site-wide limits also apply', 'wconvert')}</strong><p>{allowanceSummary(limits)}</p></>}
     {error && <><p role="alert">{__('Could not check the site-wide limits.', 'wconvert')} {error}</p>
       <TryAgain onClick={() => setRetry((value) => value + 1)} /></>}
-    <p>{__('A campaign cannot override these limits.', 'wconvert')} <a href={settingsHref()}>{__('Manage them in Settings', 'wconvert')}</a></p>
+    <p>{__('A campaign cannot override these limits.', 'wconvert')} <a href={settingsHref('experience')}>{__('Manage them in Settings', 'wconvert')}</a></p>
   </aside>;
 }

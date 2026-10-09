@@ -9,7 +9,8 @@ vi.mock('../../resources/admin/src/leads/api', () => api);
 const { LeadRetention } = await import('../../resources/admin/src/leads/LeadRetention');
 
 const forever = { days: null, max_days: 3650 };
-const disclosure = () => screen.getByRole('button', { name: /How long submissions are kept/ });
+// The region's header line describes the SAVED policy, never the draft.
+const disclosure = () => screen.getByText(/^(Kept until you delete them|Deleted automatically after \d+ days?)$/);
 const automatic = () => screen.getByRole('radio', { name: 'Delete them automatically after' });
 const keep = () => screen.getByRole('radio', { name: 'Keep them until I delete them' });
 const days = () => screen.getByRole('spinbutton', { name: 'Retention period in days' });
@@ -17,7 +18,6 @@ const save = () => screen.getByRole('button', { name: 'Save retention' });
 
 async function open() {
   render(<LeadRetention />);
-  await userEvent.click(disclosure());
   await screen.findByRole('radio', { name: 'Keep them until I delete them' });
 }
 
@@ -40,7 +40,6 @@ describe('explicit lead retention', () => {
     let resolve: (period: Retention) => void = () => undefined;
     api.readRetention.mockReturnValue(new Promise<Retention>((done) => { resolve = done; }));
     render(<LeadRetention />);
-    await userEvent.click(disclosure());
     expect(screen.getByRole('status')).toHaveTextContent('Loading how long submissions are kept…');
     expect(screen.queryByRole('radio')).toBeNull();
     await act(async () => { resolve(forever); });
@@ -48,11 +47,11 @@ describe('explicit lead retention', () => {
     expect(save()).toBeDisabled();
   });
 
-  it('retries a failed settings read in its own disclosure', async () => {
+  it('retries a failed settings read in its own region', async () => {
     api.readRetention.mockRejectedValueOnce(new Error('Retention could not be read.'));
     render(<LeadRetention />);
     expect(await screen.findByRole('alert')).toHaveTextContent('Retention could not be read.');
-    expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('heading', { name: 'How long submissions are kept' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await screen.findByRole('radio', { name: 'Keep them until I delete them' });
     expect(api.readRetention).toHaveBeenCalledTimes(2);
@@ -68,8 +67,9 @@ describe('explicit lead retention', () => {
     await userEvent.type(days(), '30{Enter}');
     await userEvent.tab();
     expect(api.saveRetention).not.toHaveBeenCalled();
-    expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
-    await userEvent.click(disclosure());
+    // The enabled Save says there is something to save; no second label does.
+    expect(screen.queryByText('Unsaved changes')).toBeNull();
+    expect(save()).toBeEnabled();
     expect(disclosure()).toHaveTextContent('Kept until you delete them');
   });
 
@@ -220,5 +220,43 @@ describe('explicit lead retention', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Cancel changes' }));
     expect(days()).toHaveValue(120);
     expect(automatic()).toHaveFocus();
+  });
+
+  it('opens on the policy, not behind a disclosure, and offers no Cancel on a clean form', async () => {
+    await open();
+    expect(screen.queryByRole('button', { name: /How long submissions are kept/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Cancel changes' })).toBeNull();
+    await userEvent.click(automatic());
+    expect(screen.getByRole('button', { name: 'Cancel changes' })).toBeInTheDocument();
+  });
+
+  it('offers the common periods as chips and confirms the chosen one', async () => {
+    await open();
+    await userEvent.click(automatic());
+    const period = screen.getByRole('group', { name: 'Retention period' });
+    expect(within(period).getAllByRole('radio').map((chip) => chip.closest('label')?.textContent))
+      .toEqual(['30 days', '90 days', '180 days', '365 days', 'Custom']);
+    await userEvent.click(within(period).getByRole('radio', { name: '90 days' }));
+    // A preset needs no number field.
+    expect(screen.queryByRole('spinbutton')).toBeNull();
+    await userEvent.click(save());
+    const dialog = screen.getByRole('alertdialog');
+    expect(dialog).toHaveAccessibleName('Delete submissions older than 90 days?');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Delete after 90 days' }));
+    await waitFor(() => expect(disclosure()).toHaveTextContent('Deleted automatically after 90 days'));
+    expect(api.saveRetention).toHaveBeenCalledExactlyOnceWith(90);
+    expect(within(period).getByRole('radio', { name: '90 days' })).toBeChecked();
+  });
+
+  it('keeps Custom chosen while its number matches a preset, and focuses the field', async () => {
+    api.readRetention.mockResolvedValue({ ...forever, days: 90 });
+    await open();
+    await userEvent.click(screen.getByRole('radio', { name: 'Custom' }));
+    expect(days()).toHaveFocus();
+    expect(days()).toHaveValue(90);
+    await userEvent.clear(days());
+    await userEvent.type(days(), '30');
+    expect(screen.getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(days()).toHaveValue(30);
   });
 });

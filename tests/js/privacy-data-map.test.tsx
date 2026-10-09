@@ -167,3 +167,20 @@ it('keeps a failed read inside the region and offers Try again', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await storedTable()).toBeInTheDocument();
 });
+
+it('names a service only where it adds something to the destination’s own name', async () => {
+  privacy.readDataMap.mockResolvedValue({
+    ...MAP,
+    destinations: [...MAP.destinations, { id: 'DEST2', label: 'Lead magnet email', type: 'resource_email', type_label: 'Lead magnet email', fields: ['email'] }],
+  });
+  render(<PrivacyDataMap />);
+  const sent = await screen.findByRole('table', { name: 'Sent to other services' });
+  expect(rowWith(sent, /Newsletter subscribers/)).toHaveTextContent('MailPoet');
+  expect(within(rowWith(sent, /Lead magnet email/)).getAllByText('Lead magnet email')).toHaveLength(1);
+});
+
+it('links the privacy-policy text WConvert suggests to WordPress', async () => {
+  render(<PrivacyDataMap />);
+  await storedTable();
+  expect(screen.getByRole('link', { name: 'Suggested privacy-policy text' })).toHaveAttribute('href', 'options-privacy.php?tab=policyguide');
+});

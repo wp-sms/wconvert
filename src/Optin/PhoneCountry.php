@@ -45,6 +45,39 @@ final class PhoneCountry
         return self::valid($code) ? $code : '';
     }
 
+    /**
+     * A starting country to OFFER, never to save: the store's own address when
+     * WooCommerce has one, else the region in the site's language. Settings
+     * shows it beside an empty default and nothing changes until it is chosen,
+     * so a guess never reaches a published phone field on its own.
+     *
+     * Computed on read from what WordPress already knows — no option of its own.
+     *
+     * @return array{country: string, from: 'store'|'language'}|null
+     */
+    public static function suggested(): ?array
+    {
+        $store = class_exists('WooCommerce') && function_exists('get_option') ? get_option('woocommerce_default_country', '') : null;
+        return self::suggestion(is_string($store) ? $store : null, function_exists('get_locale') ? get_locale() : '');
+    }
+
+    /**
+     * The pure half of {@see suggested()}. WooCommerce stores its base location
+     * as `DE` or `US:CA`; a locale is `de_DE`, `de_DE_formal` or a bare `de`,
+     * and only the last carries no country to suggest.
+     *
+     * @return array{country: string, from: 'store'|'language'}|null
+     */
+    public static function suggestion(?string $storeLocation, string $locale): ?array
+    {
+        $store = $storeLocation === null ? '' : explode(':', $storeLocation)[0];
+        if (self::valid($store)) return ['country' => $store, 'from' => 'store'];
+        if (preg_match('/^[a-z]{2,3}_([A-Z]{2})(?:_|$)/', $locale, $match) === 1 && self::valid($match[1])) {
+            return ['country' => $match[1], 'from' => 'language'];
+        }
+        return null;
+    }
+
     public static function setSiteDefault(string $code): bool
     {
         if (!self::valid($code)) return false;

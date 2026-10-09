@@ -11,6 +11,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { Description } from '../shell/Description';
+import { Disclosure } from '../shell/Disclosure';
 import { Field } from '../shell/Field';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { messageOf } from '../shell/loadable';
@@ -84,6 +85,13 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
     verified: __('Successful verifications', 'wconvert'), filter: __('Email filter rejections', 'wconvert'), send_limited: __('Repeat resource emails prevented', 'wconvert'),
   };
   const counts = Object.entries(saved.diagnostics.counts);
+  const noSavedRules = saved.rule_fields.every(f => f.value.trim() === '');
+  const rulesHelp = <Description>{__('Apply to every campaign. Leave a list empty to allow all emails.', 'wconvert')}</Description>;
+  const ruleFields = <>
+    {saved.rule_fields.map(f => <Field key={f.id} label={f.label} htmlFor={`${id}-${f.id}`} hint={f.help} hintId={`${id}-${f.id}-hint`}>
+      <Textarea id={`${id}-${f.id}`} data-setting={`rule-${f.id}`} rows={3} aria-describedby={`${id}-${f.id}-hint`} value={(draft.rules as Record<string, string> | undefined)?.[f.id] ?? ''} onChange={e => edit({ rules: { ...draft.rules, [f.id]: e.target.value } })} />
+    </Field>)}
+  </>;
   const keyHelp = draft.provider === 'turnstile' ? __('Use a Managed widget.', 'wconvert')
     : draft.provider === 'recaptcha' ? __('Use v2 checkbox keys. v3 and Cloud API keys are not supported.', 'wconvert')
       : __('Use standard hCaptcha keys.', 'wconvert');
@@ -92,7 +100,7 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
     <RegionBody className="grid gap-5">
       <fieldset disabled={busy} className="m-0 grid min-w-0 gap-5 border-0 p-0">
         <Field label={__('Bot verification', 'wconvert')} htmlFor={`${id}-provider`}>
-          <NativeSelect id={`${id}-provider`} className="w-full" value={draft.provider} onChange={e => edit({ provider: e.target.value as Provider, site_key: '', secret: '' })}>
+          <NativeSelect id={`${id}-provider`} data-setting="protection-provider" className="w-full" value={draft.provider} onChange={e => edit({ provider: e.target.value as Provider, site_key: '', secret: '' })}>
             <option value="none">{__('Built-in checks only', 'wconvert')}</option>
             <option value="turnstile">{__('Cloudflare Turnstile (recommended)', 'wconvert')}</option>
             <option value="recaptcha">{__('Google reCAPTCHA v2 checkbox', 'wconvert')}</option>
@@ -109,22 +117,30 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
             </a>
           </Description>
           <Field label={__('Site key', 'wconvert')} htmlFor={`${id}-site`} hint={keyHelp} hintId={`${id}-site-hint`}>
-            <Input id={`${id}-site`} autoComplete="off" aria-describedby={`${id}-site-hint`} value={draft.site_key} onChange={e => edit({ site_key: e.target.value.trim() })} />
+            <Input id={`${id}-site`} data-setting="protection-site-key" autoComplete="off" aria-describedby={`${id}-site-hint`} value={draft.site_key} onChange={e => edit({ site_key: e.target.value.trim() })} />
           </Field>
           <Field label={__('Secret key', 'wconvert')} htmlFor={`${id}-secret`}>
             <Input id={`${id}-secret`} type="password" autoComplete="new-password" value={draft.secret} onChange={e => edit({ secret: e.target.value.trim() })} placeholder={saved.has_secret && saved.provider === draft.provider ? __('Saved — leave empty to keep', 'wconvert') : ''} />
           </Field>
           <Description>{__('Every form then asks for verification. The provider receives browser and network data, not form answers, so mention it in your privacy notice. Save, test, then try a published form.', 'wconvert')}</Description>
         </>}
-        {saved.rules_available && <div className="grid gap-4 border-t border-border pt-4">
-          <div className="grid gap-1">
-            <h3 className="m-0 text-body font-semibold">{__('Email filters', 'wconvert')}</h3>
-            <Description>{__('Apply to every campaign. Leave a list empty to allow all emails.', 'wconvert')}</Description>
+        {saved.rules_available && (noSavedRules
+          // Three empty boxes are ~450px of nothing on most sites: folded, the
+          // summary says what they amount to. Keyed on the SAVED lists, so
+          // typing into one never refolds the box under the cursor.
+          ? <div className="border-t border-border pt-4">
+            <Disclosure title={__('Email filters', 'wconvert')} summary={__('No emails blocked', 'wconvert')} bodyClassName="grid gap-4">
+              {rulesHelp}
+              {ruleFields}
+            </Disclosure>
           </div>
-          {saved.rule_fields.map(f => <Field key={f.id} label={f.label} htmlFor={`${id}-${f.id}`} hint={f.help} hintId={`${id}-${f.id}-hint`}>
-            <Textarea id={`${id}-${f.id}`} rows={3} aria-describedby={`${id}-${f.id}-hint`} value={(draft.rules as Record<string, string> | undefined)?.[f.id] ?? ''} onChange={e => edit({ rules: { ...draft.rules, [f.id]: e.target.value } })} />
-          </Field>)}
-        </div>}
+          : <div className="grid gap-4 border-t border-border pt-4">
+            <div className="grid gap-1">
+              <h3 className="m-0 text-body font-semibold">{__('Email filters', 'wconvert')}</h3>
+              {rulesHelp}
+            </div>
+            {ruleFields}
+          </div>)}
         {!saved.rules_available && saved.rules_configured && <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
           <CircleAlert />
           <AlertTitle className="line-clamp-none">{__('Forms are paused: saved email filters aren’t available on this site. Remove the filters to resume.', 'wconvert')}</AlertTitle>
@@ -134,14 +150,14 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
     </RegionBody>
     <RegionFooter className="flex flex-wrap items-center gap-3">
       {saved.provider !== 'none' && <>
-        <Button ref={testButton} variant="outline" disabled={busy && !dirty} aria-disabled={dirty || undefined} aria-describedby={dirty ? `${id}-test-reason` : undefined} onClick={() => void test()}>{testing ? __('Testing…', 'wconvert') : __('Test saved setup', 'wconvert')}</Button>
+        <Button ref={testButton} data-setting="protection-test" variant="outline" disabled={busy && !dirty} aria-disabled={dirty || undefined} aria-describedby={dirty ? `${id}-test-reason` : undefined} onClick={() => void test()}>{testing ? __('Testing…', 'wconvert') : __('Test saved setup', 'wconvert')}</Button>
         {dirty && <span id={`${id}-test-reason`} className="text-note">{__('Save changes before testing.', 'wconvert')}</span>}
         {testNotice && <span role="status" className="text-note">{__('Test passed. No lead created or messages sent.', 'wconvert')}</span>}
       </>}
       <div className="ms-auto flex flex-wrap items-center justify-end gap-3">
         {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
         <SaveStatus saved={status.saved} />
-        <Button variant="outline" disabled={!dirty || busy} onClick={() => { setDraft(draftOf(saved)); setError(null); }}>{__('Cancel changes', 'wconvert')}</Button>
+        {dirty && <Button variant="outline" disabled={busy} onClick={() => { setDraft(draftOf(saved)); setError(null); }}>{__('Cancel changes', 'wconvert')}</Button>}
         <Button disabled={!dirty || busy} onClick={() => void save()}>{busy && !testing ? __('Saving…', 'wconvert') : __('Save spam protection', 'wconvert')}</Button>
       </div>
     </RegionFooter>

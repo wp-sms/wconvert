@@ -45,7 +45,7 @@ export function connectionMissing(destination: Destination, type: DestinationTyp
  * Settings drew this inline and the Campaign editor drew nothing, so the two
  * could only drift. The order is what a merchant needs to act on first: an
  * outage outranks a missing plugin, which outranks an unfinished setup, and
- * "not used yet" is never said about a route that could not be used.
+ * "no sends yet" is never said about a route that could not be used.
  *
  * `locked` and `unavailable` stay two states with two sentences (ADR 0026),
  * and a free install names no product for a route saved under Pro (ADR 0116).
@@ -54,7 +54,8 @@ export function connectionMissing(destination: Destination, type: DestinationTyp
  * carry its own copies ("…are not being sent") beside these ("…are kept here,
  * not sent"), which is the drift this function exists to stop.
  */
-export function destinationStatus(destination: Destination, type: DestinationType | undefined, problems: readonly string[]): DestinationStatus {
+/** `bound`: drawn inside a campaign that chose it, saved or not, so it is in a campaign by definition. */
+export function destinationStatus(destination: Destination, type: DestinationType | undefined, problems: readonly string[], bound = false): DestinationStatus {
   const failures = destination.health.consecutive_failures;
   if (failures > 0) {
     return {
@@ -100,9 +101,24 @@ export function destinationStatus(destination: Destination, type: DestinationTyp
   if (problems.length > 0) {
     return { state: 'needs_setup', badge: <Badge variant="warning">{__('Needs setup', 'wconvert')}</Badge>, issue: problems[0] };
   }
-  return destination.health.last_success_at === null
-    ? { state: 'not_used', badge: <Badge variant="secondary">{__('Not used yet', 'wconvert')}</Badge>, issue: null }
-    : { state: 'success', badge: <Badge variant="success">{__('Success recorded', 'wconvert')}</Badge>, issue: null };
+  /*
+   * **"Not used yet" said two different things**, and neither was a fault: a
+   * route no campaign has chosen, and one a campaign feeds that has simply had
+   * no submission. `usage` is the saved bindings, so an empty list is the first
+   * and anything else — including a usage read that failed — the second, which
+   * is the one that stays true either way.
+   */
+  if (destination.health.last_success_at === null) {
+    return {
+      state: 'not_used',
+      badge: <Badge variant="secondary">{!bound && Array.isArray(destination.usage) && destination.usage.length === 0
+        ? __('Not in a campaign', 'wconvert') : __('No sends yet', 'wconvert')}</Badge>,
+      issue: null,
+    };
+  }
+  // "Working", not "Success recorded": the badge answers the merchant's
+  // question, and the record is the "Last sent" line beside it.
+  return { state: 'success', badge: <Badge variant="success">{__('Working', 'wconvert')}</Badge>, issue: null };
 }
 
 /**

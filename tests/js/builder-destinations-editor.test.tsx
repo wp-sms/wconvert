@@ -150,7 +150,7 @@ describe('the cards this campaign sends to', () => {
     ['a'], [], { template: form([{ name: 'email', required: true }, { name: 'name', required: false }]) });
     expect(within(card('Newsletter signups')).getByText('Sends email and name automatically.')).toBeVisible();
     expect(within(card('Newsletter signups')).getByText(/^Last sent (?!2026-10-08)/)).toBeVisible();
-    expect(within(card('Newsletter signups')).getByText('Success recorded')).toBeVisible();
+    expect(within(card('Newsletter signups')).getByText('Working')).toBeVisible();
   });
 
   it('explains where extra answers go when a selected destination cannot map them', () => {

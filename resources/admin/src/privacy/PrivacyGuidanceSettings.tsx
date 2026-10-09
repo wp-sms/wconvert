@@ -92,6 +92,7 @@ export function PrivacyGuidanceSettings({
           hint={__('Adds a short privacy notice to new campaigns and checks it before publishing. Export, erasure and retention work either way.', 'wconvert')}
           checked={draft}
           disabled={saving}
+          data-setting="privacy-guidance"
           onChange={(event) => {
             setDraft(event.target.checked);
             setSaveError(null);
@@ -102,17 +103,19 @@ export function PrivacyGuidanceSettings({
       <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
         {saveError !== null && <p role="alert" className="m-0 text-note text-destructive">{saveError}</p>}
         <SaveStatus saved={status.saved} />
-        <Button
-          type="button"
-          variant="outline"
-          disabled={!dirty || saving}
-          onClick={() => {
-            setDraft(saved);
-            setSaveError(null);
-          }}
-        >
-          {__('Cancel changes', 'wconvert')}
-        </Button>
+        {dirty && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={saving}
+            onClick={() => {
+              setDraft(saved);
+              setSaveError(null);
+            }}
+          >
+            {__('Cancel changes', 'wconvert')}
+          </Button>
+        )}
         <Button type="button" disabled={!dirty || saving} onClick={() => void save()}>
           {saving ? __('Saving…', 'wconvert') : __('Save privacy guidance', 'wconvert')}
         </Button>

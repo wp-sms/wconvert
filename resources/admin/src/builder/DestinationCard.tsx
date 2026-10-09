@@ -52,7 +52,7 @@ export function DestinationCard({
   const actions = useRef<HTMLButtonElement>(null);
   useEffect(() => { if (focusOnMount) actions.current?.focus(); }, [focusOnMount]);
   const problems = setupProblems(destination, type, connections);
-  const status = destinationStatus(destination, type, problems);
+  const status = destinationStatus(destination, type, problems, true);
   const captures = capturedFields(template, submissionId);
   const fit = template ? captureProblems(destination, captures) : [];
   const names = contactFieldNames();

@@ -12,11 +12,11 @@ import {
 } from '../components/ui/alert-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Skeleton } from '../components/ui/skeleton';
 import { Field } from '../shell/Field';
-import { RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
+import { OptionStrip } from '../shell/OptionStrip';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
-import { SettingsDisclosure } from '../shell/SettingsDisclosure';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { readRetention, saveRetention, type Retention } from './api';
 import { formatCount } from '../lib/format';
@@ -25,17 +25,28 @@ import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSe
 interface Draft {
   automatic: boolean;
   days: string;
+  /** The Custom chip is chosen, so the number field shows even when it holds a preset's value. */
+  custom: boolean;
 }
 
-const draftOf = (period: Retention): Draft => ({
-  automatic: period.days !== null,
-  days: period.days === null ? '' : String(period.days),
-});
+/** The periods most policies name; anything else is Custom. */
+const PRESETS = [30, 90, 180, 365] as const;
+const isPreset = (days: string) => PRESETS.some((preset) => String(preset) === days);
 
-/** The disclosure describes the saved policy; controls are a separate, explicit draft. */
-export function LeadRetention({ expanded = false, onEditingStateChange }: { expanded?: boolean; onEditingStateChange?: SettingsEditing } = {}) {
+const draftOf = (period: Retention): Draft => {
+  const days = period.days === null ? '' : String(period.days);
+  return { automatic: period.days !== null, days, custom: !isPreset(days) };
+};
+
+/**
+ * How long submissions are kept: the one real setting on Data & privacy, so
+ * it is an open region at the top rather than a folded disclosure (it was the
+ * last thing a merchant found). The header line describes the SAVED policy;
+ * the controls are a separate, explicit draft.
+ */
+export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing } = {}) {
   const [retention, setRetention] = useState<Loadable<Retention>>(LOADING);
-  const [draft, setDraft] = useState<Draft>({ automatic: false, days: '' });
+  const [draft, setDraft] = useState<Draft>({ automatic: false, days: '', custom: true });
   const [retry, setRetry] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [validation, setValidation] = useState<string | null>(null);
@@ -47,6 +58,7 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
   const daysInput = useRef<HTMLInputElement>(null);
   const saveButton = useRef<HTMLButtonElement>(null);
   const returnToSavedPolicy = useRef(false);
+  const focusDays = useRef(false);
   const id = useId();
 
   useEffect(() => {
@@ -65,6 +77,12 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
   useEffect(() => {
     if (saved && !saving && !draft.automatic) foreverRadio.current?.focus();
   }, [saved, saving, draft.automatic]);
+
+  // Choosing Custom puts the cursor in the field it just drew.
+  useEffect(() => {
+    if (focusDays.current && draft.custom) daysInput.current?.focus();
+    focusDays.current = false;
+  }, [draft.custom]);
 
   const period = retention.status === 'ready' ? retention.data : null;
   const dirty = period !== null && (
@@ -121,64 +139,86 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
     setConfirmDays(days);
   };
 
+  const title = __('How long submissions are kept', 'wconvert');
+  if (retention.status === 'loading') return <RegionSkeleton label={title} lines={2} />;
+  if (retention.status === 'failed') {
+    return (
+      <Region>
+        <RegionHeader title={title} />
+        <RegionErrorState message={retention.message} onRetry={() => setRetry((value) => value + 1)} />
+      </Region>
+    );
+  }
+  const maxDays = retention.data.max_days;
+  const presets = PRESETS.filter((preset) => preset <= maxDays);
+  const chip = draft.custom ? 'custom' : draft.days;
+
   return (
     <>
-      <SettingsDisclosure
-        expanded={expanded}
-        title={__('How long submissions are kept', 'wconvert')}
-        summary={period === null
-          ? __('Loading…', 'wconvert')
-          : period.days === null
+      <Region>
+        <RegionHeader
+          title={title}
+          description={retention.data.days === null
             ? __('Kept until you delete them', 'wconvert')
             : sprintf(
-                _n('Deleted automatically after %s day', 'Deleted automatically after %s days', period.days, 'wconvert'),
-                formatCount(period.days),
+                _n('Deleted automatically after %s day', 'Deleted automatically after %s days', retention.data.days, 'wconvert'),
+                formatCount(retention.data.days),
               )}
-        attention={retention.status === 'failed' || error !== null}
-      >
-        {retention.status === 'loading' ? (
-          <RegionBody className="flex flex-col gap-3">
-            <span role="status" className="sr-only">{__('Loading how long submissions are kept…', 'wconvert')}</span>
-            <Skeleton aria-hidden="true" className="h-[1lh] w-64 max-w-full" />
-            <Skeleton aria-hidden="true" className="h-(--control-height) w-64 max-w-full" />
-          </RegionBody>
-        ) : retention.status === 'failed' ? (
-          <RegionErrorState message={retention.message} onRetry={() => setRetry((value) => value + 1)} />
-        ) : (
-          <>
-            {error !== null && confirmDays === null && <RegionError message={error} />}
-            <RegionBody className="flex flex-col gap-3">
-              <p className="m-0 rounded-md border border-border bg-surface p-4 text-note text-muted-foreground" id={`${id}-scope`}>
-                {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}
-              </p>
-              <fieldset className="wconvert-radio-cards" disabled={saving} aria-describedby={`${id}-scope`}>
-                <legend className="mb-4 pt-5 font-medium">{__('Keep submissions', 'wconvert')}</legend>
-                <label className="wconvert-radio-card">
-                  <input
-                    ref={foreverRadio}
-                    aria-labelledby={`${id}-forever`}
-                    type="radio"
-                    name={`${id}-policy`}
-                    checked={!draft.automatic}
-                    onChange={() => changeDraft({ ...draft, automatic: false })}
-                  />
-                  <span><span id={`${id}-forever`}>{__('Keep them until I delete them', 'wconvert')}</span></span>
-                </label>
-                <label className="wconvert-radio-card">
-                  <input
-                    ref={automaticRadio}
-                    aria-labelledby={`${id}-automatic`}
-                    aria-describedby={`${id}-automatic-hint`}
-                    type="radio"
-                    name={`${id}-policy`}
-                    checked={draft.automatic}
-                    onChange={() => changeDraft({ ...draft, automatic: true })}
-                  />
-                  <span><span id={`${id}-automatic`}>{__('Delete them automatically after', 'wconvert')}</span><span id={`${id}-automatic-hint`}>{__('A daily cleanup permanently deletes older submissions.', 'wconvert')}</span></span>
-                </label>
-                {draft.automatic && (
+        />
+        {error !== null && confirmDays === null && <RegionError message={error} />}
+        <RegionBody className="flex flex-col gap-3">
+          <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
+            {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}
+          </p>
+          <fieldset className="wconvert-radio-cards" disabled={saving} aria-describedby={`${id}-scope`}>
+            <legend className="mb-4 pt-2 font-medium">{__('Keep submissions', 'wconvert')}</legend>
+            <label className="wconvert-radio-card">
+              <input
+                ref={foreverRadio}
+                aria-labelledby={`${id}-forever`}
+                type="radio"
+                name={`${id}-policy`}
+                checked={!draft.automatic}
+                onChange={() => changeDraft({ ...draft, automatic: false })}
+              />
+              <span><span id={`${id}-forever`}>{__('Keep them until I delete them', 'wconvert')}</span></span>
+            </label>
+            <label className="wconvert-radio-card">
+              <input
+                ref={automaticRadio}
+                aria-labelledby={`${id}-automatic`}
+                aria-describedby={`${id}-automatic-hint`}
+                type="radio"
+                name={`${id}-policy`}
+                checked={draft.automatic}
+                data-setting="retention-automatic"
+                onChange={() => changeDraft({ ...draft, automatic: true })}
+              />
+              <span><span id={`${id}-automatic`}>{__('Delete them automatically after', 'wconvert')}</span><span id={`${id}-automatic-hint`}>{__('A daily cleanup permanently deletes older submissions.', 'wconvert')}</span></span>
+            </label>
+            {draft.automatic && (
+              <div className="flex flex-col items-start gap-3 ps-[39px]">
+                <OptionStrip
+                  label={__('Retention period', 'wconvert')}
+                  value={chip}
+                  disabled={saving}
+                  options={[
+                    ...presets.map((preset) => ({
+                      value: String(preset),
+                      label: sprintf(_n('%s day', '%s days', preset, 'wconvert'), formatCount(preset)),
+                    })),
+                    { value: 'custom', label: __('Custom', 'wconvert') },
+                  ]}
+                  onChange={(next) => {
+                    if (next === 'custom') {
+                      focusDays.current = true;
+                      changeDraft({ ...draft, custom: true });
+                    } else changeDraft({ ...draft, days: next, custom: false });
+                  }}
+                />
+                {draft.custom && (
                   <Field
-                    className="items-start ps-[39px]"
+                    className="items-start"
                     label={__('Retention period in days', 'wconvert')}
                     htmlFor={`${id}-days`}
                     error={validation !== null && <span id={`${id}-validation`}>{validation}</span>}
@@ -189,7 +229,7 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                       type="number"
                       inputMode="numeric"
                       min={1}
-                      max={retention.data.max_days}
+                      max={maxDays}
                       step={1}
                       className="w-28"
                       value={draft.days}
@@ -199,25 +239,22 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                     />
                   </Field>
                 )}
-              </fieldset>
-            </RegionBody>
-            <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
-              <span className="flex flex-wrap gap-2">
-                {dirty && <span className="text-note text-muted-foreground">{__('Unsaved changes', 'wconvert')}</span>}
-                <SaveStatus saved={saved} />
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" disabled={saving || !dirty} onClick={cancelChanges}>
-                  {__('Cancel changes', 'wconvert')}
-                </Button>
-                <Button ref={saveButton} disabled={saving || !dirty} onClick={saveDraft}>
-                  {saving ? __('Saving…', 'wconvert') : __('Save retention', 'wconvert')}
-                </Button>
               </div>
-            </RegionFooter>
-          </>
-        )}
-      </SettingsDisclosure>
+            )}
+          </fieldset>
+        </RegionBody>
+        <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
+          <SaveStatus saved={saved} />
+          {dirty && (
+            <Button variant="outline" disabled={saving} onClick={cancelChanges}>
+              {__('Cancel changes', 'wconvert')}
+            </Button>
+          )}
+          <Button ref={saveButton} disabled={saving || !dirty} onClick={saveDraft}>
+            {saving ? __('Saving…', 'wconvert') : __('Save retention', 'wconvert')}
+          </Button>
+        </RegionFooter>
+      </Region>
       <AlertDialog
         open={confirmDays !== null}
         onOpenChange={(open) => { if (!open && !saving) setConfirmDays(null); }}

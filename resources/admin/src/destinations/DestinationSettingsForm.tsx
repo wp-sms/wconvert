@@ -42,7 +42,13 @@ export function DestinationSettingsForm({
   onConnectionSaved,
   onDirtyChange,
   focusField,
+  initialConnection,
+  note,
 }: {
+  /** The account to start on where there is no saved one — just connected, from Accounts. */
+  initialConnection?: string;
+  /** The footer's short note — "Saved just now" where the dialog stays open after a save. */
+  note?: ReactNode;
   /** A setting key, or `connection`, to focus once the fields are drawn. */
   focusField?: string;
   type: DestinationType;
@@ -84,7 +90,7 @@ export function DestinationSettingsForm({
    * what every type free ships stores: `needs_connection` is false for all
    * three, so no picker is drawn and this never moves (#35).
    */
-  const [connection, setConnection] = useState<string | null>(destination?.connection ?? (connections.length === 1 ? connections[0].id : null));
+  const [connection, setConnection] = useState<string | null>(destination?.connection ?? initialConnection ?? (connections.length === 1 ? connections[0].id : null));
   const [newAccount, setNewAccount] = useState<Connection | null>(null);
   const [connecting, setConnecting] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -121,9 +127,20 @@ export function DestinationSettingsForm({
   const label = named ?? suggestedName({ ...type, settings_schema: schema }, draft);
   const fields = Object.entries(schema);
   const id = (key: string) => `wconvert-add-${type.id}-${key}`;
+  const noAccounts = noAccountsFor(type, connections, newAccount);
   const problems = (!type.needs_connection || selectedConnection !== null) && !loadingSchema
-    ? settingsProblems(type.requirements, fromDraft(schema, draft), schema) : [];
-  const noAccounts = type.needs_connection && accounts.length === 0;
+    ? settingsProblems(type.requirements, fromDraft(schema, draft), schema)
+    : type.needs_connection && selectedConnection === null && !noAccounts
+      ? [__('Choose an account before this destination can send.', 'wconvert')] : [];
+  /*
+   * **A route that cannot send is refused, whatever its type.** Only a
+   * type with an account was held back, so a lead-magnet email with no file
+   * link could be added — and the "Needs setup" cards it left behind were
+   * exactly what a merchant then found. The reasons are the list above the
+   * footer, so the button is `aria-disabled` and described by it rather than
+   * greyed with nothing said (§14).
+   */
+  const refused = problems.length > 0;
   const focused = useRef(false);
   useEffect(() => {
     if (focusField === undefined || focused.current || loadingSchema) return;
@@ -246,28 +263,30 @@ export function DestinationSettingsForm({
             );
           })}
 
-          {problems.length > 0 && <ul className="m-0 flex list-none flex-col gap-1 p-0 text-note text-warning">
+          {problems.length > 0 && <ul id={id('problems')} className="m-0 flex list-none flex-col gap-1 p-0 text-note text-warning">
             {problems.map((problem) => <li key={problem}>{problem}</li>)}
           </ul>}
         </fieldset>
       </AdminDialogBody>
 
-      <AdminDialogFooter back={cancel} error={error}>
+      <AdminDialogFooter back={cancel} error={error} note={note}>
         {/*
           **The button names the outcome**, as every confirm in this admin
           does: a merchant reading *Add destination* has been told what
           pressing it does without having read the sentence above it.
         */}
         <Button
-          aria-describedby={[submitDescription, destination ? id('usage') : undefined].filter(Boolean).join(' ') || undefined}
-          disabled={busy || loadingSchema || metadataError !== null || (type.needs_connection && (selectedConnection === null || problems.length > 0))}
-          onClick={() =>
+          aria-describedby={[refused ? id('problems') : undefined, submitDescription, destination ? id('usage') : undefined].filter(Boolean).join(' ') || undefined}
+          aria-disabled={refused ? true : undefined}
+          disabled={busy || loadingSchema || metadataError !== null}
+          onClick={() => {
+            if (refused) return;
             onConfirm({
               label,
               connection: selectedConnection,
               settings: { ...destination?.settings, ...fromDraft(schema, draft) },
-            })
-          }
+            });
+          }}
         >
           {busy
             ? (destination === undefined ? __('Adding…', 'wconvert') : __('Saving…', 'wconvert'))
@@ -276,4 +295,9 @@ export function DestinationSettingsForm({
       </AdminDialogFooter>
     </>
   );
+}
+
+/** A type that runs over an account, with none of that type's accounts to pick. */
+function noAccountsFor(type: DestinationType, connections: readonly Connection[], added: Connection | null): boolean {
+  return type.needs_connection && connections.length === 0 && added === null;
 }
