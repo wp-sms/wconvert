@@ -40,7 +40,8 @@ name: Release free
 # TO PUBLISH TO WORDPRESS.ORG:
 #   1. Set repository variable RELEASE_PUBLISH_ENABLED = true   (master switch)
 #   2. Set PUBLISH_WPORG = true
-#   3. Add secrets WP_ORG_USERNAME and WP_ORG_PASSWORD
+#   3. In the `wordpress-org` environment: variable WP_ORG_USERNAME and
+#      secret WP_ORG_PASSWORD
 # Unset means off. Both switches are required, so flipping one by mistake
 # publishes nothing.
 # =============================================================================
@@ -82,7 +83,7 @@ jobs:
   guard:
     name: '[0] Guard'
     if: startsWith(github.event.release.tag_name, 'free-v')
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -172,7 +173,7 @@ jobs:
   build:
     name: '[2] Build the free ZIP'
     needs: [guard, php-tests, frontend-tests]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -233,7 +234,7 @@ jobs:
   plugin-check:
     name: '[3] Plugin Check (pinned)'
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -258,7 +259,7 @@ jobs:
 
   # ---------------------------------------------------------------------------
   # [4] WORDPRESS.ORG — the free build to SVN.
-  # Secrets: WP_ORG_USERNAME, WP_ORG_PASSWORD.
+  # Environment `wordpress-org`: variable WP_ORG_USERNAME, secret WP_ORG_PASSWORD.
   #
   # Skipped for pre-releases: WordPress.org has no concept of one, so publishing
   # a beta there would hand it to every free user as the current version.
@@ -279,8 +280,11 @@ jobs:
       github.event.release.prerelease == false &&
       vars.RELEASE_PUBLISH_ENABLED == 'true' &&
       vars.PUBLISH_WPORG == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 20
+    environment:
+      name: wordpress-org
+      url: https://wordpress.org/plugins/wconvert/
     steps:
       - uses: actions/checkout@v4
 
@@ -301,8 +305,37 @@ jobs:
           SLUG: wconvert
           VERSION: ${{ needs.guard.outputs.version }}
           BUILD_DIR: ${{ runner.temp }}/wconvert
-          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
+          # Banner, icon and screenshots for the wp.org listing. Read from the
+          # checkout above; the action skips it when the directory is absent.
+          ASSETS_DIR: .wordpress-org
+          SVN_USERNAME: ${{ vars.WP_ORG_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
+
+  # ---------------------------------------------------------------------------
+  # ATTACH — the ZIP to the GitHub Release, so a person who installs by
+  # hand gets exactly what was built and contract-checked. Only this job holds
+  # `contents: write`; every other job in this workflow stays read-only.
+  # ---------------------------------------------------------------------------
+  attach_zip:
+    name: 'Attach the ZIP to the release'
+    needs: [guard, build, plugin-check]
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Download the ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: free-zip
+          path: zips
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" zips/*.zip --clobber
 
   # ---------------------------------------------------------------------------
   # [5] SUMMARY — always runs. A release run is GREEN when nothing published,
@@ -312,7 +345,7 @@ jobs:
     name: '[5] What shipped'
     needs: [guard, build, plugin-check, publish_wporg]
     if: always() && needs.guard.result != 'skipped'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 5
     steps:
       - name: Write the summary

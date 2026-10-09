@@ -41,7 +41,7 @@ permissions:
 jobs:
   test:
     name: 'Vitest'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
 
   typecheck:
     name: 'TypeScript'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
 
   lint:
     name: 'ESLint'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +80,7 @@ jobs:
 
   visual-build:
     name: 'Visual contracts: build'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
         with:
           php-version: '8.1'
           coverage: none
-      - run: composer install --no-interaction --no-progress --no-dev
+      - run: composer dist --no-progress
       - run: npm ci
       # The one script that builds everything, so no leg's build list can drift
       # from the suites that need it.
@@ -109,7 +109,7 @@ jobs:
   visual:
     name: 'Visual contracts: ${{ matrix.suite }}'
     needs: visual-build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     strategy:
       # Report every suite even if one fails. Any failed leg still fails the

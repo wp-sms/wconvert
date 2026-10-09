@@ -884,17 +884,27 @@ applies the tree's own `.distignore`, and then runs
 writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the
 contract has to be what decides whether one is written.
 
-**The free ZIP carries its build files.** The repository is private, so a wp.org
-reviewer's only way to reproduce `public/` is the download itself:
-`package.json`, `package-lock.json`, `tsconfig.json`, `composer.json`,
-`composer.lock`, and free's Vite configs (`vite.config.{admin,block,loader,
-inspector,phone,protection}.mjs` plus the two factories they import) all ship,
-and `npm ci && npm run build:free` then `composer install --no-dev` in the
-unzipped plugin rebuild `public/` and `vendor/` without `pro/`. Every Pro config
-is named in `.distignore`; the contract fails the build if a shipped root Vite
-config mentions a `pro/` path, so a new Pro config nobody listed stops the ZIP
-rather than leaking into it. `components.json` (shadcn's CLI) and Action
-Scheduler's contributor notes do not ship; `license.txt` does.
+**The free ZIP carries no sources and no build files.** It holds the built
+`public/` bundles and the PHP; the JavaScript sources under `resources/*/src`,
+`package.json`, `composer.json`, the lockfiles and every Vite config stay in
+this repository, and readme.txt's *Source code* section links it
+(`npm ci && npm run build:free` rebuilds `public/`). `.distignore` names each one,
+and the artifact contract fails the build if any of them ships, or if readme.txt
+stops linking the repository. `resources/` itself still ships its runtime data
+(playbooks, templates, rules, collections, the phone country list, the block's
+`block.json`).
+
+**The runtime autoloader is `packages/autoload.php`, not Composer's.**
+[wp-scoper](https://github.com/veronalabs/wp-scoper) is configured in
+`composer.json` (`extra.wp-scoper`, prefix `WConvert\Deps`, target `packages/`)
+and writes it on `composer install`, PSR-4 for `src/` plus any prefixed package.
+`extra.wp-scoper.packages` is empty today. Action Scheduler is deliberately not
+in it: it is a shared library that version-negotiates with other copies on the
+site, so it ships under `vendor/woocommerce/action-scheduler` and is loaded by
+path from `wconvert.php`, and it is the only thing left in `vendor/` (Composer's
+own autoloader is stripped). `bin/autoload-template.php` is the fallback if
+wp-scoper ever writes nothing. The one production install command is
+`composer dist`.
 
 **Translations are wp.org language packs.** There is no `Domain Path` and no
 `load_plugin_textdomain()` — WordPress loads the `wconvert` domain from

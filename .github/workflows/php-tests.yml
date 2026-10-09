@@ -34,7 +34,7 @@ permissions:
 jobs:
   test:
     name: 'Tests · PHP ${{ matrix.php }}'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -73,7 +73,7 @@ jobs:
 
   analysis:
     name: 'Static analysis (PHPStan)'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -105,7 +105,7 @@ jobs:
 
   database:
     name: 'Database · WordPress 6.8 / PHP 8.2 / MySQL 8.4'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 15
     services:
       mysql:

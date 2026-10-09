@@ -36,7 +36,13 @@ is "the bundler probably eliminated it" is not absence; it is a bet.
   than deferred behind a flag. This is the cost, and it is the whole cost.
 - **Pro's entry is free's modules plus Pro's**, which is the same composition
   0014 already describes at the plugin level, applied one layer down.
-- **Free's un-minified sources ship inside the free ZIP**, which is what makes the
+- **Free's un-minified sources are published, not shipped in the ZIP.**
+  *Amended: they used to ship inside the free ZIP, because the repository was
+  private. The ZIP now carries the built bundles only, and readme.txt's "Source
+  code" section links the public repository, like the other VeronaLabs
+  plugins; `bin/verify-artifact-contract.sh` check (d) asserts the sources are
+  absent and the link is present. The repository must be public for that claim
+  to hold.* The original text follows, for the reasoning: this is what made the
   readme's source claim true by construction. WSMS's `.distignore` strips
   `/resources` while its readme still says sources ship there — the trap this
   deletes rather than inherits.
