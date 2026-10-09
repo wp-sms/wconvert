@@ -48,7 +48,7 @@ export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly st
       && destination.availability === 'ready'
       && destination.requirements?.audience_channels?.includes(outcome.audience_channel as string)
       && settingsProblems(destination.requirements, destination.settings).length === 0);
-    return ready ? null : __('Before publishing, connect a service or choose “Collect only in WConvert”.', 'wconvert');
+    return ready ? null : __('Before you can publish, connect a service or choose “Collect only in WConvert”.', 'wconvert');
   }
   if (outcome.destination_type === null) return null;
   if (destinations === null) return __('Open Destinations to check the required delivery setup before publishing.', 'wconvert');
@@ -56,5 +56,5 @@ export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly st
     && destination.type === outcome.destination_type && destination.availability === 'ready'
     && destination.requirements != null
     && settingsProblems(destination.requirements, destination.settings).length === 0);
-  return ready ? null : __('Connect a lead magnet email destination and complete its file link before publishing.', 'wconvert');
+  return ready ? null : __('Before you can publish, connect a lead magnet email destination and complete its file link.', 'wconvert');
 }

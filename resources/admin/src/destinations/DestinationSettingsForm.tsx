@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { DialogFooter } from '../components/ui/dialog';
@@ -30,7 +30,10 @@ export function DestinationSettingsForm({
   destination,
   submitDescription,
   onConnectionSaved,
+  focusField,
 }: {
+  /** A setting key, or `connection`, to focus once the fields are drawn. */
+  focusField?: string;
   type: DestinationType;
   destination?: Destination;
   submitDescription?: string;
@@ -99,6 +102,13 @@ export function DestinationSettingsForm({
   const problems = (!type.needs_connection || selectedConnection !== null) && !loadingSchema
     ? settingsProblems(type.requirements, fromDraft(schema, draft), schema) : [];
   const noAccounts = type.needs_connection && accounts.length === 0;
+  const focused = useRef(false);
+  useEffect(() => {
+    if (focusField === undefined || focused.current || loadingSchema) return;
+    const field = document.getElementById(id(focusField));
+    const control = field?.matches('input, select, textarea, button') ? field : field?.querySelector<HTMLElement>('input, select, textarea, button');
+    if (control) { control.focus(); focused.current = true; }
+  });
 
   return (
     <>
@@ -122,7 +132,7 @@ export function DestinationSettingsForm({
       {metadataError !== null && <RegionError message={metadataError} />}
       {loadingSchema && <p role="status">{__('Loading destination choices…', 'wconvert')}</p>}
       {type.needs_connection && selectedConnection !== null && <div><Button type="button" variant="outline" disabled={loadingSchema} onClick={() => setRefreshSchema((old) => old + 1)}>{__('Refresh choices', 'wconvert')}</Button></div>}
-      {destination && <DestinationUsageNotice usage={destination.usage} />}
+      {destination && <div id={id('usage')}><DestinationUsageNotice usage={destination.usage} /></div>}
       {problems.map((problem) => <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
 
       <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
@@ -185,7 +195,7 @@ export function DestinationSettingsForm({
           pressing it does without having read the sentence above it.
         */}
         <Button
-          aria-describedby={submitDescription}
+          aria-describedby={[submitDescription, destination ? id('usage') : undefined].filter(Boolean).join(' ') || undefined}
           disabled={busy || loadingSchema || metadataError !== null || (type.needs_connection && (selectedConnection === null || problems.length > 0))}
           onClick={() =>
             onConfirm({

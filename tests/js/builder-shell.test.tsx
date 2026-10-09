@@ -1230,8 +1230,8 @@ describe('the summary', () => {
     // of no registered type on any install, and an unresolved key is our own
     // vocabulary rather than a merchant's word.
     expect(
-      await screen.findByText(/works well with a destination like WP SMS/),
-    ).toBeInTheDocument();
+      await screen.findByRole('button', { name: /WP SMS/ }),
+    ).toHaveAccessibleDescription('Suggested by your campaign setup');
     expect(screen.queryByText(/email_service_provider/)).toBeNull();
   });
 
@@ -1284,8 +1284,26 @@ describe('the summary', () => {
     await userEvent.keyboard('{Escape}');
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
 
-    expect(await screen.findByRole('checkbox', { name: /WP SMS contacts/ })).toBeChecked();
-    expect(screen.queryByText(/The campaign setup this started from/)).toBeNull();
+    expect(await screen.findByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    expect(screen.queryByText('Suggested by your campaign setup')).toBeNull();
+  });
+
+  /**
+   * The Add picker re-reads the site's routes as it opens. That read used to
+   * reset the screen to loading, so the picker opened onto nothing at all.
+   */
+  it('keeps the routes in the Add picker while it re-reads them', async () => {
+    const route = { id: 'd1', type: 'wsms', label: 'WP SMS contacts', connection: null, settings: {}, target: null, availability: 'ready',
+      health: { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } };
+    destinations.readDestinations
+      .mockResolvedValueOnce({ destinations: [route], types: [] })
+      .mockReturnValue(new Promise(() => {}));
+    builder.getOptin.mockResolvedValue(optin());
+    await open();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Add destination' }));
+    expect(destinations.readDestinations).toHaveBeenCalledTimes(2);
+    expect(within(screen.getByRole('dialog', { name: 'Add a destination' })).getByRole('button', { name: /WP SMS contacts/ })).toBeVisible();
   });
 });
 
@@ -1415,10 +1433,13 @@ describe('whole-draft Undo and Redo', () => {
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^How often\?/ }));
     await userEvent.click(screen.getByRole('checkbox', { name: 'after they submit the form' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
-    await userEvent.click(await screen.findByRole('checkbox', { name: /Selected contacts/ }));
-    expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).not.toBeChecked();
+    await userEvent.click(await screen.findByRole('button', { name: 'Actions for Selected contacts' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove from this campaign' }));
+    // A draft edit, so no confirm: Undo is the way back.
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    expect(screen.queryByRole('article', { name: 'Selected contacts' })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).toBeChecked();
+    expect(screen.getByRole('article', { name: 'Selected contacts' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^How often\?/ }));

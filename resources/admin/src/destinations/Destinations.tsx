@@ -7,7 +7,6 @@ import {
   CircleCheck,
   ChevronDown,
   Info,
-  Lock,
   Plug,
   Plus,
   RefreshCw,
@@ -19,13 +18,13 @@ import {
 } from 'lucide-react';
 import { ProviderMark } from './ProviderMark';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
 import { AccountEditor } from './AccountEditor';
 import { SendTestDialog } from './SendTestDialog';
+import { destinationStatus, setupProblems } from './status';
 import { destinationHref, leadsHref, sendingIssuesHref } from '../nav';
 import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
 import type { EditingState } from '../hooks/useAdminNavigation';
@@ -77,7 +76,7 @@ import {
   targetSaid,
   toDraft,
 } from './settings';
-import { isFreeInstall, isShown, renderingFor, tierName, tierProductName } from '../goals/availability';
+import { isFreeInstall, isShown, renderingFor, tierProductName } from '../goals/availability';
 import { issueCount } from './issueCount';
 
 /**
@@ -721,24 +720,7 @@ function Configured({
           install that has simply not bought the tier — which is the same
           collapse as the sentence above, in colour.
         */
-        trailing={
-          failing ? (
-            <Badge variant="destructive">{__('Failing', 'wconvert')}</Badge>
-          ) : destination.availability === 'locked' && isFreeInstall() ? (
-            <Badge variant="secondary">{__('Not available', 'wconvert')}</Badge>
-          ) : destination.availability === 'locked' ? (
-            <Badge variant="secondary">
-              <Lock aria-hidden="true" />
-              {tierName(type?.tier)}
-            </Badge>
-          ) : destination.availability === 'unavailable' ? (
-            <Badge variant="warning">{__('Paused', 'wconvert')}</Badge>
-          ) : destination.health.last_success_at === null ? (
-            <Badge variant="secondary">{__('Not used yet', 'wconvert')}</Badge>
-          ) : (
-            <Badge variant="success">{__('Success recorded', 'wconvert')}</Badge>
-          )
-        }
+        trailing={destinationStatus(destination, type, setupProblems(destination, type, connections)).badge}
       />
       <RegionBody>
         <Button variant="outline" onClick={async () => {

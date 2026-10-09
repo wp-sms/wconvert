@@ -308,6 +308,25 @@ describe('the destinations screen', () => {
   });
 
   /**
+   * **One badge vocabulary for Settings and the Campaign editor.** A route
+   * whose required setting is empty cannot send, and saying "Not used yet"
+   * about it reads as healthy-but-idle.
+   */
+  it('marks a route with an empty required setting as needing setup', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...MAILPOET_READY, requirements: { capture_any_of: ['email'], settings: { lists: { label: 'Lists to add to', type: 'ids' } }, fields: ['email'], mapped_fields: {} } }],
+      destinations: [{ ...MAILPOET_BOUND, settings: { lists: [] }, target: '', health: { ...HEALTHY.health, last_success_at: null } }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('Needs setup')).toBeInTheDocument();
+    expect(screen.queryByText('Not used yet')).not.toBeInTheDocument();
+  });
+
+  /**
    * The "recorded" half of "skipped and recorded, never enqueued". Without it
    * a deactivated WP SMS drops every push with nothing anywhere saying so —
    * the Optin keeps converting and the Leads keep landing (#4).

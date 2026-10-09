@@ -8,10 +8,11 @@ const children = (node: TemplateNode): readonly TemplateNode[] => {
   const branches = node as { children?: readonly TemplateNode[]; start?: readonly TemplateNode[]; end?: readonly TemplateNode[] };
   return [...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])];
 };
-/** Only fields on the actual submitting step can satisfy a destination. */
-export function capturedFields(template: Template | undefined): CapturedField[] {
+/** Only fields on the actual submitting step can satisfy a destination. The first submission unless one is named. */
+export function capturedFields(template: Template | undefined, submissionId?: string): CapturedField[] {
   if (!template) return [];
-  const refs = new Set(template.tree.submissions[0]?.fields ?? []);
+  const submission = submissionId === undefined ? template.tree.submissions[0] : template.tree.submissions.find((each) => each.id === submissionId);
+  const refs = new Set(submission?.fields ?? []);
   const fields: CapturedField[] = [];
   const walk = (node: TemplateNode) => {
     if ('hidden' in node && node.hidden === true) return;
@@ -32,6 +33,11 @@ const present = (value: unknown, type: string) => type === 'ids'
   ? Array.isArray(value) && value.some((each) => typeof each === 'string' && each.trim() !== '')
   : typeof value === 'string' && value.trim() !== '';
 
+/** The keys of required settings that are still empty, in schema order. */
+export function missingSettings(requirements: DestinationRequirements | null | undefined, settings: Readonly<Record<string, unknown>>): string[] {
+  return Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !present(settings[key], field.type)).map(([key]) => key);
+}
+
 export function settingsProblems(requirements: DestinationRequirements | null | undefined, settings: Readonly<Record<string, unknown>>, schema?: Readonly<Record<string, SettingsField>>): string[] {
   const problems: string[] = Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !present(settings[key], field.type))
     .map(([, field]) => field.type === 'ids'
@@ -47,10 +53,18 @@ export function settingsProblems(requirements: DestinationRequirements | null | 
   return problems;
 }
 
+/** Settings problems plus {@see captureProblems}, each prefixed with the route's name for a list that mixes routes. */
 export function compatibilityProblems(destination: Destination, captures: readonly CapturedField[]): string[] {
+  if (!destination.requirements) return [];
+  return [...settingsProblems(destination.requirements, destination.settings), ...captureProblems(destination, captures)]
+    .map((problem) => sprintf(__('%1$s: %2$s', 'wconvert'), destination.label, problem));
+}
+
+/** Where this form and this route disagree: missing or optional identifiers, unsent fields, broken mappings. */
+export function captureProblems(destination: Destination, captures: readonly CapturedField[]): string[] {
   const requirements = destination.requirements;
   if (!requirements) return [];
-  const problems = [...settingsProblems(requirements, destination.settings), ...(destination.mapping_issues ?? [])];
+  const problems = [...(destination.mapping_issues ?? [])];
   const needed = requirements.capture_any_of;
   const fields = captures.filter((field) => needed.includes(field.name));
   // Capture itself always requires email or phone. A route can miss its own
@@ -71,5 +85,5 @@ export function compatibilityProblems(destination: Destination, captures: readon
       problems.push(sprintf(__('The %s is saved in WConvert but is not sent by this destination.', 'wconvert'), named(field.name)));
     }
   }
-  return problems.map((problem) => sprintf(__('%1$s: %2$s', 'wconvert'), destination.label, problem));
+  return problems;
 }

@@ -926,6 +926,32 @@ it('edits campaign context beside the same map and restores the selected screen 
   expect(screen.getByLabelText('Journey map')).toBe(map);
 });
 
+/** The side panel is the same editor as the tab, not a second, thinner one. */
+it('draws the destination cards and Add in the journey side panel', async () => {
+  const user = userEvent.setup();
+  const { DestinationsEditor } = await import('../../resources/admin/src/builder/DestinationsEditor');
+  const { ready } = await import('../../resources/admin/src/shell/loadable');
+  const health = { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null };
+  const routes = [
+    { id: 'a', type: 'wsms', label: 'Enquiry contacts', connection: null, settings: {}, target: null, availability: 'ready' as const, health },
+    { id: 'b', type: 'wsms', label: 'Spare route', connection: null, settings: {}, target: null, availability: 'ready' as const, health },
+  ];
+  const onChange = vi.fn();
+  render(<JourneyEditor embedded tree={graphFixture as unknown as TemplateTree} step={0} onSelect={() => {}} onChange={() => {}}
+    displaySummary="After 5 seconds" destinationSummary="Enquiry contacts" onGoToRules={() => {}} onGoToDestinations={() => {}}
+    contextEditors={{ rules: <p>Rules</p>, destinations: <DestinationsEditor bound={['a']} available={ready(routes)} types={[]} connections={[]}
+      onChange={onChange} onRefresh={() => {}} onSaved={() => {}} /> }} />);
+  await screen.findByLabelText('Journey map');
+  await user.click(screen.getByRole('button', { name: 'Select first screen' }));
+  await user.click(screen.getByRole('button', { name: 'Edit destinations' }));
+  const panel = within(screen.getByRole('region', { name: 'Journey destinations' }));
+  expect(panel.getByRole('article', { name: 'Enquiry contacts' })).toBeInTheDocument();
+  expect(panel.queryByText('Spare route')).toBeNull();
+  await user.click(panel.getByRole('button', { name: 'Add destination' }));
+  await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Spare route/ }));
+  expect(onChange).toHaveBeenCalledExactlyOnceWith(['a', 'b']);
+});
+
 it('opens the exact referenced show condition and returns to its source question without editing the draft', async () => {
   const user = userEvent.setup();
   const initial = graphFixture as unknown as TemplateTree;

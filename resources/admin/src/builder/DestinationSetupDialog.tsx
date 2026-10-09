@@ -11,9 +11,13 @@ import { messageOf } from '../shell/loadable';
 
 /** The shared route can be configured without leaving the Optin's draft. */
 export function DestinationSetupDialog({
-  destination, types, connections, returnFocusTo, onClose, onSaved, onConnectionSaved,
+  destination, initialType, focusField, types, connections, returnFocusTo, onClose, onSaved, onConnectionSaved,
 }: {
   destination?: Destination;
+  /** Opens a new route's setup on this provider rather than on the provider list. */
+  initialType?: string;
+  /** A setting key (or `connection`) to focus instead of the title — where "Finish setup" was pressed. */
+  focusField?: string;
   types: readonly DestinationType[];
   connections: readonly Connection[];
   returnFocusTo: RefObject<HTMLElement | null>;
@@ -21,20 +25,23 @@ export function DestinationSetupDialog({
   onSaved: (destinations: readonly Destination[]) => void;
   onConnectionSaved?: (connection: Connection) => void;
 }) {
-  const [selected, setSelected] = useState<string | null>(destination?.type ?? null);
+  const [selected, setSelected] = useState<string | null>(destination?.type ?? initialType ?? null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const description = useId();
   const type = types.find((candidate) => candidate.id === selected);
   const offered = types.filter((candidate) => isShown(candidate.availability));
-  useEffect(() => { title.current?.focus(); }, [selected]);
+  useEffect(() => { if (focusField === undefined) title.current?.focus(); }, [selected, focusField]);
   const close = () => { if (!busy) onClose(); };
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
       <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-xl"
         showCloseButton={!busy}
+        // The portal mounts after this component's effects, so the first
+        // focus is taken here rather than in the effect below.
+        onOpenAutoFocus={(event) => { if (focusField === undefined) { event.preventDefault(); title.current?.focus(); } }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           returnFocusTo.current?.focus();
@@ -46,11 +53,15 @@ export function DestinationSetupDialog({
               : sprintf(__('Add a %s destination', 'wconvert'), type.label)}
           </DialogTitle>
           <DialogDescription className="m-0" id={description}>
+            {/*
+              Editing says who else is affected in the usage notice below, so
+              the description names the provider rather than saying it twice.
+            */}
             {type?.needs_connection && !connections.some((account) => account.type === type.id)
               ? sprintf(__('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
               : destination !== undefined
-              ? __('Changes affect every campaign using this destination, including published campaigns.', 'wconvert')
-              : __('Create a destination, then select it for this campaign.', 'wconvert')}
+              ? type?.label ?? destination.type
+              : __('It is selected for this campaign when you save.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
 
@@ -82,7 +93,7 @@ export function DestinationSetupDialog({
               onClick={() => { setSelected(null); setError(null); }}>
               <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Choose another provider', 'wconvert')}
             </Button>}
-            <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination}
+            <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination} focusField={focusField}
               connections={connections.filter((connection) => connection.type === type.id)}
               onConnectionSaved={onConnectionSaved}
               busy={busy} error={error} submitDescription={description} onCancel={close}
