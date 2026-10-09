@@ -15,7 +15,7 @@ export function captureOwnership(tree: TemplateTree, path: Path) {
   const owners = tree.submissions.filter(save => save[key].includes(id));
   const choices = tree.submissions.map(save => {
     const at = submissionScreen(tree, save.id);
-    const name = tree.steps[at]?.name ?? save.id;
+    const name = tree.steps[at]?.name ?? __('Unnamed screen', 'wconvert');
     const reason = at < 0 ? __('Add a Save button for this save point first.', 'wconvert')
       : source.kind !== 'input' || source.when || !graphRequiresScreen(tree.graph!, source.id, tree.steps[at].id)
         ? sprintf(__('Every path to “%s” must include this input screen. Move this element onto that screen or reconnect the paths.', 'wconvert'), name)

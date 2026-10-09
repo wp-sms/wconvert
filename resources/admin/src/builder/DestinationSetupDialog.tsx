@@ -34,6 +34,7 @@ export function DestinationSetupDialog({
   const [selected, setSelected] = useState<string | null>(destination?.type ?? initialType ?? null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
   const title = useRef<HTMLHeadingElement>(null);
   const description = useId();
   const type = types.find((candidate) => candidate.id === selected);
@@ -42,7 +43,7 @@ export function DestinationSetupDialog({
 
   return (
     <AdminDialog open onOpenChange={(open) => { if (!open) close(); }}>
-      <AdminDialogContent size="md"
+      <AdminDialogContent size="md" dirty={dirty && !busy}
         showCloseButton={!busy}
         // The portal mounts after this component's effects, so the first
         // focus is taken here rather than in the effect below.
@@ -71,12 +72,6 @@ export function DestinationSetupDialog({
               ? type?.label ?? __('Destination', 'wconvert')
               : __('It is selected for this campaign when you save.', 'wconvert')}
           </DialogDescription>
-          {type !== undefined && destination === undefined && (
-            <Button type="button" variant="outline" className="justify-self-start" disabled={busy}
-              onClick={() => { setSelected(null); setError(null); }}>
-              <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to providers', 'wconvert')}
-            </Button>
-          )}
         </div>
 
         {type === undefined ? (
@@ -87,11 +82,16 @@ export function DestinationSetupDialog({
             <AdminDialogFooter back={<Button type="button" variant="outline" onClick={close}>{__('Cancel', 'wconvert')}</Button>} />
           </>
         ) : (
-          <div className="wconvert-destination-setup__form">
+          <>
             <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination} focusField={focusField}
               connections={connections.filter((connection) => connection.type === type.id)}
               onConnectionSaved={onConnectionSaved}
-              busy={busy} error={error} submitDescription={description} onCancel={close}
+              busy={busy} error={error} submitDescription={description} onCancel={close} onDirtyChange={setDirty}
+              back={destination === undefined && initialType === undefined ? (
+                <Button type="button" variant="outline" disabled={busy} onClick={() => { setSelected(null); setError(null); }}>
+                  <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}
+                </Button>
+              ) : undefined}
               onConfirm={(draft) => {
                 if (busy) return;
                 setBusy(true);
@@ -101,7 +101,7 @@ export function DestinationSetupDialog({
                   .catch((cause: unknown) => setError(messageOf(cause)))
                   .finally(() => setBusy(false));
               }} />
-          </div>
+          </>
         )}
       </AdminDialogContent>
     </AdminDialog>

@@ -10,7 +10,7 @@ Packs can now carry an optional `playbooks` list, declaring `campaign-starts:1`.
 These are JSON data. Installed entries join the existing PlaybookLibrary and
 Prefill; no second campaign builder or snapshot mechanism is introduced.
 
-Choose a goal, then Browse template packs, preview and install a collection.
+Choose a goal, then Browse template packs (*the button reads **Template packs** since [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md)*), preview and install a collection.
 **Amended by [ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):**
 that button appears only once a catalog service is configured.
 Choose a starting point returns to that goal's creation gallery filtered to the

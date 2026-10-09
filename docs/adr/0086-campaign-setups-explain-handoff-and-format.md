@@ -30,7 +30,7 @@ available audience Destination with completed required settings and a matching
 `audience_channels` capability. MailPoet supports email; WSMS supports email and
 phone. Transactional lead-magnet email does not qualify as an audience service.
 
-**Collect only in WConvert** is explicit `config.capture_mode = local`. Selecting
+**Collect only in WConvert** (*renamed **Keep in WConvert only** by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md)*) is explicit `config.capture_mode = local`. Selecting
 it removes draft Destination ids in one undoable edit and explains manual export,
 follow-up and reviewing visitor copy. `OptinBinding::ids()` also suppresses automatic
 forwarding in this mode, including stale published bindings. Choosing a route sets

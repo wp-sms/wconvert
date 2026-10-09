@@ -7,7 +7,7 @@
 }
 #wconvert-admin .wconvert-settings-disclosure__trigger {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  inline-size: 100%; padding: 1rem 1.25rem; color: var(--foreground); text-align: start;
+  inline-size: 100%; padding: .75rem 1rem; color: var(--foreground); text-align: start;
 }
 #wconvert-admin .wconvert-settings-disclosure__trigger:hover { background: var(--muted); }
 #wconvert-admin .wconvert-settings-disclosure__trigger:focus-visible { outline: 2px solid var(--ring); outline-offset: -3px; }

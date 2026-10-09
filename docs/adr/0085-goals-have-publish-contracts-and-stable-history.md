@@ -63,5 +63,5 @@ publication, history locking after unpublish, and the copied-draft editor flow.
 
 **Completed by [ADR 0086](0086-campaign-setups-explain-handoff-and-format.md):** visible
 format selection, Campaign/Campaign setup wording, task-based names/checklists,
-explicit service versus Collect only, and separate research implementation status.
+explicit service versus Collect only (*Keep in WConvert only* since [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md)), and separate research implementation status.
 Downstream subscription/revenue tracking remains outside this change.

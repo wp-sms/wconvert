@@ -52,7 +52,7 @@ export function RegionSkeleton({
 
       <RegionBody className="flex flex-col gap-4">
         <span role="status" className="text-note text-muted-foreground">
-          {sprintf(__('Loading %s…', 'wconvert'), label)}
+          {sprintf(__('Loading %s…', 'wconvert'), sentenceCase(label))}
         </span>
 
         {children ??
@@ -66,4 +66,13 @@ export function RegionSkeleton({
       </RegionBody>
     </Region>
   );
+}
+
+/**
+ * A region's title is title-cased ("Monthly targets") and this sentence puts it
+ * mid-sentence, where domain nouns are lowercase (ADR 0131). An acronym or a
+ * name whose second letter is a capital is left as it is.
+ */
+function sentenceCase(label: string): string {
+  return /^[A-Z][a-z]/.test(label) ? label.charAt(0).toLowerCase() + label.slice(1) : label;
 }

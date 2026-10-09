@@ -30,7 +30,7 @@ describe('explicit site-wide allowance drafts', () => {
   it('shows a placeholder before reading, not editable defaults', () => {
     api.readSiteAllowance.mockReturnValue(new Promise(() => undefined));
     render(<SiteAllowance />);
-    expect(screen.getByRole('status')).toHaveTextContent('Loading Display limits…');
+    expect(screen.getByRole('status')).toHaveTextContent('Loading display limits…');
     expect(screen.queryByLabelText(/after a visitor closes/i)).toBeNull();
   });
   it('retries a failed read without writing a setting', async () => {

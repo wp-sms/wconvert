@@ -845,8 +845,8 @@ contract checks compatibility before that design becomes live.
 
 | Goal | Required before publishing | Headline metric |
 | --- | --- | --- |
-| Grow email list | Required email plus a capable service, or explicit Collect only | Email submissions |
-| Grow SMS list | Required phone plus a capable service, or explicit Collect only | Phone submissions |
+| Grow email list | Required email plus a capable service, or explicit Keep in WConvert only | Email submissions |
+| Grow SMS list | Required phone plus a capable service, or explicit Keep in WConvert only | Phone submissions |
 | Collect enquiries | Submit form collecting email or phone | Enquiries captured |
 | Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
 | Promote an offer or content | Click design with an offer/content link | Link clicks |
@@ -1353,7 +1353,8 @@ would put a member in the set that satisfies none of the set's invariants.
 Destinations are the only way a Lead is pushed out of WConvert **automatically**.
 CSV export is a manual admin action, not a Destination.
 
-`config.capture_mode = local` explicitly selects Collect only and suppresses all
+`config.capture_mode = local` explicitly selects Keep in WConvert only (named
+"Collect only" before [ADR 0131](docs/adr/0131-one-way-to-show-each-thing-in-the-admin.md)) and suppresses all
 Destination bindings. List Goals otherwise default to connected mode and require
 an audience service for the right channel at publication. Destination requirements
 declare `audience_channels` separately from captured fields; transactional email

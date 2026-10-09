@@ -499,7 +499,7 @@ describe('the builder shell', () => {
 
     expect(await screen.findByText('How it appears')).toBeInTheDocument();
     expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Popup')).toBeInTheDocument();
-    expect(screen.getByText('Centred over the page')).toBeInTheDocument();
+    expect(screen.getByText('Centered over the page')).toBeInTheDocument();
     expect(screen.getByText('Design: Centred card')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
