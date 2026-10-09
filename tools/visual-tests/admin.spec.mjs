@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const baseURL = 'http://127.0.0.1:9413';
 const screens = [
-  { route: 'optins', name: 'Campaigns', empty: 'Start with one good campaign.', full: 'Grow the list', retry: 'Try again' },
+  { route: 'optins', name: 'Campaigns', empty: 'No campaigns yet', full: 'Grow the list', retry: 'Try again' },
   { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Retry loading report' },
   { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Try again' },
   { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are kept in WConvert only', full: 'Welcome email', retry: 'Try again' },
@@ -167,7 +167,7 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await expect(page.getByRole('textbox', { name: 'Name', exact: true }).first()).toBeVisible();
       await commonChecks(page, direction);
       await screenshot(page, info, 'destination-settings');
-      await page.getByRole('button', { name: 'Need a hand? Help and resources' }).click();
+      await page.getByRole('button', { name: 'Need a hand? Help' }).click();
       await layerChecks(page, page.getByRole('dialog'));
       await screenshot(page, info, 'footer-help');
       completed = true;

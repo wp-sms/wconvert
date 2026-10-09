@@ -1,4 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
+import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
 
 export interface CampaignPreview {
@@ -127,6 +128,14 @@ export function statusOf(optin: OptinState): OptinStatus {
  * undo something they never did.
  */
 export const canUnpublish = (status: OptinStatus): boolean => status === 'published' || status === 'suspended';
+
+/**
+ * A campaign's name for a person to read: "Unnamed campaign" where it has
+ * none, never its ID (ADR 0131). A function rather than a constant because
+ * `__()` must not run at module scope.
+ */
+export const campaignName = (row: { readonly name: string }): string =>
+  row.name.trim() || __('Unnamed campaign', 'wconvert');
 
 const path = (suffix = '') => `/wconvert/v1/optins${suffix}`;
 

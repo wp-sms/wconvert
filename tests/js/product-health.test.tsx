@@ -10,10 +10,10 @@ beforeEach(() => { vi.clearAllMocks(); });
 it('names the checked version and the selection to repair', async () => {
   const recheck = vi.fn();
   render(<ProductHealthDetails health={row('A')} loading={false} failed={false} onRecheck={recheck} />);
-  expect(screen.getByText('Published version · current catalog')).toBeInTheDocument();
+  expect(screen.getByText('Checks the published version against today’s catalog.')).toBeInTheDocument();
   expect(screen.getByText('Coffee lovers')).toBeInTheDocument();
   expect(screen.getByText(/Unavailable: Coffee filter/)).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('button', { name: 'Check again' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Check products again' }));
   expect(recheck).toHaveBeenCalledOnce();
 });
 

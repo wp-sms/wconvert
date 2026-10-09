@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog';
+  AdminDialog,
+  AdminDialogBody,
+  AdminDialogClose,
+  AdminDialogContent,
+  AdminDialogFooter,
+  AdminDialogHeader,
+} from '../components/ui/admin-dialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
+import { Field } from '../shell/Field';
 import { adminSettings } from '../settings';
 
 /**
@@ -26,9 +26,11 @@ import { adminSettings } from '../settings';
  * the shop page, and a loopback breaks on staging and on basic auth and cannot
  * render the signed-out variant from a signed-in session (ADR 0048).
  *
- * So this dialog's entire job is to feed `window.location`. There is no route
- * behind it, nothing is posted, and no answer comes back here — the answer is
- * on the page the merchant lands on, computed by the request that served it.
+ * So this dialog's entire job is to open that page with the inspector on.
+ * There is no route behind it, nothing is posted, and no answer comes back
+ * here — the answer is on the page the merchant lands on, computed by the
+ * request that served it. It opens in a new tab, so the admin they came from
+ * stays where it was.
  *
  * The admin bar carries the other door, and it has to ask nothing at all
  * because the merchant is already on the page they are wondering about.
@@ -36,6 +38,8 @@ import { adminSettings } from '../settings';
 export function InspectDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const settings = adminSettings();
   const [url, setUrl] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const field = useId();
 
   // Prefilled with the site root rather than left blank, so the commonest
   // answer — "the home page" — is one click. `home_url()` rather than
@@ -45,81 +49,98 @@ export function InspectDialog({ open, onOpenChange }: { open: boolean; onOpenCha
   useEffect(() => {
     if (open) {
       setUrl(settings?.homeUrl ?? '');
+      setError(null);
     }
   }, [open, settings?.homeUrl]);
 
   const go = () => {
     const param = settings?.inspectParam;
 
-    if (url === '' || param === undefined) {
+    if (url.trim() === '') {
+      return;
+    }
+    if (param === undefined) {
+      setError(__('Visibility checks aren’t available on this site.', 'wconvert'));
       return;
     }
 
     // Built with `URL` so a page that already carries a query string keeps it
     // — a merchant asking about `/shop?filter=sale` is asking about that page,
     // and appending with a `?` would produce a different one.
+    let target: URL;
     try {
-      const target = new URL(url, settings?.homeUrl);
-
-      target.searchParams.set(param, '1');
-      window.location.assign(target.toString());
+      target = new URL(url.trim(), settings?.homeUrl);
     } catch {
-      // A URL this browser will not parse is one we cannot navigate to. The
-      // field stays as the merchant typed it rather than being cleared, so
-      // they can fix it rather than start again.
+      // The field keeps what the merchant typed, so they can fix it rather
+      // than start again — and it says so, rather than doing nothing.
+      setError(__('Enter a full page address, like https://example.com/shop.', 'wconvert'));
+      return;
     }
+    target.searchParams.set(param, '1');
+    window.open(target.toString(), '_blank', 'noopener');
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{__('Why did nothing show?', 'wconvert')}</DialogTitle>
-          <DialogDescription>
-            {__(
-              'Open a page on your site and WConvert will explain, for every Campaign, exactly where it stopped.',
-              'wconvert',
-            )}
-          </DialogDescription>
-        </DialogHeader>
-
-        <p>
-          <Label htmlFor="wconvert-inspect-url">{__('Page to open', 'wconvert')}</Label>{' '}
-          <Input
-            id="wconvert-inspect-url"
-            type="url"
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                go();
-              }
+    <AdminDialog open={open} onOpenChange={onOpenChange}>
+      {/* Typed past the prefilled home page is worth asking about (ADR 0131). */}
+      <AdminDialogContent size="sm" dirty={url !== (settings?.homeUrl ?? '')}>
+        <AdminDialogHeader
+          title={__('Check visibility', 'wconvert')}
+          meta={__('Open a page on your site to see why each campaign did or didn’t show there.', 'wconvert')}
+        />
+        <AdminDialogBody>
+          <form
+            id={`${field}-form`}
+            noValidate
+            onSubmit={(event) => {
+              event.preventDefault();
+              go();
             }}
-          />
-        </p>
-
-        {/*
-          **The cache sentence belongs HERE, not in the panel.** `DONOTCACHEPAGE`
-          is set during PHP, and a full-page cache holding a file for that URL
-          answers before PHP runs at all — so the symptom of the case this
-          warns about is that no panel appears, and a warning inside the panel
-          would be one nobody could read.
-        */}
-        <p className="text-muted-foreground">{__(
-          'If neither the panel nor the admin bar appears, a cache is serving that page before WordPress runs.',
-          'wconvert',
-        )}</p>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {__('Cancel', 'wconvert')}
-          </Button>
-          <Button onClick={go} disabled={url === ''}>
+          >
+            <Field
+              label={__('Page to open', 'wconvert')}
+              htmlFor={field}
+              hintId={`${field}-hint`}
+              /*
+                **The cache sentence belongs HERE, not in the panel.**
+                `DONOTCACHEPAGE` is set during PHP, and a full-page cache
+                holding a file for that URL answers before PHP runs at all — so
+                the symptom of the case this warns about is that no panel
+                appears, and a warning inside the panel would be one nobody
+                could read.
+              */
+              hint={__('If no explanation panel or admin bar appears there, a cache is serving that page before WordPress runs.', 'wconvert')}
+              error={error}
+            >
+              <Input
+                id={field}
+                type="url"
+                dir="ltr"
+                value={url}
+                aria-describedby={`${field}-hint`}
+                aria-invalid={error !== null || undefined}
+                onChange={(event) => {
+                  setUrl(event.target.value);
+                  setError(null);
+                }}
+              />
+            </Field>
+          </form>
+        </AdminDialogBody>
+        <AdminDialogFooter
+          back={
+            <AdminDialogClose asChild>
+              <Button type="button" variant="outline">{__('Cancel', 'wconvert')}</Button>
+            </AdminDialogClose>
+          }
+          note={__('Opens in a new tab.', 'wconvert')}
+        >
+          <Button type="submit" form={`${field}-form`} disabled={url.trim() === ''}>
             {__('Open the page', 'wconvert')}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </AdminDialogFooter>
+      </AdminDialogContent>
+    </AdminDialog>
   );
 }

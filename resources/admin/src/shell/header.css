@@ -101,8 +101,11 @@
 }
 .wconvert-header-popover { max-inline-size:calc(100vw - 32px); }
 .wconvert-header-popover h2 { margin:0 0 12px; font-size:var(--text-heading); font-weight:600; }
-.wconvert-header-popover a { display:flex; align-items:center; gap:8px; font-size:var(--text-body); color:var(--link); padding-block:8px; text-decoration:none; }
+/* Links are underlined (GUIDELINES §5), in the popover as everywhere else. */
+.wconvert-header-popover a { display:flex; align-items:center; gap:8px; font-size:var(--text-body); color:var(--link); padding-block:8px; text-decoration-line:underline; text-decoration-color:color-mix(in srgb, var(--link) 40%, transparent); text-underline-offset:4px; }
+.wconvert-header-popover a:hover { text-decoration-color:currentColor; }
 .wconvert-header-popover a svg { inline-size:14px; block-size:14px; }
-.wconvert-header-popover p { margin:6px 0; font-size:var(--text-body); color:var(--muted-foreground); }
+.wconvert-header-popover p { margin:6px 0; font-size:var(--text-body); color:var(--muted-foreground); overflow-wrap:anywhere; }
 .wconvert-notifications { inline-size:340px; max-block-size:70vh; overflow:auto; }
 .wconvert-notification + .wconvert-notification { border-block-start:1px solid var(--border); margin-block-start:12px; padding-block-start:12px; }
+.wconvert-notification__title { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; min-inline-size:0; overflow-wrap:anywhere; }

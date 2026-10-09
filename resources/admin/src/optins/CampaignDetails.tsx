@@ -1,15 +1,14 @@
 import { planFrom } from '../builder/rules/plan';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
 import { getOptin, getRules, type Frequency, type Targeting } from '../builder/api';
-import { summarise } from '../builder/rules/summaries';
+import { summarise, summaryOf } from '../builder/rules/summaries';
 import { convertingActOf } from '../builder/structure/guards';
 import { nodeAt, nodesOf } from '../builder/structure/tree';
 import { destinationsSaid } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
-import { Button } from '../components/ui/button';
 import { RegionError } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { messageOf } from '../shell/loadable';
@@ -53,11 +52,17 @@ async function readContext(id: string) {
   };
 }
 
-/** Loaded only when details open; shares the editor's rule and forwarding summaries. */
+/**
+ * The saved campaign's facts, grouped the way a merchant asks about them:
+ * who it shows to, where, and what happens after signup (ADR 0131). Loaded
+ * only when Details opens; it shares the editor's rule and forwarding
+ * summaries, so the two never describe one campaign differently.
+ */
 export default function CampaignDetails({ id }: { id: string }) {
   const [context, setContext] = useState<Awaited<ReturnType<typeof readContext>> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const heading = useId();
   useEffect(() => {
     let active = true;
     setContext(null);
@@ -73,53 +78,60 @@ export default function CampaignDetails({ id }: { id: string }) {
       active = false;
     };
   }, [id, attempt]);
-  if (error) return <RegionError message={`${__('Campaign details couldn’t load.', 'wconvert')} ${error}`} action={<Button variant="outline" onClick={() => setAttempt((n) => n + 1)}>{__('Try again', 'wconvert')}</Button>} />;
+  if (error) return <RegionError message={error} onRetry={() => setAttempt((n) => n + 1)} />;
   if (!context) return <RowsSkeleton rows={4} />;
+  const fact = (key: 'who' | 'when' | 'how-often' | 'dates') => {
+    const rule = summaryOf(context.rules, key);
+    return (
+      <div key={key}>
+        <dt>{rule.eyebrow}</dt>
+        <dd>{rule.text}</dd>
+      </div>
+    );
+  };
   return (
-    <div className="wconvert-campaign-context">
-      <h3>{__('Audience & placement', 'wconvert')}</h3>
-      {context.inline && (
+    <>
+      <section className="wconvert-campaign-facts" aria-labelledby={`${heading}-shows-to`}>
+        <h3 id={`${heading}-shows-to`}>{__('Shows to', 'wconvert')}</h3>
+        <dl>{(['who', 'when', 'how-often', 'dates'] as const).map(fact)}</dl>
+      </section>
+      <section className="wconvert-campaign-facts" aria-labelledby={`${heading}-where`}>
+        <h3 id={`${heading}-where`}>{__('Where', 'wconvert')}</h3>
         <p>
-          {__(
-            'Appears where you place its block or shortcode, when these rules allow it.',
-            'wconvert',
-          )}
+          {context.inline
+            ? __('Where you place its block or shortcode, when the rules allow.', 'wconvert')
+            : summaryOf(context.rules, 'where').text}
         </p>
-      )}
-      <dl>
-        {context.rules.map((rule) => (
-          <div key={rule.id}>
-            <dt>{rule.eyebrow}</dt>
-            <dd>{rule.text}</dd>
-          </div>
-        ))}
-      </dl>
-      <h3>{__('After conversion', 'wconvert')}</h3>
-      {context.act === 'submit' ? (
-        <>
-          <p>{__('New leads are saved in WConvert.', 'wconvert')}</p>
-          <p>{context.forwarding.said}</p>
-          {context.forwarding.problems.map((problem) => (
-            <p key={problem}>{problem}</p>
-          ))}
-        </>
-      ) : context.act === 'click' ? (
-        <>
-          <p>
-            {__(
-              'Records button clicks to the linked destination. No lead is captured.',
-              'wconvert',
+      </section>
+      <section className="wconvert-campaign-facts" aria-labelledby={`${heading}-after`}>
+        <h3 id={`${heading}-after`}>
+          {context.act === 'click' ? __('After a click', 'wconvert') : __('After signup', 'wconvert')}
+        </h3>
+        {context.act === 'submit' ? (
+          <>
+            <p>{__('New leads are saved in WConvert.', 'wconvert')}</p>
+            <p>{context.forwarding.said}</p>
+            {context.forwarding.problems.map((problem) => (
+              <p key={problem}>{problem}</p>
+            ))}
+          </>
+        ) : context.act === 'click' ? (
+          <>
+            <p>{__('Counts the click and opens the link. No lead is saved.', 'wconvert')}</p>
+            {context.links.length > 0 && (
+              <ul className="wconvert-campaign-facts__links">
+                {context.links.map((link) => (
+                  <li key={link} dir="ltr">
+                    {link}
+                  </li>
+                ))}
+              </ul>
             )}
-          </p>
-          {context.links.map((link) => (
-            <p className="wconvert-campaign-context-url" key={link}>
-              {link}
-            </p>
-          ))}
-        </>
-      ) : (
-        <p>{__('Choose a converting action in the editor.', 'wconvert')}</p>
-      )}
-    </div>
+          </>
+        ) : (
+          <p>{__('Choose what a visitor does in the editor.', 'wconvert')}</p>
+        )}
+      </section>
+    </>
   );
 }

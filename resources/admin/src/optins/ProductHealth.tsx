@@ -41,6 +41,7 @@ export function useProductHealth(ids: string, refresh: number) {
   return { ...current, recheck: () => setAttempt(n => n + 1) };
 }
 
+/** A row's one-line product state, or null where there is nothing to act on. */
 export function productHealthLabel(health?: ProductHealth): string | null {
   if (!health) return null;
   const warnings = health.checks.filter(check => check.state === 'warning').length;
@@ -50,15 +51,21 @@ export function productHealthLabel(health?: ProductHealth): string | null {
   return null;
 }
 
+/**
+ * The product check, as the last group in a campaign's Details. Nothing is
+ * drawn where every product is available: a clean check is not news.
+ */
 export function ProductHealthDetails({ health, loading, failed, onRecheck, onReview, reviewDisabled }: { health?: ProductHealth; loading: boolean; failed: boolean; onRecheck: () => void; onReview?: () => void; reviewDisabled?: boolean }) {
   if (!loading && !failed && (!health || health.checks.length === 0)) return null;
   return <section className="wconvert-product-health" aria-label={__('Product check', 'wconvert')}>
     <div className="wconvert-product-health-heading">
       <h3>{__('Product check', 'wconvert')}</h3>
-      <Button variant="outline" disabled={loading} onClick={onRecheck}>{__('Check again', 'wconvert')}</Button>
+      <Button variant="outline" disabled={loading} onClick={onRecheck}>
+        {loading ? __('Checking products…', 'wconvert') : __('Check products again', 'wconvert')}
+      </Button>
     </div>
-    {loading ? <p role="status">{__('Checking products…', 'wconvert')}</p> : failed ? <p role="alert">{__('Products could not be checked. Try again.', 'wconvert')}</p> : health && <>
-      <p className="wconvert-product-health-scope">{health.basis === 'published' ? __('Published version · current catalog', 'wconvert') : __('Saved draft · current catalog', 'wconvert')}</p>
+    {loading ? <p role="status" className="sr-only">{__('Checking products…', 'wconvert')}</p> : failed ? <p role="alert">{__('Products couldn’t be checked.', 'wconvert')}</p> : health && <>
+      <p className="wconvert-product-health-scope">{health.basis === 'published' ? __('Checks the published version against today’s catalog.', 'wconvert') : __('Checks the saved draft against today’s catalog.', 'wconvert')}</p>
       <ul>{health.checks.map((check, index) => <li key={index} data-state={check.state}>
         <strong>{check.label}</strong>
         <p>{check.message}</p>

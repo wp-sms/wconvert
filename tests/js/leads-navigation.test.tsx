@@ -18,9 +18,11 @@ beforeEach(() => {
   window.history.replaceState({}, '', '#leads');
 });
 
+// The header's notification bell reads destinations on load too, so these
+// tests describe the health read by what it returns, never by call order.
 it('makes submissions the default without tabs, setup shortcut or healthy-state issue action', async () => {
   render(<App />);
-  await waitFor(() => expect(api.readDestinations).toHaveBeenCalledOnce());
+  await waitFor(() => expect(api.readDestinations).toHaveBeenCalled());
   expect(screen.getByRole('main')).toHaveTextContent('Submission table');
   expect(screen.queryByRole('navigation', { name: 'Leads views' })).toBeNull();
   expect(screen.queryByRole('link', { name: 'Sending setup' })).toBeNull();
@@ -36,14 +38,15 @@ it('shows affected destination count only for known problems and returns from di
   await userEvent.click(issues);
   expect(await screen.findByText('Sending diagnostics')).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Sending issues');
-  await userEvent.click(screen.getByRole('link', { name: 'Back to submissions' }));
+  await userEvent.click(screen.getByRole('link', { name: 'Back to Leads' }));
   expect(await screen.findByText('Submission table')).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Leads');
 });
 
 it('does not invent an issue action during loading or a failed health read', async () => {
   let reject!: (error: Error) => void;
-  api.readDestinations.mockReturnValueOnce(new Promise((_, fail) => { reject = fail; }));
+  const pending = new Promise((_, fail) => { reject = fail; });
+  api.readDestinations.mockReturnValue(pending);
   render(<App />);
   expect(screen.queryByRole('link', { name: /Sending issues/ })).toBeNull();
   await act(async () => reject(new Error('Unavailable')));
@@ -52,18 +55,19 @@ it('does not invent an issue action during loading or a failed health read', asy
 });
 
 it('removes the issue action when a refreshed read has no remaining problems', async () => {
-  api.readDestinations.mockResolvedValueOnce(ISSUES).mockResolvedValue(HEALTHY);
+  let health: typeof ISSUES | typeof HEALTHY = ISSUES;
+  api.readDestinations.mockImplementation(async () => health);
   render(<App />);
   await screen.findByRole('link', { name: 'Sending issues 1' });
+  health = HEALTHY;
   await userEvent.click(screen.getByRole('button', { name: 'Refresh submissions' }));
-  await waitFor(() => expect(api.readDestinations).toHaveBeenCalledTimes(2));
-  expect(screen.queryByRole('link', { name: /Sending issues/ })).toBeNull();
+  await waitFor(() => expect(screen.queryByRole('link', { name: /Sending issues/ })).toBeNull());
 });
 
 it('keeps bookmarked diagnostics reachable with a way back even without a known count', () => {
   window.history.replaceState({}, '', '#leads?view=issues');
   render(<App />);
   expect(screen.getByText('Sending diagnostics')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Back to submissions' })).toHaveAttribute('href', '#leads');
+  expect(screen.getByRole('link', { name: 'Back to Leads' })).toHaveAttribute('href', '#leads');
   expect(screen.queryByRole('link', { name: 'Sending setup' })).toBeNull();
 });

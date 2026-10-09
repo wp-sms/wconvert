@@ -11,7 +11,7 @@ it('keeps section navigation and portaled actions in the light heading area', ()
   expect(within(screen.getByRole('navigation', { name: 'WConvert sections' })).getByRole('link', { name: 'Analytics' })).toHaveAttribute('aria-current', 'page');
   expect(screen.getByRole('heading', { level: 1, name: 'Analytics' }).closest('.wconvert-panel-nav')).toBeNull();
   expect(screen.getByRole('button', { name: 'Choose period' }).closest('.wconvert-panel-heading')).not.toBeNull();
-  expect(screen.getByRole('link', { name: 'Fine-tune shared settings' })).toHaveAttribute('href', '#settings?group=experience');
+  expect(within(screen.getByRole('contentinfo')).getByRole('link', { name: 'Visitor experience' })).toHaveAttribute('href', '#settings?group=experience');
 });
 
 it('shows publisher branding without site identity and opens working footer help', async () => {
@@ -22,7 +22,7 @@ it('shows publisher branding without site identity and opens working footer help
   expect(within(screen.getByRole('contentinfo')).getByText('Free')).toBeVisible();
   expect(screen.getByRole('link', { name: 'By VeronaLabs (opens in a new tab)' })).toHaveAttribute('href', 'https://veronalabs.com/');
   expect(screen.getByRole('img', { name: 'VeronaLabs' })).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Need a hand? Help and resources' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Need a hand? Help' }));
   expect(screen.getByRole('link', { name: 'Connections & destinations' })).toHaveAttribute('href', '#settings?group=connections');
   expect(screen.getByRole('link', { name: 'WConvert website' })).toHaveAttribute('href', 'https://wconvert.io/');
 });
