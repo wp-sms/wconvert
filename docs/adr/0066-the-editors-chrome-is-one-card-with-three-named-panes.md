@@ -42,6 +42,11 @@ to clear, not a wall, and the Design tab is where it is cleared twice:
 | `--text-label` | 11px / 1rem / .01em / 500 | a block's kind, a swatch's name and value, a check's word |
 | `--text-meta` | 9px / .875rem / .13em / 600 | a pane's name, where a value came from, a count, the stored JSON |
 
+*Amended by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md):
+`label` and `meta` never carry a control, a condition or a reason. "A check's
+word" is a control's label and is `micro` or `note`; so is any condition text
+and any refusal reason. The two roles stay for captions, pane names and counts.*
+
 Both are the reference tool's own values, taken value for value rather than
 interpolated down from `micro`. `meta` carries the uppercase register in the
 token because that is its dominant use; the two chips that want narrower

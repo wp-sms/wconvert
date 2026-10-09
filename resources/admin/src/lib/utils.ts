@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { extendTailwindMerge } from 'tailwind-merge';
 
 /**
- * **The six type roles, taught to `tailwind-merge`.**
+ * **The fourteen type roles, taught to `tailwind-merge`.**
  *
  * `twMerge` decides whether `text-…` is a SIZE or a COLOUR from a list of
  * Tailwind's own scale names, and anything it does not recognise it assumes is
@@ -15,12 +15,14 @@ import { extendTailwindMerge } from 'tailwind-merge';
  * Naming them here rather than reaching for `!` or reordering the arguments,
  * because the scale is a real font-size scale and this is where the merge is
  * told what the scale is. A seventh role added to `index.css` is added here in
- * the same commit or it is a class that quietly stops applying.
+ * the same commit or it is a class that quietly stops applying. It had six of
+ * fourteen until ADR 0131, so `cn('text-label', 'text-muted-foreground')` kept
+ * the colour and dropped the size on every builder caption that went through it.
  */
 const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      'font-size': [{ text: ['micro', 'note', 'body', 'heading', 'title', 'figure'] }],
+      'font-size': [{ text: ['micro', 'note', 'body', 'heading', 'section', 'metric', 'title', 'display', 'brand', 'item', 'result', 'figure', 'label', 'meta'] }],
     },
   },
 });

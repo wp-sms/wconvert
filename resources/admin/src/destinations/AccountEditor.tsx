@@ -52,7 +52,7 @@ export function AccountEditor({ types, connections, usage, onChange }: {
       </DialogContent>
     </Dialog>
     <ConfirmDialog open={removing !== null} onOpenChange={(open) => { if (!open) setRemoving(null); }}
-      title={__('Remove this account?', 'wconvert')}
+      variant="destructive" title={__('Remove this account?', 'wconvert')}
       description={removing ? sprintf(__('The saved credentials for “%s” will be removed. Destinations using an account must be reassigned or removed first.', 'wconvert'), removing.label) : ''}
       confirmLabel={__('Remove account', 'wconvert')} returnFocusTo={removeTrigger}
       onConfirm={() => {

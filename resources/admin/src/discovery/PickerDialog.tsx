@@ -1,19 +1,25 @@
 import { forwardRef, type ComponentProps } from 'react';
-import { DialogContent, DialogHeader } from '../components/ui/dialog';
+import { DialogHeader } from '../components/ui/dialog';
+import { AdminDialogBody, AdminDialogContent } from '../components/ui/admin-dialog';
 import { cn } from '../lib/utils';
 
-/** One template dialog shell; callers retain navigation and focus ownership. */
-export function PickerDialogContent({ className, ...props }: ComponentProps<typeof DialogContent>) {
-  return <DialogContent className={cn('wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]', className)} {...props} />;
+/**
+ * The template pickers on the shared modal (ADR 0131): a Large `AdminDialog`
+ * at a fixed height, so filters and pagination stay put while the gallery
+ * scrolls. Callers retain navigation and focus ownership.
+ */
+export function PickerDialogContent({ className, ...props }: ComponentProps<typeof AdminDialogContent>) {
+  return <AdminDialogContent size="lg" className={cn('wconvert-picker', className)} {...props} />;
 }
 
+/** A picker's header also carries its toolbar, so it takes children rather than `AdminDialogHeader`'s slots. */
 export function PickerDialogHeader({ className, ...props }: ComponentProps<typeof DialogHeader>) {
   return <DialogHeader className={cn('wconvert-picker__header text-start', className)} {...props} />;
 }
 
 /** This is the sole document scroll boundary, not the dialog or its footer. */
 export const PickerDialogBody = forwardRef<HTMLDivElement, ComponentProps<'div'>>(function PickerDialogBody({ className, ...props }, ref) {
-  return <div ref={ref} className={cn('wconvert-picker__body', className)} {...props} />;
+  return <AdminDialogBody ref={ref} className={cn('wconvert-picker__body', className)} {...props} />;
 });
 
 export function PickerDialogFooter({ className, ...props }: ComponentProps<'footer'>) {

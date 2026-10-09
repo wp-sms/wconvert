@@ -169,7 +169,7 @@ describe('the four situations this screen has to answer', () => {
 
     expect(await screen.findByText('Sorry, you are not allowed to do that.')).toBeInTheDocument();
     // The component's default door, rather than nine call sites spelling it.
-    expect(screen.getByText('Try again. If the problem continues, reload the page.')).toBeInTheDocument();
+    expect(screen.getByText('If it keeps failing, reload the page.')).toBeInTheDocument();
   });
 });
 

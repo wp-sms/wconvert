@@ -55,7 +55,12 @@ decides how tall its controls are.
 |---|---|---|
 | **3rem** | Reading-page heading buttons and period/select controls | shared shell action scope |
 | **2.25rem** | Fields and ordinary form actions | the default |
-| **2rem** | What *qualifies* what is already on screen — a toolbar filter, a row action, a control inside a table or footer | being inside `.wconvert-toolbar`, `.wconvert-table`, `.wconvert-footer` or compact `.wconvert-page-actions` outside the reading-page heading |
+| **2rem** | What *qualifies* what is already on screen — a toolbar filter, a row action, a control inside a table, a dialog footer | being inside `.wconvert-toolbar`, `.wconvert-table`, `.wconvert-footer` or compact `.wconvert-page-actions` outside the reading-page heading |
+
+A `.wconvert-footer` holds both kinds, so it states no height of its own: the
+small floor applies, and a `default`-size button in it (a step's Continue) is
+released back to 2.25rem. A dialog footer is a `.wconvert-toolbar` and is
+always 2rem (ADR 0131).
 
 Never pass `size="sm"` to make a toolbar control small. The container decides.
 A rule about the toolbar belongs to the toolbar, not to each control that lands
@@ -83,6 +88,12 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `figure` | 30 | the one emphasised figure per Goal |
 | `label` | 11 | builder furniture and quiet frame metadata |
 | `meta` | 9 | tracked builder furniture captions only |
+
+**`meta` and `label` never carry a control, a condition or a reason**
+(ADR 0131). They are furniture: an uppercase caption, a pane's name, a count.
+Anything a merchant presses, any rule that predicts what a visitor sees, and
+any sentence saying why something is refused is `micro` (12) or `note` (13).
+A 9px refusal is a refusal nobody reads.
 
 DM Sans is self-hosted with its OFL license. The system fallback covers missing
 glyphs. Font assets use content-hashed URLs so different weights cannot share
@@ -167,7 +178,31 @@ The dispatch rule, in order:
 **A segmented control is native radios in a `role="group"`** — arrow keys, one
 tab stop and the set announced as a set, all from the browser. Radix's
 `ToggleGroup` buys behaviour the browser already gives, at bundle bytes this
-admin prints on every build.
+admin prints on every build. **An `aria-pressed` button group is never one-of-N**;
+`aria-pressed` is for an independent toggle (ADR 0131).
+
+**Three one-of-N shapes, and no fourth** (ADR 0131):
+
+| Shape | For |
+|---|---|
+| `shell/OptionStrip` chips | page toolbars and dialogs — period, compare, device |
+| `.wconvert-choice-set` | compact inspector settings |
+| `.wconvert-radio-card` | a choice that needs a sentence of its own — retention, transfer, graph insert, capture mode, recommendations |
+
+The same concept is drawn the same way everywhere: preview device is an
+`OptionStrip` in the picker, the preview and the editor canvas.
+
+**One checkbox and radio row** (ADR 0131, `shell/CheckRow`). An 18px native
+input inside its `<label>`, centred on the first text line, 8px from the text.
+A hint is a `note` under the label TEXT, not under the box, and is the input's
+description. The shared rule in `index.css` draws it at `:where()` specificity
+so any component class can restyle a row; nothing restates the box. Coarse
+pointers give checkbox rows the same 44px floor as radios. The Radix
+`Checkbox` is retired, so a dialog and a page draw the same box.
+
+**One field** (`shell/Field`): label above, 6px, the control, a `note` hint
+below, an error under that. **One select** (`components/ui/native-select`) and
+**one textarea** (`components/ui/textarea`), at the shared control height.
 
 Template picker option strips use button-like chips: visually clip the native
 input, remove WordPress pseudo dots, and put selected and focus treatments on
@@ -194,7 +229,25 @@ they do differently?** No answer means no message.
 
 Deleted on sight: "Settings saved", "You can always change this later", a
 description under a control whose label already said it, a text box echoing a
-value shown beside it, an onboarding tour on a working screen.
+value shown beside it, an onboarding tour on a working screen, a marketing
+line, a reassurance repeated on every card, a permanent "No unsaved changes".
+
+**Save feedback is "Saved just now", beside the Save button** (`shell/SaveStatus`,
+ADR 0131). It appears when a save succeeds and clears on the next edit, so it
+is only ever true. No toast, no "…saved." sentence at the top of a region.
+Every settings section has an explicit Save; nothing autosaves a setting.
+
+**No ID on any screen** (ADR 0131). A missing name reads "Deleted campaign",
+"Removed destination" or "Unnamed", never a ULID. Search still accepts a
+pasted ID. The one exception is campaign Details' closed "For developers"
+disclosure, which shows the campaign ID with Copy, because the free page
+events identify a campaign by nothing else.
+
+**Data is shown once, one way** (`lib/format.ts`): dates in the site's locale
+and timezone — "Today, 2:22 PM", "Yesterday", "Oct 3" in a list, "Oct 9, 2026,
+2:22 PM" in a detail — counts and rates in the site's digits, money in the
+store's currency, and every stored key through `labelOf()`, so no screen
+prints a field key or a WooCommerce status slug.
 
 ## 9. Layers
 
@@ -210,7 +263,27 @@ admin layers and overrides retained vendored animation classes. Focus, keyboard
 behavior and dismissal semantics remain unchanged. Verify computed styles in the
 browser, since a class-name test cannot establish the final cascade.
 
-Template discovery dialogs share `PickerDialogContent` / `PickerDialogHeader`
+**One modal layout, three sizes** (`components/ui/admin-dialog`, ADR 0131):
+
+| Size | Width | For |
+|---|---|---|
+| Small | 32rem | confirms, short forms |
+| Medium | 48rem | details — a lead, a campaign |
+| Large | 80rem | pickers, the journey, preview |
+
+- **Header:** the title is the subject itself (a person, a campaign), an
+  optional status badge, and one muted meta line. Titles truncate before ✕.
+- **Body:** the only part that scrolls.
+- **Footer:** fixed. Back or Cancel at the start, an optional short note, the
+  primary action at the end, and an error beside the actions. Footer controls
+  take the toolbar scope.
+- **Dirty:** Escape, an outside click or ✕ asks "Discard changes?" only when
+  something was typed (`dirty`), and the question is drawn inside the dialog.
+- **Never nested.** A dialog that leads to another view opens it in place with
+  Back. A destructive confirm is an `AlertDialog` that says what survives; red
+  is for delete and remove only.
+
+Template discovery dialogs are `PickerDialogContent` — a Large `AdminDialog` —
 with a single scroll body and a separate action footer. Back and Use/Install
 stay reachable in short and phone windows. Pack and collection pagination stays
 outside the scroll body. Use-case choices and screen exploration belong to
@@ -325,10 +398,10 @@ came to be silent.
 **A busy control is `disabled`, and it is a different thing from a refused
 one** — see §14.
 
-**The honest loading state for nothing is nothing.** Milestones draws no
-skeleton, deliberately: a region that reserves height for something it will
-usually not draw pushes the numbers down on every visit and then takes the space
-back.
+**There is one loading pattern**: `RegionSkeleton` / `RowsSkeleton` and the
+other skeletons above, each with a status line naming what is loading. No
+spinner stands in for a region (ADR 0131); a spinner is only a busy control's
+icon.
 
 ## 13. Failure
 
@@ -366,8 +439,9 @@ save acts on the whole draft. `PageError` is that case, and it is drawn without
 a surface behind it, because a page-scoped error is not a region and must not
 look like one.
 
-**An error names a door that is on this screen** (§8). Pass the retry button
-as `RegionErrorState.action`, beside the error and its explanation. Reload is
+**An error names a door that is on this screen** (§8). Pass `onRetry` to
+`RegionErrorState`, `RegionError` or `PageError` and the door is one button,
+**"Try again"** — the one retry word (ADR 0131). Reload is
 the fallback when no local retry is possible. Keep the previous accepted data
 visible when a refresh fails, with a clear stale-data explanation.
 
@@ -380,9 +454,9 @@ publish sequence and offer the first action.
 succeeds, so there is no path where a merchant hides a failure and then reads
 the stale data underneath it as current.
 
-**A failure is drawn even where nothing else is.** Milestones answers three of
-the four situations with nothing and still draws this one: a read that failed
-silently leaves the merchant unable to tell there was anything to see.
+**A failure is drawn even where nothing else is.** A read that failed
+silently leaves the merchant unable to tell there was anything to see, and no
+failure ever reads as empty.
 
 ## 14. Unavailable
 
@@ -533,7 +607,8 @@ Not gaps. Each was decided:
 | `toggle-group`, `radio-group` | native radios already do it, for free |
 | Decorative shadows, gradients and motion | Harbor uses solid surfaces and clear hierarchy |
 | A dismiss control on a region's error | it clears when the next fetch succeeds |
-| A loading state on Milestones | the honest placeholder for nothing is nothing |
+| A loading spinner for a region | a skeleton mirrors what is coming |
+| An ID on a screen | names, or "Deleted campaign"; the developer disclosure is the one exception |
 
 ## 19. Changing the system
 
@@ -565,6 +640,16 @@ Not gaps. Each was decided:
   thumbnail and field layout in either view.
 - Busy state belongs to the affected campaign family. Navigation waits for
   pending writes; unrelated families remain actionable.
+- **One name per thing, lowercase in a sentence** (ADR 0131). A **lead** is
+  the person; a **submission** is one form fill. "Email or phone", never
+  "identifier". **Send** and **send again**, never push or re-push. **Shown**
+  is the one name for impressions. **Keep in WConvert only** is the one name
+  for local mode. Editor tabs are **Screens · Design · Display rules ·
+  Destinations**, and a journey's link to another screen is the **next
+  screen**, never a destination. Domain nouns (campaign, goal, lead,
+  destination) are lowercase mid-sentence; capitals start a title, a button
+  or a sentence. US spelling.
+- **More than two row actions go in a ⋯ menu**, with icons and labels.
 - Tier names come from the shared vocabulary. The header’s temporary `#` account
   link is an explicit user-approved exception, removed when an account destination
   is supplied. It is not a general permission for dead links.
@@ -605,10 +690,12 @@ must not imply that mutually exclusive paths are sequential visitor steps.
 - Route condition text uses the note role (13px, medium/semibold); its destination
   uses the micro size (12px, normal weight). Keep explanation text secondary,
   without shrinking actionable labels to the 9px metadata role.
-- Disclosure summaries are full clickable rows. Use one 16px chevron for custom
-  card disclosures; it changes direction when expanded. Plus/minus is for adding
-  and removing, not a second visual language for opening settings. Native
-  disclosure markers remain appropriate for simple text sections.
+- **One collapsible** (`shell/Disclosure`, ADR 0131). The whole row is the
+  trigger; a trailing 16px chevron turns when open; the body's inline start
+  lines up with the title text. `card` is bordered; `inline` has no border, for
+  "Other details", "For developers" and help inside something else. No browser
+  triangle, no leading chevron, no icon swap, no text-only toggle. Plus/minus
+  is for adding and removing.
 - Use a fixed badge/icon column, `minmax(0, 1fr)` for the label, and a fixed
   trailing indicator. Labels allow wrapping, including unbroken merchant text;
   decorative icons never shrink. Do not truncate conditions needed to predict

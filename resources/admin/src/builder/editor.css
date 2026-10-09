@@ -883,7 +883,7 @@ body .wconvert-launch-review[data-slot='dialog-content'] {
   padding: 0;
   overflow: hidden;
 }
-.wconvert-launch-review > [data-slot='dialog-header'] { padding: 16px 52px 12px 20px; }
+.wconvert-launch-review > [data-slot='dialog-header'] { padding-block: 16px 12px; padding-inline: 20px 52px; }
 .wconvert-launch-review__scroll { min-height: 0; overflow: auto; padding: 0 20px 12px; }
 .wconvert-launch-review__status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: var(--text-note); color: var(--muted-foreground); margin-block-end: 12px; }
 .wconvert-launch-review__section { border-top: 1px solid var(--border); padding-block: 10px; }
@@ -1730,14 +1730,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 #wconvert-admin .wconvert-display .wconvert-display-setting .wconvert-display-setting__number:disabled { border-color: var(--border); background: var(--surface); color: var(--muted-foreground); }
 
 /* A disclosure card: the whole summary row opens it; one 16px chevron turns (GUIDELINES §21). */
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card > summary { display: grid; grid-template-columns: minmax(0, 1fr) 16px; align-items: center; gap: 10px; min-block-size: 2.75rem; padding: 10px 12px; color: var(--foreground); font-size: var(--text-body); font-weight: 500; list-style: none; cursor: pointer; }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card > summary::-webkit-details-marker { display: none; }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card > summary:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: var(--radius-lg); }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card > summary small { display: block; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card > summary svg { flex: none; inline-size: 16px; block-size: 16px; color: var(--muted-foreground); transition: transform .15s; }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card[open] > summary svg { transform: rotate(180deg); }
-#wconvert-admin .wconvert-display .wconvert-display-disclosure-card__body { display: grid; gap: .75rem; padding: 12px; border-block-start: 1px solid var(--border); }
 #wconvert-admin .wconvert-display .wconvert-display-inline-field { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
 #wconvert-admin .wconvert-display .wconvert-display-inline-field input { margin: 0; }
 
@@ -1768,9 +1760,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
   #wconvert-admin .wconvert-display .wconvert-display-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   #wconvert-admin .wconvert-display nav { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   #wconvert-admin .wconvert-display .wconvert-display-editor { padding: 1rem; }
-}
-@media (prefers-reduced-motion: reduce) {
-  #wconvert-admin .wconvert-display .wconvert-display-disclosure-card > summary svg { transition: none; }
 }
 /* The Journey pane: the same editors, one column, a select in place of the menu. */
 #wconvert-admin .wconvert-journey-context-pane .wconvert-display .wconvert-display-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -2197,10 +2186,10 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 
 /* Native editor controls need the same feedback as the shared UI buttons.
  * Keep geometry and selected states stable; keyboard focus adds an outline. */
-:is(#wconvert-admin .wconvert-workspace, [data-slot='dialog-content']) details > summary {
+:is(#wconvert-admin .wconvert-workspace, [data-slot='dialog-content']) details:not(.wconvert-disclosure) > summary {
   border-radius: 4px;
 }
-:is(#wconvert-admin .wconvert-workspace, [data-slot='dialog-content']) details > summary:is(:hover, :focus-visible) {
+:is(#wconvert-admin .wconvert-workspace, [data-slot='dialog-content']) details:not(.wconvert-disclosure) > summary:is(:hover, :focus-visible) {
   color: var(--action);
   background-color: color-mix(in srgb, var(--action) 8%, transparent);
 }

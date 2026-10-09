@@ -708,7 +708,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </section>}
         </div>
         <div className={embedded && !said ? 'sr-only' : 'wconvert-journey-dialog__footer'}><p role="status">{said || __('Save draft to keep your changes.', 'wconvert')}</p>{said && onUndo && <Button type="button" size="sm" variant="ghost" onClick={onUndo}>{__('Undo change', 'wconvert')}</Button>}{said && <Button type="button" variant="outline" size="sm" onClick={() => { setTestChange(notice); setTestMode('journey'); setTestOpen(true); }}>{__('Test this change', 'wconvert')}</Button>}{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
-        <ConfirmDialog open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
+        <ConfirmDialog variant="destructive" open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
           description={sprintf(__('Remove %s, including its contact fields, consent and signup settings. Other screens and previously saved Leads stay unchanged. Undo restores this draft edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
           confirmLabel={__('Remove signup screens', 'wconvert')} onConfirm={remove} />
         <ConfirmDialog open={pendingRoute !== null} onOpenChange={value => { if (!value) setPendingRoute(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={settingsHeading}

@@ -38,6 +38,16 @@ owns the Contact — WSMS's own subscription form, or the ESP's audience setting
 Not every [[Conversion]] is a Lead. A click-through or an anonymous quiz result
 produces a Conversion without a Lead.
 
+**On screen, two words** ([ADR 0131](docs/adr/0131-one-way-to-show-each-thing-in-the-admin.md)).
+The admin says **lead** for the person a row is about — the email or phone its
+submissions share — and **submission** for one form fill, which is one Lead
+record. "Captures" and "identifier" are not used on screen; the identity is
+"Email or phone". The domain term above is unchanged.
+
+**Domain nouns are lowercase in a sentence** on screen — campaign, goal, lead,
+destination, submission. A capital starts a title, a button or a sentence.
+This glossary keeps its capitals because it defines terms.
+
 A submit design's success copy acknowledges the captured request. It must not
 claim that a Contact is subscribed or confirmed, or that a message or resource
 was delivered. Shipped examples follow that rule; existing merchant copy is

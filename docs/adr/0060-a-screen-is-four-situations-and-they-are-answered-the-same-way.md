@@ -285,7 +285,7 @@ admin"*. Read down a column to find a gap.
 | **Builder — Design** | none of its own — the index arrives behind `BuilderSkeleton` | `EmptyState` + the other Display Types | `PageError` above the tabs | the design in use + tokens |
 | **Builder — Content** | with the design | `EmptyState` + *Pick a design* | with the frame | tree + inspector |
 | **Builder — Destinations** | `RowsSkeleton` | `EmptyState` | `RegionErrorState` | bindable routes |
-| **Milestones** | renders nothing, deliberately | the disclosure, collapsed — see the correction below | `RegionErrorState` | a next step + what was recorded |
+| ~~**Milestones**~~ | *Struck by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): nothing rendered it, and the component is deleted.* | | | |
 
 *Builder — Destinations row amended by
 [0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s tab
@@ -294,6 +294,10 @@ has two cases — a site with no routes shows the providers to set one up in
 place, and routes with none selected shows `EmptyState` + *Add destination*. A
 failed first read is `RegionErrorState` + Retry; a failed re-read keeps the
 cards under `RegionError` + Retry.*
+
+*Amended by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md):
+every "+ Retry" in this table is the one `onRetry` button, labelled "Try
+again". A region loads with a named skeleton, never a spinner.*
 
 Two columns are deliberately thin. *Empty* is `n/a` wherever the region holds a
 SETTING rather than a collection: a retention period has no empty state, it has

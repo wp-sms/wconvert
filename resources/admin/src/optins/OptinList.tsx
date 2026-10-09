@@ -736,7 +736,7 @@ export function OptinList({
       </Dialog>
       <InspectDialog open={inspecting} onOpenChange={setInspecting} />
       <ConfirmDialog
-        variant={decision?.kind === 'publish' ? 'default' : 'destructive'}
+        variant={decision?.kind === 'delete' ? 'destructive' : 'default'}
         open={decision !== null}
         onOpenChange={(open) => {
           if (!open) setDecision(null);

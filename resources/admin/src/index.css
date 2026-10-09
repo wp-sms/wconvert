@@ -1846,7 +1846,8 @@ body:has(#wconvert-admin) #wpbody-content {
 
 .wconvert-picker__header {
   flex-shrink: 0;
-  padding: 0.75rem 3rem 0.75rem 1.25rem;
+  padding-block: 0.75rem;
+  padding-inline: 1.25rem 3rem;
   border-block-end: 1px solid var(--border);
 }
 
@@ -6585,6 +6586,55 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker__footer-error { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-size: var(--text-note); color: var(--destructive); }
 .wconvert-picker__footer-error p { flex: 1 1 20rem; margin: 0; }
 
+
+/* The one collapsible (GUIDELINES §21, ADR 0131): `shell/Disclosure`. */
+.wconvert-disclosure { min-inline-size: 0; margin: 0; }
+.wconvert-disclosure > summary { display: grid; grid-template-columns: minmax(0, 1fr) 16px; align-items: center; gap: 10px; min-block-size: 2.75rem; padding: 10px 12px; color: var(--foreground); font-size: var(--text-body); font-weight: 500; list-style: none; cursor: pointer; border-radius: inherit; }
+.wconvert-disclosure > summary::-webkit-details-marker { display: none; }
+.wconvert-disclosure > summary::marker { content: ''; }
+.wconvert-disclosure > summary:hover { background: var(--accent); }
+.wconvert-disclosure > summary:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.wconvert-disclosure__title { min-inline-size: 0; overflow-wrap: anywhere; }
+.wconvert-disclosure__title > small { display: block; margin-block-start: 2px; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
+.wconvert-disclosure__chevron { inline-size: 16px; block-size: 16px; color: var(--muted-foreground); }
+.wconvert-disclosure[open] > summary > .wconvert-disclosure__chevron { transform: rotate(180deg); }
+.wconvert-disclosure__body { display: grid; gap: .75rem; min-inline-size: 0; padding: 12px; }
+.wconvert-disclosure--card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+.wconvert-disclosure--card[open] > .wconvert-disclosure__body { border-block-start: 1px solid var(--border); }
+.wconvert-disclosure--inline > summary { min-block-size: 2rem; padding: 6px 0; border-radius: var(--radius-md); }
+.wconvert-disclosure--inline > summary:hover { background: transparent; color: var(--action); }
+.wconvert-disclosure--inline > .wconvert-disclosure__body { padding: 4px 0 0; }
+@media (pointer: coarse) { .wconvert-disclosure--inline > summary { min-block-size: 2.75rem; } }
+
+/* The one modal layout (GUIDELINES §9, ADR 0131): header, a body that is the
+ * only scroll boundary, and a fixed footer. Three widths; the height follows
+ * the content up to the viewport, so a short confirm is short. */
+[data-slot="dialog-content"].wconvert-dialog { max-block-size: min(90dvh, 62rem); }
+.wconvert-dialog__header { display: grid; gap: .25rem; flex: none; padding-block: 1rem .875rem; padding-inline: 1.25rem 3.5rem; border-block-end: 1px solid var(--border); text-align: start; }
+.wconvert-dialog__identity { display: flex; align-items: center; gap: .625rem; min-inline-size: 0; }
+.wconvert-dialog__title { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-dialog__identity > [data-slot="badge"] { flex: none; }
+.wconvert-dialog__meta { overflow-wrap: anywhere; }
+.wconvert-dialog__body { flex: 1 1 auto; min-block-size: 0; min-inline-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem; }
+.wconvert-dialog__footer { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; padding: .875rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); }
+.wconvert-dialog__back { display: flex; flex-wrap: wrap; gap: .5rem; }
+.wconvert-dialog__note { flex: 1 1 8rem; min-inline-size: 0; margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-dialog__error { flex: 1 1 14rem; min-inline-size: 0; margin: 0; color: var(--destructive); font-size: var(--text-note); overflow-wrap: anywhere; }
+.wconvert-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; margin-inline-start: auto; }
+.wconvert-dialog__actions > [data-slot="button"] { white-space: normal; }
+.wconvert-dialog__close { position: absolute; inset-block-start: .75rem; inset-inline-end: .75rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; padding: 0; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-dialog__close:hover { background: var(--accent); color: var(--foreground); }
+.wconvert-dialog__close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-dialog__close > svg { inline-size: 1rem; block-size: 1rem; }
+.wconvert-dialog__discard { position: absolute; inset-inline: 0; inset-block-end: 0; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; padding: .875rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); }
+.wconvert-dialog__discard > p { flex: 1 1 10rem; margin: 0; font-weight: 500; }
+@media (max-width: 639px) {
+  .wconvert-dialog__header { padding-inline: 1rem 3rem; }
+  .wconvert-dialog__body { padding: 1rem; }
+  .wconvert-dialog__footer, .wconvert-dialog__discard { padding: .75rem 1rem; }
+  .wconvert-dialog__note:empty { display: none; }
+}
+@media (pointer: coarse) { .wconvert-dialog__close { inline-size: 2.75rem; block-size: 2.75rem; inset-block-start: .5rem; inset-inline-end: .5rem; } }
 
 /* The one checkbox and radio row (GUIDELINES §7, ADR 0131).
  * An 18px native input inside its <label>, centred on the label's first text

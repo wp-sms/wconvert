@@ -499,6 +499,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
             setConfirming(null);
           }
         }}
+        variant="destructive"
         title={__('Remove this destination?', 'wconvert')}
         description={
           confirming === null

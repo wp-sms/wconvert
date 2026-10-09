@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { Disclosure } from '../../shell/Disclosure';
 
 /**
  * A setting most Campaigns leave alone, as a full-row card that opens and
  * closes (GUIDELINES §21). Closed, it still says what it is set to, so nobody
- * opens it just to check.
+ * opens it just to check. The shared `Disclosure` card, under its old name.
  */
 export function DisclosureCard({ title, current, open, children }: {
   readonly title: string;
@@ -12,8 +12,5 @@ export function DisclosureCard({ title, current, open, children }: {
   readonly open?: boolean;
   readonly children: ReactNode;
 }) {
-  return <details className="wconvert-display-disclosure-card" open={open || undefined}>
-    <summary><span>{title}<small>{current}</small></span><ChevronDown aria-hidden="true" /></summary>
-    <div className="wconvert-display-disclosure-card__body">{children}</div>
-  </details>;
+  return <Disclosure title={title} summary={current} open={open}>{children}</Disclosure>;
 }
