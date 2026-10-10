@@ -54,7 +54,9 @@ Before this:
    with a check and Custom…, which keeps the row's values and draws the params
    under the list; a set, number or range opens its own control; a closed
    choice is a word; a rule with no params is its name. Help is ⓘ beside an ✕
-   named for the row; status notes stay under it.
+   named for the row; status notes stay under it. **Where's page rules read the
+   same way** — a page or term pill named by its title, a path pill, a content
+   type as a word — with the rows of each list joined by "or" in one card.
 6. **Groups say how they combine**, even with one rule: "Group N · Match [all ▾]
    of these", rows joined by "and" or "or", a bold OR between groups, and
    "+ Add another group" opening the new group's picker. The limits are said in
