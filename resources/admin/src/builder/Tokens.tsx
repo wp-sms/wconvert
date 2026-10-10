@@ -29,7 +29,8 @@ import {
   type Axis,
 } from './themes';
 import { READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
-import { AdvancedContext, AdvancedToggle, cssOnlyNote, useAdvanced } from './advanced';
+import { cssOnlyNote, useAdvanced } from './advanced';
+import { FieldHeading, PanelHint, PanelSection } from './PanelSection';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenMap } from '@renderer/types';
 
@@ -136,8 +137,7 @@ export function Themes({
     });
 
   return (
-    <section className="wconvert-look-section" aria-label={__('Ready-made looks', 'wconvert')}>
-      <h4>{__('Ready-made looks', 'wconvert')}</h4>
+    <PanelSection title={__('Ready-made looks', 'wconvert')}>
       {/*
         None pressed is the answer for a design the merchant has since edited:
         it matches no preset, and pressing the first would claim a palette they
@@ -165,7 +165,7 @@ export function Themes({
           </button>
         ))}
       </div>
-    </section>
+    </PanelSection>
   );
 }
 
@@ -237,7 +237,8 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  const [advanced, setAdvanced] = useState(false);
+  // The Look panel's one Advanced switch is at its foot (ADR 0136); every field reads it.
+  const advanced = useAdvanced();
   const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
 
@@ -259,87 +260,83 @@ export function Tokens({
       .catch(onError);
   };
 
+  const field = (token: { readonly name: string; readonly fallback: string }, label = nameOf(labels.tokens, token.name)) => (
+    <TokenField key={token.name} simple={!advanced}
+      token={token.name}
+      label={label}
+      labels={labels}
+      fallback={design[token.name] ?? token.fallback}
+      standard={token.fallback}
+      design={hasDesign ? (design[token.name] ?? '') : undefined}
+      value={template.tokens[token.name] ?? ''}
+      open={openToken === token.name}
+      onOpenChange={(open) => onOpenToken(open ? token.name : null)}
+      onChange={(value) =>
+        onChange({ ...template, tokens: withToken(template.tokens, token.name, value) }, tokenCoalesce(token.name))
+      }
+    />
+  );
+
+  // A background picture's position and wash mean nothing until there is a picture.
+  const pictured = !['', 'none'].includes((template.tokens['bg-image'] ?? design['bg-image'] ?? 'none').trim());
+  const shown = (name: string) => advanced || PLAIN_TOKENS.includes(name) || (pictured && name === 'image-position');
+
   return (
-    <AdvancedContext.Provider value={advanced}>
-      {/*
-        **No heading of its own.** The Look panel already names itself, and a
-        heading here was a second naming of one thing before a single control.
-        The groups below are the structure, in one register.
-      */}
-      <section className="wconvert-group" aria-label={__('WordPress theme palette', 'wconvert')}>
-        <h5 className="wconvert-group__name">{__('WordPress theme palette', 'wconvert')}</h5>
-
-        <p className="wconvert-themes__theme">
-        {/*
-          **The label names what it actually writes.** It read *"Copy my theme's
-          colours"* and `ThemeTokens::fromSite()` writes five things, one of
-          which is the font and two of which — `muted` and `border` — it does
-          not write at all. So copying a dark theme could flip *Quiet text on
-          Background* to a fail in the readout the merchant is watching, under a
-          button that had promised to handle the colours. The promise and the
-          method agree now, and the note points at the readings.
-
-          It stays here with the presets rather than inside either group,
-          because what it writes spans two of them.
-        */}
-          {/* An action inside the work surface, not one a merchant came to the
-              screen to press — the 24px tier, like the resets and swatches
-              around it. */}
-          <Button type="button" variant="outline" size="xs" onClick={copyTheme}>
-            {__('Use theme colors and font', 'wconvert')}
-          </Button>
-          {copied !== null && (
-            <span className="text-note text-muted-foreground">
-              {copied === 0
-                ? __('Your theme declares no palette to copy.', 'wconvert')
-                : __('Copied. Change any of them below.', 'wconvert')}
-            </span>
-          )}
-        </p>
-      </section>
-
-      <AdvancedToggle advanced={advanced} onToggle={() => { onOpenToken(null); setAdvanced(value => !value); }} />
-      {groups.filter(group => advanced || ['color', 'type', 'heading', 'space'].includes(group.id)).map((group) => (
-        <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
-          <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
-
-          {group.id === 'color' ? (
-            <Palette
-              template={template}
-              labels={labels}
-              design={design}
-              tokens={group.tokens}
-              openToken={openToken}
-              onOpenChange={onOpenToken}
-              onChange={onChange}
-            />
-          ) : (
-            <div className="wconvert-fields">
-              {group.tokens.filter(token => advanced || ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align'].includes(token.name)).map((token) => (
-                <div key={token.name} className="wconvert-fields__item" data-compact={['gap', 'radius'].includes(token.name) || undefined}>
-                  <TokenField simple={!advanced}
-                    token={token.name}
-                    label={nameOf(labels.tokens, token.name)}
-                    labels={labels}
-                    fallback={design[token.name] ?? token.fallback}
-                    standard={token.fallback}
-                    design={hasDesign ? (design[token.name] ?? '') : undefined}
-                    value={template.tokens[token.name] ?? ''}
-                    open={openToken === token.name}
-                    onOpenChange={(open) => onOpenToken(open ? token.name : null)}
-                    onChange={(value) =>
-                      onChange({ ...template, tokens: withToken(template.tokens, token.name, value) }, tokenCoalesce(token.name))
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+    <>
+      {groups.filter(group => group.id === 'color').map(group => (
+        <PanelSection key={group.id} title={groupName(group.id)}
+          /*
+            **The label names what it actually writes.** `ThemeTokens::fromSite()`
+            writes the font as well as the colors, so a button promising only
+            colors would hide the one change a merchant did not expect.
+          */
+          action={<button type="button" onClick={copyTheme}>{__('Use my theme’s colors and font', 'wconvert')}</button>}>
+          <Palette
+            template={template}
+            labels={labels}
+            design={design}
+            tokens={group.tokens}
+            openToken={openToken}
+            onOpenChange={onOpenToken}
+            onChange={onChange}
+          />
+          {copied !== null && <PanelHint>{copied === 0
+            ? __('Your theme declares no palette to copy.', 'wconvert')
+            : __('Copied. Change any of them below.', 'wconvert')}</PanelHint>}
+        </PanelSection>
       ))}
-    </AdvancedContext.Provider>
+      {LOOK_SECTIONS.map(section => {
+        const tokens = groups.filter(group => section.groups.includes(group.id)).flatMap(group => group.tokens).filter(token => shown(token.name));
+        if (tokens.length === 0) return null;
+        const byName = new Map(tokens.map(token => [token.name, token]));
+        const placed = new Set(section.rows.flat());
+        const rows = [...section.rows.map(row => row.filter(name => byName.has(name))), ...tokens.filter(token => !placed.has(token.name)).map(token => [token.name])].filter(row => row.length > 0);
+        return <PanelSection key={section.id} title={section.title()}>
+          {rows.map(row => row.length === 1
+            ? <div key={row[0]} className="wconvert-fields__item">{field(byName.get(row[0])!, section.labels?.()[row[0]])}</div>
+            : <div key={row.join()} className="wconvert-panel-pair">{row.map(name => <div key={name} className="wconvert-fields__item">{field(byName.get(name)!, section.labels?.()[name])}</div>)}</div>)}
+        </PanelSection>;
+      })}
+    </>
   );
 }
+
+/** What the plain Look shows; everything else is Advanced's (ADR 0135, 0136). */
+const PLAIN_TOKENS: readonly string[] = ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align', 'bg-image', 'shadow'];
+
+/**
+ * The Look's sections after Colors, and which fields share a row. Body text
+ * and Headings are one "Fonts" section: a font and its size are read together.
+ */
+const LOOK_SECTIONS: readonly { id: string; title: () => string; groups: readonly TokenGroupId[]; rows: readonly (readonly string[])[]; labels?: () => Readonly<Record<string, string>> }[] = [
+  { id: 'fonts', title: () => __('Fonts', 'wconvert'), groups: ['type', 'heading'],
+    rows: [['font', 'text-size'], ['leading'], ['heading-font', 'heading-size'], ['heading-weight', 'tracking']],
+    labels: () => ({ font: __('Body text', 'wconvert'), 'heading-font': __('Headings', 'wconvert'), tracking: __('Letter spacing', 'wconvert') }) },
+  { id: 'space', title: () => groupName('space'), groups: ['space'], rows: [['width'], ['pad'], ['gap'], ['radius'], ['align']] },
+  { id: 'image', title: () => groupName('image'), groups: ['image'], rows: [['bg-image'], ['image-position'], ['overlay']] },
+  { id: 'effects', title: () => groupName('effects'), groups: ['effects'], rows: [['shadow'], ['motion']] },
+  { id: 'other', title: () => groupName('other'), groups: ['other'], rows: [] },
+];
 
 /** The history key for edits to one design-wide token: a drag on it is one Undo step. */
 export const tokenCoalesce = (name: string) => `token:${name}`;
@@ -348,7 +345,7 @@ export const tokenCoalesce = (name: string) => `token:${name}`;
 export function groupName(id: TokenGroupId): string {
   switch (id) {
     case 'color':
-      return __('Color', 'wconvert');
+      return __('Colors', 'wconvert');
     case 'type':
       return __('Body text', 'wconvert');
     case 'heading':
@@ -522,28 +519,57 @@ export function TokenField({
   const offered = CHOICES[token];
 
   const presetBase = measuresOf(fallback);
-  if (simple && ['heading-size', 'text-size', 'width', 'pad', 'gap', 'radius'].includes(token) && presetBase) {
+  if (simple && ['gap', 'radius'].includes(token) && presetBase) {
+    /*
+      **Four buttons, never a 72px select.** Gap and corner rounding sat half a
+      row wide and read "Cu" for Custom (ADR 0136). None, then the design's own
+      value a step smaller, as is, and a step larger.
+    */
+    const steps: readonly (readonly [number, string, string])[] = [
+      [0, __('None', 'wconvert'), __('None', 'wconvert')],
+      [.8, /* translators: short for “Smaller”, on a 30px button. */ __('S', 'wconvert'), __('Smaller', 'wconvert')],
+      [1, /* translators: short for “Design default”, on a 30px button. */ __('M', 'wconvert'), __('Design default', 'wconvert')],
+      [1.2, /* translators: short for “Larger”, on a 30px button. */ __('L', 'wconvert'), __('Larger', 'wconvert')],
+    ];
+    const presets = steps.map(([factor, short, long]) => ({ value: factor === 0 ? '0' : presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), short, long }));
+    const at = presets.findIndex(preset => preset.value === shown || (preset.value === '0' && measuresOf(shown)?.every(part => part.amount === 0)));
+    return <div className="wconvert-token">
+      <FieldHeading as="span" label={label} labelId={`${field}-label`}>{reset}</FieldHeading>
+      <span role="radiogroup" aria-labelledby={`${field}-label`} className="wconvert-choice-set wconvert-choice-set--fill">
+        {presets.map((preset, index) => <label key={preset.long} className="wconvert-choice" title={preset.long}>
+          <input type="radio" className="sr-only" name={field} checked={at === index} onChange={() => onChange(preset.value)} />
+          <span className="wconvert-choice__label" aria-hidden="true">{preset.short}</span>
+          <span className="sr-only">{preset.long}</span>
+        </label>)}
+        {at < 0 && <label className="wconvert-choice" title={shown}>
+          <input type="radio" className="sr-only" name={field} checked readOnly />
+          <span className="wconvert-choice__label">{__('Custom', 'wconvert')}</span>
+        </label>}
+      </span>
+    </div>;
+  }
+  if (simple && ['heading-size', 'text-size', 'width', 'pad'].includes(token) && presetBase) {
     // Type sizes use the words an element's own Size uses (ADR 0135); spacing keeps smaller/larger.
     const steps: readonly (readonly [number, string])[] = ['heading-size', 'text-size'].includes(token)
       ? [[.85, __('Small', 'wconvert')], [1, __('Medium', 'wconvert')], [1.2, __('Large', 'wconvert')], [1.45, __('Extra large', 'wconvert')]]
       : [[.8, __('Smaller', 'wconvert')], [1, __('Design default', 'wconvert')], [1.2, __('Larger', 'wconvert')]];
     const presets = steps.map(([factor, name]) => ({ value: presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), label: name }));
-    return <div className="wconvert-token"><label htmlFor={field}>{label}</label><select id={field} value={shown} onChange={event => onChange(event.target.value)}>
-      {!presets.some(preset => preset.value === shown) && <option value={shown}>{__('Custom', 'wconvert')}</option>}
+    return <div className="wconvert-token"><FieldHeading label={label} htmlFor={field}>{reset}</FieldHeading><select id={field} value={shown} onChange={event => onChange(event.target.value)}>
+      {!presets.some(preset => preset.value === shown) && <option value={shown}>{sprintf(/* translators: %s: a CSS length, e.g. “43rem”. */ __('Custom (%s)', 'wconvert'), shown)}</option>}
       {presets.filter((preset, index) => presets.findIndex(item => item.value === preset.value) === index).map(preset => <option key={preset.value} value={preset.value}>{preset.label}</option>)}
-      </select>{reset}</div>;
+      </select></div>;
   }
   const control = TOKENS.find(declaration => declaration.name === token)?.control;
   if (control === 'position') return <PositionField label={label} shown={shown} offered={offered ?? []}
     nameOfValue={choice => nameOf(labels.tokenValues, `${token}.${choice}`)} reset={reset} onChange={onChange} />;
   if (control === 'spacing') return <SpacingField label={label} shown={shown} fallback={fallback} standard={standard} reset={reset} onChange={onChange} />;
   if ((control === 'gradient' || control === 'image') && /gradient\(/i.test(shown)) {
-    return <div className="grid gap-1"><GradientField label={label} shown={shown} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />
-      <Button type="button" variant="ghost" size="xs" onClick={() => { onOpenChange(false); onChange(control === 'image' ? 'none' : '#00000000'); }}>{control === 'image' ? __('Use a picture', 'wconvert') : __('Use a solid color', 'wconvert')}</Button></div>;
+    return <div className="wconvert-panel-field"><GradientField label={label} shown={shown} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />
+      <button type="button" className="wconvert-panel-link" onClick={() => { onOpenChange(false); onChange(control === 'image' ? 'none' : '#00000000'); }}>{control === 'image' ? __('Use a picture instead', 'wconvert') : __('Use a solid color', 'wconvert')}</button></div>;
   }
-  if (control === 'gradient') return <div className="grid gap-1">
+  if (control === 'gradient') return <div className="wconvert-panel-field">
     <div className="wconvert-token wconvert-token--color"><ColorField label={label} fallback={fallback} value={value} open={open} onOpenChange={onOpenChange} onChange={onChange} />{reset}</div>
-    <Button type="button" variant="ghost" size="xs" onClick={() => { onChange(DEFAULT_GRADIENT); onOpenChange(true); }}>{__('Use a gradient', 'wconvert')}</Button>
+    <button type="button" className="wconvert-panel-link" onClick={() => { onChange(DEFAULT_GRADIENT); onOpenChange(true); }}>{__('Use a gradient', 'wconvert')}</button>
   </div>;
 
   if (TOKENS.find(declaration => declaration.name === token)?.control === 'shadow') {
@@ -568,10 +594,8 @@ export function TokenField({
 
   // Image controls are declared in the manifest; gradients on overlays remain editable values.
   if (TOKENS.find(declaration => declaration.name === token)?.control === 'image') {
-    return (
-      <div className="grid gap-1"><ImageField id={field} label={label} value={shown} reset={reset} onChange={onChange} />
-        <Button type="button" variant="ghost" size="xs" onClick={() => { onChange(DEFAULT_GRADIENT); onOpenChange(true); }}>{__('Use a gradient', 'wconvert')}</Button></div>
-    );
+    return <ImageField id={field} label={label} value={shown} reset={reset} onChange={onChange}
+      extra={<button type="button" className="wconvert-panel-link" onClick={() => { onChange(DEFAULT_GRADIENT); onOpenChange(true); }}>{__('Use a gradient', 'wconvert')}</button>} />;
   }
 
   /*
@@ -653,7 +677,7 @@ export function TokenField({
       the name of the control beside it read out as part of its own.
     */
     <div className="wconvert-token">
-      <span className="wconvert-field-heading"><label htmlFor={field}>{label}</label>{reset}</span>
+      <FieldHeading label={label} htmlFor={field}>{reset}</FieldHeading>
       {/* Multiple axes stack their numeric controls; reset stays with the field label. */}
       <span className={`wconvert-token__row${measured ? ' items-start' : ''}`}>
         {measured ? (
@@ -709,35 +733,39 @@ function ImageField({
   label,
   value,
   reset,
+  extra,
   onChange,
 }: {
   id: string;
   label: string;
   value: string;
   reset: ReactNode;
+  /** "Use a gradient", in the picture's own action row. */
+  extra?: ReactNode;
   onChange: (value: string) => void;
 }) {
   const address = urlIn(value);
 
   return (
     <div className="wconvert-token">
-      <label htmlFor={id}>{label}</label>
-      <span className="wconvert-token__row">
-        <MediaControl
-          id={id}
-          label={label}
-          type="text"
-          // What the box SHOWS is the address; what it stores is the whole
-          // layer. A value this cannot read as an address — a gradient — is
-          // shown and stored verbatim, which is the escape hatch.
-          value={address ?? (value === 'none' ? '' : value)}
-          preview={address ?? undefined}
-          onChange={(next) =>
-            onChange(asBackgroundLayer(next))
-          }
-        />
-        {reset}
-      </span>
+      <FieldHeading as="span" label={label} labelId={`${id}-label`}>{reset}</FieldHeading>
+      <MediaControl
+        id={id}
+        label={label}
+        labelledBy={`${id}-label`}
+        type="text"
+        // What the box SHOWS is the address; what it stores is the whole
+        // layer. A value this cannot read as an address — a gradient — is
+        // shown and stored verbatim, which is the escape hatch.
+        value={address ?? (value === 'none' ? '' : value)}
+        preview={address ?? undefined}
+        extra={extra}
+        // Removing a picture stores `none`: an empty value would fall back to the design's own picture.
+        onRemove={() => onChange('none')}
+        onChange={(next) =>
+          onChange(asBackgroundLayer(next))
+        }
+      />
     </div>
   );
 }
@@ -839,7 +867,7 @@ function ChoiceField({
   const choose = (choice: string) => { setAsked(false); onChange(choice); };
 
   return <div className="wconvert-token">
-    <span className="wconvert-field-heading"><label id={named} htmlFor={alignment ? undefined : id}>{label}</label>{reset}</span>
+    <FieldHeading label={label} labelId={named} htmlFor={alignment ? undefined : id} as={alignment ? 'span' : 'label'}>{reset}</FieldHeading>
     {alignment ? <span role="group" aria-labelledby={named} className="wconvert-choice-set wconvert-choice-set--icons">
       {offered.map(choice => <label key={choice} className="wconvert-choice" title={nameOf(labels.tokenValues, `${token}.${choice}`)}>
         <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => choose(choice)} />
@@ -856,7 +884,7 @@ function ChoiceField({
       {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
       {(advanced || custom) && <option value="__custom">{__('Custom…', 'wconvert')}</option>}
     </select>}
-    {custom && !advanced && <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>}
+    {custom && !advanced && <PanelHint>{cssOnlyNote()}</PanelHint>}
     {custom && advanced && <StyleValueInput type="text" className="wconvert-token__typed"
       aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
       onFocus={() => setAsked(true)} onCommit={onChange} />}
@@ -967,7 +995,12 @@ function FontField({
 
   return (
     <div className="wconvert-token">
-      <span id={named}>{label}</span>
+      {/* A Google Font is a question asked once: an InfoTip, not a block in every font popover (ADR 0136). */}
+      <FieldHeading as="span" label={label} labelId={named} tipLabel={__('Want a Google Font?', 'wconvert')}
+        tip={<>
+          <p>{__('Install it in the WordPress Font Library, then save your draft and reload. Fonts are hosted on your site.', 'wconvert')}</p>
+          <p><a href={libraryUrl ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{libraryUrl ? __('Open Font Library ↗', 'wconvert') : __('Font Library instructions ↗', 'wconvert')}</a></p>
+        </>}>{reset}</FieldHeading>
       <span className="wconvert-token__row">
         <Popover
           open={open}
@@ -1033,11 +1066,6 @@ function FontField({
             </div>
 
             {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
-            <div className="wconvert-font-library">
-              <strong>{__('Want a Google Font?', 'wconvert')}</strong>
-              <p>{__('Install it in the WordPress Font Library, then save your draft and reload. Fonts are hosted on your site.', 'wconvert')}</p>
-              <a href={libraryUrl ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{libraryUrl ? __('Open Font Library ↗', 'wconvert') : __('Font Library instructions ↗', 'wconvert')}</a>
-            </div>
             {/*
               **The escape hatch, inside the thing you opened — and OUTSIDE the
               scroller.** `choices` is what the panel offers and never what is
@@ -1062,7 +1090,6 @@ function FontField({
             </label>}
           </PopoverContent>
         </Popover>
-        {reset}
       </span>
     </div>
   );

@@ -75,7 +75,8 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | Role | Size | For |
 |---|---|---|
 | `micro` | 12 / 600 / 0.04em | table headers, chips, badges, stat labels |
-| `note` | 13 | descriptions, notes, help text |
+| `note` | 13 | descriptions, notes, help text; a builder field's label at 500 |
+| `hint` | 12 / 400 | the one line of help under a builder field (ADR 0136) |
 | `body` | 14 | the body of the admin |
 | `heading` | 16 | a region heading, a card title, a section in an editor |
 | `section` | 20 / 600 | reading-page section headings |
@@ -88,6 +89,11 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `figure` | 30 | the one emphasised figure per Goal |
 | `label` | 11 | builder furniture and quiet frame metadata |
 | `meta` | 9 | tracked builder furniture captions only |
+
+**A builder panel is one grammar** (ADR 0136, `builder/PanelSection.tsx`): a
+section title is `body` 600 in sentence case; sections are 16px apart and
+divided by one rule; fields inside are 12px apart; a label sits 6px above its
+control. A fact is one row of label, value and link.
 
 **`meta` and `label` never carry a control, a condition or a reason**
 (ADR 0131). They are furniture: an uppercase caption, a pane's name, a count.
@@ -153,7 +159,7 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
 - Native single-select fields share an explicit chevron, logical end padding and
   RTL placement. Multi-select/listbox controls keep their own affordance.
-- `InfoTip` owns contextual help in Analytics and Leads: a 16px Info glyph in a
+- `InfoTip` owns contextual help in Analytics, Leads and the builder's panels (ADR 0136): a 16px Info glyph in a
   32px control, expanded for coarse pointers by the shared control rules. Its
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
 - The header navigation divider spans the row; individual navigation and plan

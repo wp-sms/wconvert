@@ -1,3 +1,4 @@
+import { AdvancedContext, AdvancedToggle } from '../../resources/admin/src/builder/advanced';
 import { useState } from 'react';
 import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
@@ -18,10 +19,10 @@ it('keeps a child follow-up on the shared continuation until custom routing is r
   const tree = enquiry as unknown as TemplateTree, change = vi.fn();
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(item => item.id === 'garden')} onChange={change} onInsert={() => {}} />);
   expect(screen.getByRole('combobox', { name: 'After the relevant questions' })).toHaveValue('contact');
-  expect(screen.queryByRole('combobox', { name: 'If skipped, go to…' })).toBeNull();
+  expect(screen.queryByRole('combobox', { name: 'If skipped, go to' })).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
   // A skip edge to where the screen would have gone anyway reads as falling through (ADR 0135).
-  expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveValue('');
+  expect(screen.getByRole('combobox', { name: 'If skipped, go to' })).toHaveValue('');
   expect(change).not.toHaveBeenCalled();
 });
 it('selecting a result updates the canvas selection without changing matching rules', () => {
@@ -30,10 +31,10 @@ it('selecting a result updates the canvas selection without changing matching ru
   const step = tree.steps.findIndex(item => item.kind === 'result');
   render(<ResultSettings tree={tree} step={step} onChange={change} onResultSelect={select} />);
   expect(select).toHaveBeenLastCalledWith(tree.steps[step].results![0].id);
-  fireEvent.click(screen.getByRole('button', { name: /^2\. A fresh start/ }));
+  fireEvent.click(screen.getByRole('button', { name: /^A fresh start/ }));
   expect(select).toHaveBeenLastCalledWith(tree.steps[step].results![1].id);
   expect(screen.getByRole('button', { name: 'Search catalog' })).not.toBeVisible();
-  fireEvent.click(screen.getByText('Recommend products (optional)'));
+  fireEvent.click(screen.getByText('Products'));
   expect(screen.getByRole('button', { name: 'Search catalog' })).toBeVisible();
   expect(change).not.toHaveBeenCalled();
 });
@@ -49,7 +50,7 @@ it('reviews referenced answer-type changes before applying them as one edit', ()
 it('edits SMS consent without changing email consent or submission ownership', () => {
   const tree = signup.tree as TemplateTree, change = vi.fn();
   render(<JourneyConsentSettings tree={tree} step={1} labels={labels} onChange={change} />);
-  fireEvent.click(screen.getByText('Consent wording & visibility'));
+  // The Consent disclosure is the Form section's now (ADR 0136); this draws the wording itself.
   const input = screen.getByRole('textbox');
   fireEvent.change(input, { target: { value: 'Text me product updates.' } });
   const next = change.mock.calls.at(-1)![0] as TemplateTree;
@@ -60,9 +61,15 @@ it('edits SMS consent without changing email consent or submission ownership', (
 it('offers essential presets and preserves custom measurements when Advanced opens', () => {
   const initial = { ...signup, tokens: { ...signup.tokens, width: '37ch' } } as Template;
   const change = vi.fn();
-  function Styles() { const [open, setOpen] = useState<string | null>(null); return <Tokens template={initial} labels={labels} design={signup.tokens} openToken={open} onOpenToken={setOpen} onChange={change} onError={() => {}} />; }
+  // The Look's one Advanced switch is the panel's (ADR 0136); Tokens reads it.
+  function Styles() {
+    const [open, setOpen] = useState<string | null>(null);
+    const [advanced, setAdvanced] = useState(false);
+    return <AdvancedContext.Provider value={advanced}><AdvancedToggle advanced={advanced} onToggle={() => setAdvanced(value => !value)} />
+      <Tokens template={initial} labels={labels} design={signup.tokens} openToken={open} onOpenToken={setOpen} onChange={change} onError={() => {}} /></AdvancedContext.Provider>;
+  }
   render(<Styles />);
-  expect(screen.getByRole('option', { name: 'Custom' })).toBeInTheDocument();
+  expect(screen.getByRole('option', { name: 'Custom (37ch)' })).toBeInTheDocument();
   expect(screen.queryByRole('combobox', { name: 'width unit' })).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Advanced' }));
   expect(screen.getByRole('combobox', { name: /width unit/i })).toHaveValue('ch');

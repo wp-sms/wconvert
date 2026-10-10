@@ -348,6 +348,15 @@ describe('the goal in Optin details', () => {
 const cardFor = (name: string) => screen.getByText(name).closest('li') as HTMLElement;
 
 describe('the goal picker', () => {
+  /** The header holds no goal (ADR 0136): Change goal is reached through Campaign details, so focus returns to Campaign actions. */
+  it('returns focus to Campaign actions when the goal picker closes', async () => {
+    open();
+    await changeGoal();
+    expect(screen.queryByRole('button', { name: /^Goal:/ })).toBeNull();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign actions' })).toHaveFocus());
+  });
+
   it('marks the goal in use, and does not offer it again', async () => {
     open();
     await changeGoal();

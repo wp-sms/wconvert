@@ -1,6 +1,8 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { ReactNode } from 'react';
 import { isChoiceHeld, valueOfChoice } from './panel';
+import { CheckRow } from '../shell/CheckRow';
+import { FieldHeading } from './PanelSection';
 
 /** One manifest setting: checkbox for booleans, select for words, radios for pictures.
  * Preserve unlisted stored values and use the manifest default only when absent.
@@ -54,13 +56,10 @@ export function ParamChoice({
   const selected = offered.find(choice => isChoiceHeld(held, choice, fallback));
   if (renderChoice === undefined) {
     if (offered.length === 2 && offered.includes('true') && offered.includes('false') && selected !== undefined) {
-      return <label className="wconvert-setting-toggle">
-        <input type="checkbox" checked={selected === 'true'} onChange={event => onChange(event.target.checked)} />
-        {label}
-      </label>;
+      return <CheckRow className="wconvert-check" label={label} checked={selected === 'true'} onChange={event => onChange(event.target.checked)} />;
     }
     return <div className="wconvert-token">
-      <label htmlFor={`wconvert-param-${id}`}>{label}</label>
+      <FieldHeading label={label} htmlFor={`wconvert-param-${id}`} />
       <select id={`wconvert-param-${id}`} value={selected ?? '__current'} onChange={event => onChange(valueOfChoice(event.target.value))}>
         {selected === undefined && <option value="__current" disabled>{held === undefined && fallback === undefined
           ? __('Choose…', 'wconvert') : sprintf(__('Current: %s', 'wconvert'), String(held ?? fallback))}</option>}
@@ -71,7 +70,7 @@ export function ParamChoice({
 
   return (
     <div className="wconvert-token">
-      <span id={`wconvert-param-${id}`}>{label}</span>
+      <FieldHeading as="span" label={label} labelId={`wconvert-param-${id}`} />
       {/*
         **A group with a name, because a set of radios is one control.** Without
         it a screen reader announces four unrelated buttons and never the

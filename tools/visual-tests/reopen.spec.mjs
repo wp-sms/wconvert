@@ -125,13 +125,14 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await page.getByRole('dialog', { name: 'Preview', exact: true }).getByRole('button', { name: 'Back to editor', exact: true }).click();
   await expect(reopenTab).toHaveAttribute('aria-current', 'true');
   await page.locator('label').filter({ has: page.getByRole('radio', { name: 'Mobile', exact: true }) }).click();
-  await design.getByText('Colors and mobile', { exact: true }).click();
+  // The disclosure's summary says its value beside the title (ADR 0136).
+  await design.locator('summary', { hasText: 'Colors and mobile' }).click();
   await design.getByRole('checkbox', { name: 'Show on mobile', exact: true }).uncheck();
   await expect(page.getByRole('region', { name: 'Design canvas' }).getByText('Hidden on mobile', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: /^Undo:/ }).click();
   await expect(page.getByRole('region', { name: 'Design canvas' }).getByText('Hidden on mobile', { exact: true })).toHaveCount(0);
   await page.locator('label').filter({ has: page.getByRole('radio', { name: 'Desktop', exact: true }) }).click();
-  await design.getByRole('checkbox', { name: 'Reopen button', exact: true }).uncheck();
+  await design.getByRole('checkbox', { name: 'Show a reopen button', exact: true }).uncheck();
   await expect(reopenTab).toHaveCount(0);
   await page.getByRole('button', { name: /^Undo:/ }).click();
   await expect(reopenTab).toBeVisible();

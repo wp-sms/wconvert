@@ -388,7 +388,7 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
     : [{ ...addition, capture: undefined, label: nameOf(addition.leaf ? labels.nodes : labels.layouts, addition.type), note: addition.leaf ? '' : nameOf(labels.layoutNotes, addition.type) }]) : [];
   const shown = choices.filter(choice => `${choice.label} ${choice.note}`.toLowerCase().includes(search.toLowerCase()));
   return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) { setSearch(''); added.current = false; } }}>
-    <PopoverTrigger asChild><Button variant="outline" size="xs"><Plus aria-hidden="true" />{__('Add element', 'wconvert')}</Button></PopoverTrigger>
+    <PopoverTrigger asChild><button type="button" className="wconvert-tree-add"><Plus aria-hidden="true" />{__('Add element', 'wconvert')}</button></PopoverTrigger>
     <PopoverContent side="right" align="start" collisionPadding={12} className="wconvert-add-picker" onCloseAutoFocus={event => { if (added.current) event.preventDefault(); }}>
       <strong>{__('Add element', 'wconvert')}</strong>
       <label htmlFor={`${id}-position`}>{__('Insert position', 'wconvert')}</label>

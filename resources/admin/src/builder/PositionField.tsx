@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Disclosure } from '../shell/Disclosure';
 import { StyleValueInput } from './StyleValueInput';
 import { useAdvanced } from './advanced';
+import { FieldHeading } from './PanelSection';
 
 /** Only interpret positions we can round-trip; expressions stay editable as CSS. */
 export function positionPoint(value: string): [number, number] | null {
@@ -41,7 +42,7 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
     : __('Custom position', 'wconvert');
 
   return <div className="wconvert-token wconvert-position">
-    <div className="wconvert-position__heading"><span id={`${id}-label`}>{label}</span>{reset}</div>
+    <FieldHeading as="span" label={label} labelId={`${id}-label`}>{reset}</FieldHeading>
     <div className="wconvert-position__row">
       <div className="wconvert-position__grid" role="group" aria-labelledby={`${id}-label`}>
         {offered.map(choice => {

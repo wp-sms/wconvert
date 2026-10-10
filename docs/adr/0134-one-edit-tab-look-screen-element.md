@@ -98,8 +98,9 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
 - **One Preview**, a menu of the one dialog's modes: As a visitor · This screen
   · Try answers (when there is a question), plus **Test a visit**, which moved
   out of Display rules. "Preview & test" and "Check the design" are gone.
-- **The goal sits under the campaign name** and opens Change goal; Campaign
-  details keeps analytics and developer tools.
+- ~~**The goal sits under the campaign name** and opens Change goal; Campaign
+  details keeps analytics and developer tools.~~ *Amended by [ADR 0136](0136-one-panel-grammar.md): the goal
+  left the header again. It is in Campaign details with Change goal, and the name and status pill sit side by side.*
 - The canvas bar holds the device switch, fit and fullscreen, with the hint
   "Click anything on the <format> to edit it". Its "Desktop" label repeated the
   switch beside it and is gone.

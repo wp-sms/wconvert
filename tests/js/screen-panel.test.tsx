@@ -80,7 +80,7 @@ describe('Then →', () => {
     const onEditPaths = vi.fn();
     render(<ScreenThen tree={withAnswer} step={0} editable onChange={vi.fn()} onEditPaths={onEditPaths} />);
     expect(screen.getByText('Depends on the answer')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Edit paths on the question' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Edit paths' }));
     expect(onEditPaths).toHaveBeenCalledOnce();
   });
 });

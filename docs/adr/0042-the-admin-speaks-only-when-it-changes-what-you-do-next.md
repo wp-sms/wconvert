@@ -60,6 +60,11 @@ had accumulated:
 The test is not *"is this true?"* — all four were. It is **"does knowing this
 change what they do?"**
 
+*Amended by [ADR 0136](0136-one-panel-grammar.md), for the builder's panels: a sentence the label already
+says is deleted; one that changes what the merchant does next may stay as one
+line of at most twelve words; anything else worth keeping is an InfoTip beside
+the label or section title.*
+
 *Applied to a whole screen rather than to a line, by
 [ADR 0057](0057-a-milestone-is-a-date-recorded-once-about-the-site.md). #94's
 acceptance criterion asks for five milestones readable on an admin screen, and

@@ -200,7 +200,8 @@ describe('staying in the field while editing', () => {
     expect(input).toHaveFocus();
     expect(input).toHaveValue(layered);
     expect(changed).toHaveBeenCalledExactlyOnceWith(layered);
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), 'none');
+    // The first drawn preset is `none` (ADR 0136).
+    await userEvent.click(screen.getAllByRole('radio')[0]);
     expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
   });
 
@@ -208,8 +209,8 @@ describe('staying in the field while editing', () => {
     const changed = vi.fn();
     function Picture() {
       const [value, setValue] = useState('/old.jpg');
-      return <label htmlFor="test-picture-address">Picture address<MediaControl id="test-picture-address" label="Picture address" value={value}
-        onChange={next => { setValue(next); changed(next); }} /></label>;
+      return <><label htmlFor="test-picture-address">Picture address</label><MediaControl id="test-picture-address" label="Picture address" value={value}
+        onChange={next => { setValue(next); changed(next); }} /></>;
     }
     render(<Picture />);
     const address = screen.getByRole('textbox', { name: 'Picture address' });

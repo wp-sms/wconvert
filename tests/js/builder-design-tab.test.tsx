@@ -193,7 +193,7 @@ describe('the look', () => {
 
     expect(api.getThemeTokens).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole('button', { name: /Use theme colors and font/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Use my theme’s colors and font/ }));
 
     expect(api.getThemeTokens).toHaveBeenCalled();
     await vi.waitFor(() =>
@@ -228,9 +228,8 @@ describe('the look', () => {
     // A color is a picker rather than a text box, and it is not behind
     // anything: no disclosure has to be opened first.
     expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
-    // The stub names only two tokens, so the rest fall back to their raw key —
-    // which is what `nameOf` does on a real install missing a label too.
-    expect(screen.getByRole('button', { name: 'font' })).toBeInTheDocument();
+    // The Look's Fonts section names the body font "Body text" beside its size (ADR 0136).
+    expect(screen.getByRole('button', { name: 'Body text' })).toBeInTheDocument();
     // Once, and not once per group.
     expect(screen.getAllByRole('button', { name: /Choose a color for Background/ })).toHaveLength(1);
   });
@@ -789,10 +788,11 @@ describe('a shadow', () => {
   it('offers named shadow presets without requiring CSS', () => {
     look({ design: {} });
 
-    // Checked on the manifest's own fallback, which is the common case.
-    expect(within(screen.getByRole('combobox', { name: 'Shadow' })).getByRole<HTMLOptionElement>('option', { name: 'Lifted' }).selected).toBe(true);
-    expect(within(screen.getByRole('combobox', { name: 'Shadow' })).getByRole('option', { name: 'None' })).toBeInTheDocument();
-    expect(within(screen.getByRole('combobox', { name: 'Shadow' })).getByRole('option', { name: 'Floating' })).toBeInTheDocument();
+    // Checked on the manifest's own fallback, which is the common case. Each preset is drawn (ADR 0136).
+    const shadows = screen.getByRole('radiogroup', { name: 'Shadow' });
+    expect(within(shadows).getByRole('radio', { name: 'Lifted' })).toBeChecked();
+    expect(within(shadows).getByRole('radio', { name: 'None' })).toBeInTheDocument();
+    expect(within(shadows).getByRole('radio', { name: 'Floating' })).toBeInTheDocument();
   });
 
   /**
@@ -812,7 +812,7 @@ describe('a shadow', () => {
       />,
     );
 
-    expect(screen.getByRole('combobox', { name: 'Shadow' })).toHaveValue('none');
+    expect(within(screen.getByRole('radiogroup', { name: 'Shadow' })).getByRole('radio', { name: 'None' })).toBeChecked();
     // Not the media picker `isCssImage` would otherwise have handed it.
     expect(screen.queryByRole('textbox', { name: 'Shadow' })).toBeNull();
   });
@@ -840,7 +840,7 @@ describe('a shadow', () => {
     // Scoped to this token: every choice control on the tab has a Custom chip.
     const shadow = screen.getByText('Shadow').closest('.wconvert-token') as HTMLElement;
 
-    expect(within(shadow).getByRole('combobox', { name: 'Shadow' })).toHaveValue('__custom');
+    expect(within(shadow).getAllByRole('radio').every(radio => !(radio as HTMLInputElement).checked)).toBe(true);
     expect(screen.queryByLabelText('Shadow value')).toBeNull();
     await userEvent.click(within(shadow).getByRole('button', { name: 'Edit shadow CSS' }));
     expect(screen.getByLabelText('Shadow value')).toHaveValue(upward);
@@ -891,14 +891,14 @@ describe('inner spacing', () => {
  * route exists at all.
  */
 describe('the font picker', () => {
-  const trigger = () => screen.getByRole('button', { name: 'font' });
+  const trigger = () => screen.getByRole('button', { name: 'Body text' });
 
   /**
    * The rows inside the popover, and only those — the Design tab is full of
    * radios and a global query counts every chip on it.
    */
   const rows = async () =>
-    within(await screen.findByRole('group', { name: 'font' })).getAllByRole('radio');
+    within(await screen.findByRole('group', { name: 'Body text' })).getAllByRole('radio');
 
   it('reads nothing from the site until the picker is opened', () => {
     look();
@@ -980,7 +980,7 @@ describe('the font picker', () => {
     const changed = look();
 
     await userEvent.click(trigger());
-    await userEvent.type(await screen.findByLabelText('font value'), 'x');
+    await userEvent.type(await screen.findByLabelText('Body text value'), 'x');
 
     expect(changed).toHaveBeenCalled();
   });
@@ -1004,6 +1004,6 @@ describe('the font picker', () => {
 
     // Before the read there is nothing but the stack, so the first family in it
     // is the honest name — and after it, the theme's own.
-    expect(screen.getByRole('button', { name: 'font' })).toHaveTextContent('Playfair Display');
+    expect(screen.getByRole('button', { name: 'Body text' })).toHaveTextContent('Playfair Display');
   });
 });

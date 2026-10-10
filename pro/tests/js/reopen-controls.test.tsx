@@ -21,7 +21,11 @@ it('authors optional settings with on-demand help and without visitor storage or
   }
   render(<Editor />);
   expect(screen.queryByLabelText('Button text')).toBeNull();
-  await user.click(screen.getByRole('checkbox', { name: 'Reopen button' }));
+  await user.click(screen.getByRole('checkbox', { name: 'Show a reopen button' }));
+  // The box refuses anything outside 8–96, so no permanent line says so (ADR 0136).
+  expect(screen.getByLabelText('Distance (px)')).toHaveAttribute('min', '8');
+  expect(screen.getByLabelText('Distance (px)')).toHaveAttribute('max', '96');
+  expect(screen.queryByText('From 8 to 96.')).toBeNull();
   await user.clear(screen.getByLabelText('Button text'));
   expect(screen.getByRole('alert')).toHaveTextContent('Enter button text');
   expect(screen.getByLabelText('Button text')).toHaveAccessibleDescription('Enter button text before saving.');
@@ -35,11 +39,12 @@ it('authors optional settings with on-demand help and without visitor storage or
   expect(screen.queryByRole('textbox', { name: /Background/ })).toBeNull();
   expect(screen.queryByRole('button', { name: /back to the campaign’s own/ })).toBeNull();
   expect(screen.queryByRole('combobox', { name: 'Preview' })).toBeNull();
-  expect(screen.queryByText(/After a visitor closes this campaign/)).toBeNull();
+  expect(screen.queryByText(/visitors can bring it back/)).toBeNull();
+  expect(screen.queryByText(/Colors follow the campaign’s design/)).toBeNull();
   await user.click(screen.getByRole('button', { name: 'About reopen buttons' }));
-  expect(screen.getByText(/After a visitor closes this campaign/)).toBeVisible();
+  expect(screen.getByText(/After closing, visitors can bring it back from a small button/)).toBeVisible();
   await user.keyboard('{Escape}');
-  expect(screen.queryByText(/After a visitor closes this campaign/)).toBeNull();
+  expect(screen.queryByText(/visitors can bring it back/)).toBeNull();
   expect(save).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled();
   save.mockRestore();
 });

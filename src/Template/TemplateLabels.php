@@ -473,9 +473,9 @@ final class TemplateLabels
             'image.fit' => __('Picture fit', 'wconvert'),
             'code.copy' => __('Copy button', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
-            'field.required' => __('Required field', 'wconvert'),
+            'field.required' => __('Required', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
-            'field.phone_dropdown' => __('Country dropdown', 'wconvert'),
+            'field.phone_dropdown' => __('Show a country list', 'wconvert'),
             'products.action' => __('Product action', 'wconvert'),
             'products.source' => __('Recommendation source', 'wconvert'),
             'question.answer_type' => __('Answer type', 'wconvert'),

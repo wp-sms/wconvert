@@ -275,7 +275,9 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await openLook(page);
   const design = page.getByRole('region', { name: 'Look', exact: true });
   await expect(design).toBeVisible();
-  await expect(design.getByText(/^Where on the page: Manual/)).toBeVisible();
+  // "On the page" is a fact row of the Look (ADR 0136).
+  await expect(design.getByText('On the page', { exact: true })).toBeVisible();
+  await expect(design.getByText(/^Manual/)).toBeVisible();
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
 
   const rulesTab = page.getByRole('tab', { name: 'Display rules', exact: true });
@@ -336,7 +338,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // Return to the Look: still only the summary, now of the automatic state.
   await page.getByRole('tab', { name: 'Edit', exact: true }).click();
   await openLook(page);
-  await expect(design.getByText(/^Where on the page: Manual/)).toHaveCount(0);
+  await expect(design.getByText(/^Manual/)).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
   await expect(design.getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
 

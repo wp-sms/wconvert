@@ -213,10 +213,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
 
   const [changingGoal, setChangingGoal] = useState(false);
+  // Campaign actions (⋯): Change goal opens from Campaign details, reached through it, so focus returns here (ADR 0136).
   const changeGoal = useRef<HTMLButtonElement>(null);
-  const goalButton = useRef<HTMLButtonElement>(null);
-  // Change goal opens from the goal under the name or from Campaign details; focus goes back to whichever.
-  const goalOpener = useRef<HTMLElement | null>(null);
 
   const [siblingAct, setSiblingAct] = useState<ConvertingAct | null>(null);
 
@@ -867,6 +865,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <input
             id="wconvert-optin-name"
             className="wconvert-workspace__name"
+            // As wide as the name, so the status sits right beside it (ADR 0136); CSS caps it.
+            size={Math.min(32, Math.max(8, (name || __('Untitled campaign', 'wconvert')).length))}
             value={name}
             placeholder={__('Untitled campaign', 'wconvert')}
             disabled={busy}
@@ -876,10 +876,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               setSaved(false);
             }}
           />
-          {/* The goal says what this campaign is for, and changing it is one press away (ADR 0134). */}
-          {entryOfGoal && <button ref={goalButton} type="button" className="wconvert-workspace__goal" disabled={busy} onClick={() => { goalOpener.current = goalButton.current; setChangingGoal(true); }}>
-            {sprintf(__('Goal: %s', 'wconvert'), entryOfGoal.label)}
-          </button>}
           <span
             className="wconvert-workspace__save-state"
             role="status"
@@ -990,10 +986,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             appearancePreview={showingLock ? previewPane : undefined}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
-            look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates)) }}
+            look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates), chosenName(templateId, templates)) }}
             lookPanel={<DesignSettings
                             browseRef={browse}
-                            mobile={width === 'narrow'}
                             template={entry}
                             labels={gallery.labels}
                             name={chosenName(templateId, templates)}
@@ -1022,10 +1017,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onSelectElement={chooseFromTree}
             elementPanel={!lookOpen && selection && selection.path.length > 1 ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act} onBack={() => setSelection(null)}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={(next, said) => { edit({ template: next }); setSwapSaid(current => ({ said, serial: (current?.serial ?? 0) + 1 })); }}
-              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement} onSelect={chooseFromTree}
+              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
               onDesign={openLook}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
-                onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
+                onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
             testRequest={journeyTestRequest} testRequestMode={journeyTestMode} testReturnFocus={previewButton} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
             issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
@@ -1067,7 +1062,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        goalOpener.current = changeGoal.current;
                         setDetails(false);
                         setChangingGoal(true);
                       }}
@@ -1211,6 +1205,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
       <ChangeGoalDialog
         open={changingGoal}
+        returnFocusTo={changeGoal}
         onOpenChange={(next) => {
           setChangingGoal(next);
 
@@ -1218,7 +1213,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           // exactly as the picker above: naming the control is what puts the
           // caret back rather than on `<body>`.
           if (!next) {
-            (goalOpener.current ?? changeGoal.current)?.focus();
+            changeGoal.current?.focus();
           }
         }}
         goals={goals}

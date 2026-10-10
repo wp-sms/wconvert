@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChevronDown, ChevronRight, EyeOff, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronRight, EyeOff, GripVertical, Target } from 'lucide-react';
 import { losesWordsOnSwitch } from './structure/catalogue';
 import { isConvertingAct } from './structure/guards';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -285,15 +285,20 @@ export function BlockRow({
                 syllables because it is on every row of a list that is read by
                 scanning.
               */}
+              {/*
+                **An icon now, with the sentence as its tooltip** (ADR 0136): a
+                chip took a third of a 240px row and truncated the name it
+                annotates. The words a chip carried are the icon's name.
+              */}
               {isConvertingAct(block) && (
                 <span
-                  className="wconvert-block__chip wconvert-block__chip--counted"
-                  title={__('This campaign’s conversions are counted on this block.', 'wconvert')}
+                  className="wconvert-block__counted"
+                  title={__('Conversions are counted here', 'wconvert')}
                 >
-                  {__('counted', 'wconvert')}
+                  <Target aria-hidden="true" />
                   <span className="sr-only">
                     {' '}
-                    {__('— this campaign’s conversions are counted on this block.', 'wconvert')}
+                    {__('Conversions are counted here', 'wconvert')}
                   </span>
                 </span>
               )}

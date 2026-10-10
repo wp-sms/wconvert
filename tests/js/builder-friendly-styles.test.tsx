@@ -117,7 +117,10 @@ describe('padding and gradients preserve authored values until an explicit edit'
   it('unlinks without writing, edits one side, and links with one explicit change', async () => {
     const changed = vi.fn();
     render(<Control initial="1rem" token="pad" changed={changed} />);
-    await userEvent.click(screen.getByRole('button', { name: 'All sides together' }));
+    // One name for the toggle, pressed while the sides are linked (ADR 0136).
+    expect(screen.getByRole('button', { name: 'Link all sides' })).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Link all sides' }));
+    expect(screen.getByRole('button', { name: 'Link all sides' })).toHaveAttribute('aria-pressed', 'false');
     expect(changed).not.toHaveBeenCalled();
     const right = screen.getByRole('spinbutton', { name: 'Setting, Right amount' });
     await userEvent.clear(right);
@@ -174,7 +177,8 @@ it.each([
   render(<AdvancedContext.Provider value><ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
     openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={vi.fn()} /></AdvancedContext.Provider>);
   expect(screen.queryByText('Different on mobile') !== null).toBe(different);
-  expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
+  // The device row counts what differs on mobile and names it on hover (ADR 0136).
+  expect(screen.getByText('1 mobile change')).toHaveAttribute('title', 'Padding');
 });
 
 it('lists local mobile overrides and resets only the selected element’s narrow bag', async () => {
@@ -186,13 +190,12 @@ it('lists local mobile overrides and resets only the selected element’s narrow
       openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={next => { changed(next); setTemplate(next); }} />;
   }
   render(<Editor />);
-  expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
-  await userEvent.click(screen.getByText('Editing mobile appearance. Unchanged values follow desktop.'));
-  await userEvent.click(screen.getByRole('button', { name: 'Reset this element on mobile' }));
+  expect(screen.getByRole('status')).toHaveTextContent('MobileFollows desktop unless changed');
+  await userEvent.click(screen.getByRole('button', { name: 'Reset on mobile' }));
   const result = changed.mock.calls[0][0] as Template;
   expect(nodeAt(result.tree, [0, 'children', 0])).toMatchObject({ tokens: { pad: '2rem' } });
   expect(nodeAt(result.tree, [0, 'children', 0])).not.toHaveProperty('narrow');
-  expect(screen.getByText('No mobile overrides on this element. It follows the surrounding design.')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Reset on mobile' })).toBeDisabled();
 });
 
 /** ADR 0135: the plain view is presets, swatches and words; Advanced holds the exact values. */
@@ -205,10 +208,10 @@ describe('the plain style view', () => {
         openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={setTemplate} />;
     }
     render(<Editor />);
-    const reset = screen.getByRole('button', { name: 'Reset this element' });
+    const reset = screen.getByRole('button', { name: 'Reset' });
     await userEvent.click(reset);
     expect(reset).toBeDisabled();
-    expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
+    expect(screen.getByText('1 mobile change')).toHaveAttribute('title', 'Padding');
   });
 
   it('names a color on its swatch and keeps the hex for Advanced', async () => {

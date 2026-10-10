@@ -34,9 +34,10 @@ it('edits all capture conveniences in the inspector without changing routes or a
   const user = userEvent.setup();
   function Harness() { const [draft, update] = useState(tree); return <><JourneyCaptureSettings tree={draft} step={0} onChange={update} /><output data-testid="draft">{JSON.stringify(draft)}</output></>; }
   render(<Harness />);
-  await user.click(screen.getByLabelText('Ask for a name (optional)'));
-  await user.click(screen.getByLabelText('Let visitors review earlier answers before submitting'));
-  await user.type(screen.getByLabelText('How you will use their details'), 'We reply to this request.');
+  await user.click(screen.getByLabelText('Ask for their name'));
+  await user.click(screen.getByLabelText('Let visitors review earlier answers'));
+  await user.click(screen.getByText('How you’ll use their details'));
+  await user.type(screen.getByLabelText('How you’ll use their details'), 'We reply to this request.');
   const next = JSON.parse(screen.getByTestId('draft').textContent!) as TemplateTree;
   expect(next.steps[0]).toMatchObject({ review_answers: true, details_note: 'We reply to this request.' });
   expect(next.graph).toEqual(tree.graph);

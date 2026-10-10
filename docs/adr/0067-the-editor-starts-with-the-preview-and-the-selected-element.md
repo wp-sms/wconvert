@@ -5,6 +5,7 @@ the Fieldwork prototype after comparing the existing WordPress editor with the
 reference editor. The production editor adopts that flow.
 
 > **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Goal and precise metric now stay visible below the editor header. Change goal is for unpublished drafts; published Optins offer duplication.
+> **Amended again by [ADR 0087](0087-choices-first-details-on-demand.md), [0134](0134-one-edit-tab-look-screen-element.md) and [0136](0136-one-panel-grammar.md):** the goal is not in the header. It lives in Campaign details with Change goal (0134 had moved it under the name; 0136 moved it back).
 
 ## Workspace
 

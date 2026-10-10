@@ -61,7 +61,7 @@ it('repairs a missing continuation through controls, and offers the skip overrid
   expect(repaired.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([expect.objectContaining({ kind: 'default', to: 'indoors' })]);
   expect(journeyReadinessIssues(repaired)).toEqual([]);
   await user.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
-  await user.selectOptions(screen.getByRole('combobox', { name: 'If skipped, go to…' }), 'contact');
+  await user.selectOptions(screen.getByRole('combobox', { name: 'If skipped, go to' }), 'contact');
   const tree = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
   expect(tree.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([
     expect.objectContaining({ kind: 'default', to: 'indoors' }), expect.objectContaining({ kind: 'hidden', to: 'contact' }),
@@ -112,7 +112,7 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
   }
   render(<Routes />);
   await user.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
-  const hiddenDestination = screen.getByRole('combobox', { name: 'If skipped, go to…' });
+  const hiddenDestination = screen.getByRole('combobox', { name: 'If skipped, go to' });
   await user.selectOptions(hiddenDestination, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
   expect(JSON.parse(screen.getByTestId('tree').textContent!).graph.edges.find((edge: { id: string }) => edge.id === 'balcony_hidden').to).toBe('contact');
@@ -129,7 +129,7 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
 it('focuses the hidden continuation when that map connection is selected', () => {
   const tree = fixture as unknown as TemplateTree;
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(screen => screen.id === 'garden')} focusPath="hidden" onChange={() => {}} onInsert={() => {}} />);
-  expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveFocus();
+  expect(screen.getByRole('combobox', { name: 'If skipped, go to' })).toHaveFocus();
 });
 
 it('can create the missing condition on an imported matching result', async () => {

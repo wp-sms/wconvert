@@ -1,6 +1,7 @@
 import { createContext, useContext, useId, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
-import { ArrowRight, TriangleAlert } from 'lucide-react';
+import { TriangleAlert } from 'lucide-react';
+import { FactRow, PanelHint, PanelSection } from './PanelSection';
 import type { TemplateTree } from '@renderer/types';
 import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconnectGraphEdge } from './structure/graphConnections';
 import { upgradeToGraph, graphDisplayOrder } from './structure/graph';
@@ -37,28 +38,27 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
   const screen = tree.steps[step];
   // A one-screen campaign goes nowhere next, so there is nothing to say (ADR 0134).
   if (tree.steps.length === 1) return null;
-  if (screen.kind === 'acknowledgement') return <ThenLine label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</ThenLine>;
+  if (screen.kind === 'acknowledgement') return <FactRow label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</FactRow>;
   const graph = tree.graph;
   const answers = graph ? graph.edges.filter(edge => edge.from === screen.id && edge.kind === 'answer') : (screen.paths ?? []).filter(path => path.when);
   if (answers.length > 0) {
-    return <ThenLine label={__('Then', 'wconvert')}>
-      <span>{__('Depends on the answer', 'wconvert')}</span>
-      {onEditPaths && <button type="button" className="wconvert-screen-then__link" onClick={onEditPaths}>{__('Edit paths on the question', 'wconvert')}</button>}
-    </ThenLine>;
+    return <FactRow label={__('Then', 'wconvert')} action={__('Edit paths', 'wconvert')} onAction={onEditPaths}>
+      {__('Depends on the answer', 'wconvert')}
+    </FactRow>;
   }
   const fallback = graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'default');
   const nextId = graph ? fallback?.to : screen.paths?.[0]?.to ?? tree.steps[step + 1]?.id;
   const next = tree.steps.find(item => item.id === nextId);
   if (!editable) {
-    return <ThenLine label={__('Then', 'wconvert')}>
-      <span><ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /> {next?.name ?? __('The campaign ends here', 'wconvert')}</span>
-      {!graph && tree.steps.length > 2 && <small>{__('Change the order in the screen’s ⋯ menu.', 'wconvert')}</small>}
-    </ThenLine>;
+    return <>
+      <FactRow label={__('Then', 'wconvert')}>{next?.name ?? __('The campaign ends here', 'wconvert')}</FactRow>
+      {!graph && tree.steps.length > 2 && <PanelHint>{__('Change the order in the screen’s ⋯ menu.', 'wconvert')}</PanelHint>}
+    </>;
   }
   const order = graphDisplayOrder(tree).filter(index => index !== step);
   // A graph screen with no path out yet gets one, unless nothing may follow it (a final result).
   if (graph && !fallback && !order.some(index => canAddGraphConnection(tree, screen.id, tree.steps[index].id))) {
-    return <ThenLine label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</ThenLine>;
+    return <FactRow label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</FactRow>;
   }
   const reachable = (target: string) => graph ? canTargetGraphScreen(tree, screen.id, target) : tree.steps.findIndex(item => item.id === target) > step;
   const choose = (target: string) => {
@@ -68,37 +68,27 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
     const edge = upgraded.graph?.edges.find(item => item.from === screen.id && item.kind === 'default');
     if (edge) (onUpgrade ?? onChange)(reconnectGraphEdge(upgraded, edge.id, target));
   };
-  return <div className="wconvert-screen-then">
-    <label htmlFor={`${id}-then`} className="wconvert-screen-then__label">{__('Then', 'wconvert')}</label>
-    <div className="wconvert-screen-then__value">
-      <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
-      <select id={`${id}-then`} value={nextId ?? ''} onChange={event => choose(event.target.value)}>
-        {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
-        {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
-      </select>
-    </div>
-  </div>;
-}
-
-function ThenLine({ label, children }: { label: string; children: ReactNode }) {
-  return <div className="wconvert-screen-then"><span className="wconvert-screen-then__label">{label}</span><div className="wconvert-screen-then__value">{children}</div></div>;
+  return <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
+    <select id={`${id}-then`} value={nextId ?? ''} onChange={event => choose(event.target.value)}>
+      {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
+      {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
+    </select>
+  </FactRow>;
 }
 
 /** A fact the screen panel states and links to where it is changed: "When it opens · After 8 seconds". */
 export function ScreenFact({ label, value, action, onAction }: { label: string; value: string; action: string; onAction?(): void }) {
-  return <div className="wconvert-screen-fact">
-    <span className="wconvert-screen-fact__label">{label}</span>
-    <span className="wconvert-screen-fact__value">{value}</span>
-    {onAction && <button type="button" onClick={onAction}>{action}</button>}
-  </div>;
+  return <FactRow label={label} action={action} onAction={onAction}>{value}</FactRow>;
 }
 
 /** This screen's issues from the campaign's one list (ADR 0133), each a way to its fix. */
 export function ScreenIssues({ issues, onIssue }: { issues: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void }) {
   if (issues.length === 0) return null;
-  return <ul className="wconvert-screen-issues" aria-label={__('To fix on this screen', 'wconvert')}>
-    {issues.map(issue => <li key={issue.key}><button type="button" onClick={() => onIssue?.(issue)}><TriangleAlert aria-hidden="true" />{issue.said}</button></li>)}
-  </ul>;
+  return <PanelSection label={__('To fix on this screen', 'wconvert')}>
+    <ul className="wconvert-screen-issues" aria-label={__('To fix on this screen', 'wconvert')}>
+      {issues.map(issue => <li key={issue.key}><button type="button" onClick={() => onIssue?.(issue)}><TriangleAlert aria-hidden="true" />{issue.said}</button></li>)}
+    </ul>
+  </PanelSection>;
 }
 
 /** "On this screen": its elements as chips, each opening that element. */
@@ -106,10 +96,9 @@ export function ScreenChips({ tree, step, labels, onSelect }: { tree: TemplateTr
   if (!labels || !onSelect) return null;
   const blocks = nodesOf(tree).filter((block: Block) => block.path[0] === step && block.path.length > 1 && block.leaf && !block.hidden);
   if (blocks.length === 0) return null;
-  return <section className="wconvert-screen-chips" aria-label={__('On this screen', 'wconvert')}>
-    <h4>{__('On this screen', 'wconvert')}</h4>
+  return <PanelSection title={__('On this screen', 'wconvert')} className="wconvert-screen-chips">
     <div>{blocks.map(block => <button key={block.path.join('.')} type="button" onClick={() => onSelect(block.path)}>{nameOfBlock(block, labels)}</button>)}</div>
-  </section>;
+  </PanelSection>;
 }
 
 /**

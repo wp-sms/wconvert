@@ -48,7 +48,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     finally { if (!controller.signal.aborted) setBusy(false); }
   };
   return <div className="wconvert-journey-settings__products">
-    <p id={helpId}>{help ?? __('Choose up to six. The first three available products appear.', 'wconvert')}</p>
+    <p id={helpId}>{help ?? __('Up to 6. The first 3 available appear.', 'wconvert')}</p>
     <label>{label ?? __('Find products', 'wconvert')}<Input type="search" autoComplete="off" aria-describedby={helpId} value={query} onChange={event => { searchRequest.current?.abort(); setQuery(event.target.value); setFound([]); setError(''); setBusy(false); setSearched(false); }} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); void search(); } }} /></label>
     <Button variant="outline" type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert') : error ? __('Retry search', 'wconvert') : __('Search catalog', 'wconvert')}</Button>
     {error && <p role="alert">{error}</p>}

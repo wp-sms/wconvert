@@ -227,7 +227,8 @@ describe('the Style half of the inspector', () => {
    */
   it('offers a headline its own appearance without unrelated controls', async () => {
     await style(/Get 10% off/);
-    expect(screen.getByRole('group', { name: 'Headline' })).toHaveTextContent('Appearance for Heading.');
+    // One line says which device is being edited (ADR 0136).
+    expect(within(screen.getByRole('group', { name: 'Headline' })).getByRole('status')).toHaveTextContent('Desktop');
     expect(screen.getByRole('button', { name: /Choose a color for Text/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Choose a color for Background/ })).toBeNull();
   });
@@ -241,7 +242,7 @@ describe('the Style half of the inspector', () => {
   /** One way back (D2), named for where it goes: the screen the element is on. */
   it('offers one way back, and no crumb for a top-level element', async () => {
     await style(/Button label/);
-    expect(screen.getByRole('button', { name: 'Screen 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Back to Screen 1' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Inside' })).toBeNull();
   });
 
@@ -337,7 +338,7 @@ describe('the Style half of the inspector', () => {
    */
   it('copies one boxs look and pastes it onto another, replacing what was there', async () => {
     await style(/Colored box/);
-    await userEvent.click(screen.getByRole('button', { name: 'Copy this look' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Copy these styles' }));
 
     // The inner Column, which sets nothing of its own.
     const tree = screen.getByRole('treegrid', { name: /^Blocks/ });
@@ -357,7 +358,7 @@ describe('the Style half of the inspector', () => {
   it('will not copy a box that sets nothing of its own', async () => {
     await style(/Column/);
 
-    expect(screen.getByRole('button', { name: 'Copy this look' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Copy these styles' })).toBeDisabled();
   });
 
   /** And following it selects that box, so the next press changes the value. */
@@ -390,11 +391,11 @@ describe('the narrow bag, through the width switch', () => {
     await style(/Colored box/);
 
     const inspector = within(screen.getByRole('group', { name: 'Colored box' }));
-    expect(inspector.queryByText(/Editing mobile appearance/)).toBeNull();
+    expect(inspector.getByRole('status')).toHaveTextContent('Desktop');
 
     await narrow();
 
-    expect(inspector.getByText('Editing mobile appearance. Unchanged values follow desktop.')).toBeInTheDocument();
+    expect(inspector.getByRole('status')).toHaveTextContent('MobileFollows desktop unless changed');
   });
 
   it('writes into the narrow bag and leaves the full-width one alone', async () => {
