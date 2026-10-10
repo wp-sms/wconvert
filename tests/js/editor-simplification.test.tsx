@@ -56,14 +56,14 @@ it('edits SMS consent without changing email consent or submission ownership', (
   expect(next.submissions).toEqual(tree.submissions);
   expect(walkNodes(next.steps[1].content).find(node => node.type === 'consent')).toMatchObject({ text: 'Text me product updates.' });
 });
-it('offers essential presets and preserves custom measurements when detailed styling opens', () => {
+it('offers essential presets and preserves custom measurements when Advanced opens', () => {
   const initial = { ...signup, tokens: { ...signup.tokens, width: '37ch' } } as Template;
   const change = vi.fn();
   function Styles() { const [open, setOpen] = useState<string | null>(null); return <Tokens template={initial} labels={labels} design={signup.tokens} openToken={open} onOpenToken={setOpen} onChange={change} onError={() => {}} />; }
   render(<Styles />);
-  expect(screen.getByRole('option', { name: 'Custom (37ch)' })).toBeInTheDocument();
+  expect(screen.getByRole('option', { name: 'Custom' })).toBeInTheDocument();
   expect(screen.queryByRole('combobox', { name: 'width unit' })).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Detailed styling…' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Advanced' }));
   expect(screen.getByRole('combobox', { name: /width unit/i })).toHaveValue('ch');
   expect(change).not.toHaveBeenCalled();
 });

@@ -3,6 +3,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { RgbaStringColorPicker } from 'react-colorful';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { StyleValueInput } from './StyleValueInput';
+import { colorName } from './colorName';
+import { useAdvanced } from './advanced';
 
 /** Convert hex including alpha for the RGBA picker; opening never writes a value. */
 export function rgbaForPicker(value: string): string | null {
@@ -47,6 +49,8 @@ export function ColorField({
   // open on the design's own value while the STORED value stays empty.
   const shown = value === '' ? fallback : value;
   const pickerColor = rgbaForPicker(shown);
+  // The plain view names the color; the hex is Advanced's (ADR 0135).
+  const advanced = useAdvanced();
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -65,7 +69,7 @@ export function ColorField({
           />
           <span className="wconvert-swatch__text">
             <span className="wconvert-swatch__name">{label}</span>
-            <span className="wconvert-swatch__value">{shown}</span>
+            <span className="wconvert-swatch__value">{advanced ? shown : colorName(shown)}</span>
           </span>
           <span className="sr-only">
             {sprintf(
@@ -82,8 +86,10 @@ export function ColorField({
       }}>
         <div className="wconvert-color-picker">
           <strong>{label}</strong>
-          {pickerColor !== null ? <RgbaStringColorPicker color={pickerColor} onChange={onChange} /> : <p>{__('Use a hex or RGB color to adjust it visually. Your custom value is kept below.', 'wconvert')}</p>}
+          {pickerColor !== null ? <RgbaStringColorPicker color={pickerColor} onChange={onChange} />
+            : <p>{advanced ? __('Use a hex or RGB color to adjust it visually. Your custom value is kept below.', 'wconvert') : __('This color is set in CSS. Open Advanced to change its value.', 'wconvert')}</p>}
 
+          {advanced && <>
           {/*
             Named for the TOKEN rather than "Value", because a popover
             announcing "Value, edit text" tells a screen-reader user the
@@ -99,6 +105,7 @@ export function ColorField({
               value={shown} onCommit={onChange} />
           </label>
           <p className="m-0 text-note text-muted-foreground">{__('Hex, RGB or another CSS color. Press Enter or leave the field to apply.', 'wconvert')}</p>
+          </>}
 
           {/*
             The way back to the design's own color is {@see Reset}, in the

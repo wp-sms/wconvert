@@ -1,8 +1,9 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Disclosure } from '../shell/Disclosure';
 import { Button } from '../components/ui/button';
-import { ClipboardCopy, ClipboardPaste } from 'lucide-react';
-import { AA_NORMAL, PAIR_READERS, READABLE_PAIRS, contrastOf, pairKey } from './contrast';
+import { ClipboardCopy, ClipboardPaste, RotateCcw } from 'lucide-react';
+import { PAIR_READERS, READABLE_PAIRS, pairKey, readability, readableOn } from './contrast';
+import { useAdvanced } from './advanced';
 import { nodesOf } from './structure/tree';
 import { TokenField, groupName } from './Tokens';
 import {
@@ -51,6 +52,7 @@ export function ScopeStyle({
 
   width: WidthBag;
 }) {
+  const advanced = useAdvanced();
   const chain = path === null ? [] : scopeChainOf(template.tree, path);
   const here =
     chain.length > 0 && path !== null && chain[chain.length - 1]?.path.length === path.length
@@ -66,6 +68,7 @@ export function ScopeStyle({
 
   const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
+  const own = bagOf(here, width);
 
   return (
     <div className="wconvert-scope">
@@ -81,12 +84,11 @@ export function ScopeStyle({
         <p className="m-0 mt-1">{mobileOverrides.length === 0
           ? __('No mobile overrides on this element. It follows the surrounding design.', 'wconvert')
           : sprintf(__('Mobile settings: %s', 'wconvert'), mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))}</p>
-        {width === 'narrow' && mobileOverrides.length > 0 && <Button type="button" variant="ghost" size="xs" className="mt-1" onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, 'narrow') })}>{__('Reset this element’s mobile overrides', 'wconvert')}</Button>}
       </Disclosure>
 
-      <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
+      <ScopeContrast chain={chain} template={template} labels={labels} width={width} onFix={(name, value) => write(name)(value)} />
 
-      {styleGroups(template, path, width).map((group) => (
+      {styleGroups(template, path, width).map((group) => ({ ...group, tokens: group.tokens.filter((token) => advanced || !ADVANCED_ONLY.includes(token.name)) })).filter((group) => group.tokens.length > 0).map((group) => (
           <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
             <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 
@@ -98,6 +100,7 @@ export function ScopeStyle({
                 return (
                   <div key={token.name} className="wconvert-scope__token wconvert-fields__item" data-compact={['gap', 'radius'].includes(token.name) || undefined}>
                     <TokenField
+                      simple={!advanced}
                       token={token.name}
                       label={label}
                       labels={labels}
@@ -108,7 +111,7 @@ export function ScopeStyle({
                       }
                       standard={token.fallback}
                       design=""
-                      value={bagOf(here, width)[token.name] ?? ''}
+                      value={own[token.name] ?? ''}
                       open={openToken === token.name}
                       onOpenChange={(open) => onOpenToken(open ? token.name : null)}
                       onChange={write(token.name, styleCoalesce(here.path, width, token.name))}
@@ -128,14 +131,20 @@ export function ScopeStyle({
             </div>
           </section>
         ))}
+      {/* Everything this element sets for the device being edited goes, so it follows the design again. */}
+      <Button type="button" variant="ghost" size="xs" className="wconvert-scope__reset" disabled={Object.keys(own).length === 0}
+        onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, width) })}>
+        <RotateCcw aria-hidden="true" />
+        {width === 'narrow' ? __('Reset this element on mobile', 'wconvert') : __('Reset this element', 'wconvert')}
+      </Button>
       <Disclosure variant="inline" className="wconvert-style-advanced" title={__('Copy or paste styles', 'wconvert')}>
         <div className="wconvert-scope__clipboard">
           <Button
             type="button"
             variant="ghost"
             size="xs"
-            disabled={Object.keys(bagOf(here, width)).length === 0}
-            onClick={() => onCopy(bagOf(here, width))}
+            disabled={Object.keys(own).length === 0}
+            onClick={() => onCopy(own)}
           >
             <ClipboardCopy aria-hidden="true" />
             {__('Copy this look', 'wconvert')}
@@ -165,6 +174,9 @@ export function ScopeStyle({
 
 /** The history key for one element's own value of one token, at one width. */
 export const styleCoalesce = (path: Path, width: WidthBag, name: string) => `style:${path.join('.')}:${width}:${name}`;
+
+/** Exact type sizes: the element's own Size choice is the plain control (ADR 0135). */
+const ADVANCED_ONLY = ['heading-size', 'text-size'];
 
 const bagOf = (scope: Scope, width: WidthBag): Tokens => (width === 'narrow' ? scope.narrow : scope.tokens);
 
@@ -273,12 +285,16 @@ function ScopeContrast({
   template,
   labels,
   width,
+  onFix,
 }: {
   chain: readonly Scope[];
   template: Template;
   labels: TemplateLabels;
   width: WidthBag;
+  /** Writes this element's own value of a token: Fix stays inside the element. */
+  onFix: (token: string, value: string) => void;
 }) {
+  const advanced = useAdvanced();
   const value = (name: string) => sourceOfToken(chain, template.tokens, name, width).value;
 
   const here = chain[chain.length - 1]?.path ?? [];
@@ -293,9 +309,9 @@ function ScopeContrast({
       return [];
     }
 
-    const ratio = contrastOf(value(fg), value(bg));
+    const verdict = readability(value(fg), value(bg));
 
-    return ratio === null || ratio >= AA_NORMAL ? [] : [{ fg, bg, ratio }];
+    return verdict.readable === false ? [{ fg, bg, verdict }] : [];
   });
 
   if (wrong.length === 0) {
@@ -304,16 +320,19 @@ function ScopeContrast({
 
   return (
     <ul className="wconvert-scope__contrast" aria-label={__('Readability in this box', 'wconvert')}>
-      {wrong.map(({ fg, bg, ratio }) => (
-        <li key={`${fg}/${bg}`}>
-          {sprintf(
-            __('%1$s on %2$s is %3$s to 1 in this box — too close to read.', 'wconvert'),
-            nameOf(labels.tokens, fg),
-            nameOf(labels.tokens, bg),
-            ratio.toFixed(1),
-          )}
-        </li>
-      ))}
+      {wrong.map(({ fg, bg, verdict }) => {
+        const named = sprintf(__('%1$s on %2$s', 'wconvert'), nameOf(labels.tokens, fg), nameOf(labels.tokens, bg));
+
+        return (
+          <li key={`${fg}/${bg}`}>
+            <span><strong>{named}</strong> {verdict.said}{advanced && verdict.ratio !== null ? ` (${sprintf(__('%s:1', 'wconvert'), verdict.ratio)})` : ''}</span>
+            <Button type="button" variant="outline" size="xs" aria-label={sprintf(__('Fix %s', 'wconvert'), named)}
+              onClick={() => onFix(fg, readableOn(value(bg), [value('fg'), value('bg')]))}>
+              {__('Fix', 'wconvert')}
+            </Button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

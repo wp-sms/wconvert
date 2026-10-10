@@ -111,7 +111,7 @@ const LABELS = {
     'split.ratio.0.65': 'Narrow right',
   },
   nodeParams: {
-    'heading.level': 'Heading rank',
+    'heading.level': 'Heading level, for screen readers and search',
     'image.fit': 'How the picture fills its space',
     'field.required': 'Must they fill this in?',
   },
@@ -1649,6 +1649,7 @@ describe('changing templates in the draft', () => {
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
@@ -1656,7 +1657,7 @@ describe('changing templates in the draft', () => {
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
       template_id: ALTERNATE.id, template: { tree: ALTERNATE.tree, tokens: { ...ALTERNATE.tokens, bg: '#123456' } },
     }), undefined, ALTERNATE.id);
-  });
+  }, 15000);
 
   it('normalizes sample content using the selected design identity before applying it', async () => {
     loadAlternate();

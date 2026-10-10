@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { CodeXml, Link, Unlink } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { MeasurementValue } from './MeasurementValue';
+import { useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
 import { measuresOf } from './themes';
 
@@ -24,6 +25,8 @@ export function SpacingField({ label, shown, fallback, standard, reset, onChange
   const sides = spacingSides(shown);
   const [separate, setSeparate] = useState(false);
   const [custom, setCustom] = useState(false);
+  // The CSS box is an exact value: Advanced (ADR 0135).
+  const advanced = useAdvanced();
   const linked = sides !== null && sides.every(side => side === sides[0]) && !separate;
   const names = [__('Top', 'wconvert'), __('Right', 'wconvert'), __('Bottom', 'wconvert'), __('Left', 'wconvert')];
   return <fieldset className="wconvert-token min-w-0">
@@ -40,14 +43,15 @@ export function SpacingField({ label, shown, fallback, standard, reset, onChange
           }}>
           {linked ? <Link aria-hidden="true" /> : <Unlink aria-hidden="true" />}
         </Button>
-        {sides !== null && <Button type="button" variant="ghost" size="icon-xs" aria-pressed={custom}
+        {advanced && sides !== null && <Button type="button" variant="ghost" size="icon-xs" aria-pressed={custom}
           aria-label={custom ? __('Use side controls', 'wconvert') : __('Custom CSS', 'wconvert')}
           title={custom ? __('Use side controls', 'wconvert') : __('Custom CSS', 'wconvert')}
           onClick={() => setCustom(!custom)}><CodeXml aria-hidden="true" /></Button>}
         {reset}
       </span>
     </div>
-    {custom || sides === null ? <StyleValueInput type="text" className="regular-text" aria-label={sprintf(__('%s custom value', 'wconvert'), label)} value={shown} placeholder={fallback} onCommit={onChange} />
+    {!advanced && sides === null ? <p className="m-0 text-note text-muted-foreground">{__('This value is set in CSS. Open Advanced to change it.', 'wconvert')}</p>
+      : (advanced && custom) || sides === null ? <StyleValueInput type="text" className="regular-text" aria-label={sprintf(__('%s custom value', 'wconvert'), label)} value={shown} placeholder={fallback} onCommit={onChange} />
       : <div className={linked ? "grid gap-2" : "wconvert-fields"}>
         {(linked ? sides.slice(0, 1) : sides).map((side, index) => <div key={index} className="wconvert-fields__item grid min-w-0 gap-1" data-compact={!linked || undefined}>
           {!linked && <span className="text-note">{names[index]}</span>}

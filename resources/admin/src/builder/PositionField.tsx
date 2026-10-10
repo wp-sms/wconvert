@@ -2,6 +2,7 @@ import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Disclosure } from '../shell/Disclosure';
 import { StyleValueInput } from './StyleValueInput';
+import { useAdvanced } from './advanced';
 
 /** Only interpret positions we can round-trip; expressions stay editable as CSS. */
 export function positionPoint(value: string): [number, number] | null {
@@ -27,12 +28,14 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
 }) {
   const id = useId();
   const [adjusting, setAdjusting] = useState(false);
+  // Percentages and the CSS box are exact values: Advanced (ADR 0135). The grid is the plain control.
+  const advanced = useAdvanced();
   const point = positionPoint(shown);
   const selected = offered.find(value => {
     const candidate = positionPoint(value);
     return point !== null && candidate !== null && candidate[0] === point[0] && candidate[1] === point[1];
   });
-  const expanded = adjusting || selected === undefined;
+  const expanded = advanced && (adjusting || selected === undefined);
   const summary = selected !== undefined ? nameOfValue(selected) : point
     ? sprintf(__('%1$s%% across, %2$s%% down', 'wconvert'), String(point[0]), String(point[1]))
     : __('Custom position', 'wconvert');
@@ -54,7 +57,7 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
       </div>
       <div className="wconvert-position__summary">
         <span role="status">{summary}</span>
-        {selected !== undefined && <button type="button" className="wconvert-linkish" aria-expanded={expanded} aria-controls={`${id}-adjust`}
+        {advanced && selected !== undefined && <button type="button" className="wconvert-linkish" aria-expanded={expanded} aria-controls={`${id}-adjust`}
           onClick={() => setAdjusting(!adjusting)}>
           {expanded ? __('Hide adjustments', 'wconvert') : __('Adjust precisely…', 'wconvert')}
         </button>}

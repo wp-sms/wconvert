@@ -464,11 +464,11 @@ final class TemplateLabels
              */
             /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
             'button.action' => __('Button action', 'wconvert'),
-            'heading.level' => __('Heading rank', 'wconvert'),
+            'heading.level' => __('Heading level, for screen readers and search', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
-            'heading.size' => __('Heading scale', 'wconvert'),
+            'heading.size' => __('Size', 'wconvert'),
             /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */
-            'text.size' => __('Text scale', 'wconvert'),
+            'text.size' => __('Size', 'wconvert'),
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('Picture fit', 'wconvert'),
             'code.copy' => __('Copy button', 'wconvert'),
@@ -543,9 +543,10 @@ final class TemplateLabels
              * **Named for the SIZE and not for the step.** `2xl` is a token in a
              * type scale and not a thing to put in front of anybody; a merchant
              * picking how big a number is drawn is choosing between *Huge* and
-             * *Large*. `Normal` is the design's own size and is what a block
+             * *Large*. `Medium` is the design's own size and is what a block
              * gets when nothing is chosen, which is why it is named at all
-             * rather than left as an empty chip.
+             * rather than left as an empty chip (ADR 0135: the same words as
+             * the Look's type sizes).
              */
             /* translators: a type size step — the largest step — a display number, not a sentence. */
             'heading.size.3xl' => __('Huge', 'wconvert'),
@@ -554,7 +555,7 @@ final class TemplateLabels
             /* translators: a type size step — one step up from the design’s own size. */
             'heading.size.xl' => __('Large', 'wconvert'),
             /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
-            'heading.size.m' => __('Normal', 'wconvert'),
+            'heading.size.m' => __('Medium', 'wconvert'),
             /* translators: a type size step — one step down from the design’s own size. */
             'heading.size.s' => __('Small', 'wconvert'),
             /* translators: a type size step — the smallest step — fine print. */
@@ -567,7 +568,7 @@ final class TemplateLabels
             /* translators: a type size step — one step up from the design’s own size. */
             'text.size.xl' => __('Large', 'wconvert'),
             /* translators: a type size step — the design’s own size, which is what a block gets when nothing is chosen. */
-            'text.size.m' => __('Normal', 'wconvert'),
+            'text.size.m' => __('Medium', 'wconvert'),
             /* translators: a type size step — one step down from the design’s own size. */
             'text.size.s' => __('Small', 'wconvert'),
             /* translators: a type size step — the smallest step — fine print. */

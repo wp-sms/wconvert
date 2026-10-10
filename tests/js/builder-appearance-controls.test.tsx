@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { MediaControl } from '../../resources/admin/src/builder/SlotFields';
 import { CHOICES } from '../../resources/admin/src/builder/panel';
 import { TokenField } from '../../resources/admin/src/builder/Tokens';
+import { AdvancedContext } from '../../resources/admin/src/builder/advanced';
 import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 
 const labels = { tokenValues: {} } as TemplateLabels;
@@ -13,9 +14,10 @@ function Control({ initial = '28rem', token = 'width', fallback = '28rem', chang
 }) {
   const [value, setValue] = useState(initial);
   const [open, setOpen] = useState(false);
-  return <><TokenField token={token} label="Setting" labels={labels} value={value} fallback={fallback}
+  // These are the exact controls, which are Advanced's (ADR 0135).
+  return <><AdvancedContext.Provider value><TokenField token={token} label="Setting" labels={labels} value={value} fallback={fallback}
     standard={fallback} design={fallback} open={open} onOpenChange={setOpen}
-    onChange={(next) => { setValue(next); changed(next); }} />
+    onChange={(next) => { setValue(next); changed(next); }} /></AdvancedContext.Provider>
     <output data-testid="stored">{value}</output>
     <button onClick={() => setValue(fallback)}>External reset</button></>;
 }

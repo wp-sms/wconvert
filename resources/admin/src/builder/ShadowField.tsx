@@ -4,6 +4,7 @@ import { Disclosure } from '../shell/Disclosure';
 import { CodeXml } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ColorField } from './ColorField';
+import { useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
 import { nameOf, type TemplateLabels } from '../templates/api';
 
@@ -38,11 +39,13 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
 }) {
   const id = useId();
   const [custom, setCustom] = useState(false);
+  // Pixel offsets and the CSS box are exact values: Advanced (ADR 0135).
+  const advanced = useAdvanced();
   const shadow = parseShadow(shown);
   const edit = (patch: Partial<Shadow>) => shadow && onChange(shadowValue({ ...shadow, ...patch }));
   return <div className="wconvert-token">
     <span className="wconvert-field-heading"><label htmlFor={id}>{label}</label><span className="flex items-center gap-1">
-      <Button type="button" variant="ghost" size="icon-xs" aria-label={__('Edit shadow CSS', 'wconvert')} title={__('Edit shadow CSS', 'wconvert')} aria-pressed={custom} onClick={() => setCustom(!custom)}><CodeXml aria-hidden="true" /></Button>{reset}
+      {advanced && <Button type="button" variant="ghost" size="icon-xs" aria-label={__('Edit shadow CSS', 'wconvert')} title={__('Edit shadow CSS', 'wconvert')} aria-pressed={custom} onClick={() => setCustom(!custom)}><CodeXml aria-hidden="true" /></Button>}{reset}
     </span></span>
     <select id={id} value={custom || !offered.includes(shown) ? '__custom' : shown} onChange={event => {
       setCustom(false); onChange(event.target.value);
@@ -51,18 +54,19 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
       {(custom || !offered.includes(shown)) && <option value="__custom" disabled>{__('Custom', 'wconvert')}</option>}
     </select>
     {shadow && <Disclosure variant="inline" className="wconvert-shadow-adjust" title={__('Adjust shadow', 'wconvert')}>
-      <div className="wconvert-shadow-values">{(['x', 'y', 'blur', 'spread'] as const).map(key => <label key={key}>
+      {advanced && <div className="wconvert-shadow-values">{(['x', 'y', 'blur', 'spread'] as const).map(key => <label key={key}>
         {{ x: __('Horizontal', 'wconvert'), y: __('Vertical', 'wconvert'), blur: __('Blur', 'wconvert'), spread: __('Spread', 'wconvert') }[key]}
         <span><StyleValueInput type="number" min={key === 'blur' ? 0 : undefined} value={String(shadow[key])} onCommit={next => {
           const n = Number(next);
           if (next.trim() && Number.isFinite(n) && (key !== 'blur' || n >= 0)) edit({ [key]: n });
         }} /><span>px</span></span>
-      </label>)}</div>
+      </label>)}</div>}
       <ColorField label={__('Shadow color', 'wconvert')} value={shadow.color} fallback={shadow.color} open={open} onOpenChange={onOpenChange} onChange={color => edit({ color })} />
       <label className="wconvert-shadow-inset"><input type="checkbox" checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />{__('Inner shadow', 'wconvert')}</label>
     </Disclosure>}
-    {((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
+    {advanced && ((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
       <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
     </div>}
+    {!advanced && !shadow && shown !== 'none' && !offered.includes(shown) && <p className="m-0 text-note text-muted-foreground">{__('This value is set in CSS. Open Advanced to change it.', 'wconvert')}</p>}
   </div>;
 }

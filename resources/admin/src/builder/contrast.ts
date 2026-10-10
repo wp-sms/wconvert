@@ -28,6 +28,8 @@
  * design that fails.
  */
 
+import { __ } from '@wordpress/i18n';
+
 /** The AA floor for body text, which is what every pair measured here is. */
 export const AA_NORMAL = 4.5;
 
@@ -127,6 +129,63 @@ export function contrastOf(a: string, b: string): number | null {
 /** Does this pair clear the AA floor for body text? Null stays null. */
 export const meetsAA = (ratio: number | null): boolean | null =>
   ratio === null ? null : ratio >= AA_NORMAL;
+
+/**
+ * One verdict on a pair, in words (ADR 0135).
+ *
+ * Every place that judges a pair says the same thing: "Easy to read", or
+ * "Hard to read on this background" and which way to move the color — darker
+ * on a light background, lighter on a dark one. The ratio is kept, at one
+ * precision, for Advanced only: a merchant has no intuition for 4.5, and
+ * "Under AA" was the editor's word, not theirs.
+ */
+export interface Readability {
+  /** Null where the pair cannot be measured (a translucent or named color). */
+  readonly readable: boolean | null;
+  readonly direction: 'darker' | 'lighter' | null;
+  readonly said: string;
+  /** "4.5", or null. */
+  readonly ratio: string | null;
+}
+
+export function readability(fg: string, bg: string): Readability {
+  const ratio = contrastOf(fg, bg);
+  const ground = luminanceOf(bg);
+
+  if (ratio === null || ground === null) {
+    return { readable: null, direction: null, ratio: null, said: __('This color can’t be measured here. Check it by eye.', 'wconvert') };
+  }
+
+  if (ratio >= AA_NORMAL) {
+    return { readable: true, direction: null, ratio: ratio.toFixed(1), said: __('Easy to read', 'wconvert') };
+  }
+
+  // 0.179 is where black and white read equally well: above it, dark text wins.
+  const direction = ground > 0.179 ? 'darker' : 'lighter';
+
+  return {
+    readable: false,
+    direction,
+    ratio: ratio.toFixed(1),
+    said: direction === 'darker'
+      ? __('Hard to read on this background. Choose a darker color.', 'wconvert')
+      : __('Hard to read on this background. Choose a lighter color.', 'wconvert'),
+  };
+}
+
+/**
+ * The color a Fix writes: the first of the look's own colors that reads on
+ * this background, so a fix stays inside the palette, else black or white.
+ */
+export function readableOn(bg: string, candidates: readonly string[]): string {
+  const found = candidates.find((color) => (contrastOf(color, bg) ?? 0) >= AA_NORMAL);
+
+  if (found !== undefined) {
+    return found;
+  }
+
+  return (contrastOf('#000000', bg) ?? 0) >= (contrastOf('#ffffff', bg) ?? 0) ? '#000000' : '#ffffff';
+}
 
 /**
  * WCAG relative luminance, or null for a colour this cannot honestly read.
