@@ -29,8 +29,8 @@ it('blocks creation and detail-editor navigation until a duplicate completes', a
   await userEvent.click(screen.getByRole('button', { name: 'Create campaign' }));
   expect(screen.queryByText('New creation flow')).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'Welcome' }));
-  expect(await screen.findByRole('button', { name: 'Open editor' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('button', { name: 'Open editor' }));
+  expect(await screen.findByRole('button', { name: 'Continue editing' })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Continue editing' }));
   expect(window.location.hash).toBe('#optins');
   await act(async () => { resolve({ id: 'COPY' }); });
   await waitFor(() => expect(window.location.hash).toContain('edit=COPY'));

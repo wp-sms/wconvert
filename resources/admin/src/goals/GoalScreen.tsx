@@ -538,7 +538,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
                   options={inspectedChoices.map(entry => ({ value: entry.id, label: entry.name }))}
                   onChange={id => { const next = inspectedChoices.find(entry => entry.id === id); if (next) { setUseCases(value => ({ ...value, [`${designKey(next)}:${startingPointDisplayType(next)}`]: next.id })); previews.onNear(next.id); setInspected(next); } }} />
               </section>}
-              {/* The gist only: the rest of an authored note repeats what Have ready lists. */}
+              {/* The gist only: the rest of an authored note repeats what You’ll need lists. */}
               {inspected.notes && <p className="m-0 text-note text-muted-foreground">{gistOf(inspected.notes)}</p>}
               <StartingPointFacts playbook={inspectedEntry ?? inspected} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
             </aside>

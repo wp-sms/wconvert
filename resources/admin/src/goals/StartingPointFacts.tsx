@@ -1,6 +1,7 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { CircleDashed, Clock, LayoutTemplate, MapPin, Repeat, Target, Users, type LucideIcon } from 'lucide-react';
-import { displayTypeDescription, displayTypeLabel } from '../displayTypes';
+import { Clock, MapPin, Repeat, Target, Users } from 'lucide-react';
+import { displayTypeDescription } from '../displayTypes';
+import { FactList, type Fact } from '../shell/FactList';
 import { summarise, summaryOf } from '../builder/rules/summaries';
 import { howOftenSummary } from '../builder/rules/sentence';
 import { targetingSummary } from '../builder/rules/targetingSummary';
@@ -29,10 +30,13 @@ export function StartingPointSummary({ playbook, vocabulary }: {
 /**
  * **What this setup does, and what you still need** — a glance, not a page.
  *
- * Facts are one short line each beside an icon; the to-dos are the things a
- * merchant has to bring that the design cannot (a real code, a real link, a
- * service). The publication rule is listed only when the design does not
- * already meet it — the server leaves it out otherwise (ADR 0087, amended).
+ * Facts are one short line each beside an icon, without the format — the
+ * dialog's header already says it (ADR 0137). "You'll need" is what a merchant
+ * has to bring that the design cannot (a real code, a real link); a service
+ * is optional, because leads are kept in WConvert either way, so it is its own
+ * muted line rather than a requirement. The publication rule is listed only
+ * when the design does not already meet it — the server leaves it out
+ * otherwise (ADR 0087, amended).
  */
 export function StartingPointFacts({ playbook, goal, vocabulary }: {
   playbook: PlaybookEntry;
@@ -41,9 +45,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
 }) {
   const setup = playbook.setup;
   const displayType = startingPointDisplayType(playbook);
-  const facts: { icon: LucideIcon; label: string; text: string }[] = [
-    { icon: LayoutTemplate, label: __('Format', 'wconvert'), text: displayTypeLabel(displayType) },
-  ];
+  const facts: Fact[] = [];
 
   if (setup && vocabulary) {
     const summaries = summarise({ ...setup, targeting: setup.targeting ?? {}, frequency: setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary);
@@ -58,7 +60,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
       facts.push({ icon: Repeat, label: __('How often', 'wconvert'), text: howOftenSummary(setup.frequency, 0, displayType !== 'inline', act).text });
     }
   }
-  facts.push({ icon: Target, label: __('Counts', 'wconvert'), text: goal.headline_label });
+  facts.push({ icon: Target, label: __('Counts as success', 'wconvert'), text: goal.headline_label });
 
   const types = playbook.template ? new Set(nodesOf(playbook.template.tree).map((node) => node.type)) : new Set<string>();
   const resultLinks = playbook.template ? resultLinksToChoose(playbook.template.tree) : 0;
@@ -68,9 +70,9 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
   if (resultLinks > 0) todo.push(sprintf(
     /* translators: %d: how many quiz results need a link chosen before publishing. */
     _n('A link for its result', 'A link for each of its %d results', resultLinks, 'wconvert'), resultLinks));
-  if (goal.outcome.audience_channel) todo.push(goal.outcome.audience_channel === 'phone'
-    ? __('An SMS service to send to, or keep leads in WConvert', 'wconvert')
-    : __('An email service to send to, or keep leads in WConvert', 'wconvert'));
+  const optional = !goal.outcome.audience_channel ? null : goal.outcome.audience_channel === 'phone'
+    ? __('Connect an SMS service. Leads are kept in WConvert either way.', 'wconvert')
+    : __('Connect an email service. Leads are kept in WConvert either way.', 'wconvert');
   if (goal.outcome.destination_type) todo.push(__('The file or page to send, and its delivery email', 'wconvert'));
   if (goal.outcome.proof_level === 'captured' && !goal.outcome.audience_channel) todo.push(__('Someone to reply to requests', 'wconvert'));
   if (displayType === 'inline') todo.push(__('A page to place its block or shortcode on', 'wconvert'));
@@ -78,14 +80,11 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
   if (!setup || !vocabulary) todo.push(__('Display rules, reviewed in the editor', 'wconvert'));
 
   return <div className="wconvert-setup-glance">
-    <dl className="wconvert-setup-facts">
-      {facts.map(({ icon: Icon, label, text }) => <div key={label}>
-        <dt><Icon size={16} aria-hidden="true" />{label}</dt><dd>{text}</dd>
-      </div>)}
-    </dl>
-    {todo.length > 0 && <section aria-labelledby={`have-ready-${playbook.id}`}>
-      <h3 id={`have-ready-${playbook.id}`}>{__('Have ready', 'wconvert')}</h3>
-      <ul className="wconvert-setup-todo">{todo.map((item) => <li key={item}><CircleDashed size={16} aria-hidden="true" />{item}</li>)}</ul>
+    <FactList facts={facts} />
+    {todo.length > 0 && <section aria-labelledby={`you-need-${playbook.id}`}>
+      <h3 id={`you-need-${playbook.id}`}>{__('You’ll need', 'wconvert')}</h3>
+      <ul className="wconvert-setup-todo">{todo.map((item) => <li key={item}>{item}</li>)}</ul>
     </section>}
+    {optional && <p className="wconvert-setup-optional"><strong>{__('Optional', 'wconvert')}</strong> {optional}</p>}
   </div>;
 }

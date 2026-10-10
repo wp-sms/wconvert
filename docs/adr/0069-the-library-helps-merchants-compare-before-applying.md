@@ -72,9 +72,14 @@ comparison preview, not a claim to reproduce every site's final placement.
 Tall designs remain scrollable. Mobile preview is a mobile layout, not a shrunken
 desktop screenshot.
 
-Mark preview wording with the selected content mode. **Keep my content** remains
+~~Mark preview wording with the selected content mode.~~ *Amended by [0137](0137-details-and-previews-read-at-a-glance.md): the
+content radios themselves say which content the preview shows ("Keep my words
+and images", "Use the design's sample content"), so no separate preview label
+repeats them.* **Keep my content** remains
 the default; **Use this design's sample content** is now available under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md).
-Beside **Use this design**, explain the replacement scope. Prepare the normalized
+Beside **Use this design**, explain the replacement scope (*amended by
+[0137](0137-details-and-previews-read-at-a-glance.md): as the footer's one-line note, with the preview on the start side and the
+content choice and facts beside it*). Prepare the normalized
 candidate through the existing snapshot endpoint before enabling Apply, then
 apply that exact preview in one draft Undo entry. A mode change hides an obsolete
 candidate; failure and Retry remain local, and Back/Close write nothing. No extra
@@ -86,7 +91,8 @@ external **See this design** path; they gain no bundled premium tree or invented
 interactive preview.
 
 Back returns to the same query, filters and scrolled results. Focus enters the
-detail heading, returns to the card on Back and returns to the library trigger
+~~detail heading~~ dialog title, which names the design while it is inspected
+(*amended by [0137](0137-details-and-previews-read-at-a-glance.md)*), returns to the card on Back and returns to the library trigger
 when the dialog closes. The hidden browse surface cannot remain in the keyboard
 path. Escape retains the dialog's close behavior.
 

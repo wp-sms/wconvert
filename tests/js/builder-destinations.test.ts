@@ -67,12 +67,12 @@ describe('where the leads go', () => {
    * with nothing configured, so a [[Standalone]] install is a fully working
    * install and the sentence must not read as a warning.
    */
-  it('says leads are still captured when nothing is bound', () => {
+  it('says leads are kept in WConvert when nothing is bound', () => {
     const said = destinationsSaid([], []);
 
     expect(said.empty).toBe(true);
     expect(said.problems).toEqual([]);
-    expect(said.said).toContain('captured');
+    expect(said.said).toBe('Kept in WConvert only');
   });
 
   it('names what is bound', () => {

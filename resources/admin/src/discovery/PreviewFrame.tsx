@@ -39,5 +39,5 @@ export function PreviewFrame({ template, displayType, mobile, step, result, inte
         <Preview template={template} displayType={displayType} step={step} result={result} interactive={interactive} />
       </div>
     </div> : children}
-  </div>{overflows && <p id={hintId} className="wconvert-preview-frame__hint">{__('Scroll inside the preview to see the rest, or choose Fit entire design.', 'wconvert')}</p>}</>;
+  </div>{overflows && <p id={hintId} className="wconvert-preview-frame__hint">{__('Scroll inside the preview to see the rest, or choose Fit whole design.', 'wconvert')}</p>}</>;
 }

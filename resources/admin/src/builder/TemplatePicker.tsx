@@ -17,7 +17,7 @@ import { DesignComparison } from './DesignComparison';
 import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
 import { displayTypeOptions } from '../displayTypes';
-import { nameOf, type TemplateIndex } from '../templates/api';
+import { nameOf, type TemplateIndex, type TemplateIndexEntry } from '../templates/api';
 import type { Template } from '@renderer/types';
 import { usePicker } from '../discovery/usePicker';
 import { designKey } from '../discovery/model';
@@ -53,11 +53,13 @@ export interface TemplatePickerProps {
   readonly onRetry?: (id: string) => void;
   /** The draft's `integration_mappings`, so a design's detail can say a swap would remove some. */
   readonly fieldMappings?: unknown;
+  /** The design being inspected, if any, so the dialog's header can name it. */
+  readonly onInspectedChange?: (entry: TemplateIndexEntry | undefined) => void;
 }
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false, fieldMappings,
+  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false, fieldMappings, onInspectedChange,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
@@ -102,6 +104,8 @@ export function TemplatePicker({
   const currentPage = Math.min(page, pages - 1);
   const visible = shown.slice(currentPage * 24, (currentPage + 1) * 24);
   const inspected = forType.find((entry) => entry.id === inspectedId);
+  const detailShown = settings ? undefined : inspected;
+  useEffect(() => { onInspectedChange?.(detailShown); }, [detailShown, onInspectedChange]);
   const comparedEntries = forType.filter(entry=>compared.includes(entry.id) && entry.availability === 'ready');
   const hasLocked = forType.some((entry) => entry.availability !== 'ready');
   const secondaryFacets = Object.entries(index.facets).filter(([key]) =>

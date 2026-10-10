@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { TemplateTree } from '@renderer/types';
 import { treeFixture } from './support/journey';
-import { CLICK_OUTCOME } from './support/outcomes';
+import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
 import { StartingPointFacts } from '../../resources/admin/src/goals/StartingPointFacts';
 import { resultLinksToChoose } from '../../resources/admin/src/builder/structure/journey';
 import type { GoalEntry, PlaybookEntry } from '../../resources/admin/src/goals/api';
@@ -49,5 +49,24 @@ describe('result links still to choose', () => {
       { type: 'stack', children: [{ type: 'button', role: 'cta_label', label: 'Shop', action: 'link', href: '' }] },
     ] }))} />);
     expect(screen.queryByText(/A link for/)).toBeNull();
+  });
+});
+
+describe('the setup at a glance', () => {
+  /** The dialog's header already names the format (ADR 0137), so the list does not repeat it. */
+  it('leaves the format to the header and says what counts as success', () => {
+    render(<StartingPointFacts goal={GOAL} vocabulary={null} playbook={playbook(quiz([]))} />);
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual(['Counts as success']);
+    expect(screen.queryByText('Format')).toBeNull();
+  });
+
+  /** A service is optional — leads are kept in WConvert either way — so it is not a requirement. */
+  it('lists what you need and keeps the email service optional', () => {
+    render(<StartingPointFacts goal={{ ...GOAL, outcome: CAPTURE_OUTCOME }} vocabulary={null} playbook={playbook(quiz([]))} />);
+    const needed = screen.getByRole('region', { name: 'You’ll need' });
+    expect(needed.querySelector('ul')).not.toBeNull();
+    expect(needed).not.toHaveTextContent(/email service/);
+    expect(screen.getByText(/Connect an email service\. Leads are kept in WConvert either way\./)).toHaveTextContent(/^Optional /);
+    expect(screen.queryByText('Have ready')).toBeNull();
   });
 });

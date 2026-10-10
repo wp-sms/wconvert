@@ -40,7 +40,9 @@ Comparison uses open columns with equally sized, fully fitted preview frames;
 large journeys use a named Screen select instead of an overflowing chip row.
 
 Setup inspection shows the shipping renderer at desktop/phone widths, every
-screen and result, practical requirements and the existing local journey test.
+screen and result, practical requirements ~~and the existing local journey
+test~~. *Amended by [0137](0137-details-and-previews-read-at-a-glance.md): the journey test is out of setup inspection — it lives
+in the editor — and the preview stays clickable.*
 A source revision and a prepared snapshot revision accompany creation. Changes
 to the source or site configuration after inspection return 409; the user can
 reload and inspect again. Draft creation and publication remain the existing
@@ -54,9 +56,12 @@ baseline, hard refusal rules and undoable draft application. Editor comparison
 compares sample layouts in the same dialog, then opens the existing exact
 content-transfer review; comparison itself applies nothing. Creation, pack
 inspection and editor replacement share search anatomy, native device/screen
-choices and a shipping-renderer preview frame. Full inspection defaults to
+choices and a shipping-renderer preview frame. ~~Full inspection defaults to
 width fitting so tall phone forms remain readable with vertical scrolling; the
-shared Zoom control also offers Fit entire design. Comparison keeps equal-height
+shared Zoom control also offers Fit entire design.~~ *Amended by [0137](0137-details-and-previews-read-at-a-glance.md): full
+inspection opens on the whole design on desktop and on the width on a phone,
+where that reason holds; the shared control is an icon toggle naming what it
+does ("Fit whole design" / "Actual width").* Comparison keeps equal-height
 fully fitted frames. Screen labels use the
 actual tree names, and result variants remain inspectable. Pack contents use
 the existing lazy actual design cards, format/search filters and 24-card pages,
