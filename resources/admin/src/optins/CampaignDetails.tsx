@@ -1,7 +1,7 @@
 import { planFrom } from '../builder/rules/plan';
 import { useEffect, useId, useState } from 'react';
-import { __ } from '@wordpress/i18n';
-import { CalendarDays, Clock, ExternalLink, Inbox, MapPin, MousePointerClick, Repeat, Users } from 'lucide-react';
+import { __, sprintf } from '@wordpress/i18n';
+import { CalendarDays, Clock, ExternalLink, Inbox, ListChecks, MapPin, MousePointerClick, Repeat, ShoppingBasket, Users } from 'lucide-react';
 import type { Template } from '@renderer/types';
 import { getOptin, getRules, type Frequency, type RuleType, type Targeting } from '../builder/api';
 import { summarise, summaryOf, type DisplayRulesValue } from '../builder/rules/summaries';
@@ -13,6 +13,7 @@ import { nodeAt, nodesOf } from '../builder/structure/tree';
 import { destinationsSaid } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
+import { listGoals } from '../goals/api';
 import { FactList, type Fact } from '../shell/FactList';
 import { RegionError } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
@@ -44,10 +45,12 @@ async function pageNames(include: NonNullable<Targeting['include']>, types: read
 }
 
 async function readContext(id: string) {
-  const [draft, vocabulary, destinations] = await Promise.all([
+  const [draft, vocabulary, destinations, goals] = await Promise.all([
     getOptin(id),
     getRules(),
     readDestinations(),
+    // The Goal only names the number; Details still reads without it.
+    listGoals().catch(() => []),
   ]);
   const config = draft.config;
   const template = config.template as Template | undefined;
@@ -83,6 +86,7 @@ async function readContext(id: string) {
     where,
     forwarding,
     act,
+    counts: goals.find((goal) => goal.id === draft.goal)?.headline_label ?? null,
     inline,
     links: [...new Set(links)],
   };
@@ -146,6 +150,17 @@ export default function CampaignDetails({ id }: { id: string }) {
           // Product cards and other designed links carry no button href to list.
           : __('Where its links point', 'wconvert')}
         <span className="block text-note text-muted-foreground">{__('Counts the click. No lead is saved.', 'wconvert')}</span>
+      </>,
+    });
+  } else if (context.act === 'match' || context.act === 'add_to_cart') {
+    facts.push({
+      icon: context.act === 'match' ? ListChecks : ShoppingBasket,
+      label: __('Visitor action', 'wconvert'),
+      text: <>
+        {context.act === 'match' ? __('Shows a matching result', 'wconvert') : __('Adds to the basket', 'wconvert')}
+        {context.counts && <span className="block text-note text-muted-foreground">
+          {/* translators: %s: what the Goal's number is called, e.g. “Matches”. */ sprintf(__('Counts %s', 'wconvert'), context.counts)}
+        </span>}
       </>,
     });
   } else {
