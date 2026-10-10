@@ -3,7 +3,7 @@ import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -17,13 +17,12 @@ import { inlinePlacementControls } from '../../resources/admin/src/inlinePlaceme
  * #29 drew the line — *"Not a TDD seam: React component structure, panel
  * layout, gallery chrome"* — and none of these is on the far side of it:
  *
- * - **~~Four~~ five tabs.** Triggers, Conditions and page targeting are three
- *   answers to one question, and a merchant arrives expecting them together —
- *   that merge is unchanged. What is new beside it is **Structure**, which is
- *   the other view of the document Content already edits. Whether these editors
- *   reach the same screen is a fact about the product.
- * - **Preview & test is available from every tab.** Design editing keeps its
- *   canvas; Display rules and Destinations use dedicated settings workspaces.
+ * - **Three tabs (ADR 0134).** Edit holds the look, every screen and every
+ *   element; Display rules and Destinations each own a settings workspace.
+ *   Triggers, Conditions and page targeting stay one tab, because they are
+ *   three answers to one question.
+ * - **One Preview, from every tab.** Its modes live in one menu, and the Edit
+ *   canvas is the same preview.
  * - **This Optin's numbers are here.** *Is this change worth making?* is asked
  *   in the editor and was answerable two screens away, and the read is
  *   swallowed on failure, so an analytics outage must not cost anyone a Save.
@@ -246,10 +245,22 @@ beforeEach(() => {
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
 });
 
+/** The Look: the Edit tree's pinned first row, which holds the design library's door (ADR 0134). */
+const openLook = async () => {
+  if (screen.queryByRole('button', { name: 'Browse designs and formats' })) return;
+  await userEvent.click(await screen.findByRole('button', { name: /^Look/ }));
+};
+
+/** The one Preview button, as a visitor (ADR 0134). */
+const previewAsVisitor = async () => {
+  await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'As a visitor' }));
+};
+
 // These existing cases exercise layout controls. Default editing has its own regression below.
 const open = async () => {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 };
 
 /**
@@ -271,7 +282,7 @@ describe('the builder shell', () => {
       inline_placement: { position: 'after_content' },
     } }));
     await open();
-    const design = await screen.findByRole('tabpanel', { name: 'Design' });
+    const design = await screen.findByRole('tabpanel', { name: 'Edit' });
     expect(within(design).queryByText('Automatically after content')).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Change inline placement' })).toBeNull();
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
@@ -280,8 +291,8 @@ describe('the builder shell', () => {
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^Where does it show\?/ }));
     expect(within(rules).getByRole('heading', { name: 'Placement' })).toBeVisible();
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual')).toBeNull();
+    await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).queryByText('Manual')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     expect(screen.getByRole('button', { name: 'Use manual placement' })).toBeVisible();
@@ -316,33 +327,29 @@ describe('the builder shell', () => {
    * one nested inside this tab's own panel and `getAllByRole('tab')` cannot
    * tell them apart.
    */
-  it('offers a persistent Journey tab alongside Design, Display rules and Destinations', async () => {
+  /** D1: Screens and Design are one Edit tab (ADR 0134). */
+  it('offers one Edit tab beside Display rules and Destinations', async () => {
     await open();
 
     const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
 
     expect(within(strip).getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
-      'Screens',
-      'Design',
+      'Edit',
       'Display rules',
       'Destinations',
     ]);
   });
 
-  it('returns from Design to the selected Journey screen and open settings', async () => {
+  /** The Look and a screen share one panel: leaving the Look goes back to the screen, as it was (ADR 0134). */
+  it('returns from the Look to the screen and its settings', async () => {
     await open();
-    await userEvent.click(await screen.findByRole('tab', { name: 'Screens' }));
-    // Finding a screen by name is a Flow-view tool; Edit has its own list.
-    await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
-    await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
-    await userEvent.click(screen.getByRole('button', { name: 'Details' }));
-    const inspector = screen.getByRole('region', { name: 'Selected screen settings' });
-    await userEvent.click(within(inspector).getByRole('button', { name: 'Open Design' }));
-    expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getByRole('button', { name: /^Details/ }));
+    expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /^Look/ }));
+    expect(screen.getByRole('region', { name: 'Look' })).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Selected screen settings' })).toBeNull();
-    await userEvent.click(screen.getByRole('tab', { name: 'Screens' }));
-    expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBe(inspector);
-    expect(within(inspector).getByRole('textbox', { name: 'Screen name' })).toHaveValue('Details');
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getByRole('button', { name: /^Details/ }));
+    expect(within(screen.getByRole('region', { name: 'Selected screen settings' })).getByRole('textbox', { name: 'Screen name' })).toHaveValue('Details');
   });
 
   /**
@@ -356,11 +363,9 @@ describe('the builder shell', () => {
   it('lists every block of the design, layouts included, as a treegrid', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
+    const tree = screen.getByRole('treegrid', { name: /^Blocks/ });
 
-    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
-
-    expect(within(tree).getByRole('row', { name: /Details/ })).toBeInTheDocument();
+    // The screen is the tree's own row; its elements are the treegrid under it (ADR 0134).
     expect(within(tree).getByRole('row', { name: /Headline/ })).toBeInTheDocument();
     expect(within(tree).getByRole('row', { name: /Email address/ })).toBeInTheDocument();
   });
@@ -372,8 +377,6 @@ describe('the builder shell', () => {
    */
   it('names a row by the words the block is showing, and states its place separately', async () => {
     await open();
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     const headline = screen.getByRole('row', { name: /Headline/ });
 
@@ -389,8 +392,6 @@ describe('the builder shell', () => {
    */
   it('marks a block selected when its row is clicked', async () => {
     await open();
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Headline/));
 
     expect(screen.getByRole('row', { name: /Headline/ })).toHaveAttribute('aria-selected', 'true');
@@ -404,9 +405,7 @@ describe('the builder shell', () => {
   it('keeps one tab stop across the whole tree', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
-
-    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+    const tree = screen.getByRole('treegrid', { name: /^Blocks/ });
     const tabbable = within(tree).getAllByRole('button').filter((button) => button.tabIndex === 0);
 
     expect(tabbable).toHaveLength(1);
@@ -421,11 +420,11 @@ describe('the builder shell', () => {
    * (ADR 0025) — but the first thing inside it, which is what someone reading
    * the design top to bottom would have clicked.
    */
-  it('opens with design settings and keeps Layers optional', async () => {
+  /** The Edit tab opens on its first screen, with that screen's elements listed and none open (ADR 0134). */
+  it('opens on the first screen with its elements listed and none open', async () => {
     await open();
-    await screen.findByRole('button', { name: 'Browse designs and formats' });
-    expect(screen.queryByRole('treegrid')).toBeNull();
-    expect(screen.getByRole('heading', { name: 'Design', level: 4 })).toBeInTheDocument();
+    expect(await screen.findByRole('treegrid')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBeInTheDocument();
     expect(screen.queryByRole('group', { name: 'Headline' })).toBeNull();
   });
 
@@ -437,8 +436,6 @@ describe('the builder shell', () => {
    */
   it('keeps the selected block while the merchant goes to the look and back', async () => {
     await open();
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Body text/));
 
     const halves = screen.getByRole('tablist', { name: /settings$/ });
@@ -468,14 +465,12 @@ describe('the builder shell', () => {
    */
   it('keeps the block open while the merchant is away editing the rules', async () => {
     await open();
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(labelOf(/Body text/));
 
     const strip = screen.getByRole('tablist', { name: 'What you are editing' });
 
     await userEvent.click(within(strip).getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(within(strip).getByRole('tab', { name: 'Design' }));
+    await userEvent.click(within(strip).getByRole('tab', { name: 'Edit' }));
 
     expect(screen.getByRole('row', { name: /Body text/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('group', { name: 'Body text' })).toBeInTheDocument();
@@ -496,11 +491,12 @@ describe('the builder shell', () => {
   it('names the design in use and puts the gallery behind one button', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 
-    expect(await screen.findByText('How it appears')).toBeInTheDocument();
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Popup')).toBeInTheDocument();
-    expect(screen.getByText('Centered over the page')).toBeInTheDocument();
+    await openLook();
+    expect(await screen.findByText('Format and position')).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Popup')).toBeInTheDocument();
+    expect(screen.getByText(/Centered over the page/)).toBeInTheDocument();
     expect(screen.getByText('Design: Centered card')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
@@ -535,7 +531,7 @@ describe('the builder shell', () => {
   it('previews current content and puts replacement consequences beside Apply', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await openLook();
     await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
 
     const picker = within(await screen.findByRole('dialog'));
@@ -560,7 +556,7 @@ describe('the builder shell', () => {
   it('keeps the library entry off the design tab unless WP_DEBUG is on', async () => {
     await open();
 
-    await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 
     expect(screen.queryByText(/Library entry/)).toBeNull();
   });
@@ -602,18 +598,56 @@ describe('the builder shell', () => {
     await open();
     await userEvent.click(await screen.findByRole('radio', { name: 'Mobile' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
-    expect(await screen.findByRole('dialog', { name: 'Preview & test' })).toBeInTheDocument();
+    await previewAsVisitor();
+    expect(await screen.findByRole('dialog', { name: 'Preview' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
-    await userEvent.click(screen.getByRole('tab', { name: 'Screens' }));
-    expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
-    expect(await screen.findByRole('dialog', { name: 'Preview & test' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
+    expect(screen.queryByRole('dialog', { name: 'Preview' })).not.toBeInTheDocument();
+    await previewAsVisitor();
+    expect(await screen.findByRole('dialog', { name: 'Preview' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
     expect(canvas).toHaveAttribute('data-width', 'narrow');
+  });
+
+  /** D5: the empty stage around the design is the Look's, and a screen row leaves it. */
+  it('opens the Look from the empty stage and leaves it for a screen', async () => {
+    await open();
+    fireEvent.click(document.querySelector('.wconvert-canvas__stage')!);
+    expect(screen.getByRole('region', { name: 'Look' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Look/ })).toHaveAttribute('aria-current', 'true');
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getAllByRole('button', { name: /First screen/ })[0]);
+    expect(screen.queryByRole('region', { name: 'Look' })).toBeNull();
+  });
+
+  /** Content lock's preview is a row of the tree, and the Look says where the campaign sits. */
+  it('shows the locked content preview from its tree row, with the Look stating where it sits', async () => {
+    inlinePlacementControls.preview = ({ state }) => <p>Lock example: {state}</p>;
+    try {
+      builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
+      await open();
+      const row = screen.getByRole('button', { name: 'Locked content preview' });
+      await userEvent.click(row);
+      expect(row).toHaveAttribute('aria-current', 'true');
+      expect(screen.getByText('Lock example: locked')).toBeInTheDocument();
+      expect(within(screen.getByRole('region', { name: 'Look' })).getByText(/^Where on the page: Content lock/)).toBeInTheDocument();
+    } finally {
+      delete inlinePlacementControls.preview;
+    }
+  });
+
+  /** The menu's modes are the dialog's modes: "This screen" opens the one Preview on the screen being edited. */
+  it('opens Preview on this screen from the Preview menu', async () => {
+    await open();
+    await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'This screen' }));
+    const preview = within(await screen.findByRole('dialog', { name: 'Preview' }));
+    expect(preview.getByRole('radio', { name: 'This screen' })).toBeChecked();
+    // The menu item that asked is gone; focus returns to the Preview button.
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Preview' })).toHaveFocus());
   });
 
   it('keeps content-lock states available in the design check opened from Display rules', async () => {
@@ -623,22 +657,22 @@ describe('the builder shell', () => {
       builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
       await open();
       await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
-      const preview = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
-      await userEvent.click(preview.getByRole('radio', { name: 'Check the design' }));
+      await previewAsVisitor();
+      const preview = within(await screen.findByRole('dialog', { name: 'Preview' }));
+      await userEvent.click(preview.getByRole('radio', { name: 'This screen' }));
       await userEvent.selectOptions(preview.getByRole('combobox', { name: 'Preview content lock' }), 'unavailable');
       expect(preview.getByText('Lock example: unavailable')).toBeInTheDocument();
       await userEvent.click(preview.getByRole('button', { name: 'Back to editor' }));
       expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
-      await userEvent.click(screen.getByRole('tab', { name: 'Screens' }));
+      await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
       expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
       await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
-      const again = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
-      await userEvent.click(again.getByRole('radio', { name: 'Try as a visitor' }));
+      await previewAsVisitor();
+      const again = within(await screen.findByRole('dialog', { name: 'Preview' }));
+      await userEvent.click(again.getByRole('radio', { name: 'As a visitor' }));
       await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
-      expect(screen.getByRole('tab', { name: 'Screens' })).toHaveAttribute('aria-selected', 'true');
-      expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'Edit' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByRole('dialog', { name: 'Preview' })).not.toBeInTheDocument();
       expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
     } finally {
       delete inlinePlacementControls.preview;
@@ -665,8 +699,6 @@ describe('the builder shell', () => {
    */
   it('says nothing about numbers for an Optin that was never published', async () => {
     await open();
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 
     expect(screen.queryByText('Impressions')).toBeNull();
     expect(stats.readDashboard).not.toHaveBeenCalled();
@@ -797,8 +829,6 @@ describe('the builder shell', () => {
 
     await open();
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
-
     /*
      * **Waited for rather than asserted outright, and the tab is why it had to
      * be.** `getOptin` and `readDashboard` are two independent promise chains:
@@ -870,7 +900,7 @@ describe('the page-header band', () => {
     const header = document.querySelector('.wconvert-workspace__header');
     expect(header).toContainElement(save);
     expect(header).toContainElement(screen.getByRole('button', { name: /^Undo/ }));
-    expect(header).toContainElement(screen.getByRole('button', { name: 'Preview & test' }));
+    expect(header).toContainElement(screen.getByRole('button', { name: 'Preview' }));
   });
 
   it('uses the WConvert mark instead of a visible wordmark', async () => {
@@ -902,7 +932,7 @@ describe('the way out of the builder', () => {
 
     render(<OptinBuilder id={ID} onClose={closed} />);
 
-    await screen.findByRole('tab', { name: 'Screens' });
+    await screen.findByRole('tab', { name: 'Edit' });
     await userEvent.click(screen.getByRole('button', { name: 'Back to campaigns' }));
 
     expect(closed).toHaveBeenCalled();
@@ -1031,7 +1061,8 @@ describe('the summary', () => {
     await open();
     const goal = await screen.findByRole('button', { name: 'Campaign actions' });
     expect(goal.closest('header')).not.toBeNull();
-    expect(screen.queryByRole('button', { name: 'Goal: Grow my email list' })).toBeNull();
+    // The goal is said under the name and opens the goal choice (ADR 0134); details keep the measurement.
+    expect(screen.getByRole('button', { name: 'Goal: Grow my email list' })).toBeInTheDocument();
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
@@ -1343,9 +1374,8 @@ describe('saving qualification choices without losing unfinished work', () => {
       { value: 'repair', label: 'Repair' }, { value: 'installation', label: 'Installation' },
     ]));
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
     await userEvent.click(within(screen.getByRole('row', { name: /Service needed/ })).getAllByRole('button')[0]);
-    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Saved as: installation'));
+    await userEvent.click(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Saved as: installation'));
     const value = screen.getByRole('textbox', { name: 'Value sent for choice 2' });
     await userEvent.clear(value);
     await userEvent.type(value, 'repair');
@@ -1390,13 +1420,14 @@ describe('whole-draft Undo and Redo', () => {
     }));
     await open();
 
-    expect(await screen.findByText('How it appears')).toBeInTheDocument();
+    await openLook();
+    expect(await screen.findByText('Format and position')).toBeInTheDocument();
     expect(screen.getByText('Floating bar')).toBeInTheDocument();
-    expect(screen.getByText('Bar at the page edge · Bottom')).toBeInTheDocument();
+    expect(screen.getByText(/Bar at the page edge · Bottom/)).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('radio', { name: 'Top' }));
 
     expect(screen.getByText(/moves the page down/)).toBeVisible();
-    expect(screen.getByText('Bar at the page edge · Top')).toBeInTheDocument();
+    expect(screen.getByText(/Bar at the page edge · Top/)).toBeInTheDocument();
     expect(document.querySelector('.wconvert-site')?.getAttribute('data-placement')).toBe('block_start');
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
 
@@ -1513,6 +1544,7 @@ describe('changing templates in the draft', () => {
     templates.getTemplateTrees.mockResolvedValue({ templates: [ENTRY, ALTERNATE] });
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
     await open();
+    await openLook();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     await userEvent.keyboard('{Escape}');
@@ -1551,6 +1583,7 @@ describe('changing templates in the draft', () => {
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
     await open();
 
+    await openLook();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(screen.getByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
@@ -1595,6 +1628,7 @@ describe('changing templates in the draft', () => {
     loadAlternate();
     templates.prepareTemplate.mockResolvedValue(prepared);
     await open();
+    await openLook();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
@@ -1628,6 +1662,7 @@ describe('changing templates in the draft', () => {
     loadAlternate();
     templates.prepareTemplate.mockImplementation((_id, tree) => Promise.resolve(tree));
     await open();
+    await openLook();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
@@ -1648,6 +1683,7 @@ describe('changing templates in the draft', () => {
     loadAlternate();
     templates.prepareTemplate.mockRejectedValue(new Error('The design could not be prepared. Try again.'));
     await open();
+    await openLook();
     await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
@@ -1744,15 +1780,12 @@ it('prevents opening a second save path while a draft save is pending', async ()
 });
 
 
-it('starts with the actual campaign and shares screen selection between Edit and Flow', async () => {
+/** D4: a straight campaign is one way through, so there is no Flow map to switch to. */
+it('starts on the campaign itself and offers no Flow for a straight line', async () => {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  expect(await screen.findByRole('tab', { name: 'Screens' })).toHaveAttribute('aria-selected', 'true');
+  expect(await screen.findByRole('tab', { name: 'Edit' })).toHaveAttribute('aria-selected', 'true');
   expect(screen.getByRole('region', { name: 'Design canvas' })).toBeInTheDocument();
-  expect(screen.getByRole('navigation', { name: 'Campaign screens' })).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Edit' })).toBeChecked();
-  await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
-  expect(await screen.findByLabelText('Journey map')).toBeInTheDocument();
-  await userEvent.click(screen.getByRole('radio', { name: 'Edit' }));
-  expect(screen.getByRole('navigation', { name: 'Campaign screens' })).toBeInTheDocument();
+  expect(screen.getByRole('navigation', { name: 'Campaign' })).toBeInTheDocument();
+  expect(screen.queryByRole('radio', { name: 'Flow' })).toBeNull();
   expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
 });

@@ -8,12 +8,12 @@ import { displayPlan } from './support/display-entry';
 
 const initial: DisplayRulesValue = { display_rules: displayPlan([{ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 50 }]), targeting: {}, frequency: { maxPerSession: 1, stopAfterDismiss: false }, schedule: {}, priority: 0 };
 const simple: DisplayRulesValue = { ...initial, display_rules: displayPlan([{ type: 'time_on_page', seconds: 15 }]) };
-function setup(value = initial, availability = {}, compact = false, props: Partial<Parameters<typeof DisplayRules>[0]> = {}) {
+function setup(value = initial, availability = {}, props: Partial<Parameters<typeof DisplayRules>[0]> = {}) {
   const changed = vi.fn();
   function Harness() {
     const [draft, setDraft] = useState(value);
     return <>
-      <DisplayRules compact={compact} value={draft} vocabulary={ruleTypes(availability)} overlay onChange={patch => { changed(patch); setDraft({ ...draft, ...patch }); }} {...props} />
+      <DisplayRules value={draft} vocabulary={ruleTypes(availability)} overlay onChange={patch => { changed(patch); setDraft({ ...draft, ...patch }); }} {...props} />
       <output data-testid="draft">{JSON.stringify(draft)}</output>
       <button type="button" onClick={() => setDraft(value)}>Undo everything</button>
     </>;
@@ -39,7 +39,8 @@ describe('the Display rules tab', () => {
     expect(screen.getByRole('heading', { name: 'Where does it show?' })).toBeInTheDocument();
     expect(document.querySelector('.wconvert-display-sentence')).toHaveTextContent('Shows on every page to everyone, after 15 seconds, once per visit.');
     expect(screen.queryByText(/Display setup/)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Test a visit' })).toBeInTheDocument();
+    // Testing a visit is one of the editor's Preview modes now (ADR 0134).
+    expect(screen.queryByRole('button', { name: 'Test a visit' })).toBeNull();
   });
 
   it('opens a section from its phrase in the sentence', async () => {
@@ -54,12 +55,6 @@ describe('the Display rules tab', () => {
     expect(screen.getByRole('heading', { name: 'Where does it show?' })).toBeInTheDocument();
     expect(within(menu()).getByRole('button', { name: /Where does it show/ })).toHaveTextContent('Needs attention');
     expect(screen.getByRole('button', { name: 'pages you haven’t chosen yet' })).toHaveAttribute('data-attention', 'true');
-  });
-
-  it('opens the lazy sample tester without changing the draft', async () => {
-    const changed = setup(); await userEvent.click(screen.getByRole('button', { name: 'Test a visit' }));
-    expect(await screen.findByRole('dialog', { name: 'Test a visit' })).toBeInTheDocument();
-    expect(changed).not.toHaveBeenCalled();
   });
 
   it('shows a repair step for an older draft, and no Who or When picks until it is replaced', async () => {
@@ -211,7 +206,7 @@ describe('When, beside automatic placement or a content lock', () => {
   const reason = /opens right away\./;
 
   it('holds Right away: every other pick is refused before the click, with the reason', async () => {
-    const changed = setup(rightAway, {}, false, placed); await section('When does it open?');
+    const changed = setup(rightAway, {}, placed); await section('When does it open?');
     expect(pick('When does it open?', 'Right away')).toBeChecked();
     expect(pick('When does it open?', 'Right away')).not.toHaveAttribute('aria-disabled');
     expect(screen.getByText(reason)).toBeVisible();
@@ -227,7 +222,7 @@ describe('When, beside automatic placement or a content lock', () => {
   });
 
   it('still lets a draft that opens later return to Right away, as a normal undoable edit', async () => {
-    const changed = setup(simple, {}, false, placed); await section('When does it open?');
+    const changed = setup(simple, {}, placed); await section('When does it open?');
     expect(pick('When does it open?', /After 15 seconds/)).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(pick('When does it open?', 'Right away'));
     expect(changed).toHaveBeenCalledWith({ display_rules: expect.objectContaining({ opening: { mode: 'immediate' } }) });
@@ -236,7 +231,7 @@ describe('When, beside automatic placement or a content lock', () => {
   });
 
   it('refuses the other modes under Custom too, pointing at the same reason', async () => {
-    const changed = setup(initial, {}, false, placed); await section('When does it open?');
+    const changed = setup(initial, {}, placed); await section('When does it open?');
     const modes = screen.getByRole('group', { name: 'Opens' });
     for (const mode of ['After something they do', 'When they click']) {
       expect(within(modes).getByRole('radio', { name: mode })).toHaveAttribute('aria-disabled', 'true');
@@ -251,7 +246,7 @@ describe('When, beside automatic placement or a content lock', () => {
   });
 
   it('holds nothing for manual placement', async () => {
-    setup(simple, {}, false, { placement: { summary: 'Manual', controls: null } }); await section('When does it open?');
+    setup(simple, {}, { placement: { summary: 'Manual', controls: null } }); await section('When does it open?');
     expect(pick('When does it open?', /When they try to leave/)).not.toHaveAttribute('aria-disabled');
     expect(screen.queryByText(reason)).toBeNull();
   });
@@ -319,7 +314,7 @@ describe('Who', () => {
   });
 
   it('keeps the goal’s audience requirement above the picks', async () => {
-    setup(simple, {}, false, { audienceRequirement: 'This goal needs shoppers.' }); await section('Who sees it?');
+    setup(simple, {}, { audienceRequirement: 'This goal needs shoppers.' }); await section('Who sees it?');
     expect(screen.getByRole('note')).toHaveTextContent('This goal needs shoppers.');
   });
 });
@@ -368,7 +363,7 @@ describe('How often', () => {
   });
 
   it('reads the stop as the main button for a click design', async () => {
-    setup(initial, {}, false, { act: 'click' }); await section('How often?');
+    setup(initial, {}, { act: 'click' }); await section('How often?');
     expect(screen.getByRole('checkbox', { name: 'after they click the main button' })).toBeChecked();
   });
 
@@ -393,7 +388,7 @@ describe('Dates', () => {
   });
 
   it('opens Between two dates with the end field focused when a reveal asks for it', async () => {
-    setup(initial, {}, false, { reveal: { id: 'dates', focus: 'wconvert-ends-at' } });
+    setup(initial, {}, { reveal: { id: 'dates', focus: 'wconvert-ends-at' } });
     expect(pick('Dates', 'Between two dates')).toBeChecked();
     await vi.waitFor(() => expect(screen.getByLabelText('Stop showing it on')).toHaveFocus());
   });
@@ -430,20 +425,4 @@ describe('display editing without crypto.randomUUID', () => {
     await section('Where does it show?'); await section('When does it open?');
     expect(draft().display_rules!.opening).toEqual(opening);
   });
-});
-
-it('uses the same editors in the journey panel, with a select for the five questions', async () => {
-  setup(initial, {}, true);
-  const user = userEvent.setup();
-  expect(screen.queryByRole('navigation', { name: 'Display rules' })).not.toBeInTheDocument();
-  expect(within(screen.getByRole('combobox', { name: 'Display setting' })).getAllByRole('option')).toHaveLength(5);
-  expect(screen.getByRole('button', { name: 'Test a visit' })).toBeInTheDocument();
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'when');
-  await user.click(screen.getByRole('radio', { name: 'Must match every rule' }));
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'where');
-  await user.click(screen.getByRole('radio', { name: 'Selected pages' }));
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'when');
-  expect(screen.getByRole('radio', { name: 'Must match every rule' })).toBeChecked();
-  expect(draft().targeting.mode).toBe('selected');
-  expect(draft().display_rules!.opening).toMatchObject({ match: 'all', rules: [{ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 50 }] });
 });

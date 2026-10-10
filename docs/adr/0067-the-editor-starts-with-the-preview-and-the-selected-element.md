@@ -16,11 +16,15 @@ visible by default; Full width remains optional and remembered per browser.
 
 Design opens with a large canvas and design settings. Layers is optional and
 shows the current screen's tree, including its existing move, copy, delete and
-keyboard controls. Form and success screens and desktop/mobile widths have
+keyboard controls. *Amended by [ADR 0134](0134-one-edit-tab-look-screen-element.md):
+there is no Design tab and no Layers pane. The Edit tab's left tree is always
+there; the open screen unfolds into its elements, with the same move, copy,
+delete and keyboard controls, and the reopen button and content-lock preview are
+rows of that tree rather than entries in a screen dropdown.* Form and success screens and desktop/mobile widths have
 explicit controls. Fit scales the canvas visually without changing the template
 width or triggering a different responsive layout.
 
-**Extended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** enabled Pro popup and slide-in Campaigns add a Reopen button screen beside the form and success controls. It shares the canvas, zoom, and Desktop/Mobile controls; its settings panel contains authoring controls and on-demand help.
+**Extended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** enabled Pro popup and slide-in Campaigns add a Reopen button screen beside the form and success controls. It shares the canvas, zoom, and Desktop/Mobile controls; its settings panel contains authoring controls and on-demand help. *(Since [ADR 0134](0134-one-edit-tab-look-screen-element.md) it is the tree's "Reopen button" row, and its settings are in the Look.)*
 
 A click selects the deepest element under the pointer. Repeated clicks keep it
 selected. Breadcrumbs expose its ancestors, and Design settings returns to the

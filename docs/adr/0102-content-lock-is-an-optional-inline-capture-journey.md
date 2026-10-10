@@ -120,8 +120,10 @@ is still the documented static set; Groups, Columns, synced patterns and third-p
 blocks are not promised compatible. Automatic insertion across posts stays deferred.
 The user-selected prototype was removed; plan section 19 records the decision.
 
-Content lock simulation opens from Display rules through **Preview & test →
-Check the design**, with Locked, Unlocked and Form unavailable controls outside
+Content lock simulation opens from Display rules through ~~**Preview & test →
+Check the design**~~ **Preview › This screen** (*amended by [ADR 0134](0134-one-edit-tab-look-screen-element.md): one Preview
+menu, whose modes are the dialog's; the Edit tab also has a "Locked content
+preview" row in its tree*), with Locked, Unlocked and Form unavailable controls outside
 the scaled preview. The October 3 regression fix retains that placement context
 while the shared preview dialog is open and restores Display rules on close.
 It renders example

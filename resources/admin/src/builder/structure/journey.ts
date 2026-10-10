@@ -429,3 +429,22 @@ export function removedScreen(tree: TemplateTree, index: number): TemplateTree {
     submissions: tree.submissions.filter(sub => sub.id !== removal.submission),
   });
 }
+
+/**
+ * Whether visitors can take more than one way through this campaign — the one
+ * question that decides whether the editor offers the Flow map at all (D4).
+ *
+ * A straight line, linear or graph, is one way: a list of screens says all
+ * there is to say about it, and a map of it is a second picture of the same
+ * thing. Any answer path, any skipped screen (a `hidden` edge or a "Show only
+ * if…") and any linear screen with more than one path make it more than one way.
+ *
+ * **Results that depend on the answers do not.** Visitors still pass the same
+ * screens; the map draws a results screen as one card ("3 possible results"),
+ * and which result shows is edited on that screen. A straight quiz is a
+ * straight line until a path or a follow-up is added.
+ */
+export function hasManyWaysThrough(tree: TemplateTree): boolean {
+  if (tree.graph?.edges.some(edge => edge.kind === 'answer' || edge.kind === 'hidden')) return true;
+  return tree.steps.some(screen => screen.when !== undefined || (screen.paths?.length ?? 0) > 1);
+}

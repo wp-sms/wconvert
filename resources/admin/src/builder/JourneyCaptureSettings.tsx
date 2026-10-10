@@ -1,16 +1,22 @@
 import type { ReactNode } from 'react';
-import { ArrowRight } from 'lucide-react';
 import { humanize } from '../lib/format';
 import { __ } from '@wordpress/i18n';
-import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import { walkNodes } from './structure/journey';
 import { captureName, setCaptureName } from './structure/captureDetails';
 import { nodesOf, nodeAt } from './structure/tree';
-import { withValue } from './panel';
+import { withValue, type Path } from './panel';
+import { ScreenFact } from './ScreenPanel';
 
-export function JourneyCaptureSettings({ tree, step, onChange, destinationSummary, onDestinations, consentEditor }: {
+/**
+ * A form screen's **Form** section (ADR 0134): its fields, each a way to that
+ * field's own panel with its Required switch beside it, and what the form
+ * saves. A field's words are edited on the field — once, in one place.
+ */
+export function JourneyCaptureSettings({ tree, step, onChange, destinationSummary, onDestinations, consentEditor, onSelectField }: {
   consentEditor?: ReactNode; destinationSummary?: string; onDestinations?(): void;
+  /** Opens a field's own panel: where its label and example text are edited. */
+  onSelectField?(path: Path): void;
   tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void;
 }) {
   const screen = tree.steps[step];
@@ -20,24 +26,27 @@ export function JourneyCaptureSettings({ tree, step, onChange, destinationSummar
   const fields = blocks.filter(block => block.type === 'field'
     && !blocks.some(ancestor => ancestor.hidden && ancestor.path.every((part, index) => block.path[index] === part)));
   const name = captureName(tree, screen.id);
-  return <section className="wconvert-journey-settings"><h4>{__('Contact details', 'wconvert')}</h4>
-    <div className="wconvert-journey-capture-fields">{fields.map(block => {
+  return <section className="wconvert-journey-settings wconvert-screen-form"><h4>{__('Form', 'wconvert')}</h4>
+    <ul className="wconvert-journey-capture-fields">{fields.map(block => {
       const field = nodeAt(tree, block.path)!;
       if (field.type !== 'field' || !('name' in field)) return null;
-      return <Disclosure key={block.path.join('.')} className="wconvert-journey-capture-field" title={field.label || humanize(String(field.name))} summary={field.required ? __('Required', 'wconvert') : __('Optional', 'wconvert')}>
-        <label>{__('Field label', 'wconvert')}<input value={field.label ?? ''} maxLength={200} onChange={event => onChange(withValue(tree, block.path, 'label', event.target.value), `journey:${screen.id}:field:${block.path.join('.')}:label`)} /></label>
-        <label>{__('Placeholder', 'wconvert')}<input value={field.placeholder ?? ''} maxLength={200} onChange={event => onChange(withValue(tree, block.path, 'placeholder', event.target.value), `journey:${screen.id}:field:${block.path.join('.')}:placeholder`)} /></label>
-
-      </Disclosure>;
-    })}</div>
+      const label = field.label || humanize(String(field.name));
+      return <li key={block.path.join('.')} className="wconvert-journey-capture-field">
+        {onSelectField ? <button type="button" className="wconvert-screen-form__field" onClick={() => onSelectField(block.path)}>{label}</button> : <span>{label}</span>}
+        <label className="wconvert-journey-settings__check"><input type="checkbox" checked={field.required === true}
+          onChange={event => onChange(withValue(tree, block.path, 'required', event.target.checked))} />{__('Required', 'wconvert')}</label>
+      </li>;
+    })}</ul>
     <p>{__('Their answers are saved together when they submit this screen.', 'wconvert')}</p>
     <label className="wconvert-journey-settings__check"><input type="checkbox" checked={!!name.node} disabled={name.customized} onChange={event => onChange(setCaptureName(tree, screen.id, event.target.checked))} />{__('Ask for a name (optional)', 'wconvert')}</label>
-    {name.customized && <p>{__('The name field has custom settings or belongs to another screen. Use Design on that screen to change it.', 'wconvert')}</p>}
+    {name.customized && <p>{__('The name field has custom settings or belongs to another screen. Open the field on that screen to change it.', 'wconvert')}</p>}
     {tree.steps.some(item => walkNodes(item.content).some(node => node.type === 'question')) && <label className="wconvert-journey-settings__check"><input type="checkbox" checked={screen.review_answers === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step ? { ...item, review_answers: event.target.checked } : item) })} />{__('Let visitors review earlier answers before submitting', 'wconvert')}</label>}
     <label>{__('How you will use their details', 'wconvert')}<textarea rows={3} maxLength={500} value={screen.details_note ?? ''} placeholder={__('Explain what visitors are signing up for or how you will contact them.', 'wconvert')}
       onChange={event => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step ? { ...item, details_note: event.target.value } : item) }, `journey:${screen.id}:details-note`)} /></label>
 
     {consentEditor}
-    {onDestinations && <div className="wconvert-journey-handoff"><strong>{__('After submission is saved', 'wconvert')}</strong><button type="button" onClick={onDestinations}>{destinationSummary || __('Review destinations', 'wconvert')} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button><p>{__('Delivery runs after saving and does not change the visitor’s next screen.', 'wconvert')}</p></div>}
+    <p className="wconvert-screen-submits"><strong>{__('When submitted', 'wconvert')}</strong> · {__('Save the lead', 'wconvert')}</p>
+    {onDestinations && <ScreenFact label={__('Where leads go', 'wconvert')} value={destinationSummary || __('Keep in WConvert only', 'wconvert')}
+      action={__('Destinations', 'wconvert')} onAction={onDestinations} />}
   </section>;
 }

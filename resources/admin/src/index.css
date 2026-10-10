@@ -3770,7 +3770,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * *This read: "a preset is a control a merchant came to this tab to press, so
  * it stands at `--control-height`" (ADR 0039).* The test is unchanged and the
  * answer to it is: a preset is not a control anybody came to the SCREEN for —
- * it is one of six swatched buttons inside a popover inside a pane, which is
+ * it is one of six swatched buttons in a section of a pane, which is
  * ADR 0039's own reading of scope applied one level further in than that ADR
  * had a level for. The third height is that level, amended into it inline.
  *
@@ -3838,21 +3838,6 @@ body:has(#wconvert-admin) #wpbody-content {
 
 .wconvert-theme__swatch + .wconvert-theme__swatch {
   margin-inline-start: -0.3125rem;
-}
-
-/*
- * **On the toolbar's trigger they are squared and unoverlapped**, because the
- * overlapping-circles treatment beside one word inside a small outline button
- * reads as a TOGGLE — measured in a browser, `(●●) Custom look` looked like a
- * switch that was on. In the preset grid the circles are right and unchanged:
- * they are the whole of a card the merchant chooses by looking at.
- */
-.wconvert-theme__swatches[data-shape='row'] > .wconvert-theme__swatch {
-  border-radius: var(--radius-sm);
-}
-
-.wconvert-theme__swatches[data-shape='row'] > .wconvert-theme__swatch + .wconvert-theme__swatch {
-  margin-inline-start: 0.125rem;
 }
 
 /* The Copy-theme control and whatever it has to say afterwards. */

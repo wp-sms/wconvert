@@ -2,7 +2,7 @@ import { walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { render as renderVisitor } from '@renderer/render';
 import { answerReview } from '@renderer/answer-review';
@@ -43,18 +43,20 @@ it('edits all capture conveniences in the inspector without changing routes or a
   expect(next.submissions).toHaveLength(1);
 });
 
-it('edits field wording in place while preserving save ownership, validation and layout', async () => {
+/** The Form section sets Required and opens each field's own panel; a field's words are edited there, once (ADR 0134). */
+it('switches Required and opens a field’s own panel, preserving save ownership and layout', async () => {
   const user = userEvent.setup();
-  function Harness() { const [draft, update] = useState(tree); return <><JourneyCaptureSettings tree={draft} step={0} onChange={update} /><output data-testid="draft">{JSON.stringify(draft)}</output></>; }
+  const opened = vi.fn();
+  function Harness() { const [draft, update] = useState(tree); return <><JourneyCaptureSettings tree={draft} step={0} onChange={update} onSelectField={opened} /><output data-testid="draft">{JSON.stringify(draft)}</output></>; }
   render(<Harness />);
-  await user.click(screen.getByText('Email address'));
-  await user.clear(screen.getByRole('textbox', { name: 'Field label' }));
-  await user.type(screen.getByRole('textbox', { name: 'Field label' }), 'Where can we reply?');
-  await user.type(screen.getByRole('textbox', { name: 'Placeholder' }), 'you@example.com');
+  expect(screen.queryByRole('textbox', { name: 'Field label' })).toBeNull();
+  await user.click(screen.getByRole('checkbox', { name: 'Required' }));
   const next = JSON.parse(screen.getByTestId('draft').textContent!) as TemplateTree;
   const field = walkNodes(next.steps[0].content).find(node => node.type === 'field');
-  expect(field).toMatchObject({ id: 'n5', name: 'email', label: 'Where can we reply?', placeholder: 'you@example.com', required: true });
+  expect(field).toMatchObject({ id: 'n5', name: 'email', required: false });
   expect(next.submissions).toEqual(tree.submissions);
   expect(next.graph).toEqual(tree.graph);
   expect(walkNodes(next.steps[0].content).filter(node => node.type === 'button')).toEqual(walkNodes(tree.steps[0].content).filter(node => node.type === 'button'));
+  await user.click(screen.getByRole('button', { name: /Email address/ }));
+  expect(opened).toHaveBeenCalledOnce();
 });

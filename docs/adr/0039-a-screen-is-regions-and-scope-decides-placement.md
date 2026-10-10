@@ -214,7 +214,10 @@ look, and the save a merchant starts by pressing "Use this design" is a failure
 of the Optin rather than of the gallery — so it lands in the builder's own
 region error, which is this rule read correctly rather than an exception to it.*
 
-***And the Design tab was two concerns in one region*** (ADR 0043). It held
+***And the Design tab was two concerns in one region*** (ADR 0043). *(There is
+no Design tab since [ADR 0134](0134-one-edit-tab-look-screen-element.md); its
+look is the Edit tab's **Look** panel, and choosing a design is still a dialog,
+opened from the Look's "Browse designs and formats".)* It held
 *choose a design* and *adjust the look*. At three cards that was invisible; at
 forty the gallery swamps the tokens the tab is named for, and the merchant who
 came to change one colour scrolls past the whole library to reach it. Choosing a
@@ -276,7 +279,7 @@ is four tabs"* against WSMS's twenty-five-section rail. That is a statement abou
 **top-level sections** and about the scale a rail exists to serve. It is not a
 budget on tabs anywhere in the product, and
 [#69](https://github.com/navidkashani/wconvert/issues/69)'s ~~five~~ ~~four~~
-~~five~~ **four** builder tabs are a level below it.
+~~five~~ ~~four~~ **three** builder tabs are a level below it.
 
 This is written down because the two look like a contradiction and are not, and
 because the cheapest place to lose that distinction is a review comment reading
@@ -320,6 +323,12 @@ reason given above: a section arguing that a count at this level is not what is
 being budgeted, and then silently tracking the number, would be arguing against
 itself. `tests/js/builder-shell.test.tsx` is edited in the same commit each time
 — behaviour moving, recorded rather than quietly fixed.*
+
+*Amended a fourth time by [ADR 0134](0134-one-edit-tab-look-screen-element.md):
+the builder ships **three** — Edit · Display rules · Destinations. Screens and
+Design were the same campaign seen as a list and as a canvas, and a merchant
+changing a headline chose which of the two to open. Edit is one tree, the
+canvas and one panel that is the Look, a screen or an element.*
 
 ## A control that acts on a selection lives ~~under~~ **with** the list the selection is made in
 

@@ -170,10 +170,8 @@ beforeEach(() => {
  */
 async function style(row: RegExp) {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-
-  await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
-  const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
+  const tree = await screen.findByRole('treegrid', { name: /^Blocks/ });
 
   /*
     The row's own accessible name is every cell's text run together — the kind,
@@ -240,10 +238,10 @@ describe('the Style half of the inspector', () => {
    * Design tab always edited — so calling it *Column* would send a merchant
    * looking for the design's colours to something named after a flex direction.
    */
-  /** One way back (D2), named for where it goes: the Design tab's inspector returns to the whole design. */
+  /** One way back (D2), named for where it goes: the screen the element is on. */
   it('offers one way back, and no crumb for a top-level element', async () => {
     await style(/Button label/);
-    expect(screen.getByRole('button', { name: 'Design' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Screen 1' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Inside' })).toBeNull();
   });
 
@@ -253,7 +251,8 @@ describe('the Style half of the inspector', () => {
    */
   it('reaches the designs own token controls through that door', async () => {
     await style(/Button label/);
-    await userEvent.click(screen.getByRole('button', { name: 'Design' }));
+    // The design's own tokens are the Look's, one row away in the Edit tree (ADR 0134).
+    await userEvent.click(screen.getByRole('button', { name: /^Look/ }));
     expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
   });
 
@@ -340,7 +339,7 @@ describe('the Style half of the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Copy this look' }));
 
     // The inner Column, which sets nothing of its own.
-    const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+    const tree = screen.getByRole('treegrid', { name: /^Blocks/ });
 
     await userEvent.click(within(within(tree).getByRole('row', { name: /Column/ })).getAllByRole('button')[0]!);
     await userEvent.click(screen.getByRole('button', { name: /^Paste 2 setting/ }));
@@ -453,7 +452,7 @@ describe('the narrow bag, through the width switch', () => {
 
     // `pad` is the one the narrow bag names; `bg` is inherited from the box's
     // own wide bag, which is a different sentence.
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Mobile override')).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Mobile override')).toBeInTheDocument();
     expect(document.querySelector('.wconvert-scope__from [data-set="here"]')).toBeNull();
   });
 });
@@ -591,7 +590,7 @@ describe('the readability readout at a scope', () => {
 
     await style(/Colored box/);
 
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Lighter text on Background/)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText(/Lighter text on Background/)).toBeInTheDocument();
   });
 });
 
@@ -630,10 +629,8 @@ describe('the tree’s override count', () => {
     );
 
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-
-    await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
-  const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
+  const tree = await screen.findByRole('treegrid', { name: /^Blocks/ });
     const boxes = within(tree).getAllByRole('row', { name: /Colored box/ });
 
     // Two at full width and one more at narrow, which is also the payload's
@@ -656,7 +653,7 @@ describe('full width', () => {
    */
   it('starts folded, and hides wp-admins chrome only when asked', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 
     const toggle = await screen.findByRole('button', { name: 'Full width' });
 
@@ -674,7 +671,7 @@ describe('full width', () => {
   /** A mode with no keyboard way out is a trap. */
   it('leaves on Escape', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
     await userEvent.keyboard('{Escape}');
@@ -689,7 +686,7 @@ describe('full width', () => {
    */
   it('remembers the choice across a visit', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
 
@@ -703,7 +700,7 @@ describe('full width', () => {
    */
   it('puts the chrome back when the builder unmounts', async () => {
     const { unmount } = render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
 

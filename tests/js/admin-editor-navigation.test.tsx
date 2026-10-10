@@ -143,7 +143,7 @@ describe('App navigation through the real lazy editor', () => {
 
   it('explains mobile editing scope from the device controls before a block is selected', async () => {
     await openEditor();
-    expect(screen.queryByRole('treegrid')).toBeNull();
+    expect(screen.queryByRole('group', { name: /Headline/ })).toBeNull();
     await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
     await userEvent.click(screen.getByRole('button', { name: 'About mobile editing' }));
     expect(screen.getByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeInTheDocument();

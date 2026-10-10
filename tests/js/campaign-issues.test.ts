@@ -34,6 +34,12 @@ describe('a campaign’s issues', () => {
     expect(campaignIssues(inputs()).filter(issue => issue.blocks)).toEqual([]);
   });
 
+  /** A goal still loading is not a goal that failed to load: a fresh setup must not flash "1 to fix". */
+  it('says nothing about the goal while it is loading, and asks to retry only when the read failed', () => {
+    expect(campaignIssues(inputs({ outcome: undefined })).map(issue => issue.key)).not.toContain('goal-unread');
+    expect(campaignIssues(inputs({ outcome: null })).map(issue => issue.key)).toContain('goal-unread');
+  });
+
   it('asks for a service only once connecting one is chosen, with the local answer beside it', () => {
     const [handoff] = campaignIssues(inputs({ captureMode: 'connected' })).filter(issue => issue.blocks);
     expect(handoff).toMatchObject({ tab: 'destinations', go: { to: 'destinations' }, offersKeepLocal: true });

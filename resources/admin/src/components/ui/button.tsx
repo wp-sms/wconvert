@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
  * a line the vendored button knows nothing about: a control refused because of
  * what the SITE is keeps focus, so the reason it carries stays reachable, while
  * a control that is merely BUSY takes the real attribute and gets out of the
- * way ({@see StructureView} argues the same for its roving tabindex).
+ * way ({@see useBlockEdits} argues the same for its roving tabindex).
  *
  * Without this, half of that line was invisible: `aria-disabled` announced the
  * state and rendered a control that looked entirely pressable. `pointer-events`

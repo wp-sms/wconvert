@@ -55,7 +55,7 @@ vi.mock('../../resources/admin/src/goals/api', async (importOriginal) => ({
 }));
 
 const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
-const { StructureView } = await import('../../resources/admin/src/builder/StructureView');
+const { ScreenElements } = await import('../../resources/admin/src/builder/BlockEditing');
 const { historyOf, remember, undo } = await import('../../resources/admin/src/builder/structure/history');
 
 const ENTRY = JSON.parse(
@@ -199,9 +199,7 @@ beforeEach(() => {
  */
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-
-  await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
 }
 
 /**
@@ -214,7 +212,8 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
+  // The design's own look is the Edit tree's pinned first row (ADR 0134).
+  await userEvent.click(await screen.findByRole('button', { name: /^Look/ }));
   await screen.findByRole('button', { name: 'Browse designs and formats' });
 }
 
@@ -226,6 +225,10 @@ async function designLook() {
  * and the three controls that are all named after it. That is correct for a
  * treegrid and useless as an identifier.
  */
+/** A screen, chosen from the Edit tree (ADR 0134). */
+const openScreen = async (name: string) =>
+  userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getByRole('button', { name: new RegExp(`^${name}`) }));
+
 const rowNames = () =>
   screen
     .getAllByRole('row')
@@ -310,7 +313,7 @@ describe('moving a block', () => {
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
 
-    expect(rowNames().slice(0, 4)).toEqual(['Details', 'Body text', 'Headline', 'Row']);
+    expect(rowNames().slice(0, 3)).toEqual(['Body text', 'Headline', 'Row']);
   });
 
   /**
@@ -343,7 +346,7 @@ describe('moving a block', () => {
 
     await userEvent.click(up);
 
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 2)).toEqual(['Headline', 'Body text']);
   });
 
   /**
@@ -364,9 +367,7 @@ describe('moving a block', () => {
 
     // Past the `row`, whose own two children sit between them in the list —
     // the block moved two places among its SIBLINGS, which is what ↓ means.
-    expect(rowNames().slice(0, 6)).toEqual([
-      'Details',
-      'Body text',
+    expect(rowNames().slice(0, 5)).toEqual(['Body text',
       'Row',
       'Email address',
       'Button label',
@@ -457,7 +458,7 @@ describe('the row', () => {
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Move down' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 2)).toEqual(['Body text', 'Headline']);
   });
 
   /** A third pointer-free path, for repeat moves without hunting for a button. */
@@ -467,11 +468,11 @@ describe('the row', () => {
 
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
 
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 2)).toEqual(['Body text', 'Headline']);
 
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
 
-    expect(rowNames().slice(0, 4)).toEqual(['Details', 'Body text', 'Row', 'Email address']);
+    expect(rowNames().slice(0, 3)).toEqual(['Body text', 'Row', 'Email address']);
   });
 
   /**
@@ -483,7 +484,8 @@ describe('the row', () => {
     await structure();
 
     expect(row('Headline').querySelector('.wconvert-block__grip')).not.toBeNull();
-    expect(row('Details').querySelector('.wconvert-block__grip')).toBeNull();
+    // The screen itself is the tree's own row now, not a block in it (ADR 0134).
+    expect(screen.queryAllByRole('row').some(each => each.querySelector('.wconvert-block__kind')?.textContent === 'Details')).toBe(false);
   });
 
   /**
@@ -604,7 +606,7 @@ describe('deleting a block', () => {
   describe('with an Undo to offer', () => {
     function Layers({ draft }: { draft?: unknown }) {
       const [history, setHistory] = useState(() => historyOf<Template>({ tree: ENTRY.tree, tokens: ENTRY.tokens }));
-      return <StructureView template={history.present} labels={LABELS} act="submit" selected={null} onSelect={vi.fn()} focus={null}
+      return <ScreenElements template={history.present} labels={LABELS} act="submit" step={0} selected={null} onSelect={vi.fn()} focus={null}
         onChange={(next) => setHistory((held) => remember(held, next))} draft={draft}
         onUndo={history.past.length > 0 ? () => setHistory(undo) : undefined} />;
     }
@@ -795,7 +797,7 @@ describe('adding a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Image']);
+    expect(rowNames().slice(0, 2)).toEqual(['Headline', 'Image']);
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Image added.');
   });
 
@@ -829,7 +831,7 @@ describe('adding a block', () => {
    */
   it('refuses a field on the step that is not the form', async () => {
     await structure();
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign screen' }), '1');
+    await openScreen('Received');
 
     await userEvent.click(
       within(row('Headline after they submit')).getByRole('button', {
@@ -869,7 +871,7 @@ describe('the inspector', () => {
     await structure();
     await select('Headline');
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    const scroller = document.querySelector<HTMLElement>('.wconvert-pane--controls .wconvert-pane__body')!;
+    const scroller = document.querySelector<HTMLElement>('.wconvert-journey-pane--element')!;
     scroller.scrollTop = 280;
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'heading-weight' }), '700');
     expect(scroller.scrollTop).toBe(280);
@@ -903,12 +905,15 @@ describe('the inspector', () => {
     expect(inspector('Row').queryByLabelText('Text')).toBeNull();
   });
 
-  it('says what a step is rather than offering it a text box', async () => {
+  /** A screen is not an element: its row opens the screen panel, which says where it goes (ADR 0134). */
+  it('opens the screen panel for a screen rather than a text box', async () => {
     await structure();
-    await select('Details');
+    await openScreen('Details');
 
-    expect(inspector('Details').queryByLabelText('Text')).toBeNull();
-    expect(inspector('Details').getByText(/Appearance for Column/)).toBeInTheDocument();
+    const panel = screen.getByRole('region', { name: 'Selected screen settings' });
+    // A screen's words are edited on its elements, once, not in a column of boxes here.
+    expect(within(panel).queryByLabelText('Heading')).toBeNull();
+    expect(within(panel).getByText('Then')).toBeInTheDocument();
   });
 
   it('writes what is typed into the tree, and the Save sends it', async () => {
@@ -1108,7 +1113,7 @@ describe('the inspector', () => {
     expect(within(row('Headline')).getAllByRole('button')[0]).toHaveFocus();
 
     const inspector = screen.getByRole('group', { name: 'Headline' });
-    const grid = screen.getByRole('treegrid', { name: 'Blocks in this design' });
+    const grid = screen.getByRole('treegrid', { name: /^Blocks/ });
 
     await userEvent.tab();
 
@@ -1131,12 +1136,11 @@ describe('the inspector', () => {
    */
   it('takes the preview to the step the selected block lives on', async () => {
     await structure();
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign screen' }), '1');
+    await openScreen('Received');
     await select('Headline after they submit');
 
-    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('Received');
-
-    expect(screen.getByRole('combobox', { name: 'Campaign screen' })).toHaveValue('1');
+    // The canvas shows the screen the tree has open.
+    expect(within(screen.getByRole('navigation', { name: 'Campaign' })).getByRole('button', { name: /^Received/ })).toHaveAttribute('aria-current', 'true');
   });
 
   /**
@@ -1165,8 +1169,8 @@ describe('the inspector', () => {
     expect(screen.queryByRole('group', { name: 'Fine print' })).toBeNull();
     // Whatever took focus. The fine print is the last block in its list, so
     // there is no next sibling and what was holding it takes focus — here the
-    // step itself, which the inspector names rather than blanking.
-    expect(screen.getByRole('group', { name: 'Details' })).toBeInTheDocument();
+    // screen itself, whose panel opens rather than a blank one.
+    expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBeInTheDocument();
   });
 });
 
@@ -1223,7 +1227,7 @@ describe('the verdict', () => {
     await designLook();
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
     await userEvent.click(screen.getByRole('radio', { name: /Keep in WConvert only/ }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1306,7 +1310,7 @@ describe('undo and redo', () => {
   it('keeps the design unchanged when an undo shortcut is pressed inside launch review', async () => {
     await structure();
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 2)).toEqual(['Body text', 'Headline']);
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
@@ -1319,12 +1323,12 @@ describe('undo and redo', () => {
     expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeInTheDocument();
     await userEvent.click(keepEditing);
 
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 2)).toEqual(['Body text', 'Headline']);
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
     expect(screen.getByRole('button', { name: /^Redo/ })).toBeDisabled();
     // The history still works once the merchant has deliberately returned to editing.
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 2)).toEqual(['Headline', 'Body text']);
   });
 
   /**
@@ -1344,7 +1348,7 @@ describe('undo and redo', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 2)).toEqual(['Headline', 'Body text']);
     expect(screen.queryByText(/^Draft saved$/)).toBeNull();
   });
 });
@@ -1404,8 +1408,7 @@ describe('undo and redo, where they act on the whole draft', () => {
       only thing about this case that changed: it is still one history entry
       and still undone from the tab it was applied on.
     */
-    await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
-    await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
 
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
@@ -1881,7 +1884,7 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Counts down to .*2099.* — when this campaign stops running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText(/Counts down to .*2099.* — when this campaign stops running\./)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1890,7 +1893,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('This campaign has no end date, so the clock will be empty on the page.'),
+      within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('This campaign has no end date, so the clock will be empty on the page.'),
     ).toBeInTheDocument();
   });
 
@@ -1904,7 +1907,7 @@ describe('a countdown’s inspector', () => {
 
     await openTheClock();
 
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
   });
 
   /**
@@ -2017,9 +2020,9 @@ describe('the visible Add element picker', () => {
     await userEvent.selectOptions(screen.getByLabelText('Insert position'), '1');
     await userEvent.type(screen.getByLabelText('Find an element'), 'Image');
     await userEvent.click(screen.getByRole('button', { name: 'Image' }));
-    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Image', 'Headline']);
+    expect(rowNames().slice(0, 2)).toEqual(['Image', 'Headline']);
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(rowNames().slice(0, 2)).toEqual(['Details', 'Headline']);
+    expect(rowNames().slice(0, 1)).toEqual(['Headline']);
   });
 
   it('lets the merchant choose the field to add and disables a duplicate capture', async () => {
@@ -2043,14 +2046,13 @@ describe('adaptive editor and signup deletion', () => {
     window.innerWidth = 390;
     try {
       await structure();
-      expect(screen.getByRole('dialog', { name: 'Layers' })).toBeInTheDocument();
+      // Narrow, the Edit tab is three panes taken one at a time: Screens · Preview · Edit (ADR 0134).
+      const panes = screen.getByRole('group', { name: 'Mobile journey view' });
+      await userEvent.click(within(panes).getByRole('radio', { name: 'Screens' }));
       await userEvent.click(screen.getByRole('button', { name: 'Headline Get 10% off your first order' }));
-      const dialog = screen.getByRole('dialog', { name: 'Design settings' });
-      const text = within(dialog).getByRole('textbox', { name: 'Text' });
+      const text = within(screen.getByRole('group', { name: 'Headline' })).getByRole('textbox', { name: 'Text' });
       await userEvent.clear(text);
       await userEvent.type(text, 'Edited on a phone');
-      await userEvent.keyboard('{Escape}');
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
       expect(JSON.stringify(savedTree())).toContain('Edited on a phone');
     } finally { window.innerWidth = originalWidth; }
@@ -2062,9 +2064,8 @@ describe('adaptive editor and signup deletion', () => {
     const config = { template_id: ENTRY.id, template: journey, submission_settings: { 'sms-signup': { destination_ids: ['sms-route'] } } };
     builder.getOptin.mockResolvedValue(optin({ config }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-    await userEvent.click(await screen.findByRole('tab', { name: 'Screens' }));
-    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Edit' }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getByRole('button', { name: /^Optional SMS signup/ }));
     await userEvent.click(screen.getByRole('button', { name: /^Actions for / }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Remove signup' }));

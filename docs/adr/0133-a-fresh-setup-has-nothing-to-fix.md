@@ -75,7 +75,11 @@ should not meet a list of things the setup itself created.
    header's "n to fix", each screen's warning and each Flow badge read it; the
    separate "Issues (n)" button and its dialog are gone. The review also mirrors
    the server's per-signup rule: an optional signup forwarded nowhere while the
-   main one is forwarded blocks.
+   main one is forwarded blocks. *Corrected by
+   [0134](0134-one-edit-tab-look-screen-element.md): a goal still loading is
+   not a goal that failed to load. The list said "The goal's requirements
+   could not be checked" for both, so every setup opened on a flash of "1 to
+   fix"; now only a failed read (`outcome: null`) says it.*
 
 8. **The review's links go where the fix is.** "Position" and "Reopen button"
    open the look settings, not the design library, and an advisory with no

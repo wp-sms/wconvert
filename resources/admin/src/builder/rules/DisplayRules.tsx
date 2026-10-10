@@ -1,11 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { Fragment, lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import type { Template } from '@renderer/types';
+import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
-import { FlaskConical } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { RegionSkeleton } from '../../shell/RegionSkeleton';
 import { HowOften } from './HowOften';
 import { Dates } from './Dates';
 import { Where } from './Where';
@@ -18,12 +15,8 @@ import { questions, summarise, type DisplayRulesValue } from './summaries';
 import { incompletePlan } from './plan';
 import type { RuleVocabulary } from '../api';
 
-const SampleVisit = lazy(() => import('./SampleVisit'));
 export type { DisplayRulesValue } from './summaries';
 export interface DisplayRulesProps {
-  readonly compact?: boolean;
-  readonly template?: Template;
-  readonly cartRequired?: boolean;
   readonly vocabulary: RuleVocabulary;
   readonly value: DisplayRulesValue;
   readonly overlay: boolean;
@@ -63,12 +56,11 @@ const sectionOf = (id: string | undefined): SectionId | undefined =>
  * it. The only state here is which section is open and, while it stays open,
  * which open pick the merchant chose — the sticky rule in {@see pickFor}.
  */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false, template, cartRequired = false }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary);
   const asked = questions();
   const [active, setActive] = useState<SectionId>(() => sectionOf(initialSection) ?? summaries.find(section => section.attention)?.id ?? 'where');
   const [chosen, setChosen] = useState<Partial<Record<SectionId, string>>>({});
-  const [testing, setTesting] = useState(false);
   const ours = useRef<string | null>(null);
   const heldId = useId();
   const plan = value.display_rules;
@@ -120,7 +112,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   // Choosing the placement already wrote Right away; this keeps it there, so the refusal is here rather than at Publish.
   const held = active === 'when' && placement?.opensRightAway ? { pick: 'immediate', reason: placement.heldBy === 'content_lock' ? __('A content lock opens right away.', 'wconvert') : __('Automatic placement opens right away.', 'wconvert'), id: heldId } : null;
 
-  return <div className="wconvert-display" data-compact={compact || undefined}>
+  return <div className="wconvert-display">
     <div className="wconvert-display-header">
       <p className="wconvert-display-sentence">
         {interpolate(
@@ -128,19 +120,16 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
           __('Shows %1$s %2$s, %3$s, %4$s.', 'wconvert'), [phrase(parts.where), phrase(parts.who), phrase(parts.when), phrase(parts.often)])}
         {parts.dates && <> {phrase(parts.dates)}</>}
       </p>
-      <Button variant="outline" onClick={() => setTesting(true)}><FlaskConical aria-hidden="true" />{__('Test a visit', 'wconvert')}</Button>
     </div>
     {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft uses an older development rule format. Review and replace its display setup before saving or publishing.', 'wconvert')}</p>
       <Button onClick={() => update(incompletePlan())}>{__('Set up display rules', 'wconvert')}</Button></div>}
     <div className="wconvert-display-grid">
-      {compact ? <label className="wconvert-journey__field">{__('Display setting', 'wconvert')}<select value={active} onChange={event => open(event.target.value as SectionId)}>
-        {summaries.map(section => <option key={section.id} value={section.id}>{section.eyebrow}{section.attention ? ` · ${__('Needs attention', 'wconvert')}` : ''}</option>)}</select></label>
-        : <nav aria-label={__('Display rules', 'wconvert')}>
+      <nav aria-label={__('Display rules', 'wconvert')}>
           {summaries.map(section => <button type="button" key={section.id} aria-current={active === section.id ? 'true' : undefined} onClick={() => open(section.id)}>
             <span>{section.eyebrow}</span>
             <small data-attention={section.attention || undefined}>{section.attention ? __('Needs attention', 'wconvert') : section.text}</small>
           </button>)}
-        </nav>}
+        </nav>
       <section className="wconvert-display-editor" aria-labelledby="wconvert-display-heading">
         <h3 id="wconvert-display-heading" tabIndex={-1}>{current.eyebrow}</h3>
         {active === 'who' && audienceRequirement && <p role="note">{audienceRequirement}</p>}
@@ -157,8 +146,6 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       </section>
     </div>
 
-    {testing && <Suspense fallback={<RegionSkeleton label={__('Sample visit', 'wconvert')} lines={3} />}><SampleVisit template={template} cartRequired={cartRequired} act={act} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)}
-      onOpenSection={section => { setTesting(false); open(section); }} /></Suspense>}
   </div>;
 }
 
