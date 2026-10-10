@@ -31,6 +31,7 @@ export function OpeningEditor({ value, types, onChange, heldBy }: { value: Openi
       })}
     </fieldset>
     {value.mode !== 'immediate' && <GroupEditor group={{ match: value.mode === 'automatic' ? value.match : 'any', rules: value.rules }} types={offered} offset={60}
+      label={__('What opens it', 'wconvert')}
       match={value.mode === 'automatic' ? { before: __('Opens when', 'wconvert'), after: __('of these happen', 'wconvert'), label: __('Opens when any or all of these happen', 'wconvert'), order: ['any', 'all'] } : undefined}
       onChange={group => onChange(value.mode === 'click' ? { ...value, rules: group.rules } : { ...value, match: group.match, rules: group.rules })} />}
     {value.mode === 'automatic' && <DisclosureCard title={__('Minimum time on the page', 'wconvert')} open={!!value.minimum_seconds}

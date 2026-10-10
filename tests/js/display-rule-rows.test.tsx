@@ -13,7 +13,7 @@ import { ruleTypes } from './support/rule-types';
  * words where the Add controls were.
  */
 
-const types = ruleTypes().conditions.concat(ruleTypes().targeting);
+const types = [...ruleTypes().conditions, ...ruleTypes().targeting, ...ruleTypes().triggers];
 
 function setup(rules: readonly Rule[], groups = 1) {
   const audience: Audience = {
@@ -119,7 +119,7 @@ describe('a rule row', () => {
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'operator' }), 'none');
     expect(groups()[0].rules[0]).toMatchObject({ operator: 'none' });
     expect(screen.getByRole('button', { name: 'ids: 2 products' })).toBeInTheDocument();
-    const signedIn = screen.getByRole('combobox', { name: 'value' });
+    const signedIn = screen.getByRole('combobox', { name: 'logged_in' });
     expect(within(signedIn).getByRole('option', { name: 'Signed in' })).toBeInTheDocument();
     await userEvent.selectOptions(signedIn, 'false');
     expect(groups()[0].rules[1]).toMatchObject({ type: 'logged_in', value: false });
@@ -147,3 +147,53 @@ describe('a rule row', () => {
     expect(screen.getByRole('button', { name: 'Remove unavailable rule' })).toBeInTheDocument();
   });
 });
+
+/** Every kind of pill opens the control that edits it (ADR 0139). */
+describe('each kind of pill', () => {
+  it('opens a window of hours under Custom…', async () => {
+    const groups = setup([{ type: 'time_of_day', between: '09:00-17:00' }]);
+
+    await userEvent.click(screen.getByRole('button', { name: 'time_of_day: office_hours' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Custom…' }));
+    expect(within(screen.getByRole('dialog', { name: 'time_of_day' })).getByLabelText('From')).toHaveValue('09:00');
+    expect(groups()[0].rules[0]).toMatchObject({ between: '09:00-17:00' });
+  });
+
+  it('opens a number with its unit on the pill', async () => {
+    const groups = setup([{ type: 'inactivity', seconds: 30 }]);
+
+    await userEvent.click(screen.getByRole('button', { name: 'seconds: 30 seconds' }));
+    const field = within(screen.getByRole('dialog', { name: 'seconds' })).getByRole('spinbutton');
+    await userEvent.clear(field);
+    await userEvent.type(field, '45');
+    expect(groups()[0].rules[0]).toMatchObject({ seconds: 45 });
+  });
+
+  it('keeps Include subcategories with the categories, and unticked as unset', async () => {
+    const groups = setup([{ type: 'cart_categories', operator: 'any', ids: [3], descendants: true }]);
+
+    expect(screen.queryByRole('combobox', { name: 'descendants' })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'ids: 1 category' }));
+    await userEvent.click(within(screen.getByRole('dialog', { name: 'ids' })).getByRole('checkbox', { name: 'descendants' }));
+    expect(groups()[0].rules[0]).not.toHaveProperty('descendants');
+  });
+
+  it('offers its own key under the URL parameter’s Custom…', async () => {
+    const groups = setup([{ type: 'query_param', key: 'utm_source' }]);
+
+    await userEvent.click(screen.getByRole('button', { name: 'key: utm_source' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Custom…' }));
+    const key = within(screen.getByRole('dialog', { name: 'key' })).getByRole('textbox');
+    expect(key).toHaveFocus();
+    await userEvent.clear(key);
+    await userEvent.type(key, 'ref');
+    expect(groups()[0].rules[0]).toMatchObject({ type: 'query_param', key: 'ref' });
+  });
+
+  it('marks an empty word for attention, and names a lone word after its rule', () => {
+    setup([{ type: 'ad_blocking' }]);
+
+    expect(screen.getByRole('combobox', { name: 'ad_blocking' })).toHaveAttribute('data-attention');
+  });
+});
+

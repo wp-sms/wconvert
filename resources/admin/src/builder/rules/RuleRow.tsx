@@ -34,6 +34,13 @@ export interface RuleRowProps {
 const booleanWords = (type: string, param: string): readonly [string, string] | undefined =>
   type === 'logged_in' && param === 'value' ? [__('Signed in', 'wconvert'), __('Signed out', 'wconvert')] : undefined;
 
+/**
+ * What a word select is called: the rule's own name where the word is its only
+ * param ("Ad blocker [Detected ▾]"), else the param's ("operator").
+ */
+const wordLabel = (type: RuleType, param: string): string =>
+  Object.keys(type.params).length === 1 ? type.label : type.params[param].label;
+
 /** Controls drawn inline as a word rather than behind a pill. */
 const isWord = (param: RuleParam): boolean => param.control === 'enum' || param.control === 'boolean';
 
@@ -113,13 +120,13 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     const presetParams = keyed ? ['key'] : params.filter(param => !isWord(type.params[param]));
     const words = params.filter(param => isWord(type.params[param]));
     words.forEach(param => parts.push(<ParamControl key={param} id={idOf(param)} param={type.params[param]} value={shown[param]}
-      variant="pill" label={type.params[param].label} words={booleanWords(type.type, param)} onChange={value => write(param, value)} />));
+      variant="pill" label={wordLabel(type, param)} words={booleanWords(type.type, param)} onChange={value => write(param, value)} />));
     parts.push(<PresetPill key="preset" label={keyed ? type.params.key?.label ?? type.label : type.label} presets={type.presets} chosen={preset}
       text={preset?.label ?? textOf(presetParams.filter(param => !fixedByPreset(param)))} onChoose={choose}
       controls={presetParams.filter(param => !fixedByPreset(param)).map(field)} />);
     if (keyed && type.params.value) {
       parts.push(<ValuePill key="value" label={type.params.value.label} text={valueText(type.params.value, shown.value) ?? __('any value', 'wconvert')}
-        empty={false}>{field('value')}</ValuePill>);
+        >{field('value')}</ValuePill>);
     }
   } else {
     // Words first, so "Products in the cart [any of ▾] [2 products ▾]" reads in order.
@@ -130,15 +137,16 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
         // A yes/no that qualifies a set (cart categories' subcategories) lives in that set's menu.
         if (declared.control === 'boolean' && params.some(other => ['product_set', 'category_set'].includes(type.params[other].control))) continue;
         parts.push(<ParamControl key={param} id={idOf(param)} param={declared} value={shown[param]} variant="pill"
-          label={declared.label} words={booleanWords(type.type, param)} onChange={value => write(param, value)} />);
+          label={wordLabel(type, param)} words={booleanWords(type.type, param)} onChange={value => write(param, value)} />);
         continue;
       }
       const qualifier = ['product_set', 'category_set'].includes(declared.control)
         ? params.find(other => type.params[other].control === 'boolean') : undefined;
-      parts.push(<ValuePill key={param} label={declared.label} text={valueText(declared, shown[param])} empty={valueText(declared, shown[param]) === null}>
+      parts.push(<ValuePill key={param} label={declared.label} text={valueText(declared, shown[param])}>
         {field(param)}
         {qualifier !== undefined && <label className="wconvert-rule-row__check">
-          <input type="checkbox" checked={shown[qualifier] === true} onChange={event => write(qualifier, event.target.checked)} />
+          {/* Unticked is unset, as the old Yes/No field left it, not a stored false. */}
+          <input type="checkbox" checked={shown[qualifier] === true} onChange={event => write(qualifier, event.target.checked || undefined)} />
           {type.params[qualifier].label}
         </label>}
       </ValuePill>);
@@ -248,23 +256,32 @@ function RuleIcon({ type }: { type: string }) {
   return <Icon aria-hidden="true" />;
 }
 
+/** The pill itself: the value, or "Choose…" dashed and amber while there is none. */
+function PillTrigger({ label, text }: { label: string; text: string | null }) {
+  const shown = text ?? __('Choose…', 'wconvert');
+
+  return <PopoverTrigger asChild>
+    <button type="button" className="wconvert-value-pill" data-attention={text === null || undefined}
+      aria-label={sprintf(/* translators: 1: what the value is, e.g. “Device”. 2: the value, e.g. “Phone”. */ __('%1$s: %2$s', 'wconvert'), label, shown)}>
+      <span>{shown}</span><ChevronDown aria-hidden="true" />
+    </button>
+  </PopoverTrigger>;
+}
+
+/** The menu a pill opens, at a width that fits a phone. */
+const PILL_MENU = 'w-[min(320px,calc(100vw-32px))]';
+
 /**
  * A value as a pill, opening the control that edits it. Empty, it says
  * "Choose…" dashed and amber — the same attention `groupProblems` raises.
  * Done, Escape or a click outside close it, and focus goes back to the pill.
  */
-function ValuePill({ label, text, empty, children }: { label: string; text: string | null; empty: boolean; children: ReactNode }) {
+function ValuePill({ label, text, children }: { label: string; text: string | null; children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const shown = text ?? __('Choose…', 'wconvert');
 
   return <Popover open={open} onOpenChange={setOpen}>
-    <PopoverTrigger asChild>
-      <button type="button" className="wconvert-value-pill" data-attention={empty || undefined}
-        aria-label={sprintf(/* translators: 1: what the value is, e.g. “Shows on”. 2: the value, e.g. “Phone”. */ __('%1$s: %2$s', 'wconvert'), label, shown)}>
-        <span>{shown}</span><ChevronDown aria-hidden="true" />
-      </button>
-    </PopoverTrigger>
-    <OptionListContent align="start" className="w-[min(320px,calc(100vw-32px))]" aria-label={label}>
+    <PillTrigger label={label} text={text} />
+    <OptionListContent align="start" className={PILL_MENU} aria-label={label}>
       <div className="wconvert-option-menu__control">
         {children}
         <button type="button" className="wconvert-option-menu__done" onClick={() => setOpen(false)}>{__('Done', 'wconvert')}</button>
@@ -285,7 +302,6 @@ function PresetPill({ label, presets, chosen, text, onChoose, controls }: {
   const fields = useRef<HTMLDivElement>(null);
   const [focusFields, setFocusFields] = useState(false);
   const custom = chosen === null;
-  const shown = text ?? __('Choose…', 'wconvert');
 
   // Custom… keeps the menu open and moves focus to the first control it drew.
   useEffect(() => {
@@ -295,13 +311,8 @@ function PresetPill({ label, presets, chosen, text, onChoose, controls }: {
   }, [focusFields]);
 
   return <Popover open={open} onOpenChange={setOpen}>
-    <PopoverTrigger asChild>
-      <button type="button" className="wconvert-value-pill" data-attention={text === null || undefined}
-        aria-label={sprintf(/* translators: 1: what the value is, e.g. “Device”. 2: the value, e.g. “Phone”. */ __('%1$s: %2$s', 'wconvert'), label, shown)}>
-        <span>{shown}</span><ChevronDown aria-hidden="true" />
-      </button>
-    </PopoverTrigger>
-    <OptionListContent align="start" className="w-[min(320px,calc(100vw-32px))]" aria-label={label}>
+    <PillTrigger label={label} text={text} />
+    <OptionListContent align="start" className={PILL_MENU} aria-label={label}>
       <OptionList footer={custom && controls.length > 0 ? <div ref={fields} className="wconvert-option-menu__control">
         {controls}
         <button type="button" className="wconvert-option-menu__done" onClick={() => setOpen(false)}>{__('Done', 'wconvert')}</button>

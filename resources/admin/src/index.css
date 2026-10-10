@@ -6621,7 +6621,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * one rule keeps its id, because nothing in this admin draws on an input's
  * pseudo-elements. sr-only inputs (chips, segmented controls) have their own
  * targets on the label. */
-:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   input:is([type="checkbox"], [type="radio"]):not(.sr-only) {
   appearance: auto;
   -webkit-appearance: auto;
@@ -6641,19 +6641,19 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   line-height: inherit;
   cursor: pointer;
 }
-:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   input:is([type="checkbox"], [type="radio"]):not(.sr-only)::before,
-:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   input:is([type="checkbox"], [type="radio"]):not(.sr-only)::after { content: none; display: none; }
-:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   input:is([type="checkbox"], [type="radio"]):not(.sr-only):focus { box-shadow: none; outline: none; }
-:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   input:is([type="checkbox"], [type="radio"]):not(.sr-only):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
   box-shadow: none;
 }
-:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   label:where(:has(> input:is([type="checkbox"], [type="radio"]):not(.sr-only))) {
   display: flex;
   align-items: flex-start;
@@ -6667,9 +6667,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 }
 /* Centres the box on the first line whatever the label's size: `1lh` is the
  * line box the input inherits above. (0,2,2) beats the box rule's `margin: 0`. */
-:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   label > input:is([type="checkbox"], [type="radio"]):not(.sr-only) { margin-block-start: max(0px, calc((1lh - 18px) / 2)); }
-:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+:where(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
   label:where(:has(> input:is([type="checkbox"], [type="radio"]):disabled:not(.sr-only))) { cursor: default; opacity: .6; }
 
 /* The one radio card (ADR 0131): a choice that needs a sentence of its own —
@@ -6885,6 +6885,13 @@ body .wconvert-option-menu__head > label { font-size: var(--text-note); font-wei
     background-color: var(--warning-surface) !important;
     color: var(--warning) !important;
     font-weight: 600 !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="pill"][data-attention]:not([multiple]):not([size]:not([size="1"])) {
+    border-style: dashed !important;
+    border-color: color-mix(in srgb, var(--warning) 40%, var(--border)) !important;
+    background-color: var(--warning-surface) !important;
+    color: var(--warning) !important;
   }
   :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
     select.wconvert-select-word[data-variant="word"]:not([multiple]):not([size]:not([size="1"])):dir(rtl) {

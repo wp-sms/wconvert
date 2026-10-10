@@ -56,6 +56,7 @@ export function ParamControl({ id, param, value, onChange, variant, words, label
       return <CommerceRange value={value} onChange={onChange} money={param.control === 'money_range'} />;
     case 'enum':
       return <NativeSelect id={id} variant={variant} aria-label={label} value={typeof value === 'string' ? value : ''}
+        data-attention={variant !== undefined && (typeof value !== 'string' || value === '') || undefined}
         onChange={event => onChange(event.target.value || undefined)}>
         {/* A pill with a value has no empty choice: "Choose…" is how one starts, not a value to go back to. */}
         {(variant === undefined || typeof value !== 'string' || value === '') && <option value="">{__('Choose…', 'wconvert')}</option>}
@@ -64,6 +65,7 @@ export function ParamControl({ id, param, value, onChange, variant, words, label
     case 'boolean':
       return (
         <NativeSelect id={id} variant={variant} aria-label={label} value={typeof value === 'boolean' ? String(value) : ''}
+          data-attention={variant !== undefined && typeof value !== 'boolean' || undefined}
           onChange={event => onChange(event.target.value === '' ? undefined : event.target.value === 'true')}>
           {(variant === undefined || typeof value !== 'boolean') && <option value="">{__('Choose…', 'wconvert')}</option>}
           <option value="true">{words?.[0] ?? __('Yes', 'wconvert')}</option>

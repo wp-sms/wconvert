@@ -23,11 +23,13 @@ const MAX_RULES = 8;
  * `match` is the heading's words around the select, e.g. "Match" and "of
  * these". Without it (click mode) only the rows show.
  */
-export function GroupEditor({ group, types, onChange, offset = 0, match, title, actions, autoOpenAdd = false, onAddClosed }: {
+export function GroupEditor({ group, types, onChange, offset = 0, match, title, label, actions, autoOpenAdd = false, onAddClosed }: {
   group: RuleGroup; types: readonly RuleType[]; onChange: (group: RuleGroup) => void; offset?: number;
   match?: { readonly before: string; readonly after: string; readonly label: string; readonly order: readonly ('all' | 'any')[] };
   /** The group's own name, e.g. "Group 1". */
   title?: string;
+  /** Its name for assistive technology where it shows no title, e.g. "What opens it". */
+  label?: string;
   /** Beside the heading, e.g. Remove group. */
   actions?: ReactNode;
   /** Open the rule picker as the group appears, as a new group does. */
@@ -38,7 +40,7 @@ export function GroupEditor({ group, types, onChange, offset = 0, match, title, 
   const words = { all: __('all', 'wconvert'), any: __('any', 'wconvert') };
   const joiner = group.match === 'all' ? __('and', 'wconvert') : __('or', 'wconvert');
 
-  return <section className="wconvert-display-group" aria-label={title}>
+  return <section className="wconvert-display-group" aria-label={title ?? label}>
     {(title !== undefined || match !== undefined) && <div className="wconvert-display-group__head">
       {title !== undefined && <span className="wconvert-display-group__name">{title}</span>}
       {title !== undefined && match !== undefined && <span aria-hidden="true" className="wconvert-display-group__dot">·</span>}

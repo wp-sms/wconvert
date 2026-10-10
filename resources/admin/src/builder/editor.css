@@ -1445,7 +1445,6 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 #wconvert-admin .wconvert-display .wconvert-rule-row__name { display: inline-flex; align-items: center; gap: 8px; padding-inline-end: 2px; font-size: var(--text-body); font-weight: 600; }
 #wconvert-admin .wconvert-display .wconvert-rule-row__name > svg { inline-size: 16px; block-size: 16px; color: var(--muted-foreground); }
 #wconvert-admin .wconvert-display .wconvert-rule-row > p.wconvert-rule__note { margin: 0; padding-inline-start: 24px; font-size: var(--text-note); font-style: normal; }
-#wconvert-admin .wconvert-display .wconvert-rule__tools { display: flex; align-items: center; gap: 2px; }
 #wconvert-admin .wconvert-display .wconvert-rule__tools > .wconvert-rule__remove { display: inline-grid; place-items: center; inline-size: 28px; block-size: 28px; margin: 0; padding: 0; border: 0; border-radius: var(--radius); background: none; cursor: pointer; }
 #wconvert-admin .wconvert-display .wconvert-rule__tools > .wconvert-rule__remove > svg { inline-size: 16px; block-size: 16px; }
 #wconvert-admin .wconvert-display .wconvert-rule__tools > .wconvert-rule__remove:hover { background: var(--accent); }
