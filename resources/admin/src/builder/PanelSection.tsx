@@ -2,6 +2,7 @@ import { useId, type ReactNode, type Ref } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft } from 'lucide-react';
 import { InfoTip } from '../shell/InfoTip';
+import { Description } from '../shell/Description';
 import { cn } from '../lib/utils';
 
 /**
@@ -154,5 +155,6 @@ export function PanelField({ label, htmlFor, tip, tipLabel, actions, hint, hintI
 
 /** The one line of help a field may keep: 12px, muted (ADR 0136; GUIDELINES §4 `hint`). */
 export function PanelHint({ id, className, children }: { id?: string; className?: string; children: ReactNode }) {
-  return <p id={id} className={cn('wconvert-panel-hint', className)}>{children}</p>;
+  // The admin's one Description, a step smaller in a panel.
+  return <Description id={id} className={cn('wconvert-panel-hint', className)}>{children}</Description>;
 }

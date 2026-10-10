@@ -177,8 +177,8 @@ it.each([
   render(<AdvancedContext.Provider value><ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
     openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={vi.fn()} /></AdvancedContext.Provider>);
   expect(screen.queryByText('Different on mobile') !== null).toBe(different);
-  // The device row counts what differs on mobile and names it on hover (ADR 0136).
-  expect(screen.getByText('1 mobile change')).toHaveAttribute('title', 'Padding');
+  // The device row counts what differs on mobile and names it (ADR 0136).
+  expect(screen.getByText('1 mobile change: Padding')).toBeInTheDocument();
 });
 
 it('lists local mobile overrides and resets only the selected element’s narrow bag', async () => {
@@ -211,7 +211,7 @@ describe('the plain style view', () => {
     const reset = screen.getByRole('button', { name: 'Reset' });
     await userEvent.click(reset);
     expect(reset).toBeDisabled();
-    expect(screen.getByText('1 mobile change')).toHaveAttribute('title', 'Padding');
+    expect(screen.getByText('1 mobile change: Padding')).toBeInTheDocument();
   });
 
   it('names a color on its swatch and keeps the hex for Advanced', async () => {

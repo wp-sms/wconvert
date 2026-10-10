@@ -9,6 +9,7 @@ import { captureName, setCaptureName } from './structure/captureDetails';
 import { nodesOf, nodeAt } from './structure/tree';
 import { withValue, type Path } from './panel';
 import { PanelHint, PanelSection } from './PanelSection';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 /**
  * A form screen's **Form** section (ADR 0134, 0136): its fields as one compact
@@ -53,7 +54,7 @@ export function JourneyCaptureSettings({ tree, step, onChange, consentEditor, on
       checked={screen.review_answers === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step ? { ...item, review_answers: event.target.checked } : item) })} />}
     <div>
       <Disclosure variant="inline" title={__('How you’ll use their details', 'wconvert')} summary={note.trim() ? __('Set', 'wconvert') : __('Not set', 'wconvert')}>
-        <textarea aria-label={__('How you’ll use their details', 'wconvert')} rows={2} maxLength={500} value={note} placeholder={__('What visitors sign up for, or how you will contact them', 'wconvert')}
+        <AutoGrowTextarea aria-label={__('How you’ll use their details', 'wconvert')} maxLength={500} value={note} placeholder={__('What visitors sign up for, or how you will contact them', 'wconvert')}
           onChange={event => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step ? { ...item, details_note: event.target.value } : item) }, `journey:${screen.id}:details-note`)} />
         <PanelHint>{__('Shown under the headline.', 'wconvert')}</PanelHint>
       </Disclosure>

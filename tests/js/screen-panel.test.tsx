@@ -2,7 +2,7 @@ import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
-import { ScreenChips, ScreenFact, ScreenThen } from '../../resources/admin/src/builder/ScreenPanel';
+import { ScreenChips, ScreenThen } from '../../resources/admin/src/builder/ScreenPanel';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { treeFixture } from './support/journey';
 import labels from '../fixtures/template-labels.json';
@@ -86,13 +86,7 @@ describe('Then →', () => {
 });
 
 describe('the rest of the screen panel', () => {
-  it('states a fact and links to where it is changed', async () => {
-    const onAction = vi.fn();
-    render(<ScreenFact label="When it opens" value="Everyone · After 8 seconds" action="Display rules" onAction={onAction} />);
-    expect(screen.getByText('Everyone · After 8 seconds')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Display rules' }));
-    expect(onAction).toHaveBeenCalledOnce();
-  });
+  // A fact row is the panel grammar's FactRow, tested in panel-grammar.test.tsx (ADR 0136).
 
   it('lists what is on a screen, each opening its element', async () => {
     const onSelect = vi.fn();

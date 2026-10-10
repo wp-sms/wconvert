@@ -464,7 +464,7 @@ final class TemplateLabels
              */
             /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
             'button.action' => __('Button action', 'wconvert'),
-            'heading.level' => __('Heading level, for screen readers and search', 'wconvert'),
+            'heading.level' => __('Heading level', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
             'heading.size' => __('Size', 'wconvert'),
             /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */

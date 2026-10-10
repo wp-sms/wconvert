@@ -213,8 +213,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
 
   const [changingGoal, setChangingGoal] = useState(false);
-  // Campaign actions (⋯): Change goal opens from Campaign details, reached through it, so focus returns here (ADR 0136).
-  const changeGoal = useRef<HTMLButtonElement>(null);
+  // Campaign actions (⋯). Change goal opens from Campaign details, reached through it, so focus returns here (ADR 0136).
+  const campaignActions = useRef<HTMLButtonElement>(null);
 
   const [siblingAct, setSiblingAct] = useState<ConvertingAct | null>(null);
 
@@ -965,13 +965,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onPreview={() => previewAs('journey')}
             {...issueRoutes}
           />
-          <DropdownMenu><DropdownMenuTrigger asChild><Button ref={changeGoal} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
+          <DropdownMenu><DropdownMenuTrigger asChild><Button ref={campaignActions} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="wconvert-campaign-actions">
               {small && <><DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}><Undo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.undo}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}><Redo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.redo}</DropdownMenuItem></>}
               <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}><ArrowUpFromLine aria-hidden="true" />{__('Import design', 'wconvert')}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}><ArrowDownToLine aria-hidden="true" />{__('Export design', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = changeGoal.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = campaignActions.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -1018,6 +1018,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             elementPanel={!lookOpen && selection && selection.path.length > 1 ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act} onBack={() => setSelection(null)}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={(next, said) => { edit({ template: next }); setSwapSaid(current => ({ said, serial: (current?.serial ?? 0) + 1 })); }}
               endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
+              placement={displayTypeOf(config, templates) === 'inline' ? inlineSummary : undefined}
               onDesign={openLook}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
@@ -1143,10 +1144,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       {transfer && <Suspense fallback={<span role="status">{__('Loading file tools…', 'wconvert')}</span>}>
         <TemplateTransferDialog action={transfer.action} optin={id} config={transfer.config}
           design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
-          onClose={() => { setTransfer(null); changeGoal.current?.focus(); }}
+          onClose={() => { setTransfer(null); campaignActions.current?.focus(); }}
           onApply={patch => {
             if (config !== transfer.config) return __('Your draft changed during import. Close this and review the file again.', 'wconvert');
-            edit(patch); setSelection(null); setStep(0); setImported(true); setTransfer(null); changeGoal.current?.focus();
+            edit(patch); setSelection(null); setStep(0); setImported(true); setTransfer(null); campaignActions.current?.focus();
           }} />
       </Suspense>}
 
@@ -1205,17 +1206,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
       <ChangeGoalDialog
         open={changingGoal}
-        returnFocusTo={changeGoal}
-        onOpenChange={(next) => {
-          setChangingGoal(next);
-
-          // Radix restores focus to its own trigger and this dialog has none,
-          // exactly as the picker above: naming the control is what puts the
-          // caret back rather than on `<body>`.
-          if (!next) {
-            changeGoal.current?.focus();
-          }
-        }}
+        returnFocusTo={campaignActions}
+        // Radix restores focus to its own trigger and this dialog has none, so
+        // `returnFocusTo` names the control that puts the caret back (ADR 0136).
+        onOpenChange={setChangingGoal}
         goals={goals}
         current={goal ?? ''}
         duplicate={!canChangeGoal}

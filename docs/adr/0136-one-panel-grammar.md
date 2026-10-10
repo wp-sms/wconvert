@@ -38,16 +38,20 @@ with one change: field hints one step smaller.
      are rows, with no cards and no banner.
    - `FieldHeading` / `PanelField`: the label (13/500) above, 6px, the
      control; the InfoTip beside the label; reset, link-sides and CSS actions
-     at the end of the same row, for every field type.
-   - `PanelHint`: the one line a field may keep, 12/400 muted.
+     at the end of the same row, for every field type. `PanelField` is the
+     builder's dense form of `shell/Field`, not a second field: same order,
+     same 6px, a 12px hint.
+   - `PanelHint`: the one line a field may keep, `shell/Description` at
+     12/400 muted. A `CheckRow`'s hint in a panel is the same 12px.
 2. **Help has a ladder.** Delete a sentence the label already says.
    Otherwise keep one line of at most twelve words only if it changes what the
    merchant does next. Otherwise it is an InfoTip beside the label or section
    title. The InfoTip of 0131 now serves the builder as well as Analytics and
    Leads.
 3. **Checkboxes are `CheckRow` with `.wconvert-check`**: 0131 §7's row. The
-   `wconvert-setting-toggle`, `__check` and bare labels are gone. Shown or
-   hidden is the element header's eye (pressed while shown), not a checkbox;
+   `wconvert-setting-toggle`, `__check` and bare labels are gone from the
+   panels and the insert dialog. Shown or hidden is the element header's eye,
+   one name ("Show Headline") pressed while shown, not a checkbox;
    the screen panel's Consent disclosure, which has no header, keeps a
    "Shown" switch.
 4. **Disclosures have titles of at most three words and say their value as
@@ -87,6 +91,9 @@ with one change: field hints one step smaller.
    - Style: the element's own looks (Size) come first under their own labels;
      the device is one line ("Desktop · No mobile changes · Edit mobile"); a
      readability problem is one line with Fix.
+   - Heading level, under Advanced, is labelled "Heading level" with an
+     InfoTip ("For screen readers and search"); the manifest label lost its
+     ", for screen readers and search".
    - Field types: the picture is its own control, and its address sits behind
      "Use a web address" (shown under Advanced, where there is no media
      library, or when the value is not a picture). A gradient's direction is a
@@ -94,6 +101,11 @@ with one change: field hints one step smaller.
      Advanced to change it." is the one CSS-only wording. Link-sides has one
      name, pressed while linked.
    - Copy: "Up to 6. The first 3 available appear." in both product pickers.
+     "Use the Increase basket value goal" stays a line under Add to cart: it
+     changes which goal to pick.
+   - Close leaves the Edit tab's screen panel, which always shows something.
+     The legacy Manage screens dialog keeps it, because its inspector is the
+     only thing that closes back to the map.
 
 ## Consequences
 

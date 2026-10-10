@@ -76,15 +76,10 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
   </FactRow>;
 }
 
-/** A fact the screen panel states and links to where it is changed: "When it opens · After 8 seconds". */
-export function ScreenFact({ label, value, action, onAction }: { label: string; value: string; action: string; onAction?(): void }) {
-  return <FactRow label={label} action={action} onAction={onAction}>{value}</FactRow>;
-}
-
 /** This screen's issues from the campaign's one list (ADR 0133), each a way to its fix. */
 export function ScreenIssues({ issues, onIssue }: { issues: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void }) {
   if (issues.length === 0) return null;
-  return <PanelSection label={__('To fix on this screen', 'wconvert')}>
+  return <PanelSection>
     <ul className="wconvert-screen-issues" aria-label={__('To fix on this screen', 'wconvert')}>
       {issues.map(issue => <li key={issue.key}><button type="button" onClick={() => onIssue?.(issue)}><TriangleAlert aria-hidden="true" />{issue.said}</button></li>)}
     </ul>

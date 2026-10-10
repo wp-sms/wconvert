@@ -8,8 +8,7 @@ import { useDirection } from '../hooks/useDirection';
 import { Themes, Tokens } from './Tokens';
 import { physicalPlacementLabel, PlacementControl } from './PlacementControl';
 import { AdvancedContext, AdvancedToggle } from './advanced';
-import { DesignColors } from './ColorField';
-import { resolvedToken } from './panel';
+import { DesignColors, designColorsOf } from './ColorField';
 import { FactList, FactRow, PanelHeader, PanelSection } from './PanelSection';
 import type { TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
@@ -58,7 +57,7 @@ export function DesignSettings({
   // The Look's one Advanced switch, at the panel's foot (ADR 0135, 0136).
   const [advanced, setAdvanced] = useState(false);
 
-  const colors = ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 'input-bg'].map(token => resolvedToken(template.tokens, token));
+  const colors = designColorsOf(template.tokens);
 
   return (
     <AdvancedContext.Provider value={advanced}>

@@ -104,7 +104,7 @@
     },
     "nodeParams": {
         "button.action": "Button action",
-        "heading.level": "Heading level, for screen readers and search",
+        "heading.level": "Heading level",
         "heading.size": "Size",
         "text.size": "Size",
         "image.fit": "Picture fit",

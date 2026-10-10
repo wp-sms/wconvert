@@ -518,7 +518,9 @@ export function TokenField({
   );
   const offered = CHOICES[token];
 
-  const presetBase = measuresOf(fallback);
+  const designBase = measuresOf(fallback);
+  // A design that ships `0` has nothing to scale, so its steps scale the manifest's own value instead.
+  const presetBase = designBase?.every(part => part.amount === 0) ? measuresOf(standard) ?? designBase : designBase;
   if (simple && ['gap', 'radius'].includes(token) && presetBase) {
     /*
       **Four buttons, never a 72px select.** Gap and corner rounding sat half a

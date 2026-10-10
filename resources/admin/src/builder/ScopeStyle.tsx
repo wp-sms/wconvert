@@ -80,6 +80,8 @@ export function ScopeStyle({
   const own = bagOf(here, width);
 
   const mobile = width === 'narrow';
+  const pasteSaid = copied === null ? __('Paste styles', 'wconvert')
+    : sprintf(/* translators: %d: how many style settings were copied. */ _n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length);
   return (
     <div className="wconvert-scope">
       {/*
@@ -90,9 +92,12 @@ export function ScopeStyle({
       <div className="wconvert-style-device" role="status">
         {mobile ? <Smartphone aria-hidden="true" /> : <Monitor aria-hidden="true" />}
         <strong>{mobile ? __('Mobile', 'wconvert') : __('Desktop', 'wconvert')}</strong>
-        <span title={mobileOverrides.length > 0 ? mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', ') : undefined}>{mobile
+        <span>{mobile
           ? __('Follows desktop unless changed', 'wconvert')
-          : mobileOverrides.length > 0 ? sprintf(_n('%d mobile change', '%d mobile changes', mobileOverrides.length, 'wconvert'), mobileOverrides.length) : __('No mobile changes', 'wconvert')}</span>
+          : mobileOverrides.length > 0
+            ? sprintf(/* translators: 1: how many settings differ on mobile. 2: their names, e.g. “Padding, Text size”. */ _n('%1$d mobile change: %2$s', '%1$d mobile changes: %2$s', mobileOverrides.length, 'wconvert'),
+              mobileOverrides.length, mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))
+            : __('No mobile changes', 'wconvert')}</span>
         {onWidth && <button type="button" className="wconvert-panel-link" onClick={() => onWidth(mobile ? 'tokens' : 'narrow')}>{mobile ? __('Edit desktop', 'wconvert') : __('Edit mobile', 'wconvert')}</button>}
       </div>
 
@@ -157,8 +162,7 @@ export function ScopeStyle({
           <ClipboardCopy aria-hidden="true" />
         </Button>
         <Button type="button" variant="ghost" size="icon-xs" disabled={copied === null}
-          aria-label={copied === null ? __('Paste styles', 'wconvert') : sprintf(_n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length)}
-          title={copied === null ? __('Paste styles', 'wconvert') : sprintf(_n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length)}
+          aria-label={pasteSaid} title={pasteSaid}
           onClick={() => copied !== null && onChange({ ...template, tree: withScopeBag(template.tree, here.path, copied, width) })}>
           <ClipboardPaste aria-hidden="true" />
         </Button>
@@ -324,7 +328,7 @@ function ScopeContrast({
         return (
           <li key={`${fg}/${bg}`} className="wconvert-panel-warn">
             <TriangleAlert aria-hidden="true" />
-            <span title={verdict.said}>{sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), named)}{advanced && verdict.ratio !== null ? ` (${sprintf(__('%s:1', 'wconvert'), verdict.ratio)})` : ''}</span>
+            <span title={verdict.said}>{sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), named)}{advanced && verdict.ratio !== null ? ` (${sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), verdict.ratio)})` : ''}</span>
             <Button type="button" variant="outline" size="xs" aria-label={sprintf(__('Fix %s', 'wconvert'), named)}
               onClick={() => onFix(fg, readableFix(value, bg))}>
               {__('Fix', 'wconvert')}

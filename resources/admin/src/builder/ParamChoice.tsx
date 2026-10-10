@@ -19,6 +19,7 @@ export function ParamChoice({
   renderChoice,
   columns,
   compact = false,
+  tip,
   onChange,
 }: {
   /** A stable key for the radio group — never a translated string. */
@@ -47,6 +48,8 @@ export function ParamChoice({
   readonly columns?: 2 | 3;
   /** Icon-only choices retain accessible names and hover titles. */
   readonly compact?: boolean;
+  /** Help beside the label, as an InfoTip (ADR 0136). */
+  readonly tip?: string;
   readonly onChange: (value: unknown) => void;
 }) {
   if (offered.length === 0) {
@@ -59,7 +62,7 @@ export function ParamChoice({
       return <CheckRow className="wconvert-check" label={label} checked={selected === 'true'} onChange={event => onChange(event.target.checked)} />;
     }
     return <div className="wconvert-token">
-      <FieldHeading label={label} htmlFor={`wconvert-param-${id}`} />
+      <FieldHeading label={label} htmlFor={`wconvert-param-${id}`} tip={tip} />
       <select id={`wconvert-param-${id}`} value={selected ?? '__current'} onChange={event => onChange(valueOfChoice(event.target.value))}>
         {selected === undefined && <option value="__current" disabled>{held === undefined && fallback === undefined
           ? __('Choose…', 'wconvert') : sprintf(__('Current: %s', 'wconvert'), String(held ?? fallback))}</option>}
@@ -70,7 +73,7 @@ export function ParamChoice({
 
   return (
     <div className="wconvert-token">
-      <FieldHeading as="span" label={label} labelId={`wconvert-param-${id}`} />
+      <FieldHeading as="span" label={label} labelId={`wconvert-param-${id}`} tip={tip} />
       {/*
         **A group with a name, because a set of radios is one control.** Without
         it a screen reader announces four unrelated buttons and never the

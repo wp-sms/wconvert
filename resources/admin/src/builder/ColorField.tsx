@@ -5,6 +5,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popove
 import { StyleValueInput } from './StyleValueInput';
 import { colorName } from './colorName';
 import { cssOnlyNote, useAdvanced } from './advanced';
+import { resolvedToken } from './panel';
+import type { Tokens } from '@renderer/types';
 
 /**
  * The colors the design already uses, offered first in every color popover
@@ -12,6 +14,10 @@ import { cssOnlyNote, useAdvanced } from './advanced';
  * merchant should not have to find that by dragging a picker.
  */
 export const DesignColors = createContext<readonly string[]>([]);
+
+/** The design's own colors, resolved, in the order its palette lists them. */
+export const designColorsOf = (tokens: Tokens): readonly string[] =>
+  ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 'input-bg'].map(token => resolvedToken(tokens, token));
 
 /** Convert hex including alpha for the RGBA picker; opening never writes a value. */
 export function rgbaForPicker(value: string): string | null {

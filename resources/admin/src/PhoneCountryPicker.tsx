@@ -70,7 +70,7 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
   };
 
   return <div className={cn('wconvert-phone-country-picker', field && 'gap-1.5')}>
-    {tip ? <span className="wconvert-field-heading"><span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span><InfoTip label={label}>{tip}</InfoTip></span>
+    {tip ? <span className="wconvert-field-heading"><span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span><InfoTip label={sprintf(/* translators: %s: a field label, e.g. “Starting country”. */ __('About %s', 'wconvert'), label)}>{tip}</InfoTip></span>
       : <span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span>}
     <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); }}>
       <PopoverTrigger asChild>

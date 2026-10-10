@@ -6,8 +6,10 @@ import { CheckRow } from '../shell/CheckRow';
 import { FactList, FactRow, PanelField, PanelHint, PanelSection } from './PanelSection';
 
 /** One recommendation editor; campaign placement remains owned by Display rules. */
-export function RecommendationSettings({ value, onChange, onPlacement }: {
+export function RecommendationSettings({ value, onChange, onPlacement, placement }: {
   value: ProductsNode;
+  /** Where the campaign sits on the page, as Display rules says it ("After the product summary"). */
+  placement?: string;
   onChange(patch: Partial<ProductsNode>): void;
   onPlacement?: () => void;
 }) {
@@ -41,15 +43,17 @@ export function RecommendationSettings({ value, onChange, onPlacement }: {
         <label className="wconvert-radio-card"><input type="radio" name={contextName} checked={value.context === 'product'} onChange={() => onChange({ context: 'product' })}/><span>{__('Viewing the main product', 'wconvert')}</span></label>
         <label className="wconvert-radio-card"><input type="radio" name={contextName} checked={value.context !== 'product'} onChange={() => onChange({ context: 'cart' })}/><span>{legacyBasket ? __('Basket has items', 'wconvert') : __('Main product is in the basket', 'wconvert')}</span></label>
       </div>
-      <FactList><FactRow label={__('Placement', 'wconvert')} action={onPlacement ? __('Display rules', 'wconvert') : undefined} onAction={onPlacement}>{__('Set in Display rules', 'wconvert')}</FactRow></FactList>
+      <FactList><FactRow label={__('Placement', 'wconvert')} action={onPlacement ? __('Display rules', 'wconvert') : undefined} onAction={onPlacement}>{placement ?? __('Set in Display rules', 'wconvert')}</FactRow></FactList>
     </PanelSection>
     <PanelSection title={__('Product action', 'wconvert')}
-      tip={value.action === 'add_to_cart' ? __('Adds one item; products needing options open their product page. It counts additions to the cart, not purchases. Use the Increase basket value goal.', 'wconvert') : __('Results count product clicks.', 'wconvert')}>
+      tip={value.action === 'add_to_cart' ? __('Adds one item; products needing options open their product page. It counts additions to the cart, not purchases.', 'wconvert') : __('Results count product clicks.', 'wconvert')}>
       <label className="sr-only" htmlFor={actionId}>{__('Product action', 'wconvert')}</label>
       <select id={actionId} value={value.action ?? 'link'} onChange={event => onChange({ action: event.target.value as ProductsNode['action'] })}>
         <option value="link">{__('Open the product page', 'wconvert')}</option>
         <option value="add_to_cart">{__('Add to cart', 'wconvert')}</option>
       </select>
+      {/* It changes which goal to pick, so it stays a line rather than a tip (ADR 0136 §2). */}
+      {value.action === 'add_to_cart' && <PanelHint>{__('Use the Increase basket value goal to count these.', 'wconvert')}</PanelHint>}
     </PanelSection>
   </div>;
 }

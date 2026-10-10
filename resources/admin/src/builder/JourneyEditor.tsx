@@ -721,7 +721,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             when it opens, and what happens when it is submitted — label, value
             and the way to where each is changed, one row each.
           */}
-          <PanelSection label={__('About this screen', 'wconvert')} className="wconvert-screen-facts">
+          {/* Drawn only where it has something to say: an empty section would bring back a stray rule. */}
+          {(followupSource !== undefined || (slim && tree.steps.length > 1) || (slim && isFirst) || !!submission || (journeys && (!slim || !isFirst))) && <PanelSection label={__('About this screen', 'wconvert')} className="wconvert-screen-facts">
             <FactList>
               {followupSource !== undefined && <FactRow label={__('Follow-up for', 'wconvert')} action={__('Open', 'wconvert')} onAction={() => select(followupSource)}>{tree.steps[followupSource].name}</FactRow>}
               {slim && <ScreenThen tree={tree} step={step} editable={journeys} onChange={onChange}
@@ -732,7 +733,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               {submission && onGoToDestinations && <FactRow label={__('Where leads go', 'wconvert')} action={__('Destinations', 'wconvert')} onAction={() => openContext('destinations')}>{destinationSummary || __('Keep in WConvert only', 'wconvert')}</FactRow>}
             </FactList>
             {journeys && (!slim || !isFirst) && <ScreenConditionSettings key={`visibility:${current.id}`} reveal={repairRequest?.screenId === current.id && repairRequest.section === 'content' && !repairRequest.focus ? repairRequest.serial : undefined} tree={tree} step={step} onChange={onChange} onSelect={select} />}
-          </PanelSection>
+          </PanelSection>}
             {!slim && <OptionStrip className="wconvert-journey-pane__tabs" label={__('Screen settings section', 'wconvert')} value={panelSection} onChange={value => setRequestedSection(value as typeof requestedSection)}
               options={[
                 { value: 'content', label: walkNodes(current.content).some(node => node.type === 'question') ? __('Content & answers', 'wconvert') : __('Content', 'wconvert') },
@@ -744,7 +745,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           {!slim && journeys && questionSettings}
           {currentFollowups && <PanelSection title={__('Follow-up order', 'wconvert')}
             tip={followupSource === undefined ? __('This group has its own incoming paths. Review them in Flow before changing the order.', 'wconvert') : __('Visitors see matching questions in this order. Other paths stay the same.', 'wconvert')}>
-            <FactList><FactRow label={__('Position', 'wconvert')}>{sprintf(__('%1$d of %2$d', 'wconvert'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</FactRow></FactList>
+            <FactList><FactRow label={__('Position', 'wconvert')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$d of %2$d', 'wconvert'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</FactRow></FactList>
             <div className="wconvert-panel-actions">{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" size="sm" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); setSaid(__('Follow-up order updated. Test the journey with several selected interests.', 'wconvert')); }}>{direction === -1 ? __('Move up', 'wconvert') : __('Move down', 'wconvert')}</Button>)}
               {followupSource === undefined && <Button type="button" variant="ghost" size="sm" onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Review in Flow', 'wconvert')}</Button>}</div>
           </PanelSection>}
@@ -793,7 +794,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             <small>{remainingFollowups ? sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === remainingFollowups.next)?.name ?? '') : __('Review where visitors go next', 'wconvert')}</small>
           </button>}
           {slim && tree.graph && !questionPath && tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
-            open={panelSection === 'paths' || undefined} title={__('Paths', 'wconvert')} summary={sprintf(_n('%d path', '%d paths', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{routes}</Disclosure></PanelSection>}
+            open={panelSection === 'paths' || undefined} title={__('Paths', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d path', '%d paths', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{routes}</Disclosure></PanelSection>}
           {slim && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
 
           </> : tree.graph ? routes

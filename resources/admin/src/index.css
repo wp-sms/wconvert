@@ -3504,10 +3504,6 @@ body:has(#wconvert-admin) #wpbody-content {
   white-space: nowrap;
 }
 
-.wconvert-block__chip--counted {
-  background: var(--success-surface);
-  color: var(--success);
-}
 
 .wconvert-block__chip--warn {
   background: var(--warning-surface);
@@ -4524,16 +4520,12 @@ body:has(#wconvert-admin) #wpbody-content {
   min-inline-size: 0;
 }
 
-.wconvert-position__heading,
 .wconvert-position__row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.wconvert-position__heading {
-  justify-content: space-between;
-}
 
 .wconvert-position__grid {
   display: grid;

@@ -15,9 +15,18 @@ export function AutoGrowTextarea({ ref, value, className, ...props }: Omit<Texta
   useLayoutEffect(() => {
     const element = box.current;
     if (element === null) return;
-    element.style.blockSize = 'auto';
-    // jsdom measures nothing, and neither does a hidden panel: keep the CSS sizing there.
-    if (element.scrollHeight > 0) element.style.blockSize = `${element.scrollHeight + 2}px`;
+    const fit = () => {
+      element.style.blockSize = 'auto';
+      // jsdom measures nothing, and neither does a hidden panel: keep the CSS sizing there.
+      if (element.scrollHeight > 0) element.style.blockSize = `${element.scrollHeight + 2}px`;
+    };
+    fit();
+    // A wider or narrower panel rewraps the words, so the height follows the width too.
+    if (typeof ResizeObserver === 'undefined') return;
+    let width = element.clientWidth;
+    const watch = new ResizeObserver(() => { if (element.clientWidth !== width) { width = element.clientWidth; fit(); } });
+    watch.observe(element);
+    return () => watch.disconnect();
   }, [value]);
   return <textarea {...props} rows={1} value={value} className={['wconvert-autogrow', className].filter(Boolean).join(' ')} ref={element => {
     box.current = element;

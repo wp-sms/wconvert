@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { FieldHeading, PanelHint } from './PanelSection';
 import { Disclosure } from '../shell/Disclosure';
 import manifest from '../../../templates/manifest.json';
 import { Button } from '../components/ui/button';
@@ -52,9 +53,11 @@ export function InterestOptions({ value, onEdit, onChange }: {
     onChange([...options, { value: `option-${next}`, label: sprintf(__('Option %d', 'wconvert'), next) }]);
   }
 
-  return <fieldset className="m-0 min-w-0 space-y-3 border-0 p-0">
-    <legend className="mb-2 text-sm font-medium">{__('Choices', 'wconvert')}</legend>
-    <p className="description">{__('Visitors choose one answer. Rename the choices to match what your business offers.', 'wconvert')}</p>
+  // In the panel grammar (ADR 0136): a field heading with its help as an InfoTip, and one line about the limit.
+  return <fieldset className="wconvert-panel-field m-0 min-w-0 border-0 p-0">
+    <legend className="sr-only">{__('Choices', 'wconvert')}</legend>
+    <FieldHeading as="span" label={__('Choices', 'wconvert')}
+      tip={sprintf(/* translators: %d: the most choices a field may offer. */ __('Visitors choose one answer. Up to %d choices; answers stay in your capture history, so check that your destination forwards them.', 'wconvert'), optionLimits.max_items)} />
     {options.map((option, at) => <div key={at} className="space-y-2 rounded-md border border-border p-3">
       <label className="wconvert-slot__key">{sprintf(__('Choice %d', 'wconvert'), at + 1)}
         <input ref={(input) => { labels.current[at] = input; }} type="text" value={option.label} maxLength={optionLimits.label_max_length} onChange={(event) => update(at, 'label', event.target.value)} />
@@ -63,7 +66,7 @@ export function InterestOptions({ value, onEdit, onChange }: {
         <label className="wconvert-slot__key mt-2">{sprintf(__('Value sent for choice %d', 'wconvert'), at + 1)}
           <input type="text" value={option.value} pattern={optionLimits.value_pattern} onChange={(event) => update(at, 'value', event.target.value)} />
         </label>
-        <p className="description">{__('Use a unique value starting with a lowercase letter, followed by letters, numbers, hyphens or underscores. Changing the label keeps this value stable for connected services. Changing this value affects future submissions.', 'wconvert')}</p>
+        <PanelHint>{__('Lowercase letters, numbers, hyphens or underscores. Changing it affects future submissions.', 'wconvert')}</PanelHint>
       </Disclosure>
       <div className="flex flex-wrap gap-2">
         <Button type="button" variant="ghost" size="sm" disabled={at === 0} aria-label={sprintf(__('Move choice %d up', 'wconvert'), at + 1)} onClick={() => {
@@ -77,7 +80,6 @@ export function InterestOptions({ value, onEdit, onChange }: {
       </div>
     </div>)}
     {!validInterestOptions(value) && <p role="status" className="text-sm text-destructive">{__('Add at least one choice. Each choice needs a label and a unique valid sent value.', 'wconvert')}</p>}
-    <Button ref={addButton} type="button" variant="outline" size="sm" onClick={add} disabled={options.length >= optionLimits.max_items}>{__('Add choice', 'wconvert')}</Button>
-    <p className="description">{sprintf(__('Up to %d choices. Answers stay in your capture history; check that your destination supports forwarding them.', 'wconvert'), optionLimits.max_items)}</p>
+    <button ref={addButton} type="button" className="wconvert-panel-link" onClick={add} disabled={options.length >= optionLimits.max_items}>{__('Add choice', 'wconvert')}</button>
   </fieldset>;
 }

@@ -28,6 +28,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 type ChoiceQuestion = QuestionNode & { id: string };
+
+/** An answer type in the words the Answer type menu uses. */
+export function answerTypeName(type: string): string {
+  return type === 'multi' ? __('Choose several', 'wconvert') : type === 'text' ? __('Short answer', 'wconvert') : __('Choose one', 'wconvert');
+}
 const questionsBefore = (tree: TemplateTree, at: number): ChoiceQuestion[] => tree.steps.filter((screen, index) => tree.graph
   ? index !== at && graphReaches(tree.graph, screen.id, tree.steps[at].id)
   : index < at)
@@ -79,10 +84,10 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
           </select>
           {source?.answer_type === 'multi' ? <fieldset className="wconvert-journey-settings__answers">
             <legend>{clause.operator === 'includes_none' ? __('None of these answers', 'wconvert') : __('Any of these answers', 'wconvert')}</legend>
-            {source.options?.map(option => <label key={option.value} className="wconvert-journey-settings__check"><input type="checkbox" checked={clause.values.includes(option.value)}
+            {source.options?.map(option => <CheckRow key={option.value} className="wconvert-check" label={option.label} checked={clause.values.includes(option.value)}
               onChange={event => patch(index, { ...clause, values: event.target.checked
                 ? [...clause.values.filter(value => value !== ''), option.value]
-                : clause.values.filter(value => value !== option.value && value !== '') })} />{option.label}</label>)}
+                : clause.values.filter(value => value !== option.value && value !== '') })} />)}
             {unavailable.length > 0 && <div role="status"><small>{__('This rule contains an answer that is no longer available.', 'wconvert')}</small>
               <button type="button" data-destructive="true" onClick={() => patch(index, { ...clause, values: clause.values.filter(answer => !unavailable.includes(answer)) })}>{__('Remove unavailable answers', 'wconvert')}</button></div>}
             {!clause.values.some(value => value !== '') && <small>{__('Choose at least one answer.', 'wconvert')}</small>}
@@ -268,7 +273,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
           if (refs.length) { setTypeReview({ question: question.id, type }); return; }
           change(question.id, node => ({ ...node, answer_type: type, options: type === 'text' ? [] : node.options?.length ? node.options : [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }] }));
         }}>
-          <option value="single">{__('Choose one', 'wconvert')}</option><option value="multi">{__('Choose several', 'wconvert')}</option><option value="text">{__('Short answer', 'wconvert')}</option>
+          {(['single', 'multi', 'text'] as const).map(type => <option key={type} value={type}>{answerTypeName(type)}</option>)}
         </select></PanelField>
         {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert')}>
           <strong>{__('Review the affected conditions', 'wconvert')}</strong>
@@ -329,7 +334,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
           hint={question.answer_type === 'multi' ? __('Visitors can choose several answers and see every relevant follow-up.', 'wconvert') : undefined}>
           <input id={`${question.id}-help`} value={question.help ?? ''} maxLength={300} placeholder={__('Optional', 'wconvert')} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} />
         </PanelField>
-        {refs.length > 0 && <Disclosure variant="inline" className="wconvert-journey-used-by" title={__('Used by', 'wconvert')} summary={sprintf(_n('%d rule', '%d rules', refs.length, 'wconvert'), refs.length)}>
+        {refs.length > 0 && <Disclosure variant="inline" className="wconvert-journey-used-by" title={__('Used by', 'wconvert')} summary={sprintf(/* translators: %d: how many rules use these answers. */ _n('%d rule', '%d rules', refs.length, 'wconvert'), refs.length)}>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></small></button>)}
         </Disclosure>}
       </div>;
@@ -398,7 +403,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     setSelectedId(id); setDraftResult(null);
   };
   const productsSummary = (variant: ResultVariant) => variant.product_filter ? __('By category', 'wconvert')
-    : variant.product_ids?.length ? sprintf(_n('%d chosen', '%d chosen', variant.product_ids.length, 'wconvert'), variant.product_ids.length) : __('None', 'wconvert');
+    : variant.product_ids?.length ? sprintf(/* translators: %d: how many products are chosen. */ _n('%d chosen', '%d chosen', variant.product_ids.length, 'wconvert'), variant.product_ids.length) : __('None', 'wconvert');
   /*
     Results in the panel grammar (ADR 0136): the order rule is the InfoTip's,
     a result's row is its heading and its rule, and what acts on one result —
@@ -453,7 +458,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     </div>
     <Disclosure variant="inline" className="wconvert-result-products" open={screen.products_required || repairRequest?.focus === 'products-required' || undefined} title={__('Product availability', 'wconvert')}
       summary={screen.products_required ? __('Required', 'wconvert') : __('Not required', 'wconvert')}>
-      <label className="wconvert-check"><input ref={productsRequired} type="checkbox" checked={screen.products_required === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, products_required: event.target.checked } : item) })} />{__('Require live products before publishing', 'wconvert')}</label>
+      <CheckRow ref={productsRequired} className="wconvert-check" label={__('Require live products before publishing', 'wconvert')} checked={screen.products_required === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, products_required: event.target.checked } : item) })} />
     </Disclosure>
     <Dialog open={draftResult !== null} onOpenChange={open => { if (!open) setDraftResult(null); }}><AdminDialogContent size="sm" className="wconvert-graph-insert" dirty={!!draftResult?.heading.trim()}>
       <AdminDialogHeader title={__('Add matching result', 'wconvert')} meta={__('Choose who sees this result. Nothing changes until you add it.', 'wconvert')} />

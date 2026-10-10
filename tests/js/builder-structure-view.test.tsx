@@ -999,13 +999,13 @@ describe('the inspector', () => {
     await select('Consent wording');
 
     // Shown or hidden is the header's eye (ADR 0136).
-    const shown = inspector('Consent wording').getByRole('button', { name: 'Consent wording is hidden. Show it' });
+    const shown = inspector('Consent wording').getByRole('button', { name: 'Show Consent wording' });
 
     expect(shown).toHaveAttribute('aria-pressed', 'false');
 
     await userEvent.click(shown);
 
-    expect(inspector('Consent wording').getByRole('button', { name: 'Consent wording is shown. Hide it' })).toHaveAttribute('aria-pressed', 'true');
+    expect(shown).toHaveAttribute('aria-pressed', 'true');
   });
 
   /**
@@ -1513,7 +1513,7 @@ describe('what a row shows about itself', () => {
     // The row's own label button, which is what selects — not the ⋯ menu
     // beside it, which also carries the block's name.
     await userEvent.click(within(row('Fine print')).getAllByRole('button')[0]);
-    await userEvent.click(screen.getByRole('button', { name: 'Fine print is shown. Hide it' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Show Fine print' }));
 
     expect(row('Fine print')).toHaveAttribute('data-hidden', 'true');
     expect(within(row('Fine print')).getByText('Hidden')).toBeInTheDocument();
