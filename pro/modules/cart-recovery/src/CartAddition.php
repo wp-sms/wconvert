@@ -102,7 +102,7 @@ final class CartAddition
         $receipt = get_option($key);
         if (is_array($receipt)) wp_send_json(($receipt['product'] ?? 0) === $productId ? $receipt : ['state' => 'rejected'], 200);
         $lock = self::key( 'lock|' . $session);
-        if (!$this->claim($lock, ['state' => 'unknown'], time() + AdditionToken::WINDOW)) wp_send_json(['state' => 'rejected'], 409);
+        if (!$this->claim($lock, ['state' => 'unknown'])) wp_send_json(['state' => 'rejected'], 409);
         try {
             $result = $this->add($node, $productId, $key, $id, $session, $token);
         } catch (\Throwable) {
@@ -121,7 +121,7 @@ final class CartAddition
     private function add(array $node, int $productId, string $key, string $id, string $session, array $token): array
     {
         $unknown = ['state' => 'unknown', 'product' => $productId];
-        if (!$this->claim($key, $unknown, $token['expires'])) return $unknown;
+        if (!$this->claim($key, $unknown)) return $unknown;
         $cards = isset($node['quiz']) ? QuizProducts::cards($node['quiz']) : $this->context->recommendations($node, $this->context->cart(), CommerceContext::viewedProduct(self::field('page_product')))['cards'];
         $card = $cards instanceof \WP_Error ? null : (array_column($cards, null, 'id')[$productId] ?? null);
         $product = wc_get_product($productId);
@@ -140,7 +140,7 @@ final class CartAddition
                 try {
                     $this->stats->increment($id, StatKind::CartAddition, StatDay::today());
                     $headline = self::key( 'headline|' . $session . '|' . $id . '|' . $token['mount']);
-                    if (!isset($node['quiz']) && $this->claim($headline, ['state' => 'counted'], $token['expires'])) $this->stats->increment($id, StatKind::Conversion, StatDay::today());
+                    if (!isset($node['quiz']) && $this->claim($headline, ['state' => 'counted'])) $this->stats->increment($id, StatKind::Conversion, StatDay::today());
                     do_action('wconvert_cart_addition_accepted', $id);
                     \WConvert\Stats\ProductStats::start($id);
                     $this->stats->increment($id, StatKind::CartAddition, StatDay::today(), 'product:' . $productId);
@@ -156,11 +156,14 @@ final class CartAddition
         return self::PREFIX . hash_hmac('sha256', $value, wp_salt('auth'));
     }
 
-    /** @param array<string, mixed> $value */
-    private function claim(string $key, array $value, int $expires): bool
+    /**
+     * Swept with every other claim at least an hour later, which outlasts any
+     * addition token ({@see \WConvert\Pro\Claims}).
+     *
+     * @param array<string, mixed> $value
+     */
+    private function claim(string $key, array $value): bool
     {
-        if (!add_option($key, $value, '', false)) return false;
-        wp_schedule_single_event($expires + 60, 'wconvert_cart_claim_expired', [$key]);
-        return true;
+        return \WConvert\Pro\Claims::take($key, $value);
     }
 }
