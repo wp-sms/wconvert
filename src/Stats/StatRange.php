@@ -35,8 +35,8 @@ final class StatRange
      * The longest window the screen will read.
      *
      * `wconvert_stats` carries no secondary index and a date range across every
-     * Optin is therefore a scan of it — booked at ~29k rows a year, which is a
-     * read an admin screen can afford on demand (ADR 0019, ADR 0034). The cap
+     * Optin is therefore a scan of it — 94 ms at 421k rows, which is a read an
+     * admin screen can afford on demand (ADR 0034, ADR 0140). The cap
      * bounds returned rows, not the scan of the unindexed date predicate.
      * Comparisons read two such windows (ADR 0089).
      */

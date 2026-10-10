@@ -58,6 +58,11 @@ final class LeadRepository
      * headline is submissions and no screen reports a count of people — which
      * is the boundary that makes this trade safe to make at all (ADR 0021).
      *
+     * **Used only without a {@see LeadQuery}, which no screen sends any more.**
+     * Every admin read is bounded by a snapshot, and under that bound MySQL
+     * stops choosing these indexes unaided — see {@see self::groups()} and
+     * ADR 0140.
+     *
      * No parentheses around the halves: MySQL accepts them, SQLite does not,
      * and a bare compound select means one query text runs on both — which is
      * what lets `bin/verify-lead-log.php` prove this on Playground.
@@ -232,10 +237,19 @@ final class LeadRepository
             // events, repeat it on later pages, and change its submission count.
             $having = $query->before === null ? '' : ($query->order === 'oldest' ? ' HAVING MAX(id) > %s' : ' HAVING MAX(id) < %s');
             $params = [...$filter['params'], ...($query->before === null ? [] : [$query->before])];
+            // Unfiltered, MySQL ranges the primary key under the snapshot bound and
+            // groups in a temporary table, reading every row's `fields` (6.8 s at 1M
+            // Leads). `idx_email` answers the email half from the index and hands the
+            // phone half only its `email IS NULL` rows to look up (2.0 s). Forced under
+            // a narrowing filter it was a regression — one Lead 0.1 ms to 142 ms, one
+            // phone 0.1 ms to 2.1 s — so a narrowed read keeps MySQL's own plan
+            // (ADR 0140). The hint is a comment: SQLite, MariaDB and MySQL before
+            // 8.0.20 read past it.
+            $hint = $query->narrowed() ? '' : '/*+ INDEX(l idx_email) */ ';
             $rows = $this->db->results(Connection::TABLE_LEADS,
-                'SELECT email AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i WHERE '
+                'SELECT ' . $hint . 'email AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i AS l WHERE '
                 . $filter['sql'] . ' AND email IS NOT NULL GROUP BY email' . $having . ' UNION ALL '
-                . 'SELECT phone AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i WHERE '
+                . 'SELECT ' . $hint . 'phone AS identifier, COUNT(*) AS submissions, MAX(id) AS latest_id FROM %i AS l WHERE '
                 . $filter['sql'] . ' AND email IS NULL AND phone IS NOT NULL GROUP BY phone' . $having
                 . ($query->order === 'oldest' ? ' ORDER BY latest_id ASC LIMIT %d' : ' ORDER BY latest_id DESC LIMIT %d'), ...[...$params, ...$params, $limit]);
             return array_map(static fn (array $row): LeadGroup => LeadGroup::fromRow($row), $rows);

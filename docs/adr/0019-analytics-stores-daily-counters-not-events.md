@@ -29,6 +29,11 @@ rows a year**. The same site as daily counters, at 20 active Optins across four
 kinds, writes **~29k rows a year**, and the index stays in the buffer pool
 permanently.
 
+**Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** that count is
+campaign rows only. Screen scopes (0103) and product scopes (0122) share the
+table and made up 23–68% of it in measured mixes. The 30-day dashboard scan was
+94 ms at 421k rows.
+
 **Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
 channel/screen scopes and retained flow revisions increase this estimate. Measure
 representative history and report queries before relying on the original row
@@ -87,6 +92,10 @@ conclusion is unchanged and the reasoning is now the honest one: the scan is
 affordable at the ~29k rows a year this document books, capped to one year by
 [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php), and an index here would
 be paid on every beacon for a read one admin takes on demand.*
+
+**Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** an index is
+not paid on every beacon, only when a beacon creates a new row. The scan stays
+affordable at realistic sizes, and that is now a measurement.
 
 ## Table-free alternatives, rejected
 

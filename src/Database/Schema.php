@@ -196,11 +196,10 @@ KEY idx_phone (phone)
      * and it is not the shape ADR 0019 predicted. It is a date range across
      * EVERY Optin — the screen reports on all of them — and with `optin_id`
      * leftmost that cannot use this key and is a scan. It stays unindexed
-     * anyway: the table is booked at ~29k rows a year,
-     * {@see \WConvert\Stats\StatRange::MAX_DAYS} caps the window to one of
-     * them, and an index here would be paid on every beacon to save one admin
-     * screen a read it takes on demand (ADR 0034). That is the same asymmetry
-     * ADR 0033 decided the same way for the lead log.
+     * anyway, because the scan was measured: 94 ms at 421k rows and 323 ms at
+     * 1.32M (ADR 0140). An increment never writes a secondary index, so beacons
+     * would not pay for one. The cost is size: `(scope, stat_date)`, the index
+     * that read would use, adds nearly half the table again.
      *
      * A row carries **no `goal`, no `had_email`, no `had_phone` and no display
      * type** (ADR 0020). Whether a Conversion carried an email is a property of

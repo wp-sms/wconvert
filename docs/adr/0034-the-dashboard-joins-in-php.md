@@ -63,6 +63,10 @@ and is a scan.
   asymmetry [ADR 0033](0033-the-lead-log-reads-without-a-new-index.md) decided
   the other way round for the lead log, and it decides the same way here.
   `tests/unit/Database/SchemaTest.php` still budgets this table **zero**.
+  **Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** it is not
+  paid on every beacon. An increment touches only `count`, so only a new row
+  writes to the index, and upserts measured the same with it as without it. The
+  date-only index is also ignored at 1.32M rows, because `scope` is not in it.
 - **An `optin_id IN (…)` list**, which would use the key as a prefix range per
   id. Two problems, and the second is fatal: the set is *every* Optin, so it
   filters nothing out; and a variable-length `IN` list is not a
@@ -75,7 +79,9 @@ and is a scan.
   with a rollup job in front of it.
 
 The scan is affordable because ADR 0019 books the whole table at **~29k rows a
-year**, and [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php) caps the
+year** (**corrected by [0140](0140-measured-reads-keep-their-indexes.md):**
+campaign rows only; screen and product scopes add more, and the scan was
+measured at 94 ms over 421k rows), and [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php) caps the
 window at one year. **Corrected by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** this bounds
 the returned window, not the scan of the unindexed table. Two comparison windows
 mean two scans; larger installs need measured query-cost review.
@@ -126,3 +132,6 @@ mean two scans; larger installs need measured query-cost review.
   query is already the one that would use it** — add `idx_stat_date`, change
   one number in `SchemaTest::INDEX_BUDGET`, and change no code. It should be
   taken when someone can show the scan hurting, not before.
+  **Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** the
+  index the query uses is `(scope, stat_date)` (323 → 31 ms at 1.32M rows), at
+  the cost of nearly half the table again. 0140 has the measured threshold.

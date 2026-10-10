@@ -2,6 +2,7 @@
 namespace WConvert\Rest;
 
 use WConvert\Database\Connection;
+use WConvert\Lead\LeadQuery;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -44,12 +45,12 @@ final class JourneyStatsController implements RestController
     {
         try { $range = ReportWindow::read($request); }
         catch (\InvalidArgumentException $refusal) { return ReportWindow::error($refusal); }
-        // Lead created_at uses current_time('mysql'), the site's local clock.
-        $zone = wp_timezone();
-        $start = (new \DateTimeImmutable($range->from, $zone))->format('Y-m-d H:i:s');
-        $end = (new \DateTimeImmutable($range->to, $zone))->modify('+1 day')->format('Y-m-d H:i:s');
+        // The site's days, as a range over the ULID key rather than `created_at`:
+        // they name the same Leads (ADR 0033), and only the key bounds the read.
+        // On `created_at` a quiet Optin walked the whole log backwards (ADR 0140).
         $rows = $range->days() === 0 ? [] : $this->db->results(Connection::TABLE_LEADS,
-            'SELECT fields FROM %i WHERE optin_id = %s AND created_at >= %s AND created_at < %s ORDER BY id DESC LIMIT 1001', (string) $request->get_param('id'), $start, $end);
+            'SELECT fields FROM %i WHERE optin_id = %s AND id >= %s AND id < %s ORDER BY id DESC LIMIT 1001',
+            (string) $request->get_param('id'), LeadQuery::dayStart($range->from), LeadQuery::dayEnd($range->to));
         return new WP_REST_Response(\WConvert\Stats\Interests::summarize(array_slice($rows, 0, 1000)) + [
             'from' => $range->from, 'to' => $range->to, 'truncated' => count($rows) > 1000, 'retained' => min(count($rows), 1000),
         ]);

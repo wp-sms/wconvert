@@ -26,8 +26,8 @@ defined('ABSPATH') || exit;
  * **This repository has two reads, and no delete.** {@see self::inRange()} is the
  * one the dashboard issues; {@see self::firstDays()} is the one the milestone
  * screen issues, and it is deliberately not the same query. Retention is
- * keep-forever with no pruning, because at ~29k rows a year there is nothing
- * to prune and analytics needs no retention setting of its own (ADR 0019) —
+ * keep-forever with no pruning, because campaign rows grow at ~29k a year and
+ * there is nothing to prune and analytics needs no retention setting of its own (ADR 0019) —
  * which is also what makes the second read's answer a fact rather than an
  * artefact of when somebody last tidied up.
  *
@@ -81,12 +81,11 @@ final class StatsRepository
      *
      * **It is a scan of the primary key, and that is affordable rather than
      * overlooked.** `(optin_id, stat_date, kind)` puts the id leftmost, so a
-     * date range across every Optin cannot use it as a range — but the table
-     * is booked at ~29k rows a year (ADR 0019) and {@see StatRange::MAX_DAYS}
-     * keeps the window to one of them. A secondary index would be paid on
-     * every beacon to save one admin screen a read it takes on demand, which
-     * is the same asymmetry ADR 0033 decided the other way round for the lead
-     * log. `tests/unit/Database/SchemaTest.php` still budgets this table zero.
+     * date range across every Optin cannot use it as a range. Measured, it is
+     * 94 ms at 421k rows and 323 ms at 1.32M (ADR 0140). If it ever needs one,
+     * the index is `(scope, stat_date)`: the date-only index is ignored because
+     * `scope` is not in it. `tests/unit/Database/SchemaTest.php` still budgets
+     * this table zero.
      *
      * `count` is backticked because it is also a function name.
      *
@@ -137,8 +136,8 @@ final class StatsRepository
      * **A scan, and a cheaper one than the dashboard's.** There is no
      * secondary index and `optin_id` is leftmost, so this cannot use the
      * primary key — but it reads three columns' worth of nothing and returns
-     * at most four rows, on a table booked at ~29k rows a year, for a screen
-     * an admin opens on demand. That is the same asymmetry `inRange()` books,
+     * at most four rows, for a screen an admin opens on demand (309 ms at 1.32M
+     * rows, ADR 0140). That is the same asymmetry `inRange()` books,
      * without even a `WHERE` to be unable to use.
      *
      * A kind this build has no case for is dropped rather than passed on:
