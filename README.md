@@ -628,6 +628,12 @@ wp eval-file "$PWD/bin/verify-lead-search.php" --use-include --path="$WP_PATH"
 counters or Leads, and the lead-log verifier refuses existing Leads. Never
 point them at a live or valued site.
 
+With Pro active as well, CI runs `bin/verify-claims.php`. It checks that every
+short-lived claim shares one sweep event rather than adding its own to the
+`cron` option, that a claim is taken once, and that a sweep removes only claims
+at or below a mark at least an hour old, however early it is run. It refuses a
+site that holds live claims.
+
 **The beacon is stateless** — no visitor id, no device id, no hashed
 fingerprint ([ADR 0017](docs/adr/0017-no-visitor-identifier.md)) — so there is
 no consent gate on it at all and no identifier to reintroduce. The endpoint is

@@ -2,8 +2,8 @@
 /** Remove optional tracking configuration; historical order provenance belongs to WooCommerce. */
 defined('WP_UNINSTALL_PLUGIN') || exit;
 delete_option('wconvert_revenue');
-wp_unschedule_hook('wconvert_attribution_claim_expired');
-wp_unschedule_hook('wconvert_cart_claim_expired');
+wp_unschedule_hook('wconvert_claims_sweep');
+delete_option('wconvert_claims_mark');
 global $wpdb;
 // Only exact plugin-owned receipt keys, never a shopper's session or order.
 $wconvertClaims = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\\_order\\_claim\\_%'");

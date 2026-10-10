@@ -55,9 +55,6 @@ final class RevenueHooks
         });
         add_action('woocommerce_checkout_order_created', [$this, 'bindOrder']);
         add_action('woocommerce_store_api_checkout_order_processed', [$this, 'bindOrder']);
-        add_action('wconvert_attribution_claim_expired', static function (string $key): void {
-            if (preg_match('/^wconvert_order_claim_[a-f0-9]{64}$/D', $key)) delete_option($key);
-        });
         add_filter('wconvert_privacy_browser_storage', function (array $rows): array {
             if ($this->settings()['since'] === null) return $rows;
             $rows['additional'][] = __('When enabled and statistics consent is granted, campaign sales tracking stores a campaign reference and interaction time in the WooCommerce session. An interaction can link one checkout created within 30 minutes. A short-lived anonymous receipt prevents duplicate credit. Order attribution stays with the order under WooCommerce retention and erasure policies; no contact details or money are copied into WConvert.', 'wconvert');
@@ -156,8 +153,7 @@ final class RevenueHooks
                 // Claim the browser event once, including concurrent/replayed requests. Its
                 // timestamp expires before cleanup, so an old exact request cannot reopen credit.
                 $claim = 'wconvert_order_claim_' . hash('sha256', 'click:' . $event);
-                if (!add_option($claim, time(), '', false)) return false;
-                wp_schedule_single_event(time() + Attribution::WINDOW, 'wconvert_attribution_claim_expired', [$claim]);
+                if (!\WConvert\Pro\Claims::take($claim, time())) return false;
             }
             if (!WC()->session) wc_load_cart();
             if (!WC()->session) return false;
@@ -180,8 +176,7 @@ final class RevenueHooks
             if ($created === null || $created < $value['at'] || $created >= $value['at'] + Attribution::WINDOW) return;
             // A unique short-lived option is an atomic receipt claim, including concurrent checkout requests.
             $claim = 'wconvert_order_claim_' . hash('sha256', $value['receipt']);
-            if (!add_option($claim, $order->get_id(), '', false)) return;
-            wp_schedule_single_event(time() + Attribution::WINDOW, 'wconvert_attribution_claim_expired', [$claim]);
+            if (!\WConvert\Pro\Claims::take($claim, $order->get_id())) return;
             $order->update_meta_data(Attribution::META, array_diff_key($value, ['receipt' => true]));
             $order->save();
         } catch (\Throwable) {
