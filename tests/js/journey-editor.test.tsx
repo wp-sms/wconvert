@@ -404,7 +404,9 @@ it('labels screen actions and refuses unavailable moves', async () => {
   const original = draft();
   await user.click(screenMenu());
   const earlier = screen.getByRole('menuitem', { name: 'Move up' });
-  expect(earlier).toHaveAttribute('data-disabled');
+  // Refused, so still reachable, and it says why (ADR 0139).
+  expect(earlier).toHaveAttribute('aria-disabled', 'true');
+  expect(earlier).toHaveAccessibleDescription('This is the first screen.');
   await user.click(earlier);
   expect(draft()).toEqual(original);
 });
@@ -421,7 +423,7 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   await user.click(within(cards).getAllByRole('button')[1]);
   expect(screen.getByLabelText('Screen name')).toHaveValue(source.tree.steps[1].name);
   await user.click(screenMenu());
-  expect(screen.getByRole('menuitem', { name: 'Delete screen' })).toHaveAttribute('data-disabled');
+  expect(screen.getByRole('menuitem', { name: 'Delete screen' })).toHaveAttribute('aria-disabled', 'true');
   await user.keyboard('{Escape}');
   await user.click(screen.getByRole('button', { name: 'Edit design' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();

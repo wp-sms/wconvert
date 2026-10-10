@@ -1,24 +1,29 @@
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowDown, ArrowUp, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { Popover, PopoverTrigger } from '../components/ui/popover';
+import { NativeSelect } from '../components/ui/native-select';
+import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
+  OptionEmpty,
+  OptionGroup,
+  OptionItem,
+  OptionList,
+  OptionListContent,
+  OptionMenuContent,
+  OptionSeparator,
+  OptionSub,
+  refusal,
+  type Refusal,
+} from '../components/ui/option-menu';
+import { ELEMENT_SECTIONS, elementIcon, elementSection, elementSectionName } from './elementIcon';
 import { referencedJourney } from './structure/journey';
 import { useBlockDrag } from './useBlockDrag';
 import { BlockTree } from './BlockTree';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
-import { additionsIn, nodeFor, type ConvertingAct, type Addition } from './structure/catalogue';
-import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
+import { additionsIn, nodeFor, type ConvertingAct } from './structure/catalogue';
+import { duplicationRefusal, removalRefusal, whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
 import {
   countAt,
   capturesTaken,
@@ -307,8 +312,10 @@ export function RowAction({
     );
   }
 
-  const removal = whyRemovalIsRefused(tree, block.path);
-  const copying = whyDuplicationIsRefused(tree, block.path);
+  const removal = removalRefusal(tree, block.path);
+  const copying = duplicationRefusal(tree, block.path);
+  const first = block.position === 1;
+  const last = block.position === block.setSize;
 
   return (
     <DropdownMenu>
@@ -319,21 +326,16 @@ export function RowAction({
           <span className="sr-only">{sprintf(__('Add, copy or delete %s', 'wconvert'), name)}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="wconvert-layer-menu max-w-xs" align="end">
+      <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Actions for %s', 'wconvert'), name)}>
         {block.level > 1 && (
           <>
-            <DropdownMenuItem disabled={block.position === 1} onSelect={() => onMove(block, -1, 0)}>
-              <ArrowUp aria-hidden="true" />
-              {__('Move up', 'wconvert')}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={block.position === block.setSize}
-              onSelect={() => onMove(block, 1, 0)}
-            >
-              <ArrowDown aria-hidden="true" />
-              {__('Move down', 'wconvert')}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            <OptionItem icon={ArrowUp} name={__('Move up', 'wconvert')}
+              refused={first ? refusal(__('Already first', 'wconvert')) : null}
+              onSelect={() => onMove(block, -1, 0)} />
+            <OptionItem icon={ArrowDown} name={__('Move down', 'wconvert')}
+              refused={last ? refusal(__('Already last', 'wconvert')) : null}
+              onSelect={() => onMove(block, 1, 0)} />
+            <OptionSeparator />
           </>
         )}
 
@@ -341,22 +343,57 @@ export function RowAction({
 
         {block.level > 1 && (
           <>
-            <DropdownMenuSeparator />
-            <Refusable reason={copying} onSelect={() => onDuplicate(block)}>
-              <Copy aria-hidden="true" />
-              {__('Duplicate', 'wconvert')}
-            </Refusable>
-            <Refusable reason={removal} destructive onSelect={() => onRemove(block)}>
-              <Trash2 aria-hidden="true" />
-              {block.holds === 0
+            <OptionSeparator />
+            <OptionItem icon={Copy} name={__('Duplicate', 'wconvert')} refused={copying} onSelect={() => onDuplicate(block)} />
+            <OptionItem icon={Trash2} destructive refused={removal} onSelect={() => onRemove(block)}
+              name={block.holds === 0
                 ? __('Delete', 'wconvert')
-                : sprintf(__('Delete, and the %d inside it', 'wconvert'), block.holds)}
-            </Refusable>
+                // translators: %d: how many blocks the deleted one holds.
+                : sprintf(__('Delete, with %d inside', 'wconvert'), block.holds)} />
           </>
         )}
-      </DropdownMenuContent>
+      </OptionMenuContent>
     </DropdownMenu>
   );
+}
+
+/** One choice in an Add surface: an element, or one field it could capture. */
+interface Choice {
+  readonly type: string;
+  readonly leaf: boolean;
+  readonly capture?: string;
+  readonly name: string;
+  readonly hint: string | null;
+  readonly tip: string | null;
+  readonly refused: Refusal | null;
+}
+
+/**
+ * Every element that may be added at this spot, in the Add surfaces' sections.
+ * Fields are flattened, one choice per capture kind, where `flat` asks.
+ */
+function choicesAt(tree: TemplateTree, at: Spot, act: ConvertingAct, labels: TemplateLabels, flat: boolean) {
+  const taken = capturesTaken(tree);
+  const choices = additionsIn(tree, at, act).flatMap<Choice>(addition => {
+    const refused = addition.refused === null ? null : refusal(addition.refusedShort ?? addition.refused, addition.refused);
+    if (addition.type === 'field' && flat) {
+      return FIELDS.map(capture => ({
+        type: 'field', leaf: true, capture, name: nameOf(labels.fields, capture), tip: null,
+        hint: nameOf(labels.nodes, 'field'),
+        refused: refused ?? (taken.includes(capture) ? refusal(__('Already on this form', 'wconvert')) : null),
+      }));
+    }
+    return [{
+      type: addition.type, leaf: addition.leaf, refused,
+      name: nameOf(addition.leaf ? labels.nodes : labels.layouts, addition.type),
+      hint: addition.leaf ? null : nameOf(labels.layoutNotes, addition.type),
+      tip: addition.leaf ? null : labels.layoutHelp[addition.type] ?? null,
+    }];
+  });
+
+  return ELEMENT_SECTIONS
+    .map(section => ({ section, choices: choices.filter(choice => elementSection(choice.type, choice.leaf) === section) }))
+    .filter(group => group.choices.length > 0);
 }
 
 export function AddElementPicker({ block, tree, act, labels, onAdd }: {
@@ -383,26 +420,33 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
     );
   });
   const at = (places[Number(position)] ?? places[0])?.at;
-  const choices = at ? additionsIn(tree, at, act).flatMap<Addition & { capture?: string; label: string; note: string }>(addition => addition.type === 'field'
-    ? FIELDS.map(capture => ({ ...addition, capture, label: nameOf(labels.fields, capture), refused: addition.refused ?? (capturesTaken(tree).includes(capture) ? __('Already on this form', 'wconvert') : null), note: '' }))
-    : [{ ...addition, capture: undefined, label: nameOf(addition.leaf ? labels.nodes : labels.layouts, addition.type), note: addition.leaf ? '' : nameOf(labels.layoutNotes, addition.type) }]) : [];
-  const shown = choices.filter(choice => `${choice.label} ${choice.note}`.toLowerCase().includes(search.toLowerCase()));
+  const words = search.trim().toLocaleLowerCase();
+  const sections = (at ? choicesAt(tree, at, act, labels, true) : [])
+    .map(group => ({ ...group, choices: group.choices.filter(choice => `${choice.name} ${choice.hint ?? ''} ${elementSectionName(group.section)}`.toLocaleLowerCase().includes(words)) }))
+    .filter(group => group.choices.length > 0);
   return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) { setSearch(''); added.current = false; } }}>
     <PopoverTrigger asChild><button type="button" className="wconvert-tree-add"><Plus aria-hidden="true" />{__('Add element', 'wconvert')}</button></PopoverTrigger>
-    <PopoverContent side="right" align="start" collisionPadding={12} className="wconvert-add-picker" onCloseAutoFocus={event => { if (added.current) event.preventDefault(); }}>
-      <strong>{__('Add element', 'wconvert')}</strong>
-      <label htmlFor={`${id}-position`}>{__('Insert position', 'wconvert')}</label>
-      <select id={`${id}-position`} value={position} onChange={e => setPosition(e.target.value)}>{places.map((place, index) => <option key={index} value={index}>{place.label}</option>)}</select>
-      <label htmlFor={`${id}-search`} className="sr-only">{__('Find an element', 'wconvert')}</label>
-      <input id={`${id}-search`} type="search" placeholder={__('Find an element…', 'wconvert')} value={search} onChange={e => setSearch(e.target.value)} />
-      <div className="wconvert-add-picker__list">
-        {shown.map(choice => <button type="button" key={choice.capture ?? choice.type} disabled={!!choice.refused} onClick={() => {
-          if (!at) return;
-          added.current = true; setOpen(false); onAdd(at, choice.type, choice.capture);
-        }}><span>{choice.label}</span>{(choice.refused || choice.note) && <small>{choice.refused || choice.note}</small>}</button>)}
-        {shown.length === 0 && <p role="status">{__('No matching elements.', 'wconvert')}</p>}
-      </div>
-    </PopoverContent>
+    <OptionListContent side="right" align="start" collisionPadding={12} aria-label={__('Add element', 'wconvert')}
+      onCloseAutoFocus={event => { if (added.current) event.preventDefault(); }}>
+      <OptionList
+        header={<div className="wconvert-option-menu__head">
+          <strong>{__('Add element', 'wconvert')}</strong>
+          <label htmlFor={`${id}-position`}>{__('Position', 'wconvert')}</label>
+          <NativeSelect id={`${id}-position`} className="w-full" value={position} onChange={e => setPosition(e.target.value)}>
+            {places.map((place, index) => <option key={index} value={index}>{place.label}</option>)}
+          </NativeSelect>
+        </div>}
+        search={{ value: search, onChange: setSearch, label: __('Find an element', 'wconvert'), placeholder: __('Find an element…', 'wconvert') }}>
+        {sections.map(({ section, choices }) => <OptionGroup key={section} heading={elementSectionName(section)}>
+          {choices.map(choice => <OptionItem key={choice.capture ?? choice.type} icon={elementIcon(choice.type, choice.capture)} name={choice.name}
+            hint={choice.hint} tip={choice.tip} refused={choice.refused} onSelect={() => {
+              if (!at) return;
+              added.current = true; setOpen(false); onAdd(at, choice.type, choice.capture);
+            }} />)}
+        </OptionGroup>)}
+        {sections.length === 0 && <OptionEmpty what={__('elements', 'wconvert')} onClear={() => setSearch('')} />}
+      </OptionList>
+    </OptionListContent>
   </Popover>;
 }
 
@@ -411,55 +455,22 @@ function InsertionMenus({ block, tree, act, labels, onAdd }: {
   onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {
   const spot = spotOf(block.path);
+  const keys = childKeysOf(block.type);
   return <>
     {spot && <>
-      <AddMenu tree={tree} act={act} labels={labels} at={spot} label={__('Add a block before this', 'wconvert')} onAdd={onAdd} />
-      <AddMenu tree={tree} act={act} labels={labels} at={{ ...spot, index: spot.index + 1 }} label={__('Add a block after this', 'wconvert')} onAdd={onAdd} />
+      <AddMenu tree={tree} act={act} labels={labels} at={spot} label={__('Add before', 'wconvert')} onAdd={onAdd} />
+      <AddMenu tree={tree} act={act} labels={labels} at={{ ...spot, index: spot.index + 1 }} label={__('Add after', 'wconvert')} onAdd={onAdd} />
     </>}
-    {childKeysOf(block.type).map(key => <DropdownMenuSub key={key}>
-      <DropdownMenuSubTrigger><Plus aria-hidden="true" />{childKeysOf(block.type).length > 1
-        ? sprintf(__('Add to the %s', 'wconvert'), key === 'start' ? __('first pane', 'wconvert') : __('second pane', 'wconvert'))
-        : __('Add a block inside', 'wconvert')}</DropdownMenuSubTrigger>
-      <DropdownMenuSubContent className="wconvert-layer-menu">
-        <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: 0 }} label={__('At the beginning', 'wconvert')} onAdd={onAdd} />
-        <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: countAt(tree, block.path, key) }} label={__('At the end', 'wconvert')} onAdd={onAdd} />
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>)}
+    {keys.map(key => <OptionSub key={key} icon={Plus} name={keys.length > 1
+      ? key === 'start' ? __('Add to first pane', 'wconvert') : __('Add to second pane', 'wconvert')
+      : __('Add inside', 'wconvert')}>
+      <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: 0 }} label={__('At the beginning', 'wconvert')} onAdd={onAdd} />
+      <AddMenu tree={tree} act={act} labels={labels} at={{ parent: block.path, key, index: countAt(tree, block.path, key) }} label={__('At the end', 'wconvert')} onAdd={onAdd} />
+    </OptionSub>)}
   </>;
 }
 
-function Refusable({
-  reason,
-  note = null,
-  destructive = false,
-  onSelect,
-  children,
-}: {
-  reason: string | null;
-
-  note?: string | null;
-  destructive?: boolean;
-  onSelect: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <DropdownMenuItem
-      variant={destructive && reason === null ? 'destructive' : 'default'}
-      disabled={reason !== null}
-      onSelect={onSelect}
-      className="flex-col items-start gap-0.5"
-    >
-      <span className="flex items-center gap-2">{children}</span>
-
-      {(reason ?? note) !== null && (
-        <span className="text-micro font-normal tracking-normal text-pretty whitespace-normal text-muted-foreground">
-          {reason ?? note}
-        </span>
-      )}
-    </DropdownMenuItem>
-  );
-}
-
+/** One Add submenu: the elements this spot takes, sectioned, with Field as its own submenu. */
 function AddMenu({
   tree,
   act,
@@ -475,29 +486,22 @@ function AddMenu({
   label: string;
   onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {
-  return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger>
-        <Plus aria-hidden="true" />
-        {label}
-      </DropdownMenuSubTrigger>
+  const taken = capturesTaken(tree);
 
-      <DropdownMenuSubContent className="wconvert-layer-menu wconvert-add-elements max-h-[min(440px,var(--radix-dropdown-menu-content-available-height))]">
-        {additionsIn(tree, at, act).map((addition) => addition.type === 'field' && addition.refused === null ? (
-          <DropdownMenuSub key="field"><DropdownMenuSubTrigger>{nameOf(labels.nodes, 'field')}</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="wconvert-layer-menu">{FIELDS.map(capture => <Refusable key={capture} reason={capturesTaken(tree).includes(capture) ? __('Already on this form', 'wconvert') : null} onSelect={() => onAdd(at, 'field', capture)}>{nameOf(labels.fields, capture)}</Refusable>)}</DropdownMenuSubContent>
-          </DropdownMenuSub>
+  return (
+    <OptionSub icon={Plus} name={label} className="wconvert-add-elements">
+      {choicesAt(tree, at, act, labels, false).map(({ section, choices }) => <OptionGroup key={section} heading={elementSectionName(section)}>
+        {choices.map(choice => choice.type === 'field' && choice.refused === null ? (
+          <OptionSub key="field" icon={elementIcon('field')} name={choice.name}>
+            {FIELDS.map(capture => <OptionItem key={capture} icon={elementIcon('field', capture)} name={nameOf(labels.fields, capture)}
+              refused={taken.includes(capture) ? refusal(__('Already on this form', 'wconvert')) : null}
+              onSelect={() => onAdd(at, 'field', capture)} />)}
+          </OptionSub>
         ) : (
-          <Refusable
-            key={addition.type}
-            reason={addition.refused}
-            note={addition.leaf ? null : nameOf(labels.layoutNotes, addition.type)}
-            onSelect={() => onAdd(at, addition.type)}
-          >
-            {addition.leaf ? nameOf(labels.nodes, addition.type) : nameOf(labels.layouts, addition.type)}
-          </Refusable>
+          <OptionItem key={choice.type} icon={elementIcon(choice.type)} name={choice.name} hint={choice.hint} tip={choice.tip}
+            refused={choice.refused} onSelect={() => onAdd(at, choice.type)} />
         ))}
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>
+      </OptionGroup>)}
+    </OptionSub>
   );
 }

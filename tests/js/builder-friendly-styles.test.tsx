@@ -13,7 +13,7 @@ import { spacingSides } from '../../resources/admin/src/builder/SpacingField';
 import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 import type { Template } from '@renderer/types';
 
-const labels = { tokens: { pad: 'Padding', bg: 'Background' }, layouts: {}, tokenValues: {}, roles: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, tokenGroups: {}, fields: {}, placeholders: {}, nodes: {}, params: {}, paramValues: {}, nodeNotes: {}, captures: {}, nodeParams: {}, nodeParamValues: {}, keys: {} } as TemplateLabels;
+const labels = { tokens: { pad: 'Padding', bg: 'Background' }, layouts: {}, tokenValues: {}, roles: {}, layoutHelp: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, tokenGroups: {}, fields: {}, placeholders: {}, nodes: {}, params: {}, paramValues: {}, nodeNotes: {}, captures: {}, nodeParams: {}, nodeParamValues: {}, keys: {} } as TemplateLabels;
 function Control({ initial, token, changed, inherited = false }: { initial: string; token: string; changed: (value: string) => void; inherited?: boolean }) {
   const [value, setValue] = useState(inherited ? '' : initial);
   const [open, setOpen] = useState(false);

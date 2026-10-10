@@ -265,10 +265,14 @@ final class RuleCatalogue
             return $options;
         }
 
+        $phrases = RuleLabels::optionPhrases();
+
         return array_values(array_map(
             static fn ($value): array => [
                 'value' => (string) $value,
                 'label' => RuleLabels::option($control, (string) $value),
+                // How the option reads inside a sentence, where its label cannot.
+                ...(isset($phrases[$control . '.' . $value]) ? ['phrase' => $phrases[$control . '.' . $value]] : []),
             ],
             array_filter($declared, 'is_scalar')
         ));

@@ -106,6 +106,19 @@ describe('one rule, read', () => {
     expect(phraseOf({ type: 'device', in: ['mobile', 'tablet'] }, types).text).toBe('device mobile or tablet');
   });
 
+  /** "Phone" heads a checkbox; inside a sentence it is "a phone" (ADR 0139). */
+  it('reads an option by its phrase where it has one', () => {
+    const phrased = types.map(type => type.type !== 'device' ? type : {
+      ...type,
+      params: { in: { ...type.params.in, options: [
+        { value: 'mobile', label: 'Phone', phrase: 'a phone' },
+        { value: 'desktop', label: 'Computer', phrase: 'a computer' },
+      ] } },
+    });
+
+    expect(phraseOf({ type: 'device', in: ['mobile', 'desktop'] }, phrased).text).toBe('device a phone or a computer');
+  });
+
   /**
    * ==========================================================================
    * THE EMPTINESS TEST — A SECOND SPELLING OF `couldFire()`'s, DELIBERATELY

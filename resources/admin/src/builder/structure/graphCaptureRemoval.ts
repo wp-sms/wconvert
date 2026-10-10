@@ -42,17 +42,20 @@ export function graphCaptureRemovalPlan(tree: TemplateTree, submissionId: string
       && (from !== tree.graph?.entry || !screen.when));
     return { from, incoming: incoming.filter(edge => edge.to === from), targets, preferred: targets.length === 1 ? targets[0].id : '' };
   });
-  const reason = !tree.graph || !sub || !screens.length ? __('This signup is no longer in the journey.', 'wconvert')
-    : sub.required ? __('This signup is required. Change the campaign’s capture requirement before removing it.', 'wconvert')
+  // Each refusal in two lengths: a few words for the menu row, the sentence for its ⓘ (ADR 0139).
+  const refusal = !tree.graph || !sub || !screens.length ? [__('No longer in the journey', 'wconvert'), __('This signup is no longer in the journey.', 'wconvert')]
+    : sub.required ? [__('This signup is required', 'wconvert'), __('This signup is required. Change the campaign’s capture requirement before removing it.', 'wconvert')]
       : tree.submissions.length === 1 && !tree.steps.some(screen => screen.kind === 'result')
-        ? __('This is the campaign’s only signup. Keep a capture point for this campaign, or use a result journey that can finish without contact details.', 'wconvert')
+        ? [__('The only signup', 'wconvert'), __('This is the campaign’s only signup. Keep a capture point for this campaign, or use a result journey that can finish without contact details.', 'wconvert')]
         : screens.some(screen => screen.kind === 'result' || screen.kind === 'acknowledgement')
-          ? __('This signup shares a result or ending screen. Move its contact fields and save action to a separate screen before removing it.', 'wconvert')
+          ? [__('Shares a result or ending', 'wconvert'), __('This signup shares a result or ending screen. Move its contact fields and save action to a separate screen before removing it.', 'wconvert')]
           : shared.length || tree.submissions.some(other => other.id !== sub.id && [...other.fields, ...other.consents].some(id => owned.has(id)))
-            ? __('These screens also collect details for another signup. Separate those fields and save actions before removing this signup.', 'wconvert')
-            : dependents.length ? sprintf(__('Answers on these screens are used by rules on: %s. Update those rules before removing this signup.', 'wconvert'), dependents.map(screen => screen.name).join(', '))
-              : routes.some(route => !route.targets.length) ? __('A removed screen has no suitable continuation. Connect it to a remaining screen before removing this signup.', 'wconvert') : null;
-  return { reason, screens, routes, submission: sub };
+            ? [__('Shared with another signup', 'wconvert'), __('These screens also collect details for another signup. Separate those fields and save actions before removing this signup.', 'wconvert')]
+            : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Answers on these screens are used by rules on: %s. Update those rules before removing this signup.', 'wconvert'), dependents.map(screen => screen.name).join(', '))]
+              : routes.some(route => !route.targets.length) ? [__('Nowhere to continue', 'wconvert'), __('A removed screen has no suitable continuation. Connect it to a remaining screen before removing this signup.', 'wconvert')] : null;
+  const reason = refusal?.[1] ?? null;
+  const short = refusal?.[0] ?? null;
+  return { reason, short, screens, routes, submission: sub };
 }
 
 export function removeGraphCapture(tree: TemplateTree, submissionId: string, destinations: Record<string, string> = {}): { next: TemplateTree; destination: string } | null {

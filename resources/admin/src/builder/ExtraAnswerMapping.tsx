@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/badge';
 import { MappingTest } from './MappingTest';
 import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
+import { NativeSelect } from '../components/ui/native-select';
 import { Description } from '../shell/Description';
 import { messageOf } from '../shell/loadable';
 import { readMappingFields } from '../destinations/api';
@@ -126,8 +127,8 @@ function MappingRow({ id, source, label = source.label, fields, value, issue, on
     <Label htmlFor={id} className="min-w-0 leading-snug [overflow-wrap:anywhere]">{label}</Label>
     <ArrowRight aria-hidden="true" className="hidden size-4 text-muted-foreground @min-[400px]:block rtl:-scale-x-100" />
     <div className="flex min-w-0 flex-col gap-1.5">
-      <select id={id} aria-label={source.choice || label === source.label ? source.label : `${label} — ${source.label}`} aria-invalid={!!issue} aria-describedby={issue || (options.length === 0 && source.type !== 'boolean') ? `${id}-help` : undefined}
-        className="h-(--control-height) w-full min-w-0 rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground" value={target} onChange={(event) => {
+      <NativeSelect id={id} aria-label={source.choice || label === source.label ? source.label : `${label} — ${source.label}`} aria-invalid={!!issue} aria-describedby={issue || (options.length === 0 && source.type !== 'boolean') ? `${id}-help` : undefined}
+        className="w-full" value={target} onChange={(event) => {
           const next = { ...value };
           if (event.target.value) next[source.id] = event.target.value; else delete next[source.id];
           onChange(next);
@@ -138,7 +139,7 @@ function MappingRow({ id, source, label = source.label, fields, value, issue, on
           const used = Object.entries(value).some(([other, selected]) => other !== source.id && selected === field.value);
           return <option key={field.value} value={field.value} disabled={used}>{used ? sprintf(__('%s — already used', 'wconvert'), field.label) : field.label}</option>;
         })}
-      </select>
+      </NativeSelect>
       {issue ? <p id={`${id}-help`} role="alert" className="m-0 text-note text-warning">{issue}</p>
         : options.length === 0 && source.type !== 'boolean' && <Description id={`${id}-help`}>{__('Add a text field in this service, then refresh fields.', 'wconvert')}</Description>}
     </div>
