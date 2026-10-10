@@ -546,8 +546,7 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   }
   if (['cart_quantity', 'cart_amount'].includes(rule.type) && rule.range && typeof rule.range === 'object') {
     const r = rule.range as Record<string, unknown>;
-    const comparison = r.operator === 'between' ? `${r.min ?? '…'}–${r.max ?? '…'}` : `${r.operator === 'max' ? __('at most', 'wconvert') : __('at least', 'wconvert')} ${r.min ?? '…'}`;
-    return { text: `${types.find(t => t.type === rule.type)?.label ?? __('Unavailable rule', 'wconvert')}: ${comparison}${typeof r.currency === 'string' ? ` ${r.currency}` : ''}`, attention: typeof r.min !== 'number' };
+    return { text: `${types.find(t => t.type === rule.type)?.label ?? __('Unavailable rule', 'wconvert')}: ${rangeText(r)}`, attention: typeof r.min !== 'number' };
   }
   const read = fromRule(rule, types);
 
@@ -636,6 +635,49 @@ const fill = sprintf as unknown as (format: string, ...values: string[]) => stri
 const supplied = (value: unknown): boolean =>
   value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0);
 
+/** A quantity or money range, as "at least 2", "at most 50 EUR" or "2–5". */
+function rangeText(range: Record<string, unknown>): string {
+  const comparison = range.operator === 'between' ? `${range.min ?? '…'}–${range.max ?? '…'}`
+    : `${range.operator === 'max' ? __('at most', 'wconvert') : __('at least', 'wconvert')} ${range.min ?? '…'}`;
+
+  return `${comparison}${typeof range.currency === 'string' ? ` ${range.currency}` : ''}`;
+}
+
+/**
+ * One param's value as a rule row's pill shows it (ADR 0139), or null where
+ * nothing is chosen yet.
+ *
+ * **The same formatting the phrases use**, read by LABEL rather than by
+ * phrase: a pill beside "Device" says "Phone or Tablet", a sentence says "they
+ * are on a phone or a tablet". A number gains its unit, because "15" alone on
+ * a pill is a number of what.
+ */
+export function valueText(param: RuleParam, value: unknown): string | null {
+  if (!supplied(value)) return null;
+
+  const count = Array.isArray(value) ? value.length : 0;
+
+  switch (param.control) {
+    case 'seconds':
+      // translators: %d: a number of seconds.
+      return sprintf(_n('%d second', '%d seconds', Number(value), 'wconvert'), Number(value));
+    case 'percent':
+      // translators: %d: a percentage of the page.
+      return sprintf(__('%d%%', 'wconvert'), Number(value));
+    case 'quantity_range':
+    case 'money_range':
+      return typeof value === 'object' ? rangeText(value as Record<string, unknown>) : null;
+    case 'product_set':
+      // translators: %d: how many products are chosen.
+      return sprintf(_n('%d product', '%d products', count, 'wconvert'), count);
+    case 'category_set':
+      // translators: %d: how many categories are chosen.
+      return sprintf(_n('%d category', '%d categories', count, 'wconvert'), count);
+    default:
+      return format(param, value, 'label');
+  }
+}
+
 /**
  * A stored value as the merchant's own word for it.
  *
@@ -644,7 +686,7 @@ const supplied = (value: unknown): boolean =>
  * so a summary printing the raw value would be showing the merchant the
  * manifest rather than their site.
  */
-function format(param: RuleParam, value: unknown): string {
+function format(param: RuleParam, value: unknown, reading: 'phrase' | 'label' = 'phrase'): string {
   // A daily window is one value the merchant reads in their own clock: the
   // control that writes it renders in the reader's locale, so a 12-hour
   // merchant types into a box saying "10:00 PM" and would read "22:00-02:00"
@@ -657,7 +699,7 @@ function format(param: RuleParam, value: unknown): string {
   const one = (each: unknown): string => {
     const option = param.options.find((candidate) => candidate.value === String(each));
 
-    return option?.phrase ?? option?.label ?? String(each);
+    return (reading === 'phrase' ? option?.phrase : undefined) ?? option?.label ?? String(each);
   };
 
   if (Array.isArray(value)) {

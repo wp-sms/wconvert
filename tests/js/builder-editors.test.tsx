@@ -128,9 +128,9 @@ describe('When', () => {
   it('reads two rules as Custom, and keeps the match across sections', async () => {
     setup(); await section('When does it open?');
     expect(pick('When does it open?', 'Custom…')).toBeChecked();
-    await userEvent.click(screen.getByRole('radio', { name: 'Must match every rule' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Opens when any or all of these happen' }), 'all');
     await section('Where does it show?'); await section('When does it open?');
-    expect(screen.getByRole('radio', { name: 'Must match every rule' })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Opens when any or all of these happen' })).toHaveValue('all');
     expect(draft().display_rules!.opening).toMatchObject({ match: 'all', rules: [{ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 50 }] });
   });
 
@@ -146,7 +146,11 @@ describe('When', () => {
   it('never offers automatic rules in click mode', async () => {
     setup(); await section('When does it open?');
     await userEvent.click(within(screen.getByRole('group', { name: 'Opens' })).getByRole('radio', { name: 'When they click' }));
+    expect(screen.getByText('Use an ID, class or attribute')).toBeVisible();
+    // The whole sentence is one press away, in ⓘ.
+    await userEvent.click(screen.getByRole('button', { name: 'About the selector' }));
     expect(screen.getByText(/Point to the button or link with an ID, class, tag or attribute selector/)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
     expect(document.querySelector('.wconvert-display-editor details:not(.wconvert-disclosure)')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Add a rule' }));
     const picker = screen.getByRole('dialog', { name: 'Choose a rule' });
@@ -255,7 +259,8 @@ describe('When, beside automatic placement or a content lock', () => {
 describe('the rule rows', () => {
   it('names what each Remove takes away, and keeps the sentence out of a live region', async () => {
     setup(); await section('When does it open?');
-    expect(screen.getByRole('button', { name: 'Remove time_on_page' })).toHaveTextContent('Remove');
+    // An ✕ named for its row (ADR 0139).
+    expect(screen.getByRole('button', { name: 'Remove time_on_page' })).toHaveTextContent('');
     expect(screen.getByRole('button', { name: 'Remove scroll_depth' })).toBeInTheDocument();
     expect(document.querySelector('.wconvert-display-sentence')).not.toHaveAttribute('aria-live');
   });
@@ -267,21 +272,26 @@ describe('Who', () => {
     await userEvent.click(pick('Who sees it?', 'Phones only'));
     expect(draft().display_rules!.audience).toMatchObject({ mode: 'groups', groups: [{ match: 'all', rules: [{ type: 'device', in: ['mobile'], id: expect.any(String) }] }] });
     await userEvent.click(pick('Who sees it?', 'Custom…'));
-    expect(screen.getByRole('heading', { name: 'Visitors who…' })).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'device' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Group 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'device: mobile_only' })).toBeInTheDocument();
   });
 
   it('adds a different group of visitors on demand, joined by “or”', async () => {
     setup(simple); await section('Who sees it?');
     await userEvent.click(pick('Who sees it?', 'Custom…'));
     expect(draft().display_rules!.audience).toMatchObject({ mode: 'groups', groups: [{ rules: [] }] });
-    await userEvent.click(screen.getByRole('button', { name: '+ Or a different group of visitors' }));
+    await userEvent.click(screen.getByRole('button', { name: '+ Add another group' }));
     const audience = draft().display_rules!.audience;
     expect(audience.mode === 'groups' && audience.groups.length).toBe(2);
-    expect(screen.getByText('or')).toBeInTheDocument();
-    expect(screen.getAllByRole('heading', { name: 'Visitors who…' })).toHaveLength(2);
-    await userEvent.click(screen.getAllByRole('button', { name: 'Remove' })[1]);
-    expect(screen.getAllByRole('heading', { name: 'Visitors who…' })).toHaveLength(1);
+    // The new group's picker is open, ready for its first rule.
+    expect(screen.getByRole('dialog', { name: 'Choose a rule' })).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('separator', { name: 'or' })).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Group 2' })).getByText('Add at least one rule')).toBeInTheDocument();
+    await userEvent.click(within(screen.getByRole('region', { name: 'Group 2' })).getByRole('button', { name: 'Remove group' }));
+    expect(screen.queryByRole('region', { name: 'Group 2' })).toBeNull();
+    // With one group left, it cannot be removed.
+    expect(screen.queryByRole('button', { name: 'Remove group' })).toBeNull();
   });
 
   it('offers account facts in the same audience rule picker as browser facts', async () => {
@@ -298,8 +308,10 @@ describe('Who', () => {
     setup(simple); await section('Who sees it?'); await userEvent.click(pick('Who sees it?', 'Custom…'));
     await userEvent.click(screen.getByRole('button', { name: 'Add a rule' }));
     await userEvent.click(within(screen.getByRole('dialog', { name: 'Choose a rule' })).getByRole('button', { name: 'utm_campaign' }));
+    await userEvent.click(screen.getByRole('button', { name: 'value: any value' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Add a value for value' }), 'newsletter');
-    expect(screen.getByRole('combobox', { name: 'query_param' })).toHaveValue('utm_campaign');
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    expect(screen.getByRole('button', { name: 'key: utm_campaign' })).toBeInTheDocument();
     expect(draft().display_rules!.audience).toMatchObject({ groups: [{ rules: [{ type: 'query_param', key: 'utm_campaign', value: ['newsletter'] }] }] });
   });
 
@@ -405,7 +417,7 @@ describe('display editing without crypto.randomUUID', () => {
     setup(simple); await section('Who sees it?');
     await userEvent.click(pick('Who sees it?', 'Signed-in visitors'));
     await userEvent.click(pick('Who sees it?', 'Custom…'));
-    await userEvent.click(screen.getByRole('button', { name: '+ Or a different group of visitors' }));
+    await userEvent.click(screen.getByRole('button', { name: '+ Add another group' }));
     const audience = draft().display_rules!.audience;
     if (audience.mode !== 'groups') throw new Error('Expected groups');
     expect(audience.groups).toHaveLength(2);

@@ -5009,8 +5009,8 @@ body:has(#wconvert-admin) #wpbody-content {
 
 /*
  * ---------------------------------------------------------------------------
- * `Remove` SITS AT THE END OF THE CONTROLS, ALWAYS — NOT WHEREVER THE FLOW
- * LEFT IT.
+ * ⓘ AND ✕ SIT AT THE END OF THE CONTROLS, ALWAYS — NOT WHEREVER THE FLOW
+ * LEFT THEM.
  *
  * The row was a block, so the button followed whatever came before it: after
  * the last field on a plain rule, and on a line of its own under a rule that
@@ -5021,7 +5021,10 @@ body:has(#wconvert-admin) #wpbody-content {
  * `order` puts it at the end of the FIRST line and pushes every note below,
  * whatever order they arrive in the markup.
  * ------------------------------------------------------------------------- */
-#wconvert-admin .wconvert-rule > .wconvert-rule__remove {
+#wconvert-admin .wconvert-rule > .wconvert-rule__tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   order: 1;
   margin-inline-start: auto;
 }
@@ -6814,6 +6817,15 @@ body .wconvert-option-menu__empty b { color: var(--foreground); font-weight: 600
 body .wconvert-option-menu__empty button { margin: 0; padding: 0; border: 0; background: none; color: var(--link); font-size: var(--text-note); text-decoration-line: underline; text-underline-offset: 3px; cursor: pointer; }
 body .wconvert-option-menu__empty button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 body .wconvert-option-menu__tip { max-inline-size: 260px; }
+/* A value pill's control, under its presets or alone (ADR 0139). */
+body .wconvert-option-menu__control { display: grid; gap: 8px; padding-block: 8px 10px; padding-inline: 10px; }
+body .wconvert-option-menu__list + .wconvert-option-menu__control { border-block-start: 1px solid var(--border); }
+body .wconvert-option-menu__control .wconvert-param { display: grid; gap: 6px; margin: 0; font-size: var(--text-note); }
+body .wconvert-option-menu__control .wconvert-param > label, body .wconvert-option-menu__control .wconvert-param__name { font-size: var(--text-note); font-weight: 500; }
+body .wconvert-option-menu__control :is(input[type='text'], input[type='number'], input[type='time']) { min-block-size: 32px; max-inline-size: 100%; }
+body .wconvert-option-menu__done { justify-self: end; min-block-size: 28px; margin: 0; padding-block: 2px; padding-inline: 12px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-note); font-weight: 500; cursor: pointer; }
+body .wconvert-option-menu__done:is(:hover, :focus-visible) { background: var(--accent); }
+body .wconvert-rule-row__check { display: flex; align-items: center; gap: 8px; font-size: var(--text-note); }
 /* Add element's own header: a title and where the element goes. */
 body .wconvert-option-menu__head { display: grid; gap: 6px; flex: none; padding-block: 10px 4px; padding-inline: 10px; }
 body .wconvert-option-menu__head > strong { font-size: var(--text-body); font-weight: 600; }

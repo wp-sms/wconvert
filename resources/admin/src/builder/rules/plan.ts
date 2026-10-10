@@ -14,6 +14,6 @@ export const incompletePlan = (): DisplayPlan => ({ audience: { mode: 'everyone'
 export const planFrom = (value: unknown): DisplayPlan | undefined => value && typeof value === 'object' && 'audience' in value && 'opening' in value ? value as DisplayPlan : undefined;
 export function groupSummary(group: RuleGroup, types: readonly RuleType[]) {
   const parts = group.rules.map(rule => phraseOf(rule as Rule, types));
-  return { text: parts.length ? parts.map(part => part.text).join(group.match === 'all' ? __(' AND ', 'wconvert') : __(' OR ', 'wconvert')) : __('Add a rule', 'wconvert'),
+  return { text: parts.length ? parts.map(part => part.text).join(group.match === 'all' ? __(' and ', 'wconvert') : __(' or ', 'wconvert')) : __('Add a rule', 'wconvert'),
     attention: !parts.length || parts.some(part => part.attention) || groupProblems(group, types).length > 0 };
 }

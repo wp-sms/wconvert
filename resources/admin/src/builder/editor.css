@@ -1427,14 +1427,40 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 #wconvert-admin .wconvert-display .wconvert-rules__group + .wconvert-rules__group { margin-block-start: 0; }
 #wconvert-admin .wconvert-display .wconvert-rules__empty { margin: 0; padding: 10px 12px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--muted-foreground); font-size: var(--text-note); }
 #wconvert-admin .wconvert-display .wconvert-rules__empty[data-attention] { border-color: var(--warning); background: var(--warning-surface); color: var(--warning); font-weight: 500; }
-#wconvert-admin .wconvert-display .wconvert-display-group { display: grid; gap: .75rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
-#wconvert-admin .wconvert-display .wconvert-display-group :where(.mt-2) { margin-block-start: 0; }
-#wconvert-admin .wconvert-display .wconvert-display-group > button { justify-self: start; }
-#wconvert-admin .wconvert-display .wconvert-display-groups { display: grid; gap: .75rem; }
-#wconvert-admin .wconvert-display .wconvert-display-group-title { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
-#wconvert-admin .wconvert-display .wconvert-display-group-title :where(h4) { margin: 0; }
-#wconvert-admin .wconvert-display .wconvert-display-group-title [data-slot='button'] { color: var(--action); }
-#wconvert-admin .wconvert-display .wconvert-display-or { display: flex; align-items: center; gap: 10px; margin: 0 0 .75rem; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 600; }
+/* Display rules groups (ADR 0139): a numbered box, "Match [all ▾] of these", rows that read as sentences. */
+#wconvert-admin .wconvert-display .wconvert-display-groups { display: grid; gap: 0; }
+#wconvert-admin .wconvert-display .wconvert-display-group { display: grid; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+#wconvert-admin .wconvert-display .wconvert-display-group__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding-block: 10px; padding-inline: 14px; border-block-end: 1px solid var(--border); border-start-start-radius: var(--radius-lg); border-start-end-radius: var(--radius-lg); background: color-mix(in srgb, var(--surface) 55%, var(--card)); }
+#wconvert-admin .wconvert-display .wconvert-display-group__name { font-size: var(--text-body); font-weight: 600; }
+#wconvert-admin .wconvert-display .wconvert-display-group__dot { color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display .wconvert-display-group__match { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: var(--text-body); }
+#wconvert-admin .wconvert-display .wconvert-display-group__remove { margin-inline-start: auto; color: var(--action); }
+#wconvert-admin .wconvert-display .wconvert-display-group__rows { display: grid; gap: 0; padding-block: 6px 12px; padding-inline: 14px; }
+#wconvert-admin .wconvert-display .wconvert-display-group__rows :where(.mt-2) { margin-block-start: 6px; }
+#wconvert-admin .wconvert-display .wconvert-display-group__rows > :where(button, [data-slot='button']) { justify-self: start; }
+#wconvert-admin .wconvert-display .wconvert-display-group .wconvert-rules > .wconvert-rule { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; margin: 0; padding-block: 6px; padding-inline: 0; border: 0; background: none; }
+#wconvert-admin .wconvert-display .wconvert-rules__joiner { margin: 0; padding-block: 2px; padding-inline-start: 26px; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; list-style: none; }
+#wconvert-admin .wconvert-display .wconvert-rule-row { display: grid; gap: 4px; min-inline-size: 0; }
+#wconvert-admin .wconvert-display .wconvert-rule-row__sentence { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-inline-size: 0; }
+#wconvert-admin .wconvert-display .wconvert-rule-row__name { display: inline-flex; align-items: center; gap: 8px; padding-inline-end: 2px; font-size: var(--text-body); font-weight: 600; }
+#wconvert-admin .wconvert-display .wconvert-rule-row__name > svg { inline-size: 16px; block-size: 16px; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display .wconvert-rule-row > p.wconvert-rule__note { margin: 0; padding-inline-start: 24px; font-size: var(--text-note); font-style: normal; }
+#wconvert-admin .wconvert-display .wconvert-rule__tools { display: flex; align-items: center; gap: 2px; }
+#wconvert-admin .wconvert-display .wconvert-rule__tools > .wconvert-rule__remove { display: inline-grid; place-items: center; inline-size: 28px; block-size: 28px; margin: 0; padding: 0; border: 0; border-radius: var(--radius); background: none; cursor: pointer; }
+#wconvert-admin .wconvert-display .wconvert-rule__tools > .wconvert-rule__remove > svg { inline-size: 16px; block-size: 16px; }
+#wconvert-admin .wconvert-display .wconvert-rule__tools > .wconvert-rule__remove:hover { background: var(--accent); }
+#wconvert-admin .wconvert-display .wconvert-value-pill { display: inline-flex; align-items: center; gap: 6px; max-inline-size: 100%; block-size: 30px; margin: 0; padding-block: 0; padding-inline: 12px 9px; border: 1px solid color-mix(in srgb, var(--action) 35%, var(--border)); border-radius: 999px; background: var(--secondary); color: var(--secondary-foreground); font-size: var(--text-note); font-weight: 600; cursor: pointer; }
+#wconvert-admin .wconvert-display .wconvert-value-pill > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-display .wconvert-value-pill > svg { flex: none; inline-size: 14px; block-size: 14px; }
+#wconvert-admin .wconvert-display .wconvert-value-pill:hover { border-color: var(--action); }
+#wconvert-admin .wconvert-display .wconvert-value-pill[aria-expanded='true'] { border-color: var(--action); box-shadow: 0 0 0 2px color-mix(in srgb, var(--action) 25%, transparent); }
+#wconvert-admin .wconvert-display .wconvert-value-pill[data-attention] { border-style: dashed; border-color: color-mix(in srgb, var(--warning) 40%, var(--border)); background: var(--warning-surface); color: var(--warning); font-weight: 500; }
+#wconvert-admin .wconvert-display .wconvert-value-pill:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+#wconvert-admin .wconvert-display .wconvert-display-or { display: flex; align-items: center; gap: 12px; margin-block: 12px; }
+#wconvert-admin .wconvert-display .wconvert-display-or > b { padding-block: 3px; padding-inline: 10px; border-radius: 999px; background: var(--foreground); color: var(--background); font-size: var(--text-micro); font-weight: 700; letter-spacing: .06em; }
+#wconvert-admin .wconvert-display .wconvert-display-groups > .wconvert-display-link { margin-block-start: 12px; }
+#wconvert-admin .wconvert-display .wconvert-display-limit { display: inline-flex; align-items: center; gap: 4px; margin-block: 6px 0; color: var(--muted-foreground); font-size: var(--text-note); }
+#wconvert-admin .wconvert-display .wconvert-display-groups > .wconvert-display-limit { margin-block-start: 12px; }
 #wconvert-admin .wconvert-display .wconvert-display-or::before, #wconvert-admin .wconvert-display .wconvert-display-or::after { content: ''; flex: 1; block-size: 1px; background: var(--border); }
 #wconvert-admin .wconvert-display .wconvert-display-link { justify-self: start; padding: 0; border: 0; background: none; color: var(--link); font-size: var(--text-note); font-weight: 500; text-decoration-line: underline; text-underline-offset: 3px; cursor: pointer; }
 #wconvert-admin .wconvert-display .wconvert-display-link:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
