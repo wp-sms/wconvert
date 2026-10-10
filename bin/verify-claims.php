@@ -7,8 +7,8 @@
  *
  * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
  *
- * WHY THIS EXISTS. A claim is `add_option()` plus one shared sweep, and both
- * halves are WordPress and SQL: the uniqueness `add_option()` gives, the cron
+ * WHY THIS EXISTS. A claim is an `INSERT IGNORE` plus one shared sweep, and
+ * both halves are WordPress and SQL: the uniqueness the insert gives, the cron
  * entry it does or does not add, and a `DELETE` ranged over `option_id`. Each
  * claim used to schedule its own expiry, and under twenty concurrent writers
  * half of those entries were lost to the `cron` option's read-modify-write,
@@ -16,8 +16,8 @@
  * the shape of the cron array, not the arithmetic.
  *
  * IT REFUSES TO RUN WHERE CLAIMS ALREADY EXIST. The sweep is driven by hand
- * here, with a mark pushed forward to stand in for an hour passing, so a real
- * shopper's live claim would be swept early.
+ * here, with the mark's time pushed back to stand in for an hour passing, so a
+ * real shopper's live claim would be swept early.
  */
 
 declare(strict_types=1);
@@ -94,8 +94,11 @@ delete_option(Claims::MARK);
 echo "Taking claims\n";
 
 $first = $name('order');
-$verify->check('a fresh claim is taken', true, Claims::take($first, time()));
-$verify->check('the same claim is refused the second time', false, Claims::take($first, time()));
+get_option($first); // Cache its absence, as a request that looked first would have.
+$verify->check('a fresh claim is taken', true, Claims::take($first, 1234));
+$verify->check('and reads back through the option cache', 1234, (int) get_option($first));
+$verify->check('the same claim is refused the second time', false, Claims::take($first, 5678));
+$verify->check('and keeps its first value', 1234, (int) get_option($first));
 
 $taken = [$first];
 for ($i = 0; $i < 49; $i++) {
@@ -106,6 +109,7 @@ for ($i = 0; $i < 49; $i++) {
 $verify->check('fifty claims are fifty rows', 50, $claimRows());
 $verify->check('and one sweep, however many claims', 1, $entries(Claims::HOOK));
 $verify->check('with no per-claim expiry entries', 0, $entries('wconvert_attribution_claim_expired') + $entries('wconvert_cart_claim_expired'));
+$verify->check('core\'s daily cleanup also runs the sweep', true, has_action('wp_scheduled_delete', [Claims::class, 'sweep']) !== false);
 
 echo "Sweeping\n";
 
@@ -114,29 +118,42 @@ $cronRun = static function (): void {
     wp_unschedule_hook(Claims::HOOK);
     do_action(Claims::HOOK);
 };
+// An hour passing, for the mark only.
+$hourPasses = static function (): void {
+    $mark = get_option(Claims::MARK);
+    update_option(Claims::MARK, ['id' => is_array($mark) ? (int) $mark['id'] : 0, 'at' => time() - Claims::AGE - 1], false);
+};
 
-// A row that only resembles a claim, and an unrelated one, both older than the mark.
+// A row that only resembles a claim, and an unrelated one, both older than any mark.
 add_option('wconvert_cart_claim_settings', 'keep', '', false);
 add_option('wconvert_verify_claims_neighbour', 'keep', '', false);
 $decoys = ['wconvert_cart_claim_settings', 'wconvert_verify_claims_neighbour'];
 
-// The mark was taken with the first claim, so the other forty-nine are newer than it.
+// A sweep run early — a second cron runner, "Run now", a resurrected event.
 $cronRun();
-$verify->check('a sweep removes nothing taken after its mark', 49, $claimRows());
+$verify->check('a sweep run before its mark is an hour old removes nothing', 50, $claimRows());
+$verify->check('and puts itself back for when it is', 1, $entries(Claims::HOOK));
+
+// The mark was taken with the first claim, so the other forty-nine are newer than it.
+$hourPasses();
+$cronRun();
+$verify->check('a due sweep removes nothing taken after its mark', 49, $claimRows());
 $verify->check('and schedules the next one', 1, $entries(Claims::HOOK));
 
 // A claim taken while that sweep is pending is newer than its mark.
 $late = $name('cart');
 Claims::take($late, ['state' => 'counted']);
 $verify->check('a claim taken while a sweep is pending adds no entry', 1, $entries(Claims::HOOK));
+$hourPasses();
 $cronRun();
 
-$verify->check('a sweep removes every claim at or below its mark', 1, $claimRows());
+$verify->check('a due sweep removes every claim at or below its mark', 1, $claimRows());
 $verify->check('the claim taken after the mark survives', true, get_option($late) !== false);
 $verify->check('what only looks like a claim survives', 'keep', get_option('wconvert_cart_claim_settings'));
 $verify->check('an unrelated option survives', 'keep', get_option('wconvert_verify_claims_neighbour'));
 $verify->check('a swept claim can no longer be read', false, get_option($taken[10]));
 
+$hourPasses();
 $cronRun();
 
 $verify->check('with nothing left to sweep there is no claim row', 0, $claimRows());
@@ -144,7 +161,9 @@ $verify->check('no sweep stays scheduled', 0, $entries(Claims::HOOK));
 $verify->check('and no mark is left behind', false, get_option(Claims::MARK));
 
 echo "Cleaning up\n";
-foreach ($decoys as $decoy) delete_option($decoy);
+foreach ($decoys as $decoy) {
+    delete_option($decoy);
+}
 
 if ($verify->failures !== []) {
     echo count($verify->failures) . " check(s) failed.\n";

@@ -55,8 +55,9 @@ receipts hold only product ID and state. One WP-Cron cleanup is scheduled per
 claim for expiry plus one minute; delayed cron delays deletion, never validation.
 An interrupted lock refuses further WConvert additions until cleanup.
 **Amended by [0141](0141-claims-share-one-sweep.md):** one shared sweep replaces
-the per-claim events, removing claims one to two hours after they are taken. An
-interrupted lock therefore blocks that session for up to two hours. Claims are
+the per-claim events, removing claims one to two hours after they are taken, or
+later if cron is delayed or behind. An interrupted lock blocks that session for
+that long rather than about thirty-one minutes. Claims are
 not a global transaction lock for another plugin's simultaneous Woo requests.
 
 An accepted receipt can be replayed without adding/counting again. Pending or
