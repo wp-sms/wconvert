@@ -14,6 +14,10 @@ export interface AddRuleProps {
   readonly axis: readonly RuleType[];
   readonly label: string;
   readonly onAdd: (rule: Rule) => void;
+  /** Open on mount, as a new group's picker does, so its first rule is one step away. */
+  readonly autoOpen?: boolean;
+  /** Told when the picker closes, whether or not a rule was added. */
+  readonly onClose?: () => void;
 }
 
 /** Search types and their shortcuts in one step, on the shared option menu.
@@ -21,8 +25,8 @@ export interface AddRuleProps {
  * dependency that supplies them. Opening, searching and closing never edit the
  * draft.
  */
-export function AddRule({ axis, label, onAdd }: AddRuleProps) {
-  const [open, setOpen] = useState(false);
+export function AddRule({ axis, label, onAdd, autoOpen = false, onClose }: AddRuleProps) {
+  const [open, setOpen] = useState(autoOpen);
   const [query, setQuery] = useState('');
   const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   const matches = (...text: (string | null)[]) => {
@@ -55,9 +59,9 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
     })),
   ].map(group => ({ ...group, types: group.types.filter(type => matches(type.label, type.phrase, ruleHint(type.type), group.reason, ...type.presets.map(preset => preset.label))) }))
     .filter(group => group.types.length > 0);
-  const add = (rule: Rule) => { onAdd(rule); setOpen(false); };
+  const add = (rule: Rule) => { onAdd(rule); setOpen(false); onClose?.(); };
 
-  return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); }}>
+  return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); else onClose?.(); }}>
     <PopoverTrigger asChild>
       <Button type="button" variant="outline" size="sm" className="mt-2" aria-label={label}><Plus aria-hidden="true" />{label}</Button>
     </PopoverTrigger>

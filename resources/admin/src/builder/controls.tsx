@@ -34,7 +34,19 @@ export interface ParamControlProps {
   readonly onChange: (value: unknown) => void;
 }
 
-export function ParamControl({ id, param, value, onChange }: ParamControlProps) {
+/**
+ * A closed choice drawn as a word inside a rule row's sentence (ADR 0139):
+ * `pill`, and for a yes/no param the two words the row says instead of Yes and
+ * No — "Signed in / Signed out". A label names the select, since the sentence
+ * around it is not a `<label>`.
+ */
+export interface ParamControlLook {
+  readonly variant?: 'pill';
+  readonly words?: readonly [yes: string, no: string];
+  readonly label?: string;
+}
+
+export function ParamControl({ id, param, value, onChange, variant, words, label }: ParamControlProps & ParamControlLook) {
   switch (param.control) {
     case 'product_set':
     case 'category_set':
@@ -43,18 +55,21 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
     case 'money_range':
       return <CommerceRange value={value} onChange={onChange} money={param.control === 'money_range'} />;
     case 'enum':
-      return <NativeSelect id={id} value={typeof value === 'string' ? value : ''}
+      return <NativeSelect id={id} variant={variant} aria-label={label} value={typeof value === 'string' ? value : ''}
+        data-attention={variant !== undefined && (typeof value !== 'string' || value === '') || undefined}
         onChange={event => onChange(event.target.value || undefined)}>
-        <option value="">{__('Choose…', 'wconvert')}</option>
+        {/* A pill with a value has no empty choice: "Choose…" is how one starts, not a value to go back to. */}
+        {(variant === undefined || typeof value !== 'string' || value === '') && <option value="">{__('Choose…', 'wconvert')}</option>}
         {param.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
       </NativeSelect>;
     case 'boolean':
       return (
-        <NativeSelect id={id} value={typeof value === 'boolean' ? String(value) : ''}
+        <NativeSelect id={id} variant={variant} aria-label={label} value={typeof value === 'boolean' ? String(value) : ''}
+          data-attention={variant !== undefined && typeof value !== 'boolean' || undefined}
           onChange={event => onChange(event.target.value === '' ? undefined : event.target.value === 'true')}>
-          <option value="">{__('Choose…', 'wconvert')}</option>
-          <option value="true">{__('Yes', 'wconvert')}</option>
-          <option value="false">{__('No', 'wconvert')}</option>
+          {(variant === undefined || typeof value !== 'boolean') && <option value="">{__('Choose…', 'wconvert')}</option>}
+          <option value="true">{words?.[0] ?? __('Yes', 'wconvert')}</option>
+          <option value="false">{words?.[1] ?? __('No', 'wconvert')}</option>
         </NativeSelect>
       );
 
@@ -117,8 +132,9 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
 
     case 'post_type':
       return (
-        <NativeSelect id={id} value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
-          <option value="">{__('Choose…', 'wconvert')}</option>
+        <NativeSelect id={id} variant={variant} aria-label={label} value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}
+          data-attention={variant !== undefined && (typeof value !== 'string' || value === '') || undefined}>
+          {(variant === undefined || typeof value !== 'string' || value === '') && <option value="">{__('Choose…', 'wconvert')}</option>}
           {param.options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

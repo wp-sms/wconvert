@@ -103,7 +103,10 @@ function OptionListContent({
         if (event.defaultPrevented) return
         event.preventDefault()
         const content = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
-        content?.querySelector<HTMLElement>(`input[type="search"], ${STOP}`)?.focus()
+        // The search, else the first item, else — a value pill with only a
+        // control in it — the control.
+        ;(content?.querySelector<HTMLElement>(`input[type="search"], ${STOP}`)
+          ?? content?.querySelector<HTMLElement>("input, select, textarea, button"))?.focus()
       }}
       {...props}
     />

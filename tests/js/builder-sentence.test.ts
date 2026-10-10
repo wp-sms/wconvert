@@ -346,3 +346,16 @@ describe('the vocabulary these summaries are read against', () => {
     expect(types.every((type) => typeof type.phrase === 'string')).toBe(true);
   });
 });
+
+/** The menu's summary of a group joins like the sentence: "and", not "AND" (ADR 0139). */
+describe('a group’s summary', () => {
+  it('joins its rules with a lowercase word', async () => {
+    const { groupSummary } = await import('../../resources/admin/src/builder/rules/plan');
+    const types = allRuleTypes();
+    const rules = [{ type: 'device', in: ['mobile'] }, { type: 'logged_in', value: true }];
+
+    expect(groupSummary({ match: 'all', rules }, types).text).toContain(' and ');
+    expect(groupSummary({ match: 'any', rules }, types).text).toContain(' or ');
+    expect(groupSummary({ match: 'all', rules }, types).text).not.toMatch(/ AND | OR /);
+  });
+});

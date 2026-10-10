@@ -290,9 +290,13 @@ final class RuleLabels
             'device_set.mobile' => __('Phone', 'wconvert'),
             'device_set.tablet' => __('Tablet', 'wconvert'),
             'device_set.desktop' => __('Computer', 'wconvert'),
-            'enum.any' => __('Any selected item', 'wconvert'),
-            'enum.all' => __('Every selected item', 'wconvert'),
-            'enum.none' => __('None of the selected items', 'wconvert'),
+            // Words in a sentence: "Products in the cart [any of ▾] [2 products]" (ADR 0139).
+            /* translators: a word inside a rule row: "[any of] 2 products". */
+            'enum.any' => __('any of', 'wconvert'),
+            /* translators: a word inside a rule row: "[all of] 2 products". */
+            'enum.all' => __('all of', 'wconvert'),
+            /* translators: a word inside a rule row: "[none of] 2 products". */
+            'enum.none' => __('none of', 'wconvert'),
             'enum.detected' => __('Detected', 'wconvert'),
             'enum.not_detected' => __('Not detected', 'wconvert'),
             // The channel names a merchant already reads in their analytics,

@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { X } from 'lucide-react';
+import { InfoTip } from '../shell/InfoTip';
 
 /**
  * The list shell all three rule lists share — Triggers, Conditions, and each
@@ -26,9 +28,16 @@ export interface Row {
   readonly label: string;
   /** Null where this row may not be removed, which is not the same as a disabled button. */
   readonly onRemove: (() => void) | null;
+  /** The caveat a name cannot carry, as ⓘ beside the row's ✕ (ADR 0139). */
+  readonly help?: string | null;
 }
 
-export function RuleRows({ rows, empty, attention = false }: { rows: readonly Row[]; empty: string; attention?: boolean }) {
+/**
+ * @param joiner The word between two rows — "and" or "or" — so a group reads
+ *   as the sentence it is. Hidden from assistive technology, which hears the
+ *   group's own "Match all of these" instead of a word between every row.
+ */
+export function RuleRows({ rows, empty, attention = false, joiner }: { rows: readonly Row[]; empty: string; attention?: boolean; joiner?: string }) {
   if (rows.length === 0) {
     // A description by role — *"Nowhere is excluded."* explains the list it
     // stands in for, and at body size it read as content rather than as the
@@ -38,10 +47,16 @@ export function RuleRows({ rows, empty, attention = false }: { rows: readonly Ro
 
   return (
     <ul className="wconvert-rules">
-      {rows.map((row) => (
-        <li key={row.key} className="wconvert-rule">
-          {row.content}
-          {/*
+      {rows.map((row, index) => (
+        <Fragment key={row.key}>
+          {joiner !== undefined && index > 0 && <li className="wconvert-rules__joiner" aria-hidden="true">{joiner}</li>}
+          <li className="wconvert-rule">
+            {row.content}
+            <span className="wconvert-rule__tools">
+              {row.help ? <InfoTip label={sprintf(
+                /* translators: %s: the rule the help is about, e.g. “Device”. */
+                __('About %s', 'wconvert'), row.label)}>{row.help}</InfoTip> : null}
+              {/*
             ================================================================
             NOT `button-link-delete`, AND THE RED WAS DOING REAL DAMAGE.
             ================================================================
@@ -49,7 +64,7 @@ export function RuleRows({ rows, empty, attention = false }: { rows: readonly Ro
             data — the Optin list's Delete earns it. Taking a rule out of a
             draft list does not: nothing is destroyed, the change is not saved
             until the merchant saves, and the rule can be added back from the
-            control directly below.
+            control directly below. Since ADR 0139 it is an ✕, named for its row.
 
             What it cost was the one thing red is for. Measured on the built
             screen, `Remove` was the loudest element in every row and sat
@@ -58,15 +73,17 @@ export function RuleRows({ rows, empty, attention = false }: { rows: readonly Ro
             that WAS the warning had to compete with it. A quiet control puts
             the emphasis back on the thing that earned it.
           */}
-          {row.onRemove !== null && (
-            <button type="button" className="button-link wconvert-rule__remove" onClick={row.onRemove}
-              aria-label={sprintf(
-                /* translators: %s: the rule being removed, e.g. “Time on page”. */
-                __('Remove %s', 'wconvert'), row.label)}>
-              {__('Remove', 'wconvert')}
-            </button>
-          )}
-        </li>
+              {row.onRemove !== null && (
+                <button type="button" className="wconvert-rule__remove" onClick={row.onRemove}
+                  aria-label={sprintf(
+                    /* translators: %s: the rule being removed, e.g. “Time on page”. */
+                    __('Remove %s', 'wconvert'), row.label)}>
+                  <X aria-hidden="true" />
+                </button>
+              )}
+            </span>
+          </li>
+        </Fragment>
       ))}
     </ul>
   );
