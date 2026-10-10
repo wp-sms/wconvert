@@ -4,15 +4,11 @@ import { journeysSupported, commerceSupported } from '../settings';
 import { tierProductName, unlessFree } from '../goals/availability';
 import { cloneElement, isValidElement, useId, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeftRight, Check, CircleHelp, Eye, EyeOff, Heading, Image, Layers, LayoutPanelLeft, Link, Mail, Minus, Package, Phone, RectangleHorizontal, Sparkles, SquareCheck, Star, Tag, Text, TextCursorInput, Ticket, Timer, Type, User, type LucideIcon } from 'lucide-react';
+import { ArrowLeftRight, Eye, EyeOff, Layers, LayoutPanelLeft, type LucideIcon } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { InfoTip } from '../shell/InfoTip';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { OptionGroup, OptionItem, OptionMenuContent } from '../components/ui/option-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ParamChoice } from './ParamChoice';
 import { BorderPreview, ImageFitPreview, ImageShapePreview, SplitRatioPreview } from './ChoicePreview';
@@ -21,6 +17,7 @@ import { PanelField, PanelHeader, PanelHint, PanelSection } from './PanelSection
 import { DesignColors, designColorsOf } from './ColorField';
 import { answerTypeName } from './JourneySettings';
 import { nameOfBlock } from './BlockRow';
+import { elementIcon } from './elementIcon';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
 import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
@@ -251,12 +248,7 @@ interface StyleSlots { lead?: ReactNode; footerEnd?: ReactNode }
 /** An element's kind as its icon (ADR 0136): a headline is not a "T" like everything else. */
 function elementIconOf(type: string, captures: string | null, leaf: boolean): LucideIcon {
   if (!leaf) return type === 'split' ? LayoutPanelLeft : Layers;
-  if (type === 'field') return captures === 'email' ? Mail : captures === 'phone' ? Phone : captures === 'name' ? User : TextCursorInput;
-  const icons: Readonly<Record<string, LucideIcon>> = {
-    heading: Heading, eyebrow: Type, text: Text, badge: Tag, rating: Star, image: Image, icon: Sparkles, divider: Minus,
-    countdown: Timer, code: Ticket, question: CircleHelp, button: RectangleHorizontal, consent: SquareCheck, followup: Link, products: Package,
-  };
-  return icons[type] ?? Type;
+  return elementIcon(type, captures);
 }
 
 function contentBody({
@@ -442,36 +434,28 @@ function SwapMenu({
           <ArrowLeftRight aria-hidden="true" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="max-w-xs">
-        {swaps.map((swap) => {
-          const said = swapLabel(template.tree, path, swap.to, labels);
+      <OptionMenuContent align="start" aria-label={name}>
+        <OptionGroup heading={__('Swap for', 'wconvert')}>
+          {swaps.map((swap) => {
+            const said = swapLabel(template.tree, path, swap.to, labels);
 
-          return (
-            <DropdownMenuItem
-              key={swap.to}
-              disabled={swap.refused !== null || swap.current}
-              className="flex-col items-start gap-0.5"
-              onSelect={() =>
-                onSwap(
-                  { ...template, tree: withSwapped(template.tree, path, swap.to, act, labels) },
-                  swapSaid(said),
-                )
-              }
-            >
-              <span className="flex items-center gap-2">
-                {swap.current ? <Check aria-hidden="true" /> : <span className="size-4" aria-hidden="true" />}
-                {said}
-              </span>
-
-              {swap.refused !== null && (
-                <span className="text-micro font-normal tracking-normal text-pretty whitespace-normal text-muted-foreground">
-                  {swap.refused}
-                </span>
-              )}
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
+            return (
+              <OptionItem
+                key={swap.to}
+                name={said}
+                checked={swap.current}
+                refused={swap.refused === null ? null : { short: swap.refusedShort ?? swap.refused, reason: swap.refused }}
+                onSelect={swap.current ? undefined : () =>
+                  onSwap(
+                    { ...template, tree: withSwapped(template.tree, path, swap.to, act, labels) },
+                    swapSaid(said),
+                  )
+                }
+              />
+            );
+          })}
+        </OptionGroup>
+      </OptionMenuContent>
     </DropdownMenu>
   );
 }

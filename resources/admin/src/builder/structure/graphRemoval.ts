@@ -22,17 +22,20 @@ export function graphRemovalPlan(tree: TemplateTree, screenId: string) {
   const dependents = tree.steps.filter(item => item.id !== screenId && (
     [item.when, ...(item.paths?.map(path => path.when) ?? []), ...(item.results?.map(result => result.when) ?? [])].some(references)
     || graph?.edges.some(edge => edge.from === item.id && references(edge.when))));
-  const reason = !graph || !screen ? __('This screen is no longer in the journey.', 'wconvert')
+  // Each refusal in two lengths: a few words for the menu row, the sentence for its ⓘ (ADR 0139).
+  const refusal = !graph || !screen ? [__('No longer in the journey', 'wconvert'), __('This screen is no longer in the journey.', 'wconvert')]
     : screen.kind === 'result'
-      ? __('Keep this result screen for the campaign’s recommendation. Edit its results, content or incoming paths here.', 'wconvert')
+      ? [__('Keeps the recommendation', 'wconvert'), __('Keep this result screen for the campaign’s recommendation. Edit its results, content or incoming paths here.', 'wconvert')]
     : screen.kind === 'acknowledgement' && tree.steps.filter(item => item.kind === 'acknowledgement').length === 1
-      ? __('Keep this ending so visitors have somewhere to finish. You can edit its content and incoming paths.', 'wconvert')
+      ? [__('The only ending', 'wconvert'), __('Keep this ending so visitors have somewhere to finish. You can edit its content and incoming paths.', 'wconvert')]
       : nodes.some(node => node.type === 'field' || node.type === 'consent' || node.type === 'button' && 'action' in node && node.action === 'submit')
-        ? __('This screen collects or saves contact details. Its fields, consent and save settings must stay together; it cannot be deleted here.', 'wconvert')
-        : dependents.length ? sprintf(__('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))
+        ? [__('Collects contact details', 'wconvert'), __('This screen collects or saves contact details. Its fields, consent and save settings must stay together; it cannot be deleted here.', 'wconvert')]
+        : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(__('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))]
           : (isEntry || incoming.length > 0) && !targets.length
-            ? __('There is no suitable continuation. Add a screen or update the paths before deleting this one.', 'wconvert') : null;
-  return { reason, incoming, outgoing, isEntry, targets, preferred, needsDestination: isEntry || incoming.length > 0 };
+            ? [__('Nowhere to continue', 'wconvert'), __('There is no suitable continuation. Add a screen or update the paths before deleting this one.', 'wconvert')] : null;
+  const reason = refusal?.[1] ?? null;
+  const short = refusal?.[0] ?? null;
+  return { reason, short, incoming, outgoing, isEntry, targets, preferred, needsDestination: isEntry || incoming.length > 0 };
 }
 
 /** One immutable edit preserves incoming rules/priority and leaves detached work in the draft. */

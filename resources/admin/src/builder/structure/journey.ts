@@ -400,18 +400,55 @@ export function movedScreen(tree: TemplateTree, from: number, to: number): Templ
   return referencedJourney(next);
 }
 
+/**
+ * Why a screen stays where it is, in two lengths for a menu row: a few words on
+ * screen and the sentence in ⓘ (ADR 0139). Null where {@link movedScreen}
+ * would move it. Asked of the move itself, so the menu and the move cannot
+ * disagree.
+ */
+export function screenMoveRefusal(tree: TemplateTree, from: number, to: number): { short: string; reason: string } | null {
+  if (movedScreen(tree, from, to) !== tree) return null;
+  if (to < 0) return { short: __('Already first', 'wconvert'), reason: __('This is the first screen.', 'wconvert') };
+  if (from >= tree.steps.length - 1 || to >= tree.steps.length - 1) {
+    return { short: __('The last screen stays last', 'wconvert'), reason: __('The last screen is where visitors finish, so it stays at the end.', 'wconvert') };
+  }
+  return {
+    short: __('Would break the screen order', 'wconvert'),
+    reason: __('Questions come before the screens that use their answers, the main signup before the optional one, and the thank-you screen last.', 'wconvert'),
+  };
+}
+
 /** Removing a signup also removes the screens collecting its declared details.
  * Content-only offers between those screens are independent and stay in place. */
 export function screenRemoval(tree: TemplateTree, index: number): { screens: string[]; submission?: string } {
   const screen = tree.steps[index];
-  if (!screen || ['acknowledgement', 'result'].includes(screen.kind) || tree.steps.length <= 2
-    || tree.steps.some(item => item.paths?.some(path => path.to === screen.id))
-    || walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) return { screens: [] };
+  if (!screen || whyScreenStays(tree, index) !== null) return { screens: [] };
   const submission = tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
-  if (submission?.required) return { screens: [] };
   if (!submission) return { screens: [screen.id] };
   const owned = new Set([...submission.fields, ...submission.consents]);
   return { submission: submission.id, screens: tree.steps.filter(s => s.id === screen.id || walkNodes(s.content).some(n => 'id' in n && owned.has(n.id as string))).map(s => s.id) };
+}
+
+/**
+ * Why {@link screenRemoval} keeps this screen, in two lengths for a menu row
+ * (ADR 0139), or null where it may go.
+ */
+export function whyScreenStays(tree: TemplateTree, index: number): { short: string; reason: string } | null {
+  const screen = tree.steps[index];
+  if (!screen) return null;
+  if (screen.kind === 'result') return { short: __('Keeps the result', 'wconvert'), reason: __('Keep this result screen. Edit its results or content instead.', 'wconvert') };
+  if (screen.kind === 'acknowledgement') return { short: __('Keeps the ending', 'wconvert'), reason: __('Keep this ending so visitors have somewhere to finish.', 'wconvert') };
+  if (tree.steps.length <= 2) return { short: __('Needs two screens', 'wconvert'), reason: __('A campaign keeps at least two screens.', 'wconvert') };
+  if (tree.steps.some(item => item.paths?.some(path => path.to === screen.id))) {
+    return { short: __('A path leads here', 'wconvert'), reason: __('Another screen’s path leads here. Change that path first.', 'wconvert') };
+  }
+  if (walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) {
+    return { short: __('Other screens use its answers', 'wconvert'), reason: __('Answers on this screen are used by rules on other screens. Update those rules first.', 'wconvert') };
+  }
+  if (tree.submissions.find(sub => submissionScreen(tree, sub.id) === index)?.required) {
+    return { short: __('Saves the main signup', 'wconvert'), reason: __('This screen saves the campaign’s main signup, so it stays.', 'wconvert') };
+  }
+  return null;
 }
 
 export function removedScreen(tree: TemplateTree, index: number): TemplateTree {

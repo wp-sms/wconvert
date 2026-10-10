@@ -141,19 +141,19 @@ final class RuleCatalogueTest extends TestCase
         $this->assertSame('Shows on', $device['params']['in']['label']);
         $this->assertSame(
             [
-                ['value' => 'mobile', 'label' => 'Mobile'],
+                ['value' => 'mobile', 'label' => 'Phone'],
                 ['value' => 'tablet', 'label' => 'Tablet'],
-                ['value' => 'desktop', 'label' => 'Desktop'],
+                ['value' => 'desktop', 'label' => 'Computer'],
             ],
             $device['params']['in']['options']
         );
         $this->assertSame(
             [
                 'id' => 'mobile_only',
-                'label' => 'On mobile only',
+                'label' => 'Phone',
                 // The same preset read inside a sentence rather than over a
-                // control — "Fires ... on mobile", never "Fires On mobile only".
-                'phrase' => 'they are on mobile',
+                // control — "... they are on a phone", never "... Phone".
+                'phrase' => 'they are on a phone',
                 'fixed' => ['in' => ['mobile']],
             ],
             $device['presets'][0]
@@ -307,7 +307,7 @@ final class RuleCatalogueTest extends TestCase
         $described = self::type(self::catalogue(true, false), 'conditions', 'cart_has_items');
 
         $this->assertSame('unavailable', $described['availability']);
-        $this->assertSame('Has something in their cart', $described['label']);
+        $this->assertSame('Cart', $described['label']);
     }
 
     /**
@@ -315,7 +315,7 @@ final class RuleCatalogueTest extends TestCase
      * the Optin list disagreeing.
      *
      * {@see \WConvert\Optin\Suspension::reason()} already tells this same
-     * merchant *"the “Has something in their cart” rule needs WooCommerce"*.
+     * merchant *"the “Cart” rule needs WooCommerce"*.
      * Without this key the panel holding the rule could say only "not
      * available", which is the sentence ADR 0026 rejects on the list for
      * leaving them to guess which of their plugins did it.

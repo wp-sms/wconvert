@@ -11,7 +11,6 @@ import {
   Info,
   LayoutGrid,
   List,
-  Lock,
   Megaphone,
   MoreHorizontal,
   Plus,
@@ -24,14 +23,8 @@ import {
 import { Button } from '../components/ui/button';
 import { NativeSelect } from '../components/ui/native-select';
 import { Skeleton } from '../components/ui/skeleton';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator } from '../components/ui/option-menu';
 import { listGoals, type GoalEntry } from '../goals/api';
 import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
@@ -780,17 +773,17 @@ function CampaignMenu({
 }) {
   const trigger = useRef<HTMLButtonElement>(null),
     status = statusOf(row);
-  const reason = `wconvert-publish-reason-${row.id}`;
   const availability = adminSettings()?.variants?.availability ?? 'locked';
-  const publish = (
-    <DropdownMenuItem
-      disabled={missingDesign}
-      aria-describedby={missingDesign ? reason : undefined}
+  const upsell = !arm && availability !== 'ready' && renderingFor(availability, 'settings_list') === 'upsell';
+  const publish = (replaces: boolean) => (
+    <OptionItem
+      icon={Upload}
+      name={__('Publish saved draft', 'wconvert')}
+      // The one action whose result is not in its name (ADR 0139).
+      hint={replaces ? __('Replaces the live version', 'wconvert') : null}
+      refused={missingDesign ? { short: __('Add a design first', 'wconvert'), reason: __('Add a design in the editor before publishing.', 'wconvert') } : null}
       onSelect={() => onDecision('publish', trigger.current)}
-    >
-      <Upload aria-hidden="true" />
-      {__('Publish saved draft', 'wconvert')}
-    </DropdownMenuItem>
+    />
   );
   return (
     <DropdownMenu modal={false}>
@@ -805,80 +798,39 @@ function CampaignMenu({
           <MoreHorizontal aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu">
-        <DropdownMenuLabel className="wconvert-menu-heading text-micro font-normal text-muted-foreground">{name}</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => onDetails(trigger.current)}>
-          <Info aria-hidden="true" />
-          {__('Details', 'wconvert')}
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <a href={reportHref({ optinId: row.id, days })}>
-            <ChartNoAxesCombined aria-hidden="true" />
-            {__('View report', 'wconvert')}
-          </a>
-        </DropdownMenuItem>
-        {reportReady && result?.capture && (
-          <DropdownMenuItem asChild>
-            <a href={leadsHref({ optinId: row.id, ...range })}>
-              <Inbox aria-hidden="true" />
-              {__('View submissions', 'wconvert')}
-            </a>
-          </DropdownMenuItem>
+      <OptionMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu" aria-label={sprintf(__('More actions for %s', 'wconvert'), name)}>
+        <OptionGroup heading={name}>
+          <OptionItem icon={Info} name={__('Details', 'wconvert')} onSelect={() => onDetails(trigger.current)} />
+          <OptionItem icon={ChartNoAxesCombined} name={__('View report', 'wconvert')} href={reportHref({ optinId: row.id, days })} />
+          {reportReady && result?.capture && (
+            <OptionItem icon={Inbox} name={__('View submissions', 'wconvert')} href={leadsHref({ optinId: row.id, ...range })} />
+          )}
+          <OptionSeparator />
+          <OptionItem icon={Copy} name={__('Duplicate as draft', 'wconvert')} disabled={navigationBusy} onSelect={onDuplicate} />
+          {!arm && availability === 'ready' && (
+            <OptionItem icon={Split} disabled={navigationBusy} onSelect={onTest}
+              name={parent.arms.length ? __('Add another variant', 'wconvert') : __('Create A/B test', 'wconvert')} />
+          )}
+          <OptionSeparator />
+          {canUnpublish(status) ? (
+            <OptionItem icon={EyeOff} name={arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')}
+              onSelect={() => onDecision('pause', trigger.current)} />
+          ) : publish(false)}
+          {canUnpublish(status) && row.has_unpublished_changes && publish(true)}
+          {parent.arms.length > 0 && (
+            <OptionItem icon={Trophy} name={__('Use this variant', 'wconvert')} onSelect={() => onDecision('winner', trigger.current)} />
+          )}
+          <OptionSeparator />
+          <OptionItem icon={Trash2} destructive name={arm ? __('Delete variant', 'wconvert') : __('Delete campaign', 'wconvert')}
+            onSelect={() => onDecision('delete', trigger.current)} />
+        </OptionGroup>
+        {/* Upsells are grey with a lock (GUIDELINES §14): a line, not a dead item, because the route does not exist on this build. */}
+        {upsell && (
+          <OptionGroup heading={sprintf(__('With %s', 'wconvert'), tierProductName(adminSettings()?.variants?.tier ?? undefined))} icon="lock">
+            <OptionItem icon={Split} name={__('Create A/B test', 'wconvert')} />
+          </OptionGroup>
         )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled={navigationBusy} onSelect={onDuplicate}>
-          <Copy aria-hidden="true" />
-          {__('Duplicate as draft', 'wconvert')}
-        </DropdownMenuItem>
-        {!arm &&
-          (availability === 'ready' ? (
-            <DropdownMenuItem disabled={navigationBusy} onSelect={onTest}>
-              <Split aria-hidden="true" />
-              {parent.arms.length
-                ? __('Add another variant', 'wconvert')
-                : __('Create A/B test', 'wconvert')}
-            </DropdownMenuItem>
-          ) : renderingFor(availability, 'settings_list') === 'upsell' ? (
-            // Upsells are grey with a lock (GUIDELINES §14), and a label rather
-            // than a dead item: the route does not exist on this build.
-            <DropdownMenuLabel className="wconvert-menu-note text-micro font-normal text-muted-foreground">
-              <Lock aria-hidden="true" />
-              {sprintf(
-                __('A/B testing is available with %s.', 'wconvert'),
-                tierProductName(adminSettings()?.variants?.tier ?? undefined),
-              )}
-            </DropdownMenuLabel>
-          ) : null)}
-        <DropdownMenuSeparator />
-        {canUnpublish(status) ? (
-          <DropdownMenuItem onSelect={() => onDecision('pause', trigger.current)}>
-            <EyeOff aria-hidden="true" />
-            {arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')}
-          </DropdownMenuItem>
-        ) : (
-          publish
-        )}
-        {canUnpublish(status) && row.has_unpublished_changes && publish}
-        {missingDesign && (
-          <DropdownMenuLabel id={reason} className="wconvert-menu-note text-micro font-normal text-muted-foreground">
-            {__('Add a design in the editor before publishing.', 'wconvert')}
-          </DropdownMenuLabel>
-        )}
-        {parent.arms.length > 0 && (
-          <DropdownMenuItem onSelect={() => onDecision('winner', trigger.current)}>
-            <Trophy aria-hidden="true" />
-            {__('Use this variant', 'wconvert')}
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onSelect={() => onDecision('delete', trigger.current)}
-        >
-          <Trash2 aria-hidden="true" />
-          {arm ? __('Delete variant', 'wconvert') : __('Delete campaign', 'wconvert')}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+      </OptionMenuContent>
     </DropdownMenu>
   );
 }

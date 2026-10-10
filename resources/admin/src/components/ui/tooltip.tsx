@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { useDirection } from "@/hooks/useDirection"
 import { Tooltip as TooltipPrimitive } from "radix-ui"
 
 function TooltipProvider({
@@ -28,16 +29,20 @@ function TooltipTrigger({
 }
 
 // Harbor keeps overlays static and dismisses them immediately (ADR 0097).
+// Portaled, so it is told the page's direction as `PopoverContent` is.
 function TooltipContent({
   className,
   sideOffset = 0,
   children,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+  const dir = useDirection()
+
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         data-slot="tooltip-content"
+        dir={dir}
         sideOffset={sideOffset}
         className={cn(
           "z-50 w-fit rounded-md bg-foreground px-3 py-1.5 text-micro max-w-xs break-words text-balance text-background",

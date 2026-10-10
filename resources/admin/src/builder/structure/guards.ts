@@ -229,3 +229,21 @@ function typesUnder(node: TemplateNode): string[] {
       : carried;
   }, [node.type]);
 }
+
+/**
+ * A guard's refusal in two lengths for a menu row: a few words on screen, the
+ * sentence in ⓘ (ADR 0139). Keyed on the sentence the guard returned, so the
+ * guard stays the one place that decides.
+ */
+export function refusalWithShort(reason: string | null): { short: string; reason: string } | null {
+  if (reason === null) return null;
+  const shorts: Readonly<Record<string, string>> = {
+    [__('This question controls another screen or result. Remove those conditions first.', 'wconvert')]: __('Other screens depend on it', 'wconvert'),
+    [__('The only thing here that counts as a conversion.', 'wconvert')]: __('It counts the conversion', 'wconvert'),
+    [__('The only field. A form with none captures nothing.', 'wconvert')]: __('The form’s only field', 'wconvert'),
+    [__('Keep exactly one button per submission or offer link. Add a navigation button instead.', 'wconvert')]: __('Only one such button', 'wconvert'),
+    [__('Two fields capturing the same detail collide. Add one instead.', 'wconvert')]: __('Fields can’t be copied', 'wconvert'),
+  };
+
+  return { short: shorts[reason] ?? reason, reason };
+}

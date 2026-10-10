@@ -564,9 +564,9 @@ describe('an A/B test on the list', () => {
 
     await openTheMenuOn(/More actions/);
 
-    expect(
-      await screen.findByText('A/B testing is available with WConvert Pro.'),
-    ).toBeInTheDocument();
+    // A line under a locked heading, never a menu item that would 404.
+    const locked = await screen.findByRole('group', { name: 'With WConvert Pro' });
+    expect(within(locked).getByText('Create A/B test')).toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /Add another variant|Create A\/B test/ })).not.toBeInTheDocument();
   });
 

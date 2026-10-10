@@ -4,6 +4,7 @@ import * as React from "react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { useDirection } from "@/hooks/useDirection"
 
 function Popover({
   ...props
@@ -17,16 +18,26 @@ function PopoverTrigger({
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
+/**
+ * **`dir` is passed, a WConvert change for the reason {@see DropdownMenu}
+ * gives.** The content is portaled to `<body>`, out of reach of the admin's
+ * own direction, and Radix stamps `ltr` on what it cannot resolve. Every
+ * popover follows the page here rather than at each call site, where two
+ * remembered it and the rest did not.
+ */
 function PopoverContent({
   className,
   align = "center",
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+  const dir = useDirection()
+
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         data-slot="popover-content"
+        dir={dir}
         align={align}
         sideOffset={sideOffset}
         className={cn(

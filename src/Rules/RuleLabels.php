@@ -62,7 +62,9 @@ final class RuleLabels
             // stale, and naming what free does not would over-claim today.
             'role' => __('User role', 'wconvert'),
             'device' => __('Device', 'wconvert'),
-            'ad_blocking' => __('Ad-block status', 'wconvert'),
+            // Nouns, so a row reads as a sentence: "Ad blocker [Detected ▾]",
+            // "Cart [has items ▾]", "Cart total [$50 or more]" (ADR 0139).
+            'ad_blocking' => __('Ad blocker', 'wconvert'),
             'time_of_day' => __('Time of day', 'wconvert'),
             'query_param' => __('URL parameter / UTM tag', 'wconvert'),
             'referrer' => __('Where they came from', 'wconvert'),
@@ -71,8 +73,8 @@ final class RuleLabels
             'cart_quantity' => __('Total item quantity', 'wconvert'),
             'cart_amount' => __('Products after discounts', 'wconvert'),
             'products_ready' => __('Has eligible product recommendations', 'wconvert'),
-            'cart_has_items' => __('Has something in their cart', 'wconvert'),
-            'cart_value_min' => __('Cart is worth at least', 'wconvert'),
+            'cart_has_items' => __('Cart', 'wconvert'),
+            'cart_value_min' => __('Cart total', 'wconvert'),
         ];
     }
 
@@ -147,9 +149,12 @@ final class RuleLabels
             'time_on_page.after_a_read' => __('After 15 seconds', 'wconvert'),
             'scroll_depth.halfway_down' => __('Halfway down (50%)', 'wconvert'),
             'scroll_depth.near_the_end' => __('Near the end (80%)', 'wconvert'),
-            'device.mobile_only' => __('On mobile only', 'wconvert'),
-            'device.not_on_mobile' => __('Anywhere but mobile', 'wconvert'),
-            'device.desktop_only' => __('On desktop only', 'wconvert'),
+            // One device vocabulary — phone, tablet, computer — in the presets,
+            // the set's options and the phrases alike (ADR 0139). A preset is
+            // the value in "Device [Phone ▾]", so it is the value's words.
+            'device.mobile_only' => __('Phone', 'wconvert'),
+            'device.not_on_mobile' => __('Tablet or computer', 'wconvert'),
+            'device.desktop_only' => __('Computer', 'wconvert'),
             // Starting points rather than claims about this merchant's hours,
             // which is what a preset is (ADR 0005). Both carry no phrase of
             // their own, so the summary reads the type's with the hours
@@ -160,9 +165,10 @@ final class RuleLabels
             'query_param.utm_source' => __('Source (utm_source)', 'wconvert'),
             'query_param.utm_medium' => __('Medium (utm_medium)', 'wconvert'),
             'query_param.utm_campaign' => __('Campaign (utm_campaign)', 'wconvert'),
-            'referrer.from_search' => __('Came from a search engine', 'wconvert'),
-            'referrer.from_social' => __('Came from social media', 'wconvert'),
-            'referrer.arrived_directly' => __('Arrived with no referring page', 'wconvert'),
+            // The row already says "Where they came from"; the preset is the answer.
+            'referrer.from_search' => __('A search engine', 'wconvert'),
+            'referrer.from_social' => __('Social media', 'wconvert'),
+            'referrer.arrived_directly' => __('No referring page', 'wconvert'),
         ];
     }
 
@@ -209,7 +215,7 @@ final class RuleLabels
             'click_element' => __('when someone clicks %1$s', 'wconvert'),
             'exit_intent' => __('when they are about to leave', 'wconvert'),
             'scroll_up' => __('when they scroll back up', 'wconvert'),
-            /* translators: %1$s: one or more device names, already joined, e.g. “mobile or tablet”. */
+            /* translators: %1$s: one or more device names, already joined, e.g. “Phone or Tablet”. */
             'device' => __('they are on %1$s', 'wconvert'),
             /* translators: %1$s: an ad-block status, already translated — "detected" or "not detected". */
             'ad_blocking' => __('ad blocking is %1$s', 'wconvert'),
@@ -254,9 +260,9 @@ final class RuleLabels
             'time_on_page.after_a_read' => __('after 15 seconds on the page', 'wconvert'),
             'scroll_depth.halfway_down' => __('after scrolling 50 percent of the page', 'wconvert'),
             'scroll_depth.near_the_end' => __('after scrolling 80 percent of the page', 'wconvert'),
-            'device.mobile_only' => __('they are on mobile', 'wconvert'),
-            'device.not_on_mobile' => __('they are not on mobile', 'wconvert'),
-            'device.desktop_only' => __('they are on desktop', 'wconvert'),
+            'device.mobile_only' => __('they are on a phone', 'wconvert'),
+            'device.not_on_mobile' => __('they are on a tablet or a computer', 'wconvert'),
+            'device.desktop_only' => __('they are on a computer', 'wconvert'),
             /* translators: %1$s: one or more campaign sources, already joined, e.g. “google or bing”. */
             'query_param.utm_source' => __('they came from %1$s', 'wconvert'),
             /* translators: %1$s: one or more campaign mediums, already joined. */
@@ -281,9 +287,9 @@ final class RuleLabels
     public static function options(): array
     {
         return [
-            'device_set.mobile' => __('Mobile', 'wconvert'),
+            'device_set.mobile' => __('Phone', 'wconvert'),
             'device_set.tablet' => __('Tablet', 'wconvert'),
-            'device_set.desktop' => __('Desktop', 'wconvert'),
+            'device_set.desktop' => __('Computer', 'wconvert'),
             'enum.any' => __('Any selected item', 'wconvert'),
             'enum.all' => __('Every selected item', 'wconvert'),
             'enum.none' => __('None of the selected items', 'wconvert'),

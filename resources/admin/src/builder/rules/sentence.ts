@@ -486,7 +486,7 @@ export function sentenceParts(
     const groups = audience.groups.map(group => join(group.rules.map(rule => phraseOf(rule as Rule, all).text),
       group.match === 'all' ? _x('and', 'joins rules a visitor must all match', 'wconvert') : _x('or', 'joins rules any one of which a visitor may match', 'wconvert')));
     return groups.length === 0 || groups.some(group => group === '') ? unchosen
-      /* translators: %s: what the visitor must match, e.g. “they are on mobile and signed in to this site”. */
+      /* translators: %s: what the visitor must match, e.g. “they are on a phone and signed in to this site”. */
       : sprintf(__('visitors if %s', 'wconvert'), groups.join(_x(', or if ', 'joins alternative groups of visitors', 'wconvert')));
   });
 
@@ -640,7 +640,7 @@ const supplied = (value: unknown): boolean =>
  * A stored value as the merchant's own word for it.
  *
  * A closed option set carries labels resolved for this install — a custom post
- * type's name is whatever its author registered, and `mobile` is "Mobile" —
+ * type's name is whatever its author registered, and `mobile` is "Phone" —
  * so a summary printing the raw value would be showing the merchant the
  * manifest rather than their site.
  */

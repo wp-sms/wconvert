@@ -1,5 +1,6 @@
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
+import { NativeSelect } from '../components/ui/native-select';
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { ArrowUp, ArrowDown, X } from 'lucide-react';
 import apiFetch from '@wordpress/api-fetch';
@@ -90,9 +91,9 @@ export function CommerceRange({ value, onChange, money }: { value: unknown; onCh
   }, [money]);
   const update = (next: Range) => onChange({ ...range, operator: range.operator ?? 'min', ...(money && currency ? { currency: currency.currency, decimals: currency.decimals } : {}), ...next });
   return <div className="space-y-3">
-    <select className="w-full rounded-md border border-input bg-background p-2" aria-label={__('Comparison', 'wconvert')} value={range.operator ?? 'min'} onChange={event => update({ operator: event.target.value })}>
+    <NativeSelect className="w-full" aria-label={__('Comparison', 'wconvert')} value={range.operator ?? 'min'} onChange={event => update({ operator: event.target.value })}>
       <option value="min">{__('At least', 'wconvert')}</option><option value="max">{__('At most', 'wconvert')}</option><option value="between">{__('Between', 'wconvert')}</option>
-    </select>
+    </NativeSelect>
     <Input aria-label={__('Amount or quantity', 'wconvert')} type="number" min="0" step={money ? 10 ** -(currency?.decimals ?? 2) : 1} value={range.min ?? ''} onChange={event => update({ min: event.target.value === '' ? undefined : Number(event.target.value) })} />
     {range.operator === 'between' && <Input aria-label={__('Upper limit', 'wconvert')} type="number" min="0" step={money ? 'any' : 1} value={range.max ?? ''} onChange={event => update({ max: event.target.value === '' ? undefined : Number(event.target.value) })} />}
     {money && <p>{range.currency ?? currency?.currency ?? __('Loading store currency…', 'wconvert')} · {__('Products after discounts, excluding tax and shipping.', 'wconvert')}</p>}

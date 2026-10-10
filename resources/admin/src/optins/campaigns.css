@@ -138,3 +138,5 @@
   #wconvert-admin :is(.wconvert-campaign-filterbar,.wconvert-campaign-toolbar,.wconvert-campaign-footer,.wconvert-campaign-table tr) { padding-inline:18px; }
   #wconvert-admin .wconvert-campaign-thumbnail { inline-size:70px; block-size:54px; }
 }
+/* The campaign's name heads its ⋯ menu on one line (ADR 0139). */
+.wconvert-campaign-menu .wconvert-option-menu__heading > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

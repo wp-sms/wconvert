@@ -553,7 +553,7 @@ describe('the row', () => {
     await userEvent.click(
       within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
     expect(within(row('Image')).queryByTitle('What you type here is dropped when you switch design.')).toBeNull();
@@ -657,7 +657,7 @@ describe('deleting a block', () => {
     await structure();
     await menu('Row');
 
-    expect(screen.getByRole('menuitem', { name: /Delete, and the 2 inside it/ })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: /Delete, with 2 inside/ })).toBeInTheDocument();
   });
 
   /**
@@ -724,7 +724,7 @@ describe('adding a block', () => {
   it('keeps End and arrow keys inside a portaled insertion menu', async () => {
     await structure();
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }));
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     const first = screen.getByRole('menuitem', { name: 'Heading' });
     first.focus();
     await userEvent.keyboard('{End}');
@@ -743,7 +743,7 @@ describe('adding a block', () => {
     await userEvent.click(
       within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
 
     /*
       Exact names, because the notes under them now contain each other's words —
@@ -784,7 +784,7 @@ describe('adding a block', () => {
     await userEvent.click(
       within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
 
     expect(await screen.findByRole('menuitem', { name: /Button/ })).not.toHaveAttribute('aria-disabled', 'true');
   });
@@ -795,7 +795,7 @@ describe('adding a block', () => {
     await userEvent.click(
       within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
     expect(rowNames().slice(0, 2)).toEqual(['Headline', 'Image']);
@@ -819,7 +819,7 @@ describe('adding a block', () => {
     await userEvent.click(
       within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Heading' }));
 
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Heading added.');
@@ -839,7 +839,7 @@ describe('adding a block', () => {
         name: 'Add, copy or delete Headline after they submit',
       }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
 
     expect(await screen.findByRole('menuitem', { name: /Field/ })).toHaveTextContent('question screen');
   });
@@ -986,7 +986,7 @@ describe('the inspector', () => {
     await userEvent.click(
       within(row('Headline')).getByRole('button', { name: 'Add, copy or delete Headline' }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
     expect(inspector('Image').getByRole('textbox', { name: 'Image' })).toHaveAttribute('type', 'url');
@@ -1026,7 +1026,7 @@ describe('the inspector', () => {
     await userEvent.type(label, 'Where do we send it?');
 
     await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
+    await userEvent.click(await screen.findByRole('menuitemradio', { name: /Phone number/ }));
 
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Changed to Phone number');
     // The Slot Roles derived from the kind moved with it, so the row renamed
@@ -1052,7 +1052,7 @@ describe('the inspector', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Change what this button does' }));
 
-    const refused = await screen.findByRole('menuitem', { name: /Goes somewhere else/ });
+    const refused = await screen.findByRole('menuitemradio', { name: /Goes somewhere else/ });
 
     expect(refused).toHaveAttribute('aria-disabled', 'true');
     expect(refused).toHaveTextContent('second step');
@@ -1076,7 +1076,7 @@ describe('the inspector', () => {
     await select('Email address');
 
     await userEvent.click(screen.getByRole('button', { name: 'Capture something else' }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: /Phone number/ }));
+    await userEvent.click(await screen.findByRole('menuitemradio', { name: /Phone number/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const row = (formChildren(savedTree())[2] as unknown as { children: TemplateNode[] }).children[0];
@@ -1484,7 +1484,7 @@ describe('what a row shows about itself', () => {
     await userEvent.click(
       within(row('Fine print')).getByRole('button', { name: /Add, copy or delete Fine print/ }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Field' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Name' }));
 
@@ -1550,7 +1550,7 @@ describe('the Add menu', () => {
     await userEvent.click(
       within(row('Fine print')).getByRole('button', { name: /Add, copy or delete Fine print/ }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
 
     // A layout carries its one short line…
     expect(
@@ -1582,7 +1582,7 @@ describe('a layout’s own settings', () => {
     await userEvent.click(
       within(row('Fine print')).getByRole('button', { name: /Add, copy or delete Fine print/ }),
     );
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Add after' }));
     await userEvent.click(screen.getByRole('menuitem', { name: /^Side by side/ }));
   }
 
@@ -2028,7 +2028,7 @@ describe('the visible Add element picker', () => {
     await structure();
     await userEvent.click(within(row('Headline')).getByRole('button', { name: /^Headline Get/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Add element' }));
-    await userEvent.selectOptions(screen.getByLabelText('Insert position'), '1');
+    await userEvent.selectOptions(screen.getByLabelText('Position'), '1');
     await userEvent.type(screen.getByLabelText('Find an element'), 'Image');
     await userEvent.click(screen.getByRole('button', { name: 'Image' }));
     expect(rowNames().slice(0, 2)).toEqual(['Image', 'Headline']);
@@ -2040,7 +2040,10 @@ describe('the visible Add element picker', () => {
     await structure();
     await userEvent.click(screen.getByRole('button', { name: 'Add element' }));
     await userEvent.type(screen.getByLabelText('Find an element'), 'Email');
-    expect(screen.getByRole('button', { name: /Email address Already on this form/ })).toBeDisabled();
+    // Refused, not disabled: it keeps focus, and says why (ADR 0139).
+    const taken = within(screen.getByRole('dialog', { name: 'Add element' })).getByRole('button', { name: 'Email address' });
+    expect(taken).toHaveAttribute('aria-disabled', 'true');
+    expect(taken).toHaveAccessibleDescription('Already on this form');
     await userEvent.clear(screen.getByLabelText('Find an element'));
     await userEvent.type(screen.getByLabelText('Find an element'), 'Phone');
     await userEvent.click(screen.getByRole('button', { name: 'Phone number' }));
