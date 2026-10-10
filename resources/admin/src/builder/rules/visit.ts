@@ -69,9 +69,18 @@ export function readRule(rule: Rule, visitor: Visitor, cart: Readonly<Record<str
   // written, so "is not" flips them through the loader's own `leafAnswer`
   // (ADR 0139). A merchant's own yes or no was asked of the negated phrase, so
   // it is already about the rule as negated and is not flipped again.
-  if (rule.type.startsWith('cart_')) return leafAnswer(rule, cart[String(rule.id)] ?? false);
+  // A fact the sample has not given — no source, no clock, no basket answer —
+  // is not known, and an unknown answer is never flipped into a match.
+  if (rule.type.startsWith('cart_')) return leafAnswer(rule, cart[String(rule.id)] ?? false, String(rule.id) in cart);
   const natural = factOf(rule, visitor);
-  return natural === undefined ? visitor.answers?.[String(rule.id)] ?? false : leafAnswer(rule, natural);
+  return natural === undefined ? visitor.answers?.[String(rule.id)] ?? false : leafAnswer(rule, natural, knownFor(rule, visitor));
+}
+
+/** Whether the sample has filled in the fact this rule reads. */
+function knownFor(rule: Rule, visitor: Visitor): boolean {
+  if (rule.type === 'referrer') return visitor.source !== undefined;
+  if (rule.type === 'time_of_day') return minutesIn(visitor.clock ?? '') !== null;
+  return true;
 }
 
 /** A fact this form has a field for, or undefined where it asks the merchant instead. */

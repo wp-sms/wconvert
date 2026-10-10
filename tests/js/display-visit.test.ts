@@ -251,3 +251,14 @@ describe('a negated rule, in a sample visit', () => {
     expect(readRule({ id: 'x', type: 'products_ready', negate: true }, visitor({ answers: { x: true } }))).toBe(true);
   });
 });
+
+/** A fact the sample has not filled in is unknown, and an unknown answer is never flipped to "matches". */
+describe('a negated rule over a fact the sample has not given', () => {
+  it('reads false rather than inverting nothing into a match', () => {
+    expect(readRule({ type: 'referrer', in: ['search'], negate: true }, visitor())).toBe(false);
+    expect(readRule({ type: 'time_of_day', between: '09:00-17:00', negate: true }, visitor())).toBe(false);
+    expect(readRule({ id: 'c', type: 'cart_has_items', negate: true }, visitor(), {})).toBe(false);
+    expect(readRule({ type: 'referrer', in: ['search'], negate: true }, visitor({ source: 'social' }))).toBe(true);
+  });
+});
+

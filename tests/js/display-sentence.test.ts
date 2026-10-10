@@ -124,4 +124,9 @@ describe('a negated rule in the sentence', () => {
   it('reads a negated URL parameter with no value as its absence', () => {
     expect(who([{ type: 'query_param', key: 'ref', negate: true }])).toContain('URL does not contain the “ref” parameter');
   });
+
+  it('reads a negated quantity or amount range by its negative phrase', () => {
+    expect(who([{ type: 'cart_quantity', range: { operator: 'min', min: 2 }, negate: true }])).toContain('not cart_quantity at least 2');
+  });
 });
+

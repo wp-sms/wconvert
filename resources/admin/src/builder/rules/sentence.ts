@@ -546,7 +546,10 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   }
   if (['cart_quantity', 'cart_amount'].includes(rule.type) && rule.range && typeof rule.range === 'object') {
     const r = rule.range as Record<string, unknown>;
-    return { text: `${types.find(t => t.type === rule.type)?.label ?? __('Unavailable rule', 'wconvert')}: ${rangeText(r)}`, attention: typeof r.min !== 'number' };
+    const declared = types.find(t => t.type === rule.type);
+    // "is not" reads its own phrase with the range in it (ADR 0139).
+    if (rule.negate === true && declared?.not_phrase) return { text: fill(declared.not_phrase, rangeText(r)), attention: typeof r.min !== 'number' };
+    return { text: `${declared?.label ?? __('Unavailable rule', 'wconvert')}: ${rangeText(r)}`, attention: typeof r.min !== 'number' };
   }
   const read = fromRule(rule, types);
 
@@ -584,8 +587,7 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
 
   if (rule.type === 'query_param' && !supplied(rule.value)) {
     return { text: negate
-      // translators: %s: a URL parameter's name, e.g. “utm_source”.
-      ? sprintf(__('URL does not contain the “%s” parameter', 'wconvert'), String(rule.key))
+      ? sprintf(/* translators: %s: a URL parameter's name, e.g. “utm_source”. */ __('URL does not contain the “%s” parameter', 'wconvert'), String(rule.key))
       : sprintf(__('URL contains the “%s” parameter (any value)', 'wconvert'), String(rule.key)), attention: false };
   }
   if (rule.type === 'logged_in') {

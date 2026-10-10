@@ -1,5 +1,5 @@
 import { openingRules, audienceRules, groupMatches, leafAnswer, openingMatches, type Answer as MatchAnswer } from '../display-rules';
-import { decide, isOverlay, isSiteCapped, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
+import { decide, isOverlay, isSiteCapped, readRule, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
 import type { PayloadEntry, Presenter, Rule } from '../types';
 
 /**
@@ -174,7 +174,7 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
             // same negation — so a module returning something truthy-but-not-
             // true is reported as the false the engine acted on rather than
             // as the true it said, and "is not" is reported after it applies.
-            answers.set(rule, leafAnswer(rule, held === true, evaluator.known?.(rule) ?? true) === true);
+            answers.set(rule, leafAnswer(rule, held === true, evaluator.known?.(rule)) === true);
 
             return held;
           } catch (error) {
@@ -261,13 +261,8 @@ function sideOfWindow(entry: PayloadEntry, now: number): 'before' | 'after' | nu
  * something this browser does not have must not take the panel down with it.
  */
 function held(decision: Decision, rule: Rule): boolean {
-  const evaluator = decision.evaluators.get(rule.type);
-
-  try {
-    return evaluator !== undefined && leafAnswer(rule, evaluator.holds(rule) === true, evaluator.known?.(rule) ?? true) === true;
-  } catch {
-    return false;
-  }
+  // `decide`'s own reading, negation and fail-shut included.
+  return readRule(rule, decision) === true;
 }
 
 const report = (rule: Rule, answers: ReadonlyMap<Rule, boolean>, decision: Decision): RuleReport => ({

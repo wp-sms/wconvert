@@ -364,7 +364,7 @@ final class RuleLabels
             'query_param.utm_campaign' => __('they did not come from the %1$s campaign', 'wconvert'),
             'referrer.from_search' => __('they did not come from a search engine', 'wconvert'),
             'referrer.from_social' => __('they did not come from social media', 'wconvert'),
-            'referrer.arrived_directly' => __('they arrived from another page', 'wconvert'),
+            'referrer.arrived_directly' => __('they came from another page', 'wconvert'),
         ];
     }
 
