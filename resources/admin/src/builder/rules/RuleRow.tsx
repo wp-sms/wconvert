@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ChevronDown } from 'lucide-react';
 import { ParamControl, ParamField } from '../controls';
-import { Popover, PopoverTrigger } from '../../components/ui/popover';
+import { Popover } from '../../components/ui/popover';
+import { PILL_MENU, PillTrigger, ValuePill } from './ValuePill';
 import { OptionItem, OptionList, OptionListContent, OptionSeparator } from '../../components/ui/option-menu';
 import { fromRule, toRule } from '../presets';
 import type { Rule, RuleParam, RulePreset, RuleType } from '../api';
@@ -254,40 +254,6 @@ function RuleIcon({ type }: { type: string }) {
   const Icon = ruleIcon(type);
 
   return <Icon aria-hidden="true" />;
-}
-
-/** The pill itself: the value, or "Choose…" dashed and amber while there is none. */
-function PillTrigger({ label, text }: { label: string; text: string | null }) {
-  const shown = text ?? __('Choose…', 'wconvert');
-
-  return <PopoverTrigger asChild>
-    <button type="button" className="wconvert-value-pill" data-attention={text === null || undefined}
-      aria-label={sprintf(/* translators: 1: what the value is, e.g. “Device”. 2: the value, e.g. “Phone”. */ __('%1$s: %2$s', 'wconvert'), label, shown)}>
-      <span>{shown}</span><ChevronDown aria-hidden="true" />
-    </button>
-  </PopoverTrigger>;
-}
-
-/** The menu a pill opens, at a width that fits a phone. */
-const PILL_MENU = 'w-[min(320px,calc(100vw-32px))]';
-
-/**
- * A value as a pill, opening the control that edits it. Empty, it says
- * "Choose…" dashed and amber — the same attention `groupProblems` raises.
- * Done, Escape or a click outside close it, and focus goes back to the pill.
- */
-function ValuePill({ label, text, children }: { label: string; text: string | null; children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-
-  return <Popover open={open} onOpenChange={setOpen}>
-    <PillTrigger label={label} text={text} />
-    <OptionListContent align="start" className={PILL_MENU} aria-label={label}>
-      <div className="wconvert-option-menu__control">
-        {children}
-        <button type="button" className="wconvert-option-menu__done" onClick={() => setOpen(false)}>{__('Done', 'wconvert')}</button>
-      </div>
-    </OptionListContent>
-  </Popover>;
 }
 
 /**

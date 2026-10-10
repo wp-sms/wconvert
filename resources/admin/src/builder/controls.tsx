@@ -132,8 +132,9 @@ export function ParamControl({ id, param, value, onChange, variant, words, label
 
     case 'post_type':
       return (
-        <NativeSelect id={id} value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
-          <option value="">{__('Choose…', 'wconvert')}</option>
+        <NativeSelect id={id} variant={variant} aria-label={label} value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}
+          data-attention={variant !== undefined && (typeof value !== 'string' || value === '') || undefined}>
+          {(variant === undefined || typeof value !== 'string' || value === '') && <option value="">{__('Choose…', 'wconvert')}</option>}
           {param.options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

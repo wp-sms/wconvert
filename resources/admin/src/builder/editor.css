@@ -1438,7 +1438,9 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 #wconvert-admin .wconvert-display .wconvert-display-group__rows { display: grid; gap: 0; padding-block: 6px 12px; padding-inline: 14px; }
 #wconvert-admin .wconvert-display .wconvert-display-group__rows :where(.mt-2) { margin-block-start: 6px; }
 #wconvert-admin .wconvert-display .wconvert-display-group__rows > :where(button, [data-slot='button']) { justify-self: start; }
-#wconvert-admin .wconvert-display .wconvert-display-group .wconvert-rules > .wconvert-rule { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; margin: 0; padding-block: 6px; padding-inline: 0; border: 0; background: none; }
+#wconvert-admin .wconvert-display :is(.wconvert-display-group, .wconvert-rules__group) .wconvert-rules > .wconvert-rule { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; margin: 0; padding-block: 6px; padding-inline: 0; border: 0; background: none; }
+/* Where's page lists read as the groups do: one card, rows as sentences (ADR 0139). */
+#wconvert-admin .wconvert-display .wconvert-rules__group > .wconvert-rules { padding-block: 4px; padding-inline: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
 #wconvert-admin .wconvert-display .wconvert-rules__joiner { margin: 0; padding-block: 2px; padding-inline-start: 26px; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; list-style: none; }
 #wconvert-admin .wconvert-display .wconvert-rule-row { display: grid; gap: 4px; min-inline-size: 0; }
 #wconvert-admin .wconvert-display .wconvert-rule-row__sentence { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-inline-size: 0; }

@@ -1,6 +1,11 @@
+import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Description } from '../../shell/Description';
-import { ParamField } from '../controls';
+import { ParamControl, ParamField } from '../controls';
+import { resolveObjects, type ObjectKind } from './objects';
+import { ruleHelp } from './ruleHelp';
+import { ruleIcon } from './ruleIcon';
+import { ValuePill } from './ValuePill';
 import { RuleRows, type Row } from '../RuleRows';
 import { AddRule } from './AddRule';
 import type { Rule, RuleType, Targeting } from '../api';
@@ -119,19 +124,15 @@ function RuleList({ list, heading, empty, types, rules, onChange, attention = fa
     return {
       key: String(at),
       label: type?.label ?? __('unavailable rule', 'wconvert'),
+      help: type ? ruleHelp(type.type) : null,
       content:
         type === undefined ? (
-          <span className="wconvert-rule__note">{__('A rule that is not available on this site.', 'wconvert')}</span>
+          <div className="wconvert-rule-row">
+            <span className="wconvert-rule-row__name">{__('A rule that is not available on this site.', 'wconvert')}</span>
+          </div>
         ) : (
-          <>
-            <strong>{type.label}</strong>{' '}
-            <ParamField
-              id={`wconvert-target-${list}-${at}`}
-              param={type.params.value}
-              value={rule.value}
-              onChange={(value) => onChange(rules.map((each, index) => (index === at ? { ...each, value } : each)))}
-            />
-          </>
+          <TargetRow id={`wconvert-target-${list}-${at}`} type={type} value={rule.value}
+            onChange={(value) => onChange(rules.map((each, index) => (index === at ? { ...each, value } : each)))} />
         ),
       onRemove: () => onChange(rules.filter((_each, index) => index !== at)),
     };
@@ -157,7 +158,8 @@ function RuleList({ list, heading, empty, types, rules, onChange, attention = fa
     <div className="wconvert-rules__group">
       <h4 className="wconvert-rules__label">{heading}</h4>
       {list === 'include' && rules.length > 1 && <p className="wconvert-display-rule-help">{__('A page only needs to match one of these rules.', 'wconvert')}</p>}
-      <RuleRows rows={rows} empty={empty} attention={attention} />
+      {/* Either list matches on any one of its rules, so its rows join with "or". */}
+      <RuleRows rows={rows} empty={empty} attention={attention} joiner={__('or', 'wconvert')} />
       {/*
         ==================================================================
         THE SAME ADD CONTROL AS THE OTHER THREE SECTIONS, AND THAT CLOSES A
@@ -185,4 +187,44 @@ function RuleList({ list, heading, empty, types, rules, onChange, attention = fa
       />
     </div>
   );
+}
+
+/**
+ * One page rule as a sentence, the way the Who and When rows read (ADR 0139):
+ * *[icon A specific page or post] [The Friday Edit ▾]*. A content type is a
+ * word — the site's post types are a short closed list — and a page, a term or
+ * a path is a pill opening the control that edits it.
+ */
+function TargetRow({ id, type, value, onChange }: { id: string; type: RuleType; value: unknown; onChange: (value: unknown) => void }) {
+  const param = type.params.value;
+  const Icon = ruleIcon(type.type);
+  const kind: ObjectKind | null = param.control === 'post_id' ? 'post' : param.control === 'term_id' ? 'term' : null;
+  const stored = typeof value === 'string' ? value : '';
+  const title = useObjectTitle(kind, stored);
+  const text = stored === '' ? null : kind === null ? stored : title ?? `#${stored}`;
+
+  return <div className="wconvert-rule-row">
+    <div className="wconvert-rule-row__sentence">
+      <span className="wconvert-rule-row__name"><Icon aria-hidden="true" />{type.label}</span>
+      {param.control === 'post_type'
+        ? <ParamControl id={id} param={param} value={value} variant="pill" label={param.label} onChange={onChange} />
+        : <ValuePill label={param.label} text={text}><ParamField id={id} param={param} value={value} onChange={onChange} /></ValuePill>}
+    </div>
+  </div>;
+}
+
+/** A stored post or term id as its title, for the pill; null until it is known. */
+function useObjectTitle(kind: ObjectKind | null, id: string): string | null {
+  const [found, setFound] = useState<{ id: string; title: string } | null>(null);
+
+  useEffect(() => {
+    if (kind === null || id === '') return;
+    const controller = new AbortController();
+    resolveObjects(kind, [id], controller.signal)
+      .then((hits) => { if (!controller.signal.aborted && hits[0]) setFound({ id, title: hits[0].title }); })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [kind, id]);
+
+  return found?.id === id ? found.title : null;
 }
