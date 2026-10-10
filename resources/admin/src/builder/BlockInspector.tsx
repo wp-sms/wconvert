@@ -22,6 +22,7 @@ import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
 import { QuestionSettings } from './JourneySettings';
+import { useQuestionPanel } from './ScreenPanel';
 import { CaptureOwnership } from './CaptureOwnership';
 import { submissionScreen } from './structure/journey';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -76,6 +77,7 @@ export function BlockInspector({
   revealContent,
 }: BlockInspectorProps) {
   const heading = useId();
+  const questionPanel = useQuestionPanel();
 
   const [half, setHalf] = useState('content');
   const [lastReveal, setLastReveal] = useState(revealContent);
@@ -102,7 +104,9 @@ export function BlockInspector({
   }
 
   const name = nameOfBlock(block, labels);
-  const body = contentBody({
+  // A question's panel is the journey editor's: it owns the dialogs a
+  // follow-up or a new path opens (ADR 0134).
+  const body = block.type === 'question' && questionPanel !== null ? questionPanel(Number(path[0])) : contentBody({
     template,
     labels,
     path,

@@ -158,7 +158,8 @@ test('the editor tests the unsaved cross-sell draft with a sample basket', async
   await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('[data-path="0.children.3"]')]).find(node => node.isConnected)?.click());
   await page.getByRole('combobox', { name: 'Recommendation source', exact: true }).selectOption('cross_sells');
   await page.getByRole('tab', { name: 'Display rules', exact: true }).click();
-  await page.getByRole('button', { name: 'Test a visit', exact: true }).click();
+  await page.getByRole('button', { name: 'Preview', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Test a visit', exact: true }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByRole('heading', { name: 'Sample basket', exact: true })).toBeVisible();
   await dialog.getByLabel('Find products or variations', { exact: true }).fill('Coffee machine');

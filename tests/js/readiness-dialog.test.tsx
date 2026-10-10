@@ -137,7 +137,7 @@ describe('reviewing before publishing', () => {
     const trigger = screen.getByRole('button', { name: 'Review & publish' });
     expect(trigger).toHaveTextContent('2 to fix');
     expect(trigger).toHaveAccessibleDescription('2 items block publishing');
-    expect(new Set(issuesFor(supplied).filter(issue => issue.blocks).map(issue => issue.tab))).toEqual(new Set(['design', 'destinations']));
+    expect(new Set(issuesFor(supplied).filter(issue => issue.blocks).map(issue => issue.tab))).toEqual(new Set(['edit', 'destinations']));
     await userEvent.click(trigger);
     await userEvent.click(screen.getByRole('button', { name: 'Choose a design before publishing.' }));
     expect(screen.queryByRole('dialog')).toBeNull();

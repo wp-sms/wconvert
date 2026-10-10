@@ -155,11 +155,11 @@ function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingA
   if ((act === 'submit' && action === 'link') || (act === 'click' && !['link', 'close'].includes(action))) {
     return act === 'submit'
       ? __(
-          'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Design tab.',
+          'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Look’s Browse designs and formats.',
           'wconvert',
         )
       : __(
-          'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Design tab.',
+          'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Look’s Browse designs and formats.',
           'wconvert',
         );
   }

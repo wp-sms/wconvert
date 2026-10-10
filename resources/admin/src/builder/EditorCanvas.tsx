@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import { CircleHelp, MousePointer2, X } from 'lucide-react';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
@@ -8,31 +8,8 @@ import { Preview } from './Preview';
 import { resolvedPlacement } from './PlacementControl';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
-import { graphDisplayOrder } from './structure/graph';
 
 export type PreviewWidth = 'own' | 'narrow';
-export function ScreenControls({
-  template,
-  step,
-  onChange,
-  extra,
-}: {
-  template: Template;
-  step: number;
-  onChange: (step: number) => void;
-  extra?: { label: string; selected: boolean; onSelect(): void };
-}) {
-  return (
-    <div className="wconvert-screen-controls">
-      <select aria-label={__('Campaign screen', 'wconvert')} value={extra?.selected ? 'reopen' : String(step)} onChange={event => event.target.value === 'reopen' ? extra?.onSelect() : onChange(Number(event.target.value))}>
-        {graphDisplayOrder(template.tree).map((index, position) => <option key={template.tree.steps[index].id} value={String(index)}>
-          {sprintf(__('%1$d. %2$s', 'wconvert'), position + 1, template.tree.steps[index].name)}</option>)}
-        {extra && <option value="reopen">{extra.label}</option>}
-      </select>
-      {extra && <Button variant="ghost" size="sm" aria-pressed={extra.selected} onClick={extra.onSelect}>{extra.label}</Button>}
-    </div>
-  );
-}
 export function MobileAppearanceNote() {
   return <Popover><PopoverTrigger asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('About mobile editing', 'wconvert')}><CircleHelp aria-hidden="true" /></Button></PopoverTrigger>
     <PopoverContent className="text-note" align="end">{__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}</PopoverContent>
@@ -64,6 +41,9 @@ export function EditorCanvas({
   displayType,
   placement,
   screen,
+  tools,
+  hint,
+  onStage,
 }: {
   template: Template;
   step: number;
@@ -73,6 +53,12 @@ export function EditorCanvas({
   displayType: string;
   placement?: unknown;
   screen?: { label: string; content: ReactNode; controls?: ReactNode; inFlow?: boolean };
+  /** Desktop/Mobile and full screen, beside the zoom: one bar for the canvas (ADR 0134). */
+  tools?: ReactNode;
+  /** "Click anything on the popup to edit it": what the bar says while the design is the thing on screen. */
+  hint?: string;
+  /** A click on the empty stage around the design: the Edit tab opens the Look. */
+  onStage?: () => void;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const page = useRef<HTMLDivElement>(null);
@@ -118,10 +104,10 @@ export function EditorCanvas({
   return (
     <section className="wconvert-canvas" data-width={width} aria-label={__('Design canvas', 'wconvert')}>
       <div className="wconvert-canvas__bar">
-        <span>{screen?.label ?? template.tree.steps[shown]?.name}</span>
+        {screen?.label ? <span>{screen.label}</span> : hint ? <span className="wconvert-canvas__hint-line"><MousePointer2 aria-hidden="true" />{hint}</span> : <span>{template.tree.steps[shown]?.name}</span>}
+        {tools}
         <label>
           <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
-          <span>{width === 'narrow' ? __('Mobile', 'wconvert') : __('Desktop', 'wconvert')}</span>
           <select value={zoom} onChange={(event) => setZoom(event.target.value)}>
             <option value="fit">
               {__('Fit', 'wconvert')} · {Math.round(scale * 100)}%
@@ -131,7 +117,12 @@ export function EditorCanvas({
         </label>
       </div>
       {screen?.controls}
-      <div className="wconvert-canvas__stage" ref={stage}>
+      {/* The stage, the page around the design and its ghost lines are all "not the design". */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- a pointer shortcut; the Look row in the tree is the keyboard way. */}
+      <div className="wconvert-canvas__stage" ref={stage} onClick={event => {
+        const target = event.target as HTMLElement;
+        if (onStage && (target === event.currentTarget || target.matches('.wconvert-canvas__measure, .wconvert-canvas__document, .wconvert-site__page, .wconvert-site__ghost'))) onStage();
+      }}>
           <div
             className="wconvert-canvas__measure"
             style={{ width: size.width * scale, height: size.height * scale }}
@@ -178,15 +169,12 @@ export function EditorCanvas({
           </div>
       </div>
       <div className="wconvert-canvas__hint" role="status">
-        {message ||
-          (screen ? (
-            __('Preview mode', 'wconvert')
-          ) : (
-            <>
-              <MousePointer2 aria-hidden="true" />
-              {__('Click an element to edit it', 'wconvert')}
-            </>
-          ))}
+        {message || (screen ? __('Preview mode', 'wconvert') : hint ? null : (
+          <>
+            <MousePointer2 aria-hidden="true" />
+            {__('Click an element to edit it', 'wconvert')}
+          </>
+        ))}
       </div>
     </section>
   );

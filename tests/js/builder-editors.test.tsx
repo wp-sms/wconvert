@@ -39,7 +39,8 @@ describe('the Display rules tab', () => {
     expect(screen.getByRole('heading', { name: 'Where does it show?' })).toBeInTheDocument();
     expect(document.querySelector('.wconvert-display-sentence')).toHaveTextContent('Shows on every page to everyone, after 15 seconds, once per visit.');
     expect(screen.queryByText(/Display setup/)).toBeNull();
-    expect(screen.getByRole('button', { name: 'Test a visit' })).toBeInTheDocument();
+    // Testing a visit is one of the editor's Preview modes now (ADR 0134).
+    expect(screen.queryByRole('button', { name: 'Test a visit' })).toBeNull();
   });
 
   it('opens a section from its phrase in the sentence', async () => {
@@ -54,12 +55,6 @@ describe('the Display rules tab', () => {
     expect(screen.getByRole('heading', { name: 'Where does it show?' })).toBeInTheDocument();
     expect(within(menu()).getByRole('button', { name: /Where does it show/ })).toHaveTextContent('Needs attention');
     expect(screen.getByRole('button', { name: 'pages you haven’t chosen yet' })).toHaveAttribute('data-attention', 'true');
-  });
-
-  it('opens the lazy sample tester without changing the draft', async () => {
-    const changed = setup(); await userEvent.click(screen.getByRole('button', { name: 'Test a visit' }));
-    expect(await screen.findByRole('dialog', { name: 'Test a visit' })).toBeInTheDocument();
-    expect(changed).not.toHaveBeenCalled();
   });
 
   it('shows a repair step for an older draft, and no Who or When picks until it is replaced', async () => {
@@ -437,7 +432,6 @@ it('uses the same editors in the journey panel, with a select for the five quest
   const user = userEvent.setup();
   expect(screen.queryByRole('navigation', { name: 'Display rules' })).not.toBeInTheDocument();
   expect(within(screen.getByRole('combobox', { name: 'Display setting' })).getAllByRole('option')).toHaveLength(5);
-  expect(screen.getByRole('button', { name: 'Test a visit' })).toBeInTheDocument();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'when');
   await user.click(screen.getByRole('radio', { name: 'Must match every rule' }));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'where');

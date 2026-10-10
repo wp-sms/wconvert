@@ -429,3 +429,20 @@ export function removedScreen(tree: TemplateTree, index: number): TemplateTree {
     submissions: tree.submissions.filter(sub => sub.id !== removal.submission),
   });
 }
+
+/**
+ * Whether visitors can take more than one way through this campaign — the one
+ * question that decides whether the editor offers the Flow map at all (D4).
+ *
+ * A straight line, linear or graph, is one way: a list of screens says all
+ * there is to say about it, and a map of it is a second picture of the same
+ * thing. Any answer path, any skipped screen (a `hidden` edge or a "Show only
+ * if…"), any linear screen with more than one path, and any results screen
+ * that picks between results by answer make it more than one way.
+ */
+export function hasManyWaysThrough(tree: TemplateTree): boolean {
+  if (tree.graph?.edges.some(edge => edge.kind === 'answer' || edge.kind === 'hidden')) return true;
+  return tree.steps.some(screen => screen.when !== undefined
+    || (screen.paths?.length ?? 0) > 1
+    || (screen.results?.length ?? 0) > 1);
+}

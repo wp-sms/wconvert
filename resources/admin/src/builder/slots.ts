@@ -29,7 +29,7 @@ import type { Path } from './panel';
  * **What is given up is that a key survived a MOVE.** `role:headline` named the
  * headline wherever it went; `0.children.2` names the third child. Selection is
  * re-derived from the path the editor is already holding after every edit
- * ({@see StructureView}'s `onMove`), so the cost is that the PREVIEW's
+ * ({@see useBlockEdits}'s `onMove`), so the cost is that the PREVIEW's
  * selection follows the position rather than the block — and the editor's does
  * not, because the editor never spoke in keys.
  *

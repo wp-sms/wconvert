@@ -1169,8 +1169,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 /* Screen selection stays in Design; the journey has its own workspace. */
 #wconvert-admin .wconvert-workspace__toolbar { grid-template-columns: auto minmax(0, 1fr) auto; }
 #wconvert-admin .wconvert-workspace__screens { justify-content: center; min-inline-size: 0; }
-#wconvert-admin .wconvert-screen-controls { display: flex; align-items: center; gap: 6px; min-inline-size: 0; }
-#wconvert-admin .wconvert-screen-controls select { margin: 0; min-inline-size: 0; max-inline-size: 220px; inline-size: 100%; font-size: var(--text-micro); }
 @layer utilities {
   .wconvert-journey-dialog__fields :is(input, select) { inline-size: 100% !important; max-inline-size: none !important; min-inline-size: 0; block-size: 36px !important; margin: 0 !important; font-size: var(--text-micro) !important; }
 }
@@ -1232,7 +1230,7 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-pane__heading .wconvert-journey-dialog__selected>div { min-inline-size: 0; flex: 1; }
 /* Reads as the screen's title until hovered or focused; the box is Tailwind's, overridden on the element. */
 #wconvert-admin .wconvert-journey-pane__heading input.wconvert-journey-pane__name { padding: 3px 6px; margin-inline-start: -7px; font-size: var(--text-note); font-weight: 600; }
-.wconvert-journey-pane--element { padding: 0; }
+.wconvert-journey-pane--element { padding: 0; overflow: auto; }
 .wconvert-screen-actions { min-inline-size: 200px; }
 .wconvert-journey-pane__menu { display: grid; place-items: center; inline-size: 32px; block-size: 32px; flex: none; border: 0; border-radius: 6px; background: none; color: var(--muted-foreground); cursor: pointer; }
 .wconvert-journey-pane__menu:hover { background: var(--surface); color: var(--foreground); }
@@ -1367,7 +1365,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 }
 @media (max-width: 1100px) {
   #wconvert-admin .wconvert-workspace__toolbar { gap: 6px; }
-  #wconvert-admin .wconvert-screen-controls select { max-inline-size: 165px; }
 }
 @media (max-width: 640px) {
   .wconvert-journey-dialog__header { flex-wrap: wrap; padding: 18px; }
@@ -1415,9 +1412,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
   #wconvert-admin .wconvert-workspace__navigation button { flex-shrink: 0; }
   #wconvert-admin .wconvert-workspace__toolbar { grid-template-columns: minmax(0, 1fr) auto; padding: 6px 8px; }
   #wconvert-admin .wconvert-workspace__screens { grid-column: 1 / -1; grid-row: 1; justify-content: space-between; }
-  #wconvert-admin .wconvert-screen-controls { flex: 1; }
-  #wconvert-admin .wconvert-screen-controls select { max-inline-size: none; }
-  #wconvert-admin .wconvert-screen-controls > button { display: none; }
   :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__bar > span { display: none; }
   :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__bar { justify-content: flex-end; }
   .wconvert-journey-dialog__header { gap: 10px; }
@@ -1981,24 +1975,51 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-pane .wconvert-journey-visibility>.wconvert-journey-settings { margin-block-start: 12px; padding-block-start: 0; border: 0; }
 
 /* Editing starts with the rendered campaign; Flow is another view of this draft. */
-.wconvert-journey-side[data-editing='true'] { grid-template-columns: 224px minmax(0, 1fr) minmax(330px, 390px); }
-.wconvert-journey-side[data-editing='true'][data-panel-open='false'] { grid-template-columns: 224px minmax(0, 1fr); }
+.wconvert-journey-side[data-editing='true'] { grid-template-columns: 240px minmax(0, 1fr) minmax(320px, 360px); }
+.wconvert-journey-side[data-editing='true'][data-panel-open='false'] { grid-template-columns: 240px minmax(0, 1fr); }
+/* The Edit tree (ADR 0134): the pinned Look row, then screens, the open one unfolded. */
+.wconvert-edit-tree { display: flex; flex-direction: column; gap: 2px; padding: 10px 8px; }
+.wconvert-edit-tree__look { display: flex; align-items: center; gap: 10px; inline-size: 100%; margin-block-end: 10px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); text-align: start; cursor: pointer; }
+.wconvert-edit-tree__look:hover { background: var(--surface); }
+.wconvert-edit-tree__look[aria-current='true'] { border-color: var(--action); background: var(--secondary); }
+.wconvert-edit-tree__look>span:last-child { display: grid; min-inline-size: 0; line-height: 1.25; }
+.wconvert-edit-tree__look strong { font-size: var(--text-note); font-weight: 600; }
+.wconvert-edit-tree__look small { font-size: var(--text-micro); color: var(--muted-foreground); }
+.wconvert-edit-tree__dots { display: flex; flex: none; }
+.wconvert-edit-tree__dots>span { inline-size: 14px; block-size: 14px; border: 1.5px solid var(--card); border-radius: 50%; box-shadow: 0 0 0 1px var(--border); }
+.wconvert-edit-tree__dots>span+span { margin-inline-start: -4px; }
+.wconvert-edit-tree .wconvert-campaign-screens__heading { padding: 4px 8px 6px; font-size: var(--text-micro); text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); }
+.wconvert-edit-tree .wconvert-campaign-screens__heading strong { font-weight: 600; }
+.wconvert-edit-tree__elements { margin: 2px 0 6px 18px; padding-inline-start: 6px; border-inline-start: 1px solid var(--border); --wconvert-gutter: 4px; }
+.wconvert-edit-tree__elements .wconvert-blocks { border: 0; }
+.wconvert-edit-tree__elements .wconvert-block { border-block-start: 0; min-block-size: 30px; }
+.wconvert-edit-tree__elements .wconvert-block__grip { display: none; }
+.wconvert-edit-tree__add-element { padding: 4px 4px 2px; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__label { flex-wrap: nowrap; min-inline-size: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__kind { flex: 0 1 auto; min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements :is(.wconvert-block__says, .wconvert-block__pane) { display: none; }
+.wconvert-edit-tree__add { justify-content: flex-start; inline-size: 100%; margin-block-start: 8px; border-style: dashed; color: var(--muted-foreground); }
+.wconvert-add-screen__tier { margin-inline-start: auto; padding: 0 6px; border-radius: 999px; background: var(--secondary); color: var(--action); font-size: var(--text-micro); font-weight: 600; }
+.wconvert-canvas__hint-line { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-foreground); }
+.wconvert-canvas__hint-line svg { inline-size: 14px; block-size: 14px; }
+.wconvert-journey-hint { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--text-label); color: var(--muted-foreground); }
+.wconvert-journey-hint svg { inline-size: 14px; block-size: 14px; }
 .wconvert-campaign-screens { min-block-size: 0; overflow: auto; border-inline-end: 1px solid var(--border); background: var(--card); padding: 16px 10px; }
 .wconvert-campaign-screens__heading { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 0 6px 14px; }
 .wconvert-campaign-screens__heading>button { border: 0; background: none; color: var(--action); font-size: var(--text-micro); cursor: pointer; }
 .wconvert-campaign-screens__items { display: grid; gap: 6px; }
-.wconvert-campaign-screens__items button { display: flex; gap: 9px; align-items: flex-start; inline-size: 100%; padding: 11px 9px; border: 1px solid transparent; border-radius: 7px; background: none; color: var(--foreground); text-align: start; cursor: pointer; }
-.wconvert-campaign-screens__items button>svg { flex: none; margin-block-start: 2px; color: var(--muted-foreground); }
-.wconvert-campaign-screens__items button>span { min-inline-size: 0; }
-.wconvert-campaign-screens__items strong { display: block; font-size: var(--text-note); line-height: 1.45; overflow-wrap: anywhere; }
-.wconvert-campaign-screens__items small { display: block; margin-block-start: 4px; font-size: var(--text-micro); line-height: 1.45; color: var(--muted-foreground); overflow-wrap: anywhere; }
-.wconvert-campaign-screens__items small svg { display: inline; margin-inline-end: 4px; }
-.wconvert-campaign-screens__items button:hover { background: var(--surface); }
-.wconvert-campaign-screens__items button[aria-current='true'] { border-color: var(--border); background: var(--secondary); }
-.wconvert-campaign-screens button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.wconvert-campaign-screens__row > button:first-child { display: flex; gap: 9px; align-items: flex-start; inline-size: 100%; padding: 11px 9px; border: 1px solid transparent; border-radius: 7px; background: none; color: var(--foreground); text-align: start; cursor: pointer; }
+.wconvert-campaign-screens__row > button:first-child>svg { flex: none; margin-block-start: 2px; color: var(--muted-foreground); }
+.wconvert-campaign-screens__row > button:first-child>span { min-inline-size: 0; }
+.wconvert-campaign-screens__row > button:first-child strong { display: block; font-size: var(--text-note); line-height: 1.45; overflow-wrap: anywhere; }
+.wconvert-campaign-screens__row > button:first-child small { display: block; margin-block-start: 4px; font-size: var(--text-micro); line-height: 1.45; color: var(--muted-foreground); overflow-wrap: anywhere; }
+.wconvert-campaign-screens__row > button:first-child small svg { display: inline; margin-inline-end: 4px; }
+.wconvert-campaign-screens__row > button:first-child:hover { background: var(--surface); }
+.wconvert-campaign-screens__row > button:first-child[aria-current='true'] { border-color: var(--border); background: var(--secondary); }
+.wconvert-campaign-screens__row > button:focus-visible, .wconvert-edit-tree__look:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
 .wconvert-campaign-screens__row { position: relative; }
-.wconvert-campaign-screens__items .wconvert-campaign-screens__issues { position: absolute; inset-block-start: 8px; inset-inline-end: 6px; display: inline-flex; gap: 3px; align-items: center; inline-size: auto; padding: 2px 6px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--destructive); font-size: var(--text-micro); line-height: 1.2; }
-.wconvert-campaign-screens__items .wconvert-campaign-screens__issues>svg { margin: 0; color: currentColor; }
+.wconvert-campaign-screens__row > .wconvert-campaign-screens__issues { position: absolute; inset-block-start: 8px; inset-inline-end: 6px; display: inline-flex; gap: 3px; align-items: center; inline-size: auto; padding: 2px 6px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--destructive); font-size: var(--text-micro); line-height: 1.2; }
+.wconvert-campaign-screens__row > .wconvert-campaign-screens__issues>svg { margin: 0; color: currentColor; }
 .wconvert-campaign-screens__row:has(> .wconvert-campaign-screens__issues)>button:first-child { padding-inline-end: 44px; }
 .wconvert-campaign-screens__items section { border-inline-start: 2px solid var(--border); margin: 6px 0 6px 8px; padding-inline-start: 5px; }
 .wconvert-campaign-screens__items h3 { margin: 5px 8px; font-size: var(--text-label); color: var(--muted-foreground); }
@@ -2018,18 +2039,16 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-followup-continuation>p { margin: 0; }
 .wconvert-followup-continuation>button { text-align: start; }
 @media (max-width: 1200px) {
-  .wconvert-journey-side[data-editing='true'] { grid-template-columns: minmax(0, 1fr) minmax(310px, 370px); }
-  .wconvert-journey-side[data-editing='true']>.wconvert-campaign-screens { display: none; }
-  .wconvert-journey-side[data-editing='true']>.wconvert-journey-mobile-picker { display: block; grid-column: 1 / -1; padding: 10px 18px; background: var(--surface); border-block-end: 1px solid var(--border); }
-  .wconvert-journey-side[data-editing='true']>.wconvert-journey-mobile-picker label { display: flex; align-items: center; gap: 12px; }
-  .wconvert-journey-side[data-editing='true']>.wconvert-journey-mobile-picker select { flex: 1; min-inline-size: 0; }
-  .wconvert-journey-side[data-editing='true'][data-panel-open='false'] { grid-template-columns: minmax(0, 1fr); }
+  .wconvert-journey-side[data-editing='true'] { grid-template-columns: 210px minmax(0, 1fr) minmax(290px, 330px); }
+  .wconvert-journey-side[data-editing='true'][data-panel-open='false'] { grid-template-columns: 210px minmax(0, 1fr); }
 }
-@media (max-width: 800px) {
+/* Narrow, the Edit tab is three panes, one at a time: Screens · Preview · Edit (ADR 0134). */
+@media (max-width: 1000px) {
   .wconvert-journey-side[data-editing='true'] { display: flex; flex-direction: column; }
-  .wconvert-journey-side[data-editing='true']>.wconvert-campaign-canvas { flex: 1; min-block-size: 260px; }
-  .wconvert-journey-side[data-editing='true'][data-mobile-pane='details']>.wconvert-campaign-canvas { display: none; }
-  .wconvert-journey-side[data-editing='true']>.wconvert-campaign-screens { display: none; }
+  .wconvert-journey-side[data-editing='true'] > * { display: none; }
+  .wconvert-journey-side[data-editing='true'][data-mobile-pane='tree'] > .wconvert-edit-tree { display: flex; flex: 1; border-inline-end: 0; }
+  .wconvert-journey-side[data-editing='true'][data-mobile-pane='map'] > .wconvert-campaign-canvas { display: block; flex: 1; min-block-size: 360px; }
+  .wconvert-journey-side[data-editing='true'][data-mobile-pane='details'] > .wconvert-journey-pane { display: flex; flex: 1; }
 }
 .wconvert-journey-side[data-editing='true'] .wconvert-journey-pane__tabs { margin-block: 0 16px; }
 .wconvert-journey-side[data-editing='true'] .wconvert-journey-pane>.wconvert-journey-dialog__details { padding: 14px 24px; }
@@ -2071,8 +2090,8 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-screen-preview__result select { inline-size: 100%; min-inline-size: 0; max-inline-size: 100%; }
 
 /* Show conditional ownership, rather than numbering every possible screen as a visit. */
-.wconvert-campaign-screens__items .wconvert-campaign-screens__answer { margin-block: 0 3px; color: var(--action); font-size: var(--text-micro); }
-.wconvert-campaign-screens__items .wconvert-campaign-screens__path { margin-block: 0 5px; border-inline-start: 2px solid var(--action); padding-inline-start: 6px; color: var(--action); }
+.wconvert-campaign-screens__row .wconvert-campaign-screens__answer { margin-block: 0 3px; color: var(--action); font-size: var(--text-micro); }
+.wconvert-campaign-screens__row .wconvert-campaign-screens__path { margin-block: 0 5px; border-inline-start: 2px solid var(--action); padding-inline-start: 6px; color: var(--action); }
 .wconvert-campaign-screens__items section { background: color-mix(in srgb, var(--secondary) 45%, transparent); border-radius: 0 6px 6px 0; }
 .wconvert-campaign-screens__items .wconvert-campaign-screens__group-help { margin-block: 4px 8px; }
 .wconvert-followup-group li .wconvert-followup-group__answer { color: var(--action); font-weight: 500; }
@@ -2306,3 +2325,64 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-settings__products > [data-slot='button'], .wconvert-result-filter > [data-slot='button'], .wconvert-result-filter fieldset > [data-slot='button'] { justify-self: start; }
 #wconvert-admin .wconvert-result-products select { font-size: var(--text-body); }
 
+
+/* ---------------------------------------------------------------------------
+ * The Edit tab's panels (ADR 0134): the Look, the slim screen panel, the
+ * question's paths, and the header's goal line and Preview menu.
+ * ------------------------------------------------------------------------- */
+.wconvert-journey-pane--look { overflow: auto; padding: 14px 18px; }
+.wconvert-look-head { display: grid; gap: 4px; margin-block-end: 12px; }
+.wconvert-look-head h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-look-section { display: grid; gap: 8px; margin-block-start: 16px; padding-block-start: 14px; border-block-start: 1px solid var(--border); }
+.wconvert-look-section h4 { margin: 0; font-size: var(--text-note); font-weight: 600; }
+.wconvert-look-fact { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-look-fact strong { color: var(--foreground); font-weight: 600; }
+.wconvert-look-link, .wconvert-screen-then__link, .wconvert-screen-fact button { padding: 0; border: 0; background: none; color: var(--action); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.wconvert-screen-then, .wconvert-screen-fact { display: grid; gap: 4px; margin-block-end: 14px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
+.wconvert-screen-then__label, .wconvert-screen-fact__label { font-size: var(--text-micro); letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
+.wconvert-screen-then__value { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: var(--text-note); }
+.wconvert-screen-then__value svg { inline-size: 14px; block-size: 14px; color: var(--muted-foreground); }
+.wconvert-screen-then__value select { flex: 1; min-inline-size: 0; }
+.wconvert-screen-then__value small { flex-basis: 100%; color: var(--muted-foreground); font-size: var(--text-micro); }
+.wconvert-screen-fact { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.wconvert-screen-fact__label { grid-column: 1 / -1; }
+.wconvert-screen-fact__value { font-size: var(--text-note); }
+.wconvert-screen-issues { display: grid; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
+.wconvert-screen-issues button { display: flex; gap: 8px; align-items: flex-start; inline-size: 100%; padding: 9px 12px; border: 1px solid var(--warning, #f0d58e); border-radius: 6px; background: var(--warning-surface, #fdecc8); color: var(--foreground); font-size: var(--text-note); text-align: start; cursor: pointer; }
+.wconvert-screen-issues svg { flex: none; inline-size: 14px; block-size: 14px; margin-block-start: 2px; }
+.wconvert-screen-chips { display: grid; gap: 8px; margin-block-start: 16px; padding-block-start: 14px; border-block-start: 1px solid var(--border); }
+.wconvert-screen-chips h4 { margin: 0; font-size: var(--text-note); font-weight: 600; }
+.wconvert-screen-chips > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.wconvert-screen-chips button { padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--foreground); font-size: var(--text-label); cursor: pointer; }
+.wconvert-screen-chips button:hover { background: var(--surface); }
+.wconvert-screen-form .wconvert-journey-capture-fields { display: grid; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+.wconvert-screen-form .wconvert-journey-capture-field { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; }
+.wconvert-screen-form__field { padding: 0; border: 0; background: none; color: var(--action); font: inherit; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.wconvert-question-next { display: grid; gap: 10px; margin-block-start: 16px; padding-block-start: 14px; border-block-start: 1px solid var(--border); }
+.wconvert-question-next h4 { margin: 0; font-size: var(--text-note); font-weight: 600; }
+.wconvert-screen-paths { margin-block-start: 12px; }
+.wconvert-workspace__goal { padding: 0; border: 0; background: none; color: var(--muted-foreground); font-size: var(--text-micro); text-align: start; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+.wconvert-workspace__goal:hover { color: var(--action); }
+.wconvert-preview-menu { min-inline-size: 180px; }
+.wconvert-add-screen { min-inline-size: 220px; }
+#wconvert-admin .wconvert-workspace__identity .wconvert-workspace__goal { order: 3; flex-basis: 100%; }
+/* The element panel scrolls under its own header, never through it. */
+#wconvert-admin .wconvert-journey-pane--element .wconvert-inspector__head { position: sticky; inset-block-start: 0; z-index: 2; flex: none; background: var(--card); }
+#wconvert-admin .wconvert-inspector__head { flex-shrink: 0; }
+/* The tree is a column: a selected row's ↑ ↓ never push it sideways. */
+.wconvert-edit-tree__elements { overflow: clip; }
+.wconvert-edit-tree__elements .wconvert-blocks { min-inline-size: 0; max-inline-size: 100%; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block { min-inline-size: 0; }
+/* The element rows fit the column: their own width never widens the screen list. */
+.wconvert-edit-tree__elements { contain: inline-size; }
+/* The Edit tree's element rows give their name the room: the move arrows take
+   none until a row is hovered, focused or selected, and ⋯ (which also moves)
+   stays (ADR 0134). Focus reaching a collapsed arrow is focus within its row,
+   which opens it. */
+#wconvert-admin .wconvert-edit-tree__elements .wconvert-block:not(:hover, :focus-within, [data-selected]) > .wconvert-block__action:not(:last-child) { inline-size: 0; min-inline-size: 0; overflow: hidden; }
+/* A screen whose only issues are checks, not blockers, says so quietly. */
+.wconvert-campaign-screens__row > .wconvert-campaign-screens__issues[data-soft] { color: var(--muted-foreground); }
+/* A chip ("counted") shortens the name before it pushes ⋯ out of the row. */
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__name { flex: 1 1 auto; min-inline-size: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__label { flex: 0 1 auto; min-inline-size: 0; overflow: hidden; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements :is(.wconvert-block__chip, .wconvert-block__off) { flex-shrink: 0; }

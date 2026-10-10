@@ -1,8 +1,6 @@
-import { referencedJourney } from './structure/journey';
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowDown, ArrowUp, Blocks, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../components/ui/dialog';
+import { ArrowDown, ArrowUp, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import {
@@ -15,11 +13,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
-import { EmptyState } from '../shell/EmptyState';
-import { RegionBody } from '../shell/Region';
-import { BlockInspector } from './BlockInspector';
-import { BlockTree } from './BlockTree';
+import { referencedJourney } from './structure/journey';
 import { useBlockDrag } from './useBlockDrag';
+import { BlockTree } from './BlockTree';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
 import { additionsIn, nodeFor, type ConvertingAct, type Addition } from './structure/catalogue';
 import { whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
@@ -36,95 +32,35 @@ import {
   type Block,
   type Spot,
 } from './structure/tree';
-import { FIELDS, LEAVES, childKeysOf, type Path, type WidthBag } from './panel';
+import { FIELDS, LEAVES, childKeysOf, type Path } from './panel';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, TemplateTree } from '@renderer/types';
 
-export interface StructureViewProps {
+/**
+ * Moving, copying, removing and adding the blocks of one design, as one hook.
+ *
+ * Extracted from the Design tab's `StructureView` when the Edit tab's left
+ * tree took over its job (ADR 0134): the operations, their refusals and the
+ * sentences they announce are the same wherever a block list is drawn, so
+ * they live once. What a caller draws — a tree inside a screen row, a list in
+ * a drawer — is its own.
+ */
+export interface BlockEditsOptions {
   readonly template: Template;
   readonly labels: TemplateLabels;
-
   readonly act: ConvertingAct;
-
+  readonly step?: number;
   readonly selected: Path | null;
   readonly onSelect: (path: Path) => void;
-
   readonly onChange: (template: Template, coalesce?: string) => void;
-
-  /**
-   * One step back in the draft's history. Given, a deleted layer's notice is
-   * drawn on screen with an Undo beside it rather than spoken only: a delete
-   * has no confirm (`history.ts`), so the way back has to be where the
-   * merchant is looking.
-   */
   readonly onUndo?: () => void;
-  /**
-   * The whole draft, by identity. Undo steps back through every edit — a
-   * placement or a display rule as well as the design — so the notice goes
-   * when any of it changes, not only this tree.
-   */
+  /** The whole draft, so an edit elsewhere retires a stale "Undo delete". */
   readonly draft?: unknown;
-
-  readonly focus: { readonly path: Path } | null;
-
-  readonly endsAt?: string;
-
-  readonly onSetEndDate?: () => void;
-  readonly onPlacement?: () => void;
-
-  readonly preview?: ReactNode;
-
-  readonly toolbar?: ReactNode;
-
-  readonly checks?: ReactNode;
-
-  readonly look?: ReactNode;
-
-  readonly width?: WidthBag;
-  readonly showLayers?: boolean;
-  readonly onShowLayers?: () => void;
-  readonly onDesign?: () => void;
-  readonly step?: number;
-  readonly compact?: boolean;
-  readonly drawer?: 'layers' | 'settings' | null;
-  readonly onCloseDrawer?: () => void;
-  readonly onDrawerFocusReturn?: (panel: 'layers' | 'settings') => void;
+  /** A request to move focus to one row, e.g. from the readiness review. */
+  readonly focus?: { readonly path: Path } | null;
 }
 
-export function StructureView({
-  template,
-  labels,
-  act,
-  selected,
-  onSelect,
-  onChange,
-  onUndo,
-  draft,
-  focus,
-  endsAt,
-  onSetEndDate,
-  onPlacement,
-  preview,
-  toolbar,
-  checks,
-  look,
-  showLayers = true,
-  onShowLayers,
-  onDesign,
-  step,
-  compact = false, drawer = null, onCloseDrawer, onDrawerFocusReturn,
-}: StructureViewProps) {
-  const panes = useRef<HTMLDivElement>(null);
-  const lastDrawer = useRef<'layers' | 'settings'>('settings');
-  if (drawer) lastDrawer.current = drawer;
-  const inspectorScroll = useRef<HTMLDivElement>(null);
-  const selectedKey = selected?.join('.') ?? 'design';
-  // Edits and preview-width changes keep the scroll position. Choosing another
-  // element starts at its primary controls, rather than halfway down its fields.
-  useLayoutEffect(() => {
-    if (inspectorScroll.current) inspectorScroll.current.scrollTop = 0;
-  }, [selectedKey]);
-
+export function useBlockEdits({ template, labels, act, step, selected, onSelect, onChange, onUndo, draft, focus = null }: BlockEditsOptions) {
   const [said, setSaid] = useState<string | null>(null);
   /*
    * A removal Undo can take back. Shown until the next change to the design —
@@ -282,117 +218,49 @@ export function StructureView({
     blocks,
   });
 
-  if (template.tree.steps.length === 0) {
-    return (
-      <RegionBody>
-        {toolbar}
-        <EmptyState icon={Blocks} title={__('This design has nothing in it yet', 'wconvert')}>
-          {__('Choose a design and its blocks are listed here.', 'wconvert')}
-        </EmptyState>
-      </RegionBody>
-    );
-  }
 
   const undoable = removal !== null && onUndo !== undefined;
-
-  const layersPane = (
-          <div className="wconvert-pane wconvert-pane--layers">
-            <div className="wconvert-pane__stick">
-              <div className="wconvert-pane__head">
-                <span className="wconvert-pane__name">{__('Layers', 'wconvert')}</span>
-                {insertionBlock && <AddElementPicker key={insertionBlock.path.join('.')} block={insertionBlock} tree={template.tree} act={act} labels={labels} onAdd={add} />}
-              </div>
-              <div className="wconvert-pane__body">
-                <BlockTree
-                  tree={template.tree}
-                  step={step}
-                  labels={labels}
-                  selected={selected}
-                  onSelect={onSelect}
-                  onMove={move}
-                  focusOn={focusOn}
-                  drag={drag}
-                  actions={(block, { control, tabIndex }) => (
-                    <RowAction
-                      block={block}
-                      control={control}
-                      tabIndex={tabIndex}
-                      labels={labels}
-                      tree={template.tree}
-                      act={act}
-                      onMove={move}
-                      onAdd={add}
-                      onDuplicate={duplicate}
-                      onRemove={remove}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-          </div>
+  /** One live region: announced throughout, drawn only while it carries an Undo. */
+  const notice = (
+    <div className={undoable ? 'wconvert-layer-notice' : 'sr-only'}>
+      <p role="status" aria-label={__('Layer changes', 'wconvert')}>
+        {undoable ? sprintf(__('%s removed.', 'wconvert'), removal.name) : said}
+      </p>
+      {undoable && <Button type="button" variant="ghost" size="xs" onClick={undoRemoval}>{__('Undo delete', 'wconvert')}</Button>}
+    </div>
   );
-  const controlsPane = (
-        <div className="wconvert-pane wconvert-pane--controls">
-          <div className="wconvert-pane__stick">
-            <div ref={inspectorScroll} className="wconvert-pane__body">
-              <BlockInspector
-                template={template}
-                labels={labels}
-                path={selected}
-                revealContent={focus}
-                act={act}
-                onChange={onChange}
-                onSwap={(next, sentence) => {
-                  onChange(next);
-                  setSaid(sentence);
-                }}
-                endsAt={endsAt}
-                onSetEndDate={onSetEndDate}
-                onPlacement={onPlacement}
-                look={look}
-                onSelect={onSelect}
-                onDesign={onDesign}
-                onShowLayers={onShowLayers}
-              />
-            </div>
-          </div>
-        </div>
+  const rowAction = (block: Block, { control, tabIndex }: { control: Control; tabIndex: number }) => (
+    <RowAction block={block} control={control} tabIndex={tabIndex} labels={labels} tree={template.tree} act={act}
+      onMove={move} onAdd={add} onDuplicate={duplicate} onRemove={remove} />
   );
-  return (
-    <>
-      {toolbar}
-
-      <div ref={panes} className="wconvert-panes" data-compact={compact || undefined} data-layers={showLayers ? 'true' : 'false'}>
-        {!compact && showLayers && layersPane}
-
-        <div className="wconvert-pane wconvert-pane--render">
-          <div className="wconvert-pane__stick">{preview}</div>
-        </div>
-
-        {!compact && controlsPane}
-        {compact && <Dialog open={drawer !== null} onOpenChange={open => { if (!open) onCloseDrawer?.(); }}>
-          <DialogContent container={panes.current} className="wconvert-editor-drawer" onCloseAutoFocus={event => { event.preventDefault(); onDrawerFocusReturn?.(lastDrawer.current); }}>
-            <DialogTitle>{drawer === 'layers' ? __('Layers', 'wconvert') : __('Design settings', 'wconvert')}</DialogTitle>
-            <DialogDescription className="sr-only">{__('Edit this campaign, then close the panel to return to the canvas.', 'wconvert')}</DialogDescription>
-            {drawer === 'layers' ? layersPane : controlsPane}
-          </DialogContent>
-        </Dialog>}
-      </div>
-
-      {/* One live region, mounted throughout so it is announced; it is drawn only while it carries an Undo, under the panes so nothing above them moves. */}
-      <div className={undoable ? 'wconvert-layer-notice' : 'sr-only'}>
-        <p role="status" aria-label={__('Layer changes', 'wconvert')}>
-          {undoable ? sprintf(__('%s removed.', 'wconvert'), removal.name) : said}
-        </p>
-        {undoable && <Button type="button" variant="ghost" size="xs" onClick={undoRemoval}>{__('Undo delete', 'wconvert')}</Button>}
-      </div>
-
-      {checks}
-    </>
-  );
+  const picker = insertionBlock
+    ? <AddElementPicker key={insertionBlock.path.join('.')} block={insertionBlock} tree={template.tree} act={act} labels={labels} onAdd={add} />
+    : null;
+  return { move, remove, duplicate, add, focusOn, drag, said, setSaid, notice, rowAction, picker };
 }
 
-function RowAction({
+/**
+ * One screen's elements, as the Edit tree nests them under the screen's row:
+ * the block list without the screen's own root box, each row's ⋯ menu, an
+ * "Add element" picker, and the one live region that announces what changed.
+ */
+export function ScreenElements(props: BlockEditsOptions & {
+  readonly step: number;
+  /** A sentence from elsewhere to announce here, e.g. the element panel's ⇄ swap. */
+  readonly announcement?: { readonly said: string; readonly serial: number } | null;
+}) {
+  const edits = useBlockEdits(props);
+  const { setSaid } = edits;
+  useEffect(() => { if (props.announcement) setSaid(props.announcement.said); }, [props.announcement, setSaid]);
+  return <>
+    <BlockTree tree={props.template.tree} step={props.step} withoutRoot labels={props.labels} selected={props.selected}
+      onSelect={props.onSelect} onMove={edits.move} focusOn={edits.focusOn} drag={edits.drag} actions={edits.rowAction} />
+    <div className="wconvert-edit-tree__add-element">{edits.picker}</div>
+    {edits.notice}
+  </>;
+}
+
+export function RowAction({
   block,
   control,
   tabIndex,
@@ -491,7 +359,7 @@ function RowAction({
   );
 }
 
-function AddElementPicker({ block, tree, act, labels, onAdd }: {
+export function AddElementPicker({ block, tree, act, labels, onAdd }: {
   block: Block; tree: TemplateTree; act: ConvertingAct; labels: TemplateLabels;
   onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {

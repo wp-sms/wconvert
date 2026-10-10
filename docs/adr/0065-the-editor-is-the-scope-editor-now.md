@@ -110,6 +110,11 @@ disagree. A popover rather than a `Select`, because the swatches are the whole
 affordance ([ADR 0054](0054-every-control-has-the-shape-of-its-value.md) rule
 3) and a toolbar has one line.
 
+*Amended by [ADR 0134](0134-one-edit-tab-look-screen-element.md): the theme
+picker is no longer a toolbar popover. It is the first section of the **Look**
+panel, which the tree's pinned Look row and a click on the empty stage open
+whatever is selected — so the reason above holds and the place changed.*
+
 The trigger shows the current palette's name, or *Custom look* where the design
 matches none — a picker showing the first preset would be claiming a palette
 the merchant is not on.

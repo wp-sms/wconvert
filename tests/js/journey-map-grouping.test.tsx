@@ -282,7 +282,7 @@ it('gives each path into a shared screen its own named target port and approach 
 it('opens the exact issue inside a collapsed follow-up group without expanding its connections', async () => {
   const { journeyIssues } = await import('../../resources/admin/src/builder/structure/journeyIssues');
   const changed = { ...tree, steps: tree.steps.map(step => step.id === 'garden' ? { ...step, name: '' } : step) };
-  const issues = journeyIssues(changed).map(found => ({ key: found.key, said: found.said, blocks: true, tab: 'journey' as const,
+  const issues = journeyIssues(changed).map(found => ({ key: found.key, said: found.said, blocks: true, tab: 'edit' as const,
     go: { to: 'journey' as const, repair: found.repair }, screenId: found.repair.screenId }));
   const onIssue = vi.fn();
   render(<JourneyMap tree={changed} issues={issues} onIssue={onIssue} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);

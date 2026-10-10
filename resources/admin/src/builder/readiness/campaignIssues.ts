@@ -36,7 +36,7 @@ import type { Template } from '@renderer/types';
  */
 
 /** Which editor tab holds the fix, for that tab's attention dot. */
-export type BlockedTab = 'journey' | 'design' | 'rules' | 'destinations';
+export type BlockedTab = 'edit' | 'rules' | 'destinations';
 
 /** Where the fix is. The editor turns each into a jump. */
 export type IssueGo =
@@ -131,18 +131,18 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
     ...(inlineTriggerIssue ? [issue('inline-trigger', __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), 'rules', { to: 'rules', section: 'when' }, true)] : []),
     // A failed read is retried in place: reloading the page would cost unsaved edits.
     ...(!outcome ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true, { offersRetry: true })] : []),
-    ...(goalIssue ? [issue('goal', goalIssue, 'design', template && convertingActOf(template.tree)[0] === outcome?.action ? { to: 'edit-design' } : { to: 'library' }, true)] : []),
+    ...(goalIssue ? [issue('goal', goalIssue, 'edit', template && convertingActOf(template.tree)[0] === outcome?.action ? { to: 'edit-design' } : { to: 'library' }, true)] : []),
     // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
     ...(handoffIssue ? [issue(ISSUE.handoff, handoffIssue, 'destinations', { to: 'destinations' }, true, { offersKeepLocal: true })] : []),
     ...signupRouteIssues(inputs),
-    ...(!hasDesign ? [issue('no-design', __('Choose a design before publishing.', 'wconvert'), 'design', { to: 'library' }, true)] : []),
+    ...(!hasDesign ? [issue('no-design', __('Choose a design before publishing.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
     ...(template ? journeyIssues(template.tree, outcome?.action) : []).map(found =>
-      issue(`journey:${found.key}`, found.said, 'journey', { to: 'journey', repair: found.repair }, true, { screenId: found.repair.screenId })),
+      issue(`journey:${found.key}`, found.said, 'edit', { to: 'journey', repair: found.repair }, true, { screenId: found.repair.screenId })),
     ...problems.filter(problem => problem.check === 'converts' || problem.blocksPublish).map((problem, index) =>
-      issue(`problem:${index}:${problem.said}`, problem.said, 'journey', problem.path !== null ? { to: 'element', path: problem.path } : { to: 'edit-design' }, true,
+      issue(`problem:${index}:${problem.said}`, problem.said, 'edit', problem.path !== null ? { to: 'element', path: problem.path } : { to: 'edit-design' }, true,
         { screenId: screenOf(problem.path) })),
     ...(hasDesign && bound.length > 0 && captures.length === 0
-      ? [issue('no-fields', __('This campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), 'design', { to: 'library' }, true)] : []),
+      ? [issue('no-fields', __('This campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), 'edit', { to: 'library' }, true)] : []),
   ];
 
   const where = destinationsSaid(bound, destinations, capturedFields(template));

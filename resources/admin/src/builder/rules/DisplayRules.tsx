@@ -1,11 +1,8 @@
 import { __ } from '@wordpress/i18n';
-import { Fragment, lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from 'react';
-import type { Template } from '@renderer/types';
+import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
-import { FlaskConical } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { RegionSkeleton } from '../../shell/RegionSkeleton';
 import { HowOften } from './HowOften';
 import { Dates } from './Dates';
 import { Where } from './Where';
@@ -18,12 +15,9 @@ import { questions, summarise, type DisplayRulesValue } from './summaries';
 import { incompletePlan } from './plan';
 import type { RuleVocabulary } from '../api';
 
-const SampleVisit = lazy(() => import('./SampleVisit'));
 export type { DisplayRulesValue } from './summaries';
 export interface DisplayRulesProps {
   readonly compact?: boolean;
-  readonly template?: Template;
-  readonly cartRequired?: boolean;
   readonly vocabulary: RuleVocabulary;
   readonly value: DisplayRulesValue;
   readonly overlay: boolean;
@@ -63,12 +57,11 @@ const sectionOf = (id: string | undefined): SectionId | undefined =>
  * it. The only state here is which section is open and, while it stays open,
  * which open pick the merchant chose — the sticky rule in {@see pickFor}.
  */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false, template, cartRequired = false }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary);
   const asked = questions();
   const [active, setActive] = useState<SectionId>(() => sectionOf(initialSection) ?? summaries.find(section => section.attention)?.id ?? 'where');
   const [chosen, setChosen] = useState<Partial<Record<SectionId, string>>>({});
-  const [testing, setTesting] = useState(false);
   const ours = useRef<string | null>(null);
   const heldId = useId();
   const plan = value.display_rules;
@@ -128,7 +121,6 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
           __('Shows %1$s %2$s, %3$s, %4$s.', 'wconvert'), [phrase(parts.where), phrase(parts.who), phrase(parts.when), phrase(parts.often)])}
         {parts.dates && <> {phrase(parts.dates)}</>}
       </p>
-      <Button variant="outline" onClick={() => setTesting(true)}><FlaskConical aria-hidden="true" />{__('Test a visit', 'wconvert')}</Button>
     </div>
     {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft uses an older development rule format. Review and replace its display setup before saving or publishing.', 'wconvert')}</p>
       <Button onClick={() => update(incompletePlan())}>{__('Set up display rules', 'wconvert')}</Button></div>}
@@ -157,8 +149,6 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       </section>
     </div>
 
-    {testing && <Suspense fallback={<RegionSkeleton label={__('Sample visit', 'wconvert')} lines={3} />}><SampleVisit template={template} cartRequired={cartRequired} act={act} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)}
-      onOpenSection={section => { setTesting(false); open(section); }} /></Suspense>}
   </div>;
 }
 

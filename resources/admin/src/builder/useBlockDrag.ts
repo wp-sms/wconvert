@@ -23,7 +23,7 @@ import type { Block } from './structure/tree';
  * So ↑ and ↓ are the mechanism and this is a second way to reach it. It writes
  * nothing of its own: a drop computes a distance and hands it to the same
  * `withMoved` the buttons call. Its coupling to the rest of the editor is one
- * hook call in {@see StructureView} and one effect in {@see BlockRow}; removing
+ * hook call in {@see useBlockEdits} and one effect in {@see BlockRow}; removing
  * those two leaves an editor that moves, adds, deletes and copies exactly as it
  * did.
  *
@@ -47,7 +47,7 @@ import type { Block } from './structure/tree';
  * (`tests/js/admin-split.test.ts`), and **its own accessibility guidance is
  * this design**: *"always provide alternatives to dragging"*, plus a live region
  * naming *"the item being moved, as well as its old and new position"* — which
- * is the sentence {@see StructureView} was already saying for the buttons.
+ * is the sentence {@see useBlockEdits} was already saying for the buttons.
  *
  * It ships no keyboard drag. That is not a gap here: the buttons are mandatory,
  * so a keyboard merchant already has the whole capability, and a second keyboard

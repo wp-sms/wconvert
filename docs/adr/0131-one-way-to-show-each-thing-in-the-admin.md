@@ -58,8 +58,11 @@ found the system intact and its application drifted:
    `CONTEXT.md`). "Email or phone", not "identifier". **Send** and **send
    again**, not push and re-push. **Shown** is the one name for impressions.
    **Keep in WConvert only** is the one name for local mode. Editor tabs are
-   **Screens · Design · Display rules · Destinations**, and a journey link to
-   another screen is the **next screen**. Domain nouns are lowercase
+   ~~**Screens · Design · Display rules · Destinations**~~ **Edit · Display
+   rules · Destinations** (*amended by
+   [0134](0134-one-edit-tab-look-screen-element.md)*), and a journey link to
+   another screen is ~~the **next screen**~~ a **path**; the screen panel says
+   where it goes as **Then →**. Domain nouns are lowercase
    mid-sentence. US spelling.
 6. **Data has one format each** — `lib/format.ts`: dates in the site's locale
    and timezone ("Today, 2:22 PM" / "Yesterday" / "Oct 3" in lists, "Oct 9,

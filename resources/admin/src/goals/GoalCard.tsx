@@ -159,7 +159,7 @@ export function GoalCard({
             itself: a real `disabled` takes the control out of the focus order,
             so the sentence saying why it cannot be pressed is a sentence a
             keyboard user cannot tab to. That is the doctrine
-            {@see StructureView} states for its tree and this admin now holds
+            {@see useBlockEdits} states for its tree and this admin now holds
             everywhere — a control refused by what the site IS keeps focus; a
             control that is merely BUSY takes the real attribute.
 

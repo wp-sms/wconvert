@@ -104,6 +104,12 @@ export interface BlockTreeProps {
    * against.
    */
   readonly drag?: BlockDrag;
+  /**
+   * Leave out the screen's own root box. The Edit tree draws a screen as its
+   * own row and nests the elements under it (ADR 0134), so the root row would
+   * be the screen named twice.
+   */
+  readonly withoutRoot?: boolean;
 }
 
 export function BlockTree({
@@ -116,6 +122,7 @@ export function BlockTree({
   actions,
   focusOn = null,
   drag,
+  withoutRoot = false,
 }: BlockTreeProps) {
   const grid = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState<readonly string[]>([]);
@@ -135,7 +142,8 @@ export function BlockTree({
   const [taking, setTaking] = useState(false);
 
   const blocks = useMemo(() => nodesOf(tree), [tree]);
-  const rows = useMemo(() => shown(step === undefined ? blocks : blocks.filter(block => block.path[0] === step), collapsed), [blocks, collapsed, step]);
+  const rows = useMemo(() => shown((step === undefined ? blocks : blocks.filter(block => block.path[0] === step))
+    .filter(block => !withoutRoot || block.level > 1), collapsed), [blocks, collapsed, step, withoutRoot]);
 
   const current = Math.max(
     0,
