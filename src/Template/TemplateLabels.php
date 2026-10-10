@@ -464,7 +464,7 @@ final class TemplateLabels
              */
             /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
             'button.action' => __('Button action', 'wconvert'),
-            'heading.level' => __('Heading level, for screen readers and search', 'wconvert'),
+            'heading.level' => __('Heading level', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
             'heading.size' => __('Size', 'wconvert'),
             /* translators: how big this paragraph is drawn, as a step up or down from the design's own text size. */
@@ -473,9 +473,9 @@ final class TemplateLabels
             'image.fit' => __('Picture fit', 'wconvert'),
             'code.copy' => __('Copy button', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
-            'field.required' => __('Required field', 'wconvert'),
+            'field.required' => __('Required', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
-            'field.phone_dropdown' => __('Country dropdown', 'wconvert'),
+            'field.phone_dropdown' => __('Show a country list', 'wconvert'),
             'products.action' => __('Product action', 'wconvert'),
             'products.source' => __('Recommendation source', 'wconvert'),
             'question.answer_type' => __('Answer type', 'wconvert'),

@@ -31,6 +31,30 @@ import finder from '../../pro/modules/journeys/templates/journey-product-finder.
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 import branchGroups from '../fixtures/journey-graph-branch-groups.json';
 
+type User = ReturnType<typeof userEvent.setup>;
+/** A choice's actions are one ⋯ menu (ADR 0136): open it, then pick. */
+async function addFollowup(user: User, choice: string) {
+  await user.click(screen.getByRole('button', { name: `More for “${choice}”` }));
+  await user.click(screen.getByRole('menuitem', { name: `Add follow-up for ${choice}` }));
+}
+/** The nth choice whose ⋯ offers Review uses. */
+async function reviewUses(user: User, nth: number) {
+  let found = 0;
+  for (const trigger of screen.getAllByRole('button', { name: /^More for “/ })) {
+    await user.click(trigger);
+    const item = screen.queryByRole('menuitem', { name: /^Review uses/ });
+    if (item && found++ === nth) { await user.click(item); return; }
+    await user.keyboard('{Escape}');
+  }
+  throw new Error(`No choice number ${nth} offers Review uses`);
+}
+/** An open result's move and remove are one ⋯ menu. */
+async function resultAction(user: User, name: string) {
+  await user.click(screen.getByRole('button', { name: /^More for “/ }));
+  await user.click(screen.getByRole('menuitem', { name }));
+}
+
+
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
 vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect, onAdd, onGoToRules, onGoToDestinations }: {
   onGoToRules?(): void; onGoToDestinations?(): void;
@@ -423,7 +447,7 @@ it('opens on the flow and creates an ordered answer path through the inspector',
   expect(screen.getByRole('radio', { name: 'Flow' })).toBeChecked();
   expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
   await user.click(screen.getByRole('radio', { name: 'Paths' }));
-  await user.click(screen.getByRole('button', { name: 'Add answer path' }));
+  await user.click(screen.getByRole('button', { name: 'Send some answers elsewhere' }));
   const paths = draft().steps[0].paths!;
   expect(paths).toHaveLength(2);
   expect(paths[0]).toMatchObject({ to: 'contact', when: { clauses: [{ question: 'n2', values: ['design'] }] } });
@@ -438,7 +462,7 @@ it('inserts a screen on the selected branch without changing its condition or co
   render(<Editor initial={service.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Paths' }));
-  await user.click(screen.getByRole('button', { name: 'Add answer path' }));
+  await user.click(screen.getByRole('button', { name: 'Send some answers elsewhere' }));
   const before = draft();
   await user.click(screen.getAllByRole('button', { name: 'Insert on this path' })[0]);
   await user.click(screen.getByRole('menuitem', { name: 'Ask a question' }));
@@ -640,11 +664,11 @@ it('warns when two matching results can receive the same answer', async () => {
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('list', { name: 'Journey screen inventory' }).querySelectorAll('button')[3]);
   expect(screen.getByText(/may match the same answers/)).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Move later' }));
+  await resultAction(user, 'Move later');
   expect(screen.getByLabelText('Heading')).toHaveValue('Garden');
-  await user.click(screen.getByRole('button', { name: 'Move earlier' }));
+  await resultAction(user, 'Move earlier');
   await user.click(within(screen.getByRole('group', { name: 'Possible results' })).getByRole('button', { name: /More garden ideas/ }));
-  await user.click(screen.getByRole('button', { name: 'Move earlier' }));
+  await resultAction(user, 'Move earlier');
   expect(draft().steps[3].results?.[0].id).toBe('also-garden');
 });
 
@@ -656,7 +680,7 @@ it('focuses the hidden continuation when repairing a required-save bypass', asyn
       repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' }} />;
   }
   render(<RepairEditor />);
-  await waitFor(() => expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'If skipped, go to' })).toHaveFocus());
 });
 
 it('focuses the default destination when repairing a required-save bypass', async () => {
@@ -709,7 +733,7 @@ it('opens the specific result and focuses its link when repairing publication', 
   }
   render(<RepairEditor />);
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Heading' })).toHaveValue('Balcony picks'));
-  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Link (optional)' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Link' })).toHaveFocus());
 });
 
 
@@ -967,7 +991,7 @@ it('lets a two-choice question review references while keeping the two-choice mi
   const user = userEvent.setup();
   render(<Editor initial={upgradeToGraph(finder.tree as TemplateTree)} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getAllByRole('button', { name: 'Review uses' })[0]);
+  await reviewUses(user, 0);
   const review = screen.getByRole('region', { name: 'Review answer uses' });
   expect(within(review).getByText(/Keep at least two choices/)).toBeInTheDocument();
   expect(within(review).getByRole('button', { name: /Sunny garden picks/ })).toBeEnabled();
@@ -989,7 +1013,7 @@ it('adds a follow-up beside its answer, preserves every relevant path, and undoe
       <output data-testid="draft">{JSON.stringify(history.present)}</output></>;
   }
   render(<Campaign />);
-  await user.click(screen.getByRole('button', { name: 'Add follow-up for Garden' }));
+  await addFollowup(user, 'Garden');
   const dialog = within(screen.getByRole('dialog', { name: 'Add a follow-up question' }));
   expect(dialog.queryByRole('combobox', { name: 'Show when the answer to' })).toBeNull();
   expect(dialog.getByRole('button', { name: 'Add follow-up' })).toHaveAttribute('aria-disabled', 'true');
@@ -1024,7 +1048,7 @@ it('reviews a shared follow-up continuation change and updates shown and skipped
   }
   render(<Campaign />);
   // On the Edit tab a question's paths are on the question's own panel: "Where visitors go next" (ADR 0134).
-  expect(screen.getByRole('heading', { name: 'Relevant follow-ups' })).toBeInTheDocument();
+  expect(screen.getByText('Relevant follow-ups')).toBeInTheDocument();
   expect(screen.queryByRole('combobox', { name: 'Go to' })).toBeNull();
   await user.selectOptions(screen.getByRole('combobox', { name: 'After the relevant questions' }), 'received');
   expect(screen.getByRole('alertdialog', { name: 'Review this path change' })).toBeInTheDocument();
@@ -1045,7 +1069,7 @@ it.each(['home', 'business'])('adds a follow-up to the matching %s branch withou
       <output data-testid="draft">{JSON.stringify(tree)}</output></>;
   }
   render(<Campaign />);
-  await user.click(screen.getByRole('button', { name: `Add follow-up for My ${answer}` }));
+  await addFollowup(user, `My ${answer}`);
   await user.type(screen.getByRole('textbox', { name: 'Question' }), 'When would you like to start?');
   await user.click(screen.getByRole('button', { name: 'Add follow-up' }));
   const next = draft();
@@ -1066,7 +1090,7 @@ it('asks for placement when a multi-answer choice does not determine a single br
   Object.assign(question, { answer_type: 'multi' });
   const change = vi.fn();
   render(<JourneyEditor embedded editorCanvas={<div />} {...questionPanel(at)} tree={original} step={at} onSelect={() => {}} onChange={change} />);
-  await user.click(screen.getByRole('button', { name: 'Add follow-up for My home' }));
+  await addFollowup(user, 'My home');
   await user.type(screen.getByRole('textbox', { name: 'Question' }), 'When would you like to start?');
   expect(screen.getByText('This answer can take more than one path. Choose where this follow-up belongs.')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Add follow-up' })).toHaveAttribute('aria-disabled', 'true');
@@ -1087,7 +1111,7 @@ it('restores the pending answer review after editing a referenced branch', async
   }
   render(<ReviewEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getAllByRole('button', { name: 'Review uses' })[1]);
+  await reviewUses(user, 1);
   const review = screen.getByRole('region', { name: 'Review answer uses' });
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'press');
   await user.click(within(review).getByText('Stop offering this answer…'));

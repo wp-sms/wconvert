@@ -6,6 +6,8 @@ import { Button } from '../components/ui/button';
 import { ColorField } from './ColorField';
 import { cssOnlyNote, useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
+import { CheckRow } from '../shell/CheckRow';
+import { FieldHeading, PanelHint } from './PanelSection';
 import { nameOf, type TemplateLabels } from '../templates/api';
 
 export interface Shadow { x: number; y: number; blur: number; spread: number; color: string; inset: boolean }
@@ -44,29 +46,33 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
   const shadow = parseShadow(shown);
   const edit = (patch: Partial<Shadow>) => shadow && onChange(shadowValue({ ...shadow, ...patch }));
   return <div className="wconvert-token">
-    <span className="wconvert-field-heading"><label htmlFor={id}>{label}</label><span className="flex items-center gap-1">
+    <FieldHeading as="span" label={label} labelId={`${id}-label`}>
       {advanced && <Button type="button" variant="ghost" size="icon-xs" aria-label={__('Edit shadow CSS', 'wconvert')} title={__('Edit shadow CSS', 'wconvert')} aria-pressed={custom} onClick={() => setCustom(!custom)}><CodeXml aria-hidden="true" /></Button>}{reset}
-    </span></span>
-    <select id={id} value={custom || !offered.includes(shown) ? '__custom' : shown} onChange={event => {
-      setCustom(false); onChange(event.target.value);
-    }}>
-      {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
-      {(custom || !offered.includes(shown)) && <option value="__custom" disabled>{__('Custom', 'wconvert')}</option>}
-    </select>
-    {shadow && <Disclosure variant="inline" className="wconvert-shadow-adjust" title={__('Adjust shadow', 'wconvert')}>
-      {advanced && <div className="wconvert-shadow-values">{(['x', 'y', 'blur', 'spread'] as const).map(key => <label key={key}>
+    </FieldHeading>
+    {/*
+      **Drawn, not named** (ADR 0136): a shadow is judged by looking, so each
+      choice is a small card wearing it. The words stay as each choice's name.
+    */}
+    <span role="radiogroup" aria-labelledby={`${id}-label`} className="wconvert-shadow-choices">
+      {offered.map(choice => <label key={choice} className="wconvert-shadow-choice">
+        <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => { setCustom(false); onChange(choice); }} />
+        <span className="wconvert-shadow-choice__card"><span aria-hidden="true" style={{ boxShadow: choice === 'none' ? 'none' : choice }} />{nameOf(labels.tokenValues, `${token}.${choice}`)}</span>
+      </label>)}
+    </span>
+    {!offered.includes(shown) && shown !== 'none' && !advanced && <PanelHint>{shadow ? __('A custom shadow. Open Advanced to adjust it.', 'wconvert') : cssOnlyNote()}</PanelHint>}
+    {advanced && shadow && <Disclosure variant="inline" className="wconvert-shadow-adjust" title={__('Adjust shadow', 'wconvert')} summary={shadowValue(shadow)}>
+      <div className="wconvert-shadow-values">{(['x', 'y', 'blur', 'spread'] as const).map(key => <label key={key}>
         {{ x: __('Horizontal', 'wconvert'), y: __('Vertical', 'wconvert'), blur: __('Blur', 'wconvert'), spread: __('Spread', 'wconvert') }[key]}
         <span><StyleValueInput type="number" min={key === 'blur' ? 0 : undefined} value={String(shadow[key])} onCommit={next => {
           const n = Number(next);
           if (next.trim() && Number.isFinite(n) && (key !== 'blur' || n >= 0)) edit({ [key]: n });
         }} /><span>px</span></span>
-      </label>)}</div>}
+      </label>)}</div>
       <ColorField label={__('Shadow color', 'wconvert')} value={shadow.color} fallback={shadow.color} open={open} onOpenChange={onOpenChange} onChange={color => edit({ color })} />
-      <label className="wconvert-shadow-inset"><input type="checkbox" checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />{__('Inner shadow', 'wconvert')}</label>
+      <CheckRow className="wconvert-check" label={__('Inner shadow', 'wconvert')} checked={shadow.inset} onChange={e => edit({ inset: e.target.checked })} />
     </Disclosure>}
     {advanced && ((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
       <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
     </div>}
-    {!advanced && !shadow && shown !== 'none' && !offered.includes(shown) && <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>}
   </div>;
 }

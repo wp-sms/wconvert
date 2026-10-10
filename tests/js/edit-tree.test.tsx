@@ -39,8 +39,9 @@ describe('the Edit tree', () => {
   it('pins the Look first and marks it, not a screen, while it is open', () => {
     const open = vi.fn();
     render(<EditTree tree={straight} step={0} editingScreen={false} onSelect={() => {}}
-      look={{ open: true, colors: ['#fff', '#000', '#2f4f37'], summary: lookSummary('popup'), onOpen: open }} />);
-    const look = screen.getByRole('button', { name: /^Look Colors, fonts, popup position/ });
+      look={{ open: true, colors: ['#fff', '#000', '#2f4f37'], summary: lookSummary('popup', 'Fieldwork'), onOpen: open }} />);
+    // One line: the design and the format beside "Look" (ADR 0136).
+    const look = screen.getByRole('button', { name: /^Look Fieldwork · Popup/ });
     expect(look).toHaveAttribute('aria-current', 'true');
     expect(screen.getByRole('button', { name: /Screen 1/ })).not.toHaveAttribute('aria-current');
     fireEvent.click(look);

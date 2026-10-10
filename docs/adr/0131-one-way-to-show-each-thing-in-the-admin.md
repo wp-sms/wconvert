@@ -76,10 +76,12 @@ found the system intact and its application drifted:
    choice that needs a sentence.
 8. **One collapsible** — `shell/Disclosure`, `card` or `inline`: whole-row
    trigger, trailing 16px chevron, body aligned with the title text. It
-   replaces eight treatments.
+   replaces eight treatments. *Amended by [ADR 0136](0136-one-panel-grammar.md): in an editor panel a
+   disclosure's title is at most three words and its summary says its value ("Consent · Shown").*
 9. **Small type is a hierarchy, not a floor to raise.** `meta` (9) and `label`
    (11) stay as builder furniture. They never carry a control, a condition or a
-   reason; those move to `micro` or `note`.
+   reason; those move to `micro` or `note`. *Amended by [ADR 0136](0136-one-panel-grammar.md): a builder field's
+   one line of help is a `hint`, 12/400 muted; its label is `note` at 500.*
 10. **Decided by existing rules, now applied everywhere:** red only for delete
     and remove (`ConfirmDialog` is `default` unless a caller opts in);
     destructive confirms are `AlertDialog`s that say what survives; more than

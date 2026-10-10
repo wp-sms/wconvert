@@ -3504,10 +3504,6 @@ body:has(#wconvert-admin) #wpbody-content {
   white-space: nowrap;
 }
 
-.wconvert-block__chip--counted {
-  background: var(--success-surface);
-  color: var(--success);
-}
 
 .wconvert-block__chip--warn {
   background: var(--warning-surface);
@@ -3840,14 +3836,6 @@ body:has(#wconvert-admin) #wpbody-content {
   margin-inline-start: -0.3125rem;
 }
 
-/* The Copy-theme control and whatever it has to say afterwards. */
-.wconvert-themes__theme {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-}
 
 /* ---------------------------------------------------------------------------
  * ONE CONTAINER OWNS THE RHYTHM. ITS CHILDREN OWN NONE.
@@ -3906,22 +3894,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-group:first-child {
   padding-block-start: 0;
   border-block-start: 0;
-}
-
-/*
- * **`meta`, which is the register a group NAME has always been in.** *COLOUR*
- * over eight swatches is not a heading a merchant reads; it is the word that
- * says which eight these are, read once on arrival. At `micro` it stood as tall
- * as the swatch names under it and the panel read as a stack of equals.
- */
-.wconvert-group__name {
-  margin: 0;
-  color: var(--muted-foreground);
-  font-size: var(--text-meta);
-  line-height: var(--text-meta--line-height);
-  letter-spacing: var(--text-meta--letter-spacing);
-  font-weight: var(--text-meta--font-weight);
-  text-transform: uppercase;
 }
 
 /* ---------------------------------------------------------------------------
@@ -4548,16 +4520,12 @@ body:has(#wconvert-admin) #wpbody-content {
   min-inline-size: 0;
 }
 
-.wconvert-position__heading,
 .wconvert-position__row {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.wconvert-position__heading {
-  justify-content: space-between;
-}
 
 .wconvert-position__grid {
   display: grid;
@@ -5710,11 +5678,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   justify-self: start;
 }
 
-.wconvert-scope__clipboard {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
 
 /* ---------------------------------------------------------------------------
  * THE ROW ABOVE THE THREE PANES, AND THE SCOPE PANEL UNDER IT.
@@ -6131,24 +6094,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   letter-spacing: 0.02em;
 }
 
-/*
- * The mode, said where the controls it changes are.
- *
- * It carries the id because it is a `<p>` — `#wconvert-admin :is(p, li, td, …)`
- * forces `font-size: inherit` over a bare class, which is the trap this file
- * documents four times over.
- */
-#wconvert-admin .wconvert-scope__narrow {
-  margin: 0;
-  padding-block: 0.5rem;
-  padding-inline: var(--wconvert-gutter);
-  border-radius: var(--radius);
-  background: color-mix(in srgb, var(--ring) 10%, transparent);
-  color: var(--foreground);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
-  text-wrap: pretty;
-}
 
 /*
  * What is stored for this box, as data.

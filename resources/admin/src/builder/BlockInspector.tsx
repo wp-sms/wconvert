@@ -2,10 +2,11 @@ import { RecommendationSettings } from './RecommendationSettings';
 import type { ProductsNode } from '@renderer/types';
 import { journeysSupported, commerceSupported } from '../settings';
 import { tierProductName, unlessFree } from '../goals/availability';
-import { useId, useState, type ReactNode } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
+import { cloneElement, isValidElement, useId, useState, type ReactNode } from 'react';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { ArrowLeftRight, Check, CircleHelp, Eye, EyeOff, Heading, Image, Layers, LayoutPanelLeft, Link, Mail, Minus, Package, Phone, RectangleHorizontal, Sparkles, SquareCheck, Star, Tag, Text, TextCursorInput, Ticket, Timer, Type, User, type LucideIcon } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { InfoTip } from '../shell/InfoTip';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +16,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ParamChoice } from './ParamChoice';
 import { BorderPreview, ImageFitPreview, ImageShapePreview, SplitRatioPreview } from './ChoicePreview';
-import { SlotFields } from './SlotFields';
+import { SlotFields, buttonActionOf, buttonDoes } from './SlotFields';
+import { PanelField, PanelHeader, PanelHint, PanelSection } from './PanelSection';
+import { DesignColors, designColorsOf } from './ColorField';
+import { answerTypeName } from './JourneySettings';
 import { nameOfBlock } from './BlockRow';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
 import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
@@ -45,9 +49,10 @@ export interface BlockInspectorProps {
 
   readonly onSetEndDate?: () => void;
   readonly onPlacement?: () => void;
+  /** Where the campaign sits on the page, for the recommendations' Placement fact. */
+  readonly placement?: string;
 
   readonly look?: ReactNode;
-  readonly onSelect?: (path: Path) => void;
   /**
    * Back to the screen this element is on: the header's "← <screen>" (D2).
    * The element panel is the only panel while an element is open, so this is
@@ -55,7 +60,6 @@ export interface BlockInspectorProps {
    */
   readonly onBack?: () => void;
   readonly onDesign?: () => void;
-  readonly onShowLayers?: () => void;
   /** A new repair request opens Content even when the same element was on Style. */
   readonly revealContent?: { readonly path: Path } | null;
 }
@@ -70,11 +74,10 @@ export function BlockInspector({
   endsAt,
   onSetEndDate,
   onPlacement,
+  placement,
   look,
-  onSelect,
   onBack,
   onDesign,
-  onShowLayers,
   revealContent,
 }: BlockInspectorProps) {
   const heading = useId();
@@ -109,7 +112,8 @@ export function BlockInspector({
   const name = nameOfBlock(block, labels);
   // A question's panel is the journey editor's: it owns the dialogs a
   // follow-up or a new path opens (ADR 0134).
-  const body = block.type === 'question' && questionPanel !== null ? questionPanel(Number(path[0])) : contentBody({
+  const ownSections = block.type === 'products' || (block.type === 'question' && questionPanel !== null);
+  const content = block.type === 'question' && questionPanel !== null ? questionPanel(Number(path[0])) : contentBody({
     template,
     labels,
     path,
@@ -119,50 +123,49 @@ export function BlockInspector({
     endsAt,
     onSetEndDate,
     onPlacement,
+    placement,
   });
+  // Products and the question draw their own sections; everything else is one untitled section.
+  const body = ownSections ? content : <PanelSection>{content}</PanelSection>;
 
-  // Only the layout boxes between the screen and this element: the screen
-  // itself is the back button, and a crumb for it would be a second way to
-  // say the same thing (D2).
+  // The innermost box this element sits in is the caption ("In Colored box");
+  // the tree already shows the rest of the way there (ADR 0136).
   const boxes = nodesOf(template.tree).filter(
     (parent) => parent.path.length > 1 && parent.path.length < path.length && parent.path.every((part, index) => path[index] === part),
   );
+  const box = boxes[boxes.length - 1];
+  const node = nodeAt(template.tree, path) as { answer_type?: string; options?: readonly unknown[]; captures?: string } | null;
+  const caption = block.type === 'button' && slot !== null ? buttonDoes(buttonActionOf(slot))
+    : block.type === 'question' ? node?.answer_type === 'text' ? answerTypeName('text')
+      : sprintf(/* translators: 1: an answer type, e.g. “Choose one”. 2: how many choices. */ _n('%1$s · %2$d choice', '%1$s · %2$d choices', node?.options?.length ?? 0, 'wconvert'),
+        answerTypeName(node?.answer_type ?? 'single'), node?.options?.length ?? 0)
+    : box ? sprintf(/* translators: %s: a box's name, e.g. “Colored box”. */ __('In %s', 'wconvert'), nameOfBlock(box, labels)) : null;
   const screenName = template.tree.steps[Number(path[0])]?.name ?? '';
   // Back to the screen where there is one to go back to; the Design tab's
   // inspector goes back to the whole design, and says so.
   const back = onBack ?? onDesign;
   const backTo = onBack !== undefined ? screenName || __('Screen', 'wconvert') : __('Design', 'wconvert');
+  const hidden = slot?.hidden ?? block.hidden;
+  const Icon = elementIconOf(block.type, slot?.captures ?? null, block.leaf);
   const head = (
     <div className="wconvert-inspector__head">
-      {back !== undefined && (
-        <button type="button" className="wconvert-inspector__back" onClick={back}>
-          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-          <span>{backTo}</span>
-        </button>
-      )}
-      {boxes.length > 0 && (
-        <nav className="wconvert-inspector__breadcrumbs" aria-label={__('Inside', 'wconvert')}>
-          {boxes.map((parent, at) => (
-            <span key={parent.path.join('.')}>
-              {at > 0 && <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />}
-              <button type="button" onClick={() => onSelect?.(parent.path)}>
-                {nameOfBlock(parent, labels)}
-              </button>
-            </span>
-          ))}
-        </nav>
-      )}
-      <div className="wconvert-inspector__heading">
-        <span className="wconvert-element-icon">
-          {block.type === 'products' ? <Package aria-hidden="true" /> : block.leaf ? <Type aria-hidden="true" /> : <Layers aria-hidden="true" />}
-        </span>
-        <div>
-          <h4 id={heading} className="wconvert-inspector__name">
-            {name}
-          </h4>
-        </div>
-        <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
-      </div>
+      <PanelHeader
+        back={back !== undefined ? { label: backTo, onClick: back } : undefined}
+        icon={<Icon />}
+        title={<h4 id={heading} className="wconvert-inspector__name">{name}</h4>}
+        caption={caption}
+        actions={<>
+          <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
+          {/* Shown or hidden is the header's eye (ADR 0136), not a checkbox at the foot of Content. */}
+          {/* One name, pressed while shown: the same toggle pattern as Link all sides (ADR 0136). */}
+          {slot?.hideable && <button type="button" aria-pressed={!hidden}
+            aria-label={sprintf(/* translators: %s: an element's name, e.g. “Headline”. */ __('Show %s', 'wconvert'), name)}
+            title={hidden ? __('Hidden on the page', 'wconvert') : __('Shown on the page', 'wconvert')}
+            onClick={() => onChange({ ...template, tree: withHidden(template.tree, path, !hidden) })}>
+            {hidden ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+          </button>}
+        </>}
+      />
       {look !== undefined && slot !== null && (
         <TabsList
           className="wconvert-inspector__halves"
@@ -177,6 +180,33 @@ export function BlockInspector({
 
   const advancedToggle = <AdvancedToggle advanced={advanced} onToggle={() => setAdvanced((value) => !value)} />;
   const shownStyleSettings = styleSettings.filter((setting) => advanced || !ADVANCED_PARAMS.includes(setting.param));
+  // The element's own looks (Size, Heading level) lead the Style tab under their own labels (ADR 0136).
+  const ownStyle = slot !== null && shownStyleSettings.length > 0 ? <PanelSection label={sprintf(/* translators: %s: an element's name, e.g. “Headline”. */ __('%s style', 'wconvert'), name)}>
+    {shownStyleSettings.map((setting) => (
+      <ParamChoice
+        key={setting.param}
+        id={`${slot.type}-style-${setting.param}`}
+        label={nameOf(labels.nodeParams, `${slot.type}.${setting.param}`)}
+        offered={setting.offered}
+        held={setting.held}
+        fallback={setting.fallback}
+        nameOfValue={(choice) =>
+          nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
+        }
+        tip={slot.type === 'heading' && setting.param === 'level' ? __('For screen readers and search. Size changes how it looks.', 'wconvert') : undefined}
+        columns={slot.type === 'image' && ['fit', 'shape'].includes(setting.param) ? 2 : undefined}
+        renderChoice={slot.type === 'image' && setting.param === 'fit'
+          ? choice => <ImageFitPreview fit={choice} src={slot.values.src} />
+          : slot.type === 'image' && setting.param === 'shape'
+            ? choice => <ImageShapePreview shape={choice} src={slot.values.src} /> : undefined}
+        onChange={(value) =>
+          onChange({ ...template, tree: withValue(template.tree, path, setting.param, value) })
+        }
+      />
+    ))}
+  </PanelSection> : null;
+  const colors = designColorsOf(template.tokens);
+  const style = isValidElement<StyleSlots>(look) ? cloneElement(look, { lead: ownStyle, footerEnd: advancedToggle }) : look;
 
   if (look === undefined || slot === null) {
     return (
@@ -184,10 +214,9 @@ export function BlockInspector({
         {head}
         <div className="wconvert-inspector__body">
           {body}
-          {look !== undefined && <AdvancedContext.Provider value={advanced}>
-            {look}
-            {advancedToggle}
-          </AdvancedContext.Provider>}
+          {look !== undefined && <AdvancedContext.Provider value={advanced}><DesignColors.Provider value={colors}>
+            {style}
+          </DesignColors.Provider></AdvancedContext.Provider>}
         </div>
       </div>
     );
@@ -205,52 +234,29 @@ export function BlockInspector({
       <div className="wconvert-inspector__body">
         <TabsContent value="content">
           {body}
-          <button type="button" className="wconvert-style-shortcut" onClick={() => setHalf('style')}>
-            {__('Edit appearance', 'wconvert')}
-            <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />
-          </button>
-          {onShowLayers && (
-            <button type="button" className="wconvert-linkish" onClick={onShowLayers}>
-              <Layers aria-hidden="true" />
-              {__('Show in Layers', 'wconvert')}
-            </button>
-          )}
         </TabsContent>
         <TabsContent value="style">
-          <AdvancedContext.Provider value={advanced}>
-          {shownStyleSettings.length > 0 && (
-            <section className="wconvert-group" aria-label={__('Element appearance', 'wconvert')}>
-              <h5 className="wconvert-group__name">{__('Element appearance', 'wconvert')}</h5>
-              {shownStyleSettings.map((setting) => (
-                <ParamChoice
-                  key={setting.param}
-                  id={`${slot.type}-style-${setting.param}`}
-                  label={nameOf(labels.nodeParams, `${slot.type}.${setting.param}`)}
-                  offered={setting.offered}
-                  held={setting.held}
-                  fallback={setting.fallback}
-                  nameOfValue={(choice) =>
-                    nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
-                  }
-                  columns={slot.type === 'image' && ['fit', 'shape'].includes(setting.param) ? 2 : undefined}
-                  renderChoice={slot.type === 'image' && setting.param === 'fit'
-                    ? choice => <ImageFitPreview fit={choice} src={slot.values.src} />
-                    : slot.type === 'image' && setting.param === 'shape'
-                      ? choice => <ImageShapePreview shape={choice} src={slot.values.src} /> : undefined}
-                  onChange={(value) =>
-                    onChange({ ...template, tree: withValue(template.tree, path, setting.param, value) })
-                  }
-                />
-              ))}
-            </section>
-          )}
-          {look}
-          {advancedToggle}
-          </AdvancedContext.Provider>
+          <AdvancedContext.Provider value={advanced}><DesignColors.Provider value={colors}>
+            {style}
+          </DesignColors.Provider></AdvancedContext.Provider>
         </TabsContent>
       </div>
     </Tabs>
   );
+}
+
+/** The slots {@see ScopeStyle} offers the element panel: its own looks first, Advanced at the foot. */
+interface StyleSlots { lead?: ReactNode; footerEnd?: ReactNode }
+
+/** An element's kind as its icon (ADR 0136): a headline is not a "T" like everything else. */
+function elementIconOf(type: string, captures: string | null, leaf: boolean): LucideIcon {
+  if (!leaf) return type === 'split' ? LayoutPanelLeft : Layers;
+  if (type === 'field') return captures === 'email' ? Mail : captures === 'phone' ? Phone : captures === 'name' ? User : TextCursorInput;
+  const icons: Readonly<Record<string, LucideIcon>> = {
+    heading: Heading, eyebrow: Type, text: Text, badge: Tag, rating: Star, image: Image, icon: Sparkles, divider: Minus,
+    countdown: Timer, code: Ticket, question: CircleHelp, button: RectangleHorizontal, consent: SquareCheck, followup: Link, products: Package,
+  };
+  return icons[type] ?? Type;
 }
 
 function contentBody({
@@ -263,6 +269,7 @@ function contentBody({
   endsAt,
   onSetEndDate,
   onPlacement,
+  placement,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -273,21 +280,22 @@ function contentBody({
   endsAt?: string;
   onSetEndDate?: () => void;
   onPlacement?: () => void;
+  placement?: string;
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
   if (block.type === 'products') {
-    if (!commerceSupported()) return <p>{unlessFree(sprintf(
+    if (!commerceSupported()) return <PanelSection><PanelHint>{unlessFree(sprintf(
       /* translators: %s: the product that includes product suggestions, e.g. “WConvert Pro”. */
-      __('Product suggestions are included with %s and need WooCommerce on this site.', 'wconvert'), tierProductName('pro')))}</p>;
+      __('Product suggestions are included with %s and need WooCommerce on this site.', 'wconvert'), tierProductName('pro')))}</PanelHint></PanelSection>;
     const selected = nodeAt(template.tree, path) as ProductsNode;
-    return <RecommendationSettings value={selected} onPlacement={onPlacement} onChange={patch => {
+    return <RecommendationSettings value={selected} onPlacement={onPlacement} placement={placement} onChange={patch => {
       let tree = template.tree;
       for (const [key, value] of Object.entries(patch)) tree = withValue(tree, path, key, value);
       onChange({ ...template, tree });
     }} />;
   }
   if (block.type === 'question' && !journeysSupported()) {
-    return <p className="text-note text-muted-foreground">{__('This design uses elements this site can’t display.', 'wconvert')}</p>;
+    return <PanelHint>{__('This design uses elements this site can’t display.', 'wconvert')}</PanelHint>;
   }
   if (block.type === 'question') {
     return <QuestionSettings tree={template.tree} step={Number(path[0])} onChange={tree => onChange({ ...template, tree })} onSelect={() => undefined} />;
@@ -295,27 +303,27 @@ function contentBody({
   return (
     <>
       {['field', 'consent'].includes(block.type) && <CaptureOwnership tree={template.tree} path={path} onChange={tree => onChange({ ...template, tree })} />}
-      {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <label className="wconvert-slot__key">
-        {__('Form', 'wconvert')}
-        <select value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
+      {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <PanelField label={__('Form', 'wconvert')} htmlFor={`form-${path.join('-')}`}>
+        <select id={`form-${path.join('-')}`} value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
           <option value="">{__('Choose a form', 'wconvert')}</option>
           {template.tree.submissions.filter(s => node?.action !== 'skip' || !s.required).map((s, index) => <option key={s.id} value={s.id}>
             {template.tree.steps[submissionScreen(template.tree, s.id)]?.name ?? sprintf(__('Form %d', 'wconvert'), index + 1)}
           </option>)}
         </select>
-      </label>}
+      </PanelField>}
       {slot === null ? (
         <>
           <div className="wconvert-layout-params">
             {block.type === 'split' && (
               <>
-                <Button type="button" variant="outline" size="sm" onClick={() =>
-                  onChange({ ...template, tree: withSwappedPanes(template.tree, path) })
-                }>
-                  <ArrowLeftRight aria-hidden="true" />
-                  {__('Swap sides', 'wconvert')}
-                </Button>
-                <p className="description">{__('Swaps this screen’s two panes, including their order when stacked on mobile.', 'wconvert')}</p>
+                <span className="wconvert-panel-actions">
+                  <Button type="button" variant="outline" size="sm"
+                    onClick={() => onChange({ ...template, tree: withSwappedPanes(template.tree, path) })}>
+                    <ArrowLeftRight aria-hidden="true" />
+                    {__('Swap sides', 'wconvert')}
+                  </Button>
+                  <InfoTip label={__('About swapping sides', 'wconvert')}>{__('Swaps the two panes, including their order when stacked on mobile.', 'wconvert')}</InfoTip>
+                </span>
               </>
             )}
             <LayoutParams
@@ -430,10 +438,9 @@ function SwapMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="xs" className="wconvert-inspector__swap">
+        <button type="button" className="wconvert-inspector__swap" aria-label={name} title={name}>
           <ArrowLeftRight aria-hidden="true" />
-          {name}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-w-xs">
         {swaps.map((swap) => {

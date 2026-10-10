@@ -213,10 +213,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
 
   const [changingGoal, setChangingGoal] = useState(false);
-  const changeGoal = useRef<HTMLButtonElement>(null);
-  const goalButton = useRef<HTMLButtonElement>(null);
-  // Change goal opens from the goal under the name or from Campaign details; focus goes back to whichever.
-  const goalOpener = useRef<HTMLElement | null>(null);
+  // Campaign actions (⋯). Change goal opens from Campaign details, reached through it, so focus returns here (ADR 0136).
+  const campaignActions = useRef<HTMLButtonElement>(null);
 
   const [siblingAct, setSiblingAct] = useState<ConvertingAct | null>(null);
 
@@ -867,6 +865,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <input
             id="wconvert-optin-name"
             className="wconvert-workspace__name"
+            // As wide as the name, so the status sits right beside it (ADR 0136); CSS caps it.
+            size={Math.min(32, Math.max(8, (name || __('Untitled campaign', 'wconvert')).length))}
             value={name}
             placeholder={__('Untitled campaign', 'wconvert')}
             disabled={busy}
@@ -876,10 +876,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               setSaved(false);
             }}
           />
-          {/* The goal says what this campaign is for, and changing it is one press away (ADR 0134). */}
-          {entryOfGoal && <button ref={goalButton} type="button" className="wconvert-workspace__goal" disabled={busy} onClick={() => { goalOpener.current = goalButton.current; setChangingGoal(true); }}>
-            {sprintf(__('Goal: %s', 'wconvert'), entryOfGoal.label)}
-          </button>}
           <span
             className="wconvert-workspace__save-state"
             role="status"
@@ -969,13 +965,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onPreview={() => previewAs('journey')}
             {...issueRoutes}
           />
-          <DropdownMenu><DropdownMenuTrigger asChild><Button ref={changeGoal} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
+          <DropdownMenu><DropdownMenuTrigger asChild><Button ref={campaignActions} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="wconvert-campaign-actions">
               {small && <><DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}><Undo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.undo}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}><Redo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.redo}</DropdownMenuItem></>}
               <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}><ArrowUpFromLine aria-hidden="true" />{__('Import design', 'wconvert')}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}><ArrowDownToLine aria-hidden="true" />{__('Export design', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = changeGoal.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = campaignActions.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -990,10 +986,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             appearancePreview={showingLock ? previewPane : undefined}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
-            look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates)) }}
+            look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates), chosenName(templateId, templates)) }}
             lookPanel={<DesignSettings
                             browseRef={browse}
-                            mobile={width === 'narrow'}
                             template={entry}
                             labels={gallery.labels}
                             name={chosenName(templateId, templates)}
@@ -1022,10 +1017,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onSelectElement={chooseFromTree}
             elementPanel={!lookOpen && selection && selection.path.length > 1 ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act} onBack={() => setSelection(null)}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={(next, said) => { edit({ template: next }); setSwapSaid(current => ({ said, serial: (current?.serial ?? 0) + 1 })); }}
-              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement} onSelect={chooseFromTree}
+              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
+              placement={displayTypeOf(config, templates) === 'inline' ? inlineSummary : undefined}
               onDesign={openLook}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
-                onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
+                onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
             testRequest={journeyTestRequest} testRequestMode={journeyTestMode} testReturnFocus={previewButton} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
             issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
@@ -1067,7 +1063,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        goalOpener.current = changeGoal.current;
                         setDetails(false);
                         setChangingGoal(true);
                       }}
@@ -1149,10 +1144,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       {transfer && <Suspense fallback={<span role="status">{__('Loading file tools…', 'wconvert')}</span>}>
         <TemplateTransferDialog action={transfer.action} optin={id} config={transfer.config}
           design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
-          onClose={() => { setTransfer(null); changeGoal.current?.focus(); }}
+          onClose={() => { setTransfer(null); campaignActions.current?.focus(); }}
           onApply={patch => {
             if (config !== transfer.config) return __('Your draft changed during import. Close this and review the file again.', 'wconvert');
-            edit(patch); setSelection(null); setStep(0); setImported(true); setTransfer(null); changeGoal.current?.focus();
+            edit(patch); setSelection(null); setStep(0); setImported(true); setTransfer(null); campaignActions.current?.focus();
           }} />
       </Suspense>}
 
@@ -1211,16 +1206,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
       <ChangeGoalDialog
         open={changingGoal}
-        onOpenChange={(next) => {
-          setChangingGoal(next);
-
-          // Radix restores focus to its own trigger and this dialog has none,
-          // exactly as the picker above: naming the control is what puts the
-          // caret back rather than on `<body>`.
-          if (!next) {
-            (goalOpener.current ?? changeGoal.current)?.focus();
-          }
-        }}
+        returnFocusTo={campaignActions}
+        // Radix restores focus to its own trigger and this dialog has none, so
+        // `returnFocusTo` names the control that puts the caret back (ADR 0136).
+        onOpenChange={setChangingGoal}
         goals={goals}
         current={goal ?? ''}
         duplicate={!canChangeGoal}

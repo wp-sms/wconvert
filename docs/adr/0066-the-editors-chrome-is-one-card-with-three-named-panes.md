@@ -46,6 +46,8 @@ to clear, not a wall, and the Design tab is where it is cleared twice:
 `label` and `meta` never carry a control, a condition or a reason. "A check's
 word" is a control's label and is `micro` or `note`; so is any condition text
 and any refusal reason. The two roles stay for captions, pane names and counts.*
+*Amended by [ADR 0136](0136-one-panel-grammar.md): a panel field's label is `note` at 500, 6px above its
+control, and a swatch's name and value read at `micro`; `label` keeps a block's kind.*
 
 Both are the reference tool's own values, taken value for value rather than
 interpolated down from `micro`. `meta` carries the uppercase register in the

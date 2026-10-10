@@ -24,4 +24,4 @@ export function AdvancedToggle({ advanced, onToggle }: { advanced: boolean; onTo
 }
 
 /** What a plain field says in place of a value only CSS can express. */
-export const cssOnlyNote = (): string => __('This value is set in CSS. Open Advanced to change it.', 'wconvert');
+export const cssOnlyNote = (): string => __('Set in CSS. Open Advanced to change it.', 'wconvert');

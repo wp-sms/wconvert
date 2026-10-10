@@ -5,6 +5,8 @@
 
 Accepted 2026-09-14 after the pre-release Goal, Playbook and Template UX review.
 
+> **Amended by [ADR 0136](0136-one-panel-grammar.md):** where the editor shows the Goal changed twice after this ADR (0087 put it in Campaign details, 0134 under the name). It is in Campaign details, with Change goal, and not in the header.
+
 ## Decision
 
 Keep Goal → Playbook → Template: business intent, suggested setup, reusable design.

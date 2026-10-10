@@ -65,8 +65,10 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   block-size: 32px;
 }
 #wconvert-admin input.wconvert-workspace__name {
-  width: 180px;
+  width: auto;
   min-width: 80px;
+  max-width: 32ch;
+  field-sizing: content;
   height: 32px;
   padding: 5px 8px;
   margin: 0;
@@ -75,8 +77,9 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   border-radius: 4px;
   background: transparent;
   box-shadow: none;
-  font-weight: 500;
-  font-size: var(--text-note);
+  font-weight: 600;
+  font-size: var(--text-body);
+  text-overflow: ellipsis;
 }
 #wconvert-admin input.wconvert-workspace__name:hover {
   border-color: var(--editor-rule);
@@ -103,15 +106,16 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   margin-inline-start: auto;
   flex: none;
 }
+/* Name and status side by side, never wrapped: the name box is as wide as the name (ADR 0136). */
 #wconvert-admin .wconvert-workspace__identity {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  flex: 0 1 260px;
-  min-inline-size: 140px;
-  gap: 2px 6px;
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  gap: 6px;
 }
-#wconvert-admin .wconvert-workspace__identity input { flex: 1; min-inline-size: 80px; width: 120px; }
+#wconvert-admin .wconvert-workspace__identity input { flex: 0 1 auto; min-inline-size: 80px; }
+#wconvert-admin .wconvert-workspace__identity .wconvert-workspace__save-state { flex: none; }
 #wconvert-admin .wconvert-workspace__save-state {
   padding: 3px 6px;
   border-radius: 4px;
@@ -199,67 +203,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   background: white;
   border: 0;
 }
-#wconvert-admin .wconvert-inspector__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 100%;
-  margin: 12px 14px 0;
-  padding: 4px 6px;
-  border: 0;
-  border-radius: 6px;
-  background: none;
-  color: var(--action);
-  font-size: var(--text-label);
-  font-weight: 500;
-  cursor: pointer;
-}
-#wconvert-admin .wconvert-inspector__back span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#wconvert-admin .wconvert-inspector__back svg {
-  flex: none;
-  width: 14px;
-  height: 14px;
-}
-#wconvert-admin .wconvert-inspector__back:hover {
-  background: var(--surface);
-}
-#wconvert-admin .wconvert-inspector__back:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 1px;
-}
-#wconvert-admin .wconvert-inspector__breadcrumbs {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 3px;
-  padding: 10px 16px 0;
-  color: var(--muted-foreground);
-}
-#wconvert-admin .wconvert-inspector__breadcrumbs span {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-#wconvert-admin .wconvert-inspector__breadcrumbs button {
-  padding: 2px 0;
-  font-size: var(--text-micro);
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#wconvert-admin .wconvert-inspector__breadcrumbs button:hover {
-  color: var(--action);
-  text-decoration-line: underline;
-}
-#wconvert-admin .wconvert-inspector__breadcrumbs svg {
-  width: 10px;
-  height: 10px;
-}
 #wconvert-admin .wconvert-inspector__heading {
   display: flex;
   gap: 10px;
@@ -285,19 +228,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   margin: 3px 0 0;
   color: var(--muted-foreground);
   font-size: var(--text-label);
-}
-#wconvert-admin .wconvert-element-icon {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--editor-rule);
-  border-radius: 6px;
-  color: var(--action);
-}
-#wconvert-admin .wconvert-element-icon svg {
-  width: 16px;
-  height: 16px;
 }
 @layer utilities {
   #wconvert-admin
@@ -342,17 +272,17 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   gap: 16px;
 }
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body label {
-  font-size: var(--text-label);
+  font-size: var(--text-note);
   font-weight: 500;
 }
 #wconvert-admin
   .wconvert-workspace
   .wconvert-inspector__body
-  input:not([type="range"], [type="checkbox"]),
+  input:not([type="range"], [type="checkbox"], [type="radio"]),
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body textarea {
-  font-size: var(--text-micro);
+  font-size: var(--text-note);
 }
-#wconvert-admin .wconvert-workspace .wconvert-inspector__body textarea {
+#wconvert-admin .wconvert-workspace .wconvert-inspector__body textarea:not(.wconvert-autogrow) {
   min-height: 92px;
   padding: 10px;
   line-height: 1.6;
@@ -363,11 +293,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 }
 #wconvert-admin .wconvert-workspace .wconvert-group {
   gap: 12px;
-}
-#wconvert-admin .wconvert-workspace .wconvert-group__name {
-  font-size: var(--text-label);
-  letter-spacing: 0.04em;
-  margin: 0;
 }
 #wconvert-admin
   .wconvert-workspace
@@ -385,23 +310,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 #wconvert-admin .wconvert-workspace .wconvert-token__exact {
   min-width: 54px;
   width: 70px;
-}
-#wconvert-admin .wconvert-style-shortcut {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  border: 1px solid var(--editor-rule);
-  border-radius: 6px;
-  text-align: start;
-}
-#wconvert-admin .wconvert-style-shortcut svg {
-  width: 14px;
-}
-#wconvert-admin .wconvert-style-advanced {
-  padding-top: 14px;
-  margin-top: 8px;
-  border-top: 1px solid var(--editor-rule);
 }
 
 #wconvert-admin .wconvert-design-settings {
@@ -684,7 +592,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 .wconvert-preview-dialog > .wconvert-canvas { min-height: 0; flex: 1; height: auto; }
 @media (max-width: 1350px) {
   #wconvert-admin input.wconvert-workspace__name {
-    width: 150px;
+    max-width: 22ch;
   }
   #wconvert-admin .wconvert-workspace__header {
     padding-inline: 12px;
@@ -899,11 +807,8 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 .wconvert-color-picker strong { font-size: var(--text-body); }
 .wconvert-color-picker p { white-space: normal; }
 .wconvert-font-popover .wconvert-fonts { width: 100%; max-height: 240px; }
-.wconvert-font-search, .wconvert-font-library { display: grid; gap: 8px; font-size: var(--text-note); }
+.wconvert-font-search { display: grid; gap: 8px; font-size: var(--text-note); }
 .wconvert-font-search input { width: 100%; min-width: 0; }
-.wconvert-font-library { padding-block: 12px; border-block: 1px solid var(--border); }
-.wconvert-font-library p { margin: 0; color: var(--muted-foreground); }
-.wconvert-font-library a { color: var(--link); text-decoration-line: underline; }
 #wconvert-admin .wconvert-workspace .wconvert-pane--layers .wconvert-pane__head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .wconvert-add-elements { width: 264px; max-width: calc(100vw - 24px); max-height: min(440px, var(--radix-dropdown-menu-content-available-height)); overflow-y: auto; }
 :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__bar label { flex: none; }
@@ -913,7 +818,6 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 #wconvert-admin .wconvert-shadow-values label { min-width: 0; display: grid; gap: 5px; }
 #wconvert-admin .wconvert-shadow-values label > span { display: flex; align-items: center; gap: 4px; }
 #wconvert-admin .wconvert-shadow-values input { min-width: 0; width: 100%; }
-#wconvert-admin .wconvert-shadow-inset { margin-block-start: 12px; }
 #wconvert-admin .wconvert-shadow-css input { width: 100%; margin-block-start: 8px; }
 
 #wconvert-admin .wconvert-sentence-editor { display: grid; gap: 8px; }
@@ -989,9 +893,7 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 .wconvert-border-preview > span:last-child { inline-size: 65%; }
 .wconvert-border-preview[data-edges='all'] { border-color: currentColor; }
 .wconvert-border-preview[data-edges='block-start'] { border-block-start-color: currentColor; }
-.wconvert-style-context { margin-block-end: 12px; font-size: var(--text-note); color: var(--muted-foreground); }
 
-.wconvert-scope > .wconvert-style-advanced { margin-block-start: 20px; }
 
 .wconvert-fields .wconvert-token__slider { inline-size: 100%; min-inline-size: 0; }
 #wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] .wconvert-token__exact { inline-size: 0; min-inline-size: 48px; }
@@ -1027,7 +929,6 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
   gap: 0;
 }
 .wconvert-choice-set--icons .wconvert-choice__label > svg { inline-size: 16px; block-size: 16px; }
-.wconvert-setting-toggle { margin: 0; }
 #wconvert-admin .wconvert-token > select { block-size: 32px; min-block-size: 32px; margin: 0; font-size: var(--text-micro); }
 
 .wconvert-token .wconvert-fit-preview { block-size: 40px; }
@@ -1111,9 +1012,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-card__select strong { font-size: var(--text-note); font-weight: 600; overflow-wrap: anywhere; }
 .wconvert-journey-card__select span { font-size: var(--text-micro); color: var(--muted-foreground); }
 .wconvert-journey-dialog__details { overflow: auto; min-block-size: 0; padding: 22px 26px; }
-.wconvert-journey-dialog__selected { display: flex; align-items: center; gap: 10px; margin-block-end: 18px; }
-.wconvert-journey-dialog__selected>span { display: grid; place-items: center; inline-size: 32px; block-size: 32px; flex: none; border-radius: 6px; background: var(--secondary); color: var(--action); }
-.wconvert-journey-dialog__selected h3 { font-size: var(--text-note); margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .wconvert-journey-dialog__fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .wconvert-journey__field { display: flex; flex-direction: column; gap: 7px; min-inline-size: 0; font-size: var(--text-note); }
 .wconvert-journey-dialog__behavior { padding: 12px 14px; margin-block: 18px; background: var(--secondary); border: 1px solid var(--border); border-radius: 5px; font-size: var(--text-note); }
@@ -1143,11 +1041,9 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-rail .wconvert-journey-card:not(:last-child)::after { content: none; }
 .wconvert-journey-pane { display: flex; flex-direction: column; min-inline-size: 0; min-block-size: 0; overflow: hidden; }
 .wconvert-journey-pane__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 17px 24px; border-block-end: 1px solid var(--border); flex: none; }
-.wconvert-journey-pane__heading .wconvert-journey-dialog__selected { margin: 0; }
 .wconvert-journey-pane__heading small { display: block; margin-block-start: 3px; font-size: var(--text-label); color: var(--muted-foreground); }
-.wconvert-journey-pane__heading .wconvert-journey-dialog__selected>div { min-inline-size: 0; flex: 1; }
 /* Reads as the screen's title until hovered or focused; the box is Tailwind's, overridden on the element. */
-#wconvert-admin .wconvert-journey-pane__heading input.wconvert-journey-pane__name { padding: 3px 6px; margin-inline-start: -7px; font-size: var(--text-note); font-weight: 600; }
+#wconvert-admin .wconvert-journey-pane__heading input.wconvert-journey-pane__name { padding: 1px 5px; margin-inline-start: -6px; font-size: var(--text-heading); font-weight: 600; }
 .wconvert-journey-pane--element { padding: 0; overflow: auto; }
 .wconvert-screen-actions { min-inline-size: 200px; }
 .wconvert-journey-pane__menu { display: grid; place-items: center; inline-size: 32px; block-size: 32px; flex: none; border: 0; border-radius: 6px; background: none; color: var(--muted-foreground); cursor: pointer; }
@@ -1155,10 +1051,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-pane__menu:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
 .wconvert-journey-pane__menu svg { inline-size: 16px; block-size: 16px; }
 .wconvert-screen-actions__reason { max-inline-size: 260px; margin: 4px 8px 6px; font-size: var(--text-micro); color: var(--muted-foreground); }
-.wconvert-screen-submits { margin: 0 0 14px; padding: 9px 12px; border-radius: var(--radius); background: var(--secondary); font-size: var(--text-note); }
-.wconvert-journey-pane__close { display: grid; place-items: center; flex: none; inline-size: 28px; block-size: 28px; border: 0; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
-.wconvert-journey-pane__close:hover { background: var(--surface); color: var(--foreground); }
-.wconvert-journey-pane__close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-journey-pane>.wconvert-journey-dialog__details { flex: 1; min-block-size: 0; padding: 20px 24px; overscroll-behavior: contain; }
 .wconvert-journey-pane>.wconvert-journey-dialog__actions-row { padding: 12px 24px; border-block-start: 1px solid var(--border); flex: none; }
 .wconvert-journey-settings { display: grid; gap: 12px; margin-block-start: 20px; padding-block-start: 20px; border-block-start: 1px solid var(--border); min-inline-size: 0; }
@@ -1177,7 +1069,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-settings__answers small { color: var(--destructive); }
 .wconvert-journey-settings__question,.wconvert-journey-settings__result { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); min-inline-size: 0; }
 .wconvert-journey-settings__result { border-block-start: 3px solid var(--action); }
-.wconvert-journey-settings__result-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
 .wconvert-journey-results { display: grid; gap: 10px; }
 .wconvert-journey-result-card { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .wconvert-journey-settings .wconvert-journey-result-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; inline-size: 100%; padding: 12px; color: var(--foreground); background: var(--card); border: 0; text-align: start; }
@@ -1188,7 +1079,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-result-summary span { grid-column: 1; font-size: var(--text-micro); line-height: 1.45; font-weight: 400; color: var(--muted-foreground); overflow-wrap: anywhere; }
 .wconvert-journey-result-card .wconvert-journey-settings__result { border: 0; border-block-start: 1px solid var(--border); border-radius: 0; background: var(--card); }
 .wconvert-journey-settings .wconvert-journey-settings__warning { padding: 10px 12px; border: 1px solid var(--border); border-inline-start: 3px solid var(--action); border-radius: var(--radius); background: var(--secondary); color: var(--foreground); }
-.wconvert-journey-settings__result-order { display: flex; gap: 16px; }
 .wconvert-journey-settings__group { display: grid; gap: 10px; margin-block-start: 20px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); min-inline-size: 0; }
 .wconvert-journey-settings__group legend { padding-inline: 5px; font-weight: 650; }
 .wconvert-journey-settings__group label { display: flex; gap: 8px; }
@@ -1207,8 +1097,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-graph-remove { max-block-size: min(90dvh, 48rem); grid-template-rows: auto minmax(0, 1fr) auto auto; }
 .wconvert-graph-remove__body { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; }
 .wconvert-graph-insert__body label { font-weight: 600; }
-.wconvert-graph-insert__check { display: flex; align-items: start; gap: 8px; line-height: 1.5; }
-.wconvert-graph-insert__check input { flex: none; margin-block-start: 3px; }
 .wconvert-graph-insert__body select { inline-size: 100%; max-inline-size: 100%; min-inline-size: 0; margin: 0; }
 .wconvert-graph-insert__body p { margin: 0; line-height: 1.5; color: var(--muted-foreground); }
 .wconvert-graph-insert__summary { padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow-wrap: anywhere; }
@@ -1279,7 +1167,7 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
   .wconvert-journey-mobile-picker select { flex: 1; min-inline-size: 0; }
   .wconvert-journey-pane { flex: 1; }
   .wconvert-journey-pane__heading { padding: 10px 18px; }
-  .wconvert-journey-pane__heading .wconvert-journey-dialog__selected>span, .wconvert-journey-pane__heading small { display: none; }
+  .wconvert-journey-pane__heading small { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -1320,7 +1208,8 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 }
 @media (max-width: 640px) {
   #wconvert-admin .wconvert-workspace__header { gap: 6px; }
-  #wconvert-admin input.wconvert-workspace__name { flex: 1; inline-size: 180px; margin: 0; }
+  #wconvert-admin input.wconvert-workspace__name { flex: 1 1 auto; margin: 0; }
+  #wconvert-admin .wconvert-workspace__identity { flex: 1 1 auto; }
   #wconvert-admin .wconvert-workspace__actions { flex-basis: 100%; justify-content: space-between; }
   #wconvert-admin .wconvert-workspace__actions > button { padding-inline: 8px; }
   #wconvert-admin .wconvert-workspace__navigation button { padding-inline: 8px; }
@@ -1867,10 +1756,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-handoff { display: grid; gap: 8px; padding-block: 16px; border-block-start: 1px solid var(--border); }
 @media(max-width: 600px) { .wconvert-graph-insert__intents,.wconvert-graph-insert__types { grid-template-columns: minmax(0, 1fr); } }
 
-.wconvert-journey-inspector-back { display: flex; align-items: center; gap: 8px; flex: none; padding: 10px 20px; border: 0; border-block-end: 1px solid var(--border); background: var(--surface); color: var(--action); font-size: var(--text-note); text-align: start; cursor: pointer; }
-.wconvert-journey-inspector-back svg { flex: none; }
-.wconvert-journey-inspector-back:focus-visible { outline: 2px solid var(--ring); outline-offset: -3px; }
-.wconvert-journey-pane__heading .wconvert-journey-dialog__selected { flex: 1; min-inline-size: 0; }
 .wconvert-journey-capture-fields { display: grid; gap: 8px; }
 .wconvert-flow-node__new-connection span { display: block; color: white; font: 12px/12px sans-serif; text-align: center; pointer-events: none; }
 /* Multi-answer rules need the inspector width; a half-width checklist obscures choices. */
@@ -1892,17 +1777,14 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-edit-tree__dots { display: flex; flex: none; }
 .wconvert-edit-tree__dots>span { inline-size: 14px; block-size: 14px; border: 1.5px solid var(--card); border-radius: 50%; box-shadow: 0 0 0 1px var(--border); }
 .wconvert-edit-tree__dots>span+span { margin-inline-start: -4px; }
-.wconvert-edit-tree .wconvert-campaign-screens__heading { padding: 4px 8px 6px; font-size: var(--text-micro); text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); }
 .wconvert-edit-tree .wconvert-campaign-screens__heading strong { font-weight: 600; }
 .wconvert-edit-tree__elements { margin: 2px 0 6px 18px; padding-inline-start: 6px; border-inline-start: 1px solid var(--border); --wconvert-gutter: 4px; overflow: clip; contain: inline-size; }
 .wconvert-edit-tree__elements .wconvert-blocks { border: 0; }
-.wconvert-edit-tree__elements .wconvert-block { border-block-start: 0; min-block-size: 30px; }
 .wconvert-edit-tree__elements .wconvert-block__grip { display: none; }
 .wconvert-edit-tree__add-element { padding: 4px 4px 2px; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__label { flex-wrap: nowrap; min-inline-size: 0; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__kind { flex: 0 1 auto; min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements :is(.wconvert-block__says, .wconvert-block__pane) { display: none; }
-.wconvert-edit-tree__add { justify-content: flex-start; inline-size: 100%; margin-block-start: 8px; border-style: dashed; color: var(--muted-foreground); }
 .wconvert-add-screen__tier { margin-inline-start: auto; padding: 0 6px; border-radius: 999px; background: var(--secondary); color: var(--action); font-size: var(--text-micro); font-weight: 600; }
 .wconvert-canvas__hint-line { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-foreground); }
 .wconvert-canvas__hint-line svg { inline-size: 14px; block-size: 14px; }
@@ -1931,8 +1813,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-campaign-canvas>.wconvert-canvas { flex: 1; min-inline-size: 0; }
 .wconvert-journey-side[data-editing='true'] .wconvert-journey-pane { border-inline-start: 1px solid var(--border); }
 .wconvert-journey-side[data-editing='true'] .wconvert-inspector__body { padding-inline: 0; }
-.wconvert-journey-settings__choice:has(.wconvert-answer-followup) { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; }
-.wconvert-answer-followup { grid-column: 2 / -1; justify-self: start; margin-block-end: 6px; }
 .wconvert-insert-condition { display: grid; gap: 8px; padding: 12px; background: var(--secondary); border-radius: 8px; }
 .wconvert-insert-condition strong { font-size: var(--text-note); font-weight: 500; }
 .wconvert-insert-condition button { justify-self: start; padding: 0; border: 0; background: none; color: var(--action); cursor: pointer; }
@@ -1980,8 +1860,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding-block: 7px; gap: 10px; }
 .wconvert-journey-dialog__header .wconvert-journey-view { align-items: center; }
 .wconvert-journey-pane__heading { align-items: center; gap: 6px; padding: 12px 20px; }
-.wconvert-journey-pane__close { inline-size: 28px; block-size: 28px; padding: 5px; }
-.wconvert-journey-pane__close svg { display: block; inline-size: 18px; block-size: 18px; stroke-width: 1.75; }
 @layer utilities {
   #wconvert-admin .wconvert-journey-find label { block-size: 32px; box-sizing: border-box; margin: 0; }
   #wconvert-admin .wconvert-journey-find input { block-size: 30px !important; min-block-size: 0 !important; padding: 0 !important; line-height: 30px; }
@@ -2011,7 +1889,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-consent { display: grid; gap: 10px; }
 .wconvert-result-products { margin-block: 12px; }
 
-.wconvert-style-detail-toggle { margin-block: 12px; text-align: start; text-decoration-line: underline; text-underline-offset: 3px; }
 .wconvert-journey-appearance-test { min-height: 0; overflow: auto; padding: 16px; }
 .wconvert-journey-appearance-test > label { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .wconvert-journey-appearance-test select { max-width: 100%; }
@@ -2047,7 +1924,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 [data-slot='dialog-content'] .wconvert-editor-help p { font-size: var(--text-micro); line-height: 1.45; }
 .wconvert-condition-settings { gap: 10px; }
 .wconvert-journey-result-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; padding-block-start: 10px; border-block-start: 1px solid var(--border); }
-.wconvert-journey-result-actions .wconvert-journey-settings__result-order { gap: 12px; }
 .wconvert-journey-settings .wconvert-journey-result-actions button { min-block-size: 30px; }
 .wconvert-journey-settings [data-destructive='true'] { border-radius: 4px; }
 @layer utilities {
@@ -2088,9 +1964,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 }
 
 /* Merchant tasks share the same compact, readable controls in Edit and Flow. */
-.wconvert-followup-order { display: grid; gap: 8px; border-block-start: 1px solid var(--border); padding-block: 12px; }
-.wconvert-followup-order p { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-followup-order > div { display: flex; flex-wrap: wrap; gap: 8px; }
 .wconvert-answer-retirement { margin-block: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
 .wconvert-answer-retirement ul { list-style: disc; padding-inline-start: 20px; margin-block: 8px; }
 .wconvert-test-diagnostics { margin-block: 8px; }
@@ -2179,17 +2052,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 }
 
 /* Recommendation setup: compact product rows and readable native controls. */
-#wconvert-admin .wconvert-recommendations { display: grid; gap: 20px; min-width: 0; }
-#wconvert-admin .wconvert-recommendations > section,
-#wconvert-admin .wconvert-recommendations__when { display: grid; gap: 10px; min-width: 0; margin: 0; padding: 0; border: 0; }
-#wconvert-admin .wconvert-recommendations > section + section { border-top: 1px solid var(--border); padding-top: 18px; }
-#wconvert-admin .wconvert-recommendations h4,
-#wconvert-admin .wconvert-recommendations legend { margin: 0; padding: 0; font-size: var(--text-body); font-weight: 600; line-height: 1.5; }
-#wconvert-admin .wconvert-recommendations legend { margin-bottom: 10px; }
-#wconvert-admin .wconvert-recommendations__help { margin: 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
-#wconvert-admin .wconvert-recommendations__source { display: block; min-width: 0; }
-#wconvert-admin .wconvert-inspector .wconvert-recommendations .wconvert-recommendations__source select { display: block; width: 100%; max-width: 100%; height: var(--control-height-sm); min-height: var(--control-height-sm); margin: 0; padding: 0 30px 0 10px; font-size: var(--text-note); line-height: 1.5; border: 1px solid var(--input); border-radius: 6px; background-color: var(--background); color: var(--foreground); }
-#wconvert-admin .wconvert-recommendations__placement { width: 100%; justify-content: space-between; white-space: normal; height: auto; min-height: 36px; padding: 8px 10px; }
+#wconvert-admin .wconvert-recommendations { display: grid; min-width: 0; }
 :is(#wconvert-admin, .wconvert-sample-dialog) .wconvert-product-picker { display: grid; gap: 10px; min-width: 0; }
 :is(#wconvert-admin, .wconvert-sample-dialog) .wconvert-product-picker :is(ol, ul) { list-style: none; margin: 0; padding: 0; }
 :is(#wconvert-admin, .wconvert-sample-dialog) .wconvert-product-picker__selected { border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
@@ -2229,22 +2092,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
  * question's paths, and the header's goal line and Preview menu.
  * ------------------------------------------------------------------------- */
 .wconvert-journey-pane--look { overflow: auto; padding: 14px 18px; }
-.wconvert-look-head { display: grid; gap: 4px; margin-block-end: 12px; }
-.wconvert-look-head h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
-.wconvert-look-section { display: grid; gap: 8px; margin-block-start: 16px; padding-block-start: 14px; border-block-start: 1px solid var(--border); }
-.wconvert-look-section h4 { margin: 0; font-size: var(--text-note); font-weight: 600; }
-.wconvert-look-fact { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-look-fact strong { color: var(--foreground); font-weight: 600; }
-.wconvert-look-link, .wconvert-screen-then__link, .wconvert-screen-fact button { padding: 0; border: 0; background: none; color: var(--action); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.wconvert-screen-then, .wconvert-screen-fact { display: grid; gap: 4px; margin-block-end: 14px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
-.wconvert-screen-then__label, .wconvert-screen-fact__label { font-size: var(--text-micro); letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
-.wconvert-screen-then__value { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: var(--text-note); }
-.wconvert-screen-then__value svg { inline-size: 14px; block-size: 14px; color: var(--muted-foreground); }
-.wconvert-screen-then__value select { flex: 1; min-inline-size: 0; }
-.wconvert-screen-then__value small { flex-basis: 100%; color: var(--muted-foreground); font-size: var(--text-micro); }
-.wconvert-screen-fact { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
-.wconvert-screen-fact__label { grid-column: 1 / -1; }
-.wconvert-screen-fact__value { font-size: var(--text-note); }
 .wconvert-screen-issues { display: grid; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
 .wconvert-screen-issues button { display: flex; gap: 8px; align-items: flex-start; inline-size: 100%; padding: 9px 12px; border: 1px solid var(--warning, #f0d58e); border-radius: 6px; background: var(--warning-surface, #fdecc8); color: var(--foreground); font-size: var(--text-note); text-align: start; cursor: pointer; }
 .wconvert-screen-issues svg { flex: none; inline-size: 14px; block-size: 14px; margin-block-start: 2px; }
@@ -2259,11 +2106,8 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-question-next { display: grid; gap: 10px; margin-block-start: 16px; padding-block-start: 14px; border-block-start: 1px solid var(--border); }
 .wconvert-question-next h4 { margin: 0; font-size: var(--text-note); font-weight: 600; }
 .wconvert-screen-paths { margin-block-start: 12px; }
-.wconvert-workspace__goal { padding: 0; border: 0; background: none; color: var(--muted-foreground); font-size: var(--text-micro); text-align: start; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
-.wconvert-workspace__goal:hover { color: var(--action); }
 .wconvert-preview-menu { min-inline-size: 180px; }
 .wconvert-add-screen { min-inline-size: 220px; }
-#wconvert-admin .wconvert-workspace__identity .wconvert-workspace__goal { order: 3; flex-basis: 100%; }
 /* The element panel scrolls under its own header, never through it. */
 #wconvert-admin .wconvert-journey-pane--element .wconvert-inspector__head { position: sticky; inset-block-start: 0; z-index: 2; flex: none; background: var(--card); }
 #wconvert-admin .wconvert-inspector__head { flex-shrink: 0; }
@@ -2290,3 +2134,387 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-map__note { position: absolute; inset-block-start: 12px; inset-inline-start: 50%; z-index: 6; display: flex; align-items: center; gap: 10px; margin: 0; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08)); font-size: var(--text-note); transform: translateX(-50%); }
 .wconvert-journey-map__note:dir(rtl) { transform: translateX(50%); }
 .wconvert-journey-map__note button { padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font-size: var(--text-micro); cursor: pointer; }
+
+/* ===========================================================================
+   One panel grammar (ADR 0136): header, section, fact row, field heading,
+   hint. Look, screen and element panels draw only these. Spacing is three
+   numbers: 16px around a section, 12px between its fields, 6px from a label
+   to its control.
+   =========================================================================== */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header {
+  display: grid;
+  gap: 6px;
+  padding: 12px 16px;
+  border-block-end: 1px solid var(--border);
+  background: var(--card);
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__back {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--action);
+  font-size: var(--text-note);
+  font-weight: 500;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__back svg { inline-size: 14px; block-size: 14px; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__back:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.wconvert-panel-header__row { display: flex; align-items: center; gap: 10px; min-inline-size: 0; }
+.wconvert-panel-header__icon { display: grid; flex: none; place-items: center; inline-size: 32px; block-size: 32px; border-radius: var(--radius); background: var(--surface); color: var(--foreground); }
+.wconvert-panel-header__icon svg { inline-size: 16px; block-size: 16px; }
+.wconvert-panel-header__text { display: grid; flex: 1; min-inline-size: 0; line-height: 1.3; }
+.wconvert-panel-header__title { display: flex; align-items: center; gap: 2px; min-inline-size: 0; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__title :is(h3, h4) {
+  overflow: hidden;
+  margin: 0;
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__title input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  block-size: 28px;
+  min-block-size: 28px;
+  margin: 0;
+  margin-inline-start: -6px;
+  padding: 1px 5px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  box-shadow: none;
+  font-size: var(--text-heading);
+  font-weight: 600;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__title input:hover { border-color: var(--border); }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__title input:focus { border-color: var(--input); outline: 2px solid var(--ring); outline-offset: 0; }
+.wconvert-panel-header__caption { overflow: hidden; color: var(--muted-foreground); font-size: var(--text-note); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-panel-header__actions { display: flex; flex: none; align-items: center; gap: 2px; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__actions > button,
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__actions > * > button {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  min-block-size: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__actions button:hover { background: var(--accent); color: var(--foreground); }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__actions button[aria-pressed='false'] { color: var(--muted-foreground); }
+.wconvert-panel-header__actions svg { inline-size: 16px; block-size: 16px; }
+
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section {
+  display: grid;
+  gap: 12px;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section + .wconvert-panel-section { border-block-start: 1px solid var(--border); }
+.wconvert-panel-section__head { display: flex; align-items: center; gap: 2px; min-block-size: 24px; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section__head h4 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.wconvert-panel-section__action { margin-inline-start: auto; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section__action > button,
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-link {
+  min-block-size: 0;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--action);
+  font-size: var(--text-note);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-link { justify-self: start; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-link:disabled { color: var(--muted-foreground); text-decoration: none; cursor: not-allowed; }
+
+.wconvert-facts { display: grid; min-inline-size: 0; }
+.wconvert-fact {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 36px;
+  padding-block: 4px;
+}
+.wconvert-fact + .wconvert-fact { border-block-start: 1px solid var(--surface); }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__label { color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__value { min-inline-size: 0; color: var(--foreground); font-size: var(--text-body); overflow-wrap: anywhere; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__value select { inline-size: 100%; min-inline-size: 0; margin: 0; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__action {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--action);
+  font-size: var(--text-note);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Field: label (13/500), 6px, control, one 12px hint. */
+:is(#wconvert-admin, [data-slot='dialog-content']) :is(.wconvert-panel-field, .wconvert-panel-section .wconvert-token, .wconvert-panel-section .wconvert-slot__key) {
+  display: grid;
+  gap: 6px;
+  min-inline-size: 0;
+  margin: 0;
+  color: var(--foreground);
+  font-size: var(--text-note);
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-field-heading { display: flex; align-items: center; justify-content: flex-start; gap: 2px; min-block-size: 20px; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-field-heading > :is(label, span:first-child) { color: var(--foreground); font-size: var(--text-note); font-weight: 500; }
+.wconvert-field-heading__actions { display: inline-flex; align-items: center; gap: 2px; margin-inline-start: auto; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-field-heading .wconvert-info-trigger,
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section__head .wconvert-info-trigger,
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header__title .wconvert-info-trigger {
+  inline-size: 24px;
+  block-size: 24px;
+  min-block-size: 24px;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) :is(.wconvert-panel-hint, .wconvert-panel-section .description) {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-micro);
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.wconvert-panel-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+/* Checkboxes: one CheckRow everywhere, the canonical row of ADR 0131 §7 — 18px box, 8px from its words. */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--foreground);
+  font-size: var(--text-note);
+  font-weight: 400;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-check input { flex: none; inline-size: 18px; block-size: 18px; min-block-size: 18px; margin: 0; }
+
+/* Disclosures inside a panel: a title of at most three words, its value as the summary. */
+.wconvert-panel-section .wconvert-disclosure--inline { border-block-start: 1px solid var(--surface); }
+.wconvert-panel-section .wconvert-disclosure--inline:first-child { border-block-start: 0; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-disclosure--inline > summary { min-block-size: 36px; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-disclosure--inline .wconvert-disclosure__title { display: flex; flex: 1; align-items: baseline; gap: 8px; min-inline-size: 0; font-size: var(--text-body); font-weight: 500; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-disclosure--inline .wconvert-disclosure__title small { flex: 1; overflow: hidden; margin: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; text-align: end; text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-panel-section .wconvert-disclosure--inline > .wconvert-disclosure__body { display: grid; gap: 12px; padding-block: 4px 12px; }
+
+/* The panel's foot: Reset, Copy, Paste on the start side; Advanced at the end. */
+.wconvert-panel-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 10px 12px; border-block-start: 1px solid var(--border); background: var(--card); }
+.wconvert-panel-foot__spacer { flex: 1; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-foot .wconvert-style-detail-toggle { margin: 0; }
+
+/* ---------------------------------------------------------------------------
+   The Edit tree in the panel grammar (ADR 0136): a one-line Look row, a
+   sentence-case "Screens", screen rows 44px, element rows 32px, and one quiet
+   "+" row for Add element and Add screen alike.
+   --------------------------------------------------------------------------- */
+#wconvert-admin .wconvert-edit-tree__look { min-block-size: 40px; margin-block-end: 12px; padding-block: 4px; gap: 8px; }
+#wconvert-admin .wconvert-edit-tree__look > span:last-child { display: flex; align-items: baseline; gap: 6px; min-inline-size: 0; }
+#wconvert-admin .wconvert-edit-tree__look small { overflow: hidden; font-size: var(--text-note); text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__heading { padding: 2px 8px 4px; color: var(--muted-foreground); font-size: var(--text-note); letter-spacing: 0; text-transform: none; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__heading span { font-variant-numeric: tabular-nums; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__row > button:first-child { align-items: center; min-block-size: 44px; padding-block: 4px; padding-inline: 8px; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__row > button:first-child > svg { margin-block-start: 0; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__row > button:first-child strong { overflow: hidden; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__row > button:first-child small { overflow: hidden; margin-block-start: 0; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-edit-tree .wconvert-campaign-screens__row > button:first-child > span { display: grid; flex: 1; }
+#wconvert-admin .wconvert-edit-tree__elements .wconvert-block { border-block-start: 0; min-block-size: 32px; }
+#wconvert-admin .wconvert-block__counted { display: inline-flex; flex-shrink: 0; align-items: center; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-block__counted svg { inline-size: 13px; block-size: 13px; }
+#wconvert-admin .wconvert-workspace .wconvert-tree-add {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: var(--radius);
+  cursor: pointer;
+  gap: 6px;
+  inline-size: 100%;
+  block-size: 32px;
+  min-block-size: 32px;
+  margin: 0;
+  padding-inline: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--action);
+  font-size: var(--text-note);
+  font-weight: 500;
+}
+#wconvert-admin .wconvert-workspace .wconvert-tree-add:hover { background: var(--accent); }
+#wconvert-admin .wconvert-workspace .wconvert-tree-add svg { inline-size: 14px; block-size: 14px; }
+#wconvert-admin .wconvert-workspace .wconvert-edit-tree__add.wconvert-tree-add { margin-block-start: 6px; padding-inline: 8px; }
+
+/* ---------------------------------------------------------------------------
+   Panel grammar: the pieces individual panels share (ADR 0136).
+   --------------------------------------------------------------------------- */
+/* Panels pad their own sections; their containers add nothing. */
+#wconvert-admin .wconvert-journey-pane--look { padding: 0; }
+#wconvert-admin .wconvert-journey-pane > .wconvert-journey-dialog__details,
+#wconvert-admin .wconvert-journey-side[data-editing='true'] .wconvert-journey-pane > .wconvert-journey-dialog__details { padding: 0; }
+#wconvert-admin .wconvert-journey-pane--element .wconvert-inspector__body,
+#wconvert-admin .wconvert-workspace .wconvert-journey-pane--element .wconvert-inspector__body { padding: 0; }
+#wconvert-admin .wconvert-inspector__body > * + * { margin-block-start: 0; }
+#wconvert-admin .wconvert-inspector__body > [data-slot='tabs-content'] { gap: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-inspector__head { display: block; min-block-size: 0; padding: 0; border: 0; background: var(--card); }
+#wconvert-admin .wconvert-inspector__head .wconvert-inspector__halves { display: grid; grid-template-columns: 1fr 1fr; inline-size: 100%; margin: 0; border-block-end: 1px solid var(--border); }
+/* A route list, a question's settings or a result list inside a section is not a section of its own. */
+#wconvert-admin .wconvert-panel-section .wconvert-journey-settings:not(.wconvert-panel-section) { margin: 0; padding: 0; border: 0; }
+#wconvert-admin .wconvert-panel-section.wconvert-journey-settings { margin: 0; }
+
+/* A warning that stays beside what it is about: one amber line, its fix at the end. */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-warn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 6px 6px 10px;
+  border-radius: var(--radius);
+  background: var(--warning-surface);
+  color: var(--foreground);
+  font-size: var(--text-note);
+  line-height: 1.4;
+}
+.wconvert-panel-warn > svg { flex: none; inline-size: 15px; block-size: 15px; color: var(--warning); }
+.wconvert-panel-warn > span { flex: 1; min-inline-size: 0; }
+.wconvert-panel-warn > button { flex: none; }
+.wconvert-panel-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.wconvert-panel-radios { display: grid; gap: 8px; }
+
+/* The Style tab's device row and readability line. */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-style-device {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-block-end: 1px solid var(--border);
+  font-size: var(--text-note);
+}
+.wconvert-style-device > svg { flex: none; inline-size: 15px; block-size: 15px; }
+.wconvert-style-device > span { overflow: hidden; flex: 1; min-inline-size: 0; color: var(--muted-foreground); text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-scope__contrast { display: grid; gap: 6px; margin: 0; padding: 16px 16px 0; list-style: none; }
+#wconvert-admin .wconvert-scope__contrast > li { display: flex; margin: 0; border: 0; }
+#wconvert-admin .wconvert-scope > .wconvert-panel-section:first-of-type { border-block-start: 0; }
+#wconvert-admin .wconvert-scope .wconvert-scope__from { margin: 4px 0 0; font-size: var(--text-micro); }
+
+/* Swatches: the color's name in the body font; its code only under Advanced. */
+#wconvert-admin .wconvert-swatch { min-block-size: 36px; padding: 5px 8px; border-color: var(--border); gap: 8px; }
+#wconvert-admin .wconvert-swatch__chip { inline-size: 22px; block-size: 22px; border-radius: 5px; }
+#wconvert-admin .wconvert-swatch__name { color: var(--foreground); font-size: var(--text-micro); font-weight: 500; line-height: 1.3; }
+#wconvert-admin .wconvert-swatch__value { color: var(--muted-foreground); font-family: inherit; font-size: var(--text-micro); line-height: 1.3; }
+#wconvert-admin .wconvert-swatch__value[data-code] { font-family: var(--font-mono); }
+.wconvert-color-picker__design { display: grid; gap: 6px; }
+.wconvert-color-picker__design > span { color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; }
+.wconvert-color-picker__design > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.wconvert-color-picker__dot { inline-size: 26px; block-size: 26px; padding: 0; border: 0; border-radius: 50%; background: var(--wconvert-chip); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .18); cursor: pointer; }
+.wconvert-color-picker__dot[aria-pressed='true'] { box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--action); }
+.wconvert-color-picker__dot:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Choice sets as buttons in one field-height row: pressed is ice (ADR 0136). */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-choice-set { gap: 2px; padding: 2px; border-color: var(--input); background: var(--card); }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-choice > input:checked + .wconvert-choice__label { border-color: transparent; background: var(--secondary); color: var(--secondary-foreground, var(--action)); font-weight: 600; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-choice__label { min-block-size: 28px; font-size: var(--text-note); }
+.wconvert-choice-set--fill { display: flex; inline-size: 100%; }
+.wconvert-choice-set--fill > .wconvert-choice { flex: 1; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-choice-set--fill .wconvert-choice__label { justify-content: center; inline-size: 100%; }
+
+/* Shadows, drawn. */
+.wconvert-shadow-choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; }
+.wconvert-shadow-choice { position: relative; margin: 0; cursor: pointer; }
+.wconvert-shadow-choice__card { display: grid; justify-items: center; gap: 6px; padding: 10px 4px 6px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--foreground); font-size: var(--text-micro); font-weight: 400; text-align: center; }
+.wconvert-shadow-choice__card > span { inline-size: 32px; block-size: 20px; border-radius: 3px; background: var(--card); }
+.wconvert-shadow-choice > input:checked + .wconvert-shadow-choice__card { border-color: var(--action); background: var(--secondary); box-shadow: inset 0 0 0 1px var(--action); }
+.wconvert-shadow-choice > input:focus-visible + .wconvert-shadow-choice__card { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* A picture is its own control; the address is a way in. */
+#wconvert-admin .wconvert-workspace .wconvert-slot__media { display: grid; gap: 8px; }
+#wconvert-admin .wconvert-workspace .wconvert-media-preview { display: block; inline-size: 100%; max-block-size: 140px; object-fit: cover; border: 1px solid var(--border); border-radius: var(--radius); }
+.wconvert-media-empty { display: grid; place-items: center; min-block-size: 96px; border: 1px dashed var(--input); border-radius: var(--radius); background: var(--surface); }
+.wconvert-media-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-media-actions__end { margin-inline-start: auto; }
+.wconvert-media-actions:empty { display: none; }
+
+/* Gradient: a bar to open, an editor under it. */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-gradient-trigger { display: flex; align-items: center; gap: 10px; inline-size: 100%; min-block-size: 36px; padding: 4px 10px 4px 4px; border: 1px solid var(--input); border-radius: var(--radius); background: var(--card); color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
+.wconvert-gradient-trigger__bar { flex: none; inline-size: 56px; block-size: 26px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .1); }
+.wconvert-gradient-editor { display: grid; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.wconvert-gradient-stop { display: grid; gap: 6px; }
+.wconvert-gradient-stop__row { display: flex; align-items: center; gap: 8px; }
+.wconvert-gradient-stop__at { display: flex; flex: 1; align-items: center; gap: 8px; min-inline-size: 0; font-size: var(--text-note); }
+
+/* Text boxes as tall as their words. */
+:is(#wconvert-admin, [data-slot='dialog-content']) textarea.wconvert-autogrow { min-block-size: 36px; overflow: hidden; resize: none; field-sizing: content; }
+#wconvert-admin .wconvert-sentence-box textarea.wconvert-autogrow { border: 0; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-sentence-preview { margin: 0; padding: 0; border: 0; background: none; color: var(--muted-foreground); font-size: var(--text-micro); line-height: 1.45; }
+.wconvert-sentence-toolbar__end { margin-inline-start: auto; }
+
+/* The form's fields: one bordered list, a row per field. */
+#wconvert-admin .wconvert-screen-form .wconvert-journey-capture-fields { gap: 0; margin: 0; border: 1px solid var(--border); border-radius: var(--radius); }
+#wconvert-admin .wconvert-screen-form .wconvert-journey-capture-field { min-block-size: 40px; padding: 0 10px; border: 0; border-radius: 0; }
+#wconvert-admin .wconvert-screen-form .wconvert-journey-capture-field + .wconvert-journey-capture-field { border-block-start: 1px solid var(--border); }
+#wconvert-admin .wconvert-screen-form .wconvert-journey-capture-field .wconvert-check { align-items: center; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-screen-form .wconvert-journey-capture-field .wconvert-check input { margin: 0; }
+/* "Shown if" sits in the facts as a row, not a grey card. */
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility { margin: 0; padding: 0; border: 0; border-block-start: 1px solid var(--surface); border-radius: 0; background: none; }
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility > summary { min-block-size: 36px; }
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title { display: flex; flex: 1; gap: 10px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title small { overflow: hidden; flex: 1; margin: 0; color: var(--foreground); font-size: var(--text-body); text-overflow: ellipsis; white-space: nowrap; }
+#wconvert-admin .wconvert-screen-facts .wconvert-facts:empty { display: none; }
+#wconvert-admin .wconvert-screen-facts:not(:has(.wconvert-fact, .wconvert-journey-visibility)) { display: none; }
+
+/* Choices: number, words, ⋯; a follow-up as a tag under its row. */
+#wconvert-admin .wconvert-journey-pane .wconvert-journey-settings__choice { grid-template-columns: 18px minmax(0, 1fr) 32px; gap: 4px 6px; margin: 0; }
+#wconvert-admin .wconvert-journey-settings__choice-followups { display: flex; flex-wrap: wrap; grid-column: 2 / -1; align-items: center; gap: 6px; color: var(--muted-foreground); font-size: var(--text-micro); }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-tag { padding: 1px 6px; border: 0; border-radius: 4px; background: var(--surface); color: var(--foreground); font-size: var(--text-micro); cursor: pointer; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-choice-menu { display: inline-grid; place-items: center; inline-size: 32px; block-size: 32px; min-block-size: 32px; padding: 0; border: 0; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-choice-menu:hover { background: var(--accent); color: var(--foreground); }
+.wconvert-choice-menu svg { inline-size: 16px; block-size: 16px; }
+.wconvert-menu-count { margin-inline-start: auto; padding-inline-start: 12px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+.wconvert-journey-result-actions { display: flex; justify-content: flex-end; }
+
+/* Advanced: a pill at the panel's foot, ice while on. */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-style-detail-toggle { block-size: 28px; min-block-size: 28px; padding-inline: 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--foreground); font-size: var(--text-note); text-decoration: none; }
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-style-detail-toggle[aria-pressed='true'] { border-color: #b7d6de; background: var(--secondary); color: var(--secondary-foreground, var(--action)); font-weight: 600; }
+
+/* Fixes found comparing the build with the prototype. */
+:is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-section .wconvert-disclosure.wconvert-disclosure--inline > summary { grid-template-columns: minmax(0, 1fr) 16px; justify-content: stretch; gap: 8px; min-block-size: 36px; padding-block: 4px; }
+#wconvert-admin .wconvert-scope__contrast { background: none; color: var(--foreground); border-radius: 0; }
+#wconvert-admin .wconvert-scope__contrast > li.wconvert-panel-warn { padding: 4px 4px 4px 10px; font-size: var(--text-note); line-height: 1.4; letter-spacing: 0; }
+#wconvert-admin .wconvert-panel-section .wconvert-field-heading { min-block-size: 24px; }
+#wconvert-admin .wconvert-panel-section .wconvert-token .wconvert-font,
+#wconvert-admin .wconvert-panel-section .wconvert-token > select { block-size: 36px; min-block-size: 36px; font-size: var(--text-note); }
+#wconvert-admin .wconvert-scope .wconvert-fields > .wconvert-fields__item[data-compact] { grid-column: 1 / -1; }
+
+/* A check's hint is a panel hint: 12px (ADR 0136). */
+#wconvert-admin .wconvert-panel-section .wconvert-check span > span { font-size: var(--text-micro); line-height: 1.4; }
+.wconvert-panel-actions { align-items: center; }

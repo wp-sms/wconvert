@@ -63,7 +63,7 @@ it('requires manual review for mixed conditions rather than broadening a result'
 it('stages result creation without inventing an answer rule', () => {
   const change = vi.fn();
   render(<ResultSettings tree={quiz} step={quiz.steps.findIndex(step => step.kind === 'result')} onChange={change} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Add matching result' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Add result' }));
   const modal = screen.getByRole('dialog');
   expect(within(modal).getByRole('button', { name: 'Add result' })).toHaveAttribute('aria-disabled', 'true');
   fireEvent.change(within(modal).getByLabelText('Result heading'), { target: { value: 'French press favourite' } });

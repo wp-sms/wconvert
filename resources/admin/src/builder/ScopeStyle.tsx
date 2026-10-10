@@ -1,7 +1,8 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Disclosure } from '../shell/Disclosure';
 import { Button } from '../components/ui/button';
-import { ClipboardCopy, ClipboardPaste, RotateCcw } from 'lucide-react';
+import { ClipboardCopy, ClipboardPaste, Monitor, RotateCcw, Smartphone, TriangleAlert } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { PanelHint, PanelSection } from './PanelSection';
 import { PAIR_READERS, READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
 import { useAdvanced } from './advanced';
 import { nodesOf } from './structure/tree';
@@ -17,7 +18,6 @@ import {
   type WidthBag,
 } from './panel';
 import { styleGroups, inheritedStyle } from './styleTokens';
-import { LEAVES } from './panel';
 import { REFERABLE } from '@renderer/render';
 import { isColor } from './themes';
 import { Description } from '../shell/Description';
@@ -35,6 +35,9 @@ export function ScopeStyle({
   copied,
   onCopy,
   width,
+  onWidth,
+  lead,
+  footerEnd,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -51,6 +54,12 @@ export function ScopeStyle({
   onCopy: (tokens: Tokens | null) => void;
 
   width: WidthBag;
+  /** Switch the canvas between desktop and mobile: the device row's link. */
+  onWidth?: (width: WidthBag) => void;
+  /** The element's own looks (Size, Heading level), drawn first under their own labels (ADR 0136). */
+  lead?: ReactNode;
+  /** Advanced, at the end of the footer row. */
+  footerEnd?: ReactNode;
 }) {
   const advanced = useAdvanced();
   const chain = path === null ? [] : scopeChainOf(template.tree, path);
@@ -70,28 +79,34 @@ export function ScopeStyle({
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
   const own = bagOf(here, width);
 
+  const mobile = width === 'narrow';
+  const pasteSaid = copied === null ? __('Paste styles', 'wconvert')
+    : sprintf(/* translators: %d: how many style settings were copied. */ _n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length);
   return (
     <div className="wconvert-scope">
-      <Disclosure variant="inline" className="wconvert-style-context"
-        title={width === 'narrow' ? __('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert') : __('Editing desktop', 'wconvert')}
-        summary={mobileOverrides.length > 0 ? sprintf(_n('%d mobile setting', '%d mobile settings', mobileOverrides.length, 'wconvert'), mobileOverrides.length) : undefined}>
-        <Description>
-          {sprintf(
-            __('Appearance for %s. Unchanged values follow the surrounding design.', 'wconvert'),
-            nameOf(LEAVES[here.type] ? labels.nodes : labels.layouts, here.type),
-          )}
-        </Description>
-        <p className="m-0 mt-1">{mobileOverrides.length === 0
-          ? __('No mobile overrides on this element. It follows the surrounding design.', 'wconvert')
-          : sprintf(__('Mobile settings: %s', 'wconvert'), mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))}</p>
-      </Disclosure>
+      {/*
+        **One line for the device being edited** (ADR 0136): which one, what
+        differs on mobile, and the way to the other. It was a disclosure whose
+        title was a sentence.
+      */}
+      <div className="wconvert-style-device" role="status">
+        {mobile ? <Smartphone aria-hidden="true" /> : <Monitor aria-hidden="true" />}
+        <strong>{mobile ? __('Mobile', 'wconvert') : __('Desktop', 'wconvert')}</strong>
+        <span>{mobile
+          ? __('Follows desktop unless changed', 'wconvert')
+          : mobileOverrides.length > 0
+            ? sprintf(/* translators: 1: how many settings differ on mobile. 2: their names, e.g. “Padding, Text size”. */ _n('%1$d mobile change: %2$s', '%1$d mobile changes: %2$s', mobileOverrides.length, 'wconvert'),
+              mobileOverrides.length, mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))
+            : __('No mobile changes', 'wconvert')}</span>
+        {onWidth && <button type="button" className="wconvert-panel-link" onClick={() => onWidth(mobile ? 'tokens' : 'narrow')}>{mobile ? __('Edit desktop', 'wconvert') : __('Edit mobile', 'wconvert')}</button>}
+      </div>
 
       <ScopeContrast chain={chain} template={template} labels={labels} width={width} onFix={(name, value) => write(name)(value)} />
 
-      {styleGroups(template, path, width).map((group) => ({ ...group, tokens: group.tokens.filter((token) => advanced || !ADVANCED_ONLY.includes(token.name)) })).filter((group) => group.tokens.length > 0).map((group) => (
-          <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
-            <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
+      {lead}
 
+      {styleGroups(template, path, width).map((group) => ({ ...group, tokens: group.tokens.filter((token) => advanced || !ADVANCED_ONLY.includes(token.name)) })).filter((group) => group.tokens.length > 0).map((group) => (
+          <PanelSection key={group.id} title={groupName(group.id)} className="wconvert-group">
             <div className={group.id === 'color' ? 'wconvert-palette' : 'wconvert-fields'}>
               {group.tokens.map((token) => {
                 const from = source(token.name);
@@ -117,7 +132,7 @@ export function ScopeStyle({
                       onChange={write(token.name, styleCoalesce(here.path, width, token.name))}
                       resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
                     />
-                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-action">{__('Different on mobile', 'wconvert')}</p>}
+                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <PanelHint className="text-action">{__('Different on mobile', 'wconvert')}</PanelHint>}
                     <SourceNote
                       from={from}
                       token={token.name}
@@ -129,50 +144,35 @@ export function ScopeStyle({
                 );
               })}
             </div>
-          </section>
+          </PanelSection>
         ))}
-      {/* Everything this element sets for the device being edited goes, so it follows the design again. */}
-      <Button type="button" variant="ghost" size="xs" className="wconvert-scope__reset" disabled={Object.keys(own).length === 0}
-        onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, width) })}>
-        <RotateCcw aria-hidden="true" />
-        {width === 'narrow' ? __('Reset this element on mobile', 'wconvert') : __('Reset this element', 'wconvert')}
-      </Button>
-      <Disclosure variant="inline" className="wconvert-style-advanced" title={__('Copy or paste styles', 'wconvert')}>
-        <div className="wconvert-scope__clipboard">
-          <Button
-            type="button"
-            variant="ghost"
-            size="xs"
-            disabled={Object.keys(own).length === 0}
-            onClick={() => onCopy(own)}
-          >
-            <ClipboardCopy aria-hidden="true" />
-            {__('Copy this look', 'wconvert')}
-          </Button>
-
-          {copied !== null && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="xs"
-              onClick={() =>
-                onChange({
-                  ...template,
-                  tree: withScopeBag(template.tree, here.path, copied, width),
-                })
-              }
-            >
-              <ClipboardPaste aria-hidden="true" />
-              {sprintf(_n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length)}
-            </Button>
-          )}
-        </div>
-      </Disclosure>
+      {/*
+        **The footer row** (ADR 0136): Reset, Copy and Paste for this element,
+        then Advanced. Copy and paste were a disclosure of their own.
+      */}
+      <div className="wconvert-panel-foot">
+        {/* Everything this element sets for the device being edited goes, so it follows the design again. */}
+        <Button type="button" variant="ghost" size="xs" className="wconvert-scope__reset" disabled={Object.keys(own).length === 0}
+          onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, width) })}>
+          <RotateCcw aria-hidden="true" />
+          {mobile ? __('Reset on mobile', 'wconvert') : __('Reset', 'wconvert')}
+        </Button>
+        <Button type="button" variant="ghost" size="icon-xs" disabled={Object.keys(own).length === 0}
+          aria-label={__('Copy these styles', 'wconvert')} title={__('Copy these styles', 'wconvert')} onClick={() => onCopy(own)}>
+          <ClipboardCopy aria-hidden="true" />
+        </Button>
+        <Button type="button" variant="ghost" size="icon-xs" disabled={copied === null}
+          aria-label={pasteSaid} title={pasteSaid}
+          onClick={() => copied !== null && onChange({ ...template, tree: withScopeBag(template.tree, here.path, copied, width) })}>
+          <ClipboardPaste aria-hidden="true" />
+        </Button>
+        <span className="wconvert-panel-foot__spacer" />
+        {footerEnd}
+      </div>
     </div>
   );
 }
 
-/** The history key for one element's own value of one token, at one width. */
 export const styleCoalesce = (path: Path, width: WidthBag, name: string) => `style:${path.join('.')}:${width}:${name}`;
 
 /** Exact type sizes: the element's own Size choice is the plain control (ADR 0135). */
@@ -324,11 +324,11 @@ function ScopeContrast({
         /* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */
         const named = sprintf(__('%1$s on %2$s', 'wconvert'), nameOf(labels.tokens, fg), nameOf(labels.tokens, bg));
 
+        // Verdict and Fix on one line (ADR 0136); the ratio is Advanced's.
         return (
-          <li key={`${fg}/${bg}`}>
-            <span><strong>{named}</strong> {advanced && verdict.ratio !== null
-              ? sprintf(/* translators: 1: a readability verdict. 2: its contrast ratio, e.g. “4.4”. */ __('%1$s (%2$s:1)', 'wconvert'), verdict.said, verdict.ratio)
-              : verdict.said}</span>
+          <li key={`${fg}/${bg}`} className="wconvert-panel-warn">
+            <TriangleAlert aria-hidden="true" />
+            <span title={verdict.said}>{sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), named)}{advanced && verdict.ratio !== null ? ` (${sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), verdict.ratio)})` : ''}</span>
             <Button type="button" variant="outline" size="xs" aria-label={sprintf(__('Fix %s', 'wconvert'), named)}
               onClick={() => onFix(fg, readableFix(value, bg))}>
               {__('Fix', 'wconvert')}

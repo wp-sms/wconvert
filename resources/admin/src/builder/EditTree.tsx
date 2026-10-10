@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { CircleHelp, FileText, Flag, GitBranch, Mail, Sparkles, TriangleAlert } from 'lucide-react';
+import { CircleHelp, FileText, Flag, GitBranch, Mail, Sparkles, TriangleAlert, type LucideIcon } from 'lucide-react';
 import { Disclosure } from '../shell/Disclosure';
 import type { Template, TemplateTree } from '@renderer/types';
 import { graphDisplayOrder } from './structure/graph';
@@ -10,6 +10,14 @@ import { conditionText } from './structure/conditionText';
 import { walkNodes, unreachableScreenIds } from './structure/journey';
 import { issuesByScreen, type CampaignIssue } from './readiness/campaignIssues';
 import { resolvedToken } from './panel';
+import { displayTypeLabel } from '../displayTypes';
+
+/** A screen's kind as its icon, the same in the tree row and the screen panel's head (ADR 0136). */
+export function screenIconOf(screen: TemplateTree['steps'][number]): LucideIcon {
+  const nodes = walkNodes(screen.content);
+  return screen.kind === 'result' ? Sparkles : screen.kind === 'acknowledgement' ? Flag
+    : nodes.some(node => node.type === 'field') ? Mail : nodes.some(node => node.type === 'question') ? CircleHelp : FileText;
+}
 
 /** The Look row's dots: background, text and button, as the design resolves them. */
 export const lookColors = (template: Template): readonly string[] =>
@@ -24,10 +32,10 @@ export function formatWordOf(displayType: string): string {
   return words[displayType] ?? __('design', 'wconvert');
 }
 
-/** "Colors, fonts, popup position", naming the format the campaign uses. */
-export function lookSummary(displayType: string): string {
-  /* translators: %s: the campaign's format, e.g. “popup”. */
-  return sprintf(__('Colors, fonts, %s position', 'wconvert'), formatWordOf(displayType));
+/** "Fieldwork · Popup": the design and the format, beside "Look" on one line (ADR 0136). */
+export function lookSummary(displayType: string, design: string): string {
+  /* translators: 1: a design's name, e.g. “Fieldwork”. 2: the campaign's format, e.g. “Popup”. */
+  return sprintf(__('%1$s · %2$s', 'wconvert'), design, displayTypeLabel(displayType));
 }
 
 /** The pinned Look row: the design's colors and what the Look holds. */
@@ -35,7 +43,7 @@ export interface EditTreeLook {
   readonly open: boolean;
   /** The design's background, text and button colors, drawn as dots. */
   readonly colors: readonly string[];
-  /** "Colors, fonts, popup position". */
+  /** "Fieldwork · Popup". */
   readonly summary: string;
   readonly onOpen: () => void;
 }
@@ -85,12 +93,10 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
   const owners = new Map(groups.flatMap(group => { const source = followupGroupSource(tree, group); return source === undefined ? [] : [[group.id, source] as const]; }));
   const item = (index: number, nested = false) => {
     const screen = tree.steps[index];
-    const nodes = walkNodes(screen.content);
     const branches = tree.graph?.edges.filter(edge => edge.from === screen.id && edge.kind === 'answer').length ?? Math.max(0, (screen.paths?.length ?? 1) - 1);
     const incoming = tree.graph?.edges.filter(edge => edge.to === screen.id) ?? [];
     const path = incoming.length === 1 && incoming[0].kind !== 'hidden' && tree.graph?.edges.some(edge => edge.from === incoming[0].from && edge.kind === 'answer') ? incoming[0] : undefined;
-    const Icon = screen.kind === 'result' ? Sparkles : screen.kind === 'acknowledgement' ? Flag
-      : nodes.some(node => node.type === 'field') ? Mail : nodes.some(node => node.type === 'question') ? CircleHelp : FileText;
+    const Icon = screenIconOf(screen);
     const here = issuesHere.get(screen.id) ?? [];
     const current = step === index && editingScreen;
     const warning = here.length > 0 && <button type="button" className="wconvert-campaign-screens__issues" data-soft={here.every(issue => !issue.blocks) || undefined} onClick={() => onIssue?.(here[0])}

@@ -10,8 +10,7 @@ import { physicalPlacementLabel } from '@/builder/PlacementControl';
 import { useDirection } from '@/hooks/useDirection';
 import { CheckRow } from '@/shell/CheckRow';
 import { Disclosure } from '@/shell/Disclosure';
-import { Field } from '@/shell/Field';
-import { InfoTip } from '@/shell/InfoTip';
+import { PanelField, PanelSection } from '@/builder/PanelSection';
 import { type Teaser } from '../loader/reminder';
 
 const corners = ['block_start_inline_start', 'block_start_inline_end', 'block_end_inline_start', 'block_end_inline_end'];
@@ -27,11 +26,15 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
   const config = value && typeof value === 'object' && 'label' in value ? value as Teaser : null;
   const update = (changes: Partial<Teaser>) => onChange({ ...config, ...changes });
   const updateMobile = (changes: Partial<NonNullable<Teaser['mobile']>>) => update({ mobile: { ...config?.mobile, ...changes } });
-  const position = (field: string, label: string, current: string | undefined, change: (value: string) => void) => <Field label={label} htmlFor={field}>
+  const position = (field: string, label: string, current: string | undefined, change: (value: string) => void) => <PanelField label={label} htmlFor={field}>
     <NativeSelect id={field} className="w-full" value={current ?? 'block_end_inline_end'} onChange={event => change(event.target.value)}>
       {corners.map(corner => <option key={corner} value={corner}>{physicalPlacementLabel('slide_in', corner, direction)}</option>)}
     </NativeSelect>
-  </Field>;
+  </PanelField>;
+  // The input refuses anything outside 8–96, so no line under it says so (ADR 0136).
+  const distance = (field: string, label: string, current: number, change: (gap: number) => void) => <PanelField label={label} htmlFor={field}>
+    <Input id={field} type="number" min={8} max={96} value={current} onChange={event => change(gapOf(event.target.value))} />
+  </PanelField>;
   const color = (key: 'background' | 'color', label: string, fallback: string) => {
     const held = config?.[key] ?? '';
     return <div className="wconvert-token wconvert-token--color">
@@ -46,37 +49,36 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
     </div>;
   };
   const missingLabel = config !== null && !config.label.trim();
+  const ownColors = config?.background || config?.color;
+  const summary = [ownColors ? __('Own colors', 'wconvert') : __('Design colors', 'wconvert'),
+    config?.mobile?.visible === false ? __('Hidden on mobile', 'wconvert') : __('Shown on mobile', 'wconvert')].join(' · ');
 
-  return <section className="grid gap-4 border-t pt-4">
-    <div className="flex items-center gap-1">
-      <CheckRow className="wconvert-reopen-toggle" label={__('Reopen button', 'wconvert')} checked={config !== null}
-        onChange={event => onChange(event.target.checked ? { label: __('View offer', 'wconvert') } : null)} />
-      <InfoTip label={__('About reopen buttons', 'wconvert')}>
-        <p>{__('After a visitor closes this campaign, a small button lets them return to it on eligible pages in the same tab. Closing the button or completing the campaign removes it for the session.', 'wconvert')}</p>
-        <p>{__('Reopening still follows targeting, schedules, consent and completion settings. Automatic view limits and closing settings don’t block a visitor’s click.', 'wconvert')}</p>
-      </InfoTip>
-    </div>
+  return <PanelSection title={__('Reopen button', 'wconvert')} tipLabel={__('About reopen buttons', 'wconvert')}
+    tip={__('After closing, visitors can bring it back from a small button on the page.', 'wconvert')}>
+    <CheckRow className="wconvert-check wconvert-reopen-toggle" label={__('Show a reopen button', 'wconvert')} checked={config !== null}
+      onChange={event => onChange(event.target.checked ? { label: __('View offer', 'wconvert') } : null)} />
     {config && <>
-      <Field label={__('Button text', 'wconvert')} htmlFor={`${id}-label`}>
+      <PanelField label={__('Button text', 'wconvert')} htmlFor={`${id}-label`}>
         <Input id={`${id}-label`} value={config.label} aria-invalid={missingLabel || undefined} aria-describedby={missingLabel ? `${id}-label-error` : undefined}
           onChange={event => update({ label: [...event.target.value].slice(0, 80).join('') })} />
         {missingLabel && <p id={`${id}-label-error`} role="alert" className="m-0 text-note text-destructive">{__('Enter button text before saving.', 'wconvert')}</p>}
-      </Field>
-      {position(`${id}-position`, __('Position', 'wconvert'), config.placement, placement => update({ placement }))}
-      <Field label={__('Distance from edges (px)', 'wconvert')} htmlFor={`${id}-gap`} hint={__('From 8 to 96.', 'wconvert')} hintId={`${id}-gap-hint`}>
-        <Input id={`${id}-gap`} type="number" min={8} max={96} aria-describedby={`${id}-gap-hint`} value={config.gap ?? 16} onChange={event => update({ gap: gapOf(event.target.value) })} />
-      </Field>
-      <Disclosure variant="inline" title={__('Colors and mobile', 'wconvert')} bodyClassName="gap-4">
-        <p className="m-0 text-note text-muted-foreground">{__('Colors follow the campaign’s design until you change them here.', 'wconvert')}</p>
-        {color('background', __('Background', 'wconvert'), template.tokens.accent || '#2563eb')}
-        {color('color', __('Text', 'wconvert'), template.tokens['accent-fg'] || '#ffffff')}
-        <CheckRow label={__('Show on mobile', 'wconvert')} checked={config.mobile?.visible !== false} onChange={event => updateMobile({ visible: event.target.checked })} />
-        {position(`${id}-mobile-position`, __('Mobile position', 'wconvert'), config.mobile?.placement ?? config.placement, placement => updateMobile({ placement }))}
-        <Field label={__('Mobile distance from edges (px)', 'wconvert')} htmlFor={`${id}-mobile-gap`} hint={__('From 8 to 96.', 'wconvert')} hintId={`${id}-mobile-gap-hint`}>
-          <Input id={`${id}-mobile-gap`} type="number" min={8} max={96} aria-describedby={`${id}-mobile-gap-hint`} value={config.mobile?.gap ?? config.gap ?? 16} onChange={event => updateMobile({ gap: gapOf(event.target.value) })} />
-        </Field>
-        <Button variant="outline" className="justify-self-start" onClick={() => update({ mobile: undefined })}>{__('Reset mobile overrides', 'wconvert')}</Button>
+      </PanelField>
+      <div className="wconvert-panel-pair">
+        {position(`${id}-position`, __('Position', 'wconvert'), config.placement, placement => update({ placement }))}
+        {distance(`${id}-gap`, __('Distance (px)', 'wconvert'), config.gap ?? 16, gap => update({ gap }))}
+      </div>
+      <Disclosure variant="inline" title={__('Colors and mobile', 'wconvert')} summary={summary}>
+        <div className="wconvert-palette">
+          {color('background', __('Background', 'wconvert'), template.tokens.accent || '#2563eb')}
+          {color('color', __('Text', 'wconvert'), template.tokens['accent-fg'] || '#ffffff')}
+        </div>
+        <CheckRow className="wconvert-check" label={__('Show on mobile', 'wconvert')} checked={config.mobile?.visible !== false} onChange={event => updateMobile({ visible: event.target.checked })} />
+        <div className="wconvert-panel-pair">
+          {position(`${id}-mobile-position`, __('Mobile position', 'wconvert'), config.mobile?.placement ?? config.placement, placement => updateMobile({ placement }))}
+          {distance(`${id}-mobile-gap`, __('Mobile distance (px)', 'wconvert'), config.mobile?.gap ?? config.gap ?? 16, gap => updateMobile({ gap }))}
+        </div>
+        <Button variant="outline" size="sm" className="justify-self-start" disabled={config.mobile === undefined} onClick={() => update({ mobile: undefined })}>{__('Reset mobile', 'wconvert')}</Button>
       </Disclosure>
     </>}
-  </section>;
+  </PanelSection>;
 }

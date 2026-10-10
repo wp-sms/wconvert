@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { SlotFields } from '../../resources/admin/src/builder/SlotFields';
+import { SlotFields, buttonDoes } from '../../resources/admin/src/builder/SlotFields';
 import { slotsOf } from '../../resources/admin/src/builder/panel';
 import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 import type { Template } from '@renderer/types';
@@ -32,14 +32,16 @@ describe('a button’s controls', () => {
     expect(screen.getByText('Where the button goes')).toBeVisible();
   });
 
+  // What the button does is the element panel's caption now (ADR 0136), so the fields say nothing about it.
   it.each([
-    ['submit', 'Sends the form and saves the visitor’s details.'],
-    ['skip', 'Skips this form without saving anything and moves on.'],
-    ['next', 'Goes to the next screen.'],
-  ])('says what a %s button does instead of asking for an address it ignores', (action, said) => {
+    ['submit', 'Sends the form'],
+    ['skip', 'Skips this signup'],
+    ['next', 'Goes to the next screen'],
+  ])('asks no address of a %s button, and names what it does for the caption', (action, said) => {
     draw({ type: 'button', role: 'cta_label', label: 'Go', action });
     expect(screen.queryByText('Where the button goes')).toBeNull();
-    expect(screen.getByText(said)).toBeVisible();
+    expect(screen.queryByText(said)).toBeNull();
+    expect(buttonDoes(action)).toBe(said);
   });
 });
 
@@ -47,7 +49,7 @@ describe('an empty link’s address', () => {
   it('means the privacy policy in fine print', async () => {
     draw({ type: 'text', role: 'fine_print', text: 'See our %s.', link: { label: 'policy' } });
     await userEvent.click(screen.getByRole('button', { name: 'Link' }));
-    expect(screen.getByText('Leave empty to use your site’s privacy policy.')).toBeVisible();
+    expect(screen.getByText('Empty uses your privacy policy.')).toBeVisible();
   });
 
   /** Anywhere else it is unfinished, and the review asks for one (ADR 0133). */

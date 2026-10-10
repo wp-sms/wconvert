@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type RefObject } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -20,6 +20,11 @@ export interface ChangeGoalDialogProps {
   readonly onChange: (goal: string) => Promise<void>;
   /** Reads the goals again after a failed read. */
   readonly onRetry?: () => void;
+  /**
+   * Where focus goes when it closes. This dialog has no trigger of its own,
+   * so Radix would otherwise put focus on `<body>` after the caller set it.
+   */
+  readonly returnFocusTo?: RefObject<HTMLElement | null>;
 }
 
 /**
@@ -29,7 +34,7 @@ export interface ChangeGoalDialogProps {
  * and report a refusal on the page behind it, so a refused change or an
  * unconfirmed copy surfaced somewhere the merchant was no longer looking.
  */
-export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate = false, onChange, onRetry }: ChangeGoalDialogProps) {
+export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate = false, onChange, onRetry, returnFocusTo }: ChangeGoalDialogProps) {
   const [picked, setPicked] = useState<GoalEntry | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +54,7 @@ export function ChangeGoalDialog({ open, onOpenChange, goals, current, duplicate
   };
 
   return <AdminDialog open={open} onOpenChange={close}>
-    <AdminDialogContent size="md" showCloseButton={!saving}>
+    <AdminDialogContent size="md" showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
       {picked === null ? <>
         <AdminDialogHeader
           title={duplicate ? __('Duplicate for another goal', 'wconvert') : __('Change goal', 'wconvert')}

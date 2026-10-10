@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { CheckRow } from '../shell/CheckRow';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ArrowRight, CircleHelp, Flag, LayoutTemplate, Send } from 'lucide-react';
@@ -134,7 +135,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         </div> : <>
         <label htmlFor={`${id}-name`}>{kind === 'input' ? __('Question', 'wconvert') : __('Screen name', 'wconvert')}</label><Input id={`${id}-name`} maxLength={120} value={name} placeholder={intent === 'followup' ? __('Relevant follow-up', 'wconvert') : kind === 'content' ? __('A helpful message', 'wconvert') : kind === 'ending' ? __('All done', 'wconvert') : __('A follow-up question', 'wconvert')} onChange={event => setName(event.target.value)} />
         {kind === 'input' && <label htmlFor={`${id}-answer-type`}>{__('Answer type', 'wconvert')}<select id={`${id}-answer-type`} value={answerType} onChange={event => setAnswerType(event.target.value as QuestionNode['answer_type'])}><option value="single">{__('Choose one', 'wconvert')}</option><option value="multi">{__('Choose several', 'wconvert')}</option><option value="text">{__('Short answer', 'wconvert')}</option></select></label>}
-        {location?.sharedHidden && intent !== 'branch' && (!initialAnswer || advanced) && <label className="wconvert-graph-insert__check"><input type="checkbox" checked={includeHidden} onChange={event => setIncludeHidden(event.target.checked)} />{sprintf(__('Also check this screen when “%s” is skipped', 'wconvert'), tree.steps.find(item => item.id === location.source)?.name ?? '')}</label>}
+        {location?.sharedHidden && intent !== 'branch' && (!initialAnswer || advanced) && <CheckRow className="wconvert-check" checked={includeHidden} onChange={event => setIncludeHidden(event.target.checked)} label={sprintf(/* translators: %s: a screen's name. */ __('Also check this screen when “%s” is skipped', 'wconvert'), tree.steps.find(item => item.id === location.source)?.name ?? '')} />}
         {kind === 'ending' && intent !== 'followup' && <p>{__('This is a closing screen. It does not save details. Any bypassed screens or required saves are shown for review.', 'wconvert')}</p>}
         {unavailable && <div role="status"><p>{unavailable}</p>{suggested && <Button type="button" variant="outline" onClick={() => { setLocationId(suggested.id); setChangeLocation(false); }}>{sprintf(__('Add before %s', 'wconvert'), tree.steps.find(screen => screen.id === suggested.target)?.name ?? '')}</Button>}</div>}
         </>}

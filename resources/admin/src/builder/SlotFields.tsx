@@ -2,8 +2,12 @@ import { StyleValueInput } from './StyleValueInput';
 import { CheckRow } from '../shell/CheckRow';
 import { SentenceEditor } from './SentenceEditor';
 import type { SentenceValue } from './sentence';
+import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { CalendarClock, ImagePlus } from 'lucide-react';
+import { useAdvanced } from './advanced';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
+import { FactList, FactRow, FieldHeading, PanelField, PanelHint } from './PanelSection';
+import { ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
@@ -75,6 +79,12 @@ export interface SlotFieldsProps {
   readonly endsAt?: string;
   /** Take the merchant to the field that sets it. */
   readonly onSetEndDate?: () => void;
+  /**
+   * Draw the "Shown" switch here. The element panel has an eye in its header
+   * for this (ADR 0136); the screen panel's Consent disclosure has no header,
+   * so it asks for the switch.
+   */
+  readonly showVisibility?: boolean;
 }
 
 export function SlotFields({
@@ -86,7 +96,9 @@ export function SlotFields({
   onHidden,
   endsAt,
   onSetEndDate,
+  showVisibility = false,
 }: SlotFieldsProps) {
+  const fieldId = useId();
   const text = String(slot.values.text ?? '');
   const action = slot.type === 'button' ? buttonActionOf(slot) : null;
   // Only consent wording and fine print fill an empty link with the policy (ADR 0133).
@@ -105,10 +117,9 @@ export function SlotFields({
           was a control that does nothing — it gets one line saying what the
           button does instead ({@see BUTTON_DOES}).
         */
+        // What a submit, next, back, skip or close button does is the panel's caption (ADR 0136); it reads no address.
         if (key === 'href' && action !== null && action !== 'link') {
-          const does = BUTTON_DOES[action];
-
-          return does === undefined ? null : <p key={key} className="description">{does()}</p>;
+          return null;
         }
         if (key === 'options') {
           return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
@@ -133,41 +144,42 @@ export function SlotFields({
           );
         }
 
+        const control = controlFor(key, slot);
+        const id = `${fieldId}-${key}`;
+        if (control === 'media') {
+          // The picture is the control (ADR 0136), so the field is named for the picture, not its address.
+          return <div key={key} className="wconvert-panel-field">
+            <FieldHeading as="span" label={__('Image', 'wconvert')} labelId={`${id}-label`} />
+            <MediaControl label={label} labelledBy={`${id}-label`} value={held} onChange={(value) => onValue(key, value)} />
+          </div>;
+        }
+
         return (
-          <label key={key} className="wconvert-slot__key">
-            {label}
-            <KeyControl
-              control={controlFor(key, slot)}
-              label={label}
-              value={held}
-              onChange={(value) => onValue(key, value)}
-            />
-            {/*
+          <PanelField key={key} label={label} htmlFor={id}
+            tip={slot.type === 'field' && key === 'placeholder' && slot.captures !== 'interest' ? __('Disappears when visitors type. Use the label to say what to enter.', 'wconvert')
+              : slot.type === 'image' && key === 'alt' ? __('Describes the image for screen readers. Leave it empty if the image is decoration.', 'wconvert') : undefined}
+            /*
               **The mark is where the words go, and it has to be said in the
               same breath as the box that holds them.** `emphasis` is the
               second placeholder a sentence carries and the only key whose
               value renders NOWHERE unless the sentence has a place for it —
               which is a control that silently does nothing, and the one thing
-              ADR 0054 rule 3 says a control may not be. `link` says the same
-              sentence about `%s` inside {@see LinkControl}.
-            */}
-            {key === 'emphasis' && (
-              <span className="description">
-                {__('Put %b in the text above where the bold words should sit.', 'wconvert')}
-              </span>
-            )}
-          </label>
+              ADR 0054 rule 3 says a control may not be.
+            */
+            hint={key === 'emphasis' ? __('Put %b in the text above where the bold words should sit.', 'wconvert') : undefined}>
+            <KeyControl
+              id={id}
+              control={control}
+              label={label}
+              value={held}
+              onChange={(value) => onValue(key, value)}
+            />
+          </PanelField>
         );
       })}
 
-      {slot.type === 'followup' && <p className="description">{__('Opens your resource after submission, without counting another conversion. Use a file or page address; this does not send an email.', 'wconvert')}</p>}
-      {slot.type === 'code' && <p className="description">{__('Enable the copy button to let visitors copy this code. Empty messages use English defaults. If copying fails, the code stays visible for manual copying.', 'wconvert')}</p>}
-
-      {slot.type === 'field' && slot.captures !== 'interest' && (
-        <p className="description">
-          {__('Example text disappears when visitors type. Use the label to say what to enter. A blank label uses the field’s default name.', 'wconvert')}
-        </p>
-      )}
+      {slot.type === 'followup' && <PanelHint>{__('Opens your file or page after they submit. It sends no email.', 'wconvert')}</PanelHint>}
+      {slot.type === 'code' && <PanelHint>{__('Empty messages use English defaults.', 'wconvert')}</PanelHint>}
 
       {/*
         ======================================================================
@@ -187,7 +199,7 @@ export function SlotFields({
         spelled in this bundle.
       */}
       {slot.type === 'field' && slot.captures === 'phone' && (
-        <PhoneCountryPicker label={__('Starting country', 'wconvert')}
+        <PhoneCountryPicker label={__('Starting country', 'wconvert')} tip={__('Numbers are saved with their country code.', 'wconvert')}
           value={String(slot.settings.find(setting => setting.param === 'phone_country')?.held ?? 'site')}
           siteCountry={phoneSiteCountry()} countries={countries} onChange={country => onParam('phone_country', country)} />
       )}
@@ -244,13 +256,6 @@ export function SlotFields({
       */}
       {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
 
-      {slot.type === 'field' && slot.captures === 'phone' && (
-        <p className="description">{__('Numbers are saved with their country code.', 'wconvert')}</p>
-      )}
-
-      {(slot.role === 'success_headline' || slot.role === 'success_body') && (
-        <p className="description">{__('This appears after the form is submitted. Thank visitors for their request; your connected service handles emails and subscription confirmation.', 'wconvert')}</p>
-      )}
 
       {/*
         **Under the fields, not over them.** The thing a merchant opened this
@@ -259,8 +264,8 @@ export function SlotFields({
         panel's first question. It also put the one control that can empty the
         panel where the eye lands first.
       */}
-      {slot.hideable && (
-        <CheckRow className="wconvert-slot__shown" label={__('Visible', 'wconvert')}
+      {showVisibility && slot.hideable && (
+        <CheckRow className="wconvert-check wconvert-slot__shown" label={__('Shown', 'wconvert')}
           checked={!slot.hidden} onChange={(event) => onHidden(!event.target.checked)} />
       )}
     </>
@@ -275,14 +280,22 @@ export function buttonActionOf(slot: Pick<Slot, 'settings'>): string {
   return typeof held === 'string' ? held : setting?.fallback ?? 'next';
 }
 
-/** One line for each button that goes nowhere, in place of the address box it does not read. */
-const BUTTON_DOES: Readonly<Record<string, () => string>> = {
-  submit: () => __('Sends the form and saves the visitor’s details.', 'wconvert'),
-  skip: () => __('Skips this form without saving anything and moves on.', 'wconvert'),
-  next: () => __('Goes to the next screen.', 'wconvert'),
-  back: () => __('Goes back to the previous screen.', 'wconvert'),
-  close: () => __('Closes this and leaves visitors on the page.', 'wconvert'),
-};
+/**
+ * What a button does, as the element panel's caption (ADR 0136): "Sends the
+ * form" under the title, in place of a sentence under the label box.
+ */
+export function buttonDoes(action: string): string | null {
+  const said: Readonly<Record<string, () => string>> = {
+    submit: () => __('Sends the form', 'wconvert'),
+    skip: () => __('Skips this signup', 'wconvert'),
+    next: () => __('Goes to the next screen', 'wconvert'),
+    back: () => __('Goes back a screen', 'wconvert'),
+    close: () => __('Closes the campaign', 'wconvert'),
+    link: () => __('Opens a page', 'wconvert'),
+  };
+
+  return said[action]?.() ?? null;
+}
 
 /**
  * What this slot is CALLED, in the vocabulary's own words.
@@ -336,30 +349,29 @@ export function LinkControl({
   const write = (next: { label?: string; href?: string }) =>
     onChange(next.label === undefined || next.label === '' ? undefined : next);
 
+  const id = useId();
   return (
-    <fieldset className="wconvert-slot__link">
-      <legend>{label}</legend>
-      <label className="wconvert-slot__key">
-        {__('Link text', 'wconvert')}
+    <fieldset className="wconvert-slot__link wconvert-panel-field">
+      <legend className="sr-only">{label}</legend>
+      <PanelField label={__('Link text', 'wconvert')} htmlFor={`${id}-label`}>
         <input
+          id={`${id}-label`}
           type="text"
           className="widefat"
           value={link.label ?? ''}
           onChange={(event) => write({ ...link, label: event.target.value })}
         />
-      </label>
-      <label className="wconvert-slot__key">
-        {policy ? __('Address — leave empty for your privacy policy', 'wconvert') : __('Web address', 'wconvert')}
+      </PanelField>
+      <PanelField label={__('Web address', 'wconvert')} htmlFor={`${id}-href`} hint={policy ? __('Empty uses your privacy policy.', 'wconvert') : undefined}>
         <input
+          id={`${id}-href`}
           type="text"
           className="widefat"
           value={link.href ?? ''}
           onChange={(event) => write({ ...link, href: event.target.value === '' ? undefined : event.target.value })}
         />
-      </label>
-      <p className="description">
-        {__('Put %s in the sentence above where the link should sit.', 'wconvert')}
-      </p>
+      </PanelField>
+      <PanelHint>{__('Put %s in the sentence above where the link should sit.', 'wconvert')}</PanelHint>
     </fieldset>
   );
 }
@@ -410,21 +422,24 @@ export function controlFor(key: string, slot: Pick<Slot, 'type'>): KeyControlKin
 }
 
 function KeyControl({
+  id,
   control,
   label,
   value,
   onChange,
 }: {
+  id: string;
   control: KeyControlKind;
   label: string;
   value: string;
   onChange: (value: string) => void;
 }) {
   if (control === 'multiline') {
+    // One row for one line, growing with each line it holds (ADR 0136).
     return (
-      <textarea
+      <AutoGrowTextarea
+        id={id}
         className="widefat"
-        rows={3}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
@@ -432,15 +447,16 @@ function KeyControl({
   }
 
   if (control === 'media') {
-    return <MediaControl label={label} value={value} onChange={onChange} />;
+    return <MediaControl id={id} label={label} value={value} onChange={onChange} />;
   }
 
   if (control === 'link') {
-    return <LinkField className="widefat" value={value} onChange={onChange} />;
+    return <LinkField id={id} className="widefat" value={value} onChange={onChange} />;
   }
 
   return (
     <input
+      id={id}
       type={control === 'url' ? 'url' : 'text'}
       className="widefat"
       value={value}
@@ -474,9 +490,12 @@ function KeyControl({
 export function MediaControl({
   id,
   label,
+  labelledBy,
   value,
   type = 'url',
   preview,
+  extra,
+  onRemove,
   onChange,
 }: {
   /**
@@ -488,6 +507,8 @@ export function MediaControl({
    */
   id?: string;
   label: string;
+  /** The heading that names the picture as a whole, for the address box once it shows. */
+  labelledBy?: string;
   value: string;
   /**
    * `url` everywhere but the background token, which may also hold a
@@ -496,55 +517,76 @@ export function MediaControl({
    */
   type?: 'url' | 'text';
   preview?: string;
+  /** A link of the caller's on the action row: "Use a gradient". */
+  extra?: ReactNode;
+  /** What Remove writes, where an empty value would mean something else. */
+  onRemove?: () => void;
   onChange: (value: string) => void;
 }) {
   const media = mediaLibrary();
   const image = preview ?? (type === 'url' ? value : '');
+  const advanced = useAdvanced();
+  const [typing, setTyping] = useState(false);
+  /*
+    **The picture is the control; the address is a way in, not the first
+    thing on the panel** (ADR 0136). It shows when asked for, under Advanced,
+    where there is no media library to pick from, and whenever the value is
+    something no picture can show (a gradient) — so nothing is ever hidden
+    that is set.
+  */
+  const addressShown = typing || advanced || media === null || (value !== '' && !image);
+
+  const choose = () => {
+    if (media === null) return;
+    const frame = media({
+      title: __('Choose an image', 'wconvert'),
+      button: { text: __('Use this image', 'wconvert') },
+      multiple: false,
+    });
+
+    frame.on('select', () => {
+      const chosen = frame.state().get('selection').first()?.toJSON();
+
+      if (chosen !== undefined && typeof chosen.url === 'string') {
+        onChange(chosen.url);
+      }
+    });
+
+    frame.open();
+  };
+
+  const chooseButton = media !== null && <Button type="button" variant="outline" size="sm" onClick={choose}>
+    <ImagePlus aria-hidden="true" />
+    <span aria-hidden="true">{image ? __('Replace image', 'wconvert') : __('Choose image', 'wconvert')}</span>
+    <span className="sr-only">
+      {sprintf(
+        /* translators: %s: what the address is for, e.g. “Image address”. */
+        __('Choose %s from the media library', 'wconvert'),
+        label,
+      )}
+    </span>
+  </Button>;
 
   return (
     <span className="wconvert-slot__media">
-      {image && <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />}
-      <StyleValueInput
+      {image ? <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />
+        : <span className="wconvert-media-empty">{chooseButton}</span>}
+      <span className="wconvert-media-actions">
+        {image && chooseButton}
+        {image && <Button type="button" variant="ghost" size="sm" onClick={() => (onRemove ?? (() => onChange('')))()}>{__('Remove', 'wconvert')}</Button>}
+        {extra}
+        {!addressShown && <button type="button" className="wconvert-panel-link wconvert-media-actions__end" onClick={() => setTyping(true)}>{__('Use a web address', 'wconvert')}</button>}
+      </span>
+      {addressShown && <StyleValueInput
         id={id}
         type={type}
         className="widefat"
+        aria-labelledby={labelledBy}
+        aria-label={id || labelledBy ? undefined : sprintf(/* translators: %s: what the address is for, e.g. “Image”. */ __('%s web address', 'wconvert'), label)}
+        placeholder="https://"
         value={value}
         onCommit={onChange}
-      />
-      {media !== null && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const frame = media({
-              title: __('Choose an image', 'wconvert'),
-              button: { text: __('Use this image', 'wconvert') },
-              multiple: false,
-            });
-
-            frame.on('select', () => {
-              const chosen = frame.state().get('selection').first()?.toJSON();
-
-              if (chosen !== undefined && typeof chosen.url === 'string') {
-                onChange(chosen.url);
-              }
-            });
-
-            frame.open();
-          }}
-        >
-          <ImagePlus aria-hidden="true" />
-          <span aria-hidden="true">{image ? __('Replace image', 'wconvert') : __('Choose image', 'wconvert')}</span>
-          <span className="sr-only">
-            {sprintf(
-              /* translators: %s: what the address is for, e.g. “Image address”. */
-              __('Choose %s from the media library', 'wconvert'),
-              label,
-            )}
-          </span>
-        </Button>
-      )}
+      />}
     </span>
   );
 }
@@ -636,39 +678,16 @@ function Countdown({
   const spelled = readable(endsAt);
   const finished = hasScheduleEnded(endsAt, adminSettings()?.timezone);
 
+  // A fact and the way to change it (ADR 0136); a clock with nothing to count to says so in one line.
   return (
-    <div className="wconvert-slot__note">
-      <p className="text-note">
-        {spelled === null
-          ? __('This campaign has no end date, so the clock will be empty on the page.', 'wconvert')
-          : finished
-            ? sprintf(
-                /* translators: %s: a date and time the Optin stopped running. */
-                __('Counted down to %s. This campaign has already stopped running.', 'wconvert'),
-                spelled,
-              )
-            : sprintf(
-                /* translators: %s: a date and time the Optin stops running. */
-                __('Counts down to %s — when this campaign stops running.', 'wconvert'),
-                spelled,
-              )}
-      </p>
-
-      {/* The same 24px tier: this repairs the group it sits in rather than
-          acting on the Optin. */}
-      {onSetEndDate !== undefined && (
-        <Button type="button" variant="secondary" size="xs" onClick={onSetEndDate}>
-          <CalendarClock aria-hidden="true" />
-          {/*
-            Two labels, because one of them would be wrong half the time: *Set
-            an end date* over a date that is already set reads as an offer to
-            add a second one.
-          */}
-          {spelled === null
-            ? __('Set an end date', 'wconvert')
-            : __('Change the end date', 'wconvert')}
-        </Button>
-      )}
+    <div className="wconvert-slot__note wconvert-panel-field">
+      <FactList>
+        <FactRow label={__('Counts to', 'wconvert')} action={spelled === null ? __('Set an end date', 'wconvert') : __('Change the end date', 'wconvert')} onAction={onSetEndDate}>
+          {spelled ?? __('No end date', 'wconvert')}
+        </FactRow>
+      </FactList>
+      {spelled === null && <p className="wconvert-panel-warn">{__('Without an end date the clock is empty on the page.', 'wconvert')}</p>}
+      {spelled !== null && finished && <p className="wconvert-panel-warn">{__('This campaign has already stopped running.', 'wconvert')}</p>}
     </div>
   );
 }

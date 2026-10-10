@@ -5,6 +5,7 @@ import { Button } from './components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
 import { useDirection } from './hooks/useDirection';
 import { cn } from './lib/utils';
+import { InfoTip } from './shell/InfoTip';
 
 export interface Country { code: string; name: string }
 
@@ -15,8 +16,10 @@ export interface Country { code: string; name: string }
  * 6px above the control. Without it the label is the editor inspector's small
  * caption, which is the builder's own furniture (ADR 0066).
  */
-export function PhoneCountryPicker({ label, value, countries, onChange, disabled = false, siteCountry, field = false, describedBy }: {
+export function PhoneCountryPicker({ label, value, countries, onChange, disabled = false, siteCountry, field = false, describedBy, tip }: {
   label: string;
+  /** Help beside the label, as an InfoTip (ADR 0136). */
+  tip?: string;
   value: string;
   countries: readonly Country[];
   onChange: (country: string) => void;
@@ -67,7 +70,8 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
   };
 
   return <div className={cn('wconvert-phone-country-picker', field && 'gap-1.5')}>
-    <span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span>
+    {tip ? <span className="wconvert-field-heading"><span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span><InfoTip label={sprintf(/* translators: %s: a field label, e.g. “Starting country”. */ __('About %s', 'wconvert'), label)}>{tip}</InfoTip></span>
+      : <span id={`${id}-label`} className={field ? 'text-body font-medium leading-snug text-foreground' : 'wconvert-phone-country-picker__label'}>{label}</span>}
     <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); }}>
       <PopoverTrigger asChild>
         <Button id={`${id}-trigger`} type="button" variant="outline" disabled={disabled}

@@ -495,9 +495,9 @@ describe('the builder shell', () => {
 
     await openLook();
     expect(await screen.findByText('Format and position')).toBeInTheDocument();
-    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Popup')).toBeInTheDocument();
-    expect(screen.getByText(/Centered over the page/)).toBeInTheDocument();
-    expect(screen.getByText('Design: Centered card')).toBeInTheDocument();
+    // Format and what it does are one fact row (ADR 0136).
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Popup · Centered over the page')).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText('Centered card')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
   });
@@ -632,7 +632,8 @@ describe('the builder shell', () => {
       await userEvent.click(row);
       expect(row).toHaveAttribute('aria-current', 'true');
       expect(screen.getByText('Lock example: locked')).toBeInTheDocument();
-      expect(within(screen.getByRole('region', { name: 'Look' })).getByText(/^Where on the page: Content lock/)).toBeInTheDocument();
+      expect(within(screen.getByRole('region', { name: 'Look' })).getByText('On the page')).toBeInTheDocument();
+      expect(within(screen.getByRole('region', { name: 'Look' })).getByText(/^Content lock/)).toBeInTheDocument();
     } finally {
       delete inlinePlacementControls.preview;
     }
@@ -1061,8 +1062,9 @@ describe('the summary', () => {
     await open();
     const goal = await screen.findByRole('button', { name: 'Campaign actions' });
     expect(goal.closest('header')).not.toBeNull();
-    // The goal is said under the name and opens the goal choice (ADR 0134); details keep the measurement.
-    expect(screen.getByRole('button', { name: 'Goal: Grow my email list' })).toBeInTheDocument();
+    // The goal is not in the header (ADR 0136): Campaign details holds it, with its measurement.
+    expect(screen.queryByRole('button', { name: /^Goal:/ })).toBeNull();
+    expect(screen.queryByText(/Goal: Grow my email list/)).toBeNull();
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
@@ -1422,8 +1424,7 @@ describe('whole-draft Undo and Redo', () => {
 
     await openLook();
     expect(await screen.findByText('Format and position')).toBeInTheDocument();
-    expect(screen.getByText('Floating bar')).toBeInTheDocument();
-    expect(screen.getByText(/Bar at the page edge · Bottom/)).toBeInTheDocument();
+    expect(screen.getByText(/^Floating bar · Bar at the page edge · Bottom/)).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('radio', { name: 'Top' }));
 
     expect(screen.getByText(/moves the page down/)).toBeVisible();
@@ -1557,7 +1558,7 @@ describe('changing templates in the draft', () => {
       .getByRole('button', { name: 'Preview design' }));
     await userEvent.click(picker.getByRole('button', { name: 'Switch to Inline form' }));
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
@@ -1643,12 +1644,12 @@ describe('changing templates in the draft', () => {
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
-    expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
-    expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
-    expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ALTERNATE.name)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
@@ -1696,7 +1697,7 @@ describe('changing templates in the draft', () => {
     await waitFor(() => expect(within(alternateCard).getByRole('button', { name: 'Preview design' })).toHaveFocus());
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
-    expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Design' })).getByText(ENTRY.name)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();

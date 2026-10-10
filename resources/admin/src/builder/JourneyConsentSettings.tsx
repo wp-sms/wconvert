@@ -1,5 +1,3 @@
-import { __ } from '@wordpress/i18n';
-import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import type { TemplateLabels } from '../templates/api';
 import { slotsOf, withHidden, withValue } from './panel';
@@ -12,9 +10,10 @@ export function JourneyConsentSettings({ tree, step, labels, onChange }: {
 }) {
   const slots = slotsOf(tree).filter(slot => slot.path[0] === step && slot.type === 'consent');
   if (!slots.length) return null;
-  return <Disclosure variant="inline" className="wconvert-journey-settings wconvert-journey-consent-settings" title={__('Consent wording & visibility', 'wconvert')}>
+  // The "Consent" disclosure around this is the Form section's (ADR 0136): this draws its wording only.
+  return <>
     {slots.map(slot => <div key={slot.path.join('.')} className="wconvert-journey-consent">
-      <SlotFields slot={slot} labels={labels}
+      <SlotFields slot={slot} labels={labels} showVisibility
         onValue={(key, value) => onChange(withValue(tree, slot.path, key, value), `consent:${slot.path.join('.')}:${key}`)}
         onParam={(key, value) => onChange(withValue(tree, slot.path, key, value))}
         onHidden={hidden => onChange(withHidden(tree, slot.path, hidden))}
@@ -24,5 +23,5 @@ export function JourneyConsentSettings({ tree, step, labels, onChange }: {
           onChange(next, typing ? `consent:${slot.path.join('.')}:sentence` : undefined);
         }} />
     </div>)}
-  </Disclosure>;
+  </>;
 }

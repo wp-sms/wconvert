@@ -512,8 +512,9 @@ describe('the row', () => {
   it('marks the block conversions are counted on, and only that one', async () => {
     await structure();
 
-    expect(within(row('Button label')).getByText('counted')).toBeInTheDocument();
-    expect(screen.getAllByText('counted')).toHaveLength(1);
+    // An icon whose name is the sentence (ADR 0136), not a chip that truncated the row's name.
+    expect(within(row('Button label')).getByTitle('Conversions are counted here')).toBeInTheDocument();
+    expect(screen.getAllByTitle('Conversions are counted here')).toHaveLength(1);
   });
 
   /**
@@ -880,7 +881,8 @@ describe('the inspector', () => {
     await select('Body text');
     expect(scroller.scrollTop).toBe(0);
     expect(screen.getByRole('tab', { name: 'Style' })).toHaveAttribute('aria-selected', 'true');
-    expect(within(screen.getByRole('group', { name: 'Body text' })).getAllByRole('region')[1]).toHaveAccessibleName('Body text');
+    // The first section of the Style tab is the element's own type (ADR 0136); the device line is a status, not a region.
+    expect(within(screen.getByRole('group', { name: 'Body text' })).getAllByRole('region')[0]).toHaveAccessibleName('Body text');
   });
 
   it('puts the selected block\u2019s own controls under the tree', async () => {
@@ -901,7 +903,7 @@ describe('the inspector', () => {
     await structure();
     await select('Row');
 
-    expect(inspector('Row').getByText(/Appearance for Row/)).toBeInTheDocument();
+    expect(inspector('Row').getByRole('status')).toHaveTextContent('Desktop');
     expect(inspector('Row').queryByLabelText('Text')).toBeNull();
   });
 
@@ -987,7 +989,7 @@ describe('the inspector', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
-    expect(inspector('Image').getByLabelText('Image address')).toHaveAttribute('type', 'url');
+    expect(inspector('Image').getByRole('textbox', { name: 'Image' })).toHaveAttribute('type', 'url');
     expect(inspector('Image').getByLabelText('Alt text')).toHaveAttribute('type', 'text');
   });
 
@@ -996,13 +998,14 @@ describe('the inspector', () => {
     await structure();
     await select('Consent wording');
 
-    const shown = inspector('Consent wording').getByRole('checkbox', { name: 'Visible' });
+    // Shown or hidden is the header's eye (ADR 0136).
+    const shown = inspector('Consent wording').getByRole('button', { name: 'Show Consent wording' });
 
-    expect(shown).not.toBeChecked();
+    expect(shown).toHaveAttribute('aria-pressed', 'false');
 
     await userEvent.click(shown);
 
-    expect(inspector('Consent wording').getByRole('checkbox', { name: 'Visible' })).toBeChecked();
+    expect(shown).toHaveAttribute('aria-pressed', 'true');
   });
 
   /**
@@ -1510,7 +1513,7 @@ describe('what a row shows about itself', () => {
     // The row's own label button, which is what selects — not the ⋯ menu
     // beside it, which also carries the block's name.
     await userEvent.click(within(row('Fine print')).getAllByRole('button')[0]);
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Visible' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Show Fine print' }));
 
     expect(row('Fine print')).toHaveAttribute('data-hidden', 'true');
     expect(within(row('Fine print')).getByText('Hidden')).toBeInTheDocument();
@@ -1524,9 +1527,9 @@ describe('what a row shows about itself', () => {
   it('says what “counted” means, rather than only that a row is counted', async () => {
     await structure();
 
-    const chip = within(row('Button label')).getByText('counted');
+    const mark = within(row('Button label')).getByTitle('Conversions are counted here');
 
-    expect(chip).toHaveAttribute('title', expect.stringContaining('conversions are counted'));
+    expect(mark).toHaveTextContent('Conversions are counted here');
   });
 });
 
@@ -1888,7 +1891,9 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText(/Counts down to .*2099.* — when this campaign stops running\./)).toBeInTheDocument();
+    const edit = within(screen.getByRole('tabpanel', { name: 'Edit' }));
+    expect(edit.getByText('Counts to')).toBeInTheDocument();
+    expect(edit.getByText(/2099/)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1897,7 +1902,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('This campaign has no end date, so the clock will be empty on the page.'),
+      within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('Without an end date the clock is empty on the page.'),
     ).toBeInTheDocument();
   });
 
@@ -1911,7 +1916,8 @@ describe('a countdown’s inspector', () => {
 
     await openTheClock();
 
-    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText(/2020/)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Edit' })).getByText('This campaign has already stopped running.')).toBeInTheDocument();
   });
 
   /**

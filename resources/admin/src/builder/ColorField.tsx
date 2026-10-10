@@ -1,10 +1,23 @@
-import type { CSSProperties } from 'react';
+import { createContext, useContext, type CSSProperties } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { RgbaStringColorPicker } from 'react-colorful';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { StyleValueInput } from './StyleValueInput';
 import { colorName } from './colorName';
-import { useAdvanced } from './advanced';
+import { cssOnlyNote, useAdvanced } from './advanced';
+import { resolvedToken } from './panel';
+import type { Tokens } from '@renderer/types';
+
+/**
+ * The colors the design already uses, offered first in every color popover
+ * (ADR 0136): most color changes are "make this the button color", and a
+ * merchant should not have to find that by dragging a picker.
+ */
+export const DesignColors = createContext<readonly string[]>([]);
+
+/** The design's own colors, resolved, in the order its palette lists them. */
+export const designColorsOf = (tokens: Tokens): readonly string[] =>
+  ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 'input-bg'].map(token => resolvedToken(tokens, token));
 
 /** Convert hex including alpha for the RGBA picker; opening never writes a value. */
 export function rgbaForPicker(value: string): string | null {
@@ -51,6 +64,7 @@ export function ColorField({
   const pickerColor = rgbaForPicker(shown);
   // The plain view names the color; the hex is Advanced's (ADR 0135).
   const advanced = useAdvanced();
+  const designColors = useContext(DesignColors).filter((color, at, all) => all.indexOf(color) === at);
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -69,7 +83,7 @@ export function ColorField({
           />
           <span className="wconvert-swatch__text">
             <span className="wconvert-swatch__name">{label}</span>
-            <span className="wconvert-swatch__value">{advanced ? shown : colorName(shown)}</span>
+            <span className="wconvert-swatch__value" data-code={advanced || undefined}>{advanced ? shown : colorName(shown)}</span>
           </span>
           <span className="sr-only">
             {sprintf(
@@ -86,16 +100,20 @@ export function ColorField({
       }}>
         <div className="wconvert-color-picker">
           <strong>{label}</strong>
+          {designColors.length > 0 && <div className="wconvert-color-picker__design" role="group" aria-label={__('This design’s colors', 'wconvert')}>
+            <span aria-hidden="true">{__('This design’s colors', 'wconvert')}</span>
+            <div>{designColors.map(color => <button key={color} type="button" className="wconvert-color-picker__dot" aria-pressed={color.toLowerCase() === shown.toLowerCase()}
+              title={colorName(color)} aria-label={colorName(color)} style={{ '--wconvert-chip': color } as CSSProperties} onClick={() => onChange(color)} />)}</div>
+          </div>}
           {pickerColor !== null ? <RgbaStringColorPicker color={pickerColor} onChange={onChange} />
-            : <p>{advanced ? __('Use a hex or RGB color to adjust it visually. Your custom value is kept below.', 'wconvert') : __('This color is set in CSS. Open Advanced to change its value.', 'wconvert')}</p>}
+            : <p>{advanced ? __('Use a hex or RGB color to get the picker.', 'wconvert') : cssOnlyNote()}</p>}
 
-          {advanced && <>
           {/*
-            Named for the TOKEN rather than "Value", because a popover
-            announcing "Value, edit text" tells a screen-reader user the
-            value of what.
+            The exact value is Advanced's (ADR 0135), named for the TOKEN
+            rather than "Value", because a popover announcing "Value, edit
+            text" tells a screen-reader user the value of what.
           */}
-          <label className="wconvert-slot__key">
+          {advanced && <label className="wconvert-slot__key">
             {sprintf(
               /* translators: %s: what the color is for, e.g. “Background”. */
               __('%s value', 'wconvert'),
@@ -103,9 +121,7 @@ export function ColorField({
             )}
             <StyleValueInput type="text" className="regular-text" placeholder={fallback}
               value={shown} onCommit={onChange} />
-          </label>
-          <p className="m-0 text-note text-muted-foreground">{__('Hex, RGB or another CSS color. Press Enter or leave the field to apply.', 'wconvert')}</p>
-          </>}
+          </label>}
 
           {/*
             The way back to the design's own color is {@see Reset}, in the

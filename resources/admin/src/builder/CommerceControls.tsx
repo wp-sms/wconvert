@@ -60,12 +60,12 @@ export function CommercePicker({ value, onChange, categories = false, max = 20, 
       {showSearch && <div className="wconvert-product-picker__search">
         <label className="sr-only" htmlFor={inputId}>{searchLabel ?? __('Find products', 'wconvert')}</label>
         <Input ref={searchInput} id={inputId} type="search" autoComplete="off" placeholder={searchLabel ?? __('Find products', 'wconvert')} value={query} onChange={event => { setQuery(event.target.value); setError(''); }}/>
-        {error ? <p role="alert">{error}</p> : query.trim() && <div role="status" className="wconvert-recommendations__help">{searched !== query ? __('Searching…', 'wconvert') : matches.length === 0 ? __('No matching products.', 'wconvert') : null}</div>}
+        {error ? <p role="alert">{error}</p> : query.trim() && <div role="status" className="wconvert-panel-hint">{searched !== query ? __('Searching…', 'wconvert') : matches.length === 0 ? __('No matching products.', 'wconvert') : null}</div>}
         {matches.length > 0 && <ul className="wconvert-product-picker__results" aria-label={__('Matching products', 'wconvert')}>{matches.map(hit => <li key={hit.id}>
           <span className="wconvert-product-picker__name">{hit.name}</span>
           <Button type="button" variant="outline" size="sm" aria-label={sprintf(single ? __('Use %s', 'wconvert') : __('Add %s', 'wconvert'), hit.name)} disabled={!single && ids.length >= max} onClick={() => { setNames(current => [...current.filter(item => item.id !== hit.id), hit]); onChange(single ? [hit.id] : [...ids, hit.id]); setQuery(''); setChanging(false); }}>{single ? __('Use', 'wconvert') : __('Add', 'wconvert')}</Button>
         </li>)}</ul>}
-        {!single && ids.length >= max && <p className="wconvert-recommendations__help">{__('Remove a product to add another.', 'wconvert')}</p>}
+        {!single && ids.length >= max && <p className="wconvert-panel-hint">{__('Remove a product to add another.', 'wconvert')}</p>}
       </div>}
     </div>;
   }
