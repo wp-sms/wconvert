@@ -97,9 +97,11 @@ const FREE_BYTE_BUDGET = 14624;
 const PAID_BYTE_BUDGET = 25376;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
 // ADR 0121: server-counted conversion notification adds a bounded renderer seam.
-const PRO_BYTE_BUDGET = 26944;
+// ADR 0139: user-approved +32 B for the one shared "is not" helper (leafAnswer).
+const PRO_BYTE_BUDGET = 26976;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
-const ELITE_BYTE_BUDGET = 27616;
+// ADR 0139: user-approved +32 B for "is not" and the cart bridge's known().
+const ELITE_BYTE_BUDGET = 27648;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

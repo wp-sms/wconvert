@@ -100,6 +100,8 @@ Before this:
   parity test requires it and allows true only on Condition and Visitor kinds.
 - `config.display_rules` gains no column: `negate` is stored inside the
   existing JSON, only when true.
-- The loader budget grew by the helper (Pro and Elite, see `check-loader.mjs`).
+- The loader budget grew, approved by the user: +32 B for Pro (26,976 B) and
+  Elite (27,648 B) for `leafAnswer` and the cart bridge's `known()`. Free
+  fits unchanged (`bin/check-loader.mjs`).
 - `User role` reads in the Who sentence ("their role is Editor"), so a Visitor
   fact on the Targeting axis may carry a phrase; a Page rule still may not.
