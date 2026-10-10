@@ -53,10 +53,10 @@ That is a real cost, and it is the right one to accept for now: it is an
 add `idx_optin_created` — and it should be taken when someone can show the
 scan actually hurting, not before.
 
-*Measured by [0140](0140-measured-reads-keep-their-indexes.md): at 1M Leads, a
-Campaign holding 0.05% of them pages in 70 ms, and one in a steady state pages in
-under 2.5 ms. `idx_optin` would add 66 MB and 0.05 ms per capture to fix the
-first case. Still not taken.*
+**Amended by [0140](0140-measured-reads-keep-their-indexes.md):** measured at
+1M Leads, an Optin holding 0.05% of them pages in 70 ms, and a capturing one
+pages in under 2.5 ms. `idx_optin` would add 66 MB and 0.05 ms per capture to
+fix the first case. Still not taken.
 
 *Extended by [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md):
 the 50-row default is now a page, with a maximum of 200 requested rows. A shared
@@ -82,6 +82,14 @@ the primary key to every secondary index, so `idx_email` covers `(email, id)`
 and even the `MAX(id)` each group reports comes out of the index without
 touching a row.
 
+**Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** once
+`LeadQuery` bounded every read by its snapshot, MySQL stopped choosing these
+indexes. It ranges the primary key and groups in a temporary table: 6.8 s at 1M
+Leads. The unfiltered grouping now names `idx_email` in an optimizer hint
+(2.0 s). That answers the email half from the index, but the phone half still
+looks up its `email IS NULL` rows. A narrowed grouping keeps MySQL's plan,
+because forcing the index there was slower where it was measured.
+
 The group's "last submitted" is read off that ULID rather than fetched as a
 `MAX(created_at)`, for the same reason: adding `created_at` to the aggregate
 would force a row lookup per row and lose the covering read.
@@ -93,13 +101,6 @@ reuses the email-first partition: a phone group requires `email IS NULL` even
 though an ordinary exact-phone search may match rows that also carry email.
 Additional Optin/date/search predicates can change the optimizer's access path;
 this extension does not claim that every combined filter remains index-only.*
-
-**Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** once
-`LeadQuery` bounded every read by its snapshot, MySQL stopped using `idx_email`
-here. It ranges the primary key and groups in a temporary table, taking 6.8 s at
-1M Leads. The unfiltered grouping now names `idx_email` in an optimizer hint
-(2.0 s). A narrowed grouping leaves the plan to MySQL, where forcing the index
-was slower.
 
 ## What this costs
 

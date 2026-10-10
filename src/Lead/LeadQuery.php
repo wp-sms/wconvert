@@ -88,17 +88,6 @@ final class LeadQuery
             $snapshot ?? self::snapshotNow(), $before, $canonical($value('group_identifier')), $search, $purpose, $order);
     }
 
-    /**
-     * Whether any filter narrows the log below "everything before the snapshot".
-     * The cursor and the order do not: they page the same set.
-     */
-    public function narrowed(): bool
-    {
-        return $this->optinId !== null || $this->identifier !== null || $this->leadId !== null
-            || $this->from !== null || $this->to !== null || $this->groupIdentifier !== null
-            || $this->search !== null || $this->purpose !== null;
-    }
-
     /** Exclude the current millisecond too: later captures cannot enter this paging window. */
     public static function snapshotNow(): string
     {
@@ -111,10 +100,45 @@ final class LeadQuery
     }
 
     /**
+     * Whether any filter narrows the log below "everything before the snapshot".
+     * Read off the same predicates the query is built from, so a filter added
+     * there narrows here without being listed twice. The snapshot, the cursor
+     * and the order do not narrow: they page the same set.
+     */
+    public function narrowed(): bool
+    {
+        return $this->filters([])['sql'] !== '1 = 1';
+    }
+
+    /**
      * @param list<string>|null $purposeOptins All matching IDs, including historical Campaigns.
      * @return array{sql: literal-string, params: list<string>}
      */
     public function constraints(?array $purposeOptins = null): array
+    {
+        $filter = $this->filters($purposeOptins);
+        if ($this->snapshot !== '') { $filter['sql'] .= ' AND id < %s'; $filter['params'][] = $this->snapshot; }
+
+        return $filter;
+    }
+
+    /** The first Lead id of a site-timezone day, as a primary-key bound (ADR 0033). */
+    public static function dayStart(string $date): string
+    {
+        return Ulid::floorAt(max(0, self::date($date)->getTimestamp() * 1000));
+    }
+
+    /** The first Lead id after a site-timezone day: the exclusive upper bound. */
+    public static function dayEnd(string $date): string
+    {
+        return Ulid::floorAt(max(0, self::date($date)->modify('+1 day')->getTimestamp() * 1000));
+    }
+
+    /**
+     * @param list<string>|null $purposeOptins
+     * @return array{sql: literal-string, params: list<string>}
+     */
+    private function filters(?array $purposeOptins): array
     {
         $sql = '1 = 1';
         $params = [];
@@ -149,13 +173,12 @@ final class LeadQuery
         }
         if ($this->from !== null) {
             $sql .= ' AND id >= %s';
-            $params[] = Ulid::floorAt(max(0, self::date($this->from)->getTimestamp() * 1000));
+            $params[] = self::dayStart($this->from);
         }
         if ($this->to !== null) {
             $sql .= ' AND id < %s';
-            $params[] = Ulid::floorAt(max(0, self::date($this->to)->modify('+1 day')->getTimestamp() * 1000));
+            $params[] = self::dayEnd($this->to);
         }
-        if ($this->snapshot !== '') { $sql .= ' AND id < %s'; $params[] = $this->snapshot; }
 
         return ['sql' => $sql, 'params' => $params];
     }

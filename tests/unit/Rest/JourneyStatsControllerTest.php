@@ -31,7 +31,7 @@ final class JourneyStatsControllerTest extends TestCase
     /**
      * The interests window is a primary-key range, not a `created_at` one.
      * Both name the same Leads (ADR 0033), but only the key can be ranged:
-     * on `created_at` a quiet Campaign walked the whole log (1.6 s at 1M rows).
+     * on `created_at` a quiet Optin walked the whole log (1.6 s at 1M rows).
      */
     public function testInterestsBoundTheWindowByThePrimaryKey(): void
     {

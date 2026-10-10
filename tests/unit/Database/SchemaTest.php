@@ -70,10 +70,11 @@ final class SchemaTest extends TestCase
      *   grouped by kind. A secondary index here would be paid on every beacon
      *   for a query nobody issues." #28 issued it, and it is neither: it is a
      *   date range across every Optin, which cannot use a key with `optin_id`
-     *   leftmost and is a scan. The number stays zero on the ASYMMETRY rather
-     *   than on the access path — ~29k rows a year, capped to one year by
-     *   `StatRange::MAX_DAYS`, against an index paid on every beacon for a read
-     *   one admin takes on demand (ADR 0019, ADR 0034).
+     *   leftmost and is a scan. The number stays zero on a MEASUREMENT: the
+     *   30-day scan is 94 ms at 421k rows, and the index that read would use,
+     *   `(scope, stat_date)`, adds nearly half the table. An increment never
+     *   writes a secondary index, so beacons are not what it would cost
+     *   (ADR 0140).
      */
     private const INDEX_BUDGET = [
         'wconvert_optins' => 0,

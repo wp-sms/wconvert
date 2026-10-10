@@ -79,7 +79,9 @@ and is a scan.
   with a rollup job in front of it.
 
 The scan is affordable because ADR 0019 books the whole table at **~29k rows a
-year**, and [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php) caps the
+year** (**corrected by [0140](0140-measured-reads-keep-their-indexes.md):**
+campaign rows only; screen and product scopes add more, and the scan was
+measured at 94 ms over 421k rows), and [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php) caps the
 window at one year. **Corrected by [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md):** this bounds
 the returned window, not the scan of the unindexed table. Two comparison windows
 mean two scans; larger installs need measured query-cost review.

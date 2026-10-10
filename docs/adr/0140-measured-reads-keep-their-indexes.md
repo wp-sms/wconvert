@@ -8,7 +8,7 @@ index, and which index) and [0019](0019-analytics-stores-daily-counters-not-even
 
 Those three ADRs refused indexes on reasoning nobody had measured. This one
 measured it: scratch copies of `Schema::sql()` on MySQL 8.0.35 with a 128 MB
-buffer pool, at 10k, 100k and 1M Leads (30 Campaigns, one taking 40%, one
+buffer pool, at 10k, 100k and 1M Leads (30 Optins, one taking 40%, one
 0.05%; ~600-byte `fields`; 15% repeat identifiers) and 37k, 421k and 1.32M stats
 rows (campaign, screen and product scopes). Each time is the median of five
 warm runs, and the same query texts were also run on a real site.
@@ -23,8 +23,8 @@ warm runs, and the same query texts were also run on a real site.
 2. **A stats index is not "paid on every beacon".** An increment updates
    `count`, and no secondary index contains `count`. Only a beacon that creates a
    new row writes to the index, which on a live site is about one in a thousand.
-   10k upserts at that mix cost 0.0950 ms each without `idx_date` and 0.0945 ms
-   with it.
+   10k upserts at that mix cost 0.0950 ms each without `idx_stat_date` and
+   0.0945 ms with it.
 3. **`idx_stat_date` is the wrong escalation.** `inRange()` filters
    `scope = ''`, and the date-only index does not contain `scope`. So at
    1.32M rows MySQL ignores it and keeps scanning (311 ms). `(scope, stat_date)`
@@ -37,19 +37,22 @@ warm runs, and the same query texts were also run on a real site.
 1. **The unfiltered grouping names its index.** When the `LeadQuery` has no
    narrowing filter, `LeadRepository::groups()` adds the optimizer hint
    `/*+ INDEX(l idx_email) */` to both halves. This cuts the read from 1.2 s to
-   0.14 s at 100k Leads, and from 6.8 s to 2.0 s at 1M, with identical rows.
-   `LeadQuery::narrowed()` decides when the hint applies. Every narrowing filter
-   already has a better path, and forcing `idx_email` there was a regression:
-   one Lead by id went from 0.1 ms to 142 ms, one phone number from 0.1 ms to
-   2.1 s. The hint is a comment, so SQLite, MariaDB and MySQL before 8.0.20
+   0.14 s at 100k Leads, and from 6.8 s to 2.0 s at 1M, with identical rows. The email half reads only the index; the phone half
+   still looks up its `email IS NULL` rows.
+   `LeadQuery::narrowed()` decides when the hint applies, reading the same
+   predicates the query is built from. Under a narrowing filter the hint was a
+   regression where measured: one Lead by id went from 0.1 ms to 142 ms, one
+   phone number from 0.1 ms to 2.1 s, and one large Optin gained nothing.
+   Purpose and search were not measured, so they keep MySQL's plan too. The hint is a comment, so SQLite, MariaDB and MySQL before 8.0.20
    read the same text and ignore it.
 2. **Interests are a primary-key range.** `JourneyStatsController::interests()`
-   bounded its window with `created_at`, so for a quiet Campaign it walked the
+   bounded its window with `created_at`, so for a quiet Optin it walked the
    whole log backwards (1.6 s at 1M). It now uses `id >= floorAt(start) AND
    id < floorAt(end)`, the same trick `LeadQuery`'s date filters already use,
-   and the same rows come back in 19 ms.
+   and the same rows come back in 19 ms. `LeadQuery::dayStart()` and `dayEnd()`
+   are the one spelling of a site day as a key bound.
 3. **Still no `idx_optin` on `wconvert_leads`.** It would help only rarely-used
-   Campaigns: a page goes from 70 ms to 1 ms and a grouping from 0.7 s to 2 ms
+   Optins: a page goes from 70 ms to 1 ms and a grouping from 0.7 s to 2 ms
    at 1M. It does nothing for the totals (377 ms) or the unfiltered grouping. Its
    cost:
 

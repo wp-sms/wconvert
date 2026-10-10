@@ -140,9 +140,9 @@ final class LeadHistoryTest extends TestCase
     }
 
     /**
-     * Any narrowing filter has a better index than `idx_email`, and forcing it
-     * there is a regression: one Lead by id went from 0.1 ms to 142 ms, one
-     * phone number from 0.1 ms to 2.1 s.
+     * A narrowed read keeps MySQL's own plan. Forcing `idx_email` there was a
+     * regression where measured: one Lead by id went from 0.1 ms to 142 ms, one
+     * phone number from 0.1 ms to 2.1 s (ADR 0140).
      *
      * @param array<string, string> $filter
      */
@@ -160,7 +160,7 @@ final class LeadHistoryTest extends TestCase
     /** @return iterable<string, array{array<string, string>}> */
     public static function narrowingFilters(): iterable
     {
-        yield 'one Campaign' => [['optin_id' => self::NEWER]];
+        yield 'one Optin' => [['optin_id' => self::NEWER]];
         yield 'one Lead' => [['lead_id' => self::OLDER]];
         yield 'one email' => [['identifier' => 'sarah@example.com']];
         yield 'one phone' => [['identifier' => '+14155550123']];
