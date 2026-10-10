@@ -29,7 +29,6 @@ import { StatusBadge } from './StatusBadge';
 
 const Facts = lazy(() => import('./CampaignDetails'));
 
-export type { CampaignResults };
 
 /** The two status changes Details can ask; delete stays in the row's menu only. */
 export type DetailsDecision = 'publish' | 'pause';

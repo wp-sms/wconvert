@@ -43,8 +43,7 @@ import { ReadinessDialog } from './ReadinessDialog';
 import { captureModeOf, routedMode } from './captureMode';
 import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
-import { CampaignSummary, type CampaignResults } from '../optins/CampaignSummary';
-import { HowItRuns } from '../optins/CampaignDetails';
+import { CampaignSummary, HowItRuns, type CampaignResults } from '../optins/CampaignSummary';
 import { campaignFacts, linksIn } from '../optins/campaignFacts';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
@@ -184,7 +183,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const previewReturnTab = useRef<TabId>('edit');
   const [previewFromRules, setPreviewFromRules] = useState(false);
   const [journeyTestRequest, setJourneyTestRequest] = useState(0);
-  const [journeyTestMode, setJourneyTestMode] = useState<'journey' | 'visit'>('journey');
   useEffect(() => { if (tab === 'edit') setJourneyVisited(true); }, [tab]);
   const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
   const journeyRepairSerial = useRef(0);
@@ -249,6 +247,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const entryOfGoal = goalEntry.status === 'ready' ? goalEntry.data : null;
 
   const numbers = stats.status === 'ready' ? stats.data : null;
+  const campaignStatus = statusOf({ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges });
   // A draft has no period; a read that answered nothing has none to name either.
   const detailResults: CampaignResults = publishedAt === null || (stats.status === 'ready' && numbers === null) ? { status: 'ready', days: 0 }
     : stats.status === 'loading' ? { status: 'loading' }
@@ -695,11 +694,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const reopenLabel = __('Reopen button', 'wconvert');
   const showReopen = () => openTreeRow('reopen');
 
-  const previewAs = (mode: 'journey' | 'visit') => {
+  const openPreview = () => {
     previewReturnTab.current = tab;
     setPreviewFromRules(tab === 'rules');
     setTab('edit');
-    setJourneyTestMode(mode);
     setJourneyTestRequest(value => value + 1);
   };
   const openLook = () => openTreeRow('look');
@@ -919,7 +917,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }}
           />}
           {/* One Preview, no menu (ADR 0138): its two tabs are inside the dialog. */}
-          <Button variant="outline" ref={previewButton} size={small ? 'icon-sm' : 'default'} aria-label={__('Preview', 'wconvert')} disabled={entry === null || busy} onClick={() => previewAs('journey')}>
+          <Button variant="outline" ref={previewButton} size={small ? 'icon-sm' : 'default'} aria-label={__('Preview', 'wconvert')} disabled={entry === null || busy} onClick={openPreview}>
             <Eye aria-hidden="true" />
             {!small && __('Preview', 'wconvert')}
           </Button>
@@ -955,7 +953,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onPublish={publish}
             onKeepLocal={() => edit({ capture_mode: 'local', destinations: [] })}
             onGoToLook={openLook}
-            onPreview={() => previewAs('journey')}
+            onPreview={openPreview}
             {...issueRoutes}
           />
           <DropdownMenu><DropdownMenuTrigger asChild><Button ref={campaignActions} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
@@ -1014,7 +1012,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               onDesign={openLook}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
-            testRequest={journeyTestRequest} testRequestMode={journeyTestMode} testReturnFocus={previewButton} previewTitle={name || __('Untitled campaign', 'wconvert')}
+            testRequest={journeyTestRequest} testReturnFocus={previewButton} previewTitle={name || __('Untitled campaign', 'wconvert')}
             whoSeesIt={close => <Suspense fallback={<RowsSkeleton rows={4} />}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={act} value={displayRules} vocabulary={vocabulary}
               onClose={close} onOpenSection={section => { close(); setTab('rules'); setRevealSection({ id: section }); }} /></Suspense>} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
             issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
@@ -1044,7 +1042,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         }}>
           <AdminDialogHeader
             title={name || __('Untitled campaign', 'wconvert')}
-            badge={<StatusBadge status={statusOf({ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges })} />}
+            badge={<StatusBadge status={campaignStatus} />}
             meta={dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : undefined}
           />
           <AdminDialogBody className="wconvert-campaign-detail__body">
@@ -1059,7 +1057,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 </Button>
               )}
               results={detailResults}
-              status={statusOf({ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges })}
+              status={campaignStatus}
               howItRuns={displayAxes && <HowItRuns facts={campaignFacts({
                 rules: displayAxes,
                 where: displayTypeOf(config, templates) === 'inline' ? { text: config.content_lock == null && config.inline_placement == null ? __('Where you place its block or shortcode', 'wconvert') : inlineSummary } : undefined,

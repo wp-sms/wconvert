@@ -1858,10 +1858,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-test__side .wconvert-journey-test__current { padding: 10px 12px; list-style: none; border: 1px solid var(--border); border-radius: var(--radius); background: var(--secondary); }
 .wconvert-journey-test__side .wconvert-journey-test__current li { padding: 0; }
 .wconvert-journey-test__current span { display: block; margin-block-start: 3px; }
-.wconvert-journey-test__history { border-block-end: 1px solid var(--border); padding-block-end: 8px; }
 
-.wconvert-journey-test__history[open]>p { margin-block: 8px; font-size: var(--text-micro); color: var(--muted-foreground); }
-.wconvert-journey-test__history ol { margin-block-start: 8px; }
 
 .wconvert-campaign-screens__items section .wconvert-disclosure > summary { padding-inline: 8px; font-size: var(--text-micro); }
 

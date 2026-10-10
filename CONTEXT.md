@@ -805,7 +805,7 @@ allowed to rely on expired facts: an Optin whose cart emptied while its ten
 second timer ran does not show. Pro product/category/quantity/amount predicates use a prepared, expiring WooCommerce session projection and fail closed while it is unavailable. A selected-products block offers merchant-chosen catalog links as one click-only act. See [ADR 0117](docs/adr/0117-cart-intelligence-uses-a-bounded-session-projection.md).
 
 The cart-intelligence follow-up supports configured WooCommerce cross-sells and
-a stateless sample-basket preview in the Test a visit dialog. The preview
+a stateless sample-basket preview in Preview's Who sees it tab (formerly the Test a visit dialog; ADR 0138). The preview
 uses live catalog facts and shared cart predicates without a real cart mutation
 or analytics event. See [ADR 0118](docs/adr/0118-sample-baskets-share-live-commerce-evaluation.md).
 

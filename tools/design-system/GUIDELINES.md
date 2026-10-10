@@ -289,7 +289,8 @@ browser, since a class-name test cannot establish the final cascade.
 - **Header:** the title is the subject itself (a person, a campaign), an
   optional status badge, and one muted meta line. Titles truncate before ✕.
 - **Body:** the only part that scrolls.
-- **Footer:** fixed. Back or Cancel at the start, an optional short note, the
+- **Footer:** fixed. Back or Cancel at the start (or a secondary way out such as
+  Review & publish's Preview, ADR 0138), an optional short note, the
   primary action at the end, and an error beside the actions. Footer controls
   take the toolbar scope.
 - **Dirty:** Escape, an outside click or ✕ asks "Discard changes?" only when
@@ -799,9 +800,10 @@ must not imply that mutually exclusive paths are sequential visitor steps.
   Reuse the publication validators and their repair addresses. Repair opens the
   exact existing control and offers Back to issues; an empty list does not prove
   that all visitor cases have been tested.
-- Preview & test separates Check the design, Try as a visitor and Explore answer paths.
+- ~~Preview & test separates Check the design, Try as a visitor and Explore answer paths.
   Predictions begin without assumed answers and stop at each unanswered question
-  or submission choice. Diagnostics appear progressively beside the form. Walkthroughs
+  or submission choice.~~ Preview is two tabs, Try the form and Who sees it; answer
+  paths are explored by trying the real form (ADR 0138). Diagnostics appear progressively beside the form. Walkthroughs
   highlight only reached transitions. Reset remains available, tree edits clear
   stale map traces, and neither mode creates Leads or sends destination requests.
 - Keep the ordinary sequence horizontal. Place a proven optional detour below

@@ -1,5 +1,5 @@
 import { planFrom } from '../builder/rules/plan';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
 import { getOptin, getRules, type Frequency, type RuleType, type Targeting } from '../builder/api';
@@ -12,8 +12,8 @@ import { destinationsSaid } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
 import { listGoals } from '../goals/api';
-import { FactList, type Fact } from '../shell/FactList';
 import { campaignFacts, linksIn } from './campaignFacts';
+import { HowItRuns } from './CampaignSummary';
 import { RegionError } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { messageOf } from '../shell/loadable';
@@ -117,15 +117,4 @@ export default function CampaignDetails({ id }: { id: string }) {
     ...context,
     where: context.inline ? { text: __('Where you place its block or shortcode', 'wconvert') } : context.where,
   })} />;
-}
-
-/** The section both Details hosts draw the facts in. */
-export function HowItRuns({ facts }: { facts: readonly Fact[] }) {
-  const heading = useId();
-  return (
-    <section className="wconvert-campaign-facts" aria-labelledby={heading}>
-      <h3 id={heading}>{__('How it runs', 'wconvert')}</h3>
-      <FactList facts={facts} />
-    </section>
-  );
 }

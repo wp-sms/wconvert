@@ -22,6 +22,18 @@ import { capturesTaken } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise, summaryOf } from './rules/summaries';
 import { ISSUE, consentIn, followIssue, type CampaignIssue, type IssueRoutes } from './readiness/campaignIssues';
+import type { CaptureMode } from './captureMode';
+import { PlacementGuidance } from './PlacementGuidance';
+import { inlinePlacementLabel } from '../inlinePlacement';
+import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
+import { useDirection } from '../hooks/useDirection';
+import type { Path } from './panel';
+import type { RuleVocabulary } from './api';
+import type { DisplayRulesValue } from './rules/summaries';
+import type { Destination } from '../destinations/api';
+import { goalSaid } from '../goals/said';
+import type { GoalEntry } from '../goals/api';
+import type { Template } from '@renderer/types';
 
 const CampaignDesign = lazy(() => import('../optins/CampaignDesign'));
 const handoffIssueOf = (issues: readonly CampaignIssue[]) => issues.some(issue => issue.key === ISSUE.handoff);
@@ -36,18 +48,6 @@ function fixLabel(issue: CampaignIssue): string {
     default: return __('Fix in the editor', 'wconvert');
   }
 }
-import type { CaptureMode } from './captureMode';
-import { PlacementGuidance } from './PlacementGuidance';
-import { inlinePlacementLabel } from '../inlinePlacement';
-import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
-import { useDirection } from '../hooks/useDirection';
-import type { Path } from './panel';
-import type { RuleVocabulary } from './api';
-import type { DisplayRulesValue } from './rules/summaries';
-import type { Destination } from '../destinations/api';
-import { goalSaid } from '../goals/said';
-import type { GoalEntry } from '../goals/api';
-import type { Template } from '@renderer/types';
 
 export interface ReadinessDialogProps {
   /** The campaign's name: the dialog is about it, so it is the title. */

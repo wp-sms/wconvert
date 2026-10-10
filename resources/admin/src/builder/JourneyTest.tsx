@@ -319,9 +319,10 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         // Screens off this path are one muted line each, never a list to open (ADR 0138).
         return screens.length > 0 && <div key={category} className="wconvert-journey-test__others" data-category={category}>
           <span>{category === 'pending' ? __('Not reached yet:', 'wconvert') : __('Skipped:', 'wconvert')}</span>
-          <ul>{screens.map(at => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Bypassed by another path', 'wconvert') : __('Show condition did not match', 'wconvert')}>
+          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Bypassed by another path', 'wconvert') : __('Show condition did not match', 'wconvert')}>
             <bdi>{tree.steps[at].name}</bdi>
             {category === 'skipped' && <button type="button" onClick={() => onEdit(at, progress.states[at] === 'hidden' ? 'condition' : undefined)}>{progress.states[at] === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
+            {/* translators: follows each but the last screen name in a one-line list. */ position < screens.length - 1 && __(',', 'wconvert')}
           </li>)}</ul>
         </div>;
       })}
@@ -360,7 +361,9 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
           <p>{shownResult?.product_filter ? __('Available shows live matches. The other options simulate problems. No activity is counted.', 'wconvert') : __('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
         </fieldset>}
       </Disclosure>}
-      <p className="wconvert-journey-test__scope">{destinationSummary && tree.submissions.length > 0 ? sprintf(__('Checks screens, answers and required fields. Destination setup: %s; delivery here is simulated.', 'wconvert'), destinationSummary) : __('Checks screens, answers and required fields. Nothing is saved, sent or counted.', 'wconvert')}</p>
+      <p className="wconvert-journey-test__scope">{destinationSummary && tree.submissions.length > 0 ? sprintf(
+        /* translators: %s: where this campaign's leads go, e.g. “Mailchimp”. */
+        __('Checks screens, answers and required fields. Destination setup: %s; delivery here is simulated.', 'wconvert'), destinationSummary) : __('Checks screens, answers and required fields. Nothing is saved, sent or counted.', 'wconvert')}</p>
     </aside>
     <AdminDialogFooter className="wconvert-preview-test__footer" note={__('Uses your unsaved draft.', 'wconvert')}>
       <Button variant="outline" onClick={reset}><RotateCcw aria-hidden="true" />{__('Start over', 'wconvert')}</Button>

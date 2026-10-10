@@ -7,6 +7,7 @@ import { formatCount, formatRange, formatRate } from '../lib/format';
 import type { GoalEntry } from '../goals/api';
 import type { Loadable } from '../shell/loadable';
 import { goalSaid } from '../goals/said';
+import { FactList, type Fact } from '../shell/FactList';
 import type { OptinStatus } from './api';
 
 /** One campaign's numbers for a period, as its host already read them. */
@@ -91,9 +92,11 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
         ? sprintf(
             /* translators: 1: the period, e.g. “Last 30 days”. 2: its dates, e.g. “Sep 10 – Oct 9”. */
             __('%1$s · %2$s', 'wconvert'),
+            /* translators: %d: how many days the period covers. */
             sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days),
             formatRange(results.from, results.to),
           )
+        /* translators: %d: how many days the period covers. */
         : sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days)
       : __('Results', 'wconvert');
   const result = results.status === 'ready' ? results.result : undefined;
@@ -138,6 +141,17 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
       ) : (
         <p>{status === 'draft' ? __('No results yet.', 'wconvert') : __('No results in this period.', 'wconvert')}</p>
       )}
+    </section>
+  );
+}
+
+/** How it runs, as both Details hosts and nothing else draw it (ADR 0138). */
+export function HowItRuns({ facts }: { facts: readonly Fact[] }) {
+  const heading = useId();
+  return (
+    <section className="wconvert-campaign-facts" aria-labelledby={heading}>
+      <h3 id={heading}>{__('How it runs', 'wconvert')}</h3>
+      <FactList facts={facts} />
     </section>
   );
 }

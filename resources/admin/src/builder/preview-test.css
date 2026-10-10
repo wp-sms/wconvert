@@ -29,8 +29,8 @@
 /* Screens off this path: one muted line each (ADR 0138). */
 .wconvert-journey-test__others { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 6px; font-size: var(--text-note); color: var(--muted-foreground); }
 .wconvert-journey-test__side .wconvert-journey-test__others ul { display: contents; }
-.wconvert-journey-test__side .wconvert-journey-test__others li { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; font-weight: 400; color: inherit; }
-.wconvert-journey-test__others li:not(:last-child)::after { content: ','; }
+.wconvert-journey-test__side .wconvert-journey-test__others li { display: inline; padding: 0; font-weight: 400; color: inherit; }
+.wconvert-journey-test__others li > button { margin-inline: 4px 0; }
 .wconvert-journey-test__others button { padding: 0; border: 0; background: none; color: var(--action); font: inherit; text-decoration-line: underline; cursor: pointer; }
 .wconvert-journey-test__side .wconvert-journey-test__scope { margin-block-start: auto; font-size: var(--text-micro); line-height: 1.5; }
 .wconvert-journey-test__side .wconvert-journey-test__complete { color: var(--foreground); }

@@ -51,7 +51,7 @@ const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testRequestMode = 'journey', testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
+export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
   onUndo?(): void; labels?: TemplateLabels; onResultSelect?(id: string | undefined): void; tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree;
   /** The campaign's one issue list (ADR 0133); the screens and the map show the ones about a screen. */
   issues?: readonly CampaignIssue[];
@@ -70,8 +70,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   displaySummary?: string; destinationSummary?: string; deliveryMode?: 'local' | 'connected' | 'none'; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number;
   repairRequest?: JourneyRepair & { readonly serial: number }; embedded?: boolean;
   editorCanvas?: ReactNode; elementPanel?: ReactNode; elementSelection?: object; onClearElement?(): void; testRequest?: number; onTestClose?(): void; onTestExit?(): void;
-  /** Which of Preview's two tabs a new request opens (ADR 0138): the form, or who sees it. */
-  testRequestMode?: 'journey' | 'visit';
   /** Preview's title: the campaign's name. */
   previewTitle?: string;
   /** Preview's second tab, Who sees it; `close` closes Preview. */
@@ -136,7 +134,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   useEffect(() => { if (editorCanvas && view === 'flow' && !manyWays) setView('edit'); }, [editorCanvas, view, manyWays]);
   const externalTestTrigger = useRef<HTMLElement | null>(null);
   const handledTestRequest = useRef(0);
-  useEffect(() => { if (testRequest && testRequest !== handledTestRequest.current) { handledTestRequest.current = testRequest; externalTestTrigger.current = testReturnFocus?.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null); returnToTestTrigger.current = true; setTestChange(undefined); setTestMode(testRequestMode); setTestOpen(true); } }, [testRequest]); // eslint-disable-line react-hooks/exhaustive-deps -- the mode travels with the request
+  useEffect(() => { if (testRequest && testRequest !== handledTestRequest.current) { handledTestRequest.current = testRequest; externalTestTrigger.current = testReturnFocus?.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null); returnToTestTrigger.current = true; setTestChange(undefined); setTestMode('journey'); setTestOpen(true); } }, [testRequest]); // eslint-disable-line react-hooks/exhaustive-deps -- only a new request opens it
   useEffect(() => { if (elementSelection) { setInspecting(true); setRequestedSection('content'); setMobilePane('details'); } }, [elementSelection]);
   const [query, setQuery] = useState('');
   const [inspecting, setInspecting] = useState(!!editorCanvas || !embedded);

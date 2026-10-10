@@ -63,7 +63,8 @@ import {
 } from './api';
 import { DataTable, DataTableHead, DataTableColumn, DataTableBody, DataTableRow, DataTableCell, DataTableActions } from '../shell/DataTable';
 import { CampaignSkeleton } from './CampaignSkeleton';
-import { CampaignDetailsDialog, type CampaignResults } from './DetailsDialog';
+import { CampaignDetailsDialog } from './DetailsDialog';
+import type { CampaignResults } from './CampaignSummary';
 import { decisionCopy, type DecisionKind } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
 import './campaigns.css';

@@ -4,7 +4,8 @@ Date: 2026-10-10. Status: accepted.
 Amends [0134](0134-one-edit-tab-look-screen-element.md) (the Preview menu),
 [0129](0129-display-rules-plain-questions-and-quick-picks.md) (Test a visit),
 [0108](0108-explicit-journey-graph-and-legacy-migration.md) (the previewed
-result), [0137](0137-details-and-previews-read-at-a-glance.md) decision 2
+result), [0102](0102-content-lock-is-an-optional-inline-capture-journey.md) (where content lock is
+simulated), [0088](0088-handoff-state-and-required-fixes-lead-the-review.md) (the measurement disclosure), [0137](0137-details-and-previews-read-at-a-glance.md) decision 2
 (Details), [0131](0131-one-way-to-show-each-thing-in-the-admin.md) decision 1
 and [0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md)
 (the stale "Preview & test"). GUIDELINES §"One modal layout" carries the rules.
