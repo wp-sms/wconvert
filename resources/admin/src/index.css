@@ -3505,10 +3505,6 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 
-.wconvert-block__chip--warn {
-  background: var(--warning-surface);
-  color: var(--warning);
-}
 
 /*
  * Which pane of a `split` a block sits in. Named first and second rather than

@@ -2518,3 +2518,10 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* A check's hint is a panel hint: 12px (ADR 0136). */
 #wconvert-admin .wconvert-panel-section .wconvert-check span > span { font-size: var(--text-micro); line-height: 1.4; }
 .wconvert-panel-actions { align-items: center; }
+
+/* The tree's element rows give the words the room (ADR 0136): an 8px step
+   from the screen row, a 16px twist slot, and warnings as icons. */
+#wconvert-admin .wconvert-edit-tree__elements { margin-inline-start: 10px; padding-inline-start: 2px; }
+#wconvert-admin .wconvert-edit-tree__elements .wconvert-block__twist { inline-size: 16px; }
+#wconvert-admin .wconvert-block__loses { display: inline-flex; flex-shrink: 0; align-items: center; color: var(--warning); }
+#wconvert-admin .wconvert-block__loses svg { inline-size: 13px; block-size: 13px; }
