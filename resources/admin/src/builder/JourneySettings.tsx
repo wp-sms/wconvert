@@ -9,7 +9,7 @@ import { retireAnswerPlan } from './structure/retireAnswer';
 import { answerReferences } from './structure/answerReferences';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
 import type { JourneyRepair } from './structure/journeyReadiness';
-import { graphEdgeId, graphReaches } from './structure/graph';
+import { graphReaches } from './structure/graph';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Dialog } from '../components/ui/dialog';
 import { AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
@@ -188,22 +188,22 @@ export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect
     || walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')) return null;
   const sources = questionsBefore(tree, step);
   const groupedFollowup = followupGroups(tree).some(group => group.screens.includes(step));
-  const hiddenDestination = tree.graph && tree.steps.find(item => item.id === tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to);
+  const skipTo = tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')
+    ?? tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'default');
+  const hiddenDestination = tree.graph && tree.steps.find(item => item.id === skipTo?.to);
   return <Disclosure variant="inline" className="wconvert-journey-settings wconvert-journey-visibility" open={open} onToggle={setOpen}
     title={__('Show only if…', 'wconvert')} summary={screen.when ? conditionText(tree, screen.when) : __('Everyone who reaches it', 'wconvert')}>
     <ConditionSettings value={screen.when} sources={sources} onChange={when => {
       const steps = tree.steps.map((item, at) => at === step ? { ...item, when } : item);
       if (!tree.graph) { onChange({ ...tree, steps }); return; }
-      const edges = tree.graph.edges.filter(edge => !(edge.from === screen.id && edge.kind === 'hidden'));
-      const fallback = edges.find(edge => edge.from === screen.id && edge.kind === 'default');
-      const hidden = tree.graph.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden');
-      if (when && (hidden || fallback)) edges.push({ id: hidden?.id ?? graphEdgeId(tree.graph),
-        from: screen.id, to: (hidden ?? fallback)!.to, kind: 'hidden' });
+      // A skipped screen falls through along its default edge (ADR 0135): a condition adds no
+      // edge, and an override goes with the condition that needed it.
+      const edges = when ? tree.graph.edges : tree.graph.edges.filter(edge => !(edge.from === screen.id && edge.kind === 'hidden'));
       onChange({ ...tree, steps, graph: { ...tree.graph, edges } });
     }} />
     {screen.when && <p className="wconvert-journey-settings__skip">{groupedFollowup ? __('If this does not match, skip this question and check the remaining follow-ups. All matching questions share one continuation.', 'wconvert') : tree.graph
-      ? hiddenDestination ? sprintf(__('If this does not match, skip “%1$s” and continue at “%2$s”. Change where it continues under Next screen.', 'wconvert'), screen.name, hiddenDestination.name)
-        : __('Choose where visitors continue when this screen is hidden under Next screen.', 'wconvert')
+      ? hiddenDestination ? sprintf(__('If this does not match, skip “%1$s” and continue at “%2$s”.', 'wconvert'), screen.name, hiddenDestination.name)
+        : __('Choose where visitors continue after this screen.', 'wconvert')
       : sprintf(__('If this does not match, skip “%1$s” and check “%2$s” next. Other relevant follow-ups can still appear.', 'wconvert'), screen.name, tree.steps[step + 1]?.name ?? __('the ending', 'wconvert'))}</p>}
     {screen.when?.clauses.map(clause => { const source = questionsBefore(tree, step).find(q => q.id === clause.question);
       const sourceAt = tree.steps.findIndex(item => walkNodes(item.content).some(node => 'id' in node && node.id === clause.question));

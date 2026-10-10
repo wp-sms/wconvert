@@ -19,6 +19,18 @@ it('asks all relevant follow-ups and rejoins by edge IDs regardless of screen ar
   }
 });
 
+/** ADR 0135: a skipped screen with no hidden edge continues along its default edge, in PHP and here alike. */
+it('lets a skipped screen fall through along its default edge when it has no hidden edge', () => {
+  const graph = fixture.fallthrough.graph as JourneyGraph;
+  for (const example of fixture.fallthrough.cases) {
+    const trace = graphTrace(steps, graph, example.answers as Answers);
+    expect(trace.indices.map(index => steps[index].id)).toEqual(example.visible);
+    expect(trace.answers).toEqual(example.active);
+    expect(trace.hidden).toEqual(example.hidden);
+    expect(trace.decisions.map(decision => decision.edge)).toEqual(example.edges);
+  }
+});
+
 it('takes the first matching answer edge, even when multiple interests match', () => {
   const when = (value: string) => ({ match: 'all' as const, clauses: [{ question: 'n1', operator: 'includes_any' as const, values: [value] }] });
   const exclusive: JourneyGraph = { entry: 'interests', edges: [

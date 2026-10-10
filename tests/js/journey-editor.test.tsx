@@ -655,7 +655,7 @@ it('focuses the hidden continuation when repairing a required-save bypass', asyn
       repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' }} />;
   }
   render(<RepairEditor />);
-  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveFocus());
 });
 
 it('focuses the default destination when repairing a required-save bypass', async () => {

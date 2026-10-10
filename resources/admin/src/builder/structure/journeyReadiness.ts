@@ -157,9 +157,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     if (!outgoing.some(edge => edge.kind === 'default') && (outgoing.length > 0 || ['input', 'content'].includes(screen.kind)))
       issues.push({ key: `continue:${screen.id}`, said: sprintf(__('Choose where visitors continue after “%s”.', 'wconvert'), screen.name),
         repair: { screenId: screen.id, section: 'paths', pathPriority: outgoing.filter(edge => edge.kind === 'answer').length } });
-    if (screen.when && !outgoing.some(edge => edge.kind === 'hidden'))
-      issues.push({ key: `hidden:${screen.id}`, said: sprintf(__('Choose where visitors go when “%s” is hidden.', 'wconvert'), screen.name),
-        repair: { screenId: screen.id, section: 'paths' } });
+    // A skipped screen falls through along its default edge; a hidden edge is an optional override (ADR 0135).
   }
   for (const id of unreachableScreenIds(tree)) {
     const name = tree.steps.find(screen => screen.id === id)?.name ?? id;

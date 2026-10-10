@@ -40,8 +40,11 @@ export function graphTrace(steps: readonly TemplateScreen[], graph: JourneyGraph
     const outgoing = graph.edges.filter(edge => edge.from === id);
     const choices = outgoing.filter(edge => edge.kind === 'answer');
     const priority = shown ? choices.findIndex(edge => edge.when && matches(edge.when, active)) : -1;
-    const edge = shown ? priority >= 0 ? choices[priority] : outgoing.find(item => item.kind === 'default')
-      : outgoing.find(item => item.kind === 'hidden');
+    // A skipped screen takes its hidden edge where it has one, else falls through
+    // along its default edge (ADR 0135) — the same rule as JourneyGraph::trace.
+    const fallback = outgoing.find(item => item.kind === 'default');
+    const edge = shown ? priority >= 0 ? choices[priority] : fallback
+      : outgoing.find(item => item.kind === 'hidden') ?? fallback;
     if (!edge) break;
     decisions.push({ edge: edge.id, from: id, to: edge.to, kind: edge.kind, ...(priority >= 0 ? { priority } : {}) });
     id = edge.to;

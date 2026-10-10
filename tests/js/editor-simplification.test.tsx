@@ -18,9 +18,10 @@ it('keeps a child follow-up on the shared continuation until custom routing is r
   const tree = enquiry as unknown as TemplateTree, change = vi.fn();
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(item => item.id === 'garden')} onChange={change} onInsert={() => {}} />);
   expect(screen.getByRole('combobox', { name: 'After the relevant questions' })).toHaveValue('contact');
-  expect(screen.queryByRole('combobox', { name: 'Continue at' })).toBeNull();
+  expect(screen.queryByRole('combobox', { name: 'If skipped, go to…' })).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
-  expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveValue('indoors');
+  // A skip edge to where the screen would have gone anyway reads as falling through (ADR 0135).
+  expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveValue('');
   expect(change).not.toHaveBeenCalled();
 });
 it('selecting a result updates the canvas selection without changing matching rules', () => {

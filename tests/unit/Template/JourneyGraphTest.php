@@ -19,6 +19,20 @@ final class JourneyGraphTest extends TestCase
         }
     }
 
+    /** ADR 0135: a skipped screen with no hidden edge continues along its default edge, as the loader does. */
+    public function testASkippedScreenFallsThroughAlongItsDefaultEdge(): void
+    {
+        $fixture = json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/fixtures/journey-graph.json'), true);
+        foreach ($fixture['fallthrough']['cases'] as $example) {
+            $trace = JourneyGraph::trace($fixture['steps'], $fixture['fallthrough']['graph'], $example['answers']);
+            self::assertSame($example['visible'], array_map(static fn (int $index): string => $fixture['steps'][$index]['id'], $trace['indices']));
+            self::assertSame($example['active'], $trace['answers']);
+            self::assertSame($example['hidden'], $trace['hidden']);
+            self::assertSame($example['edges'], array_column($trace['decisions'], 'edge'));
+        }
+        self::assertNull(JourneyGraph::issue(['steps' => $fixture['steps'], 'graph' => $fixture['fallthrough']['graph']]));
+    }
+
     public function testFirstMatchingAnswerEdgeWinsBeforeTheMerge(): void
     {
         $fixture = json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/fixtures/journey-graph.json'), true);

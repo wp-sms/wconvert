@@ -22,13 +22,17 @@ it('names a rule source that can only be answered after the rule', () => {
   expect(issue?.repair).toEqual({ screenId: 'interests', section: 'paths', edgeId: 'too-early' });
 });
 
-it('locates missing continuations and hidden exits without calling an input screen an ending', () => {
+it('locates a missing continuation without calling an input screen an ending', () => {
   const tree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.filter(edge => edge.from !== 'garden') } };
   const issues = journeyReadinessIssues(tree);
   expect(issues).toContainEqual({ key: 'continue:garden', said: 'Choose where visitors continue after “Garden details”.',
     repair: { screenId: 'garden', section: 'paths', pathPriority: 0 } });
-  expect(issues).toContainEqual({ key: 'hidden:garden', said: 'Choose where visitors go when “Garden details” is hidden.',
-    repair: { screenId: 'garden', section: 'paths' } });
+});
+
+/** ADR 0135: a skipped screen continues along its default edge, so a missing hidden edge is not an issue. */
+it('asks nothing about where a skipped screen goes when it has somewhere to continue', () => {
+  const tree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.filter(edge => edge.kind !== 'hidden') } };
+  expect(journeyReadinessIssues(tree).map(issue => issue.key).filter(key => key.startsWith('hidden:'))).toEqual([]);
 });
 
 it('points a removed answer back to its screen visibility rule', () => {
