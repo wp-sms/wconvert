@@ -2143,6 +2143,9 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
    =========================================================================== */
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header {
   display: grid;
+  /* One track the full width: the old pane heading's space-between would size it to its content. */
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
   gap: 6px;
   padding: 12px 16px;
   border-block-end: 1px solid var(--border);
@@ -2257,9 +2260,12 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
   grid-template-columns: 104px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  min-block-size: 36px;
-  padding-block: 4px;
+  min-block-size: 40px;
+  /* Room above and below the rule, so a select in the row never sits on it. */
+  padding-block: 8px;
 }
+.wconvert-fact:first-child { padding-block-start: 0; }
+.wconvert-fact:last-child { padding-block-end: 0; }
 .wconvert-fact + .wconvert-fact { border-block-start: 1px solid var(--surface); }
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__label { color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__value { min-inline-size: 0; color: var(--foreground); font-size: var(--text-body); overflow-wrap: anywhere; }
@@ -2487,8 +2493,9 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* "Shown if" sits in the facts as a row, not a grey card. */
 #wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility { margin: 0; padding: 0; border: 0; border-block-start: 1px solid var(--surface); border-radius: 0; background: none; }
 #wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility > summary { min-block-size: 36px; }
-#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title { display: flex; flex: 1; gap: 10px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
-#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title small { overflow: hidden; flex: 1; margin: 0; color: var(--foreground); font-size: var(--text-body); text-overflow: ellipsis; white-space: nowrap; }
+/* Its summary sits in the facts' value column, like every other fact. */
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 10px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title small { overflow: hidden; margin: 0; color: var(--foreground); font-size: var(--text-body); text-align: start; text-overflow: ellipsis; white-space: nowrap; }
 #wconvert-admin .wconvert-screen-facts .wconvert-facts:empty { display: none; }
 #wconvert-admin .wconvert-screen-facts:not(:has(.wconvert-fact, .wconvert-journey-visibility)) { display: none; }
 
