@@ -1,4 +1,4 @@
-import { useId, useState, type CSSProperties, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '../shell/Region';
 import { SpacingField } from './SpacingField';
@@ -8,7 +8,7 @@ import { ShadowField } from './ShadowField';
 import { styleTokens } from './styleTokens';
 import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
-import { ChevronDown, CodeXml, RotateCcw } from 'lucide-react';
+import { ChevronDown, CodeXml, RotateCcw, TriangleAlert } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { AlignmentPreview } from './ChoicePreview';
 import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
@@ -1233,7 +1233,6 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
     key: pairKey(fg, bg),
     fg,
     bg,
-    sample: SAMPLE[pairKey(fg, bg)] ?? 'Aa',
     verdict: readability(value(fg), value(bg)),
     named: sprintf(
       /* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */
@@ -1253,72 +1252,31 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
     return null;
   }
 
+  // One line per pair, with Fix at its end: the Style tab's readability row (ADR 0136).
   return (
-    <div className="wconvert-contrast">
-      <h6 className="wconvert-contrast__name">{__('Can it be read', 'wconvert')}</h6>
-
-      <ul className="wconvert-contrast__list">
-        {wrong.map((pair) => (
-          /*
-            **The sample is the point.** Two letters drawn in the actual pair
-            are a judgement a merchant can make at a glance; the words say
-            which way to move, and Fix moves it — to the look's own text or
-            background color where one reads, so the fix stays in the palette.
-          */
-          <li key={pair.key} className="wconvert-contrast__pair" data-state={pair.verdict.readable === null ? 'unknown' : 'fail'}>
-            <span
-              aria-hidden="true"
-              className="wconvert-contrast__sample"
-              style={{ '--wconvert-sample-fg': value(pair.fg), '--wconvert-sample-bg': value(pair.bg) } as CSSProperties}
+    <ul className="wconvert-scope__contrast wconvert-contrast" aria-label={__('Can it be read', 'wconvert')}>
+      {wrong.map((pair) => (
+        <li key={pair.key} className="wconvert-panel-warn" data-state={pair.verdict.readable === null ? 'unknown' : 'fail'}>
+          <TriangleAlert aria-hidden="true" />
+          <span title={pair.verdict.said}>
+            {pair.verdict.readable === null
+              ? sprintf(/* translators: 1: a pair, e.g. “Text on Background”. 2: why it cannot be measured. */ __('%1$s: %2$s', 'wconvert'), pair.named, pair.verdict.said)
+              : sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), pair.named)}
+            {advanced && pair.verdict.ratio !== null ? ` (${sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), pair.verdict.ratio)})` : ''}
+          </span>
+          {pair.verdict.readable === false && (
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              aria-label={sprintf(/* translators: %s: a pair, e.g. “Lighter text on Background”. */ __('Fix %s', 'wconvert'), pair.named)}
+              onClick={() => onChange({ ...template, tokens: withToken(template.tokens, pair.fg, readableFix(value, pair.bg)) })}
             >
-              {pair.sample}
-            </span>
-
-            <span className="wconvert-contrast__what">
-              <strong>{pair.named}</strong>
-              <span>{pair.verdict.said}</span>
-            </span>
-
-            {advanced && pair.verdict.ratio !== null && (
-              <span className="wconvert-contrast__ratio">
-                {sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), pair.verdict.ratio)}
-              </span>
-            )}
-
-            {pair.verdict.readable === false && (
-              <Button
-                type="button"
-                variant="outline"
-                size="xs"
-                aria-label={sprintf(/* translators: %s: a pair, e.g. “Lighter text on Background”. */ __('Fix %s', 'wconvert'), pair.named)}
-                onClick={() => onChange({ ...template, tokens: withToken(template.tokens, pair.fg, readableFix(value, pair.bg)) })}
-              >
-                {__('Fix', 'wconvert')}
-              </Button>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+              {__('Fix', 'wconvert')}
+            </Button>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
-
-/**
- * Every place the renderer paints words on a surface, and the two characters
- * that stand for what is painted there.
- *
- * The sample is not decoration: a ratio is a number nobody has an intuition
- * for, and the same pair drawn as letters is a judgement a merchant can make
- * without knowing what 4.5 means. `Go` for the button, because that is what a
- * button says.
- */
-/**
- * The lettered sample per pair, keyed by the pair {@see READABLE_PAIRS}
- * declares. The pairs are shared; the letters are this readout's.
- */
-const SAMPLE: Readonly<Record<string, string>> = {
-  'fg/bg': 'Aa',
-  'muted/bg': 'Aa',
-  'accent-fg/accent': 'Go',
-  'fg/input-bg': 'Aa',
-};

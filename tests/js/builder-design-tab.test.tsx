@@ -407,17 +407,16 @@ describe('the contrast readout', () => {
       />,
     );
 
-    const failing = screen.getByText('Lighter text on Background').closest('li');
+    const failing = screen.getByText(/^Lighter text on Background is hard to read/).closest('li');
 
     expect(failing).toHaveAttribute('data-state', 'fail');
-    // In words, with the way to move it (ADR 0135); the ratio at one precision is Advanced's.
-    expect(failing).toHaveTextContent('Hard to read on this background. Choose a darker color.');
+    // One line with Fix (ADR 0136); which way to move it is the line's tooltip (ADR 0135).
+    expect(screen.getByText(/^Lighter text on Background is hard to read/)).toHaveAttribute('title', 'Hard to read on this background. Choose a darker color.');
     // Rounded down, so a pair under the floor never reads 4.5.
     expect(failing).toHaveTextContent('1.4:1');
     expect(failing).not.toHaveTextContent('Under AA');
-    expect(failing).toHaveTextContent('Aa');
-    expect(screen.queryByText('Text on Background')).toBeNull();
-    expect(screen.queryByText('Button text on Button')).toBeNull();
+    expect(screen.queryByText(/^Text on Background/)).toBeNull();
+    expect(screen.queryByText(/^Button text on Button/)).toBeNull();
   });
 
   /**
@@ -467,7 +466,7 @@ describe('the contrast readout', () => {
       looked like a design that fails. `data-state` is what the stylesheet
       reads, and it is what the browser pass measures the colour of.
     */
-    const pair = screen.getByText('Text on Background').closest('li');
+    const pair = screen.getByText(/^Text on Background/).closest('li');
 
     expect(pair).toHaveAttribute('data-state', 'unknown');
     expect(pair).toHaveTextContent('This color can’t be measured here. Check it by eye.');

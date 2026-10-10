@@ -74,7 +74,10 @@ with one change: field hints one step smaller.
    - Tree: a one-line Look row ("Look · Fieldwork · Popup"), "Screens" in
      sentence case, screen rows 44px and element rows 32px, "counted" as a
      target icon whose name is the sentence, and Add element and Add screen as
-     the same quiet + row.
+     the same quiet + row. Element rows sit one 8px step in from their screen
+     with a 16px twist slot, and "words will be lost" is a warning icon whose
+     name is "What you type here is dropped when you switch design.": the chip
+     and a 50px indent cut names to "H…".
    - Look: Ready-made looks, Colors (with "Use my theme's colors and font" as
      its action), Fonts (body and headings, each beside its size), Size and
      space, Picture, Effects, Format and position, Reopen button, Design. Gap

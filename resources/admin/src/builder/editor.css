@@ -238,7 +238,8 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
     display: flex !important;
     block-size: 41px !important;
     gap: 0;
-    padding: 0 var(--wconvert-gutter) !important;
+    /* Two halves the full width of the panel, as the prototype draws them (ADR 0136). */
+    padding: 0 !important;
     margin: 0;
     inline-size: 100% !important;
     border-radius: 0 !important;
@@ -250,15 +251,19 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
     flex: 1;
     block-size: 100% !important;
     font-size: var(--text-note) !important;
+    border: 0 !important;
     border-radius: 0 !important;
+    background: transparent !important;
     box-shadow: none !important;
     border-block-end: 2px solid transparent !important;
   }
+  #wconvert-admin .wconvert-workspace .wconvert-inspector__halves button::after { display: none; }
   #wconvert-admin
     .wconvert-workspace
     .wconvert-inspector__halves
     button[data-state="active"] {
-    color: var(--action) !important;
+    color: var(--foreground) !important;
+    font-weight: 600 !important;
     border-block-end-color: var(--action) !important;
   }
 }
@@ -2143,6 +2148,9 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
    =========================================================================== */
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-panel-header {
   display: grid;
+  /* One track the full width: the old pane heading's space-between would size it to its content. */
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
   gap: 6px;
   padding: 12px 16px;
   border-block-end: 1px solid var(--border);
@@ -2257,9 +2265,12 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
   grid-template-columns: 104px minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  min-block-size: 36px;
-  padding-block: 4px;
+  min-block-size: 40px;
+  /* Room above and below the rule, so a select in the row never sits on it. */
+  padding-block: 8px;
 }
+.wconvert-fact:first-child { padding-block-start: 0; }
+.wconvert-fact:last-child { padding-block-end: 0; }
 .wconvert-fact + .wconvert-fact { border-block-start: 1px solid var(--surface); }
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__label { color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
 :is(#wconvert-admin, [data-slot='dialog-content']) .wconvert-fact__value { min-inline-size: 0; color: var(--foreground); font-size: var(--text-body); overflow-wrap: anywhere; }
@@ -2487,8 +2498,9 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* "Shown if" sits in the facts as a row, not a grey card. */
 #wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility { margin: 0; padding: 0; border: 0; border-block-start: 1px solid var(--surface); border-radius: 0; background: none; }
 #wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility > summary { min-block-size: 36px; }
-#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title { display: flex; flex: 1; gap: 10px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
-#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title small { overflow: hidden; flex: 1; margin: 0; color: var(--foreground); font-size: var(--text-body); text-overflow: ellipsis; white-space: nowrap; }
+/* Its summary sits in the facts' value column, like every other fact. */
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 10px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
+#wconvert-admin .wconvert-screen-facts .wconvert-journey-visibility .wconvert-disclosure__title small { overflow: hidden; margin: 0; color: var(--foreground); font-size: var(--text-body); text-align: start; text-overflow: ellipsis; white-space: nowrap; }
 #wconvert-admin .wconvert-screen-facts .wconvert-facts:empty { display: none; }
 #wconvert-admin .wconvert-screen-facts:not(:has(.wconvert-fact, .wconvert-journey-visibility)) { display: none; }
 
@@ -2518,3 +2530,25 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* A check's hint is a panel hint: 12px (ADR 0136). */
 #wconvert-admin .wconvert-panel-section .wconvert-check span > span { font-size: var(--text-micro); line-height: 1.4; }
 .wconvert-panel-actions { align-items: center; }
+
+/* The tree's element rows give the words the room (ADR 0136): an 8px step
+   from the screen row, a 16px twist slot, and warnings as icons. */
+#wconvert-admin .wconvert-edit-tree__elements { margin-inline-start: 10px; padding-inline-start: 2px; }
+#wconvert-admin .wconvert-edit-tree__elements .wconvert-block__twist { inline-size: 16px; }
+#wconvert-admin .wconvert-block__loses { display: inline-flex; flex-shrink: 0; align-items: center; color: var(--warning); }
+#wconvert-admin .wconvert-block__loses svg { inline-size: 13px; block-size: 13px; }
+
+/* Field headings are one height, with or without an InfoTip, so paired fields line up. */
+#wconvert-admin .wconvert-panel-section .wconvert-field-heading { block-size: 24px; min-block-size: 24px; }
+#wconvert-admin .wconvert-panel-section .wconvert-field-heading .wconvert-info-trigger { inline-size: 24px; block-size: 24px; min-block-size: 0; margin-block: -2px; }
+/* The font picker is a field like the select beside it. */
+#wconvert-admin .wconvert-panel-section .wconvert-token .wconvert-font { inline-size: 100%; block-size: 36px; min-block-size: 36px; border-color: var(--input); }
+
+/* A color's reset sits inside its swatch, at the end, on the same line (ADR 0136). */
+#wconvert-admin .wconvert-panel-section .wconvert-token--color { position: relative; display: block; }
+#wconvert-admin .wconvert-panel-section .wconvert-token--color:has(.wconvert-token__reset) .wconvert-swatch { padding-inline-end: 32px; }
+#wconvert-admin .wconvert-panel-section .wconvert-token--color > .wconvert-token__reset { position: absolute; inset-block-start: 50%; inset-inline-end: 6px; transform: translateY(-50%); }
+#wconvert-admin .wconvert-panel-section .wconvert-token .wconvert-font { padding-inline: 10px; }
+/* A pair that cannot be measured is not a failure: a neutral line, not amber (ADR 0135). */
+#wconvert-admin .wconvert-panel-warn[data-state='unknown'] { background: var(--surface); }
+#wconvert-admin .wconvert-panel-warn[data-state='unknown'] > svg { color: var(--muted-foreground); }

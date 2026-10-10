@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChevronDown, ChevronRight, EyeOff, GripVertical, Target } from 'lucide-react';
+import { ChevronDown, ChevronRight, EyeOff, GripVertical, Target, TriangleAlert } from 'lucide-react';
 import { losesWordsOnSwitch } from './structure/catalogue';
 import { isConvertingAct } from './structure/guards';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -362,21 +362,20 @@ export function BlockRow({
                     : String(block.sets)}
                 </span>
               )}
+              {/*
+                **An icon, like counted, with the sentence as its name** (ADR
+                0136): the chip took most of a 240px tree row and cut the
+                block's own name to "H…".
+              */}
               {losesWordsOnSwitch(block) && (
                 <span
-                  className="wconvert-block__chip wconvert-block__chip--warn"
-                  title={__(
-                    'This block has no Slot Role, so what you type in it is dropped when you switch design.',
-                    'wconvert',
-                  )}
+                  className="wconvert-block__loses"
+                  title={__('What you type here is dropped when you switch design.', 'wconvert')}
                 >
-                  {__('words will be lost', 'wconvert')}
+                  <TriangleAlert aria-hidden="true" />
                   <span className="sr-only">
                     {' '}
-                    {__(
-                      '— this block has no Slot Role, so what you type in it is dropped when you switch design.',
-                      'wconvert',
-                    )}
+                    {__('What you type here is dropped when you switch design.', 'wconvert')}
                   </span>
                 </span>
               )}
