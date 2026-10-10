@@ -36,7 +36,7 @@ export function PositionField({ label, shown, offered, nameOfValue, reset, onCha
     return point !== null && candidate !== null && candidate[0] === point[0] && candidate[1] === point[1];
   });
   const expanded = advanced && (adjusting || selected === undefined);
-  const summary = selected !== undefined ? nameOfValue(selected) : point
+  const summary = selected !== undefined ? nameOfValue(selected) : point && advanced
     ? sprintf(__('%1$s%% across, %2$s%% down', 'wconvert'), String(point[0]), String(point[1]))
     : __('Custom position', 'wconvert');
 

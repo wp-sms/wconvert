@@ -4,7 +4,7 @@ import { Disclosure } from '../shell/Disclosure';
 import { CodeXml } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ColorField } from './ColorField';
-import { useAdvanced } from './advanced';
+import { cssOnlyNote, useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
 import { nameOf, type TemplateLabels } from '../templates/api';
 
@@ -67,6 +67,6 @@ export function ShadowField({ label, shown, value, fallback, offered, labels, to
     {advanced && ((!shadow && shown !== 'none' && !offered.includes(shown)) || custom) && <div className="wconvert-shadow-css">
       <StyleValueInput aria-label={sprintf(__('%s value', 'wconvert'), label)} className="wconvert-token__typed" value={value} placeholder={fallback} onFocus={() => setCustom(true)} onCommit={onChange} />
     </div>}
-    {!advanced && !shadow && shown !== 'none' && !offered.includes(shown) && <p className="m-0 text-note text-muted-foreground">{__('This value is set in CSS. Open Advanced to change it.', 'wconvert')}</p>}
+    {!advanced && !shadow && shown !== 'none' && !offered.includes(shown) && <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>}
   </div>;
 }

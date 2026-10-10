@@ -38,18 +38,21 @@ three type-size words that did not match the element's own. A merchant reads
 4. **One size word list.** The element's Size reads Small · Medium · Large ·
    Extra large (with the template's Very small and Huge at the ends); the
    Look's type sizes use the same words, and anything else is "Custom". The
-   exact Heading size and Text size tokens and the heading level ("Heading
-   level, for screen readers and search") are Advanced's.
-5. **Reset this element** clears what the element sets for the device being
-   edited — desktop or mobile — and is disabled when it sets nothing. It
-   replaces the mobile-only reset.
+   element's Size offers no Custom step of its own: its exact value is the
+   Heading size or Text size token, which with the heading level ("Heading
+   level, for screen readers and search") is Advanced's.
+5. **Reset this element** clears the element's own style values for the device
+   being edited — its style tokens on desktop, its mobile bag on mobile — and is
+   disabled when it sets none. Its Size, shape and other settings are content
+   choices and stay. It replaces the mobile-only reset.
 6. **The Flow map opens fitted**, whole, and then follows the selection. Its
    tools are one line: − % + · Fit · Tidy up · Highlight paths · ⋯ (Screen
    previews, Group follow-ups). Go to first screen, panning earlier or later
    and Show selected screen were ways around a map that did not open fitted. A
    card's issue count opens every issue about that screen, each a way to its
    fix. The first drag says once, per browser, that moving a card only tidies
-   the map. **The side panel in Flow is the slim screen panel** of
+   the map. The camera keeps the whole map until the selection first changes,
+   then follows it. **The side panel in Flow is the slim screen panel** of
    [0134](0134-one-edit-tab-look-screen-element.md), as on the canvas: it was
    still the old inspector there, with every word as a text box and a Paths
    tab. Clicking a question's path opens the question, where its paths live.
@@ -60,7 +63,11 @@ three type-size words that did not match the element's own. A merchant reads
    and agree through the shared fixture's `fallthrough` cases; validation
    allows at most one hidden edge and no longer requires it; readiness stops
    asking "Choose where visitors go when … is hidden"; adding a condition adds
-   no edge, and removing it removes the override. "Next screen" means the
+   no edge, and removing it removes the override; the version 2 upgrade and
+   inserting a screen add none either, and moving a screen's default drops a
+   skip edge that only copied the old destination. A skipped screen's trace
+   decision says "hidden" whichever edge it continued on, so a test narrates
+   it as skipped. Visitor-facing copy says "skipped". "Next screen" means the
    default edge, not the next entry in `steps`, which has carried no order in
    a graph since 0108. Every existing hidden edge already points where its
    default does, so existing campaigns trace the same screens. The server

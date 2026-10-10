@@ -148,7 +148,7 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
   return <section className="wconvert-journey-settings wconvert-journey-routes"><h4>{__('Next paths', 'wconvert')}</h4>
     <p>{paths.length > 1 ? __('Visitors take the first path that matches, top to bottom. All other answers take the last one.', 'wconvert')
       : __('After this screen, visitors continue to the next relevant screen.', 'wconvert')}</p>
-    {screen.when && screen.paths && <p>{__('If this screen is hidden, visitors continue to the next screen without checking these paths.', 'wconvert')}</p>}
+    {screen.when && screen.paths && <p>{__('If this screen is skipped, visitors continue to the next screen without checking these paths.', 'wconvert')}</p>}
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{paths.map((path, index) => <li key={`${index}-${path.to}`} data-path-priority={index}>
       <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), index + 1)}</strong>

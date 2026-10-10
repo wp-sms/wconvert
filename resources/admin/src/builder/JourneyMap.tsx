@@ -114,9 +114,10 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       </button>
       {(groupedTargets.get(paths[0].to) ?? paths[0].to) !== detourTarget && <Handle id="route-0" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />}
     </div>}
-    {screen.when && hiddenId && <div className="wconvert-flow-node__hidden">
-      {tree.graph ? <button type="button" className="nodrag" onClick={() => selectPath(index, 'hidden')}>{sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? __('Removed screen', 'wconvert'))}</button>
-        : sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? __('Removed screen', 'wconvert'))}
+    {/* Only an override is drawn: a skipped screen otherwise continues on its default (ADR 0135). */}
+    {screen.when && hiddenTarget && <div className="wconvert-flow-node__hidden">
+      {tree.graph ? <button type="button" className="nodrag" onClick={() => selectPath(index, 'hidden')}>{sprintf(__('When skipped %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? __('Removed screen', 'wconvert'))}</button>
+        : sprintf(__('When skipped %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? __('Removed screen', 'wconvert'))}
       {hiddenTarget &&
       <Handle id="hidden" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       }
@@ -180,11 +181,13 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, initialOv
     return () => cancelAnimationFrame(frame);
   }, [nodesReady, onNodesReady, revision]);
   // The map opens fitted, whole (ADR 0135), and stays whole while cards measure
-  // and settle; once another screen is chosen, the camera follows the selection.
+  // and settle; from the first change of selection on, the camera follows it.
   const openedOn = useRef(selectedId);
+  const following = useRef(false);
   useEffect(() => {
+    if (selectedId !== openedOn.current) following.current = true;
     if (!viewportInitialized || revision === 0) return;
-    const overview = selectedId === openedOn.current || (width >= overviewWidth && initialOverview);
+    const overview = !following.current || (width >= overviewWidth && initialOverview);
     const frame = requestAnimationFrame(() => void fitView({
       ...(overview ? {} : { nodes: cameraTargets(getNodes(), selectedId, nextId, width, height, contextIds) }),
       padding: viewPadding(), maxZoom: 1, duration: 180 }));
@@ -204,7 +207,7 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, initialOv
         */}
         <button type="button" onClick={fitJourney}><Focus aria-hidden="true" />{__('Fit', 'wconvert')}</button>
         <button type="button" onClick={onTidy}>{__('Tidy up', 'wconvert')}</button>
-        {selection && <button type="button" aria-pressed={selection.highlighted} onClick={selection.toggle}>{__('Highlight paths', 'wconvert')}</button>}
+        <button type="button" aria-pressed={selection?.highlighted ?? false} disabled={!selection} title={selection ? undefined : __('Select a screen to highlight its paths', 'wconvert')} onClick={selection?.toggle}>{__('Highlight paths', 'wconvert')}</button>
         <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-map__view-options" aria-label={__('More map options', 'wconvert')} title={__('More map options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuCheckboxItem checked={preview} onCheckedChange={onPreview}>{__('Screen previews', 'wconvert')}</DropdownMenuCheckboxItem>
@@ -336,7 +339,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     if (hidden && !paths.some(path => path.to === hidden)) routes.push({
       id: tree.graph?.edges.find(edge => edge.from === step.id && edge.kind === 'hidden')?.id ?? `${step.id}-hidden`,
       source: step.id, target: hidden, data: { sourceIndex: index, priority: 'hidden' }, sourceHandle: 'hidden', targetHandle: 'in', type: 'journey', reconnectable: 'target',
-      label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#857a6e', width: 15, height: 15 },
+      label: __('Skipped', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#857a6e', width: 15, height: 15 },
       style: { stroke: '#857a6e', strokeWidth: 1.5, strokeDasharray: '5 4' },
     });
     return routes;
@@ -377,7 +380,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       style: { ...edge.style, strokeWidth: samplePath !== null && sampleEdges !== null
         ? sampleEdges.includes(edge.id) || tree.graph?.edges.some(hidden => hidden.kind === 'hidden' && hidden.from === edge.source && hidden.to === edge.target && sampleEdges.includes(hidden.id)) ? 3.5 : 1.5
         : highlighting && related.paths.has(edge.id) ? 3 : 1.5 },
-      ariaLabel: sprintf(edge.data?.priority === 'hidden' ? __('When hidden: %1$s to %2$s', 'wconvert') : __('%1$s to %2$s', 'wconvert'), tree.steps.find(step => step.id === edge.source)?.name ?? edge.source, tree.steps.find(step => step.id === edge.target)?.name ?? edge.target),
+      ariaLabel: sprintf(edge.data?.priority === 'hidden' ? __('When skipped: %1$s to %2$s', 'wconvert') : __('%1$s to %2$s', 'wconvert'), tree.steps.find(step => step.id === edge.source)?.name ?? edge.source, tree.steps.find(step => step.id === edge.target)?.name ?? edge.target),
       sourceHandle: detours.get(source) === target ? 'detour-out' : source !== edge.source ? 'out' : edge.sourceHandle,
       targetHandle: detours.get(source) === target ? 'detour-in' : ports.length > 1 ? `in:${edge.id}` : 'in',
       reconnectable: !editingConnections || source !== edge.source || target !== edge.target ? false : edge.reconnectable }];

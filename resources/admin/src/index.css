@@ -4772,10 +4772,6 @@ body:has(#wconvert-admin) #wpbody-content {
   font-variant-numeric: tabular-nums;
 }
 
-/*
- * The verdict as a chip rather than a sentence, so the eye finds the answer
- * before it reads the number.
- */
 /* The verdict under the pair's name, in words; the ratio is Advanced's. */
 .wconvert-contrast__what > strong {
   display: block;

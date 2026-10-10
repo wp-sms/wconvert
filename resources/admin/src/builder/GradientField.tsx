@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { ColorField } from './ColorField';
-import { useAdvanced } from './advanced';
+import { cssOnlyNote, useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
 import { gradientOf, gradientCss, type Gradient } from './gradient';
 
@@ -61,7 +61,7 @@ export function GradientField({ label, shown, reset, open, onOpenChange, onChang
       </> : advanced ? <>
         <p className="m-0 text-note text-muted-foreground">{__('This value stays editable as CSS. Use a simple linear gradient for visual controls.', 'wconvert')}</p>
         <StyleValueInput aria-label={sprintf(__('%s CSS', 'wconvert'), label)} value={shown} onCommit={onChange} />
-      </> : <p className="m-0 text-note text-muted-foreground">{__('This value is set in CSS. Open Advanced to change it.', 'wconvert')}</p>}
+      </> : <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>}
       {advanced && <Button type="button" variant="ghost" size="xs" disabled={gradient === null} onClick={() => { setColor(null); setCustom(!custom); }}>{custom ? __('Use visual controls', 'wconvert') : __('Custom CSS', 'wconvert')}</Button>}
     </div>}
   </fieldset>;

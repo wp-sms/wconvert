@@ -46,7 +46,8 @@ export function graphTrace(steps: readonly TemplateScreen[], graph: JourneyGraph
     const edge = shown ? priority >= 0 ? choices[priority] : fallback
       : outgoing.find(item => item.kind === 'hidden') ?? fallback;
     if (!edge) break;
-    decisions.push({ edge: edge.id, from: id, to: edge.to, kind: edge.kind, ...(priority >= 0 ? { priority } : {}) });
+    // A skipped screen's decision says it was skipped, whichever edge it continued on.
+    decisions.push({ edge: edge.id, from: id, to: edge.to, kind: shown ? edge.kind : 'hidden', ...(priority >= 0 ? { priority } : {}) });
     id = edge.to;
   }
   return { indices, answers: active, decisions, hidden };

@@ -43,7 +43,7 @@ export function MeasurementValue({ id, label, value, fallback, standard, onChang
             className="wconvert-token__exact min-w-0"
             aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
             onCommit={(amount) => write(index, amount, unit)} />
-          {!advanced ? <span className="wconvert-measure-input__unit" aria-hidden="true">{unit}</span> : <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
+          {!advanced ? <span className="wconvert-measure-input__unit">{unit}</span> : <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
             onChange={(event) => write(index, String(part.amount), event.target.value)}>
             {unit !== '' && !UNITS.includes(unit) && <option value={unit}>{unit}</option>}
             {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}

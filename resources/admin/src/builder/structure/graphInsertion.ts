@@ -38,7 +38,7 @@ export function graphInsertionLocations(tree: TemplateTree) {
     for (const edge of [...answers, ...outgoing.filter(edge => edge.kind !== 'answer')]) {
       const target = tree.steps.find(screen => screen.id === edge.to);
       if (!target) continue;
-      const path = edge.kind === 'hidden' ? __('When hidden', 'wconvert') : edge.kind === 'answer'
+      const path = edge.kind === 'hidden' ? __('When skipped', 'wconvert') : edge.kind === 'answer'
         ? sprintf(__('Answer path %d', 'wconvert'), answers.indexOf(edge) + 1)
         : answers.length ? __('All other answers', 'wconvert') : __('Continue', 'wconvert');
       locations.push({ id: `edge:${edge.id}`, source: source.id, target: target.id,

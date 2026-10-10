@@ -28,8 +28,8 @@ import {
   urlIn,
   type Axis,
 } from './themes';
-import { READABLE_PAIRS, pairKey, readability, readableOn } from './contrast';
-import { AdvancedContext, useAdvanced } from './advanced';
+import { READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
+import { AdvancedContext, AdvancedToggle, cssOnlyNote, useAdvanced } from './advanced';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenMap } from '@renderer/types';
 
@@ -298,7 +298,7 @@ export function Tokens({
         </p>
       </section>
 
-      <button type="button" className="wconvert-style-detail-toggle" aria-expanded={advanced} onClick={() => { onOpenToken(null); setAdvanced(value => !value); }}>{advanced ? __('Hide advanced', 'wconvert') : __('Advanced', 'wconvert')}</button>
+      <AdvancedToggle advanced={advanced} onToggle={() => { onOpenToken(null); setAdvanced(value => !value); }} />
       {groups.filter(group => advanced || ['color', 'type', 'heading', 'space'].includes(group.id)).map((group) => (
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
           <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
@@ -856,7 +856,7 @@ function ChoiceField({
       {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
       {(advanced || custom) && <option value="__custom">{__('Custom…', 'wconvert')}</option>}
     </select>}
-    {custom && !advanced && <p className="m-0 text-note text-muted-foreground">{__('This value is set in CSS. Open Advanced to change it.', 'wconvert')}</p>}
+    {custom && !advanced && <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>}
     {custom && advanced && <StyleValueInput type="text" className="wconvert-token__typed"
       aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
       onFocus={() => setAsked(true)} onCommit={onChange} />}
@@ -1252,8 +1252,7 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
 
             {advanced && pair.verdict.ratio !== null && (
               <span className="wconvert-contrast__ratio">
-                {/* translators: %s: a contrast ratio, e.g. “4.5”. */}
-                {sprintf(__('%s:1', 'wconvert'), pair.verdict.ratio)}
+                {sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), pair.verdict.ratio)}
               </span>
             )}
 
@@ -1263,7 +1262,7 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
                 variant="outline"
                 size="xs"
                 aria-label={sprintf(/* translators: %s: a pair, e.g. “Lighter text on Background”. */ __('Fix %s', 'wconvert'), pair.named)}
-                onClick={() => onChange({ ...template, tokens: withToken(template.tokens, pair.fg, readableOn(value(pair.bg), [value('fg'), value('bg')])) })}
+                onClick={() => onChange({ ...template, tokens: withToken(template.tokens, pair.fg, readableFix(value, pair.bg)) })}
               >
                 {__('Fix', 'wconvert')}
               </Button>

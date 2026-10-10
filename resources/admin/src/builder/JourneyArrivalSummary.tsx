@@ -23,7 +23,7 @@ export function JourneyArrivalSummary({ tree, step, onSelectPath }: {
       if (from < 0) return null;
       const answers = graph.edges.filter(item => item.from === edge.from && item.kind === 'answer');
       const priority = edge.kind === 'hidden' ? 'hidden' : edge.kind === 'default' ? answers.length : answers.findIndex(item => item.id === edge.id);
-      const rule = edge.kind === 'hidden' ? __('When that screen is hidden', 'wconvert')
+      const rule = edge.kind === 'hidden' ? __('When that screen is skipped', 'wconvert')
         : edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : __('After completing that screen', 'wconvert')
           : sprintf(__('Path %1$d: %2$s', 'wconvert'), Number(priority) + 1, edge.when ? conditionText(tree, edge.when) : __('Choose a condition', 'wconvert'));
       return <li key={edge.id}><button type="button" onClick={() => onSelectPath(from, priority)}><strong><bdi>{tree.steps[from].name}</bdi></strong><span>{rule}</span></button></li>;

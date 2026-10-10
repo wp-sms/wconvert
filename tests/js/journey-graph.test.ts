@@ -28,6 +28,8 @@ it('lets a skipped screen fall through along its default edge when it has no hid
     expect(trace.answers).toEqual(example.active);
     expect(trace.hidden).toEqual(example.hidden);
     expect(trace.decisions.map(decision => decision.edge)).toEqual(example.edges);
+    // A skipped screen's decision says it was skipped, though it continued on the default edge.
+    expect(trace.decisions.filter(decision => decision.kind === 'hidden').map(decision => decision.from)).toEqual(example.hidden);
   }
 });
 

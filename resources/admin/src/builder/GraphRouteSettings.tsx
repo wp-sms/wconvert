@@ -104,7 +104,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </>}
       <label>{__('Go to', 'wconvert')}<select data-route-target value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
-        if (edge.kind === 'default') write(answers, updated);
+        // A skip edge that only copied the old destination goes, so the screen keeps falling through (ADR 0135).
+        if (edge.kind === 'default') write(answers, updated, hidden && hidden.to === edge.to ? null : hidden);
         else write(answers.map(item => item.id === edge.id ? updated : item));
       }}>
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}

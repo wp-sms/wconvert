@@ -64,7 +64,7 @@ it.each(['ltr', 'rtl'])('keeps card content and path arrows aligned with the %s 
     expect(screen.getByRole('button', { name: '1 answer path · All other answers' })).toBeInTheDocument();
     const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
     expect(edges.some(edge => edge.label === 'All other answers' && edge.target === changed.steps.find(step => step.name === 'Your business interests')?.id)).toBe(true);
-    expect(screen.getByRole('button', { name: `When hidden ${arrow} Send one combined enquiry` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `When skipped ${arrow} Send one combined enquiry` })).toBeInTheDocument();
     const firstX = canvas.nodes.find(node => node.id === 'scope')!.position.x;
     const endingX = canvas.nodes.find(node => node.id === 'received')!.position.x;
     expect(direction === 'rtl' ? firstX > endingX : firstX < endingX).toBe(true);
@@ -172,7 +172,7 @@ it('opens normal and hidden paths without the enclosing card overriding the acti
   await user.click(screen.getByRole('button', { name: 'Check next: Garden details' }));
   expect(path).toHaveBeenLastCalledWith(tree.steps.findIndex(step => step.id === 'interests'), 0);
   expect(select).not.toHaveBeenCalled();
-  await user.click(screen.getByRole('button', { name: 'When hidden → One enquiry' }));
+  await user.click(screen.getByRole('button', { name: 'When skipped → One enquiry' }));
   const garden = tree.steps.findIndex(step => step.id === 'garden');
   expect(path).toHaveBeenLastCalledWith(garden, 'hidden');
   expect(select).not.toHaveBeenCalled();
@@ -273,7 +273,7 @@ it('opens the exact issue inside a collapsed follow-up group without expanding i
   const onIssue = vi.fn();
   render(<JourneyMap tree={changed} issues={issues} onIssue={onIssue} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
   // The marker lists every issue about the screen; each is a way to its fix (ADR 0135).
-  await userEvent.click(screen.getByRole('button', { name: /1 issue: Give screen/ }));
+  await userEvent.click(screen.getByRole('button', { name: '1 issue on this screen. Show them' }));
   await userEvent.click(within(screen.getByRole('list', { name: 'To fix on this screen' })).getByRole('button', { name: /Give screen/ }));
   expect(onIssue).toHaveBeenCalledWith(expect.objectContaining({ go: { to: 'journey', repair: { screenId: 'garden', section: 'content', focus: 'screen-name' } } }));
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);

@@ -243,8 +243,10 @@ describe('readability', () => {
       said: 'Hard to read on this background. Choose a lighter color.' });
   });
 
-  it('keeps one precision for the ratio', () => {
+  it('keeps one precision for the ratio, rounded down so a failing pair never reads 4.5', () => {
     expect(readability('#767676', '#ffffff').ratio).toBe('4.5');
+    // #777777 on white is 4.48:1 — hard to read, and shown as 4.4.
+    expect(readability('#777777', '#ffffff')).toMatchObject({ readable: false, ratio: '4.4' });
   });
 
   it('refuses a pair it cannot measure rather than guessing', () => {

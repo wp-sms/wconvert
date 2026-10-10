@@ -12,7 +12,10 @@ export function graphFromOrderedJourney(tree: TemplateTree): JourneyGraph {
     if (screen.paths) {
       screen.paths.forEach(path => edge(screen.id, path.to, path.when ? 'answer' : 'default', path.when));
     } else if (next) edge(screen.id, next.id, 'default');
-    if (screen.when && next) edge(screen.id, next.id, 'hidden');
+    // A skipped screen falls through along its default (ADR 0135); an override is
+    // kept only where version 2's "next screen" differs from that default.
+    const fallback = screen.paths ? screen.paths.find(path => !path.when)?.to : next?.id;
+    if (screen.when && next && fallback !== next.id) edge(screen.id, next.id, 'hidden');
   });
   return { entry: tree.steps[0]?.id ?? '', edges };
 }
@@ -95,12 +98,10 @@ export function insertOnGraphEdge(tree: TemplateTree, edgeId: string, screen: Te
   if (!tree.graph || tree.steps.some(item => item.id === screen.id)) return tree;
   const edge = tree.graph.edges.find(item => item.id === edgeId);
   if (!edge) return tree;
+  // The new screen's continuation is also where it goes when skipped: no hidden edge (ADR 0135).
   const continuation: JourneyGraphEdge = { id: graphEdgeId(tree.graph), from: screen.id, to: edge.to, kind: 'default' };
-  const hidden: JourneyGraphEdge | null = screen.when
-    ? { id: graphEdgeId({ ...tree.graph, edges: [...tree.graph.edges, continuation] }), from: screen.id, to: edge.to, kind: 'hidden' }
-    : null;
   return { ...tree, steps: [...tree.steps, screen], graph: { ...tree.graph,
     edges: [...tree.graph.edges.map(item => item.id === edgeId
       || edge.kind === 'default' && item.from === edge.from && item.kind === 'hidden' && item.to === edge.to
-        ? { ...item, to: screen.id } : item), continuation, ...(hidden ? [hidden] : [])] } };
+        ? { ...item, to: screen.id } : item), continuation] } };
 }

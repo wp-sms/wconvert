@@ -2,7 +2,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Disclosure } from '../shell/Disclosure';
 import { Button } from '../components/ui/button';
 import { ClipboardCopy, ClipboardPaste, RotateCcw } from 'lucide-react';
-import { PAIR_READERS, READABLE_PAIRS, pairKey, readability, readableOn } from './contrast';
+import { PAIR_READERS, READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
 import { useAdvanced } from './advanced';
 import { nodesOf } from './structure/tree';
 import { TokenField, groupName } from './Tokens';
@@ -321,13 +321,16 @@ function ScopeContrast({
   return (
     <ul className="wconvert-scope__contrast" aria-label={__('Readability in this box', 'wconvert')}>
       {wrong.map(({ fg, bg, verdict }) => {
+        /* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */
         const named = sprintf(__('%1$s on %2$s', 'wconvert'), nameOf(labels.tokens, fg), nameOf(labels.tokens, bg));
 
         return (
           <li key={`${fg}/${bg}`}>
-            <span><strong>{named}</strong> {verdict.said}{advanced && verdict.ratio !== null ? ` (${sprintf(__('%s:1', 'wconvert'), verdict.ratio)})` : ''}</span>
+            <span><strong>{named}</strong> {advanced && verdict.ratio !== null
+              ? sprintf(/* translators: 1: a readability verdict. 2: its contrast ratio, e.g. “4.4”. */ __('%1$s (%2$s:1)', 'wconvert'), verdict.said, verdict.ratio)
+              : verdict.said}</span>
             <Button type="button" variant="outline" size="xs" aria-label={sprintf(__('Fix %s', 'wconvert'), named)}
-              onClick={() => onFix(fg, readableOn(value(bg), [value('fg'), value('bg')]))}>
+              onClick={() => onFix(fg, readableFix(value, bg))}>
               {__('Fix', 'wconvert')}
             </Button>
           </li>

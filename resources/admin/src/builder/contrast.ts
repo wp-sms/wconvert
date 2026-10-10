@@ -156,8 +156,11 @@ export function readability(fg: string, bg: string): Readability {
     return { readable: null, direction: null, ratio: null, said: __('This color can’t be measured here. Check it by eye.', 'wconvert') };
   }
 
+  // Shown rounded down, so a pair just under the floor never reads "4.5:1" beside "Hard to read".
+  const shown = (Math.floor(ratio * 10) / 10).toFixed(1);
+
   if (ratio >= AA_NORMAL) {
-    return { readable: true, direction: null, ratio: ratio.toFixed(1), said: __('Easy to read', 'wconvert') };
+    return { readable: true, direction: null, ratio: shown, said: __('Easy to read', 'wconvert') };
   }
 
   // 0.179 is where black and white read equally well: above it, dark text wins.
@@ -166,7 +169,7 @@ export function readability(fg: string, bg: string): Readability {
   return {
     readable: false,
     direction,
-    ratio: ratio.toFixed(1),
+    ratio: shown,
     said: direction === 'darker'
       ? __('Hard to read on this background. Choose a darker color.', 'wconvert')
       : __('Hard to read on this background. Choose a lighter color.', 'wconvert'),
@@ -186,6 +189,9 @@ export function readableOn(bg: string, candidates: readonly string[]): string {
 
   return (contrastOf('#000000', bg) ?? 0) >= (contrastOf('#ffffff', bg) ?? 0) ? '#000000' : '#ffffff';
 }
+
+/** What Fix writes for a pair on `bg`, given how the panel resolves a token: the look's text, then background, then black or white. */
+export const readableFix = (value: (token: string) => string, bg: string): string => readableOn(value(bg), [value('fg'), value('bg')]);
 
 /**
  * WCAG relative luminance, or null for a colour this cannot honestly read.

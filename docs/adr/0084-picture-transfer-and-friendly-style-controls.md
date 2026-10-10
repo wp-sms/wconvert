@@ -51,6 +51,9 @@ never rewrites a value. All changes use the existing draft history.
 The selected element lists its own mobile overrides in both scopes. Desktop
 controls mark values that differ on mobile. Reset removes only that element's
 narrow bag, returning it to normal inheritance; it does not reset descendants
-or desktop styling. This introduces no per-device copy, order or visibility.
+or desktop styling. *Amended by [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md):
+"Reset this element" clears the bag for whichever device is being edited — the
+narrow bag on mobile, the element's own style tokens on desktop — and still
+never descendants.* This introduces no per-device copy, order or visibility.
 
 See [review and verification](../reviews/content-transfer-style-controls-2026-09-14.md).

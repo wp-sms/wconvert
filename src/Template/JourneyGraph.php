@@ -183,7 +183,8 @@ final class JourneyGraph
                 }
             }
             if ($edge === null) { break; }
-            $decisions[] = ['edge' => $edge['id'], 'from' => $id, 'to' => $edge['to'], 'kind' => $edge['kind']]
+            // A skipped screen's decision says it was skipped, whichever edge it continued on.
+            $decisions[] = ['edge' => $edge['id'], 'from' => $id, 'to' => $edge['to'], 'kind' => $shown ? $edge['kind'] : 'hidden']
                 + ($priority !== null ? ['priority' => $priority] : []);
             $id = $edge['to'];
         }

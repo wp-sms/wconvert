@@ -3,7 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { CodeXml, Link, Unlink } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { MeasurementValue } from './MeasurementValue';
-import { useAdvanced } from './advanced';
+import { cssOnlyNote, useAdvanced } from './advanced';
 import { StyleValueInput } from './StyleValueInput';
 import { measuresOf } from './themes';
 
@@ -50,7 +50,7 @@ export function SpacingField({ label, shown, fallback, standard, reset, onChange
         {reset}
       </span>
     </div>
-    {!advanced && sides === null ? <p className="m-0 text-note text-muted-foreground">{__('This value is set in CSS. Open Advanced to change it.', 'wconvert')}</p>
+    {!advanced && sides === null ? <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>
       : (advanced && custom) || sides === null ? <StyleValueInput type="text" className="regular-text" aria-label={sprintf(__('%s custom value', 'wconvert'), label)} value={shown} placeholder={fallback} onCommit={onChange} />
       : <div className={linked ? "grid gap-2" : "wconvert-fields"}>
         {(linked ? sides.slice(0, 1) : sides).map((side, index) => <div key={index} className="wconvert-fields__item grid min-w-0 gap-1" data-compact={!linked || undefined}>

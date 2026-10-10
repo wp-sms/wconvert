@@ -23,7 +23,7 @@ import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './struct
 import type { ConvertingAct } from './structure/catalogue';
 import { QuestionSettings } from './JourneySettings';
 import { useQuestionPanel } from './ScreenPanel';
-import { AdvancedContext } from './advanced';
+import { AdvancedContext, AdvancedToggle } from './advanced';
 import { CaptureOwnership } from './CaptureOwnership';
 import { submissionScreen } from './structure/journey';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -175,11 +175,8 @@ export function BlockInspector({
     </div>
   );
 
-  const advancedToggle = (
-    <button type="button" className="wconvert-style-detail-toggle" aria-expanded={advanced} onClick={() => setAdvanced((value) => !value)}>
-      {advanced ? __('Hide advanced', 'wconvert') : __('Advanced', 'wconvert')}
-    </button>
-  );
+  const advancedToggle = <AdvancedToggle advanced={advanced} onToggle={() => setAdvanced((value) => !value)} />;
+  const shownStyleSettings = styleSettings.filter((setting) => advanced || !ADVANCED_PARAMS.includes(setting.param));
 
   if (look === undefined || slot === null) {
     return (
@@ -221,10 +218,10 @@ export function BlockInspector({
         </TabsContent>
         <TabsContent value="style">
           <AdvancedContext.Provider value={advanced}>
-          {styleSettings.filter((setting) => advanced || !ADVANCED_PARAMS.includes(setting.param)).length > 0 && (
+          {shownStyleSettings.length > 0 && (
             <section className="wconvert-group" aria-label={__('Element appearance', 'wconvert')}>
               <h5 className="wconvert-group__name">{__('Element appearance', 'wconvert')}</h5>
-              {styleSettings.filter((setting) => advanced || !ADVANCED_PARAMS.includes(setting.param)).map((setting) => (
+              {shownStyleSettings.map((setting) => (
                 <ParamChoice
                   key={setting.param}
                   id={`${slot.type}-style-${setting.param}`}

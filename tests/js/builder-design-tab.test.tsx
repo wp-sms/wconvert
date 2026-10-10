@@ -413,7 +413,8 @@ describe('the contrast readout', () => {
     expect(failing).toHaveAttribute('data-state', 'fail');
     // In words, with the way to move it (ADR 0135); the ratio at one precision is Advanced's.
     expect(failing).toHaveTextContent('Hard to read on this background. Choose a darker color.');
-    expect(failing).toHaveTextContent('1.5:1');
+    // Rounded down, so a pair under the floor never reads 4.5.
+    expect(failing).toHaveTextContent('1.4:1');
     expect(failing).not.toHaveTextContent('Under AA');
     expect(failing).toHaveTextContent('Aa');
     expect(screen.queryByText('Text on Background')).toBeNull();

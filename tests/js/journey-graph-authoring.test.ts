@@ -48,11 +48,12 @@ it('inserts on a named edge without changing the original condition or unrelated
   ]);
 });
 
-it('gives a conditional inserted screen an explicit hidden continuation', () => {
+/** ADR 0135: a conditional inserted screen falls through along its continuation; it needs no hidden edge. */
+it('gives a conditional inserted screen one continuation, which a skip also follows', () => {
   const screen = { ...freshScreen(base, 'input'), when: base.steps.find(step => step.id === 'garden')!.when };
   const next = insertOnGraphEdge(base, 'start', screen);
   expect(next.graph?.edges.filter(edge => edge.from === screen.id).map(edge => [edge.kind, edge.to])).toEqual([
-    ['default', 'garden'], ['hidden', 'garden'],
+    ['default', 'garden'],
   ]);
 });
 
@@ -66,7 +67,8 @@ it('keeps later independent follow-ups reachable when an earlier one is hidden',
     { question: 'n1', operator: 'includes_any' as const, values: ['balcony'] },
   ] } };
   const second = insertOnGraphEdge(first, firstDefault.id, balcony);
-  expect(second.graph?.edges.find(edge => edge.from === garden.id && edge.kind === 'hidden')?.to).toBe(balcony.id);
+  expect(second.graph?.edges.find(edge => edge.from === garden.id && edge.kind === 'default')?.to).toBe(balcony.id);
+  expect(second.graph?.edges.some(edge => edge.from === garden.id && edge.kind === 'hidden')).toBe(false);
   expect(graphTrace(second.steps, second.graph!, { n1: ['balcony'] }).indices.map(index => second.steps[index].id))
     .toEqual(['interests', balcony.id, 'balcony', 'contact', 'received']);
 });
