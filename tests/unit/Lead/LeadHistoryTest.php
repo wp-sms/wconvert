@@ -124,6 +124,53 @@ final class LeadHistoryTest extends TestCase
         $this->assertSame(Ulid::floorAt(0), $query->constraints()['params'][1]);
     }
 
+    /**
+     * The unfiltered grouping asks MySQL for `idx_email`, where left to itself it
+     * scans the primary key under the snapshot bound and aggregates in a temporary
+     * table (6.8 s against 2.0 s at 1M Leads). The hint is a comment, so SQLite and
+     * MariaDB read the same text and ignore it.
+     */
+    public function testTheUnfilteredGroupingAsksForTheEmailIndexInBothHalves(): void
+    {
+        $db = new FakeConnection();
+        $db->answers = [[['total' => '0']], []];
+        (new LeadLog(new LeadRepository($db)))->read(null, true, 50, LeadQuery::fromInput(['snapshot' => self::SNAPSHOT]));
+        $this->assertSame(2, substr_count($db->reads[1]['sql'], 'SELECT /*+ INDEX(l idx_email) */'));
+        $this->assertSame(2, substr_count($db->reads[1]['sql'], 'FROM %i AS l WHERE'));
+    }
+
+    /**
+     * Any narrowing filter has a better index than `idx_email`, and forcing it
+     * there is a regression: one Lead by id went from 0.1 ms to 142 ms, one
+     * phone number from 0.1 ms to 2.1 s.
+     *
+     * @param array<string, string> $filter
+     */
+    #[DataProvider('narrowingFilters')]
+    public function testANarrowedGroupingLeavesThePlanToMySql(array $filter): void
+    {
+        $db = new FakeConnection();
+        $db->answers = [[['id' => self::NEWER]], [['total' => '0']], []];
+        (new LeadLog(new LeadRepository($db)))->read(null, true, 50, LeadQuery::fromInput($filter + ['snapshot' => self::SNAPSHOT]));
+        $grouping = $db->reads[count($db->reads) - 1]['sql'];
+        $this->assertStringContainsString('GROUP BY email', $grouping);
+        $this->assertStringNotContainsString('/*+', $grouping);
+    }
+
+    /** @return iterable<string, array{array<string, string>}> */
+    public static function narrowingFilters(): iterable
+    {
+        yield 'one Campaign' => [['optin_id' => self::NEWER]];
+        yield 'one Lead' => [['lead_id' => self::OLDER]];
+        yield 'one email' => [['identifier' => 'sarah@example.com']];
+        yield 'one phone' => [['identifier' => '+14155550123']];
+        yield 'one group' => [['group_identifier' => 'sarah@example.com']];
+        yield 'from a date' => [['from' => '2026-09-01']];
+        yield 'to a date' => [['to' => '2026-09-01']];
+        yield 'text search' => [['search' => 'repair']];
+        yield 'one purpose' => [['purpose' => 'enquiries']];
+    }
+
     /** @return iterable<string, array{array<string, mixed>}> */
     public static function invalidInputs(): iterable
     {

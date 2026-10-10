@@ -87,6 +87,10 @@ conclusion is unchanged and the reasoning is now the honest one: the scan is
 affordable at the ~29k rows a year this document books, capped to one year by
 [`StatRange::MAX_DAYS`](../../src/Stats/StatRange.php), and an index here would
 be paid on every beacon for a read one admin takes on demand.*
+**Corrected by [0140](0140-measured-reads-keep-their-indexes.md):** an index is
+not paid on every beacon, only when a beacon creates a new row. Product and
+screen scopes have also outgrown the ~29k rows a year booked here. The scan
+stays affordable at realistic sizes, and that is now a measurement.
 
 ## Table-free alternatives, rejected
 

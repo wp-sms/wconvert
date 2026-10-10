@@ -81,12 +81,11 @@ final class StatsRepository
      *
      * **It is a scan of the primary key, and that is affordable rather than
      * overlooked.** `(optin_id, stat_date, kind)` puts the id leftmost, so a
-     * date range across every Optin cannot use it as a range — but the table
-     * is booked at ~29k rows a year (ADR 0019) and {@see StatRange::MAX_DAYS}
-     * keeps the window to one of them. A secondary index would be paid on
-     * every beacon to save one admin screen a read it takes on demand, which
-     * is the same asymmetry ADR 0033 decided the other way round for the lead
-     * log. `tests/unit/Database/SchemaTest.php` still budgets this table zero.
+     * date range across every Optin cannot use it as a range. Measured, it is
+     * 94 ms at 421k rows and 323 ms at 1.32M (ADR 0140). If it ever needs one,
+     * the index is `(scope, stat_date)`: the date-only index is ignored because
+     * `scope` is not in it. `tests/unit/Database/SchemaTest.php` still budgets
+     * this table zero.
      *
      * `count` is backticked because it is also a function name.
      *

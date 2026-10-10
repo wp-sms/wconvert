@@ -88,6 +88,17 @@ final class LeadQuery
             $snapshot ?? self::snapshotNow(), $before, $canonical($value('group_identifier')), $search, $purpose, $order);
     }
 
+    /**
+     * Whether any filter narrows the log below "everything before the snapshot".
+     * The cursor and the order do not: they page the same set.
+     */
+    public function narrowed(): bool
+    {
+        return $this->optinId !== null || $this->identifier !== null || $this->leadId !== null
+            || $this->from !== null || $this->to !== null || $this->groupIdentifier !== null
+            || $this->search !== null || $this->purpose !== null;
+    }
+
     /** Exclude the current millisecond too: later captures cannot enter this paging window. */
     public static function snapshotNow(): string
     {
