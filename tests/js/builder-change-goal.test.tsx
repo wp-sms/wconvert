@@ -254,11 +254,11 @@ describe('the numbers in Campaign details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     const details = within(await screen.findByRole('dialog', { name: 'Welcome discount' }));
-    const alert = await details.findByText('The numbers could not be loaded.');
+    const alert = await details.findByText('Results couldn’t load.');
     expect(alert).toHaveAttribute('role', 'alert');
     // Each failed read in the dialog carries its own door, beside its own sentence.
     await userEvent.click(within(alert.parentElement!).getByRole('button', { name: 'Try again' }));
-    await waitFor(() => expect(details.queryByText('The numbers could not be loaded.')).toBeNull());
+    await waitFor(() => expect(details.queryByText('Results couldn’t load.')).toBeNull());
     expect(stats.readDashboard).toHaveBeenCalledTimes(2);
   });
 });
@@ -282,7 +282,9 @@ describe('the goal in Optin details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    expect(await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
+    const goal = await within(screen.getByRole('dialog')).findByRole('region', { name: 'Goal' });
+    expect(await within(goal).findByText('Grow my email list')).toBeInTheDocument();
+    expect(goal).toHaveTextContent('Counts as success: Conversions');
   });
 
   /**
@@ -335,7 +337,7 @@ describe('the goal in Optin details', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions');
+    await within(screen.getByRole('dialog')).findByText('Counts as success: Conversions');
 
     expect(screen.queryByRole('button', { name: 'Change goal' })).toBeNull();
   });

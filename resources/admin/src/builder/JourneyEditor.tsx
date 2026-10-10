@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, MoreHorizontal, Workflow, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUp, Copy, FilePlus2, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, MoreHorizontal, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { Dialog, DialogTrigger, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
-import { AdminDialogContent, AdminDialogFooter } from '../components/ui/admin-dialog';
+import { AdminDialogContent } from '../components/ui/admin-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { AlertDialog, AlertDialogContent } from '../components/ui/alert-dialog';
 import { EditTree, screenIconOf, type EditTreeLook, type EditTreeRow } from './EditTree';
 import { FactList, FactRow, PanelHeader, PanelHint, PanelSection } from './PanelSection';
@@ -19,9 +20,7 @@ import { followupGroups, followupGroupSource } from './structure/followupGroups'
 import { JourneyScreenCard } from './JourneyScreenCard';
 import { JourneyArrivalSummary } from './JourneyArrivalSummary';
 import { QuestionSettings, type QuestionReviewContext, ResultSettings, RouteSettings, ScreenConditionSettings } from './JourneySettings';
-import { JourneyScreenPreview } from './JourneyScreenPreview';
 import { JourneyTest } from './JourneyTest';
-import { JourneySample } from './JourneySample';
 import { GraphRouteSettings } from './GraphRouteSettings';
 import { JourneyScreenContent } from './JourneyScreenContent';
 import type { TemplateLabels } from '../templates/api';
@@ -48,12 +47,11 @@ import type { JourneyRepair } from './structure/journeyReadiness';
 import type { CampaignIssue } from './readiness/campaignIssues';
 import { journeysSupported } from '../settings';
 
-const ignoreSampleTrace = () => {};
 const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, appearancePreview, elementPanel, elementSelection, onClearElement, testRequest, testRequestMode = 'journey', testReturnFocus, onTestClose, onTestExit }: {
+export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
   onUndo?(): void; labels?: TemplateLabels; onResultSelect?(id: string | undefined): void; tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree;
   /** The campaign's one issue list (ADR 0133); the screens and the map show the ones about a screen. */
   issues?: readonly CampaignIssue[];
@@ -71,9 +69,11 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   onSelectElement?(path: Path): void; step: number; onChange(tree: TemplateTree, coalesce?: string): void; onSelect(step: number): void;
   displaySummary?: string; destinationSummary?: string; deliveryMode?: 'local' | 'connected' | 'none'; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number;
   repairRequest?: JourneyRepair & { readonly serial: number }; embedded?: boolean;
-  editorCanvas?: ReactNode; appearancePreview?: ReactNode; elementPanel?: ReactNode; elementSelection?: object; onClearElement?(): void; testRequest?: number; onTestClose?(): void; onTestExit?(): void;
-  /** Which of the preview's modes a new test request opens: as a visitor, or trying answers. */
-  testRequestMode?: 'journey' | 'appearance' | 'sample';
+  editorCanvas?: ReactNode; elementPanel?: ReactNode; elementSelection?: object; onClearElement?(): void; testRequest?: number; onTestClose?(): void; onTestExit?(): void;
+  /** Preview's title: the campaign's name. */
+  previewTitle?: string;
+  /** Preview's second tab, Who sees it; `close` closes Preview. */
+  whoSeesIt?(close: () => void): ReactNode;
   /** Where focus returns when a requested test closes: the menu item that asked is gone by then. */
   testReturnFocus?: RefObject<HTMLElement | null>;
   focusActions?: ReactNode;
@@ -98,16 +98,11 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const [testChange, setTestChange] = useState<JourneyChange | undefined>();
-  const [testMode, setTestMode] = useState<'journey' | 'appearance' | 'sample'>('journey');
-  const [appearanceStep, setAppearanceStep] = useState(0);
-  const hasTestQuestions = tree.steps.some(screen => walkNodes(screen.content).some(node => node.type === 'question'));
-  const previewMode = testMode === 'sample' && !hasTestQuestions ? 'journey' : testMode;
+  const [testMode, setTestMode] = useState<'journey' | 'visit'>('journey');
+  const previewMode = testMode === 'visit' && whoSeesIt ? 'visit' : 'journey';
   const leaveTest = () => { setTestOpen(false); onTestExit?.(); };
   const closeTest = () => { leaveTest(); setTestChange(undefined); onTestClose?.(); if (!embedded) setOpen(true); };
   const [addCapture, setAddCapture] = useState(false);
-  const [previewScreen, setPreviewScreen] = useState<number | null>(null);
-  const previewTrigger = useRef<HTMLElement | null>(null);
-  const previewAction = useRef<'edit' | 'test' | null>(null);
   const contextAddTrigger = useRef<HTMLElement | null>(null);
   const [followupAnswer, setFollowupAnswer] = useState<{ question: string; value: string }>();
   const [insertIntent, setInsertIntent] = useState<'branch' | undefined>();
@@ -127,7 +122,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     document.body.classList.add('wconvert-journey-focus');
     return () => document.body.classList.remove('wconvert-journey-focus');
   }, [focused, embedded]);
-  const testTrigger = useRef<HTMLButtonElement>(null);
   const testHeading = useRef<HTMLHeadingElement>(null);
   const settingsHeading = useRef<HTMLHeadingElement>(null);
   const inspectorTrigger = useRef<HTMLElement | null>(null);
@@ -140,12 +134,10 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   useEffect(() => { if (editorCanvas && view === 'flow' && !manyWays) setView('edit'); }, [editorCanvas, view, manyWays]);
   const externalTestTrigger = useRef<HTMLElement | null>(null);
   const handledTestRequest = useRef(0);
-  useEffect(() => { if (testRequest && testRequest !== handledTestRequest.current) { handledTestRequest.current = testRequest; externalTestTrigger.current = testReturnFocus?.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null); returnToTestTrigger.current = true; setTestChange(undefined); if (testRequestMode === 'appearance') setAppearanceStep(step); setTestMode(testRequestMode); setTestOpen(true); } }, [testRequest]); // eslint-disable-line react-hooks/exhaustive-deps -- the mode travels with the request
-  useEffect(() => { if (elementSelection) { setInspecting(true); setSampleOpen(false); setRequestedSection('content'); setMobilePane('details'); } }, [elementSelection]);
+  useEffect(() => { if (testRequest && testRequest !== handledTestRequest.current) { handledTestRequest.current = testRequest; externalTestTrigger.current = testReturnFocus?.current ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null); returnToTestTrigger.current = true; setTestChange(undefined); setTestMode('journey'); setTestOpen(true); } }, [testRequest]); // eslint-disable-line react-hooks/exhaustive-deps -- only a new request opens it
+  useEffect(() => { if (elementSelection) { setInspecting(true); setRequestedSection('content'); setMobilePane('details'); } }, [elementSelection]);
   const [query, setQuery] = useState('');
-  const [sampleOpen, setSampleOpen] = useState(false);
   const [inspecting, setInspecting] = useState(!!editorCanvas || !embedded);
-  const [traceKind, setTraceKind] = useState<'sample' | 'visited'>('sample');
   const [sampleEdges, setSampleEdges] = useState<readonly string[] | null>(null);
   const [samplePath, setSamplePath] = useState<readonly number[] | null>(null);
   useEffect(() => { setSamplePath(null); setSampleEdges(null); }, [tree]);
@@ -176,7 +168,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     if (index < 0) return;
     selectedId.current = repairRequest.screenId;
     setInspecting(true);
-    setSampleOpen(false);
     if (!editorCanvas) setView('flow');
     onClearElement?.();
     setMobilePane('details');
@@ -229,16 +220,16 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   useEffect(() => {
     if (!focused) return;
     const escape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || previewScreen !== null || addKind || addCapture || confirmRemoval || confirmGraphRemoval || pendingRoute
+      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || addKind || addCapture || confirmRemoval || confirmGraphRemoval || pendingRoute
         || !(event.target instanceof Node) || !workspaceRoot.current?.contains(event.target)) return;
       event.preventDefault(); setFocused(false); focusTrigger.current?.focus();
     };
     document.addEventListener('keydown', escape);
     return () => document.removeEventListener('keydown', escape);
-  }, [focused, testOpen, previewScreen, addKind, addCapture, confirmRemoval, confirmGraphRemoval, pendingRoute]);
+  }, [focused, testOpen, addKind, addCapture, confirmRemoval, confirmGraphRemoval, pendingRoute]);
   const screenList = useRef<HTMLOListElement>(null);
   const previousTree = useRef(tree);
-  const select = (index: number) => { setDeleting(false); setMoving(false); setResumeReview(undefined); onClearElement?.(); setReturnInspection(null); setReferenceRequest(undefined); inspectorTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setSamplePath(null); setSampleEdges(null); setRequestedSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
+  const select = (index: number) => { setDeleting(false); setMoving(false); setResumeReview(undefined); onClearElement?.(); setReturnInspection(null); setReferenceRequest(undefined); inspectorTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; selectedId.current = tree.steps[index]?.id; setInspecting(true); setSamplePath(null); setSampleEdges(null); setRequestedSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
   useEffect(() => {
     if (previousTree.current !== tree) {
       // A later edit or Undo invalidates instructions about a prior operation.
@@ -454,7 +445,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const insertionLabel = tree.graph ? __('Choose a location in the journey', 'wconvert') : insertionAt <= step
     ? sprintf(__('Before %s', 'wconvert'), tree.steps[insertionAt].name)
     : sprintf(__('After %s', 'wconvert'), current.name);
-  const panelOpen = sampleOpen || inspecting;
+  const panelOpen = inspecting;
   // Display rules and Destinations are tabs of their own, one click away (ADR 0134).
   const openContext = (kind: 'rules' | 'destinations') => { setOpen(false); (kind === 'rules' ? onGoToRules : onGoToDestinations)?.(); };
   const connect = (source: string, target: string) => {
@@ -508,7 +499,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   };
   // Every path from the open screen, with the dialogs it opens: the Flow
   // pane's Next screen, the slim panel's disclosure and the question panel.
-  const routes = <GraphRouteSettings tree={tree} step={step} onSelect={index => { select(index); setReturnInspection({ screenId: current.id, section: panelSection }); }} onPreview={index => { previewTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setPreviewScreen(index); }} focusPath={pathFocus} focusTarget={repairRequest?.screenId === current.id && repairRequest.focus === 'route-target'} onChange={onChange} onInsert={insertOnGraphPath} onAdd={intent => {
+  const routes = <GraphRouteSettings tree={tree} step={step} onSelect={index => { select(index); setReturnInspection({ screenId: current.id, section: panelSection }); }} focusPath={pathFocus} focusTarget={repairRequest?.screenId === current.id && repairRequest.focus === 'route-target'} onChange={onChange} onInsert={insertOnGraphPath} onAdd={intent => {
               contextAddTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
               setFollowupAnswer(undefined); setInsertLocation(undefined); insertedScreen.current = false;
               setInsertIntent(intent === 'branch' ? 'branch' : undefined); setAddKind(intent === 'followup' ? 'followup' : 'input');
@@ -583,8 +574,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               {focused ? __('Back to campaign', 'wconvert') : __('Focus journey', 'wconvert')}
             </Button>}
             {focused && focusActions}
-            {journeys && !editorCanvas && <Button type="button" variant={sampleOpen ? 'secondary' : 'outline'} onClick={() => { setView('flow'); setSampleEdges(null); setTraceKind('sample'); setSampleOpen(true); setMobilePane('details'); }}>{__('Try answers', 'wconvert')}</Button>}
-            {!editorCanvas && <Button ref={testTrigger} type="button" variant="outline" onClick={() => { returnToTestTrigger.current = true; setOpen(false); setTestChange(undefined); setTestOpen(true); }}>{__('Test journey', 'wconvert')}</Button>}
             {!editorCanvas && (journeys ? <Button ref={addTrigger} type="button" variant="outline" onClick={() => { setFollowupAnswer(undefined); contextAddTrigger.current = null; setInsertLocation(undefined); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input'); }}><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}</Button>
               : !tree.graph && <Button ref={addTrigger} type="button" variant="outline" aria-disabled={tree.steps.length >= 7 || undefined} aria-describedby={tree.steps.length >= 7 ? `${id}-limit` : undefined}
                 title={tree.steps.length >= 7 ? __('A campaign without answer paths holds up to 7 screens.', 'wconvert') : undefined}
@@ -618,13 +607,13 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             {!embedded && <DialogClose asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('Close screen manager', 'wconvert')}><X aria-hidden="true" /></Button></DialogClose>}
           </div>
         </div>}
-        {samplePath && !sampleOpen && <div className="wconvert-journey-context"><span>{traceKind === 'visited' ? __('Showing the path visited in your test', 'wconvert') : __('Showing the path for your sample answers', 'wconvert')}</span><button type="button" onClick={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Test path cleared. All screens and paths are shown.', 'wconvert')); }}>{__('Clear test path', 'wconvert')}</button></div>}
+        {samplePath && <div className="wconvert-journey-context"><span>{__('Showing the path visited in your test', 'wconvert')}</span><button type="button" onClick={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Test path cleared. All screens and paths are shown.', 'wconvert')); }}>{__('Clear test path', 'wconvert')}</button></div>}
         {(panelOpen || onCanvas) && <OptionStrip className="wconvert-journey-mobile-tabs" label={__('Mobile journey view', 'wconvert')} value={mobilePane}
           options={[
             // Narrow, the Edit tab is three panes taken one at a time (ADR 0134).
             ...(onCanvas ? [{ value: 'tree', label: __('Screens', 'wconvert') }] : []),
             { value: 'map', label: view === 'flow' ? __('Map', 'wconvert') : view === 'edit' ? __('Preview', 'wconvert') : __('Screens', 'wconvert') },
-            { value: 'details', label: sampleOpen ? __('Try answers', 'wconvert') : onCanvas ? __('Edit', 'wconvert') : __('Edit screen', 'wconvert') },
+            { value: 'details', label: onCanvas ? __('Edit', 'wconvert') : __('Edit screen', 'wconvert') },
           ]} onChange={value => setMobilePane(value as typeof mobilePane)} />}
         <QuestionPanelContext.Provider value={editorCanvas ? questionPanel : null}>
         <div className="wconvert-journey-side" data-mobile-pane={mobilePane} data-panel-open={panelOpen} data-editing={view === 'edit' || undefined} data-wide-panel={widePanel || undefined}>
@@ -632,14 +621,13 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           {view === 'edit' && <><EditTree tree={tree} step={step} editingScreen={editingScreen && !look?.open} issues={issues} onIssue={openIssue} onSelect={select}
             look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map" role="status"><span className="sr-only">{__('Loading journey map…', 'wconvert')}</span></div>}>
-            <JourneyMap traceKind={traceKind} issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
+            <JourneyMap traceKind="visited" issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
               onSelect={select} onSelectPath={(index, priority) => {
                 // A question's paths live on the question (ADR 0134), in Flow as on the canvas.
                 const question = slim && onSelectElement ? nodesOf(tree).find(block => block.path[0] === index && block.type === 'question')?.path : undefined;
                 setPathFocus(priority);
                 if (question) { onSelectElement!(question); return; }
                 select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); }} onConnect={journeys ? connect : undefined} onReconnect={journeys ? reconnect : undefined} samplePath={samplePath} sampleEdges={sampleEdges}
-              onPreview={index => { previewAction.current = null; previewTrigger.current = document.activeElement as HTMLElement; setPreviewScreen(index); }}
               onAdd={journeys && tree.graph ? (index, edgeId) => {
                 contextAddTrigger.current = document.activeElement as HTMLElement;
                 select(index); setFollowupAnswer(undefined); setInsertLocation(edgeId ? `edge:${edgeId}` : undefined); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');
@@ -657,8 +645,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 onMove={tree.graph ? undefined : (from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
             </ol>
           </aside>}
-          {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); setMobilePane('map'); }} />
-            : lookPanel && view === 'edit' && (look?.open || !editingScreen) ? <section className="wconvert-journey-pane wconvert-journey-pane--look" aria-label={__('Look', 'wconvert')}>{lookPanel}</section>
+          {lookPanel && view === 'edit' && (look?.open || !editingScreen) ? <section className="wconvert-journey-pane wconvert-journey-pane--look" aria-label={__('Look', 'wconvert')}>{lookPanel}</section>
             : inspecting && elementPanel ? <section ref={elementPane} className="wconvert-journey-pane wconvert-journey-pane--element" aria-label={__('Selected element settings', 'wconvert')}>{elementPanel}</section>
             : inspecting && <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
             {(() => {
@@ -685,7 +672,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                     onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) }, `journey:${current.id}:name`)} /></>}
                 caption={kindWord}
                 actions={<>
-                  <button type="button" aria-label={__('Preview this screen', 'wconvert')} title={__('Preview this screen', 'wconvert')} onClick={event => { previewTrigger.current = event.currentTarget; setPreviewScreen(step); }}><Eye aria-hidden="true" /></button>
                   <DropdownMenu><DropdownMenuTrigger asChild><button ref={deleteTrigger} type="button" className="wconvert-journey-pane__menu" aria-label={sprintf(__('Actions for %s', 'wconvert'), current.name)} title={sprintf(__('Actions for %s', 'wconvert'), current.name)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="wconvert-screen-actions">
                       {!tree.graph && <DropdownMenuItem disabled={current.kind === 'acknowledgement' || current.kind === 'result' || tree.steps.length >= 7} onSelect={duplicate}><Copy aria-hidden="true" />{__('Duplicate', 'wconvert')}</DropdownMenuItem>}
@@ -876,29 +862,16 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             if (impact) { setAddKind(null); setPendingRoute({ tree: next, description: impact, selected: next.steps.length - 1 }); return; }
             insertedScreen.current = true;
             write(next, next.steps.length - 1);
-            setRequestedSection('content'); setMobilePane('details'); setSampleOpen(false); setAddKind(null);
+            setRequestedSection('content'); setMobilePane('details'); setAddKind(null);
             setSaid(__('Screen added at the chosen location. Review its content and where it continues in screen settings.', 'wconvert'), next.steps[next.steps.length - 1]);
           }} />}
-      </AdminDialogContent>
-    </Dialog>
-    <Dialog open={previewScreen !== null} onOpenChange={value => { if (!value) setPreviewScreen(null); }}>
-      <AdminDialogContent size="lg" className="wconvert-journey-screen-preview" onCloseAutoFocus={event => {
-        event.preventDefault();
-        if (previewAction.current === 'test') return;
-        if (previewAction.current === 'edit') { requestAnimationFrame(() => settingsHeading.current?.focus()); return; }
-        if (previewTrigger.current?.isConnected) previewTrigger.current.focus();
-        else findInput.current?.focus();
-      }}>
-        {previewScreen !== null && tree.steps[previewScreen] && <JourneyScreenPreview template={{ tree, tokens }} step={previewScreen}
-          onEdit={() => { previewAction.current = 'edit'; select(previewScreen); setPreviewScreen(null); }}
-          onTest={() => { previewAction.current = 'test'; setPreviewScreen(null); returnToTestTrigger.current = true; setTestChange(undefined); setTestOpen(true); }} />}
       </AdminDialogContent>
     </Dialog>
     <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value) { setTestChange(undefined); onTestExit?.(); onTestClose?.(); } if (!value && !embedded) setOpen(true); }}>
       <AdminDialogContent size="lg" className="wconvert-journey-test-dialog" onOpenAutoFocus={event => { event.preventDefault(); testHeading.current?.focus(); }}
         onCloseAutoFocus={event => {
           event.preventDefault();
-          const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : testTrigger.current ?? findInput.current : settingsHeading.current)?.focus();
+          const restore = () => (returnToTestTrigger.current ? externalTestTrigger.current?.isConnected ? externalTestTrigger.current : findInput.current : settingsHeading.current)?.focus();
           // The embedded workspace stays mounted. Deferring its restoration can
           // steal focus from a subsequent Escape that leaves Focus journey.
           if (embedded) restore();
@@ -906,41 +879,22 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         }}>
         {/* Drawn here rather than by `AdminDialogHeader` because the title takes focus on open. */}
         <div data-slot="dialog-header" className="wconvert-dialog__header">
-          <div className="wconvert-dialog__identity"><DialogTitle ref={testHeading} tabIndex={-1} className="wconvert-dialog__title leading-snug">{__('Preview', 'wconvert')}</DialogTitle></div>
-          <DialogDescription className="wconvert-dialog__meta">{__('Your current draft, as visitors see it. Nothing you enter is saved or sent.', 'wconvert')}</DialogDescription>
-          <OptionStrip className="mt-2" label={__('What to check', 'wconvert')} value={previewMode} onChange={value => {
-            if (value === 'appearance') setAppearanceStep(step);
-            setTestMode(value as typeof testMode);
-          }} options={[
-            { value: 'journey', label: __('As a visitor', 'wconvert') },
-            { value: 'appearance', label: __('This screen', 'wconvert') },
-            ...(hasTestQuestions ? [{ value: 'sample', label: __('Try answers', 'wconvert') }] : []),
-          ]} />
+          <div className="wconvert-dialog__identity"><DialogTitle ref={testHeading} tabIndex={-1} className="wconvert-dialog__title leading-snug">{previewTitle || __('Preview', 'wconvert')}</DialogTitle></div>
+          <DialogDescription className="wconvert-dialog__meta">{__('Preview · Nothing you enter is saved or sent.', 'wconvert')}</DialogDescription>
         </div>
-        {previewMode === 'sample' && <div className="wconvert-preview-test__mode">
-          <JourneySample tree={tree} onTrace={ignoreSampleTrace}
-            onClose={() => setTestMode('journey')} onSelect={index => { returnToTestTrigger.current = false; select(index); leaveTest(); setOpen(true); }}
-            onShowPath={(screens, edges) => { setTraceKind('sample'); setSamplePath(screens); setSampleEdges(edges); setSampleOpen(false); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); }} />
-          <AdminDialogFooter back={<Button variant="outline" onClick={closeTest}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to editor', 'wconvert')}</Button>}
-            note={__('A prediction only. No test submission is made.', 'wconvert')} />
-        </div>}
-        {previewMode === 'appearance' && <div className="wconvert-preview-test__mode">
-          {appearancePreview ? <div className="wconvert-preview-test__placement">{appearancePreview}</div> : <div className="wconvert-journey-appearance-test">
-            <nav className="wconvert-preview-test__screens" aria-label={__('Screen to preview', 'wconvert')}>
-              <span className="wconvert-preview-test__eyebrow" aria-hidden="true">{__('Screens', 'wconvert')}</span>
-              <div role="group" aria-label={__('Screens', 'wconvert')} className="wconvert-preview-test__screen-choices">
-                {displayOrder.map(index => <label key={tree.steps[index].id}><input type="radio" name={`${id}-appearance-screen`} checked={Math.min(appearanceStep, tree.steps.length - 1) === index} onChange={() => setAppearanceStep(index)} /><bdi>{tree.steps[index].name}</bdi></label>)}
-              </div>
-            </nav>
-            <div className="wconvert-preview-test__design"><JourneyScreenPreview key={appearanceStep} embedded template={{ tree, tokens }} step={Math.min(appearanceStep, tree.steps.length - 1)} onEdit={() => { returnToTestTrigger.current = false; select(appearanceStep); leaveTest(); setOpen(true); }} onTest={() => setTestMode('journey')} /></div>
-          </div>}
-          <AdminDialogFooter back={<Button variant="outline" onClick={closeTest}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to editor', 'wconvert')}</Button>}
-            note={__('Check layout, copy and spacing.', 'wconvert')} />
-        </div>}
-        <div className="wconvert-journey-test-dialog__body" hidden={previewMode !== 'journey'}>
-          <JourneyTest onClose={closeTest} active={previewMode === 'journey'} changeToCheck={testChange} onShowPath={(screens, edges) => { setTraceKind('visited'); setSamplePath(screens); setSampleEdges(edges); setSampleOpen(false); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); setSaid(__('The screens and paths visited in your test are highlighted. Future screens are not predicted.', 'wconvert')); }} template={testTemplate} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
-            onEdit={(index, focus) => { returnToTestTrigger.current = false; select(index); leaveTest(); setOpen(true); if (focus === 'condition') setReferenceRequest({ screenId: tree.steps[index].id, section: 'content', serial: --referenceSerial.current }); }} />
-        </div>
+        {/* One Preview, two tabs (ADR 0138): the form as a visitor uses it, and who it shows to. */}
+        <Tabs value={previewMode} onValueChange={value => setTestMode(value as typeof testMode)} className="wconvert-preview-tabs">
+          {whoSeesIt && <TabsList variant="line" className="wconvert-preview-tabs__list w-full justify-start px-5">
+            <TabsTrigger value="journey" className="flex-none px-3">{__('Try the form', 'wconvert')}</TabsTrigger>
+            <TabsTrigger value="visit" className="flex-none px-3">{__('Who sees it', 'wconvert')}</TabsTrigger>
+          </TabsList>}
+          {/* Kept mounted, so a run survives a look at Who sees it. */}
+          <TabsContent value="journey" forceMount className="wconvert-journey-test-dialog__body data-[state=inactive]:hidden">
+            <JourneyTest onClose={closeTest} active={previewMode === 'journey'} changeToCheck={testChange} onShowPath={(screens, edges) => { setSamplePath(screens); setSampleEdges(edges); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); setSaid(__('The screens and paths visited in your test are highlighted. Future screens are not predicted.', 'wconvert')); }} template={testTemplate} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
+              onEdit={(index, focus) => { returnToTestTrigger.current = false; select(index); leaveTest(); setOpen(true); if (focus === 'condition') setReferenceRequest({ screenId: tree.steps[index].id, section: 'content', serial: --referenceSerial.current }); }} />
+          </TabsContent>
+          {whoSeesIt && <TabsContent value="visit" className="wconvert-preview-tabs__visit wconvert-sample-dialog">{whoSeesIt(closeTest)}</TabsContent>}
+        </Tabs>
       </AdminDialogContent>
     </Dialog>
   </>;

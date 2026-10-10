@@ -1,6 +1,6 @@
 import { graphTrace } from '../../resources/loader/src/journey-graph';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { historyOf, remember, undo, redo } from '../../resources/admin/src/builder/structure/history';
@@ -82,11 +82,7 @@ it('focuses the existing workspace without remounting it and closes nested UI be
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
   await user.keyboard('{Escape}');
   expect(document.body).toHaveClass('wconvert-journey-focus');
-  await user.click(screen.getByRole('button', { name: 'Test journey' }));
-  await user.keyboard('{Escape}');
-  expect(screen.queryByRole('dialog', { name: 'Preview' })).not.toBeInTheDocument();
-  expect(document.body).toHaveClass('wconvert-journey-focus');
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Test journey' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Add screen' })).toHaveFocus());
   await user.keyboard('{Escape}');
   expect(document.body).not.toHaveClass('wconvert-journey-focus');
   expect(screen.getByRole('button', { name: 'Focus journey' })).toHaveFocus();
@@ -236,14 +232,19 @@ it('reviews a canvas save bypass even when no screens are disconnected', async (
   expect(screen.getByRole('heading', { name: 'Balcony details' })).toHaveFocus();
   expect(draft().graph!.edges.find(edge => edge.id === 'balcony_hidden')?.to).toBe('contact');
 });
-it.each([true, false])('restores focus after closing Test journey (embedded: %s)', async embedded => {
+it('returns focus to the Preview button when Preview closes', async () => {
   const user = userEvent.setup();
-  render(<JourneyEditor embedded={embedded} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
-  if (!embedded) await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Test journey' }));
+  function Host() {
+    const trigger = useRef<HTMLButtonElement>(null);
+    const [request, setRequest] = useState(0);
+    return <><button ref={trigger} type="button" onClick={() => setRequest(value => value + 1)}>Preview</button>
+      <JourneyEditor embedded editorCanvas={<div />} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={request} testReturnFocus={trigger} /></>;
+  }
+  render(<Host />);
+  await user.click(screen.getByRole('button', { name: 'Preview' }));
   expect(screen.getByRole('dialog', { name: 'Preview' })).toBeInTheDocument();
   await user.keyboard('{Escape}');
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Test journey' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Preview' })).toHaveFocus());
 });
 it('opens a requested graph repair on its source screen and path settings', async () => {
   const base = graphFixture as unknown as TemplateTree;
@@ -486,20 +487,6 @@ it('keeps an inserted screen hidden when its source is skipped', async () => {
   const next = draft();
   expect(next.steps[2].when).toEqual(next.steps[1].when);
   expect(next.steps[2].paths).toEqual([{ to: 'contact' }]);
-});
-
-it('explains a sample route without changing the campaign draft', async () => {
-  const user = userEvent.setup();
-  render(<Editor initial={service.tree as TemplateTree} />);
-  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Try answers' }));
-  const sample = screen.getByRole('complementary', { name: 'Sample visitor' });
-  expect(within(sample).queryByText('Repair details')).not.toBeInTheDocument();
-  await user.click(within(sample).getByRole('radio', { name: 'Repair' }));
-  expect(within(sample).getByText('Repair details')).toBeInTheDocument();
-  expect(within(sample).getByText('Waiting for your choice')).toBeInTheDocument();
-  expect(within(sample).queryByText(/submission would be made/)).not.toBeInTheDocument();
-  expect(draft()).toEqual(service.tree);
 });
 
 it('replaces a referenced answer in visibility, paths and results as one tree change', () => {
@@ -1149,43 +1136,18 @@ it('opens an incomplete continuation from the screen’s own warning', async () 
   await waitFor(() => expect(screen.getByRole('region', { name: 'Where visitors go next' })).toBeInTheDocument());
 });
 
-it('offers sample answers in Preview and clears its predicted path when the draft changes', async () => {
+it('keeps unsent visitor inputs across Preview’s two tabs, and offers no third', async () => {
   const user = userEvent.setup();
-  const tree = structuredClone(graphFixture) as unknown as TemplateTree;
-  const props = { embedded: true, editorCanvas: <div>Canvas</div>, tree, step: 2, onChange: vi.fn(), onSelect: vi.fn(), testRequest: 1 };
-  const view = render(<JourneyEditor {...props} />);
-  const dialog = await screen.findByRole('dialog', { name: 'Preview' });
-  await user.click(within(dialog).getByRole('radio', { name: 'Try answers' }));
-  expect(within(dialog).getByText(/This predicts a path/)).toBeInTheDocument();
-  await user.click(within(dialog).getByRole('button', { name: 'Show sample path on the map' }));
-  expect(screen.getByText('Showing the path for your sample answers')).toBeInTheDocument();
-  expect(props.onChange).not.toHaveBeenCalled();
-  view.rerender(<JourneyEditor {...props} tree={{ ...tree, steps: tree.steps.map((step, at) => at === 2 ? { ...step, name: 'Changed interests' } : step) }} />);
-  expect(screen.queryByRole('button', { name: 'Clear test path' })).not.toBeInTheDocument();
-});
-
-it('moves keyboard focus inside the preview when reopening Sample answers', async () => {
-  const user = userEvent.setup();
-  render(<JourneyEditor embedded tree={finder.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
-  await user.click(screen.getByRole('button', { name: 'Test journey' }));
-  await user.click(screen.getByRole('radio', { name: 'Try answers' }));
-  await user.click(within(screen.getByRole('dialog', { name: 'Preview' })).getByRole('button', { name: 'Close' }));
-  await user.click(screen.getByRole('button', { name: 'Test journey' }));
-  const dialog = screen.getByRole('dialog', { name: 'Preview' });
-  expect(within(dialog).getByRole('radio', { name: 'Try answers' })).toBeChecked();
-  await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
-});
-
-it('keeps unsent visitor inputs across design mode switches and omits answer exploration for simple forms', async () => {
-  const user = userEvent.setup();
-  render(<JourneyEditor embedded editorCanvas={<div>Canvas</div>} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={1} />);
+  render(<JourneyEditor embedded editorCanvas={<div>Canvas</div>} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={1}
+    whoSeesIt={() => <p>The visitor</p>} />);
   const dialog = await screen.findByRole('dialog', { name: 'Preview' });
   const root = () => [...dialog.querySelectorAll('*')].find(node => node.shadowRoot)!.shadowRoot!;
   const email = within(root() as unknown as HTMLElement).getByRole('textbox', { name: /Email address/ });
   await user.type(email, 'draft@example.test');
-  await user.click(within(dialog).getByRole('radio', { name: 'This screen' }));
-  expect(within(dialog).queryByRole('radio', { name: 'Try answers' })).not.toBeInTheDocument();
-  await user.click(within(within(dialog).getByRole('group', { name: 'What to check' })).getByRole('radio', { name: 'As a visitor' }));
+  expect(within(dialog).getAllByRole('tab').map(tab => tab.textContent)).toEqual(['Try the form', 'Who sees it']);
+  await user.click(within(dialog).getByRole('tab', { name: 'Who sees it' }));
+  expect(within(dialog).getByText('The visitor')).toBeVisible();
+  await user.click(within(dialog).getByRole('tab', { name: 'Try the form' }));
   expect(within(root() as unknown as HTMLElement).getByRole('textbox', { name: /Email address/ })).toBe(email);
   expect(email).toHaveValue('draft@example.test');
 });

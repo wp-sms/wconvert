@@ -34,6 +34,9 @@ found the system intact and its application drifted:
    (Publish or Unpublish, Duplicate, View submissions), then View report and
    the editor — no longer only two doors out — and a status change asked there
    confirms in the footer's place rather than in a second dialog.*
+   *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): both Details share one body; the editor's footer is
+   View report and Close. Review & publish's footer is Preview beside Publish,
+   and Preview is one Large dialog titled with the campaign's name.*
 2. **Dirty dialogs ask once.** `AdminDialogContent dirty` makes Escape, an
    outside click and ✕ ask "Discard changes?" — drawn inside the dialog, over
    its footer — only when something was typed. It replaces the Targets

@@ -123,6 +123,7 @@ final class GoalRegistryTest extends TestCase
 
             $this->assertSame($goal->headlineLabel(), $entry['headline_label']);
             $this->assertNotSame('', $entry['headline_label']);
+            $this->assertSame($goal->rateLabel(), $entry['rate_label']);
         }
     }
 

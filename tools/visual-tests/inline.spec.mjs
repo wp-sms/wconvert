@@ -397,33 +397,17 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await method.getByText('Content lock', { exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
-  const previewButton = page.getByRole('button', { name: 'Preview', exact: true });
-  const thisScreen = page.getByRole('menuitem', { name: 'This screen', exact: true });
-  const previewDialog = page.getByRole('dialog', { name: 'Preview', exact: true });
-  const canvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
+  // One screen, a lock state included, is looked at on the canvas, never in a
+  // second preview (ADR 0138): the Edit tree's Locked content preview row.
+  const editTab = page.getByRole('tab', { name: 'Edit', exact: true });
+  const lockRow = page.getByRole('button', { name: 'Locked content preview', exact: true });
+  const canvas = page.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
-  // Display rules owns the full pane at every width; its preview opens in the
-  // same dialog on desktop and at the builder floor.
+  // Display rules owns the full pane at every width.
   for (const width of [1440, 782]) {
     await page.setViewportSize({ width, height: 1000 });
     await expect(rulesPanel.getByRole('region', { name: 'Design canvas', exact: true })).toHaveCount(0);
-    await previewButton.click();
-    await thisScreen.click();
-    await expect(previewDialog).toBeVisible();
-    await expect(previewDialog.getByRole('radio', { name: 'This screen', exact: true })).toBeChecked();
-    await expect(preview).toBeVisible();
-    for (const direction of ['ltr', 'rtl']) {
-      await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
-      for (const state of ['locked', 'unlocked', 'unavailable']) {
-        await preview.selectOption(state);
-        const example = canvas.getByLabel('Content lock example', { exact: true });
-        await expect.poll(() => example.evaluate(node => node.scrollWidth - node.clientWidth)).toBeLessThanOrEqual(1);
-      }
-    }
-    await page.keyboard.press('Escape');
-    await expect(previewDialog).toBeHidden();
-    await expect(previewButton).toBeFocused();
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
@@ -433,17 +417,24 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
   await expect(placementPanel.getByRole('button', { name: /Google/ })).toHaveCount(0);
   await expect(placementPanel).not.toContainText('—');
-  await previewButton.click();
-  await thisScreen.click();
-  await expect(previewDialog).toBeVisible();
+  await editTab.click();
+  await lockRow.click();
+  await expect(preview).toBeVisible();
+  for (const direction of ['ltr', 'rtl']) {
+    await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
+    for (const state of ['locked', 'unlocked', 'unavailable']) {
+      await preview.selectOption(state);
+      const example = canvas.getByLabel('Content lock example', { exact: true });
+      await expect.poll(() => example.evaluate(node => node.scrollWidth - node.clientWidth)).toBeLessThanOrEqual(1);
+    }
+  }
+  await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
   await preview.selectOption('locked');
   await preview.scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('content-lock-workspace.png'), fullPage: true });
   await preview.selectOption('unavailable');
   await expect(canvas.getByText('No submission recorded.', { exact: true })).toBeVisible();
   await preview.selectOption('locked');
-  await page.keyboard.press('Escape');
-  await expect(previewDialog).toBeHidden();
   await page.getByRole('button', { name: 'Review & publish', exact: true }).click();
   await expect(review).toContainText('Locks the selected region');
   await expect(publish).toBeEnabled();

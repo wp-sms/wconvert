@@ -32,7 +32,12 @@ and none could be read at a glance:
    answer, one line each, `tone: 'warning'` for a fact that needs a look. It is
    extracted from the setup preview's list and is now how all three modals
    show facts, so they scan the same way.
-2. **Details reads top to bottom as the merchant asks.** One callout for
+2. *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): the list's Details and the editor's are one body,
+   `optins/CampaignSummary`, which adds the Goal and what counts as success
+   after the preview, names the rate in the Goal's words, and says a quiz's or
+   basket's visitor action instead of calling it unfinished. How it runs is
+   `optins/campaignFacts`, which Review & publish reads too.*
+   **Details reads top to bottom as the merchant asks.** One callout for
    anything that needs attention (no design, suspended, unpublished changes —
    the same sentences, merged); the preview; the period's results under one
    line ("Last 30 days · Sep 10 – Oct 9"), with a caption under a missing rate

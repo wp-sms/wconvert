@@ -151,6 +151,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
   const where = destinationsSaid(bound, destinations, capturedFields(template));
   const reviewsPrivacy = inputs.privacyGuidance === true && captures.length > 0;
   const expectsConsent = reviewsPrivacy && outcome?.audience_channel != null;
+  const hiddenConsent = template ? consentIn(template) : null;
   const checking: CampaignIssue[] = [
     ...problems.filter(problem => problem.check !== 'converts' && !problem.blocksPublish).map((problem, index) =>
       issue(`check:${index}:${problem.said}`, problem.said, null,
@@ -166,8 +167,10 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       ? [issue(ISSUE.policyPage, __('WordPress has no Privacy Policy page selected, so the form cannot link to it.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
     ...(reviewsPrivacy && template && visiblePolicyLinkIn(template, inputs.policyUrl) === null
       ? [issue(ISSUE.policyNotice, __('No Privacy Policy notice is shown on this form.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
+    // A hidden checkbox opens on itself; none at all opens the design (ADR 0138).
     ...(expectsConsent && template && consentIn(template, true) === null
-      ? [issue(ISSUE.consent, __('No consent checkbox is shown for this mailing list.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
+      ? [issue(ISSUE.consent, __('No consent checkbox is shown for this mailing list.', 'wconvert'), null,
+        hiddenConsent ? { to: 'element', path: hiddenConsent } : { to: 'edit-design' }, false, { section: 'privacy' })] : []),
   ];
 
   return [...blocking, ...checking];

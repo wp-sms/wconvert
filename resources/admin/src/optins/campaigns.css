@@ -74,8 +74,16 @@
 .wconvert-campaign-detail-stats span { display:block; font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; }
 .wconvert-campaign-detail-stats small { display:block; margin-block-start:2px; font-size:var(--text-micro); color:var(--muted-foreground); overflow-wrap:anywhere; }
 .wconvert-campaign-facts { display:grid; gap:8px; min-inline-size:0; padding-block-start:1.25rem; border-block-start:1px solid var(--border); }
+/* The editor's Details has no notice or thumbnail above its Goal: nothing to rule off. */
+.wconvert-campaign-detail__body > .wconvert-campaign-facts:first-child { padding-block-start:0; border-block-start:0; }
 .wconvert-campaign-facts h3, .wconvert-product-health h3 { margin:0; font-size:var(--text-heading); font-weight:600; line-height:1.3; }
 .wconvert-campaign-facts p { margin:0; font-size:var(--text-body); overflow-wrap:anywhere; }
+/* The Goal, what counts as its success and how it is measured (ADR 0138). */
+.wconvert-campaign-goal__body { display:grid; grid-template-columns:18px minmax(0,1fr) auto; gap:10px; align-items:start; }
+.wconvert-campaign-goal__body > svg { margin-block-start:2px; color:var(--action); }
+.wconvert-campaign-goal__body strong { display:block; font-size:var(--text-body); font-weight:600; }
+.wconvert-campaign-goal__body p { font-size:var(--text-note); color:var(--muted-foreground); }
+@media (max-width:479px) { .wconvert-campaign-goal__body { grid-template-columns:18px minmax(0,1fr); } .wconvert-campaign-goal__body > :last-child:not(div) { grid-column:2; justify-self:start; } }
 
 .wconvert-product-health-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
 .wconvert-product-health { display:grid; gap:12px; border:1px solid var(--border); border-radius:var(--radius); padding:16px; font-size:var(--text-body); }

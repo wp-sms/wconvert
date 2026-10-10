@@ -13,7 +13,7 @@ import type { GoalEntry, PlaybookEntry } from '../../resources/admin/src/goals/a
  */
 const GOAL: GoalEntry = {
   id: 'promote_offer', label: 'Promote an offer', description: '', outcome: CLICK_OUTCOME,
-  headline_kind: 'conversion', headline_label: 'Offer clicks', tier: 'free', availability: 'ready',
+  headline_kind: 'conversion', headline_label: 'Offer clicks', rate_label: 'Offer click rate', tier: 'free', availability: 'ready',
 };
 
 function quiz(results: { link_label?: string; href?: string }[]): TemplateTree {

@@ -21,8 +21,11 @@ Historical setup guidance becomes optional **Setup guidance**.
 
 Review puts **Before you can publish** ahead of the recap, with direct actions to
 fix each blocker. Design, all four placement/timing summaries, forwarding state and
-advisory warnings remain visible. Measurement explanation and setup origin move to
-optional **Measurement & setup details**; the Goal stays in the status row.
+advisory warnings remain visible. ~~Measurement explanation and setup origin move to
+optional **Measurement & setup details**; the Goal stays in the status row.~~
+*Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): **Counts as success** — the Goal's number and its
+measurement — sits under the thumbnail, never folded away; How it runs replaces
+the placement/timing and forwarding sections.*
 An unfinished required service choice says **No destination selected. Finish setup
 in Destinations.** It must not describe manual export as if collect-only was chosen.
 Spacing is reduced without reducing type sizes or hiding publishing controls.

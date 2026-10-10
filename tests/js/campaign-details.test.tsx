@@ -3,7 +3,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
-const api = vi.hoisted(() => ({ getOptin: vi.fn(), getRules: vi.fn(), readDestinations: vi.fn(), resolveObjects: vi.fn() }));
+const api = vi.hoisted(() => ({ getOptin: vi.fn(), getRules: vi.fn(), readDestinations: vi.fn(), resolveObjects: vi.fn(), listGoals: vi.fn() }));
+vi.mock('../../resources/admin/src/goals/api', () => ({ listGoals: api.listGoals }));
 vi.mock('../../resources/admin/src/builder/api', () => ({ getOptin: api.getOptin, getRules: api.getRules }));
 vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: api.readDestinations }));
 vi.mock('../../resources/admin/src/builder/rules/objects', () => ({ resolveObjects: api.resolveObjects }));
@@ -17,6 +18,7 @@ beforeEach(() => {
   api.getRules.mockResolvedValue(ruleTypes());
   api.readDestinations.mockResolvedValue({ destinations: [], types: [], connections: [] });
   api.resolveObjects.mockResolvedValue([]);
+  api.listGoals.mockResolvedValue([{ id: 'quiz', headline_label: 'Matches' }, { id: 'basket', headline_label: 'Basket adds' }]);
 });
 it('reads how it runs as one icon list', async () => {
   api.getOptin.mockResolvedValue({ config: config('submit') });
@@ -78,4 +80,28 @@ it('offers one way to try again after a failed context read', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent('Read failed');
   await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('region', { name: 'How it runs' })).toBeInTheDocument();
+});
+it('reads a quiz as showing a matching result, never as unfinished', async () => {
+  const tree = treeFixture({ steps: [{ type: 'stack', children: [{ type: 'button', action: 'next' }] }, { type: 'stack', children: [] }] });
+  const quiz = { ...tree, steps: tree.steps.map((step, at) => at === 1 ? { ...step, kind: 'result' as const } : step) };
+  api.getOptin.mockResolvedValue({ goal: 'quiz', config: { display_type: 'inline', template: { tokens: {}, tree: quiz } } });
+  render(<CampaignDetails id="Q" />);
+  await screen.findByRole('region', { name: 'How it runs' });
+  expect(fact('Visitor action')).toHaveTextContent(/^Shows a matching resultCounts Matches$/);
+  expect(fact('Visitor action').parentElement).not.toHaveAttribute('data-tone');
+  expect(screen.queryByText(/Choose what a visitor does/)).toBeNull();
+});
+it('reads a basket design as adding to the basket', async () => {
+  api.getOptin.mockResolvedValue({ goal: 'basket', config: { display_type: 'inline', template: { tokens: {}, tree: treeFixture({ steps: [
+    { type: 'stack', children: [{ type: 'products', action: 'add_to_cart' }] },
+  ] }) } } });
+  render(<CampaignDetails id="C" />);
+  await screen.findByRole('region', { name: 'How it runs' });
+  expect(fact('Visitor action')).toHaveTextContent(/^Adds to the basketCounts Basket adds$/);
+});
+it('still warns when nothing converts', async () => {
+  api.getOptin.mockResolvedValue({ config: { display_type: 'inline', template: { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [] }] }) } } });
+  render(<CampaignDetails id="E" />);
+  await screen.findByRole('region', { name: 'How it runs' });
+  expect(fact('Visitor action').parentElement).toHaveAttribute('data-tone', 'warning');
 });

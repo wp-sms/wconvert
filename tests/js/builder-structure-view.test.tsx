@@ -1245,7 +1245,7 @@ describe('the verdict', () => {
     */
     await userEvent.click(await screen.findByRole('button', { name: 'Review & publish' }));
     expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
+    await userEvent.keyboard('{Escape}');
 
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
 
@@ -1319,7 +1319,7 @@ describe('undo and redo', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     // Focus a non-text control: text inputs already have their own undo guard.
-    const keepEditing = screen.getByRole('button', { name: 'Keep editing' });
+    const keepEditing = within(screen.getByRole('dialog', { name: 'Welcome discount' })).getByRole('button', { name: 'Close' });
     keepEditing.focus();
     expect(keepEditing).toHaveFocus();
     await userEvent.keyboard('{Meta>}z{/Meta}');

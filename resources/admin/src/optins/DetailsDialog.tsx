@@ -1,9 +1,8 @@
 import { lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Copy, EyeOff, Inbox, MoreHorizontal, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Skeleton } from '../components/ui/skeleton';
 import {
   AdminDialog,
   AdminDialogBody,
@@ -21,18 +20,15 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Disclosure } from '../shell/Disclosure';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
-import { formatCount, formatRange, formatRate } from '../lib/format';
+import type { GoalEntry } from '../goals/api';
+import type { Loadable } from '../shell/loadable';
+import { CampaignSummary, type CampaignResults } from './CampaignSummary';
 import { canUnpublish, statusOf, type OptinSummary } from './api';
 import { decisionCopy } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
 
 const Facts = lazy(() => import('./CampaignDetails'));
 
-/** One campaign's numbers for the list's period, as the list already read them. */
-export type CampaignResults =
-  | { status: 'loading' }
-  | { status: 'failed' }
-  | { status: 'ready'; days: number; from: string; to: string; result?: { count: number; shown: number; rate: number | null; label: string } };
 
 /** The two status changes Details can ask; delete stays in the row's menu only. */
 export type DetailsDecision = 'publish' | 'pause';
@@ -42,9 +38,8 @@ export type DetailsDecision = 'publish' | 'pause';
  * amended by ADR 0137).
  *
  * The header is the campaign itself: its name, its status and one line saying
- * what it is. The body reads top to bottom the way a merchant asks: anything
- * that needs attention, what it looks like, how it did, how it runs, and
- * whether its products still exist. The footer holds a ⋯ menu for the status
+ * what it is. The body is {@link CampaignSummary}, the one the editor's
+ * Details shows too (ADR 0138). The footer holds a ⋯ menu for the status
  * changes, then the report and the editor.
  *
  * Publish and Unpublish confirm in place — the footer becomes the question —
@@ -61,6 +56,8 @@ export function CampaignDetailsDialog({
   thumbnail,
   missingDesign = false,
   results,
+  goal,
+  goalId,
   productCheck,
   reportLink,
   leadsLink,
@@ -77,6 +74,9 @@ export function CampaignDetailsDialog({
   thumbnail: ReactNode;
   missingDesign?: boolean;
   results: CampaignResults;
+  /** The row's Goal, as the list read the registry. */
+  goal: Loadable<GoalEntry | null>;
+  goalId: string;
   productCheck: ReactNode;
   reportLink: string;
   /** Its submissions for the period, only when it captures. */
@@ -152,20 +152,17 @@ export function CampaignDetailsDialog({
         <AdminDialogHeader title={name} badge={row && <StatusBadge status={status} />} meta={meta} />
         <AdminDialogBody className="wconvert-campaign-detail__body">
           {row && (
-            <>
-              {notes.length > 0 && (
-                <div role="note" className="wconvert-campaign-detail__notice">
-                  {notes.map((note) => <p key={note}>{note}</p>)}
-                </div>
-              )}
-              {thumbnail}
-              <Results results={results} status={status} />
-              <Suspense fallback={<RowsSkeleton rows={4} />}>
-                <Facts key={row.id} id={row.id} />
-              </Suspense>
-              {productCheck}
-              <ForDevelopers key={row.id} value={row.id} variant={row.parent_id !== null} />
-            </>
+            <CampaignSummary
+              notes={notes}
+              thumbnail={thumbnail}
+              goal={goal}
+              goalId={goalId}
+              results={results}
+              status={status}
+              howItRuns={<Suspense fallback={<RowsSkeleton rows={4} />}><Facts key={row.id} id={row.id} /></Suspense>}
+              productCheck={productCheck}
+              developers={<ForDevelopers key={row.id} value={row.id} variant={row.parent_id !== null} />}
+            />
           )}
         </AdminDialogBody>
         {words && asking ? (
@@ -237,60 +234,6 @@ export function CampaignDetailsDialog({
         )}
       </AdminDialogContent>
     </AdminDialog>
-  );
-}
-
-/** The list's numbers for this campaign, never a second read. */
-function Results({ results, status }: { results: CampaignResults; status: ReturnType<typeof statusOf> }) {
-  const heading = useId();
-  const title =
-    results.status === 'ready'
-      ? sprintf(
-          /* translators: 1: the period, e.g. “Last 30 days”. 2: its dates, e.g. “Sep 10 – Oct 9”. */
-          __('%1$s · %2$s', 'wconvert'),
-          sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days),
-          formatRange(results.from, results.to),
-        )
-      : __('Results', 'wconvert');
-  const result = results.status === 'ready' ? results.result : undefined;
-  return (
-    <section className="wconvert-campaign-facts" aria-labelledby={heading}>
-      <h3 id={heading}>{title}</h3>
-      {results.status === 'loading' ? (
-        <div className="wconvert-campaign-detail-stats" aria-hidden="true">
-          {[0, 1, 2].map((key) => (
-            <div key={key}>
-              <Skeleton className="w-12" style={{ blockSize: '1lh' }} />
-              <Skeleton className="mt-1 w-20" style={{ blockSize: '1lh' }} />
-            </div>
-          ))}
-        </div>
-      ) : results.status === 'failed' ? (
-        <p>{__('Results couldn’t load.', 'wconvert')}</p>
-      ) : result ? (
-        <div className="wconvert-campaign-detail-stats">
-          <p>
-            <strong>{formatCount(result.count)}</strong>
-            <span>{result.label}</span>
-          </p>
-          <p>
-            <strong>{formatCount(result.shown)}</strong>
-            <span>{__('Shown', 'wconvert')}</span>
-            {/* Submissions with no views read as a fault unless something says why. */}
-            {result.shown === 0 && result.count > 0 && (
-              <small>{__('Views are counted only from the published version.', 'wconvert')}</small>
-            )}
-          </p>
-          <p>
-            <strong>{formatRate(result.rate)}</strong>
-            <span>{__('Conversion rate', 'wconvert')}</span>
-            {result.rate === null && <small>{__('Shows once it has been shown', 'wconvert')}</small>}
-          </p>
-        </div>
-      ) : (
-        <p>{status === 'draft' ? __('No results yet.', 'wconvert') : __('No results in this period.', 'wconvert')}</p>
-      )}
-    </section>
   );
 }
 

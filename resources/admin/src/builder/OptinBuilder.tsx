@@ -1,12 +1,13 @@
 import { CampaignAnalytics } from '../analyticsIntegration';
 import { useCompactEditor } from '../hooks/useCompactEditor';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
+import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { SubmissionSettings } from './SubmissionSettings';
 import { BlockInspector } from './BlockInspector';
 import { JourneyEditor } from './JourneyEditor';
 import { ProductActivityReport } from '../stats/ProductActivityReport';
 import { JourneyReport } from '../stats/JourneyReport';
-import { referencedJourney, submissionScreen, walkNodes } from './structure/journey';
+import { referencedJourney, submissionScreen } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
@@ -20,7 +21,6 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   Blocks,
-  ChevronDown,
   Eye,
   Info,
   MoreHorizontal,
@@ -33,9 +33,7 @@ import { BackLink, BuilderSkeleton } from '../shell/BuilderSkeleton';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
-import { PageError, Region, RegionErrorState, TryAgain } from '../shell/Region';
-import { Skeleton } from '../components/ui/skeleton';
-import { Stat, StatRow, StatRowSkeleton } from '../shell/Stat';
+import { PageError, Region, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, read, ready, type Loadable } from '../shell/loadable';
 import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
@@ -45,6 +43,10 @@ import { ReadinessDialog } from './ReadinessDialog';
 import { captureModeOf, routedMode } from './captureMode';
 import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
+import { CampaignSummary, HowItRuns, type CampaignResults } from '../optins/CampaignSummary';
+import { campaignFacts, linksIn } from '../optins/campaignFacts';
+import { destinationsSaid } from './destinations';
+import { capturedFields } from '../destinations/requirements';
 import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
 import { planFrom } from './rules/plan';
 import { summarise, summaryOf } from './rules/summaries';
@@ -59,7 +61,7 @@ import { EditorCanvas, DeviceControls } from './EditorCanvas';
 import { ScreenElements } from './BlockEditing';
 import { formatWordOf, lookColors, lookSummary } from './EditTree';
 import { Fullscreen } from './Fullscreen';
-import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogHeader } from '../components/ui/admin-dialog';
+import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Disclosure } from '../shell/Disclosure';
 import { StatusBadge } from '../optins/StatusBadge';
 import { draftHistoryLabels, type DraftSnapshot } from './structure/draftEditLabel';
@@ -69,7 +71,6 @@ import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
 import { offerableGoals } from '../goals/GoalCard';
-import { goalSaid } from '../goals/said';
 import { ChangeGoalDialog } from './ChangeGoalDialog';
 import { slotsOf, type Path } from './panel';
 import { validDraftInterestOptions } from './InterestOptions';
@@ -91,12 +92,11 @@ import {
   type TemplateEntry,
 } from '../templates/api';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
-import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type Connection, type Destination, type DestinationsPayload } from '../destinations/api';
 import { adminSettings, catalogConfigured } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin, statusOf } from '../optins/api';
-import { editorHref } from '../nav';
+import { editorHref, reportHref } from '../nav';
 import { BrandMark } from '../shell/Brand';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
@@ -183,8 +183,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const previewReturnTab = useRef<TabId>('edit');
   const [previewFromRules, setPreviewFromRules] = useState(false);
   const [journeyTestRequest, setJourneyTestRequest] = useState(0);
-  const [journeyTestMode, setJourneyTestMode] = useState<'journey' | 'appearance' | 'sample'>('journey');
-  const [sampleVisit, setSampleVisit] = useState(false);
   useEffect(() => { if (tab === 'edit') setJourneyVisited(true); }, [tab]);
   const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
   const journeyRepairSerial = useRef(0);
@@ -249,6 +247,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const entryOfGoal = goalEntry.status === 'ready' ? goalEntry.data : null;
 
   const numbers = stats.status === 'ready' ? stats.data : null;
+  const campaignStatus = statusOf({ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges });
+  // A draft has no period; a read that answered nothing has none to name either.
+  const detailResults: CampaignResults = publishedAt === null || (stats.status === 'ready' && numbers === null) ? { status: 'ready', days: 0 }
+    : stats.status === 'loading' ? { status: 'loading' }
+      : stats.status === 'failed' ? { status: 'failed', onRetry: () => setStatsRead((value) => value + 1) }
+        : { status: 'ready', days: numbers!.days, result: { count: numbers!.report.headline, shown: numbers!.report.impressions, rate: numbers!.report.conversion_rate, label: entryOfGoal?.headline_label ?? numbers!.label } };
 
   const bound = Array.isArray(config?.destinations) ? (config.destinations as string[]) : [];
 
@@ -690,14 +694,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const reopenLabel = __('Reopen button', 'wconvert');
   const showReopen = () => openTreeRow('reopen');
 
-  const previewAs = (mode: 'journey' | 'appearance' | 'sample') => {
+  const openPreview = () => {
     previewReturnTab.current = tab;
     setPreviewFromRules(tab === 'rules');
     setTab('edit');
-    setJourneyTestMode(mode);
     setJourneyTestRequest(value => value + 1);
   };
-  const hasQuestions = !!entry?.tree.steps.some(screen => walkNodes(screen.content).some(node => node.type === 'question'));
   const openLook = () => openTreeRow('look');
 
   const showingLock = canPreviewLock && (tab === 'rules' || (tab === 'edit' && (previewFromRules || lockRow)));
@@ -914,21 +916,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           {!small && <HistoryControls
             history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }}
           />}
-          {/* One Preview, with its modes inside (ADR 0134): what was "Preview & test" and Display rules' "Test a visit". */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" ref={previewButton} size={small ? 'icon-sm' : 'default'} aria-label={__('Preview', 'wconvert')} disabled={entry === null || busy}>
-                <Eye aria-hidden="true" />
-                {!small && <>{__('Preview', 'wconvert')}<ChevronDown aria-hidden="true" /></>}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="wconvert-preview-menu">
-              <DropdownMenuItem onSelect={() => previewAs('journey')}>{__('As a visitor', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => previewAs('appearance')}>{__('This screen', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setSampleVisit(true)}>{__('Test a visit', 'wconvert')}</DropdownMenuItem>
-              {hasQuestions && <DropdownMenuItem onSelect={() => previewAs('sample')}>{__('Try answers', 'wconvert')}</DropdownMenuItem>}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* One Preview, no menu (ADR 0138): its two tabs are inside the dialog. */}
+          <Button variant="outline" ref={previewButton} size={small ? 'icon-sm' : 'default'} aria-label={__('Preview', 'wconvert')} disabled={entry === null || busy} onClick={openPreview}>
+            <Eye aria-hidden="true" />
+            {!small && __('Preview', 'wconvert')}
+          </Button>
           <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
             {busy
               ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
@@ -958,11 +950,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             destinations={read(destinations)?.destinations ?? null}
             fieldLabels={gallery.labels.fields}
             privacyGuidance={privacyGuidance}
-            policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
             onKeepLocal={() => edit({ capture_mode: 'local', destinations: [] })}
             onGoToLook={openLook}
-            onPreview={() => previewAs('journey')}
+            onPreview={openPreview}
             {...issueRoutes}
           />
           <DropdownMenu><DropdownMenuTrigger asChild><Button ref={campaignActions} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
@@ -983,7 +974,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           {!entry && <EmptyState icon={Blocks} title={__('Choose a design', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start from a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
           {entry && <JourneyEditor onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
-            appearancePreview={showingLock ? previewPane : undefined}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
             look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates), chosenName(templateId, templates)) }}
@@ -1022,7 +1012,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               onDesign={openLook}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
-            testRequest={journeyTestRequest} testRequestMode={journeyTestMode} testReturnFocus={previewButton} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
+            testRequest={journeyTestRequest} testReturnFocus={previewButton} previewTitle={name || __('Untitled campaign', 'wconvert')}
+            whoSeesIt={close => <Suspense fallback={<RowsSkeleton rows={4} />}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={act} value={displayRules} vocabulary={vocabulary}
+              onClose={close} onOpenSection={section => { close(); setTab('rules'); setRevealSection({ id: section }); }} /></Suspense>} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
             issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
@@ -1044,87 +1036,52 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         </TabsContent>
       </div>
       <AdminDialog open={details} onOpenChange={setDetails}>
-        <AdminDialogContent size="md" className="wconvert-optin-details" onCloseAutoFocus={(event) => {
+        <AdminDialogContent size="md" className="wconvert-optin-details wconvert-campaign-detail" onCloseAutoFocus={(event) => {
           event.preventDefault();
           if (!changingGoal) detailsTrigger.current?.focus();
         }}>
           <AdminDialogHeader
             title={name || __('Untitled campaign', 'wconvert')}
-            badge={<StatusBadge status={statusOf({ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges })} />}
+            badge={<StatusBadge status={campaignStatus} />}
             meta={dirty ? __('Unsaved changes', 'wconvert') : unpublishedChanges ? __('Unpublished changes', 'wconvert') : undefined}
           />
-          <AdminDialogBody className="grid gap-4">
-            <section className="wconvert-details-section"><h3>{__('Goal', 'wconvert')}</h3>
-              <div className="flex min-h-[1lh] flex-wrap items-center gap-x-3 gap-y-2 text-note text-muted-foreground">
-                <span>{goalSaid(goalEntry, goal ?? '')}</span>
-                {goals.status === 'ready' &&
-                  offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setDetails(false);
-                        setChangingGoal(true);
-                      }}
-                    >
-                      {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
-                    </Button>
-                  )}
-              </div>
-              {entryOfGoal?.outcome && <p className="mt-2">{entryOfGoal.outcome.measurement}</p>}
-            </section>
-            <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
-            <section className="wconvert-details-section"><h3>{__('Results', 'wconvert')}</h3>
-              {publishedAt === null ? (
-                <p>{__('Publish this campaign to start counting views and conversions.', 'wconvert')}</p>
-              ) : stats.status === 'loading' ? (
-                <>
-                  <StatRowSkeleton stats={3} />
-                  <Skeleton aria-hidden="true" className="mt-2 h-[1lh] w-28 text-body" />
-                </>
-              ) : stats.status === 'failed' ? (
-                <div className="grid justify-items-start gap-2">
-                  <p role="alert" className="text-destructive">{__('The numbers could not be loaded.', 'wconvert')}</p>
-                  <TryAgain onClick={() => setStatsRead((value) => value + 1)} />
-                </div>
-              ) : numbers === null ? (
-                <p>{__('Nothing recorded yet.', 'wconvert')}</p>
-              ) : (
-                <>
-                  <StatRow>
-                    <Stat
-                      emphasis
-                      label={entryOfGoal?.headline_label ?? numbers.label}
-                      value={formatCount(numbers.report.headline)}
-                    />
-                    <Stat
-                      label={__('Shown', 'wconvert')}
-                      value={formatCount(numbers.report.impressions)}
-                    />
-                    <Stat
-                      label={__('Conversion rate', 'wconvert')}
-                      value={formatRate(numbers.report.conversion_rate)}
-                    />
-                  </StatRow>
-                  <p className="mt-2">
-                    {sprintf(
-                      _n('The last %s day', 'The last %s days', numbers.days, 'wconvert'),
-                      formatCount(numbers.days),
-                    )}
-                  </p>
-                </>
+          <AdminDialogBody className="wconvert-campaign-detail__body">
+            {/* The list's Details body, read live from this draft (ADR 0138); the editor's own sections follow it. */}
+            <CampaignSummary
+              notes={[suspended, publishedAt !== null && (dirty || unpublishedChanges) ? __('The previous version is still published. Review & publish to replace it.', 'wconvert') : null].filter((note): note is string => !!note)}
+              goal={goalEntry}
+              goalId={goal ?? ''}
+              goalAction={goals.status === 'ready' && offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
+                <Button type="button" variant="outline" onClick={() => { setDetails(false); setChangingGoal(true); }}>
+                  {canChangeGoal ? __('Change goal', 'wconvert') : __('Duplicate for another goal', 'wconvert')}
+                </Button>
               )}
-            </section>
-            {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
-            {/* The one place a developer finds the ID page events carry, as in the list's Details (ADR 0131). */}
-            <ForDevelopers value={id} variant={analyticsParent !== null} />
-            {entry && adminSettings()?.dev === true && (
-              <Disclosure variant="inline" title={__('Developer tools', 'wconvert')}>
-                <PayloadMeter template={entry} />
-                <DevExport entry={entry} onChange={(next) => edit({ template: next })} />
-              </Disclosure>
-            )}
+              results={detailResults}
+              status={campaignStatus}
+              howItRuns={displayAxes && <HowItRuns facts={campaignFacts({
+                rules: displayAxes,
+                where: displayTypeOf(config, templates) === 'inline' ? { text: config.content_lock == null && config.inline_placement == null ? __('Where you place its block or shortcode', 'wconvert') : inlineSummary } : undefined,
+                act: template ? convertingActOf(template.tree)[0] : undefined,
+                forwarding: destinationsSaid(bound, read(destinations)?.destinations ?? null, capturedFields(template)),
+                links: linksIn(template),
+                counts: entryOfGoal?.headline_label ?? null,
+              })} />}
+              developers={<ForDevelopers value={id} variant={analyticsParent !== null} />}
+            >
+              <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
+              {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
+              {entry && adminSettings()?.dev === true && (
+                <Disclosure variant="inline" title={__('Developer tools', 'wconvert')}>
+                  <PayloadMeter template={entry} />
+                  <DevExport entry={entry} onChange={(next) => edit({ template: next })} />
+                </Disclosure>
+              )}
+            </CampaignSummary>
           </AdminDialogBody>
+          <AdminDialogFooter>
+            <Button variant="outline" asChild><a href={reportHref({ optinId: id })}>{__('View report', 'wconvert')}</a></Button>
+            <Button type="button" onClick={() => setDetails(false)}>{__('Close', 'wconvert')}</Button>
+          </AdminDialogFooter>
         </AdminDialogContent>
       </AdminDialog>
       <ConfirmDialog
@@ -1200,9 +1157,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         }}
       />
 
-      {sampleVisit && <Suspense fallback={null}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={act} value={displayRules} vocabulary={vocabulary}
-        onClose={() => { setSampleVisit(false); previewButton.current?.focus(); }}
-        onOpenSection={section => { setSampleVisit(false); setTab('rules'); setRevealSection({ id: section }); }} /></Suspense>}
 
       <ChangeGoalDialog
         open={changingGoal}

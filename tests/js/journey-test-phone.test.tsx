@@ -41,7 +41,7 @@ it('retains the selected phone country and canonical number after failure, Back 
   expect(visitor().getByRole('textbox', { name: /Phone number/ })).toHaveAttribute('readonly');
   expect(visitor().getByRole('textbox', { name: /Phone number/ })).toHaveAttribute('data-e164', '+15065550123');
   expect(visitor().getByRole('button', { name: 'Select country: Canada (+1)' })).toBeDisabled();
-  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
+  await user.click(screen.getByRole('button', { name: 'Start over' }));
   expect(visitor().getByRole('button', { name: 'Select country: Armenia (+374)' })).toBeInTheDocument();
   expect(visitor().getByRole('textbox', { name: /Phone number/ })).toHaveValue('');
 });

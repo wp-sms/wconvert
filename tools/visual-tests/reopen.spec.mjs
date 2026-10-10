@@ -121,8 +121,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await expect(tree.locator('.wconvert-campaign-screens__row > button[aria-current="true"]').first()).toBeVisible();
   await reopenTab.click();
   await page.getByRole('button', { name: 'Preview', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'As a visitor', exact: true }).click();
-  await page.getByRole('dialog', { name: 'Preview', exact: true }).getByRole('button', { name: 'Back to editor', exact: true }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Done', exact: true }).click();
   await expect(reopenTab).toHaveAttribute('aria-current', 'true');
   await page.locator('label').filter({ has: page.getByRole('radio', { name: 'Mobile', exact: true }) }).click();
   // The disclosure's summary says its value beside the title (ADR 0136).

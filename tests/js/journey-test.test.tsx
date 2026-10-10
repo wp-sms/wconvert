@@ -55,7 +55,7 @@ it('keeps typed details when failure is toggled, then accepts a retry without se
   render(<JourneyTest template={source as Template} onEdit={() => {}} />);
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
-  await user.click(screen.getByText('Test a problem'));
+  await user.click(screen.getByText('Simulate a problem'));
   await user.click(screen.getByRole('checkbox', { name: 'Simulate failure on next submission' }));
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.com');
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
@@ -65,7 +65,7 @@ it('keeps typed details when failure is toggled, then accepts a retry without se
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Received' })).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
+  await user.click(screen.getByRole('button', { name: 'Start over' }));
   expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('');
 });
@@ -77,13 +77,12 @@ it('starts a graph test at its entry screen and resets to that entry', async () 
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
   expect(screen.getByText('One enquiry').closest('li')).toHaveAttribute('data-current', 'false');
   expect(screen.queryByText('Why this path?')).not.toBeInTheDocument();
-  expect(screen.getByText('Garden details').closest('li')).toHaveTextContent('Not reached yet');
-  expect(screen.getByText('Garden details')).not.toBeVisible();
-  await user.click(screen.getByText('Other screens'));
-  await user.click(screen.getByText(/^Not reached yet \(/));
+  // Off-path screens are one muted line, never a list to open (ADR 0138).
+  expect(screen.getByText('Garden details').closest('[data-category]')).toHaveTextContent(/^Not reached yet:/);
   expect(screen.getByText('Garden details')).toBeVisible();
+  expect(screen.queryByText('Other screens')).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Edit condition' })).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
+  await user.click(screen.getByRole('button', { name: 'Start over' }));
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
 });
 
@@ -92,7 +91,7 @@ it('separates an accepted save from failed destination delivery and retries deli
   render(<JourneyTest template={source as Template} deliveryMode="connected" destinationSummary="MailPoet" onEdit={() => {}} />);
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
-  await user.click(screen.getByText('Test a problem'));
+  await user.click(screen.getByText('Simulate a problem'));
   await user.click(screen.getByRole('checkbox', { name: 'Simulate delivery failure after next accepted save' }));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
@@ -120,7 +119,7 @@ it('retains an answer on the capture screen after a simulated save failure', asy
   await user.type(screen.getByLabelText('Optional note'), 'A sunny space');
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
-  await user.click(screen.getByText('Test a problem'));
+  await user.click(screen.getByText('Simulate a problem'));
   await user.click(screen.getByRole('checkbox', { name: 'Simulate failure on next submission' }));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByLabelText('Optional note')).toHaveValue('A sunny space');
@@ -165,7 +164,7 @@ it('returns only the path actually visited to the map, before and after a save',
 });
 
 
-it('keeps skipped-condition repairs available inside the collapsed summary', async () => {
+it('keeps skipped-condition repairs on the skipped line', async () => {
   const user = userEvent.setup();
   const edit = vi.fn();
   const template = { ...source, tree: { ...source.tree, steps: [source.tree.steps[0], {
@@ -176,13 +175,12 @@ it('keeps skipped-condition repairs available inside the collapsed summary', asy
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  expect(screen.getByText('Edit condition')).not.toBeVisible();
-  await user.click(screen.getByText('Skipped screens (1)'));
+  expect(screen.getByText('Extra details').closest('[data-category]')).toHaveTextContent(/^Skipped:/);
   await user.click(screen.getByRole('button', { name: 'Edit condition' }));
   expect(edit).toHaveBeenCalledWith(1, 'condition');
 });
 
-it('resizes the existing form without losing drafts and counts each completed run once', async () => {
+it('resizes the existing form without losing drafts, and Start over clears them', async () => {
   const user = userEvent.setup();
   render(<JourneyTest template={source as Template} onEdit={() => {}} />);
   const email = screen.getByLabelText('Email address');
@@ -192,12 +190,23 @@ it('resizes the existing form without losing drafts and counts each completed ru
   expect(email).toHaveValue('visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  expect(screen.getByText('1 completed run this session')).toBeInTheDocument();
+  expect(screen.getByText('Finished')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Previous screen' }));
   expect(screen.getByLabelText('Email address')).toHaveAttribute('readonly');
   await user.click(screen.getByRole('button', { name: 'Continue' }));
-  expect(screen.getByText('1 completed run this session')).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
-  expect(screen.getByText('1 completed run this session')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Start over' }));
+  expect(screen.getByText('In progress')).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('');
+});
+
+it('folds every simulation into one closed Simulate a problem, and names the result shown', async () => {
+  const user = userEvent.setup();
+  const template: Template = { tokens: {}, tree: { v: 2, submissions: [], steps: [{ id: 'result', name: 'Your result', kind: 'result',
+    content: { type: 'stack', children: [] }, results: [{ id: 'default', heading: 'Your kit', body: 'Three picks.', product_ids: [11, 12] }] }] } } as unknown as Template;
+  render(<JourneyTest template={template} onEdit={() => {}} />);
+  expect(screen.getByRole('list', { name: 'Visited screens' })).toHaveTextContent('Result shown: Your kit');
+  expect(screen.getByRole('radio', { name: 'None available' })).not.toBeVisible();
+  await user.click(screen.getByText('Simulate a problem'));
+  expect(screen.getByRole('group', { name: 'Products on this result' })).toBeVisible();
+  for (const gone of ['Test a problem', 'Test product availability', 'What does this test check?']) expect(screen.queryByText(gone)).toBeNull();
 });

@@ -32,7 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
-import { listGoals } from '../goals/api';
+import { listGoals, type GoalEntry } from '../goals/api';
 import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
 import { PickerSearch } from '../discovery/PickerSearch';
@@ -63,7 +63,8 @@ import {
 } from './api';
 import { DataTable, DataTableHead, DataTableColumn, DataTableBody, DataTableRow, DataTableCell, DataTableActions } from '../shell/DataTable';
 import { CampaignSkeleton } from './CampaignSkeleton';
-import { CampaignDetailsDialog, type CampaignResults } from './DetailsDialog';
+import { CampaignDetailsDialog } from './DetailsDialog';
+import type { CampaignResults } from './CampaignSummary';
 import { decisionCopy, type DecisionKind } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
@@ -103,6 +104,8 @@ export function OptinList({
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
   const [labelsError, setLabelsError] = useState<string | null>(null);
   const [labels, setLabels] = useState<Record<string, string> | null>(null);
+  // Details names a row's Goal and what counts as its success (ADR 0138).
+  const [goalEntries, setGoalEntries] = useState<readonly GoalEntry[] | null>(null);
   const [report, setReport] = useState<DashboardPayload | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(true);
@@ -155,7 +158,7 @@ export function OptinList({
     setLabelsError(null);
     void listGoals()
       .then((goals) => {
-        if (active) setLabels(Object.fromEntries(goals.map((g) => [g.id, g.label])));
+        if (active) { setLabels(Object.fromEntries(goals.map((g) => [g.id, g.label]))); setGoalEntries(goals); }
       })
       .catch((cause) => {
         if (active) setLabelsError(messageOf(cause));
@@ -669,6 +672,8 @@ export function OptinList({
         thumbnail={selected && previews[selected.id]?.template !== null && preview(selected)}
         missingDesign={selected !== null && previews[selected.id]?.template === null}
         results={selected ? resultsOf(selected) : { status: 'loading' }}
+        goalId={selected?.goal ?? ''}
+        goal={goalEntries ? ready(goalEntries.find((entry) => entry.id === selected?.goal) ?? null) : labelsError ? failed(new Error(labelsError)) : LOADING}
         productCheck={selected && (
           <ProductHealthDetails
             health={productHealth.rows[selected.id]}

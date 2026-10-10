@@ -1,6 +1,6 @@
-import { useId, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useId, useRef, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, Check, TriangleAlert } from 'lucide-react';
+import { ArrowLeft, Check, Eye, Target, TriangleAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   AdminDialog,
@@ -11,7 +11,8 @@ import {
 } from '../components/ui/admin-dialog';
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
-import { Disclosure } from '../shell/Disclosure';
+import { FactList } from '../shell/FactList';
+import { campaignFacts, linksIn } from '../optins/campaignFacts';
 import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
@@ -20,7 +21,7 @@ import { type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise, summaryOf } from './rules/summaries';
-import { ISSUE, consentIn, followIssue, visiblePolicyLinkIn, type CampaignIssue, type IssueRoutes } from './readiness/campaignIssues';
+import { ISSUE, consentIn, followIssue, type CampaignIssue, type IssueRoutes } from './readiness/campaignIssues';
 import type { CaptureMode } from './captureMode';
 import { PlacementGuidance } from './PlacementGuidance';
 import { inlinePlacementLabel } from '../inlinePlacement';
@@ -33,6 +34,20 @@ import type { Destination } from '../destinations/api';
 import { goalSaid } from '../goals/said';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
+
+const CampaignDesign = lazy(() => import('../optins/CampaignDesign'));
+const handoffIssueOf = (issues: readonly CampaignIssue[]) => issues.some(issue => issue.key === ISSUE.handoff);
+
+/** A blocker's fix, named for where it takes the merchant. */
+function fixLabel(issue: CampaignIssue): string {
+  switch (issue.go.to) {
+    case 'destinations': return __('Choose a service', 'wconvert');
+    case 'rules': case 'schedule': return __('Fix in Display rules', 'wconvert');
+    case 'library': return __('Choose a design', 'wconvert');
+    case 'placement': return __('Fix placement', 'wconvert');
+    default: return __('Fix in the editor', 'wconvert');
+  }
+}
 
 export interface ReadinessDialogProps {
   /** The campaign's name: the dialog is about it, so it is the title. */
@@ -60,7 +75,6 @@ export interface ReadinessDialogProps {
   readonly destinations: readonly Destination[] | null;
   readonly fieldLabels: Readonly<Record<string, string>>;
   readonly privacyGuidance?: boolean;
-  readonly policyUrl?: string;
   readonly onGoTo: (path: Path) => void;
   readonly onGoToSchedule: () => void;
   readonly onGoToRules: (section: string) => void;
@@ -104,7 +118,6 @@ export function ReadinessDialog({
   destinations,
   fieldLabels,
   privacyGuidance = false,
-  policyUrl,
   onGoTo,
   onGoToSchedule,
   onGoToRules,
@@ -135,18 +148,46 @@ export function ReadinessDialog({
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
   const captures = hasDesign ? capturesTaken(template.tree) : [];
   const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
-  const privacyPath = template ? visiblePolicyLinkIn(template, policyUrl) : null;
-  const consentPath = template ? consentIn(template) : null;
   const visibleConsentPath = template ? consentIn(template, true) : null;
   const reviewsPrivacy = privacyGuidance && captures.length > 0;
   const expectsConsent = reviewsPrivacy && outcome?.audience_channel != null;
   const blocking = issues.filter(issue => issue.blocks);
-  const warnings = issues.filter(issue => !issue.blocks && issue.section === undefined);
-  const missingPolicyPage = issues.some(issue => issue.key === ISSUE.policyPage);
-  const missingNotice = issues.some(issue => issue.key === ISSUE.policyNotice);
-  const missingConsent = issues.some(issue => issue.key === ISSUE.consent);
+  // Privacy's own problems are review items now; its one fact line is Consent (ADR 0138).
+  const warnings = issues.filter(issue => !issue.blocks && (issue.section === undefined || issue.section === 'privacy'));
+  const unchecked = bound.length > 0 && destinations === null ? [__('Destination details could not be checked. Open Destinations to refresh them.', 'wconvert')] : [];
+  const forwarding = captureMode === 'local' || bound.length === 0
+    ? {
+        said: captureMode === 'local' ? __('Kept in WConvert only', 'wconvert') : __('Saved in Leads', 'wconvert'),
+        problems: [...(handoffIssueOf(issues) ? [__('No service chosen yet', 'wconvert')] : []), ...unchecked],
+      }
+    : { said: where.said, problems: [...where.problems, ...unchecked] };
+  const go = (label: string, action: () => void) => <button type="button" className="wconvert-readiness__go" onClick={() => jump(action)}>{label}</button>;
+  const placementSaid = overlay
+    ? position === null && teaser == null ? undefined : { text: <>
+        {position !== null && go(position, onGoToLook)}
+        {teaser != null && ['popup', 'slide_in'].includes(displayType) && <span className="block text-note text-muted-foreground">{__('A reopen button follows visitors to eligible pages after they close it.', 'wconvert')}</span>}
+        {displayType === 'floating_bar' && resolvedPlacement(displayType, placement) === 'block_start' && <span className="block text-note text-muted-foreground">{__('A top bar moves the page down; check it with your site header.', 'wconvert')}</span>}
+      </> }
+    : { text: <>
+        {go(contentLock != null ? __('Content lock', 'wconvert') : inlinePlacementLabel(inlinePlacement) ?? __('Where you place its block or shortcode', 'wconvert'), onGoToPlacement)}
+        {contentLock != null && <span className="block text-note text-muted-foreground">{__('Locks the selected region and remembers an unlock for 30 days in that browser. The content stays readable if the form cannot load.', 'wconvert')}</span>}
+      </> };
+  const facts = campaignFacts({
+    rules: summaries,
+    onRule: (section) => jump(() => onGoToRules(section)),
+    act: hasDesign ? convertingActOf(template.tree)[0] : undefined,
+    forwarding,
+    links: linksIn(template),
+    counts: goal.status === 'ready' ? goal.data?.headline_label ?? null : null,
+    placement: placementSaid,
+    collects: captures.length > 0 ? captures.map((field) => labelOf(field, fieldLabels, humanize(field))).join(', ') : undefined,
+    consent: reviewsPrivacy
+      ? expectsConsent
+        ? visibleConsentPath === null ? { text: __('Not shown', 'wconvert'), attention: true } : { text: __('Shown', 'wconvert') }
+        : { text: __('Not asked on this form', 'wconvert') }
+      : undefined,
+  });
   const routes: IssueRoutes = { onGoTo, onGoToSchedule, onGoToRules, onGoToDestinations, onGoToDesign, onGoToPlacement, onEditDesign, onEditJourney, onRetryGoal };
-  const handoffIssue = issues.find(issue => issue.key === ISSUE.handoff) ?? null;
   // After jumping to fix a blocker, the way back to the list stays on screen until the list is empty.
   const [resume, setResume] = useState(false);
   const reviewCount = issues.length;
@@ -197,7 +238,7 @@ export function ReadinessDialog({
     : current
       ? __('Your saved draft matches the published version.', 'wconvert')
       : blocking.length > 0
-        ? __('Fix the items under “Before you can publish” first.', 'wconvert')
+        ? _n('Fix the item above first.', 'Fix the items above first.', blocking.length, 'wconvert')
         : null;
 
   return (
@@ -280,130 +321,65 @@ export function ReadinessDialog({
               </div>
             ) : (
               <>
+                {/* One callout for what blocks publishing, each with its fix (ADR 0138). */}
                 {blocking.length > 0 && (
-                  <ReviewSection title={__('Before you can publish', 'wconvert')}>
-                    <ul className="wconvert-launch-review__notice">
+                  <section role="alert" className="wconvert-launch-review__blockers" aria-labelledby={`${reasonId}-blockers`}>
+                    <h3 id={`${reasonId}-blockers`}>
+                      <TriangleAlert aria-hidden="true" />
+                      {sprintf(
+                        /* translators: %d: how many items block publishing. */
+                        _n('%d thing to fix before publishing', '%d things to fix before publishing', blocking.length, 'wconvert'),
+                        blocking.length,
+                      )}
+                    </h3>
+                    <ul>
                       {blocking.map((problem) => (
                         <li key={problem.key}>
-                          <button type="button" className="wconvert-readiness__go" onClick={() => fix(problem, true)}>
-                            {problem.said}
-                          </button>
-                          {problem.offersRetry && onRetryGoal && <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button>}
-                          {problem.offersKeepLocal && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
+                          <p>{problem.said}</p>
+                          <div className="wconvert-launch-review__fixes">
+                            {problem.offersRetry && onRetryGoal
+                              ? <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button>
+                              : <Button type="button" variant="outline" onClick={() => fix(problem, true)}>{fixLabel(problem)}</Button>}
+                            {problem.offersKeepLocal && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
+                          </div>
                         </li>
                       ))}
                     </ul>
-                  </ReviewSection>
+                  </section>
                 )}
-                <ReviewSection
-                  title={__('Design', 'wconvert')}
-                  action={hasDesign ? __('Preview design', 'wconvert') : __('Choose design', 'wconvert')}
-                  onAction={() => jump(hasDesign ? onPreview : onGoToDesign)}
-                >
-                  <p>
-                    {hasDesign
-                      ? captures.length > 0
-                        ? sprintf(
-                            __('Collects: %s', 'wconvert'),
-                            captures.map((field) => labelOf(field, fieldLabels, humanize(field))).join(', '),
-                          )
-                        : convertingActOf(template.tree).includes('click')
-                          ? __('No lead fields. This design tracks button clicks.', 'wconvert')
-                          : __('This design has no fields to collect leads.', 'wconvert')
-                      : __('No design selected yet.', 'wconvert')}
-                  </p>
-                </ReviewSection>
-                <ReviewSection title={__('Placement & timing', 'wconvert')}>
-                  {displayType === 'fullscreen' && (
-                    <p>{__('Fullscreen covers the page until it is closed. Prefer a visitor action or real engagement over opening right away, and check it on mobile.', 'wconvert')}</p>
+                <section className="wconvert-launch-review__section wconvert-launch-review__what">
+                  {hasDesign
+                    ? <div className="wconvert-campaign-thumbnail"><Suspense fallback={<div className="wconvert-preview-placeholder" />}><CampaignDesign template={template} /></Suspense></div>
+                    : <p>{__('No design selected yet.', 'wconvert')} <Button type="button" variant="link" onClick={() => jump(onGoToDesign)}>{__('Choose design', 'wconvert')}</Button></p>}
+                  {/* What counts as success, said where publishing is decided, never folded away. */}
+                  {outcome && goal.status === 'ready' && goal.data && (
+                    <div className="wconvert-launch-review__success-measure">
+                      <Target aria-hidden="true" size={18} />
+                      <div>
+                        <span>{__('Counts as success', 'wconvert')}</span>
+                        <strong>{goal.data.headline_label}</strong>
+                        <p>{outcome.measurement}</p>
+                      </div>
+                    </div>
                   )}
-                  {position !== null && (
-                    <p>
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToLook)}>
-                        {sprintf(__('Position: %s', 'wconvert'), position)}
-                      </button>
-                      {displayType === 'floating_bar' && resolvedPlacement(displayType, placement) === 'block_start' && (
-                        <> {__('A top bar moves the page down; check it with your site header.', 'wconvert')}</>
+                  {startedFrom !== null && (
+                    <p className="text-note text-muted-foreground">
+                      {sprintf(
+                        /* translators: %s: the name of the starting point this campaign was created from. */
+                        __('Started from: %s', 'wconvert'),
+                        startedFrom,
                       )}
                     </p>
                   )}
-                  {teaser != null && ['popup', 'slide_in'].includes(displayType) && (
-                    <p>
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToLook)}>
-                        {__('Reopen button', 'wconvert')}
-                      </button>{' '}
-                      {__('Follows visitors to eligible pages in this tab after they close it. Check it beside checkout, chat and cookie controls on mobile.', 'wconvert')}
-                    </p>
-                  )}
-                  {!overlay && (
-                    <p>
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToPlacement)}>
-                        {contentLock != null
-                          ? __('Content lock', 'wconvert')
-                          : inlinePlacementLabel(inlinePlacement) ?? __('Manual placement', 'wconvert')}
-                      </button>{' '}
-                      {contentLock != null
-                        ? __('Locks the selected region and remembers an unlock for 30 days in that browser. The content stays readable if the form cannot load.', 'wconvert')
-                        : inlinePlacement == null
-                          ? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')
-                          : null}
-                    </p>
-                  )}
-                  <dl className="wconvert-launch-review__rules">
-                    {summaries.map((summary) => (
-                      <div key={summary.id}>
-                        <dt>
-                          <button
-                            type="button"
-                            className="wconvert-readiness__go"
-                            onClick={() => jump(() => onGoToRules(summary.id))}
-                          >
-                            {!overlay && summary.id === 'where'
-                              ? __('Eligible pages', 'wconvert')
-                              : summary.eyebrow}
-                          </button>
-                        </dt>
-                        <dd data-attention={summary.attention || undefined}>{summary.text}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </ReviewSection>
+                </section>
                 <ReviewSection
-                  title={__('Where leads go', 'wconvert')}
-                  action={__('Edit destinations', 'wconvert')}
-                  onAction={() => jump(onGoToDestinations)}
+                  title={__('How it runs', 'wconvert')}
+                  action={__('Display rules', 'wconvert')}
+                  onAction={() => jump(() => onGoToRules('where'))}
                 >
-                  <p>
-                    {captures.length > 0
-                      ? __('New leads are saved in WConvert.', 'wconvert')
-                      : __('This design does not collect leads to save or send.', 'wconvert')}
-                  </p>
-                  {(captures.length > 0 || bound.length > 0) && (
-                    <p>
-                      {captureMode === 'local'
-                        ? __('Keep in WConvert only: leads stay in Leads for export or follow-up. Nothing is sent anywhere else.', 'wconvert')
-                        : bound.length === 0
-                        ? handoffIssue
-                          ? __('No destination selected. Finish setup in Destinations.', 'wconvert')
-                          : __('No destination selected. Leads stay here for review or export.', 'wconvert')
-                        : where.said}
-                    </p>
-                  )}
-                  {bound.length > 0 && destinations === null && (
-                    <p className="wconvert-launch-review__notice">
-                      {__('Destination details could not be checked. Open Destinations to refresh them.', 'wconvert')}
-                    </p>
-                  )}
-                  {issues.some(issue => issue.section === 'where') && (
-                    <ul className="wconvert-launch-review__notice">
-                      {issues.filter(issue => issue.section === 'where').map((issue) => (
-                        <li key={issue.key}>
-                          <button type="button" className="wconvert-readiness__go" onClick={() => fix(issue)}>
-                            {issue.said}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                  <FactList facts={facts} />
+                  {displayType === 'fullscreen' && (
+                    <p className="text-note text-muted-foreground">{__('Fullscreen covers the page until it is closed. Prefer a visitor action or real engagement over opening right away, and check it on mobile.', 'wconvert')}</p>
                   )}
                   {bound.length > 0 && (
                     <p className="text-note text-muted-foreground">
@@ -414,42 +390,6 @@ export function ReadinessDialog({
                     </p>
                   )}
                 </ReviewSection>
-                {reviewsPrivacy && (
-                  <ReviewSection
-                    title={__('Privacy', 'wconvert')}
-                    action={missingNotice
-                      ? __('Edit design', 'wconvert')
-                      : missingConsent
-                        ? consentPath === null ? __('Edit design', 'wconvert') : __('Edit consent', 'wconvert')
-                        : __('Edit notice', 'wconvert')}
-                    onAction={() => {
-                      if (missingNotice || (missingConsent && consentPath === null)) jump(onEditDesign);
-                      else if (missingConsent && consentPath !== null) jump(() => onGoTo(consentPath));
-                      else if (privacyPath !== null) jump(() => onGoTo(privacyPath));
-                    }}
-                  >
-                    <p>
-                      {privacyPath === null
-                        ? __('No Privacy Policy notice is shown on this form.', 'wconvert')
-                        : policyUrl
-                          ? __('This form links to your Privacy Policy.', 'wconvert')
-                          : __('This form includes a Privacy Policy notice.', 'wconvert')}
-                    </p>
-                    {expectsConsent
-                      ? visibleConsentPath === null
-                        ? <p className="wconvert-launch-review__notice">{__('No consent checkbox is shown for this mailing list.', 'wconvert')}</p>
-                        : <p>{__('Required consent is shown for this mailing list.', 'wconvert')}</p>
-                      : <p>{__('This form shows a privacy notice without a consent checkbox.', 'wconvert')}</p>}
-                    {missingPolicyPage && (
-                      <p className="wconvert-launch-review__notice">
-                        {__('WordPress has no Privacy Policy page selected, so the form cannot link to it.', 'wconvert')}{' '}
-                        <a href="options-privacy.php" target="_blank" rel="noreferrer">
-                          {__('Set the Privacy Policy page', 'wconvert')}
-                        </a>
-                      </p>
-                    )}
-                  </ReviewSection>
-                )}
                 {warnings.length > 0 && (
                   <ReviewSection
                     title={sprintf(
@@ -460,27 +400,13 @@ export function ReadinessDialog({
                     <ul className="wconvert-launch-review__warnings">
                       {warnings.map((problem) => (
                         <li key={problem.key}>
-                          <button type="button" className="wconvert-readiness__go" onClick={() => fix(problem)}>
-                            {problem.said}
-                          </button>
+                          {problem.key === ISSUE.policyPage
+                            ? <>{problem.said}{' '}<a href="options-privacy.php" target="_blank" rel="noreferrer">{__('Set the Privacy Policy page', 'wconvert')}</a></>
+                            : <button type="button" className="wconvert-readiness__go" onClick={() => fix(problem)}>{problem.said}</button>}
                         </li>
                       ))}
                     </ul>
                   </ReviewSection>
-                )}
-                {(outcome || startedFrom !== null) && (
-                  <Disclosure variant="inline" className="wconvert-launch-review__section" title={__('Measurement & setup details', 'wconvert')}>
-                    {outcome && <p>{outcome.measurement}</p>}
-                    {startedFrom !== null && (
-                      <p className="text-note text-muted-foreground">
-                        {sprintf(
-                          /* translators: %s: the name of the starting point this campaign was created from. */
-                          __('Started from: %s', 'wconvert'),
-                          startedFrom,
-                        )}
-                      </p>
-                    )}
-                  </Disclosure>
                 )}
               </>
             )}
@@ -498,11 +424,9 @@ export function ReadinessDialog({
             )}
           </AdminDialogBody>
           <AdminDialogFooter
-            back={
-              <Button variant="outline" disabled={publishing} onClick={() => setOpen(false)}>
-                {published ? __('Done', 'wconvert') : __('Keep editing', 'wconvert')}
-              </Button>
-            }
+            back={published
+              ? <Button variant="outline" onClick={() => setOpen(false)}>{__('Done', 'wconvert')}</Button>
+              : hasDesign && <Button variant="outline" disabled={publishing} onClick={() => jump(onPreview)}><Eye aria-hidden="true" />{__('Preview', 'wconvert')}</Button>}
             note={published ? null : (
               <span id={reasonId}>
                 {refusal ?? (dirty

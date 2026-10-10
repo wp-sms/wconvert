@@ -2,7 +2,7 @@ import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Check as CheckIcon, CheckCircle2, CircleAlert, Dot, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../../components/ui/admin-dialog';
+import { AdminDialogBody, AdminDialogFooter } from '../../components/ui/admin-dialog';
 import { humanize } from '../../lib/format';
 import { audienceRules, type Answer } from '../../../../loader/src/display-rules';
 import { phraseOf } from './sentence';
@@ -24,9 +24,11 @@ const NATURAL = ['device', 'logged_in', 'role', 'referrer', 'query_param', 'time
 const SOURCES = ['search', 'social', 'direct'];
 
 /**
- * Test a visit: describe one visitor, read whether this campaign shows to them
- * and when (ADR 0129). Hypothetical facts only — this module has no storage,
- * listeners, beacons or capture imports, and nothing opens on the site.
+ * Preview's **Who sees it** tab: describe one visitor, read whether this
+ * campaign shows to them and when (ADR 0129, amended by ADR 0138 — a tab of
+ * Preview now, not a dialog of its own). Hypothetical facts only — this module
+ * has no storage, listeners, beacons or capture imports, and nothing opens on
+ * the site.
  */
 export default function SampleVisit({ value, vocabulary, onClose, onOpenSection, template, cartRequired = false, act = 'submit' }: {
   value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void; onOpenSection?: (section: SectionId) => void;
@@ -83,97 +85,114 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
   const checking = result.checking === true;
   const Headline = checking ? Dot : result.opens ? CheckCircle2 : CircleAlert;
 
-  return <AdminDialog open onOpenChange={open => { if (!open) onClose(); }}>
-    <AdminDialogContent size="lg" className="wconvert-sample-dialog">
-      <AdminDialogHeader title={__('Test a visit', 'wconvert')}
-        meta={__('Describe one visitor to see whether this campaign shows to them, and when. Nothing opens on your site.', 'wconvert')} />
-      <AdminDialogBody className="wconvert-sample-body">
-        <aside className="wconvert-sample-verdict" aria-label={__('Result', 'wconvert')}>
-          <div className="wconvert-sample-result" data-opens={checking ? undefined : result.opens} role="status" aria-live="polite" aria-atomic="true">
-            <Headline aria-hidden="true" />
-            <div><strong>{result.headline}</strong>{result.reason && <p>{result.reason}</p>}</div>
-          </div>
-          <ul className="wconvert-sample-checks">
-            {result.checks.map(row => <CheckRow key={row.section} row={row} question={asked[row.section]}
-              onChange={onOpenSection && (() => onOpenSection(row.section))} />)}
-          </ul>
-        </aside>
+  const failing = result.checks.find(row => row.status === 'fail');
+  const field = (key: string, label: string, control: (id: string) => ReactNode) => <Field key={key} label={label}>{control}</Field>;
+  const where = [
+    pages.length > 1 && field('page', __('Page they’re on', 'wconvert'), id =>
+      <select id={id} value={visitor.page} onChange={event => set({ page: event.target.value })}>
+        {pages.map(choice => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
+      </select>),
+    field('device', __('Device', 'wconvert'), id =>
+      <select id={id} value={visitor.device} onChange={event => set({ device: event.target.value as Visitor['device'] })}>
+        <option value="mobile">{__('Phone', 'wconvert')}</option>
+        <option value="tablet">{__('Tablet', 'wconvert')}</option>
+        <option value="desktop">{__('Computer', 'wconvert')}</option>
+      </select>),
+    has('query_param') && field('query', __('Page address', 'wconvert'), id =>
+      <input id={id} type="text" placeholder="?utm_source=newsletter" value={visitor.query} onChange={event => set({ query: event.target.value })} />),
+  ];
+  const who = [
+    asksAccount && field('signed-in', __('Signed in', 'wconvert'), id =>
+      <select id={id} value={visitor.signedIn ? 'yes' : 'no'} onChange={event => set({ signedIn: event.target.value === 'yes' })}>
+        <option value="no">{__('No', 'wconvert')}</option>
+        <option value="yes">{__('Yes', 'wconvert')}</option>
+      </select>),
+    asksRole && visitor.signedIn && roleValues.length > 0 && field('role', __('Role', 'wconvert'), id =>
+      <select id={id} value={visitor.role} onChange={event => set({ role: event.target.value })}>
+        {roleValues.map(role => <option key={role} value={role}>{roleLabel(role)}</option>)}
+      </select>),
+    has('referrer') && field('source', __('Came from', 'wconvert'), id =>
+      <select id={id} value={visitor.source} onChange={event => set({ source: event.target.value })}>
+        <option value="search">{__('A search engine', 'wconvert')}</option>
+        <option value="social">{__('Social media', 'wconvert')}</option>
+        <option value="direct">{__('Typed the address (direct)', 'wconvert')}</option>
+        {domains.map(domain => <option key={domain} value={domain}>{domain}</option>)}
+        <option value="elsewhere">{__('Another site', 'wconvert')}</option>
+      </select>),
+    has('ad_blocking') && field('ad-blocking', __('Ad blocker', 'wconvert'), id =>
+      <select id={id} value={visitor.adBlocking} onChange={event => set({ adBlocking: event.target.value as Visitor['adBlocking'] })}>
+        <option value="no">{__('No', 'wconvert')}</option>
+        <option value="yes">{__('Yes', 'wconvert')}</option>
+        <option value="unknown">{__('Can’t tell', 'wconvert')}</option>
+      </select>),
+    ...others.map(rule => field(String(rule.id), sprintf(
+      /* translators: %s: a rule, e.g. “their cart is not empty”. */
+      __('Does this visitor match: %s?', 'wconvert'), phraseOf(rule as Rule, all).text), id =>
+      <select id={id} value={visitor.answers?.[String(rule.id)] ? 'yes' : 'no'}
+        onChange={event => set({ answers: { ...visitor.answers, [String(rule.id)]: event.target.value === 'yes' } })}>
+        <option value="no">{__('No', 'wconvert')}</option>
+        <option value="yes">{__('Yes', 'wconvert')}</option>
+      </select>)),
+  ];
+  const when = [
+    has('time_of_day') && field('clock', __('Time on your site’s clock', 'wconvert'), id =>
+      <input id={id} type="time" value={visitor.clock} onChange={event => set({ clock: event.target.value })} />),
+    field('history', __('Before this visit', 'wconvert'), id =>
+      <select id={id} value={visitor.history} onChange={event => set({ history: event.target.value as History })}>
+        {HISTORIES.map(history =>
+          <option key={history} value={history}>{history === 'days-ago' ? __('Saw it on an earlier day', 'wconvert') : historyLabel(history, undefined, act)}</option>)}
+      </select>),
+    DATED.includes(visitor.history) && field('days-ago', __('How many days ago', 'wconvert'), id =>
+      <input id={id} type="number" min={1} max={3650} value={visitor.daysAgo} onChange={event => set({ daysAgo: Math.max(1, Math.floor(Number(event.target.value)) || 1) })} />),
+    scheduled && field('date', __('Visit date', 'wconvert'), id =>
+      <select id={id} value={visitor.date === undefined ? 'today' : 'pick'}
+        onChange={event => set({ date: event.target.value === 'today' ? undefined : wallKey(value.schedule.starts_at) ?? wallNow(timezone) })}>
+        <option value="today">{__('Today', 'wconvert')}</option>
+        <option value="pick">{__('Pick a date and time', 'wconvert')}</option>
+      </select>),
+    scheduled && visitor.date !== undefined && field('date-time', __('Date and time', 'wconvert'), id =>
+      <input id={id} type="datetime-local" value={visitor.date?.replace(' ', 'T')}
+        onChange={event => { const date = wallKey(event.target.value); if (date) set({ date }); }} />),
+  ];
 
-        <section className="wconvert-sample-visitor" aria-labelledby="wconvert-sample-visitor">
-          <h3 id="wconvert-sample-visitor">{__('The visitor', 'wconvert')}</h3>
-          <div className="wconvert-sample-fields">
-            {pages.length > 1 && <Field label={__('Page they’re on', 'wconvert')}>{id =>
-              <select id={id} value={visitor.page} onChange={event => set({ page: event.target.value })}>
-                {pages.map(choice => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
-              </select>}</Field>}
-            <Field label={__('Device', 'wconvert')}>{id =>
-              <select id={id} value={visitor.device} onChange={event => set({ device: event.target.value as Visitor['device'] })}>
-                <option value="mobile">{__('Phone', 'wconvert')}</option>
-                <option value="tablet">{__('Tablet', 'wconvert')}</option>
-                <option value="desktop">{__('Computer', 'wconvert')}</option>
-              </select>}</Field>
-            {asksAccount && <Field label={__('Signed in', 'wconvert')}>{id =>
-              <select id={id} value={visitor.signedIn ? 'yes' : 'no'} onChange={event => set({ signedIn: event.target.value === 'yes' })}>
-                <option value="no">{__('No', 'wconvert')}</option>
-                <option value="yes">{__('Yes', 'wconvert')}</option>
-              </select>}</Field>}
-            {asksRole && visitor.signedIn && roleValues.length > 0 && <Field label={__('Role', 'wconvert')}>{id =>
-              <select id={id} value={visitor.role} onChange={event => set({ role: event.target.value })}>
-                {roleValues.map(role => <option key={role} value={role}>{roleLabel(role)}</option>)}
-              </select>}</Field>}
-            {has('referrer') && <Field label={__('Came from', 'wconvert')}>{id =>
-              <select id={id} value={visitor.source} onChange={event => set({ source: event.target.value })}>
-                <option value="search">{__('A search engine', 'wconvert')}</option>
-                <option value="social">{__('Social media', 'wconvert')}</option>
-                <option value="direct">{__('Typed the address (direct)', 'wconvert')}</option>
-                {domains.map(domain => <option key={domain} value={domain}>{domain}</option>)}
-                <option value="elsewhere">{__('Another site', 'wconvert')}</option>
-              </select>}</Field>}
-            {has('query_param') && <Field label={__('Page address', 'wconvert')}>{id =>
-              <input id={id} type="text" placeholder="?utm_source=newsletter" value={visitor.query} onChange={event => set({ query: event.target.value })} />}</Field>}
-            {has('time_of_day') && <Field label={__('Time on your site’s clock', 'wconvert')}>{id =>
-              <input id={id} type="time" value={visitor.clock} onChange={event => set({ clock: event.target.value })} />}</Field>}
-            {has('ad_blocking') && <Field label={__('Ad blocker', 'wconvert')}>{id =>
-              <select id={id} value={visitor.adBlocking} onChange={event => set({ adBlocking: event.target.value as Visitor['adBlocking'] })}>
-                <option value="no">{__('No', 'wconvert')}</option>
-                <option value="yes">{__('Yes', 'wconvert')}</option>
-                <option value="unknown">{__('Can’t tell', 'wconvert')}</option>
-              </select>}</Field>}
-            {others.map(rule => <Field key={String(rule.id)} label={sprintf(
-              /* translators: %s: a rule, e.g. “their cart is not empty”. */
-              __('Does this visitor match: %s?', 'wconvert'), phraseOf(rule as Rule, all).text)}>{id =>
-              <select id={id} value={visitor.answers?.[String(rule.id)] ? 'yes' : 'no'}
-                onChange={event => set({ answers: { ...visitor.answers, [String(rule.id)]: event.target.value === 'yes' } })}>
-                <option value="no">{__('No', 'wconvert')}</option>
-                <option value="yes">{__('Yes', 'wconvert')}</option>
-              </select>}</Field>)}
-            <Field label={__('Before this visit', 'wconvert')}>{id =>
-              <select id={id} value={visitor.history} onChange={event => set({ history: event.target.value as History })}>
-                {HISTORIES.map(history =>
-                  <option key={history} value={history}>{history === 'days-ago' ? __('Saw it on an earlier day', 'wconvert') : historyLabel(history, undefined, act)}</option>)}
-              </select>}</Field>
-            {DATED.includes(visitor.history) && <Field label={__('How many days ago', 'wconvert')}>{id =>
-              <input id={id} type="number" min={1} max={3650} value={visitor.daysAgo} onChange={event => set({ daysAgo: Math.max(1, Math.floor(Number(event.target.value)) || 1) })} />}</Field>}
-            {scheduled && <Field label={__('Visit date', 'wconvert')}>{id =>
-              <select id={id} value={visitor.date === undefined ? 'today' : 'pick'}
-                onChange={event => set({ date: event.target.value === 'today' ? undefined : wallKey(value.schedule.starts_at) ?? wallNow(timezone) })}>
-                <option value="today">{__('Today', 'wconvert')}</option>
-                <option value="pick">{__('Pick a date and time', 'wconvert')}</option>
-              </select>}</Field>}
-            {scheduled && visitor.date !== undefined && <Field label={__('Date and time', 'wconvert')}>{id =>
-              <input id={id} type="datetime-local" value={visitor.date?.replace(' ', 'T')}
-                onChange={event => { const date = wallKey(event.target.value); if (date) set({ date }); }} />}</Field>}
-          </div>
-          {basketEnabled && <SampleBasket value={basket} onChange={setBasket} result={preview.result} error={preview.error} products={products}
-            legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} />}
-        </section>
-      </AdminDialogBody>
-      <AdminDialogFooter note={__('Uses your unsaved draft.', 'wconvert')}>
-        <Button type="button" variant="outline" onClick={reset}>{__('Reset visitor', 'wconvert')}</Button>
-        <Button type="button" onClick={onClose}>{__('Done', 'wconvert')}</Button>
-      </AdminDialogFooter>
-    </AdminDialogContent>
-  </AdminDialog>;
+  return <>
+    <AdminDialogBody className="wconvert-sample-body">
+      <section className="wconvert-sample-visitor" aria-labelledby="wconvert-sample-visitor">
+        <h3 id="wconvert-sample-visitor" className="sr-only">{__('The visitor', 'wconvert')}</h3>
+        <p className="wconvert-sample-intro">{__('Describe one visitor. Only what this campaign’s rules ask about is listed.', 'wconvert')}</p>
+        <Group title={__('Where', 'wconvert')}>{where}</Group>
+        <Group title={__('Who', 'wconvert')}>{who}</Group>
+        <Group title={__('When', 'wconvert')}>{when}</Group>
+        {basketEnabled && <Group title={__('Basket', 'wconvert')}><SampleBasket value={basket} onChange={setBasket} result={preview.result} error={preview.error} products={products}
+          legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} /></Group>}
+      </section>
+      <aside className="wconvert-sample-verdict" aria-label={__('Result', 'wconvert')}>
+        <div className="wconvert-sample-result" data-opens={checking ? undefined : result.opens} role="status" aria-live="polite" aria-atomic="true">
+          <Headline aria-hidden="true" />
+          <div><strong>{result.headline}</strong>{result.reason && <p>{result.reason}</p>}
+            {failing && onOpenSection && <Button type="button" variant="link" className="wconvert-sample-fix" onClick={() => onOpenSection(failing.section)}>{__('Fix in Display rules', 'wconvert')}</Button>}</div>
+        </div>
+        <ul className="wconvert-sample-checks">
+          {result.checks.map(row => <CheckRow key={row.section} row={row} question={asked[row.section]}
+            onChange={onOpenSection && (() => onOpenSection(row.section))} />)}
+        </ul>
+      </aside>
+    </AdminDialogBody>
+    <AdminDialogFooter note={__('Uses your unsaved draft. Nothing opens on your site.', 'wconvert')}>
+      <Button type="button" variant="outline" onClick={reset}>{__('Reset visitor', 'wconvert')}</Button>
+      <Button type="button" onClick={onClose}>{__('Done', 'wconvert')}</Button>
+    </AdminDialogFooter>
+  </>;
+}
+
+/** One of the visitor's groups — Where, Who, When, Basket — or nothing when the rules ask none of it. */
+function Group({ title, children }: { title: string; children: ReactNode }) {
+  const items = (Array.isArray(children) ? children : [children]).filter(Boolean);
+  if (items.length === 0) return null;
+  return <fieldset className="wconvert-sample-group">
+    <legend className="wconvert-sample-group__title">{title}</legend>
+    <div className="wconvert-sample-fields">{items}</div>
+  </fieldset>;
 }
 
 function Field({ label, children }: { label: string; children: (id: string) => ReactNode }) {
