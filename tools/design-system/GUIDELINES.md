@@ -173,7 +173,10 @@ The dispatch rule, in order:
    value.** Neither arm names a token, and no code should need a per-token table
    of components.
 2. **One-of-N is chips while N is small, a popover list once it is not.** The
-   switch happens at a count the manifest does not control.
+   switch happens at a count the manifest does not control. The popover list is
+   the **option menu** (`components/ui/option-menu`, ADR 0139) — list mode for a
+   searchable list, menu mode inside a ⋯ — and a choice of two or three words
+   inside a sentence is a `NativeSelect` drawn as a `word` or `pill`.
 3. **A measure is a slider** — one or two components. Anything a slider cannot
    express falls through to Custom, deliberately.
 4. **A colour is a popover whose trigger shows the current value.**
@@ -270,7 +273,7 @@ prints a field key or a WooCommerce status slug.
 |---|---|
 | `Dialog` | something the merchant can walk away from |
 | `AlertDialog` | destructive confirmation — says what *survives*, not just what goes |
-| `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown. One exception: `shell/DateRangePicker`, whose button IS the control and whose popover holds its choices (ADR 0132) |
+| `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown. Two exceptions, both a button that IS the control and a popover that holds its choices: `shell/DateRangePicker` (ADR 0132), and a rule row's value pill (ADR 0139) |
 | `DropdownMenu` | row actions past the first two |
 
 **Entry and dismissal are immediate.** A shared no-motion rule includes portaled
@@ -538,11 +541,14 @@ card were doing the opposite.
   the real attribute and gets out of the way for the half-second it is working.
 
 Radix's `DropdownMenuItem` takes `disabled` as a prop and renders
-`aria-disabled` rather than the HTML attribute, so a menu item is already on the
-right side of this line.
+`aria-disabled` rather than the HTML attribute — but its keyboard then skips the
+item, and the reason with it. A refused option-menu item sets `aria-disabled`
+itself and stays a keyboard stop (ADR 0139); `disabled` is kept for busy.
 
 **A refusal is marked before the click, with the reason, and the reason is
-announced with the control** (§8). That last clause is not decoration: `GoalCard`
+announced with the control** (§8). In a menu the reason has two lengths
+(ADR 0139): a few words on screen and the full sentence in ⓘ, and the sentence
+is the item's description, so both are heard. That last clause is not decoration: `GoalCard`
 passed its refusal as the card's ordinary `notes`, which carry no `id`, so
 `aria-describedby` pointed at the title and a screen reader heard a dimmed
 button and no reason at all. `ChoiceCard` and `TemplateCard` both take a

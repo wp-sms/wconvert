@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { audienceMatches, type Answer, type Opening } from '../../../../loader/src/display-rules';
+import { audienceMatches, leafAnswer, type Answer, type Opening } from '../../../../loader/src/display-rules';
 import type { Frequency, OptinRecord, Rule } from '@loader/types';
 import { isAllowed } from '../../../../loader/src/frequency';
 import { inside, minutesIn } from '../../../../loader/src/modules/time-of-day';
@@ -65,6 +65,26 @@ const strings = (value: unknown): string[] => (Array.isArray(value) ? value : [v
  * has one. A cart rule is the basket check's answer, by rule id.
  */
 export function readRule(rule: Rule, visitor: Visitor, cart: Readonly<Record<string, Answer>> = {}): Answer {
+  // The facts read here and the basket's cart answers are about the rule as
+  // written, so "is not" flips them through the loader's own `leafAnswer`
+  // (ADR 0139). A merchant's own yes or no was asked of the negated phrase, so
+  // it is already about the rule as negated and is not flipped again.
+  // A fact the sample has not given — no source, no clock, no basket answer —
+  // is not known, and an unknown answer is never flipped into a match.
+  if (rule.type.startsWith('cart_')) return leafAnswer(rule, cart[String(rule.id)] ?? false, String(rule.id) in cart);
+  const natural = factOf(rule, visitor);
+  return natural === undefined ? visitor.answers?.[String(rule.id)] ?? false : leafAnswer(rule, natural, knownFor(rule, visitor));
+}
+
+/** Whether the sample has filled in the fact this rule reads. */
+function knownFor(rule: Rule, visitor: Visitor): boolean {
+  if (rule.type === 'referrer') return visitor.source !== undefined;
+  if (rule.type === 'time_of_day') return minutesIn(visitor.clock ?? '') !== null;
+  return true;
+}
+
+/** A fact this form has a field for, or undefined where it asks the merchant instead. */
+function factOf(rule: Rule, visitor: Visitor): boolean | undefined {
   switch (rule.type) {
     case 'device': return strings(rule.in).includes(visitor.device);
     case 'logged_in': return rule.value === visitor.signedIn;
@@ -82,9 +102,8 @@ export function readRule(rule: Rule, visitor: Visitor, cart: Readonly<Record<str
     }
     case 'ad_blocking': return visitor.adBlocking !== undefined && visitor.adBlocking !== 'unknown'
       && rule.value === (visitor.adBlocking === 'yes' ? 'detected' : 'not_detected');
+    default: return undefined;
   }
-  if (rule.type.startsWith('cart_')) return cart[String(rule.id)] ?? false;
-  return visitor.answers?.[String(rule.id)] ?? false;
 }
 
 /** What stopped another showing, in the order the loader asks. */

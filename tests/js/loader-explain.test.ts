@@ -306,3 +306,34 @@ describe('the allowance the whole site shares', () => {
     expect(only(report).triggers[0].answer).toBe(true);
   });
 });
+
+/**
+ * "is not" (ADR 0139) is applied in the report exactly as `decide` applies it,
+ * so the panel's ✓ beside "Device is not" agrees with the verdict.
+ */
+describe('a negated rule', () => {
+  const negated: Rule = { type: 'device', negate: true };
+
+  it('reports the answer after negation, marks the negation, and agrees with the verdict', () => {
+    const phone = explain(input({ entries: [entry({ conditions: [negated] })], evaluators: evaluators({ time_on_page: () => true, device: () => true }) }));
+    const computer = explain(input({ entries: [entry({ conditions: [negated] })], evaluators: evaluators({ time_on_page: () => true, device: () => false }) }));
+
+    expect(only(phone)!.conditions[0]).toMatchObject({ answer: false, negate: true });
+    expect(only(phone)!.groups?.[0]?.answer).toBe(false);
+    expect(only(phone)!.standing).toBe('ineligible');
+    expect(only(computer)!.conditions[0]).toMatchObject({ answer: true, negate: true });
+    expect(only(computer)!.groups?.[0]?.answer).toBe(true);
+    expect(only(computer)!.standing).toBe('ready');
+  });
+
+  it('does not invert a rule that failed, or one whose answer is not known yet', () => {
+    const failing = explain(input({ entries: [entry({ conditions: [negated] })], evaluators: new Map<string, RuleEvaluator>([
+      ['time_on_page', { holds: () => true }], ['device', { holds: () => { throw new Error('no'); } }]]) }));
+    const pending = explain(input({ entries: [entry({ conditions: [negated] })], evaluators: new Map<string, RuleEvaluator>([
+      ['time_on_page', { holds: () => true }], ['device', { holds: () => false, known: () => false }]]) }));
+
+    expect(only(failing)!.conditions[0].answer).toBe(false);
+    expect(only(pending)!.conditions[0].answer).toBe(false);
+    expect(only(pending)!.standing).toBe('ineligible');
+  });
+});

@@ -98,6 +98,8 @@ export interface RulePreset {
    * seconds on the page"*, which is the general form with extra steps.
    */
   phrase: string | null;
+  /** The same preset read "is not" (ADR 0139), or null where it offers none. */
+  not_phrase?: string | null;
   /** The params it decides, leaving the rest to the merchant. */
   fixed: Record<string, unknown>;
 }
@@ -137,6 +139,14 @@ export interface RuleType {
   requires_label: string | null;
   params: Record<string, RuleParam>;
   presets: RulePreset[];
+  /**
+   * Whether an audience leaf of this type may say "is not" (ADR 0139), the two
+   * words its switch shows — "is / is not", or the cart's "has items / is
+   * empty" — and how it then reads in a sentence. Null where it may not.
+   */
+  negatable: boolean;
+  negation: { is: string; not: string } | null;
+  not_phrase: string | null;
 }
 
 export interface RuleVocabulary {

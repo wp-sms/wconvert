@@ -93,7 +93,9 @@ found the system intact and its application drifted:
     and remove (`ConfirmDialog` is `default` unless a caller opts in);
     destructive confirms are `AlertDialog`s that say what survives; more than
     two row actions go in a ⋯ menu; a refusal is `aria-disabled` with its
-    reason; tier names come from `tierName()`; "Try again" is the one retry
+    reason (*amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): a short reason on screen and the full sentence in
+    ⓘ, both announced; a refused menu item stays focusable rather than taking
+    Radix's `disabled`, which the keyboard skips*); tier names come from `tierName()`; "Try again" is the one retry
     word; a region loads with a named skeleton, never a spinner.
 
 ## Consequences

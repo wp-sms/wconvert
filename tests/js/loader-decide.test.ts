@@ -527,3 +527,34 @@ describe('the site-wide allowance', () => {
     });
   });
 });
+
+/**
+ * "is not" (ADR 0139): a negated leaf flips a yes or a no, and nothing else.
+ * A consent block stays blocked, a rule that cannot answer stays false, and an
+ * answer still pending never flips to show.
+ */
+describe('a negated rule', () => {
+  const notOn = (conditions: Rule[], evaluatorMap: ReadonlyMap<string, RuleEvaluator>, withheld = new Set<string>()) =>
+    standings(decide(input({ entries: [entry({ id: 'a', conditions })], evaluators: evaluatorMap, withheld })));
+  const device = (answer: boolean, known = true): RuleEvaluator => ({ holds: () => answer, known: () => known });
+  const negated: Rule = { type: 'device', negate: true };
+
+  it('holds where the plain rule does not, and the other way round', () => {
+    expect(notOn([negated], new Map([['time_on_page', device(true)], ['device', device(false)]]))).toEqual({ a: 'ready' });
+    expect(notOn([negated], new Map([['time_on_page', device(true)], ['device', device(true)]]))).toEqual({ a: 'ineligible' });
+  });
+
+  it('stays blocked while consent is withheld, rather than flipping to show', () => {
+    expect(notOn([negated], new Map([['time_on_page', device(true)], ['device', device(false)]]), new Set(['device']))).toEqual({ a: 'blocked' });
+  });
+
+  it('stays false when its rule cannot answer — fail shut, never inverted', () => {
+    const exploding: RuleEvaluator = { holds: () => { throw new Error('no'); } };
+    expect(notOn([negated], new Map([['time_on_page', device(true)], ['device', exploding]]))).toEqual({ a: 'ineligible' });
+  });
+
+  it('stays false while its answer is not known yet, so a pending cart never shows', () => {
+    expect(notOn([{ type: 'cart_has_items', negate: true }], new Map([['time_on_page', device(true)], ['cart_has_items', device(false, false)]]))).toEqual({ a: 'ineligible' });
+    expect(notOn([{ type: 'cart_has_items', negate: true }], new Map([['time_on_page', device(true)], ['cart_has_items', device(false, true)]]))).toEqual({ a: 'ready' });
+  });
+});

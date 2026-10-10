@@ -89,10 +89,10 @@ const entry = (over: Partial<EntryReport> = {}): EntryReport => ({
   id: 'A',
   standing: 'blocked',
   overlay: true,
-  triggers: [{ rule: { type: 'time_on_page' }, answer: null, unsupported: false }],
+  triggers: [{ rule: { type: 'time_on_page' }, answer: null, unsupported: false, negate: false }],
   conditions: [
-    { rule: { type: 'device' }, answer: true, unsupported: false },
-    { rule: { type: 'cart_has_items' }, answer: null, unsupported: false },
+    { rule: { type: 'device' }, answer: true, unsupported: false, negate: false },
+    { rule: { type: 'cart_has_items' }, answer: null, unsupported: false, negate: false },
   ],
   lostArbitration: false,
   schedule: null,

@@ -20,6 +20,7 @@ interface Declared {
   readonly requires?: string | null;
   readonly params: Record<string, { control: string; options?: string[]; authored?: boolean }>;
   readonly presets: Record<string, Record<string, unknown>>;
+  readonly negatable?: boolean;
 }
 
 /**
@@ -45,6 +46,10 @@ export function ruleTypes(
       tier: entry.tier,
       availability: availability[entry.tier] ?? 'ready',
       requires_label: entry.requires === null || entry.requires === undefined ? null : 'WooCommerce',
+      // Stand-in words for "is not", like the key-as-label above (ADR 0139).
+      negatable: entry.negatable === true,
+      negation: entry.negatable === true ? { is: 'is', not: 'is not' } : null,
+      not_phrase: entry.negatable === true ? phraseFor(`not ${type}`, Object.keys(entry.params)) : null,
       params: Object.fromEntries(
         Object.entries(entry.params).map(([name, param]) => [
           name,
@@ -63,6 +68,7 @@ export function ruleTypes(
         // order — which is the rule `RuleLabelParityTest` pins in PHP and the
         // one the sentence depends on to substitute the right value.
         phrase: phraseFor(id, Object.keys(entry.params).filter((param) => !(param in fixed))),
+        not_phrase: entry.negatable === true ? phraseFor(`not ${id}`, Object.keys(entry.params).filter((param) => !(param in fixed))) : null,
         fixed,
       })),
     }));

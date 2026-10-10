@@ -41,11 +41,25 @@ export function groupProblems(group: RuleGroup, types: readonly RuleType[]): str
   if (group.match === 'all') {
     const gestures = group.rules.filter(rule => ['exit_intent', 'scroll_up'].includes(rule.type));
     if (gestures.length > 1 || (gestures.length > 0 && group.rules.some(rule => rule.type === 'inactivity'))) problems.push(__('Use ANY for alternative gestures. Inactivity and a leaving gesture cannot be required together.', 'wconvert'));
-    const devices = group.rules.filter(rule => rule.type === 'device' && Array.isArray(rule.in)).map(rule => rule.in as string[]);
+    // What is left of every device, as `DisplayPlan::issues()` reads it: a plain
+    // rule narrows to its set, a negated one takes its set away (ADR 0139).
+    const deviceRules = group.rules.filter(rule => rule.type === 'device' && Array.isArray(rule.in) && rule.in.length > 0);
+    const everyDevice = types.find(type => type.type === 'device')?.params.in?.options.map(option => option.value) ?? [];
+    const devicesLeft = deviceRules.reduce<string[]>((left, rule) => rule.negate === true
+      ? left.filter(device => !(rule.in as string[]).includes(device))
+      : left.filter(device => (rule.in as string[]).includes(device)), everyDevice);
+    // The same rule asked both ways — "Cart has items" and "Cart is empty".
+    const asked = new Map<string, Set<boolean>>();
+    for (const rule of group.rules) {
+      const question = Object.entries(rule).filter(([name]) => name !== 'id' && name !== 'negate').sort(([left], [right]) => left.localeCompare(right));
+      const key = JSON.stringify(question);
+      asked.set(key, new Set([...(asked.get(key) ?? []), rule.negate === true]));
+    }
+    const bothWays = [...asked.values()].some(ways => ways.size === 2);
     const logins = group.rules.filter(rule => rule.type === 'logged_in').map(rule => rule.value);
     const adStatuses = group.rules.filter(rule => rule.type === 'ad_blocking').map(rule => rule.value);
     if (adStatuses.includes('detected') && adStatuses.includes('not_detected')) problems.push(__('Ad blocking cannot be both detected and not detected. Use ANY or change the values.', 'wconvert'));
-    if ((devices.length > 1 && !devices.reduce((left, right) => left.filter(value => right.includes(value))).length) || (logins.includes(true) && logins.includes(false))) problems.push(__('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert'));
+    if ((deviceRules.length > 0 && everyDevice.length > 0 && devicesLeft.length === 0) || bothWays || (logins.includes(true) && logins.includes(false))) problems.push(__('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert'));
   }
   return problems;
 }

@@ -14,6 +14,17 @@ export interface DisplayPlan { readonly audience: Audience; readonly opening: Op
 export type Answer = boolean | 'blocked';
 export type ReadRule = (rule: Rule) => Answer;
 
+/**
+ * One leaf's answer once its "is not" is applied (ADR 0139) — the one place a
+ * negation is read, shared by the decision, the inspector and Test a visit.
+ *
+ * Only a settled yes or no flips. `blocked` stays blocked, because consent is
+ * still withheld; and an answer that is not `known` yet (a cart still loading)
+ * is false, so "their cart is empty" never shows before the cart has said so.
+ */
+export const leafAnswer = (rule: Rule, raw: Answer, known = true): Answer =>
+  raw === 'blocked' || rule.negate !== true ? raw : known && !raw;
+
 /** Shared three-valued ALL/ANY reduction, including empty-group rejection. */
 function combine<T>(rules: readonly T[], match: 'all' | 'any', read: (rule: T) => Answer): Answer {
   if (!rules.length || !['all', 'any'].includes(match)) return false;

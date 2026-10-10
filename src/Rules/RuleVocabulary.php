@@ -106,6 +106,7 @@ final class RuleVocabulary
      * @param array<string, OnAbsence> $onAbsence Rule type => what happens where this install cannot evaluate it.
      * @param array<string, array<string, mixed>> $substitutes Rule type => the rule that runs in its place.
      * @param array<string, SiteDependency> $requires Rule type => what the SITE must have for it to mean anything.
+     * @param array<string, true> $negatable Rule types an audience leaf may negate ("is not", ADR 0139).
      */
     private function __construct(
         private readonly array $kinds,
@@ -117,6 +118,7 @@ final class RuleVocabulary
         private readonly array $substitutes = [],
         private readonly array $requires = [],
         private readonly array $signals = [],
+        private readonly array $negatable = [],
     ) {
     }
 
@@ -139,6 +141,7 @@ final class RuleVocabulary
         $substitutes = [];
         $requires = [];
         $signals = [];
+        $negatable = [];
 
         foreach ($manifest as $axis => $entries) {
             if (!is_array($entries)) {
@@ -160,6 +163,7 @@ final class RuleVocabulary
                 $axes[(string) $axis][] = $type;
                 $kinds[$type] = $kind;
                 if (in_array($entry['signal'] ?? '', ['threshold', 'state', 'gesture'], true)) $signals[$type] = $entry['signal'];
+                if (($entry['negatable'] ?? false) === true) $negatable[$type] = true;
                 $tiers[$type] = Tier::tryFrom(is_string($entry['tier'] ?? null) ? $entry['tier'] : '') ?? Tier::Free;
                 $params[$type] = self::declarations($entry['params'] ?? []);
                 $presets[$type] = self::declarations($entry['presets'] ?? []);
@@ -194,12 +198,24 @@ final class RuleVocabulary
             }
         }
 
-        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes, $requires, $signals);
+        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes, $requires, $signals, $negatable);
     }
 
     public function signalOf(string $type): ?string
     {
         return $this->signals[$type] ?? null;
+    }
+
+    /**
+     * Whether an audience leaf of this type may say "is not" (ADR 0139).
+     *
+     * Declared per type rather than assumed, because some have an opposite of
+     * their own — Sign-in status, Ad blocker, "none of" in the cart sets — and
+     * a second way to say it is a second thing to read wrong.
+     */
+    public function negatable(string $type): bool
+    {
+        return isset($this->negatable[$type]);
     }
 
     public function kindOf(string $type): ?RuleKind

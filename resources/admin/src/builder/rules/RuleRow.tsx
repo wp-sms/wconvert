@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ParamControl, ParamField } from '../controls';
+import { NativeSelect } from '../../components/ui/native-select';
 import { Popover } from '../../components/ui/popover';
 import { PILL_MENU, PillTrigger, ValuePill } from './ValuePill';
 import { OptionItem, OptionList, OptionListContent, OptionSeparator } from '../../components/ui/option-menu';
@@ -81,7 +82,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     </div>;
   }
 
-  const { type, preset: matched, values, filled, degradedFrom } = read;
+  const { type, preset: matched, values, filled, degradedFrom, negate } = read;
   const preset = custom ? null : matched;
   // What the controls are given: with a preset on, the params it leaves open;
   // without one, everything the rule holds — so dropping to the general form
@@ -94,7 +95,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     // fields (e.g. UTM values) do not change its fixed key and must not turn
     // it into the custom form.
     if (preset === null) setCustom(true);
-    onChange(toRule(type, preset, { ...shown, [param]: value }, degradedFrom));
+    onChange(toRule(type, preset, { ...shown, [param]: value }, degradedFrom, negate));
   };
   const choose = (chosen: RulePreset | null) => {
     // Choosing Custom… IS the choice, and it is the only way the row can know
@@ -102,7 +103,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     // old preset: dropping from "came from a particular source" to the general
     // form must hand the merchant `utm_source` to edit rather than an empty key.
     setCustom(chosen === null);
-    onChange(toRule(type, chosen, values, degradedFrom));
+    onChange(toRule(type, chosen, values, degradedFrom, negate));
   };
   const field = (param: string) => <ParamField key={param} id={idOf(param)} param={type.params[param]} value={shown[param]} onChange={value => write(param, value)} />;
   const params = Object.keys(type.params);
@@ -112,6 +113,17 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     return parts.every(part => part !== null) && parts.length > 0 ? parts.join(' · ') : null;
   };
   const parts: ReactNode[] = [];
+
+  // "is / is not" between the name and the value, for a type that can say it
+  // (ADR 0139). Amber when negated, so a negation is never missed.
+  if (type.negatable && type.negation) {
+    parts.push(<NativeSelect key="negate" variant="pill" data-negated={negate || undefined} value={negate ? 'not' : 'is'}
+      aria-label={sprintf(/* translators: %s: a rule, e.g. “Device”. */ __('%s: is or is not', 'wconvert'), type.label)}
+      onChange={event => onChange(toRule(type, preset, shown, degradedFrom, event.target.value === 'not'))}>
+      <option value="is">{type.negation.is}</option>
+      <option value="not">{type.negation.not}</option>
+    </NativeSelect>);
+  }
 
   if (type.presets.length > 0) {
     // `query_param` keeps its key and its values apart: the key is the preset's

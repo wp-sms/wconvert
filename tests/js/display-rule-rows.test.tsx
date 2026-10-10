@@ -197,3 +197,34 @@ describe('each kind of pill', () => {
   });
 });
 
+/** "is not" on a row (ADR 0139): a word between the name and the value. */
+describe('a negatable rule', () => {
+  it('says is or is not, tints the negation, and keeps it through every edit', async () => {
+    const groups = setup([{ type: 'device', in: ['mobile'] }]);
+    const word = screen.getByRole('combobox', { name: 'device: is or is not' });
+
+    await userEvent.selectOptions(word, 'not');
+    expect(groups()[0].rules[0]).toMatchObject({ type: 'device', in: ['mobile'], negate: true });
+    expect(screen.getByRole('combobox', { name: 'device: is or is not' })).toHaveAttribute('data-negated');
+
+    // A preset switch and a Custom… edit both keep it.
+    await userEvent.click(screen.getByRole('button', { name: 'device: mobile_only' }));
+    await userEvent.click(screen.getByRole('button', { name: 'desktop_only' }));
+    expect(groups()[0].rules[0]).toMatchObject({ in: ['desktop'], negate: true });
+    await userEvent.click(screen.getByRole('button', { name: 'device: desktop_only' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Custom…' }));
+    await userEvent.click(within(screen.getByRole('dialog', { name: 'device' })).getAllByRole('checkbox')[1]);
+    expect(groups()[0].rules[0]).toMatchObject({ in: ['tablet', 'desktop'], negate: true });
+
+    await userEvent.keyboard('{Escape}');
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'device: is or is not' }), 'is');
+    expect(groups()[0].rules[0]).not.toHaveProperty('negate');
+  });
+
+  it('offers no switch on a rule with an opposite of its own', () => {
+    setup([{ type: 'logged_in', value: true }, { type: 'ad_blocking', value: 'detected' }]);
+
+    expect(screen.queryByRole('combobox', { name: /is or is not/ })).toBeNull();
+  });
+});
+

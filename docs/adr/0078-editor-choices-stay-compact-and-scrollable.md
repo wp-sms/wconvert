@@ -4,7 +4,7 @@ This refines [ADR 0077](0077-editor-controls-make-placement-and-formatting-expli
 
 ## Menu boundaries
 
-Every shared dropdown submenu is portaled, bounded to the available viewport height, and vertically scrollable. The overflow is stated with the same Tailwind utilities as the component: a normal CSS override cannot beat this project's important utility declarations. Layer-specific menus cap their height at 440px and use 13px actions with 12px explanatory text. The tree uses the same 13px reading size.
+Every shared dropdown submenu is portaled, bounded to the available viewport height, and vertically scrollable. The overflow is stated with the same Tailwind utilities as the component: a normal CSS override cannot beat this project's important utility declarations. Layer-specific menus cap their height at 440px and use 13px actions with 12px explanatory text. *Amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): those menus are the option menu in menu mode — 14px names, 12px hints, a short reason for a refusal with the sentence in ⓘ — and the `.wconvert-layer-menu` overrides are gone.* The tree uses the same 13px reading size.
 
 Portaled React keyboard events still bubble through the layer tree. The tree handles keys only when the event target is physically within its DOM; Home, End and arrows in a menu therefore remain menu navigation. The regression test exercises the actual insertion submenu.
 
@@ -36,7 +36,7 @@ Ordinary edits and desktop/mobile preview changes keep the inspector scroller. S
 
 The Add rule control opens a searchable, viewport-bounded popover. Type labels, preset labels and phrases are searchable together; Time delay makes “delay” discoverable. A preset or the general form is still one selection. Pro-only and missing-dependency types remain searchable, noninteractive text grouped under their distinct explanations, refining the menu presentation in [ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md).
 
-Search receives focus on opening. Arrow keys move between results, Home/End reach the ends, and Escape closes and returns focus to Add. Opening, searching and closing write nothing. Content follows the document's RTL direction, uses logical spacing, wraps long labels and scrolls independently below the search field.
+Search receives focus on opening. Arrow keys move between results, Home/End reach the ends, and Escape closes and returns focus to Add. *Amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): that keyboard is now the option menu's `useListNavigation`, shared by every list-mode menu — Add element gained it, and its chips are stops too.* Opening, searching and closing write nothing. Content follows the document's RTL direction, uses logical spacing, wraps long labels and scrolls independently below the search field.
 
 ## Starting points
 

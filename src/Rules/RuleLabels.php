@@ -217,6 +217,10 @@ final class RuleLabels
             'scroll_up' => __('when they scroll back up', 'wconvert'),
             /* translators: %1$s: one or more device names, already joined, e.g. “Phone or Tablet”. */
             'device' => __('they are on %1$s', 'wconvert'),
+            // A Visitor fact read in the Who sentence. Page rules carry no
+            // phrase because Where counts them; this one is read (ADR 0139).
+            /* translators: %1$s: one or more role names, already joined, e.g. “Editor or Author”. */
+            'role' => __('their role is %1$s', 'wconvert'),
             /* translators: %1$s: an ad-block status, already translated — "detected" or "not detected". */
             'ad_blocking' => __('ad blocking is %1$s', 'wconvert'),
             /* translators: %1$s: a range of times on a 24-hour clock, e.g. “09:00-17:00”. */
@@ -308,6 +312,81 @@ final class RuleLabels
     }
 
     /**
+     * The "is not" reading of every negatable type (ADR 0139), keyed by type,
+     * with the same placeholders as its {@see self::phrases()} entry.
+     *
+     * Written out rather than built as "not " + phrase, because no language
+     * negates by prefixing — and in English either: "their cart is not empty"
+     * negated is "their cart is empty".
+     *
+     * @return array<string, string>
+     */
+    public static function negativePhrases(): array
+    {
+        return [
+            /* translators: %1$s: one or more device names, already joined, e.g. “a phone or a tablet”. */
+            'device' => __('they are not on %1$s', 'wconvert'),
+            /* translators: %1$s: one or more role names, already joined, e.g. “Editor or Author”. */
+            'role' => __('their role is not %1$s', 'wconvert'),
+            /* translators: %1$s: a range of times on a 24-hour clock, e.g. “09:00-17:00”. */
+            'time_of_day' => __('the time on your site is not %1$s', 'wconvert'),
+            /* translators: %1$s: one or more traffic sources, already joined, e.g. “a search engine or example.com”. */
+            'referrer' => __('they did not come from %1$s', 'wconvert'),
+            /* translators: 1: a URL parameter name, e.g. “utm_source”. 2: one or more values, already joined. */
+            'query_param' => __('%1$s is not %2$s', 'wconvert'),
+            'cart_has_items' => __('their cart is empty', 'wconvert'),
+            /* translators: %1$s: an amount in the store's currency. */
+            'cart_value_min' => __('their cart is worth less than %1$s', 'wconvert'),
+            /* translators: %1$s: a quantity range, already formatted. */
+            'cart_quantity' => __('their cart item quantity is not %1$s', 'wconvert'),
+            /* translators: %1$s: an amount range, already formatted. */
+            'cart_amount' => __('their discounted products total is not %1$s, excluding tax and shipping', 'wconvert'),
+        ];
+    }
+
+    /**
+     * The "is not" reading of each phrased preset of a negatable type, keyed
+     * like {@see self::presetPhrases()}.
+     *
+     * @return array<string, string>
+     */
+    public static function negativePresetPhrases(): array
+    {
+        return [
+            'device.mobile_only' => __('they are not on a phone', 'wconvert'),
+            'device.not_on_mobile' => __('they are not on a tablet or a computer', 'wconvert'),
+            'device.desktop_only' => __('they are not on a computer', 'wconvert'),
+            /* translators: %1$s: one or more campaign sources, already joined. */
+            'query_param.utm_source' => __('they did not come from %1$s', 'wconvert'),
+            /* translators: %1$s: one or more campaign mediums, already joined. */
+            'query_param.utm_medium' => __('they did not arrive through %1$s', 'wconvert'),
+            /* translators: %1$s: one or more campaign names, already joined. */
+            'query_param.utm_campaign' => __('they did not come from the %1$s campaign', 'wconvert'),
+            'referrer.from_search' => __('they did not come from a search engine', 'wconvert'),
+            'referrer.from_social' => __('they did not come from social media', 'wconvert'),
+            'referrer.arrived_directly' => __('they came from another page', 'wconvert'),
+        ];
+    }
+
+    /**
+     * The two words a negatable rule's switch shows, or null where the type
+     * cannot be negated. "is / is not" for all but the cart, whose row reads
+     * "Cart [has items ▾]" and "Cart [is empty ▾]".
+     *
+     * @return array{is: string, not: string}|null
+     */
+    public static function negation(string $type): ?array
+    {
+        if (!isset(self::negativePhrases()[$type])) {
+            return null;
+        }
+
+        return $type === 'cart_has_items'
+            ? ['is' => __('has items', 'wconvert'), 'not' => __('is empty', 'wconvert')]
+            : ['is' => __('is', 'wconvert'), 'not' => __('is not', 'wconvert')];
+    }
+
+    /**
      * An option read INSIDE a sentence, keyed like {@see self::options()}, for
      * the sets whose labels cannot stand in one.
      *
@@ -383,6 +462,16 @@ final class RuleLabels
     public static function phrase(string $type): string
     {
         return self::phrases()[$type] ?? self::type($type);
+    }
+
+    public static function negativePhrase(string $type): ?string
+    {
+        return self::negativePhrases()[$type] ?? null;
+    }
+
+    public static function negativePresetPhrase(string $type, string $preset): ?string
+    {
+        return self::negativePresetPhrases()[$type . '.' . $preset] ?? null;
     }
 
     /** One preset's phrase, or null where the preset has none to offer. */

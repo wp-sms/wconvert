@@ -116,11 +116,18 @@ final class RuleLabelParityTest extends TestCase
         );
     }
 
-    public function testNoTargetingTypeCarriesAPhrase(): void
+    /**
+     * A PAGE rule carries no phrase; a Visitor fact on the same axis may, since
+     * it is an audience leaf and the Who sentence reads it (ADR 0139).
+     */
+    public function testNoPageRuleCarriesAPhrase(): void
     {
+        $pages = array_keys(array_filter(self::entries(), static fn (array $entry): bool => $entry['kind'] === 'page'));
+
+        $this->assertNotSame([], $pages);
         $this->assertSame(
             [],
-            array_intersect(self::typesOn(['targeting']), array_keys(RuleLabels::phrases())),
+            array_intersect($pages, array_keys(RuleLabels::phrases())),
             'the Where section counts its rules; a phrase here has no reader'
         );
     }
@@ -286,5 +293,55 @@ final class RuleLabelParityTest extends TestCase
         $this->assertSame([], array_diff($declared, array_keys(RuleLabels::options())), 'an unnamed option');
         $this->assertSame([], array_diff(array_keys(RuleLabels::options()), $declared), 'a label for no option');
         $this->assertSame([], array_diff(array_keys(RuleLabels::optionPhrases()), $declared), 'a phrase for no option');
+    }
+
+    /** @return list<string> */
+    private static function negatable(): array
+    {
+        return array_keys(array_filter(self::entries(), static fn (array $entry): bool => ($entry['negatable'] ?? false) === true));
+    }
+
+    /**
+     * Every type that can say "is not" reads in a sentence that way too — "they
+     * are not on %1$s", "their cart is empty" — and no other type does.
+     */
+    public function testEveryNegatableTypeReadsNegatedAndNoOtherDoes(): void
+    {
+        $this->assertNotSame([], self::negatable(), 'nothing is negatable, so this asserts nothing');
+        $this->assertEqualsCanonicalizing(self::negatable(), array_keys(RuleLabels::negativePhrases()));
+    }
+
+    /** And with the same placeholders as the plain phrase, in the same order. */
+    public function testANegativePhraseTakesThePlainPhrasesPlaceholders(): void
+    {
+        foreach (RuleLabels::negativePhrases() as $type => $phrase) {
+            preg_match_all('/%\d+\$s/', RuleLabels::phrase($type), $plain);
+            preg_match_all('/%\d+\$s/', $phrase, $negative);
+            $this->assertEqualsCanonicalizing($plain[0], $negative[0], $type);
+        }
+    }
+
+    /**
+     * A phrased preset of a negatable type is phrased negated too — "they are
+     * not on a phone" — and nothing is phrased that is not one.
+     */
+    public function testEveryPhrasedPresetOfANegatableTypeReadsNegated(): void
+    {
+        $expected = [];
+
+        foreach (self::negatable() as $type) {
+            foreach (array_keys(self::entries()[$type]['presets']) as $preset) {
+                $phrase = RuleLabels::presetPhrase($type, (string) $preset);
+
+                if ($phrase !== null) {
+                    $expected[] = $type . '.' . $preset;
+                    preg_match_all('/%\d+\$s/', $phrase, $plain);
+                    preg_match_all('/%\d+\$s/', RuleLabels::negativePresetPhrases()[$type . '.' . $preset] ?? '', $negative);
+                    $this->assertEqualsCanonicalizing($plain[0], $negative[0], $type . '.' . $preset);
+                }
+            }
+        }
+
+        $this->assertEqualsCanonicalizing($expected, array_keys(RuleLabels::negativePresetPhrases()));
     }
 }

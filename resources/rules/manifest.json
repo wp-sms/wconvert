@@ -13,7 +13,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "singular": {
       "kind": "page",
@@ -27,7 +28,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "archive": {
       "kind": "page",
@@ -41,7 +43,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "term": {
       "kind": "page",
@@ -56,7 +59,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "url": {
       "kind": "page",
@@ -70,7 +74,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "role": {
       "kind": "visitor",
@@ -84,7 +89,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "logged_in": {
       "kind": "visitor",
@@ -98,7 +104,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": null,
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     }
   },
   "triggers": {
@@ -111,6 +118,7 @@
       "consent_category": null,
       "on_absence": "drop",
       "substitute": null,
+      "negatable": false,
       "signal": "threshold"
     },
     "time_on_page": {
@@ -133,6 +141,7 @@
       "consent_category": null,
       "on_absence": "drop",
       "substitute": null,
+      "negatable": false,
       "signal": "threshold"
     },
     "scroll_depth": {
@@ -155,6 +164,7 @@
       "consent_category": null,
       "on_absence": "drop",
       "substitute": null,
+      "negatable": false,
       "signal": "threshold"
     },
     "click_element": {
@@ -171,6 +181,7 @@
       "consent_category": null,
       "on_absence": "drop",
       "substitute": null,
+      "negatable": false,
       "signal": "gesture"
     },
     "exit_intent": {
@@ -185,6 +196,7 @@
         "type": "time_on_page",
         "seconds": 15
       },
+      "negatable": false,
       "signal": "gesture"
     },
     "scroll_up": {
@@ -199,6 +211,7 @@
         "type": "scroll_depth",
         "percent": 50
       },
+      "negatable": false,
       "signal": "gesture"
     },
     "inactivity": {
@@ -214,6 +227,7 @@
       "consent_category": null,
       "on_absence": "drop",
       "substitute": null,
+      "negatable": false,
       "signal": "state"
     }
   },
@@ -234,7 +248,8 @@
       "presets": {},
       "consent_category": null,
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "device": {
       "kind": "condition",
@@ -270,7 +285,8 @@
       },
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "time_of_day": {
       "kind": "condition",
@@ -291,7 +307,8 @@
       },
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "query_param": {
       "kind": "condition",
@@ -318,7 +335,8 @@
       },
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "referrer": {
       "kind": "condition",
@@ -353,7 +371,8 @@
       },
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "cart_has_items": {
       "kind": "condition",
@@ -363,7 +382,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "cart_value_min": {
       "kind": "condition",
@@ -378,7 +398,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "cart_products": {
       "kind": "condition",
@@ -401,7 +422,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "cart_categories": {
       "kind": "condition",
@@ -427,7 +449,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     },
     "cart_quantity": {
       "kind": "condition",
@@ -442,7 +465,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     },
     "cart_amount": {
       "kind": "condition",
@@ -457,7 +481,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": true
     }
   },
   "requirements": {
@@ -469,7 +494,8 @@
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",
-      "substitute": null
+      "substitute": null,
+      "negatable": false
     }
   }
 }

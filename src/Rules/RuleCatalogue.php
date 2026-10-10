@@ -183,6 +183,11 @@ final class RuleCatalogue
             'requires_label' => $this->missingDependencyOf($type)?->label(),
             'params' => $this->params($type),
             'presets' => $this->presets($type),
+            // "is not" (ADR 0139): whether a leaf may say it, the two words its
+            // switch shows, and how it then reads in a sentence.
+            'negatable' => $this->vocabulary->negatable($type),
+            'negation' => $this->vocabulary->negatable($type) ? RuleLabels::negation($type) : null,
+            'not_phrase' => $this->vocabulary->negatable($type) ? RuleLabels::negativePhrase($type) : null,
         ];
     }
 
@@ -223,6 +228,7 @@ final class RuleCatalogue
                 // fixed values substituted back in. Not the same as an empty
                 // string, which would summarise the rule as nothing at all.
                 'phrase' => RuleLabels::presetPhrase($type, (string) $id),
+                'not_phrase' => RuleLabels::negativePresetPhrase($type, (string) $id),
                 'fixed' => $fixed,
             ];
         }

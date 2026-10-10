@@ -208,6 +208,8 @@ final class InspectorLabels
                 'true' => __('Matches', 'wconvert'), 'false' => __('Does not match', 'wconvert'), 'blocked' => __('Waiting for consent', 'wconvert'),
                 'immediate' => __('Immediately', 'wconvert'), 'automatic' => __('Automatic', 'wconvert'), 'click' => __('Explicit click', 'wconvert'),
                 'minimum' => __('Minimum seconds on page', 'wconvert'),
+                // After a rule's name, for a negated rule: "Device is not — Yes" (ADR 0139).
+                'negated' => __('is not', 'wconvert'),
             ],
             'sections' => [
                 'request' => __('This page, as the server sees it', 'wconvert'),

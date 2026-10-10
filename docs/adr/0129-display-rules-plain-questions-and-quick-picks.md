@@ -129,6 +129,10 @@ minimum time and priority — stay, closed showing their value.
 The rule picker is sectioned (Content, Address, Account, Their visit, Cart,
 Time and scrolling, What they do), and every rule shows an icon and one line of
 what it looks at. A rule with presets offers them as chips beside *Custom…*.
+*Amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): the sections are Pages, Visitor, Traffic source, Cart,
+Timing and Actions, an explicit map with no catch-all; a rule shows a hint only
+where its name does not say it, with the longer help in ⓘ; and an added rule is
+one sentence of pills ("Device [is ▾] [Phone ▾]") rather than a stacked row.*
 Rules the site cannot add keep their own muted sections, explained and never
 offered.
 

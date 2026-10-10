@@ -210,7 +210,7 @@ final class RuleManifestParityTest extends TestCase
         foreach ($entries as $type => $entry) {
             $where = sprintf('%s.%s', $axis, $type);
 
-            $fields = ['kind', 'tier', 'requires', 'params', 'presets', 'consent_category', 'on_absence', 'substitute'];
+            $fields = ['kind', 'tier', 'requires', 'params', 'presets', 'consent_category', 'on_absence', 'substitute', 'negatable'];
 
             foreach ($fields as $field) {
                 $this->assertArrayHasKey($field, $entry, sprintf('%s is missing %s', $where, $field));
@@ -519,6 +519,27 @@ final class RuleManifestParityTest extends TestCase
                     [null, 'functional'],
                     sprintf('free rule %s.%s needs consent the free tier claims not to need', $axis, $type)
                 );
+            }
+        }
+    }
+
+    /**
+     * **"is not" is declared, per type, and only on the audience axis**
+     * (ADR 0139). A boolean on every entry, so a type added without deciding
+     * fails here rather than arriving negatable or not by accident; true only
+     * on a Condition or Visitor kind, because a trigger is an event and "did
+     * not scroll" is not one.
+     *
+     * @param list<RuleKind> $_kinds
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('axes')]
+    public function testNegationIsDeclaredAndOnlyOnTheAudience(string $axis, array $_kinds): void
+    {
+        foreach ($this->axis($axis) as $type => $entry) {
+            $this->assertIsBool($entry['negatable'], sprintf('%s.%s', $axis, $type));
+
+            if ($entry['negatable']) {
+                $this->assertContains(RuleKind::tryFrom((string) $entry['kind']), [RuleKind::Condition, RuleKind::Visitor], sprintf('%s.%s', $axis, $type));
             }
         }
     }

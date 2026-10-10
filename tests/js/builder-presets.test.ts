@@ -29,6 +29,9 @@ const queryParam: RuleType = {
   presets: [
     { id: 'utm_source', label: 'Came from a campaign source', phrase: 'they came from %1$s', fixed: { key: 'utm_source' } },
   ],
+  negatable: true,
+  negation: { is: 'is', not: 'is not' },
+  not_phrase: '%1$s is not %2$s',
 };
 
 describe('a preset, expanded to its general form', () => {
@@ -45,6 +48,7 @@ describe('a stored rule, read back', () => {
 
     expect(read).toEqual({
       degradedFrom: null,
+      negate: false,
       type: queryParam,
       preset: queryParam.presets[0],
       values: { key: 'utm_source', value: ['google'] },
@@ -63,6 +67,7 @@ describe('a stored rule, read back', () => {
 
     expect(read).toEqual({
       degradedFrom: null,
+      negate: false,
       type: queryParam,
       preset: null,
       values: { key: 'utm_term', value: ['sale'] },
@@ -132,7 +137,7 @@ describe('every preset the manifest ships', () => {
     const rule = toRule(type, preset, filled);
 
     expect(rule.type).toBe(type.type);
-    expect(fromRule(rule, TYPES)).toEqual({ type, preset, values: { ...preset.fixed, ...filled }, filled, degradedFrom: null });
+    expect(fromRule(rule, TYPES)).toEqual({ type, preset, values: { ...preset.fixed, ...filled }, filled, degradedFrom: null, negate: false });
     expect(toRule(type, preset, filled)).toEqual(rule);
   });
 });
@@ -156,5 +161,26 @@ describe('leaving a preset for the general form', () => {
       key: 'utm_source',
       value: ['google'],
     });
+  });
+});
+
+/**
+ * "is not" travels with the rule through every edit (ADR 0139): switching a
+ * preset, dropping to Custom… and editing a param all go through `toRule`, so
+ * a flag it forgot would be a negation that quietly turned into its opposite.
+ */
+describe('a negated rule', () => {
+  it('keeps its negation through toRule, and only where the type can say it', () => {
+    expect(toRule(queryParam, queryParam.presets[0], { value: ['x'] }, null, true)).toEqual({ type: 'query_param', key: 'utm_source', value: ['x'], negate: true });
+    expect(toRule(queryParam, queryParam.presets[0], { value: ['x'] }, null, false)).not.toHaveProperty('negate');
+    expect(toRule({ ...queryParam, negatable: false }, queryParam.presets[0], {}, null, true)).not.toHaveProperty('negate');
+  });
+
+  it('reads it back from a stored rule, with the same preset it wears', () => {
+    const read = fromRule({ type: 'query_param', key: 'utm_source', value: ['x'], negate: true }, [queryParam]);
+
+    expect(read?.negate).toBe(true);
+    expect(read?.preset).toBe(queryParam.presets[0]);
+    expect(fromRule({ type: 'query_param', key: 'utm_source' }, [queryParam])?.negate).toBe(false);
   });
 });

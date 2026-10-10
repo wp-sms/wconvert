@@ -6,7 +6,8 @@ const analytics = size('pro/public/analytics/analytics.js');
 const cap = 4096;
 if (analytics > cap) throw new Error(`Analytics asset ${analytics} B exceeds ${cap} B`);
 console.log(`Analytics feature: ${analytics} B gzip (budget ${cap} B, enabled pages only)`);
-for (const [tier, base] of [['basic', 25376], ['pro', 26944], ['elite', 27616]]) {
+// The loader budgets from check-loader.mjs; ADR 0139 raised Pro and Elite by 32 B.
+for (const [tier, base] of [['basic', 25376], ['pro', 26976], ['elite', 27648]]) {
   const loader = size(tier === 'elite' ? 'pro/public/loader/loader.js' : `pro/public/tiers/${tier}/loader/loader.js`);
   const phone = size('public/phone/phone.js');
   if (loader + analytics > base + cap || loader + analytics + phone > base + cap + 16384) throw new Error(`${tier} analytics page exceeds its combined budget`);

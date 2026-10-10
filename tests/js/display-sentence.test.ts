@@ -102,3 +102,31 @@ describe('the sentence', () => {
     expect(sentenceParts(value({ targeting: { mode: 'selected', exclude: [{ type: 'url', value: '/a' }] } }), vocabulary).where).toMatchObject({ attention: true, text: 'pages you haven’t chosen yet' });
   });
 });
+
+/**
+ * A negated rule reads its "is not" phrase (ADR 0139) — the preset's first,
+ * then the type's — so the sentence never says the opposite of the rule.
+ */
+describe('a negated rule in the sentence', () => {
+  const who = (rules: Record<string, unknown>[]) => sentenceParts(value({ display_rules: {
+    audience: { mode: 'groups', groups: [{ id: 'g', match: 'all', rules: rules as never }] },
+    opening: { mode: 'immediate' },
+  } }), vocabulary).who.text;
+
+  it('reads a negated preset by its own negative phrase', () => {
+    expect(who([{ type: 'device', in: ['mobile'], negate: true }])).toContain('not mobile_only');
+  });
+
+  it('reads a negated rule with no preset by its type’s negative phrase', () => {
+    expect(who([{ type: 'device', in: ['mobile', 'tablet'], negate: true }])).toContain('not device mobile or tablet');
+  });
+
+  it('reads a negated URL parameter with no value as its absence', () => {
+    expect(who([{ type: 'query_param', key: 'ref', negate: true }])).toContain('URL does not contain the “ref” parameter');
+  });
+
+  it('reads a negated quantity or amount range by its negative phrase', () => {
+    expect(who([{ type: 'cart_quantity', range: { operator: 'min', min: 2 }, negate: true }])).toContain('not cart_quantity at least 2');
+  });
+});
+

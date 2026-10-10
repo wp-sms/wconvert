@@ -546,7 +546,10 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   }
   if (['cart_quantity', 'cart_amount'].includes(rule.type) && rule.range && typeof rule.range === 'object') {
     const r = rule.range as Record<string, unknown>;
-    return { text: `${types.find(t => t.type === rule.type)?.label ?? __('Unavailable rule', 'wconvert')}: ${rangeText(r)}`, attention: typeof r.min !== 'number' };
+    const declared = types.find(t => t.type === rule.type);
+    // "is not" reads its own phrase with the range in it (ADR 0139).
+    if (rule.negate === true && declared?.not_phrase) return { text: fill(declared.not_phrase, rangeText(r)), attention: typeof r.min !== 'number' };
+    return { text: `${declared?.label ?? __('Unavailable rule', 'wconvert')}: ${rangeText(r)}`, attention: typeof r.min !== 'number' };
   }
   const read = fromRule(rule, types);
 
@@ -554,16 +557,18 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
     return { text: rule.type, attention: true };
   }
 
-  const { type, preset } = read;
+  const { type, preset, negate } = read;
+  // "is not" reads its own phrase (ADR 0139): the preset's, else the type's.
+  const presetPhrase = negate ? preset?.not_phrase ?? null : preset?.phrase ?? null;
   // The params the phrase takes, in DECLARED order — which is what makes
   // `%2$s` mean the second one and lets a translator move it anywhere.
   const open = Object.keys(type.params).filter(
-    (param) => !(preset !== null && preset.phrase !== null && param in preset.fixed),
+    (param) => !(preset !== null && presetPhrase !== null && param in preset.fixed),
   );
 
   const missing = open.filter((param) => !(rule.type === 'query_param' && param === 'value') && !supplied(rule[param]));
   const values = open.map((param) => format(type.params[param], rule[param]));
-  const phrase = preset?.phrase ?? type.phrase;
+  const phrase = presetPhrase ?? (negate ? type.not_phrase ?? type.phrase : type.phrase);
 
   if (missing.length > 0) {
     return {
@@ -581,7 +586,9 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   }
 
   if (rule.type === 'query_param' && !supplied(rule.value)) {
-    return { text: sprintf(__('URL contains the “%s” parameter (any value)', 'wconvert'), String(rule.key)), attention: false };
+    return { text: negate
+      ? sprintf(/* translators: %s: a URL parameter's name, e.g. “utm_source”. */ __('URL does not contain the “%s” parameter', 'wconvert'), String(rule.key))
+      : sprintf(__('URL contains the “%s” parameter (any value)', 'wconvert'), String(rule.key)), attention: false };
   }
   if (rule.type === 'logged_in') {
     return { text: rule.value === true ? __('signed in to this site', 'wconvert') : __('signed out of this site', 'wconvert'), attention: false };
