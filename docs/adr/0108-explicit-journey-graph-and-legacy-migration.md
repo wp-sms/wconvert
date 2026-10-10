@@ -14,7 +14,9 @@ and stores edges with stable IDs, `from` and `to` screen IDs, and one of three
 kinds: `answer`, `default`, or `hidden`. Answer edges are checked in their saved
 order and the first matching condition wins. The default edge is the explicit
 Everyone else path (*"All other answers" since [ADR 0134](0134-one-edit-tab-look-screen-element.md)*). A screen with a show condition (*"Show only if…"*) uses its hidden edge when
-that condition is false; none of its answer edges run. An ending has no outgoing
+that condition is false; none of its answer edges run. *Amended by [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md): the
+hidden edge is optional — with none, a skipped screen falls through along its
+default edge, in the server trace and the loader alike.* An ending has no outgoing
 edge. The graph must be acyclic and every screen must be reachable from the
 entry. Canvas coordinates and screen array order never route a visitor.
 
@@ -66,7 +68,7 @@ its fields, consent and question snapshot. Required capture is decided by the
 campaign Goal: an enquiry route must reach its one combined submission; a
 quiz or content route may finish anonymously unless its Goal requires capture.
 Publishing must reject cycles, dangling or duplicate edges, missing defaults
-or hidden exits, unreachable screens, impossible rule sources, invalid capture
+~~or hidden exits~~ (*a hidden exit is optional since [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md)*), unreachable screens, impossible rule sources, invalid capture
 ownership and any path that bypasses required capture.
 
 Version 2 journeys remain on their existing ordered evaluator until explicitly

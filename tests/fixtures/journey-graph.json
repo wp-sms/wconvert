@@ -22,5 +22,23 @@
     {"answers":{"n1":["garden"],"n3":"small","n2":"bright"},"visible":["interests","garden","contact","received"],"active":{"n1":["garden"],"n3":"small"},"hidden":["indoors"],"edges":["e1","e2","e5","e6"]},
     {"answers":{"n1":["indoors"],"n3":"small","n2":"bright"},"visible":["interests","indoors","contact","received"],"active":{"n1":["indoors"],"n2":"bright"},"hidden":["garden"],"edges":["e1","e3","e4","e6"]},
     {"answers":{"n1":[],"n3":"small","n2":"bright"},"visible":["interests","contact","received"],"active":{"n1":[]},"hidden":["garden","indoors"],"edges":["e1","e3","e5","e6"]}
-  ]
+  ],
+  "fallthrough": {
+    "note": "The same graph without its hidden edges (ADR 0135): a skipped screen falls through along its default edge, so every case visits the same screens.",
+    "graph": {
+      "entry":"interests",
+      "edges": [
+        {"id":"e1","from":"interests","to":"garden","kind":"default"},
+        {"id":"e2","from":"garden","to":"indoors","kind":"default"},
+        {"id":"e4","from":"indoors","to":"contact","kind":"default"},
+        {"id":"e6","from":"contact","to":"received","kind":"default"}
+      ]
+    },
+    "cases": [
+      {"answers":{"n1":["garden","indoors"],"n3":"small","n2":"bright"},"visible":["interests","garden","indoors","contact","received"],"active":{"n1":["garden","indoors"],"n3":"small","n2":"bright"},"hidden":[],"edges":["e1","e2","e4","e6"]},
+      {"answers":{"n1":["garden"],"n3":"small","n2":"bright"},"visible":["interests","garden","contact","received"],"active":{"n1":["garden"],"n3":"small"},"hidden":["indoors"],"edges":["e1","e2","e4","e6"]},
+      {"answers":{"n1":["indoors"],"n3":"small","n2":"bright"},"visible":["interests","indoors","contact","received"],"active":{"n1":["indoors"],"n2":"bright"},"hidden":["garden"],"edges":["e1","e2","e4","e6"]},
+      {"answers":{"n1":[],"n3":"small","n2":"bright"},"visible":["interests","contact","received"],"active":{"n1":[]},"hidden":["garden","indoors"],"edges":["e1","e2","e4","e6"]}
+    ]
+  }
 }

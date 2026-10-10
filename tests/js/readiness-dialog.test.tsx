@@ -223,7 +223,7 @@ describe('reviewing before publishing', () => {
   it('keeps a contrast warning advisory and routes its correction to the design in place', async () => {
     const { supplied } = await open({ template: { ...FORM, tokens: { ...FORM.tokens, muted: '#ffffff' } } });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
-    await userEvent.click(screen.getByRole('button', { name: /too close to the background/ }));
+    await userEvent.click(screen.getByRole('button', { name: /hard to read on the background/ }));
     await waitFor(() => expect(supplied.onEditDesign).toHaveBeenCalledOnce());
     expect(supplied.onGoToDesign).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();

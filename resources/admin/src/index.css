@@ -4772,34 +4772,19 @@ body:has(#wconvert-admin) #wpbody-content {
   font-variant-numeric: tabular-nums;
 }
 
-/*
- * The verdict as a chip rather than a sentence, so the eye finds the answer
- * before it reads the number.
- */
-.wconvert-contrast__badge {
-  flex: none;
-  padding: 0.0625rem 0.375rem;
-  border-radius: var(--radius);
-  font-size: var(--text-micro);
-  line-height: var(--text-micro--line-height);
-  font-weight: var(--text-micro--font-weight);
-  white-space: nowrap;
+/* The verdict under the pair's name, in words; the ratio is Advanced's. */
+.wconvert-contrast__what > strong {
+  display: block;
+  font-weight: 600;
 }
 
-/*
- * **Two answers, and they used to be painted as one.** *"We measured it and it
- * is too low"* and *"we cannot measure this"* are different news, and both came
- * out in the same amber — so a design whose accent is `var(--brand)` looked
- * like a design that fails.
- */
-.wconvert-contrast__pair[data-state='fail'] .wconvert-contrast__badge {
-  background: var(--warning-surface);
-  color: var(--warning);
-}
-
-.wconvert-contrast__pair[data-state='unknown'] .wconvert-contrast__badge {
-  background: var(--surface);
+.wconvert-contrast__what > span {
+  display: block;
   color: var(--muted-foreground);
+}
+
+.wconvert-contrast__pair[data-state='fail'] {
+  border-color: var(--warning);
 }
 
 /*
@@ -5720,6 +5705,11 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * selections and neither is the panel's primary control — the token fields
  * under them are.
  * ------------------------------------------------------------------------- */
+/* Reset this element: the way back to the design for the device being edited (ADR 0135). */
+.wconvert-scope__reset {
+  justify-self: start;
+}
+
 .wconvert-scope__clipboard {
   display: flex;
   flex-wrap: wrap;
@@ -6803,5 +6793,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   /* The inspector's control rules are important utilities, so the joined unit states its own the same way. */
   #wconvert-admin .wconvert-measure-input > select.wconvert-measure-input__unit { flex: none !important; inline-size: auto !important; block-size: var(--control-height-sm) !important; min-block-size: var(--control-height-sm) !important; margin-block: 0 !important; margin-inline: -1px 0 !important; padding-inline: 8px 24px !important; border-start-start-radius: 0 !important; border-end-start-radius: 0 !important; background-color: var(--surface) !important; background-position: right 6px center !important; }
   #wconvert-admin .wconvert-measure-input > select.wconvert-measure-input__unit:dir(rtl) { background-position: left 6px center !important; }
+  /* Plain view: the unit is a word beside the amount, not a menu (ADR 0135). */
+  #wconvert-admin .wconvert-measure-input > span.wconvert-measure-input__unit { display: inline-flex; align-items: center; flex: none; padding-inline: 8px; border: 1px solid var(--input); border-inline-start: 0; border-start-end-radius: var(--radius); border-end-end-radius: var(--radius); background: var(--surface); color: var(--muted-foreground); font-size: var(--text-note); }
   #wconvert-admin .wconvert-measure-input > input { block-size: var(--control-height-sm) !important; min-block-size: var(--control-height-sm) !important; }
 }

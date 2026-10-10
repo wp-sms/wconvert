@@ -39,9 +39,14 @@ export function addGraphConnection(tree: TemplateTree, source: string, target: s
       operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [''] }] } } : {}) }] } };
 }
 
-/** Reconnection changes only the destination; identity, condition and priority survive. */
+/**
+ * Reconnection changes only the destination; identity, condition and priority
+ * survive. Moving a screen's default drops a skip edge that only copied the old
+ * destination, so a skipped screen keeps falling through (ADR 0135).
+ */
 export function reconnectGraphEdge(tree: TemplateTree, edgeId: string, target: string): TemplateTree {
   const edge = tree.graph?.edges.find(edge => edge.id === edgeId);
   if (!edge || edge.to === target || !canTargetGraphScreen(tree, edge.from, target)) return tree;
-  return { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(item => item.id === edgeId ? { ...item, to: target } : item) } };
+  const copied = (item: { from: string; to: string; kind: string }) => edge.kind === 'default' && item.kind === 'hidden' && item.from === edge.from && item.to === edge.to;
+  return { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.filter(item => !copied(item)).map(item => item.id === edgeId ? { ...item, to: target } : item) } };
 }

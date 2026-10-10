@@ -172,7 +172,8 @@ it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusi
   } else {
     expect(added.when?.clauses[0].values).toEqual(['garden']);
     expect(next.graph!.edges.find(edge => edge.id === fallback.id)?.to).toBe(added.id);
-    expect(next.graph!.edges.filter(edge => edge.from === added.id).map(edge => edge.kind)).toEqual(['default', 'hidden']);
+    // Skipped, it falls through along its default (ADR 0135): no hidden edge.
+    expect(next.graph!.edges.filter(edge => edge.from === added.id).map(edge => edge.kind)).toEqual(['default']);
   }
 });
 it('opens a drawn graph branch for repair without guessing its condition', async () => {
@@ -655,7 +656,7 @@ it('focuses the hidden continuation when repairing a required-save bypass', asyn
       repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' }} />;
   }
   render(<RepairEditor />);
-  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveFocus());
 });
 
 it('focuses the default destination when repairing a required-save bypass', async () => {

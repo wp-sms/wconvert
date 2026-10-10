@@ -16,7 +16,9 @@ export function followupGroups(tree: TemplateTree): FollowupGroup[] {
       || node.type === 'button' && 'action' in node && node.action === 'submit')) return;
     const routes = graph.edges.filter(edge => edge.from === screen.id);
     const normal = routes.find(edge => edge.kind === 'default');
-    if (routes.length !== 2 || !normal || !routes.some(edge => edge.kind === 'hidden' && edge.to === normal.to)) return;
+    // Skipped follow-ups continue where shown ones do: by falling through, or by a hidden edge to the same place (ADR 0135).
+    const skip = routes.find(edge => edge.kind === 'hidden');
+    if (!normal || routes.length !== (skip ? 2 : 1) || (skip && skip.to !== normal.to)) return;
     eligible.set(screen.id, { index, next: normal.to, sources: [...new Set(screen.when.clauses.map(clause => clause.question))].sort().join('|') });
   });
   const follows = (from: string, to: string) => {

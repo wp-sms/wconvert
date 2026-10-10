@@ -2,6 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { measuresOf } from './themes';
 import { StyleValueInput } from './StyleValueInput';
 import { NativeSelect } from '../components/ui/native-select';
+import { useAdvanced } from './advanced';
 
 const UNITS = ['px', 'rem', 'em', '%', 'ch', 'vw', 'vh'];
 
@@ -14,6 +15,8 @@ export function MeasurementValue({ id, label, value, fallback, standard, onChang
   standard: string;
   onChange: (value: string) => void;
 }) {
+  // Changing the unit is an exact-value choice: Advanced (ADR 0135); plain shows it beside the amount.
+  const advanced = useAdvanced();
   const shown = value === '' ? fallback : value;
   const parts = measuresOf(shown);
   if (parts === null) return null;
@@ -40,12 +43,12 @@ export function MeasurementValue({ id, label, value, fallback, standard, onChang
             className="wconvert-token__exact min-w-0"
             aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
             onCommit={(amount) => write(index, amount, unit)} />
-          <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
+          {!advanced ? <span className="wconvert-measure-input__unit">{unit}</span> : <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
             onChange={(event) => write(index, String(part.amount), event.target.value)}>
             {unit !== '' && !UNITS.includes(unit) && <option value={unit}>{unit}</option>}
             {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}
             {UNITS.map((option) => <option key={option} value={option}>{option}</option>)}
-          </NativeSelect>
+          </NativeSelect>}
         </span>
       </div>;
     })}

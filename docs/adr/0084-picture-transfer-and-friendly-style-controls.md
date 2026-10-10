@@ -39,7 +39,9 @@ strings, with no renderer or persisted document format change.
 Padding expands one through four CSS values into physical Top/Right/Bottom/Left
 controls. Unlinking writes nothing; linking explicitly applies the top value to
 all sides. Negative or complex expressions remain in Custom CSS. Units are
-explicit and changing them never guesses a conversion.
+explicit and changing them never guesses a conversion. *Amended by [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md):
+Custom CSS, units, gradient degrees and stop positions are shown under
+Advanced only; the plain view keeps presets, swatches and the color stops.*
 
 Visual gradients support a single linear gradient with two to six color stops,
 positions and direction. Alpha uses the existing color picker. Unsupported or
@@ -49,6 +51,9 @@ never rewrites a value. All changes use the existing draft history.
 The selected element lists its own mobile overrides in both scopes. Desktop
 controls mark values that differ on mobile. Reset removes only that element's
 narrow bag, returning it to normal inheritance; it does not reset descendants
-or desktop styling. This introduces no per-device copy, order or visibility.
+or desktop styling. *Amended by [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md):
+"Reset this element" clears the bag for whichever device is being edited — the
+narrow bag on mobile, the element's own style tokens on desktop — and still
+never descendants.* This introduces no per-device copy, order or visibility.
 
 See [review and verification](../reviews/content-transfer-style-controls-2026-09-14.md).

@@ -28,7 +28,8 @@ import {
   urlIn,
   type Axis,
 } from './themes';
-import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from './contrast';
+import { READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
+import { AdvancedContext, AdvancedToggle, cssOnlyNote, useAdvanced } from './advanced';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenMap } from '@renderer/types';
 
@@ -236,7 +237,7 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  const [detailed, setDetailed] = useState(false);
+  const [advanced, setAdvanced] = useState(false);
   const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
 
@@ -259,13 +260,11 @@ export function Tokens({
   };
 
   return (
-    <>
+    <AdvancedContext.Provider value={advanced}>
       {/*
-        **No `<h4>How it looks</h4>`.** The tab is called Design, the region is
-        labelled *The design*, and a heading here was the third naming of one
-        thing before a single control — the exact failure {@see TabNote}'s own
-        docblock describes for the tabs that had a `RegionHeader`. The groups
-        below are the structure, in one register, and this is the first of them.
+        **No heading of its own.** The Look panel already names itself, and a
+        heading here was a second naming of one thing before a single control.
+        The groups below are the structure, in one register.
       */}
       <section className="wconvert-group" aria-label={__('WordPress theme palette', 'wconvert')}>
         <h5 className="wconvert-group__name">{__('WordPress theme palette', 'wconvert')}</h5>
@@ -299,8 +298,8 @@ export function Tokens({
         </p>
       </section>
 
-      <button type="button" className="wconvert-style-detail-toggle" aria-expanded={detailed} onClick={() => { onOpenToken(null); setDetailed(value => !value); }}>{detailed ? __('Show essential styles', 'wconvert') : __('Detailed styling…', 'wconvert')}</button>
-      {groups.filter(group => detailed || ['color', 'type', 'heading', 'space'].includes(group.id)).map((group) => (
+      <AdvancedToggle advanced={advanced} onToggle={() => { onOpenToken(null); setAdvanced(value => !value); }} />
+      {groups.filter(group => advanced || ['color', 'type', 'heading', 'space'].includes(group.id)).map((group) => (
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
           <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 
@@ -316,9 +315,9 @@ export function Tokens({
             />
           ) : (
             <div className="wconvert-fields">
-              {group.tokens.filter(token => detailed || ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align'].includes(token.name)).map((token) => (
+              {group.tokens.filter(token => advanced || ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align'].includes(token.name)).map((token) => (
                 <div key={token.name} className="wconvert-fields__item" data-compact={['gap', 'radius'].includes(token.name) || undefined}>
-                  <TokenField simple={!detailed}
+                  <TokenField simple={!advanced}
                     token={token.name}
                     label={nameOf(labels.tokens, token.name)}
                     labels={labels}
@@ -338,7 +337,7 @@ export function Tokens({
           )}
         </section>
       ))}
-    </>
+    </AdvancedContext.Provider>
   );
 }
 
@@ -432,7 +431,7 @@ function Palette({
   return (
     <>
       <div className="wconvert-palette">{solid.map(field)}</div>
-      <Contrast template={template} labels={labels} />
+      <Contrast template={template} labels={labels} onChange={onChange} />
       {wide.map(field)}
     </>
   );
@@ -524,9 +523,13 @@ export function TokenField({
 
   const presetBase = measuresOf(fallback);
   if (simple && ['heading-size', 'text-size', 'width', 'pad', 'gap', 'radius'].includes(token) && presetBase) {
-    const presets = [.8, 1, 1.2].map((factor, index) => ({ value: presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), label: [__('Smaller', 'wconvert'), __('Design default', 'wconvert'), __('Larger', 'wconvert')][index] }));
+    // Type sizes use the words an element's own Size uses (ADR 0135); spacing keeps smaller/larger.
+    const steps: readonly (readonly [number, string])[] = ['heading-size', 'text-size'].includes(token)
+      ? [[.85, __('Small', 'wconvert')], [1, __('Medium', 'wconvert')], [1.2, __('Large', 'wconvert')], [1.45, __('Extra large', 'wconvert')]]
+      : [[.8, __('Smaller', 'wconvert')], [1, __('Design default', 'wconvert')], [1.2, __('Larger', 'wconvert')]];
+    const presets = steps.map(([factor, name]) => ({ value: presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), label: name }));
     return <div className="wconvert-token"><label htmlFor={field}>{label}</label><select id={field} value={shown} onChange={event => onChange(event.target.value)}>
-      {!presets.some(preset => preset.value === shown) && <option value={shown}>{sprintf(__('Custom (%s)', 'wconvert'), shown)}</option>}
+      {!presets.some(preset => preset.value === shown) && <option value={shown}>{__('Custom', 'wconvert')}</option>}
       {presets.filter((preset, index) => presets.findIndex(item => item.value === preset.value) === index).map(preset => <option key={preset.value} value={preset.value}>{preset.label}</option>)}
       </select>{reset}</div>;
   }
@@ -829,6 +832,8 @@ function ChoiceField({
 }) {
   const named = `${id}-name`;
   const [asked, setAsked] = useState(false);
+  // A typed value is an exact one: Advanced (ADR 0135).
+  const advanced = useAdvanced();
   const alignment = TOKENS.find(declaration => declaration.name === token)?.control === 'alignment';
   const custom = !offered.includes(shown) || asked;
   const choose = (choice: string) => { setAsked(false); onChange(choice); };
@@ -840,18 +845,19 @@ function ChoiceField({
         <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => choose(choice)} />
         <span className="wconvert-choice__label"><AlignmentPreview value={choice} /><span className="sr-only">{nameOf(labels.tokenValues, `${token}.${choice}`)}</span></span>
       </label>)}
-      <label className="wconvert-choice" title={__('Custom', 'wconvert')}>
+      {(advanced || custom) && <label className="wconvert-choice" title={__('Custom', 'wconvert')}>
         <input type="radio" className="sr-only" name={id} checked={custom} onChange={() => setAsked(true)} />
         <span className="wconvert-choice__label"><CodeXml aria-hidden="true" /><span className="sr-only">{__('Custom', 'wconvert')}</span></span>
-      </label>
+      </label>}
     </span> : <select id={id} value={custom ? '__custom' : shown} onChange={event => {
       if (event.target.value === '__custom') setAsked(true);
       else choose(event.target.value);
     }}>
       {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
-      <option value="__custom">{__('Custom…', 'wconvert')}</option>
+      {(advanced || custom) && <option value="__custom">{__('Custom…', 'wconvert')}</option>}
     </select>}
-    {custom && <StyleValueInput type="text" className="wconvert-token__typed"
+    {custom && !advanced && <p className="m-0 text-note text-muted-foreground">{cssOnlyNote()}</p>}
+    {custom && advanced && <StyleValueInput type="text" className="wconvert-token__typed"
       aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
       onFocus={() => setAsked(true)} onCommit={onChange} />}
   </div>;
@@ -929,6 +935,7 @@ function FontField({
   const [search, setSearch] = useState('');
   const [libraryUrl, setLibraryUrl] = useState<string | null>(null);
   const [fontError, setFontError] = useState(false);
+  const advanced = useAdvanced();
 
   const read = () => {
     setFontError(false);
@@ -1039,7 +1046,7 @@ function FontField({
               2 satisfied. Under the list rather than in it, because a theme
               declaring thirty families would otherwise put it thirty rows down.
             */}
-            <label className="wconvert-slot__key wconvert-fonts__typed">
+            {advanced && <label className="wconvert-slot__key wconvert-fonts__typed">
               {sprintf(
                 /* translators: %s: what the setting is for, e.g. “Font”. */
                 __('%s value', 'wconvert'),
@@ -1052,7 +1059,7 @@ function FontField({
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
               />
-            </label>
+            </label>}
           </PopoverContent>
         </Popover>
         {reset}
@@ -1185,108 +1192,81 @@ function Reset({
  * contained them, so the default view of the Design tab was three ratios and no
  * colours at all — a verdict on something the merchant could not see.
  */
-function Contrast({ template, labels }: { template: Template; labels: TemplateLabels }) {
+function Contrast({ template, labels, onChange }: { template: Template; labels: TemplateLabels; onChange: (template: Template, coalesce?: string) => void }) {
+  const advanced = useAdvanced();
   // The Optin's own value, else the token this one chains to, else what the
   // manifest declares — which is exactly what the renderer resolves, so the
-  // ratio is the one a visitor gets rather than the one an empty control
+  // verdict is the one a visitor gets rather than the one an empty control
   // implies ({@see resolvedToken}).
   const value = (name: string) => resolvedToken(template.tokens, name);
 
-  const read = READABLE_PAIRS.map(([fg, bg]) => {
-    const sample = SAMPLE[pairKey(fg, bg)] ?? 'Aa';
-
-    const ratio = contrastOf(value(fg), value(bg));
-
-    return {
-      key: `${fg}/${bg}`,
-      fg,
-      bg,
-      sample,
-      ratio,
-      state: ratio === null ? 'unknown' : ratio >= AA_NORMAL ? 'pass' : 'fail',
-      named: sprintf(
-        /* translators: 1: the text colour's name, e.g. “Quiet text”. 2: the surface's, e.g. “Background”. */
-        __('%1$s on %2$s', 'wconvert'),
-        nameOf(labels.tokens, fg),
-        nameOf(labels.tokens, bg),
-      ),
-    };
-  });
-
-  const wrong = read.filter((pair) => pair.state !== 'pass');
+  const read = READABLE_PAIRS.map(([fg, bg]) => ({
+    key: pairKey(fg, bg),
+    fg,
+    bg,
+    sample: SAMPLE[pairKey(fg, bg)] ?? 'Aa',
+    verdict: readability(value(fg), value(bg)),
+    named: sprintf(
+      /* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */
+      __('%1$s on %2$s', 'wconvert'),
+      nameOf(labels.tokens, fg),
+      nameOf(labels.tokens, bg),
+    ),
+  }));
 
   /*
-    ==========================================================================
-    A PASSING RATIO IS A FACT NOBODY ACTS ON, SO IT IS NOT ON SCREEN AT ALL.
-    ==========================================================================
-    Every pair was printed on every visit — *"Text on Background 17.7 to 1 —
-    passes AA"* three times over — which is three lines of arithmetic a merchant
-    reads once and reads past forever. That is the cost {@see Shell}'s own
-    subtitle argument names: a permanent line that taxes every visit and informs
-    one.
-
-    The first fix replaced it with one line saying everything passed, on the
-    reasoning that silence would hide the check. That was still a line nobody
-    acts on. **A clean design says nothing**, and the check announces itself the
-    only way that matters: by appearing the moment something is wrong.
+    A clean design says nothing: a readable pair is a fact nobody acts on, so
+    the check announces itself only by appearing when something is wrong.
   */
+  const wrong = read.filter((pair) => pair.verdict.readable !== true);
+
   if (wrong.length === 0) {
     return null;
   }
 
   return (
     <div className="wconvert-contrast">
-      {/*
-        Named, because a group of rows that appears out of nowhere under a
-        palette needs to say what it is measuring. Micro register, like every
-        other group name in this panel.
-      */}
       <h6 className="wconvert-contrast__name">{__('Can it be read', 'wconvert')}</h6>
 
       <ul className="wconvert-contrast__list">
         {wrong.map((pair) => (
           /*
-            **The sample is the point.** A ratio is a number a merchant has no
-            intuition for; two letters drawn in the actual pair, at the actual
-            size, is the same fact in a form they can judge in a glance — and it
-            is the only part of this row that would still mean something with
-            the numbers removed.
+            **The sample is the point.** Two letters drawn in the actual pair
+            are a judgement a merchant can make at a glance; the words say
+            which way to move, and Fix moves it — to the look's own text or
+            background color where one reads, so the fix stays in the palette.
           */
-          <li key={pair.key} className="wconvert-contrast__pair" data-state={pair.state}>
+          <li key={pair.key} className="wconvert-contrast__pair" data-state={pair.verdict.readable === null ? 'unknown' : 'fail'}>
             <span
               aria-hidden="true"
               className="wconvert-contrast__sample"
-              style={
-                {
-                  '--wconvert-sample-fg': value(pair.fg),
-                  '--wconvert-sample-bg': value(pair.bg),
-                } as CSSProperties
-              }
+              style={{ '--wconvert-sample-fg': value(pair.fg), '--wconvert-sample-bg': value(pair.bg) } as CSSProperties}
             >
               {pair.sample}
             </span>
 
-            <span className="wconvert-contrast__what">{pair.named}</span>
+            <span className="wconvert-contrast__what">
+              <strong>{pair.named}</strong>
+              <span>{pair.verdict.said}</span>
+            </span>
 
-            {pair.ratio !== null && (
+            {advanced && pair.verdict.ratio !== null && (
               <span className="wconvert-contrast__ratio">
-                {sprintf(
-                  /* translators: %s: a contrast ratio, e.g. “4.8”. */
-                  __('%s:1', 'wconvert'),
-                  pair.ratio.toFixed(2),
-                )}
+                {sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), pair.verdict.ratio)}
               </span>
             )}
 
-            {/*
-              **A refusal rather than a wrong number.** A translucent colour
-              composites over whatever is behind it and a named one needs a
-              browser to resolve; either way a ratio here would be a green tick
-              over a design that fails.
-            */}
-            <span className="wconvert-contrast__badge">
-              {pair.ratio === null ? __('No reading', 'wconvert') : __('Under AA', 'wconvert')}
-            </span>
+            {pair.verdict.readable === false && (
+              <Button
+                type="button"
+                variant="outline"
+                size="xs"
+                aria-label={sprintf(/* translators: %s: a pair, e.g. “Lighter text on Background”. */ __('Fix %s', 'wconvert'), pair.named)}
+                onClick={() => onChange({ ...template, tokens: withToken(template.tokens, pair.fg, readableFix(value, pair.bg)) })}
+              >
+                {__('Fix', 'wconvert')}
+              </Button>
+            )}
           </li>
         ))}
       </ul>

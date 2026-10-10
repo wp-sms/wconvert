@@ -65,7 +65,8 @@ final class JourneyGraph
             $hidden = array_values(array_filter($routes, static fn (array $edge): bool => $edge['kind'] === 'hidden'));
             if (($routes === [] && ($screen['kind'] ?? '') === 'input')
                 || count($defaults) !== ($routes === [] ? 0 : 1)
-                || count($hidden) !== (isset($screen['when']) ? 1 : 0)
+                // A hidden edge is an optional override for a screen with a show condition (ADR 0135).
+                || count($hidden) > (isset($screen['when']) ? 1 : 0)
                 || ($screen['kind'] ?? '') === 'acknowledgement' && $routes !== []) { return 'routes'; }
         }
         $visiting = [];
@@ -170,12 +171,20 @@ final class JourneyGraph
                     }
                 }
             } else {
+                // A skipped screen takes its hidden edge where it has one, else falls
+                // through along its default edge (ADR 0135) — the loader's rule too.
                 foreach ($outgoing as $candidate) {
                     if (($candidate['kind'] ?? null) === 'hidden') { $edge = $candidate; break; }
                 }
+                if ($edge === null) {
+                    foreach ($outgoing as $candidate) {
+                        if (($candidate['kind'] ?? null) === 'default') { $edge = $candidate; break; }
+                    }
+                }
             }
             if ($edge === null) { break; }
-            $decisions[] = ['edge' => $edge['id'], 'from' => $id, 'to' => $edge['to'], 'kind' => $edge['kind']]
+            // A skipped screen's decision says it was skipped, whichever edge it continued on.
+            $decisions[] = ['edge' => $edge['id'], 'from' => $id, 'to' => $edge['to'], 'kind' => $shown ? $edge['kind'] : 'hidden']
                 + ($priority !== null ? ['priority' => $priority] : []);
             $id = $edge['to'];
         }

@@ -6,6 +6,7 @@ import { fireEvent, render as renderBase, screen, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TemplateEntry, TemplateLabels } from '../../resources/admin/src/templates/api';
+import { AdvancedContext } from '../../resources/admin/src/builder/advanced';
 
 /**
  * ============================================================================
@@ -33,11 +34,11 @@ import type { TemplateEntry, TemplateLabels } from '../../resources/admin/src/te
  * file still holds.
  */
 
-// These checks exercise the detailed controls; essentials are covered separately.
+// These checks exercise the exact controls, which are Advanced's (ADR 0135); the plain view is covered separately.
 function render(ui: ReactElement) {
-  const view = renderBase(ui);
-  const detailed = screen.queryByRole('button', { name: 'Detailed styling…' });
-  if (detailed) fireEvent.click(detailed);
+  const view = renderBase(<AdvancedContext.Provider value>{ui}</AdvancedContext.Provider>);
+  const advanced = screen.queryByRole('button', { name: 'Advanced' });
+  if (advanced) fireEvent.click(advanced);
   return view;
 }
 
@@ -410,9 +411,11 @@ describe('the contrast readout', () => {
     const failing = screen.getByText('Lighter text on Background').closest('li');
 
     expect(failing).toHaveAttribute('data-state', 'fail');
-    expect(failing).toHaveTextContent('Under AA');
-    // The ratio, and the sample that is the row's real argument.
-    expect(failing).toHaveTextContent('1.48:1');
+    // In words, with the way to move it (ADR 0135); the ratio at one precision is Advanced's.
+    expect(failing).toHaveTextContent('Hard to read on this background. Choose a darker color.');
+    // Rounded down, so a pair under the floor never reads 4.5.
+    expect(failing).toHaveTextContent('1.4:1');
+    expect(failing).not.toHaveTextContent('Under AA');
     expect(failing).toHaveTextContent('Aa');
     expect(screen.queryByText('Text on Background')).toBeNull();
     expect(screen.queryByText('Button text on Button')).toBeNull();
@@ -468,8 +471,24 @@ describe('the contrast readout', () => {
     const pair = screen.getByText('Text on Background').closest('li');
 
     expect(pair).toHaveAttribute('data-state', 'unknown');
-    expect(pair).toHaveTextContent('No reading');
-    expect(pair).not.toHaveTextContent('Under AA');
+    expect(pair).toHaveTextContent('This color can’t be measured here. Check it by eye.');
+    expect(within(pair!).queryByRole('button', { name: /^Fix/ })).toBeNull();
+  });
+
+  /** Fix moves the failing color to the look's own text color where that reads, so the fix stays in the palette. */
+  it('fixes a hard pair with the look’s own text color', async () => {
+    const onChange = vi.fn();
+    render(
+      <Panel
+        template={{ ...ENTRY, tokens: { ...ENTRY.tokens, fg: '#111827', muted: '#d4d4d8', bg: '#ffffff' } }}
+        labels={LABELS}
+        onChange={onChange}
+        onError={vi.fn()}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Fix Lighter text on Background' }));
+    expect(onChange.mock.calls.at(-1)![0].tokens.muted).toBe('#111827');
   });
 });
 

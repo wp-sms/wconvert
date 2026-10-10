@@ -2281,3 +2281,12 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__name { flex: 1 1 auto; min-inline-size: 0; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__label { flex: 0 1 auto; min-inline-size: 0; overflow: hidden; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements :is(.wconvert-block__chip, .wconvert-block__off) { flex-shrink: 0; }
+/* A Flow card's issues, listed (ADR 0135): each line opens its fix. */
+.wconvert-flow-issue__list { inline-size: min(320px, calc(100vw - 32px)); padding: 6px; }
+.wconvert-flow-issue__list ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.wconvert-flow-issue__list button { display: block; inline-size: 100%; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--foreground); font-size: var(--text-note); text-align: start; cursor: pointer; }
+.wconvert-flow-issue__list button:hover, .wconvert-flow-issue__list button:focus-visible { background: var(--accent); }
+/* The one-time drag note sits over the map's top edge, never over a card's controls. */
+.wconvert-journey-map__note { position: absolute; inset-block-start: 12px; inset-inline-start: 50%; z-index: 6; display: flex; align-items: center; gap: 10px; margin: 0; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08)); font-size: var(--text-note); transform: translateX(-50%); }
+.wconvert-journey-map__note:dir(rtl) { transform: translateX(50%); }
+.wconvert-journey-map__note button { padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font-size: var(--text-micro); cursor: pointer; }

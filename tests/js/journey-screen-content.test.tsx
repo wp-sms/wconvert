@@ -37,7 +37,8 @@ it('inserts a conditional message without forcing a question or interrupting the
   const next = addGraphScreen(tree, 'edge:start', 'content', { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: ['garden'] }] }, true);
   const added = next.steps.at(-1)!;
   expect(added.kind).toBe('content');
-  expect(next.graph!.edges.find(edge => edge.from === added.id && edge.kind === 'hidden')).toBeDefined();
+  // Skipped, it falls through along its default (ADR 0135): no hidden edge, and the trace still skips it.
+  expect(next.graph!.edges.find(edge => edge.from === added.id && edge.kind === 'hidden')).toBeUndefined();
   expect(graphTrace(next.steps, next.graph!, { n1: ['garden'] }).indices).toContain(next.steps.length - 1);
   expect(graphTrace(next.steps, next.graph!, { n1: ['balcony'] }).indices).not.toContain(next.steps.length - 1);
   expect(next.submissions).toEqual(tree.submissions);

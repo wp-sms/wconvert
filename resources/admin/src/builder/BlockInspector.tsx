@@ -23,6 +23,7 @@ import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './struct
 import type { ConvertingAct } from './structure/catalogue';
 import { QuestionSettings } from './JourneySettings';
 import { useQuestionPanel } from './ScreenPanel';
+import { AdvancedContext, AdvancedToggle } from './advanced';
 import { CaptureOwnership } from './CaptureOwnership';
 import { submissionScreen } from './structure/journey';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -80,6 +81,8 @@ export function BlockInspector({
   const questionPanel = useQuestionPanel();
 
   const [half, setHalf] = useState('content');
+  // The Style tab's one Advanced switch (ADR 0135): exact values, units, hex, heading level.
+  const [advanced, setAdvanced] = useState(false);
   const [lastReveal, setLastReveal] = useState(revealContent);
   if (lastReveal !== revealContent) {
     setLastReveal(revealContent);
@@ -172,13 +175,19 @@ export function BlockInspector({
     </div>
   );
 
+  const advancedToggle = <AdvancedToggle advanced={advanced} onToggle={() => setAdvanced((value) => !value)} />;
+  const shownStyleSettings = styleSettings.filter((setting) => advanced || !ADVANCED_PARAMS.includes(setting.param));
+
   if (look === undefined || slot === null) {
     return (
       <div role="group" aria-labelledby={heading} className="wconvert-inspector">
         {head}
         <div className="wconvert-inspector__body">
           {body}
-          {look}
+          {look !== undefined && <AdvancedContext.Provider value={advanced}>
+            {look}
+            {advancedToggle}
+          </AdvancedContext.Provider>}
         </div>
       </div>
     );
@@ -208,10 +217,11 @@ export function BlockInspector({
           )}
         </TabsContent>
         <TabsContent value="style">
-          {styleSettings.length > 0 && (
+          <AdvancedContext.Provider value={advanced}>
+          {shownStyleSettings.length > 0 && (
             <section className="wconvert-group" aria-label={__('Element appearance', 'wconvert')}>
               <h5 className="wconvert-group__name">{__('Element appearance', 'wconvert')}</h5>
-              {styleSettings.map((setting) => (
+              {shownStyleSettings.map((setting) => (
                 <ParamChoice
                   key={setting.param}
                   id={`${slot.type}-style-${setting.param}`}
@@ -235,6 +245,8 @@ export function BlockInspector({
             </section>
           )}
           {look}
+          {advancedToggle}
+          </AdvancedContext.Provider>
         </TabsContent>
       </div>
     </Tabs>
@@ -390,6 +402,8 @@ function LayoutParams({
 }
 
 const STYLE_PARAMS = ['size', 'level', 'shape', 'fit', 'place'];
+/** A heading's level is for screen readers and search, not for looks: Advanced. Size is the plain control. */
+const ADVANCED_PARAMS = ['level'];
 
 export const typingKey = (path: Path, key: string): string => `text:${path.join('.')}:${key}`;
 

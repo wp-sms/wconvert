@@ -30,8 +30,8 @@ it('authors optional settings with on-demand help and without visitor storage or
   await user.click(screen.getByText('Colors and mobile'));
   await user.click(screen.getByRole('checkbox', { name: 'Show on mobile' }));
   expect(JSON.parse(screen.getByTestId('settings').textContent!)).toMatchObject({ label: 'Get the offer', placement: 'block_start_inline_start', mobile: { visible: false } });
-  // A color is the shared swatch and picker, showing the campaign's own until changed.
-  expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toHaveTextContent('#2563eb');
+  // A color is the shared swatch and picker, named, showing the campaign's own until changed (ADR 0135).
+  expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toHaveTextContent('Blue');
   expect(screen.queryByRole('textbox', { name: /Background/ })).toBeNull();
   expect(screen.queryByRole('button', { name: /back to the campaign’s own/ })).toBeNull();
   expect(screen.queryByRole('combobox', { name: 'Preview' })).toBeNull();

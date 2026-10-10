@@ -62,7 +62,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     }
     else onChange(changed);
   };
-  const write = (nextAnswers: readonly JourneyGraphEdge[], nextFallback = fallback, nextHidden = hidden) =>
+  // `null` removes the skip override, so a skipped screen falls through again (ADR 0135).
+  const write = (nextAnswers: readonly JourneyGraphEdge[], nextFallback = fallback, nextHidden: JourneyGraphEdge | null | undefined = hidden) =>
     apply([...nextAnswers, ...(nextFallback ? [nextFallback] : []), ...(nextHidden ? [nextHidden] : [])]);
   const add = () => {
     const question = sources[0];
@@ -103,7 +104,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </>}
       <label>{__('Go to', 'wconvert')}<select data-route-target value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
-        if (edge.kind === 'default') write(answers, updated);
+        // A skip edge that only copied the old destination goes, so the screen keeps falling through (ADR 0135).
+        if (edge.kind === 'default') write(answers, updated, hidden && hidden.to === edge.to ? null : hidden);
         else write(answers.map(item => item.id === edge.id ? updated : item));
       }}>
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
@@ -136,12 +138,13 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     {fallback && sources.length > 0 && onAdd && <div className="wconvert-journey-next-actions"><button type="button" onClick={() => onAdd('followup')}>{__('Add conditional follow-up', 'wconvert')}</button><button type="button" onClick={() => onAdd('branch')}>{__('Add path', 'wconvert')}</button></div>}
     {fallback && sources.length > 0 && targets.length > 0 && !onAdd && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
     {!sources.length && <p>{__('Add a choice question here or on a screen that leads here to send answers down different paths.', 'wconvert')}</p>}
-    {screen.when && <div className="wconvert-journey-settings__skip"><strong>{__('When this screen is hidden', 'wconvert')}</strong>
-      <label>{__('Continue at', 'wconvert')}<select ref={hiddenSelect} value={hidden?.to ?? ''} onChange={event => write(answers, fallback,
-        { id: hidden?.id ?? graphEdgeId(graph), from: screen.id, kind: 'hidden', to: event.target.value })}>
-        {!hidden && <option value="" disabled>{__('Choose where it continues…', 'wconvert')}</option>}
-        {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
-      </select></label><p>{__('Hidden screens do not collect an answer or submit details.', 'wconvert')}</p></div>}
+    {screen.when && <div className="wconvert-journey-settings__skip"><strong>{__('When this screen is skipped', 'wconvert')}</strong>
+      {/* A skipped screen continues where it would have; choosing a screen here is an override (ADR 0135). */}
+      <label>{__('If skipped, go to…', 'wconvert')}<select ref={hiddenSelect} value={hidden && hidden.to !== fallback?.to ? hidden.to : ''} onChange={event => write(answers, fallback,
+        event.target.value === '' ? null : { id: hidden?.id ?? graphEdgeId(graph), from: screen.id, kind: 'hidden', to: event.target.value })}>
+        <option value="">{fallback ? sprintf(__('Where it would have gone (%s)', 'wconvert'), tree.steps.find(item => item.id === fallback.to)?.name ?? '') : __('Where it would have gone', 'wconvert')}</option>
+        {targets.filter(target => target.id !== fallback?.to).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
+      </select></label><p>{__('Skipped screens do not collect an answer or submit details.', 'wconvert')}</p></div>}
     </div>
     {unreachableScreens(tree).length > 0 && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('No path reaches: %s. Connect or remove these screens before publishing.', 'wconvert'), unreachableScreens(tree).join(', '))}</p>}
     <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={returnFocus}

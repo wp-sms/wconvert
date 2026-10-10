@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from '../contrast';
+import { READABLE_PAIRS, pairKey, readability } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
@@ -365,10 +365,10 @@ function whatCannotBeRead(template: Template): Problem[] {
   const value = (name: string) => resolvedToken(template.tokens, name);
 
   return READABLE_PAIRS.flatMap(([fg, bg]) => {
-    const ratio = contrastOf(value(fg), value(bg));
+    // The same verdict the Look's readout gives (ADR 0135), so the review and the panel never disagree.
     const said = SAID[pairKey(fg, bg)];
 
-    return ratio === null || ratio >= AA_NORMAL || said === undefined
+    return readability(value(fg), value(bg)).readable !== false || said === undefined
       ? []
       : [{ said: said(), path: null, check: 'readable' as const }];
   });
@@ -385,10 +385,10 @@ function whatCannotBeRead(template: Template): Problem[] {
  */
 const SAID: Readonly<Record<string, () => string>> = {
   'fg/bg': () =>
-    __('The text color is too close to the background to be readable. Change one of them.', 'wconvert'),
-  'muted/bg': () => __('The lighter text is too close to the background to be readable.', 'wconvert'),
+    __('The text is hard to read on the background. Fix it in the Look.', 'wconvert'),
+  'muted/bg': () => __('The lighter text is hard to read on the background. Fix it in the Look.', 'wconvert'),
   'accent-fg/accent': () =>
-    __('The button’s label is too close to the button to be readable.', 'wconvert'),
+    __('The button’s label is hard to read on the button. Fix it in the Look.', 'wconvert'),
   'fg/input-bg': () =>
-    __('The text in the form fields is too close to their background to be readable.', 'wconvert'),
+    __('The text in the form fields is hard to read on their background. Fix it in the Look.', 'wconvert'),
 };

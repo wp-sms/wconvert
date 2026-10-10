@@ -116,7 +116,7 @@ const LABELS = {
     'split.ratio.0.65': 'Narrow right',
   },
   nodeParams: {
-    'heading.level': 'Heading rank',
+    'heading.level': 'Heading level, for screen readers and search',
     'image.fit': 'How the picture fills its space',
     'field.required': 'Must they fill this in?',
     'rating.value': 'How many stars',
@@ -1231,6 +1231,7 @@ describe('the verdict', () => {
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for muted/ }));
     await userEvent.clear(screen.getByLabelText('muted value'));
     await userEvent.type(screen.getByLabelText('muted value'), '#f4f4f5');
@@ -1248,7 +1249,7 @@ describe('the verdict', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
 
     expect(screen.getByRole('heading', { name: '1 thing to review' })).toBeInTheDocument();
-    expect(screen.getByText(/too close to the background/)).toBeInTheDocument();
+    expect(screen.getByText(/hard to read on the background/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
   });
 
@@ -1698,7 +1699,8 @@ describe('a leaf’s own settings', () => {
   it('offers a heading the rank the renderer has always read', async () => {
     await selecting('Headline');
 
-    const group = screen.getByRole('combobox', { name: 'Heading rank' });
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
+    const group = screen.getByRole('combobox', { name: 'Heading level, for screen readers and search' });
 
     expect(within(group).getAllByRole('option')).toHaveLength(2);
     /*
@@ -1715,7 +1717,8 @@ describe('a leaf’s own settings', () => {
   it('writes a heading rank as the number the renderer compares', async () => {
     await selecting('Headline');
 
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading rank' }), '2');
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading level, for screen readers and search' }), '2');
     await save();
 
     // `render.ts` reads `node.level === 2`; the string "2" is not that.
@@ -1792,7 +1795,7 @@ describe('a leaf’s own settings', () => {
   it('draws nothing for a leaf that offers none', async () => {
     await selecting('Body text');
 
-    expect(screen.queryByRole('group', { name: 'Heading rank' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Heading level, for screen readers and search' })).toBeNull();
     expect(screen.queryByRole('group', { name: 'Must they fill this in?' })).toBeNull();
   });
 
@@ -1808,7 +1811,8 @@ describe('a leaf’s own settings', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading rank' }), '2');
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading level, for screen readers and search' }), '2');
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await save();
 
@@ -2005,7 +2009,8 @@ describe('the icon picker', () => {
     await userEvent.click(within(row('Headline')).getAllByRole('button')[0]);
 
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    const group = screen.getByRole('combobox', { name: 'Heading rank' });
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
+    const group = screen.getByRole('combobox', { name: 'Heading level, for screen readers and search' });
 
     expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);
   });

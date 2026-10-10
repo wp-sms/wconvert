@@ -270,6 +270,7 @@ describe('the Style half of the inspector', () => {
     // The typed hex lives inside the picker's popover, so it has to be opened
     // first — the swatch is the control, and the box is the escape hatch under
     // it (ADR 0042).
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
@@ -400,6 +401,7 @@ describe('the narrow bag, through the width switch', () => {
     await style(/Colored box/);
     await narrow();
 
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
@@ -469,6 +471,7 @@ describe('a scoped color that follows the palette', () => {
   it('offers the conversion where the value is a literal the merchant set', async () => {
     await style(/Colored box/);
 
+    await userEvent.click(screen.getByRole('button', { name: 'Advanced' }));
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');

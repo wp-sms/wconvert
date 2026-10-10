@@ -517,7 +517,10 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               contextAddTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
               setFollowupAnswer(undefined); setInsertLocation(`edge:${edgeId}`); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');
             }} />;
-  const slim = !!editorCanvas && view === 'edit';
+  // The Edit tab on its canvas view: the tree is a pane of its own there.
+  const onCanvas = !!editorCanvas && view === 'edit';
+  // The Edit tab's screen panel is the slim one in Flow too (ADR 0135): one panel, whatever the view.
+  const slim = !!editorCanvas;
   const questionSettings = <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={!journeys ? undefined : (question, value) => { setFollowupAnswer({ question, value }); contextAddTrigger.current = document.activeElement as HTMLElement;
             const edge = followupInsertionEdge(insertionTree, current.id, question, value);
             setInsertLocation(edge ? `edge:${edge.id}` : 'choose'); setInsertIntent(undefined); insertedScreen.current = false; setAddKind('followup'); }} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />;
@@ -617,12 +620,12 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </div>
         </div>}
         {samplePath && !sampleOpen && <div className="wconvert-journey-context"><span>{traceKind === 'visited' ? __('Showing the path visited in your test', 'wconvert') : __('Showing the path for your sample answers', 'wconvert')}</span><button type="button" onClick={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Test path cleared. All screens and paths are shown.', 'wconvert')); }}>{__('Clear test path', 'wconvert')}</button></div>}
-        {(panelOpen || slim) && <OptionStrip className="wconvert-journey-mobile-tabs" label={__('Mobile journey view', 'wconvert')} value={mobilePane}
+        {(panelOpen || onCanvas) && <OptionStrip className="wconvert-journey-mobile-tabs" label={__('Mobile journey view', 'wconvert')} value={mobilePane}
           options={[
             // Narrow, the Edit tab is three panes taken one at a time (ADR 0134).
-            ...(slim ? [{ value: 'tree', label: __('Screens', 'wconvert') }] : []),
+            ...(onCanvas ? [{ value: 'tree', label: __('Screens', 'wconvert') }] : []),
             { value: 'map', label: view === 'flow' ? __('Map', 'wconvert') : view === 'edit' ? __('Preview', 'wconvert') : __('Screens', 'wconvert') },
-            { value: 'details', label: sampleOpen ? __('Try answers', 'wconvert') : slim ? __('Edit', 'wconvert') : __('Edit screen', 'wconvert') },
+            { value: 'details', label: sampleOpen ? __('Try answers', 'wconvert') : onCanvas ? __('Edit', 'wconvert') : __('Edit screen', 'wconvert') },
           ]} onChange={value => setMobilePane(value as typeof mobilePane)} />}
         <QuestionPanelContext.Provider value={editorCanvas ? questionPanel : null}>
         <div className="wconvert-journey-side" data-mobile-pane={mobilePane} data-panel-open={panelOpen} data-editing={view === 'edit' || undefined} data-wide-panel={widePanel || undefined}>
@@ -631,7 +634,12 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map" role="status"><span className="sr-only">{__('Loading journey map…', 'wconvert')}</span></div>}>
             <JourneyMap traceKind={traceKind} issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
-              onSelect={select} onSelectPath={(index, priority) => { select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); setPathFocus(priority); }} onConnect={journeys ? connect : undefined} onReconnect={journeys ? reconnect : undefined} samplePath={samplePath} sampleEdges={sampleEdges}
+              onSelect={select} onSelectPath={(index, priority) => {
+                // A question's paths live on the question (ADR 0134), in Flow as on the canvas.
+                const question = slim && onSelectElement ? nodesOf(tree).find(block => block.path[0] === index && block.type === 'question')?.path : undefined;
+                setPathFocus(priority);
+                if (question) { onSelectElement!(question); return; }
+                select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); }} onConnect={journeys ? connect : undefined} onReconnect={journeys ? reconnect : undefined} samplePath={samplePath} sampleEdges={sampleEdges}
               onPreview={index => { previewAction.current = null; previewTrigger.current = document.activeElement as HTMLElement; setPreviewScreen(index); }}
               onAdd={journeys && tree.graph ? (index, edgeId) => {
                 contextAddTrigger.current = document.activeElement as HTMLElement;
@@ -757,7 +765,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
 
           </> : tree.graph ? routes
             : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
-            {!slim && <Button type="button" variant="outline" className="wconvert-journey-appearance" onClick={() => { if (editorCanvas) setView('edit'); else if (embedded) onGoToDesign?.(); else setOpen(false); }}>{editorCanvas ? __('Edit on the canvas', 'wconvert') : __('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
+            {!onCanvas && <Button type="button" variant="outline" className="wconvert-journey-appearance" onClick={() => { if (editorCanvas) setView('edit'); else if (embedded) onGoToDesign?.(); else setOpen(false); }}>{editorCanvas ? __('Edit on the canvas', 'wconvert') : __('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
             </div>
 
           </section>}

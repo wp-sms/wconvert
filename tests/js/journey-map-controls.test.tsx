@@ -17,13 +17,18 @@ vi.mock('@tisoap/react-flow-smart-edge', () => ({ useSmartEdgePath: () => ({ rou
 import { FocusCamera, JourneyMap } from '../../resources/admin/src/builder/JourneyMap';
 import { JourneyMapEdge } from '../../resources/admin/src/builder/JourneyMapEdge';
 afterEach(() => { cleanup(); vi.clearAllMocks(); vi.unstubAllGlobals(); });
-it('centres only the selected screen when explicitly requested, without fitting its next branch', () => {
-  render(<FocusCamera mapRoot={{ current: null }} selectedId="selected" nextId="next" firstId="first" initialOverview={false} revision={0}
-    onTidy={() => {}} preview={false} onPreview={() => {}} onNodesReady={() => {}} selection={{ highlighted: true, toggle: () => {} }} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Show selected screen' }));
-  expect(mocks.fitView).toHaveBeenCalledWith(expect.objectContaining({ nodes: [{ id: 'selected' }], maxZoom: 1 }));
+/** ADR 0135: one line of tools — zoom, Fit, Tidy up, Highlight paths and ⋯ — and nothing to pan around a map that opens fitted. */
+it('fits the whole map on request and offers no first-screen or panning detours', () => {
+  const tidy = vi.fn();
+  render(<FocusCamera mapRoot={{ current: null }} selectedId="selected" nextId="next" initialOverview={false} revision={0}
+    onTidy={tidy} preview={false} onPreview={() => {}} onNodesReady={() => {}} selection={{ highlighted: true, toggle: () => {} }} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Fit' }));
+  expect(mocks.fitView).toHaveBeenCalledWith(expect.not.objectContaining({ nodes: expect.anything() }));
+  fireEvent.click(screen.getByRole('button', { name: 'Tidy up' }));
+  expect(tidy).toHaveBeenCalledOnce();
+  expect(screen.getByRole('button', { name: 'Highlight paths' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.queryByRole('button', { name: 'Show selected screen' })).toBeNull();
   expect(screen.queryByText('Scroll to pan')).toBeNull();
-  expect(screen.queryByRole('button', { name: 'Focus selection' })).toBeNull();
 });
 it('keeps the route label out of the insert button and suppresses the duplicate SVG label', () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });

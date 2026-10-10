@@ -45,7 +45,8 @@ it('can clear an invalid required rule with no sources without crashing or makin
   expect(screen.getByRole('button', { name: 'Add condition' })).toBeDisabled();
 });
 
-it('repairs both a missing default and hidden exit through controls without dragging', async () => {
+/** ADR 0135: a missing continuation is the only repair; the skip edge is an override chosen afterwards. */
+it('repairs a missing continuation through controls, and offers the skip override after', async () => {
   const user = userEvent.setup();
   const base = fixture as unknown as TemplateTree;
   function Routes() {
@@ -56,7 +57,11 @@ it('repairs both a missing default and hidden exit through controls without drag
   render(<Routes />);
   expect(screen.queryByText('Journey ends here')).not.toBeInTheDocument();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Go to' }), 'indoors');
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Continue at' }), 'contact');
+  const repaired = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
+  expect(repaired.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([expect.objectContaining({ kind: 'default', to: 'indoors' })]);
+  expect(journeyReadinessIssues(repaired)).toEqual([]);
+  await user.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
+  await user.selectOptions(screen.getByRole('combobox', { name: 'If skipped, go to…' }), 'contact');
   const tree = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
   expect(tree.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([
     expect.objectContaining({ kind: 'default', to: 'indoors' }), expect.objectContaining({ kind: 'hidden', to: 'contact' }),
@@ -107,13 +112,14 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
   }
   render(<Routes />);
   await user.click(screen.getByRole('button', { name: 'Send some answers down another path' }));
-  const hiddenDestination = screen.getByRole('combobox', { name: 'Continue at' });
+  const hiddenDestination = screen.getByRole('combobox', { name: 'If skipped, go to…' });
   await user.selectOptions(hiddenDestination, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
   expect(JSON.parse(screen.getByTestId('tree').textContent!).graph.edges.find((edge: { id: string }) => edge.id === 'balcony_hidden').to).toBe('contact');
   await user.click(screen.getByRole('button', { name: 'Cancel' }));
   expect(hiddenDestination).toHaveFocus();
-  expect(hiddenDestination).toHaveValue('contact');
+  // Still where it would have gone anyway: the skip edge matches the default (ADR 0135).
+  expect(hiddenDestination).toHaveValue('');
   await user.selectOptions(hiddenDestination, 'received');
   await user.click(screen.getByRole('button', { name: 'Apply path change' }));
   expect(hiddenDestination).toHaveValue('received');
@@ -123,7 +129,7 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
 it('focuses the hidden continuation when that map connection is selected', () => {
   const tree = fixture as unknown as TemplateTree;
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(screen => screen.id === 'garden')} focusPath="hidden" onChange={() => {}} onInsert={() => {}} />);
-  expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveFocus();
+  expect(screen.getByRole('combobox', { name: 'If skipped, go to…' })).toHaveFocus();
 });
 
 it('can create the missing condition on an imported matching result', async () => {

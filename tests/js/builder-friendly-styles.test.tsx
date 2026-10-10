@@ -8,6 +8,7 @@ import { ParamChoice } from '../../resources/admin/src/builder/ParamChoice';
 import { nodeAt } from '../../resources/admin/src/builder/structure/tree';
 import { ScopeStyle } from '../../resources/admin/src/builder/ScopeStyle';
 import { gradientOf } from '../../resources/admin/src/builder/gradient';
+import { AdvancedContext } from '../../resources/admin/src/builder/advanced';
 import { spacingSides } from '../../resources/admin/src/builder/SpacingField';
 import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 import type { Template } from '@renderer/types';
@@ -16,8 +17,9 @@ const labels = { tokens: { pad: 'Padding', bg: 'Background' }, layouts: {}, toke
 function Control({ initial, token, changed, inherited = false }: { initial: string; token: string; changed: (value: string) => void; inherited?: boolean }) {
   const [value, setValue] = useState(inherited ? '' : initial);
   const [open, setOpen] = useState(false);
-  return <TokenField label="Setting" token={token} labels={labels} value={value} fallback={initial} standard="1rem"
-    design={initial} open={open} onOpenChange={setOpen} onChange={next => { setValue(next); changed(next); }} />;
+  // The exact controls are Advanced's (ADR 0135).
+  return <AdvancedContext.Provider value><TokenField label="Setting" token={token} labels={labels} value={value} fallback={initial} standard="1rem"
+    design={initial} open={open} onOpenChange={setOpen} onChange={next => { setValue(next); changed(next); }} /></AdvancedContext.Provider>;
 }
 
 describe('padding and gradients preserve authored values until an explicit edit', () => {
@@ -56,8 +58,8 @@ describe('padding and gradients preserve authored values until an explicit edit'
   it('groups picture and heading settings and omits unused effects without changing the draft', () => {
     const template: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'media', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [{ type: 'heading', text: 'Hello' }] }] }) };
     const changed = vi.fn();
-    render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
-      openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} />);
+    render(<AdvancedContext.Provider value><ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
+      openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} /></AdvancedContext.Provider>);
     expect(within(screen.getByRole('region', { name: 'Picture' })).getByRole('group', { name: 'image-position' })).toBeInTheDocument();
     expect(within(screen.getByRole('region', { name: 'Headings' })).getByRole('combobox', { name: 'heading-weight' })).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Effects' })).not.toBeInTheDocument();
@@ -169,8 +171,8 @@ it.each([
   [{ pad: '2rem' }, {}, '1rem', true],
 ])('marks mobile padding only when its effective value differs (%j, %j, %s)', (local, inherited, mobile, different) => {
   const template: Template = { tokens: inherited, tree: treeFixture({ steps: [{ type: 'panel', tokens: local, narrow: { pad: mobile }, children: [] }] }) };
-  render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
-    openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={vi.fn()} />);
+  render(<AdvancedContext.Provider value><ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
+    openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={vi.fn()} /></AdvancedContext.Provider>);
   expect(screen.queryByText('Different on mobile') !== null).toBe(different);
   expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
 });
@@ -186,9 +188,48 @@ it('lists local mobile overrides and resets only the selected element’s narrow
   render(<Editor />);
   expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
   await userEvent.click(screen.getByText('Editing mobile appearance. Unchanged values follow desktop.'));
-  await userEvent.click(screen.getByRole('button', { name: 'Reset this element’s mobile overrides' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Reset this element on mobile' }));
   const result = changed.mock.calls[0][0] as Template;
   expect(nodeAt(result.tree, [0, 'children', 0])).toMatchObject({ tokens: { pad: '2rem' } });
   expect(nodeAt(result.tree, [0, 'children', 0])).not.toHaveProperty('narrow');
   expect(screen.getByText('No mobile overrides on this element. It follows the surrounding design.')).toBeInTheDocument();
+});
+
+/** ADR 0135: the plain view is presets, swatches and words; Advanced holds the exact values. */
+describe('the plain style view', () => {
+  it('resets this element on desktop, and offers nothing to reset when it sets nothing', async () => {
+    const original: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'panel', tokens: { pad: '2rem' }, narrow: { pad: '1rem' }, children: [] }] }] }) };
+    function Editor() {
+      const [template, setTemplate] = useState(original);
+      return <ScopeStyle template={template} labels={labels} path={[0, 'children', 0]} width="tokens" copied={null} onCopy={vi.fn()}
+        openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={setTemplate} />;
+    }
+    render(<Editor />);
+    const reset = screen.getByRole('button', { name: 'Reset this element' });
+    await userEvent.click(reset);
+    expect(reset).toBeDisabled();
+    expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
+  });
+
+  it('names a color on its swatch and keeps the hex for Advanced', async () => {
+    function Swatch({ advanced }: { advanced: boolean }) {
+      const [open, setOpen] = useState(false);
+      return <AdvancedContext.Provider value={advanced}><TokenField label="Background" token="bg" labels={labels} value="#2f4f37" fallback="#ffffff" standard="#ffffff"
+        design="#ffffff" open={open} onOpenChange={setOpen} onChange={vi.fn()} /></AdvancedContext.Provider>;
+    }
+    const { unmount } = render(<Swatch advanced={false} />);
+    expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toHaveTextContent('Forest');
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
+    expect(screen.queryByLabelText('Background value')).toBeNull();
+    unmount();
+    render(<Swatch advanced />);
+    expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toHaveTextContent('#2f4f37');
+  });
+
+  it('offers type sizes in the words an element’s Size uses', () => {
+    render(<TokenField simple label="Heading size" token="heading-size" labels={labels} value="" fallback="2rem" standard="2rem"
+      design="2rem" open={false} onOpenChange={vi.fn()} onChange={vi.fn()} />);
+    expect(within(screen.getByRole('combobox', { name: 'Heading size' })).getAllByRole('option').map(option => option.textContent))
+      .toEqual(['Small', 'Medium', 'Large', 'Extra large']);
+  });
 });

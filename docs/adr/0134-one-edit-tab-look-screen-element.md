@@ -112,7 +112,7 @@ section of its own yet: the detailed tokens and custom CSS sit behind Tokens'
 "Detailed styling…", which phase 3 renames Advanced when it gathers the exact
 values there.
 
-### Still to land
+### Phase 3
 
-Plain style controls with exact values under Advanced, and the fitted Flow map
-(phase 3). It extends this ADR when it lands.
+Plain style controls with exact values under Advanced, the fitted Flow map and
+a skipped screen falling through are [0135](0135-plain-style-controls-exact-values-under-advanced.md).

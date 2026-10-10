@@ -101,3 +101,26 @@ describe('the rest of the screen panel', () => {
     expect(onSelect).toHaveBeenCalledWith([1, 'children', 0]);
   });
 });
+
+/** ADR 0135: moving a screen's default drops a skip edge that only copied it, so the screen keeps falling through. */
+it('drops a copied skip edge when the screen’s next screen changes, and keeps a real override', async () => {
+  const graphed = upgradeToGraph(treeFixture({ steps: [
+    { type: 'stack', children: [{ type: 'heading', text: 'One' }] },
+    { type: 'stack', children: [{ type: 'heading', text: 'Two' }] },
+    { type: 'stack', children: [{ type: 'heading', text: 'Three' }] },
+    { type: 'stack', children: [{ type: 'heading', text: 'Four' }] },
+  ] }));
+  const when = { match: 'all' as const, clauses: [{ question: 'q', operator: 'is' as const, values: ['x'] }] };
+  const withSkip = (to: string) => ({ ...graphed, steps: graphed.steps.map((item, at) => at === 1 ? { ...item, when } : item),
+    graph: { ...graphed.graph!, edges: [...graphed.graph!.edges, { id: 'skip', from: 's2', to, kind: 'hidden' as const }] } });
+  const onChange = vi.fn();
+  const { unmount } = render(<ScreenThen tree={withSkip('s3')} step={1} editable onChange={onChange} />);
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's4');
+  expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.some(edge => edge.id === 'skip')).toBe(false);
+  unmount();
+  onChange.mockClear();
+  // A real override (to somewhere other than the old default) is the merchant's choice and stays.
+  render(<ScreenThen tree={withSkip('s4')} step={1} editable onChange={onChange} />);
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's4');
+  expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.id === 'skip')?.to).toBe('s4');
+});

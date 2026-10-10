@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AA_NORMAL, contrastOf, luminanceOf, meetsAA } from '../../resources/admin/src/builder/contrast';
+import { AA_NORMAL, contrastOf, luminanceOf, meetsAA, readability, readableOn } from '../../resources/admin/src/builder/contrast';
 import { axesOf, measuresOf, rangeFor } from '../../resources/admin/src/builder/themes';
 
 /**
@@ -224,5 +224,38 @@ describe('the sliders a token earns', () => {
    */
   it('offers nothing where no unit can be found at all', () => {
     expect(axesOf('0', '0', '0')).toBeNull();
+  });
+});
+
+/**
+ * One verdict for every place that judges a pair (ADR 0135): in words, with
+ * the way to fix it and a color that does, and the ratio only for Advanced.
+ */
+describe('readability', () => {
+  it('reads a clear pair as easy, with no fix', () => {
+    expect(readability('#18181b', '#ffffff')).toMatchObject({ readable: true, direction: null, said: 'Easy to read' });
+  });
+
+  it('says which way a hard pair should move, from the background it sits on', () => {
+    expect(readability('#bbbbbb', '#ffffff')).toMatchObject({ readable: false, direction: 'darker',
+      said: 'Hard to read on this background. Choose a darker color.' });
+    expect(readability('#444444', '#111111')).toMatchObject({ readable: false, direction: 'lighter',
+      said: 'Hard to read on this background. Choose a lighter color.' });
+  });
+
+  it('keeps one precision for the ratio, rounded down so a failing pair never reads 4.5', () => {
+    expect(readability('#767676', '#ffffff').ratio).toBe('4.5');
+    // #777777 on white is 4.48:1 — hard to read, and shown as 4.4.
+    expect(readability('#777777', '#ffffff')).toMatchObject({ readable: false, ratio: '4.4' });
+  });
+
+  it('refuses a pair it cannot measure rather than guessing', () => {
+    expect(readability('rgba(0,0,0,0.5)', '#ffffff')).toMatchObject({ readable: null, ratio: null });
+  });
+
+  it('fixes with the first of the look’s own colors that reads, else black or white', () => {
+    expect(readableOn('#ffffff', ['#dddddd', '#18181b'])).toBe('#18181b');
+    expect(readableOn('#ffffff', ['#dddddd', '#eeeeee'])).toBe('#000000');
+    expect(readableOn('#0b1020', ['#111111'])).toBe('#ffffff');
   });
 });
