@@ -36,7 +36,8 @@ export function ruleHint(type: string): string | null {
 /**
  * The picker's sections, as an explicit map with **no fallback**. "Their
  * visit" used to catch whatever no branch named, so a new type landed there
- * silently; now it lands nowhere and `builder-rule-picker` fails until it is
+ * silently. Now it answers null — the picker still offers the rule, under no
+ * heading, rather than hiding it — and `builder-rule-picker` fails until it is
  * placed.
  */
 export function ruleCategory(type: string): string | null {

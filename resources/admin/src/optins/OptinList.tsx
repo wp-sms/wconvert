@@ -24,7 +24,7 @@ import { Button } from '../components/ui/button';
 import { NativeSelect } from '../components/ui/native-select';
 import { Skeleton } from '../components/ui/skeleton';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator } from '../components/ui/option-menu';
+import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { listGoals, type GoalEntry } from '../goals/api';
 import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
@@ -781,7 +781,7 @@ function CampaignMenu({
       name={__('Publish saved draft', 'wconvert')}
       // The one action whose result is not in its name (ADR 0139).
       hint={replaces ? __('Replaces the live version', 'wconvert') : null}
-      refused={missingDesign ? { short: __('Add a design first', 'wconvert'), reason: __('Add a design in the editor before publishing.', 'wconvert') } : null}
+      refused={missingDesign ? refusal(__('Add a design first', 'wconvert'), __('Add a design in the editor before publishing.', 'wconvert')) : null}
       onSelect={() => onDecision('publish', trigger.current)}
     />
   );
@@ -798,7 +798,7 @@ function CampaignMenu({
           <MoreHorizontal aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
-      <OptionMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu" aria-label={sprintf(__('More actions for %s', 'wconvert'), name)}>
+      <OptionMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu" aria-label={sprintf(/* translators: %s: a campaign's name. */ __('More actions for %s', 'wconvert'), name)}>
         <OptionGroup heading={name}>
           <OptionItem icon={Info} name={__('Details', 'wconvert')} onSelect={() => onDetails(trigger.current)} />
           <OptionItem icon={ChartNoAxesCombined} name={__('View report', 'wconvert')} href={reportHref({ optinId: row.id, days })} />
@@ -826,7 +826,7 @@ function CampaignMenu({
         </OptionGroup>
         {/* Upsells are grey with a lock (GUIDELINES §14): a line, not a dead item, because the route does not exist on this build. */}
         {upsell && (
-          <OptionGroup heading={sprintf(__('With %s', 'wconvert'), tierProductName(adminSettings()?.variants?.tier ?? undefined))} icon="lock">
+          <OptionGroup heading={sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('With %s', 'wconvert'), tierProductName(adminSettings()?.variants?.tier ?? undefined))} icon="lock">
             <OptionItem icon={Split} name={__('Create A/B test', 'wconvert')} />
           </OptionGroup>
         )}

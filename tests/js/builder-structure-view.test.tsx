@@ -101,7 +101,7 @@ const LABELS = {
   },
   // The menu shows what a layout DOES, because *Row* and *Side by side* are two
   // words a merchant cannot tell apart from their names alone.
-  layoutNotes: {
+  layoutHelp: {}, layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',

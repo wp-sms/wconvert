@@ -32,7 +32,8 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
   const on = (rendering: Rendering) => axis.filter(type => renderingFor(type.availability, 'settings_list') === rendering);
   const offered = on('offer').map(type => ({
     type,
-    choices: [...type.presets, null].filter(preset => matches(type.label, type.phrase, ruleHint(type.type), ruleCategory(type.type), preset?.label ?? '', preset?.phrase ?? '')),
+    // The ⓘ help is searched too, now that most rules carry no hint line.
+    choices: [...type.presets, null].filter(preset => matches(type.label, type.phrase, ruleHint(type.type), ruleHelp(type.type), ruleCategory(type.type), preset?.label ?? '', preset?.phrase ?? '')),
   })).filter(group => group.choices.length > 0);
   // Sections in the order each first appears, so the manifest's order still leads.
   const sections = new Map<string, typeof offered>();

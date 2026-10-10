@@ -51,7 +51,7 @@ export function graphCaptureRemovalPlan(tree: TemplateTree, submissionId: string
           ? [__('Shares a result or ending', 'wconvert'), __('This signup shares a result or ending screen. Move its contact fields and save action to a separate screen before removing it.', 'wconvert')]
           : shared.length || tree.submissions.some(other => other.id !== sub.id && [...other.fields, ...other.consents].some(id => owned.has(id)))
             ? [__('Shared with another signup', 'wconvert'), __('These screens also collect details for another signup. Separate those fields and save actions before removing this signup.', 'wconvert')]
-            : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(__('Answers on these screens are used by rules on: %s. Update those rules before removing this signup.', 'wconvert'), dependents.map(screen => screen.name).join(', '))]
+            : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Answers on these screens are used by rules on: %s. Update those rules before removing this signup.', 'wconvert'), dependents.map(screen => screen.name).join(', '))]
               : routes.some(route => !route.targets.length) ? [__('Nowhere to continue', 'wconvert'), __('A removed screen has no suitable continuation. Connect it to a remaining screen before removing this signup.', 'wconvert')] : null;
   const reason = refusal?.[1] ?? null;
   const short = refusal?.[0] ?? null;

@@ -147,7 +147,7 @@ const LABELS = {
   roles: {},
   nodes: {},
   layouts: {},
-  layoutNotes: {},
+  layoutHelp: {}, layoutNotes: {},
   layoutParams: {},
   layoutParamValues: {},
   nodeParams: {},

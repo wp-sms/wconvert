@@ -1,3 +1,4 @@
+import type { Refusal } from '../../components/ui/option-menu';
 import { walkNodes, usedBy } from './journey';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { childKeysOf } from '../panel';
@@ -99,7 +100,7 @@ function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
 export const isConvertingAct = (block: Block): boolean => block.type === 'button' && block.counts !== false && ['submit', 'link'].includes(block.action ?? '');
 
 /**
- * Why this block may not be removed, or null.
+ * Why this block may not be removed, in two lengths for its menu row (ADR 0139), or null.
  *
  * ============================================================================
  * ASKED BY SIMULATING THE REMOVAL, NEVER BY INSPECTING THE BLOCK.
@@ -122,13 +123,13 @@ export const isConvertingAct = (block: Block): boolean => block.type === 'button
  *    the write would block a merchant mid-rearrangement who is about to add the
  *    field back.
  */
-export function whyRemovalIsRefused(tree: TemplateTree, path: Path): string | null {
+export function removalRefusal(tree: TemplateTree, path: Path): Refusal | null {
   const current = nodeAt(tree, path);
   if (current === null) {
     return null;
   }
   if (walkNodes(current).some(node => node.type === 'question' && 'id' in node && usedBy(tree, node.id as string).length > 0)) {
-    return __('This question controls another screen or result. Remove those conditions first.', 'wconvert');
+    return { short: __('Other screens depend on it', 'wconvert'), reason: __('This question controls another screen or result. Remove those conditions first.', 'wconvert') };
   }
 
   const after = withRemoved(tree, path);
@@ -142,18 +143,18 @@ export function whyRemovalIsRefused(tree: TemplateTree, path: Path): string | nu
       first version added ("change what it says instead, or pick a different
       design") is two doors for a state where the first one is enough.
     */
-    return __('The only thing here that counts as a conversion.', 'wconvert');
+    return { short: __('It counts the conversion', 'wconvert'), reason: __('The only thing here that counts as a conversion.', 'wconvert') };
   }
 
   if (convertingActOf(after).includes('submit') && fieldsIn(after) === 0 && fieldsIn(tree) > 0) {
-    return __('The only field. A form with none captures nothing.', 'wconvert');
+    return { short: __('The form’s only field', 'wconvert'), reason: __('The only field. A form with none captures nothing.', 'wconvert') };
   }
 
   return null;
 }
 
 /**
- * Why this block may not be duplicated, or null.
+ * Why this block may not be duplicated, in two lengths for its menu row, or null.
  *
  * The two things a copy cannot be. A second `button` is a second converting
  * act the Optin does not have and cannot report; a second `field` of a kind
@@ -165,7 +166,7 @@ export function whyRemovalIsRefused(tree: TemplateTree, path: Path): string | nu
  * Asked of the SUBTREE rather than the block, for the same reason removal is:
  * duplicating a `row` duplicates whatever the row holds.
  */
-export function whyDuplicationIsRefused(tree: TemplateTree, path: Path): string | null {
+export function duplicationRefusal(tree: TemplateTree, path: Path): Refusal | null {
   const node = nodeAt(tree, path);
 
   if (node === null) {
@@ -173,11 +174,11 @@ export function whyDuplicationIsRefused(tree: TemplateTree, path: Path): string 
   }
 
   if (walkNodes(node).some(n => n.type === 'button' && 'action' in n && ['submit', 'link'].includes(String(n.action)))) {
-    return __('Keep exactly one button per submission or offer link. Add a navigation button instead.', 'wconvert');
+    return { short: __('Only one such button', 'wconvert'), reason: __('Keep exactly one button per submission or offer link. Add a navigation button instead.', 'wconvert') };
   }
 
   if (typesUnder(node).includes('field')) {
-    return __('Two fields capturing the same detail collide. Add one instead.', 'wconvert');
+    return { short: __('Fields can’t be copied', 'wconvert'), reason: __('Two fields capturing the same detail collide. Add one instead.', 'wconvert') };
   }
 
   return null;
@@ -230,20 +231,9 @@ function typesUnder(node: TemplateNode): string[] {
   }, [node.type]);
 }
 
-/**
- * A guard's refusal in two lengths for a menu row: a few words on screen, the
- * sentence in ⓘ (ADR 0139). Keyed on the sentence the guard returned, so the
- * guard stays the one place that decides.
- */
-export function refusalWithShort(reason: string | null): { short: string; reason: string } | null {
-  if (reason === null) return null;
-  const shorts: Readonly<Record<string, string>> = {
-    [__('This question controls another screen or result. Remove those conditions first.', 'wconvert')]: __('Other screens depend on it', 'wconvert'),
-    [__('The only thing here that counts as a conversion.', 'wconvert')]: __('It counts the conversion', 'wconvert'),
-    [__('The only field. A form with none captures nothing.', 'wconvert')]: __('The form’s only field', 'wconvert'),
-    [__('Keep exactly one button per submission or offer link. Add a navigation button instead.', 'wconvert')]: __('Only one such button', 'wconvert'),
-    [__('Two fields capturing the same detail collide. Add one instead.', 'wconvert')]: __('Fields can’t be copied', 'wconvert'),
-  };
 
-  return { short: shorts[reason] ?? reason, reason };
-}
+/** {@link removalRefusal}'s sentence, for a caller that announces rather than draws it. */
+export const whyRemovalIsRefused = (tree: TemplateTree, path: Path): string | null => removalRefusal(tree, path)?.reason ?? null;
+
+/** {@link duplicationRefusal}'s sentence, for a caller that announces rather than draws it. */
+export const whyDuplicationIsRefused = (tree: TemplateTree, path: Path): string | null => duplicationRefusal(tree, path)?.reason ?? null;

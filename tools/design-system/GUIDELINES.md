@@ -594,12 +594,14 @@ in Persian: a list runs top to bottom whichever way the words run, which is why
 its direction through a `DirectionProvider`, falls back to `ltr` when there is
 none, and then writes that answer onto the DOM as a real `dir` attribute — which
 beats inheritance. So one root saying `ltr` pins everything under it the wrong
-way round inside an admin the browser had laid out correctly. `Tabs`,
-`DropdownMenu` and `Select` are the three, and `Select` shipped without it: the
-Leads screen's Optin filter opened a popup reading LTR, while Analytics and
-Destinations used native `<select>`s and inherited the direction for free.
+way round inside an admin the browser had laid out correctly. `Tabs` and
+`DropdownMenu` take it at the root; `PopoverContent` and `TooltipContent` take it
+on the portaled content, so no call site has to remember it. The Radix `Select`
+that first shipped without it — the Leads filter opened a popup reading LTR — is
+deleted: a tiny list is a native `<select>`, which inherits the direction for
+free (ADR 0139).
 
-`admin-rtl.test.tsx` asserts all three, and asserts the logical-property
+`admin-rtl.test.tsx` asserts each of them, and asserts the logical-property
 convention over `components/ui/*.tsx`; `admin-stylesheet.test.ts` asserts it
 over `index.css`. That pair is the guard.
 

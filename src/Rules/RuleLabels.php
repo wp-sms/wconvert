@@ -304,6 +304,34 @@ final class RuleLabels
     }
 
     /**
+     * An option read INSIDE a sentence, keyed like {@see self::options()}, for
+     * the sets whose labels cannot stand in one.
+     *
+     * "Phone" heads a checkbox; "they are on a phone" is the phrase. Without
+     * these a custom device set read *"they are on Phone or Computer"*. An
+     * option missing here falls back to its label (ADR 0139).
+     *
+     * @return array<string, string>
+     */
+    public static function optionPhrases(): array
+    {
+        return [
+            /* translators: a device inside a sentence: "they are on a phone". */
+            'device_set.mobile' => __('a phone', 'wconvert'),
+            /* translators: a device inside a sentence: "they are on a tablet". */
+            'device_set.tablet' => __('a tablet', 'wconvert'),
+            /* translators: a device inside a sentence: "they are on a computer". */
+            'device_set.desktop' => __('a computer', 'wconvert'),
+            /* translators: a referrer inside a sentence: "they came from a direct visit". */
+            'referrer_set.direct' => __('a direct visit', 'wconvert'),
+            /* translators: a referrer inside a sentence: "they came from a search engine". */
+            'referrer_set.search' => __('a search engine', 'wconvert'),
+            /* translators: a referrer inside a sentence: "they came from social media". */
+            'referrer_set.social' => __('social media', 'wconvert'),
+        ];
+    }
+
+    /**
      * One label, or the key itself where nothing names it.
      *
      * ============================================================================

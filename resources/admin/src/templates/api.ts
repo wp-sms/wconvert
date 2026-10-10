@@ -145,8 +145,8 @@ export interface TemplateLabels {
    */
   /** A few words under a layout's name in the Add menus (ADR 0139). */
   layoutNotes: Record<string, string>;
-  /** The sentence behind {@link layoutNotes}, in ⓘ. Optional so older fixtures still type. */
-  layoutHelp?: Record<string, string>;
+  /** The sentence behind {@link layoutNotes}, in ⓘ. */
+  layoutHelp: Record<string, string>;
   /**
    * What a layout's own setting is called, keyed `"{layout}.{param}"`.
    *

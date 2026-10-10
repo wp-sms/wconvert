@@ -141,9 +141,10 @@ final class RuleCatalogueTest extends TestCase
         $this->assertSame('Shows on', $device['params']['in']['label']);
         $this->assertSame(
             [
-                ['value' => 'mobile', 'label' => 'Phone'],
-                ['value' => 'tablet', 'label' => 'Tablet'],
-                ['value' => 'desktop', 'label' => 'Computer'],
+                // The label heads a checkbox; the phrase reads in a sentence.
+                ['value' => 'mobile', 'label' => 'Phone', 'phrase' => 'a phone'],
+                ['value' => 'tablet', 'label' => 'Tablet', 'phrase' => 'a tablet'],
+                ['value' => 'desktop', 'label' => 'Computer', 'phrase' => 'a computer'],
             ],
             $device['params']['in']['options']
         );

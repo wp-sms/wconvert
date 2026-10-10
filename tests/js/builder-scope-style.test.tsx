@@ -101,7 +101,7 @@ const LABELS = {
     panel: 'Colored box',
     media: LABELS_FIXTURE.layouts.media,
   },
-  layoutNotes: {
+  layoutHelp: {}, layoutNotes: {
     stack: 'Blocks stacked top to bottom.',
     row: 'Blocks along one line.',
     split: 'Two panes, each holding its own blocks.',

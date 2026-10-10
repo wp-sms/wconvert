@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator } from '../components/ui/option-menu';
+import { OptionGroup, OptionItem, OptionMenuContent, OptionSeparator, refusal } from '../components/ui/option-menu';
 import { isFreeInstall, tierProductName } from '../goals/availability';
 import { Dialog, DialogTrigger, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
 import { AdminDialogContent } from '../components/ui/admin-dialog';
@@ -412,7 +412,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const deletionReason = optionalRemoval ? optionalRemoval.reason : graphDelete?.reason;
   // Why Delete is refused, in two lengths for its menu row (ADR 0139).
   const deletionRefusal = tree.graph
-    ? deletionReason ? { short: (optionalRemoval ?? graphDelete)?.short ?? deletionReason, reason: deletionReason } : null
+    ? deletionReason ? refusal((optionalRemoval ?? graphDelete)?.short ?? deletionReason, deletionReason) : null
     : removal.screens.length === 0 ? whyScreenStays(tree, step) : null;
   const applyGraphRemoval = (next: TemplateTree, destination: string) => {
     deletedGraphScreen.current = true;
@@ -537,12 +537,12 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const capped = !tree.graph && tree.steps.length >= 7;
   const canAddOptional = tree.graph ? canAddGraphResultSignup || canAddGraphCapture
     : !!primaryChannel && tree.submissions.length === 1 || tree.submissions.length === 0 && tree.steps.some(screen => screen.kind === 'result');
-  const capRefusal = { short: __('Up to 7 screens', 'wconvert'), reason: __('A campaign without answer paths holds up to 7 screens.', 'wconvert') };
+  const capRefusal = refusal(__('Up to 7 screens', 'wconvert'), __('A campaign without answer paths holds up to 7 screens.', 'wconvert'));
   const capHelp = journeys
     ? __('Without answer paths a campaign holds up to 7 screens. Let answers choose the next screen to add more.', 'wconvert')
     : __('A campaign without answer paths holds up to 7 screens.', 'wconvert');
   const followupRefusal = capped ? capRefusal : !tree.graph && !canCondition
-    ? { short: __('Needs a choice question first', 'wconvert'), reason: __('Add a choice question here or earlier before making a conditional follow-up.', 'wconvert') } : null;
+    ? refusal(__('Needs a choice question first', 'wconvert'), __('Add a choice question here or earlier before making a conditional follow-up.', 'wconvert')) : null;
   // An optional signup after the result adds a thank-you screen too, so it needs two places.
   const optionalRefusal = !tree.graph && tree.steps.length >= (tree.submissions.length === 0 ? 6 : 7) ? capRefusal : null;
   const upgrade = () => {
@@ -561,8 +561,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         {journeys && <OptionItem icon={ListPlus} name={__('Follow-up question', 'wconvert')} refused={followupRefusal} onSelect={() => add('input', true)} />}
         {canAddOptional && <OptionItem icon={Plus} name={__('Optional signup', 'wconvert')} refused={optionalRefusal} onSelect={addOptional} />}
       </OptionGroup>
-      {lockedQuestions && <OptionGroup heading={sprintf(__('With %s', 'wconvert'), tierProductName('basic'))} icon="lock"
-        tip={__('Question screens and follow-ups come with Pro.', 'wconvert')}>
+      {lockedQuestions && <OptionGroup heading={sprintf(/* translators: %s: the product that supplies these, e.g. “WConvert Pro”. */ __('With %s', 'wconvert'), tierProductName('basic'))} icon="lock"
+        tip={sprintf(/* translators: %s: the product that supplies them, e.g. “WConvert Pro”. */ __('Question screens and follow-ups come with %s.', 'wconvert'), tierProductName('basic'))}>
         <OptionItem icon={ListPlus} name={__('Question', 'wconvert')} />
         <OptionItem icon={ListPlus} name={__('Follow-up question', 'wconvert')} />
       </OptionGroup>}
@@ -619,7 +619,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                   : primaryChannel && tree.submissions.length === 1 || tree.submissions.length === 0 && tree.steps.some(s => s.kind === 'result')) &&
                   <OptionGroup heading={tree.submissions.length === 0
                     ? __('After the result', 'wconvert')
-                    : tree.graph ? __('After the primary signup', 'wconvert') : sprintf(__('Before %s', 'wconvert'), tree.steps[tree.steps.length - 1].name)}>
+                    : tree.graph ? __('After the primary signup', 'wconvert') : sprintf(/* translators: %s: a screen's name. */ __('Before %s', 'wconvert'), tree.steps[tree.steps.length - 1].name)}>
                     <OptionItem icon={Plus} name={__('Add optional signup', 'wconvert')} refused={optionalRefusal} onSelect={addOptional} />
                   </OptionGroup>}
                 {journeys && !tree.graph && <OptionGroup>
@@ -696,15 +696,15 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 caption={kindWord}
                 actions={<>
                   <DropdownMenu><DropdownMenuTrigger asChild><button ref={deleteTrigger} type="button" className="wconvert-journey-pane__menu" aria-label={sprintf(__('Actions for %s', 'wconvert'), current.name)} title={sprintf(__('Actions for %s', 'wconvert'), current.name)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
-                    <OptionMenuContent align="end" aria-label={sprintf(__('Actions for %s', 'wconvert'), current.name)}>
+                    <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a screen's name. */ __('Actions for %s', 'wconvert'), current.name)}>
                       {!tree.graph && <OptionItem icon={Copy} name={__('Duplicate', 'wconvert')} onSelect={duplicate}
                         refused={current.kind === 'acknowledgement' || current.kind === 'result'
-                          ? { short: __('Endings stay single', 'wconvert'), reason: __('Endings and result screens can’t be duplicated.', 'wconvert') }
+                          ? refusal(__('Endings stay single', 'wconvert'), __('Endings and result screens can’t be duplicated.', 'wconvert'))
                           : tree.steps.length >= 7 ? capRefusal : null} />}
                       {!tree.graph && <OptionItem icon={ArrowUp} name={__('Move up', 'wconvert')} refused={screenMoveRefusal(tree, step, step - 1)} onSelect={() => move(step, step - 1)} />}
                       {!tree.graph && <OptionItem icon={ArrowDown} name={__('Move down', 'wconvert')} refused={screenMoveRefusal(tree, step, step + 1)} onSelect={() => move(step, step + 1)} />}
                       {tree.graph && <OptionItem icon={Workflow} name={__('Move to another path…', 'wconvert')} onSelect={() => setMoving(value => !value)} />}
-                      <OptionItem icon={widePanel ? Minimize2 : Maximize2} name={widePanel ? __('Narrow panel', 'wconvert') : __('Expand panel', 'wconvert')} onSelect={() => setWidePanel(value => !value)} />
+                      <OptionItem className="wconvert-expand-settings" icon={widePanel ? Minimize2 : Maximize2} name={widePanel ? __('Narrow panel', 'wconvert') : __('Expand panel', 'wconvert')} onSelect={() => setWidePanel(value => !value)} />
                       <OptionSeparator />
                       {/* A refused delete stays reachable and says why, rather than vanishing from the keyboard (GUIDELINES §6). */}
                       <OptionItem icon={Trash2} destructive onSelect={askToDelete}

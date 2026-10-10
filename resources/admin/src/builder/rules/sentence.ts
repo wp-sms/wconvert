@@ -654,8 +654,11 @@ function format(param: RuleParam, value: unknown): string {
     return readableHours(value) ?? String(value);
   }
 
-  const one = (each: unknown): string =>
-    param.options.find((option) => option.value === String(each))?.label ?? String(each);
+  const one = (each: unknown): string => {
+    const option = param.options.find((candidate) => candidate.value === String(each));
+
+    return option?.phrase ?? option?.label ?? String(each);
+  };
 
   if (Array.isArray(value)) {
     return join(value.map(one), _x('or', 'joins the values of one set-valued rule', 'wconvert'));

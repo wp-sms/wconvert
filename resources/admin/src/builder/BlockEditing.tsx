@@ -14,6 +14,8 @@ import {
   OptionMenuContent,
   OptionSeparator,
   OptionSub,
+  refusal,
+  type Refusal,
 } from '../components/ui/option-menu';
 import { ELEMENT_SECTIONS, elementIcon, elementSection, elementSectionName } from './elementIcon';
 import { referencedJourney } from './structure/journey';
@@ -21,7 +23,7 @@ import { useBlockDrag } from './useBlockDrag';
 import { BlockTree } from './BlockTree';
 import { nameOfBlock, sentenceFor, type Control } from './BlockRow';
 import { additionsIn, nodeFor, type ConvertingAct } from './structure/catalogue';
-import { refusalWithShort, whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
+import { duplicationRefusal, removalRefusal, whyDuplicationIsRefused, whyRemovalIsRefused } from './structure/guards';
 import {
   countAt,
   capturesTaken,
@@ -310,8 +312,8 @@ export function RowAction({
     );
   }
 
-  const removal = refusalWithShort(whyRemovalIsRefused(tree, block.path));
-  const copying = refusalWithShort(whyDuplicationIsRefused(tree, block.path));
+  const removal = removalRefusal(tree, block.path);
+  const copying = duplicationRefusal(tree, block.path);
   const first = block.position === 1;
   const last = block.position === block.setSize;
 
@@ -324,14 +326,14 @@ export function RowAction({
           <span className="sr-only">{sprintf(__('Add, copy or delete %s', 'wconvert'), name)}</span>
         </Button>
       </DropdownMenuTrigger>
-      <OptionMenuContent align="end" aria-label={sprintf(__('Actions for %s', 'wconvert'), name)}>
+      <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a block's name, e.g. “Headline”. */ __('Actions for %s', 'wconvert'), name)}>
         {block.level > 1 && (
           <>
             <OptionItem icon={ArrowUp} name={__('Move up', 'wconvert')}
-              refused={first ? { short: __('Already first', 'wconvert'), reason: __('Already first', 'wconvert') } : null}
+              refused={first ? refusal(__('Already first', 'wconvert')) : null}
               onSelect={() => onMove(block, -1, 0)} />
             <OptionItem icon={ArrowDown} name={__('Move down', 'wconvert')}
-              refused={last ? { short: __('Already last', 'wconvert'), reason: __('Already last', 'wconvert') } : null}
+              refused={last ? refusal(__('Already last', 'wconvert')) : null}
               onSelect={() => onMove(block, 1, 0)} />
             <OptionSeparator />
           </>
@@ -363,7 +365,7 @@ interface Choice {
   readonly name: string;
   readonly hint: string | null;
   readonly tip: string | null;
-  readonly refused: { readonly short: string; readonly reason: string } | null;
+  readonly refused: Refusal | null;
 }
 
 /**
@@ -373,19 +375,19 @@ interface Choice {
 function choicesAt(tree: TemplateTree, at: Spot, act: ConvertingAct, labels: TemplateLabels, flat: boolean) {
   const taken = capturesTaken(tree);
   const choices = additionsIn(tree, at, act).flatMap<Choice>(addition => {
-    const refused = addition.refused === null ? null : { short: addition.refusedShort ?? addition.refused, reason: addition.refused };
+    const refused = addition.refused === null ? null : refusal(addition.refusedShort ?? addition.refused, addition.refused);
     if (addition.type === 'field' && flat) {
       return FIELDS.map(capture => ({
         type: 'field', leaf: true, capture, name: nameOf(labels.fields, capture), tip: null,
         hint: nameOf(labels.nodes, 'field'),
-        refused: refused ?? (taken.includes(capture) ? { short: __('Already on this form', 'wconvert'), reason: __('Already on this form', 'wconvert') } : null),
+        refused: refused ?? (taken.includes(capture) ? refusal(__('Already on this form', 'wconvert')) : null),
       }));
     }
     return [{
       type: addition.type, leaf: addition.leaf, refused,
       name: nameOf(addition.leaf ? labels.nodes : labels.layouts, addition.type),
       hint: addition.leaf ? null : nameOf(labels.layoutNotes, addition.type),
-      tip: addition.leaf ? null : labels.layoutHelp?.[addition.type] ?? null,
+      tip: addition.leaf ? null : labels.layoutHelp[addition.type] ?? null,
     }];
   });
 
@@ -492,7 +494,7 @@ function AddMenu({
         {choices.map(choice => choice.type === 'field' && choice.refused === null ? (
           <OptionSub key="field" icon={elementIcon('field')} name={choice.name}>
             {FIELDS.map(capture => <OptionItem key={capture} icon={elementIcon('field', capture)} name={nameOf(labels.fields, capture)}
-              refused={taken.includes(capture) ? { short: __('Already on this form', 'wconvert'), reason: __('Already on this form', 'wconvert') } : null}
+              refused={taken.includes(capture) ? refusal(__('Already on this form', 'wconvert')) : null}
               onSelect={() => onAdd(at, 'field', capture)} />)}
           </OptionSub>
         ) : (

@@ -32,7 +32,7 @@ import { TooltipContent } from "./tooltip"
  * ============================================================================
  * A REFUSED ITEM STAYS FOCUSABLE, AND ITS REASON IS ITS DESCRIPTION.
  * ============================================================================
- * `aria-disabled`, never `disabled` (GUIDELINES §6): a disabled menu item is
+ * `aria-disabled`, never `disabled` (GUIDELINES §14): a disabled menu item is
  * skipped by the keyboard, and the reason goes with it. The row shows a short
  * reason and the full sentence is in ⓘ — an `InfoTip` beside the item in list
  * mode, and a tooltip on the item itself in menu mode, because a button inside
@@ -257,7 +257,7 @@ function OptionGroup({
   const mode = React.useContext(ModeContext)
   const id = React.useId()
   const Icon = icon ? GROUP_ICONS[icon] : null
-  const about = heading ? sprintf(/* translators: %s: a menu section, e.g. "With WConvert Pro". */ __("About %s", "wconvert"), heading) : __("More about this", "wconvert")
+  const about = heading ? sprintf(/* translators: %s: what the help is about, e.g. a menu item or section. */ __("About %s", "wconvert"), heading) : __("More about this", "wconvert")
   const tipFor = (text: string, label: string) =>
     mode === "list" ? <InfoTip label={label}>{text}</InfoTip> : <TipGlyph tip={text} />
   const described = [tip ? `${id}-tip` : null, noteTip ? `${id}-note` : null].filter(Boolean).join(" ") || undefined
@@ -271,7 +271,7 @@ function OptionGroup({
   const noteLine = note ? (
     <p className="wconvert-option-menu__note">
       <span>{note}</span>
-      {noteTip ? tipFor(noteTip, sprintf(/* translators: %s: a short note, e.g. "Up to 7 screens". */ __("About %s", "wconvert"), note)) : null}
+      {noteTip ? tipFor(noteTip, sprintf(/* translators: %s: what the help is about, e.g. a menu item or section. */ __("About %s", "wconvert"), note)) : null}
     </p>
   ) : null
   // Menu mode has no reachable ⓘ, so the tips are the group's description.
@@ -302,6 +302,15 @@ function OptionGroup({
   )
 }
 
+/** Why an item cannot be chosen here: a few words on screen, the sentence in ⓘ. */
+export interface Refusal {
+  readonly short: string
+  readonly reason: string
+}
+
+/** A refusal whose few words are already the whole of it, so it has no ⓘ. */
+export const refusal = (short: string, reason: string = short): Refusal => ({ short, reason })
+
 export interface OptionChip {
   readonly label: string
   /** A fuller name where the chip's own words lean on the item's. */
@@ -321,7 +330,7 @@ export interface OptionItemProps {
   /** The longer help, in ⓘ. */
   readonly tip?: string | null
   /** Why it cannot be chosen here: a few words on screen, the sentence in ⓘ. */
-  readonly refused?: { readonly short: string; readonly reason: string } | null
+  readonly refused?: Refusal | null
   /** Presets offered under the item, each its own stop. */
   readonly chips?: readonly OptionChip[]
   readonly checked?: boolean
@@ -337,6 +346,8 @@ export interface OptionItemProps {
    * A refusal has a reason and stays focusable; this has neither.
    */
   readonly disabled?: boolean
+  /** A hook for a rule about this one item, e.g. hiding it on a narrow screen. */
+  readonly className?: string
 }
 
 /** One option. See the file's docblock for what refused means in each mode. */
@@ -354,6 +365,7 @@ function OptionItem({
   href,
   onSelect,
   disabled,
+  className,
 }: OptionItemProps) {
   const mode = React.useContext(ModeContext)
   const id = React.useId()
@@ -400,7 +412,7 @@ function OptionItem({
   if (mode === "menu") {
     const item = (
       <DropdownMenuPrimitive.Item
-        className="wconvert-option-menu__item"
+        className={cn("wconvert-option-menu__item", className)}
         textValue={name}
         disabled={disabled}
         // Radix spreads these over its own `role="menuitem"`, so an undefined
@@ -436,7 +448,7 @@ function OptionItem({
   const head = interactive ? (
     <button
       type="button"
-      className="wconvert-option-menu__item"
+      className={cn("wconvert-option-menu__item", className)}
       data-option-nav=""
       disabled={disabled}
       aria-label={label}
@@ -466,7 +478,11 @@ function OptionItem({
     >
       {head}
       {more ? (
-        <InfoTip label={sprintf(/* translators: %s: a menu item, e.g. "Content archive". */ refused ? __("Why: %s", "wconvert") : __("About %s", "wconvert"), name)}>
+        <InfoTip label={sprintf(refused
+          /* translators: %s: a menu item that cannot be chosen here, e.g. "Product recommendations". */
+          ? __("Why: %s", "wconvert")
+          /* translators: %s: what the help is about, e.g. a menu item or section. */
+          : __("About %s", "wconvert"), name)}>
           {more}
         </InfoTip>
       ) : null}

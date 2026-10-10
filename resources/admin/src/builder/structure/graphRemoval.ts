@@ -30,7 +30,7 @@ export function graphRemovalPlan(tree: TemplateTree, screenId: string) {
       ? [__('The only ending', 'wconvert'), __('Keep this ending so visitors have somewhere to finish. You can edit its content and incoming paths.', 'wconvert')]
       : nodes.some(node => node.type === 'field' || node.type === 'consent' || node.type === 'button' && 'action' in node && node.action === 'submit')
         ? [__('Collects contact details', 'wconvert'), __('This screen collects or saves contact details. Its fields, consent and save settings must stay together; it cannot be deleted here.', 'wconvert')]
-        : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(__('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))]
+        : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))]
           : (isEntry || incoming.length > 0) && !targets.length
             ? [__('Nowhere to continue', 'wconvert'), __('There is no suitable continuation. Add a screen or update the paths before deleting this one.', 'wconvert')] : null;
   const reason = refusal?.[1] ?? null;

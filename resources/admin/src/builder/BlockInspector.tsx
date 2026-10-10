@@ -4,11 +4,11 @@ import { journeysSupported, commerceSupported } from '../settings';
 import { tierProductName, unlessFree } from '../goals/availability';
 import { cloneElement, isValidElement, useId, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeftRight, Eye, EyeOff, Layers, LayoutPanelLeft, type LucideIcon } from 'lucide-react';
+import { ArrowLeftRight, Eye, EyeOff, type LucideIcon } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { InfoTip } from '../shell/InfoTip';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionGroup, OptionItem, OptionMenuContent } from '../components/ui/option-menu';
+import { OptionGroup, OptionItem, OptionMenuContent, refusal } from '../components/ui/option-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ParamChoice } from './ParamChoice';
 import { BorderPreview, ImageFitPreview, ImageShapePreview, SplitRatioPreview } from './ChoicePreview';
@@ -247,8 +247,7 @@ interface StyleSlots { lead?: ReactNode; footerEnd?: ReactNode }
 
 /** An element's kind as its icon (ADR 0136): a headline is not a "T" like everything else. */
 function elementIconOf(type: string, captures: string | null, leaf: boolean): LucideIcon {
-  if (!leaf) return type === 'split' ? LayoutPanelLeft : Layers;
-  return elementIcon(type, captures);
+  return elementIcon(type, leaf ? captures : null);
 }
 
 function contentBody({
@@ -444,7 +443,7 @@ function SwapMenu({
                 key={swap.to}
                 name={said}
                 checked={swap.current}
-                refused={swap.refused === null ? null : { short: swap.refusedShort ?? swap.refused, reason: swap.refused }}
+                refused={swap.refused === null ? null : refusal(swap.refusedShort ?? swap.refused, swap.refused)}
                 onSelect={swap.current ? undefined : () =>
                   onSwap(
                     { ...template, tree: withSwapped(template.tree, path, swap.to, act, labels) },

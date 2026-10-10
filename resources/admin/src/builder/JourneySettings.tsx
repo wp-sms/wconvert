@@ -25,7 +25,7 @@ import { InfoTip } from '../shell/InfoTip';
 import { FieldHeading, PanelField, PanelHint, PanelSection } from './PanelSection';
 import { CheckRow } from '../shell/CheckRow';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionItem, OptionMenuContent } from '../components/ui/option-menu';
+import { OptionItem, OptionMenuContent, refusal } from '../components/ui/option-menu';
 import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 type ChoiceQuestion = QuestionNode & { id: string };
@@ -306,7 +306,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
                   {used && <OptionItem icon={GitBranch} name={__('Review uses', 'wconvert')} trail={uses > 0 ? uses : undefined}
                     onSelect={() => { setRepair({ question: question.id, value: option.value }); setReplacement(''); setRetiring(false); }} />}
                   {!used && <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert')}
-                    refused={(question.options?.length ?? 0) <= 2 ? { short: __('Keeps two choices', 'wconvert'), reason: __('A choice question keeps at least two choices.', 'wconvert') } : null}
+                    refused={(question.options?.length ?? 0) <= 2 ? refusal(__('Keeps two choices', 'wconvert'), __('A choice question keeps at least two choices.', 'wconvert')) : null}
                     onSelect={() => change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }))} />}
                 </OptionMenuContent>
               </DropdownMenu>
@@ -455,9 +455,9 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
         <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert'), selected.heading || sprintf(__('Result %d', 'wconvert'), selectedAt + 1))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
           <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert'), selected.heading || sprintf(__('Result %d', 'wconvert'), selectedAt + 1))}>
             {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move earlier', 'wconvert')} onSelect={() => move(selectedAt, selectedAt - 1)}
-              refused={selectedAt === 0 ? { short: __('Already first', 'wconvert'), reason: __('Already first', 'wconvert') } : null} />}
+              refused={selectedAt === 0 ? refusal(__('Already first', 'wconvert')) : null} />}
             {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move later', 'wconvert')} onSelect={() => move(selectedAt, selectedAt + 1)}
-              refused={selectedAt >= variants.length - 2 ? { short: __('The fallback stays last', 'wconvert'), reason: __('The result for all other answers stays last.', 'wconvert') } : null} />}
+              refused={selectedAt >= variants.length - 2 ? refusal(__('The fallback stays last', 'wconvert'), __('The result for all other answers stays last.', 'wconvert')) : null} />}
             <OptionItem icon={Trash2} destructive name={__('Remove result', 'wconvert')} onSelect={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }} />
           </OptionMenuContent>
         </DropdownMenu>

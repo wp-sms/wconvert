@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import type { Refusal } from '../../components/ui/option-menu';
 import type { QuestionCondition, TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
 import { graphEdgeId, graphReaches } from './graph';
 
@@ -406,7 +407,7 @@ export function movedScreen(tree: TemplateTree, from: number, to: number): Templ
  * would move it. Asked of the move itself, so the menu and the move cannot
  * disagree.
  */
-export function screenMoveRefusal(tree: TemplateTree, from: number, to: number): { short: string; reason: string } | null {
+export function screenMoveRefusal(tree: TemplateTree, from: number, to: number): Refusal | null {
   if (movedScreen(tree, from, to) !== tree) return null;
   if (to < 0) return { short: __('Already first', 'wconvert'), reason: __('This is the first screen.', 'wconvert') };
   if (from >= tree.steps.length - 1 || to >= tree.steps.length - 1) {
@@ -433,7 +434,7 @@ export function screenRemoval(tree: TemplateTree, index: number): { screens: str
  * Why {@link screenRemoval} keeps this screen, in two lengths for a menu row
  * (ADR 0139), or null where it may go.
  */
-export function whyScreenStays(tree: TemplateTree, index: number): { short: string; reason: string } | null {
+export function whyScreenStays(tree: TemplateTree, index: number): Refusal | null {
   const screen = tree.steps[index];
   if (!screen) return null;
   if (screen.kind === 'result') return { short: __('Keeps the result', 'wconvert'), reason: __('Keep this result screen. Edit its results or content instead.', 'wconvert') };
