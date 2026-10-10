@@ -43,6 +43,11 @@ export function toRule(
    * with it, and that takes the marker with it.
    */
   degradedFrom: string | null = null,
+  /**
+   * "is not" (ADR 0139), carried through every edit like the marker above.
+   * Stored only when true, and only where the type can say it.
+   */
+  negate = false,
 ): Rule {
   const rule: Rule = { type: type.type };
 
@@ -56,6 +61,10 @@ export function toRule(
 
   if (degradedFrom !== null) {
     rule[DEGRADED_FROM] = degradedFrom;
+  }
+
+  if (negate && type.negatable) {
+    rule.negate = true;
   }
 
   return rule;
@@ -105,7 +114,7 @@ export function fromRule(rule: Rule, types: readonly RuleType[]): ReadRule | nul
 
   const marker = rule[DEGRADED_FROM];
 
-  return { type, preset, values, filled, degradedFrom: typeof marker === 'string' ? marker : null };
+  return { type, preset, values, filled, degradedFrom: typeof marker === 'string' ? marker : null, negate: rule.negate === true };
 }
 
 export interface ReadRule {
@@ -129,6 +138,8 @@ export interface ReadRule {
    * carry it (ADR 0012).
    */
   readonly degradedFrom: string | null;
+  /** Whether the rule reads "is not" (ADR 0139). */
+  readonly negate: boolean;
 }
 
 /** Does this rule carry everything the preset decides? */

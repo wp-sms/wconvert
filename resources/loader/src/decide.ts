@@ -1,6 +1,6 @@
 import type { Frequency, PayloadEntry, Rule, RuleEvaluator, VisitorState } from './types';
 import { isAllowed } from './frequency';
-import { audienceMatches, audienceRules, openingMatches, openingRules, type Answer } from './display-rules';
+import { audienceMatches, audienceRules, leafAnswer, openingMatches, openingRules, type Answer } from './display-rules';
 import { SITE_SLOT } from './state';
 
 /**
@@ -130,7 +130,9 @@ export function audienceAnswer(entry: PayloadEntry, decision: Decision): Answer 
 }
 export function readRule(rule: Rule, decision: Decision): Answer {
   if (decision.withheld.has(rule.type)) return 'blocked';
-  try { return decision.evaluators.get(rule.type)?.holds(rule) === true; } catch { return false; }
+  const evaluator = decision.evaluators.get(rule.type);
+  // No module, or one that throws, is false and is NOT inverted: fail shut.
+  try { return !!evaluator && leafAnswer(rule, evaluator.holds(rule) === true, evaluator.known?.(rule)); } catch { return false; }
 }
 export function explicitBlock(entry: PayloadEntry, decision: Decision): string | null {
   if ((entry.starts_at !== undefined && decision.now < entry.starts_at) || (entry.ends_at !== undefined && decision.now >= entry.ends_at)) return 'schedule';

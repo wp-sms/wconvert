@@ -155,6 +155,7 @@ final class RuleCatalogueTest extends TestCase
                 // The same preset read inside a sentence rather than over a
                 // control — "... they are on a phone", never "... Phone".
                 'phrase' => 'they are on a phone',
+                'not_phrase' => 'they are not on a phone',
                 'fixed' => ['in' => ['mobile']],
             ],
             $device['presets'][0]
@@ -360,5 +361,29 @@ final class RuleCatalogueTest extends TestCase
                 }
             }
         }
+    }
+
+    /**
+     * What the builder needs to say "is not" (ADR 0139): whether a type may,
+     * the two words its switch shows, and the negated phrase on the type and
+     * on each phrased preset.
+     */
+    public function testANegatableTypeCarriesItsWordsAndNegatedPhrases(): void
+    {
+        $device = self::type(self::catalogue(), 'conditions', 'device');
+
+        $this->assertTrue($device['negatable']);
+        $this->assertSame(['is' => 'is', 'not' => 'is not'], $device['negation']);
+        $this->assertSame('they are not on %1$s', $device['not_phrase']);
+        $this->assertSame('they are not on a phone', $device['presets'][0]['not_phrase']);
+
+        $cart = self::type(self::catalogue(true, true), 'conditions', 'cart_has_items');
+        $this->assertSame(['is' => 'has items', 'not' => 'is empty'], $cart['negation']);
+        $this->assertSame('their cart is empty', $cart['not_phrase']);
+
+        $click = self::type(self::catalogue(true), 'triggers', 'click_element');
+        $this->assertFalse($click['negatable']);
+        $this->assertNull($click['negation']);
+        $this->assertNull($click['not_phrase']);
     }
 }

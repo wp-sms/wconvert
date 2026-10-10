@@ -145,7 +145,8 @@ function wherePicks(): readonly Pick[] {
 
 function audiencePick(id: string, label: () => string, fragment: () => string, rule: Rule, held: (rule: Rule) => boolean): Pick {
   return { id, types: [rule.type], template: label, label, fragment,
-    matches: value => { const only = onlyAudienceRule(value); return only !== undefined && only.type === rule.type && held(only); },
+    // A negated rule is never a pick: "Device is not Phone" is Custom, not "Phones only" (ADR 0139).
+    matches: value => { const only = onlyAudienceRule(value); return only !== undefined && only.type === rule.type && only.negate !== true && held(only); },
     apply: value => withAudience(value, oneGroup(rule)) };
 }
 

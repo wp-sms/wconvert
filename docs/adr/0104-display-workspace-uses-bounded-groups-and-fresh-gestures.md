@@ -10,7 +10,7 @@ Display is one workspace: Pages, Audience, Opening moment, Schedule & limits, wi
 
 > _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Pages, Audience, Opening moment, Schedule & limits, with a live summary". It is five plain questions instead — Where does it show?, Who sees it?, When does it open?, How often? and Dates — one open at a time, with one summary sentence above them and no side summary. Alternative audiences sit behind "+ Or a different group of visitors" under Custom…._
 
-`config.display_rules` is the sole saved and published policy. Audience is explicit Everyone or up to five alternative groups; each group matches ALL or ANY of up to eight leaves. Groups combine with OR. Opening is explicit Immediate, Automatic (ALL/ANY and minimum elapsed seconds), or Click (alternative selectors). There is no recursive expression tree or second legacy runtime. Old pre-release drafts require an explicit replacement before save/publish.
+`config.display_rules` is the sole saved and published policy. Audience is explicit Everyone or up to five alternative groups; each group matches ALL or ANY of up to eight leaves. *Amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): a group is "Group N · Match [all ▾] of these" even with one rule, groups are divided by a bold OR, an audience leaf may carry `negate`, and at the limits the Add controls are replaced by "Up to 8 rules in a group" and "Up to 5 groups" with ⓘ rather than simply disappearing.* Groups combine with OR. Opening is explicit Immediate, Automatic (ALL/ANY and minimum elapsed seconds), or Click (alternative selectors). There is no recursive expression tree or second legacy runtime. Old pre-release drafts require an explicit replacement before save/publish.
 
 Group and rule IDs are assigned once on creation and preserved through edits.
 The admin generates them with `crypto.getRandomValues`, which is available on
@@ -29,7 +29,7 @@ The catalog's existing declarative recipes remain authoring input and are compil
 
 The authoring controls expose explicit values: sign-in status has an unset
 choice distinct from Yes/No, quick delays and scroll choices name their numbers,
-and ALL/ANY explain whether every rule or just one must match. URL-presence
+and ALL/ANY explain whether every rule or just one must match (*amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): as the words in "Match [all ▾] of these" and "Opens when [any ▾] of these happen", not as two radios*). URL-presence
 rules without values are valid and summarised as presence checks. Technical
 selector guidance stays on demand; exit and inactivity explain what is observed.
 

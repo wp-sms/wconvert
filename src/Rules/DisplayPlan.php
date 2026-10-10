@@ -43,7 +43,7 @@ final class DisplayPlan
                         ['rules' => self::leaves($group['rules'] ?? null, 'audience', $vocabulary, $ids)];
                 }, $groups)];
         } else {
-            throw new \InvalidArgumentException(__('Choose Everyone or Specific visitors.', 'wconvert'));
+            throw new \InvalidArgumentException(__('Choose Everyone or Custom.', 'wconvert'));
         }
         $opening = $input['opening'];
         $mode = $opening['mode'] ?? '';
@@ -103,11 +103,17 @@ final class DisplayPlan
             if (!is_array($row) || !is_string($row['type'] ?? null) || isset($row['rules']) || isset($row['groups'])) {
                 throw new \InvalidArgumentException(__('Rules cannot contain nested groups.', 'wconvert'));
             }
-            if (array_diff(array_keys($row), ['id', 'type', RuleVocabulary::DEGRADED_FROM, ...array_keys($vocabulary->paramsOf($row['type']))]) !== []) throw new \InvalidArgumentException(__('Unknown rule parameter.', 'wconvert'));
+            if (array_diff(array_keys($row), ['id', 'type', 'negate', RuleVocabulary::DEGRADED_FROM, ...array_keys($vocabulary->paramsOf($row['type']))]) !== []) throw new \InvalidArgumentException(__('Unknown rule parameter.', 'wconvert'));
             $kind = $vocabulary->kindOf($row['type']);
             $allowed = $slot === 'audience' ? in_array($kind, [RuleKind::Condition, RuleKind::Visitor], true)
                 : ($kind === RuleKind::Trigger && ($slot === 'click' ? $row['type'] === 'click_element' : !in_array($row['type'], ['click_element', 'page_load'], true)));
             if (!$allowed) throw new \InvalidArgumentException(__('This rule is unknown or belongs in a different section.', 'wconvert'));
+            // "is not" is a flag on ONE audience leaf, never an operator and never
+            // on a group, so ADR 0005's "no expression language" still holds (ADR 0139).
+            $negate = $row['negate'] ?? false;
+            if (!is_bool($negate) || ($negate && ($slot !== 'audience' || !$vocabulary->negatable($row['type'])))) {
+                throw new \InvalidArgumentException(__('This rule can’t be negated.', 'wconvert'));
+            }
             $out = ['id' => self::id($row, $ids), 'type' => $row['type']];
             foreach ($vocabulary->paramsOf($row['type']) as $name => $param) {
                 if (!array_key_exists($name, $row)) continue;
@@ -118,6 +124,9 @@ final class DisplayPlan
                 $out[$name] = $value;
             }
             if (isset($row[RuleVocabulary::DEGRADED_FROM])) $out[RuleVocabulary::DEGRADED_FROM] = $row[RuleVocabulary::DEGRADED_FROM];
+            // Stored only when true: the row is rebuilt key by key, so leaving
+            // this out would drop it silently on every save.
+            if ($negate) $out['negate'] = true;
             $result[] = $out;
         }
         return $result;
@@ -140,12 +149,26 @@ final class DisplayPlan
             if (!$group['rules']) $issues[] = __('Add a rule to each group.', 'wconvert');
             $devices = null;
             $signedIn = [];
+            // Each rule read without its id or its negation, so the same rule
+            // asked both ways can be told apart from two different rules.
+            $asked = [];
             $gestures = 0;
             $idle = false;
             foreach ($group['rules'] as $rule) {
                 if ($vocabulary->signalOf($rule['type']) === 'gesture' && $rule['type'] !== 'click_element') ++$gestures;
                 $idle = $idle || $rule['type'] === 'inactivity';
-                if ($rule['type'] === 'device' && is_array($rule['in'] ?? null)) $devices = $devices === null ? $rule['in'] : array_intersect($devices, $rule['in']);
+                $negated = ($rule['negate'] ?? false) === true;
+                // An empty set is incomplete, which is said below; it is not also a contradiction.
+                if ($rule['type'] === 'device' && is_array($rule['in'] ?? null) && $rule['in'] !== []) {
+                    // What is left of every device: a plain rule narrows to its
+                    // set, a negated one takes its set away (ADR 0139).
+                    $devices ??= $vocabulary->paramsOf('device')['in']['options'] ?? [];
+                    $devices = $negated ? array_diff($devices, $rule['in']) : array_intersect($devices, $rule['in']);
+                }
+                $question = $rule;
+                unset($question['id'], $question['negate']);
+                ksort($question);
+                $asked[(string) wp_json_encode($question)][$negated ? 'not' : 'is'] = true;
                 if ($rule['type'] === 'logged_in') $signedIn[] = $rule['value'] ?? null;
                 foreach ($vocabulary->paramsOf($rule['type']) as $name => $param) {
                     $value = $rule[$name] ?? null;
@@ -168,7 +191,7 @@ final class DisplayPlan
                         default => is_string($value) && trim($value) !== '',
                     };
                     /* translators: 1: a display rule's name, for example "Time on page", 2: the name of the rule's setting that is incomplete. */
-                    if (!$valid) $issues[] = sprintf(__('%1$s: complete the %2$s value.', 'wconvert'), RuleLabels::types()[$rule['type']] ?? $rule['type'], $name);
+                    if (!$valid) $issues[] = sprintf(__('%1$s: complete the %2$s value.', 'wconvert'), RuleLabels::types()[$rule['type']] ?? $rule['type'], RuleLabels::param($rule['type'], $name));
                 }
             }
             if (($group['match'] ?? 'any') === 'all') {
@@ -177,7 +200,8 @@ final class DisplayPlan
                     $issues[] = __('Ad blocking cannot be both detected and not detected. Use ANY or change the values.', 'wconvert');
                 }
             }
-            if (($group['match'] ?? 'any') === 'all' && ($devices === [] || (in_array(true, $signedIn, true) && in_array(false, $signedIn, true)))) $issues[] = __('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert');
+            $bothWays = array_filter($asked, static fn (array $ways): bool => count($ways) === 2) !== [];
+            if (($group['match'] ?? 'any') === 'all' && ($devices === [] || $bothWays || (in_array(true, $signedIn, true) && in_array(false, $signedIn, true)))) $issues[] = __('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert');
             if (($group['match'] ?? 'any') === 'all' && ($gestures > 1 || ($idle && $gestures > 0))) {
                 $issues[] = __('Use ANY for alternative gestures. Inactivity and a leaving gesture cannot be required together.', 'wconvert');
             }
@@ -254,6 +278,9 @@ final class DisplayPlan
                     'role' => array_intersect($context->roles, $rule['value']) !== [],
                     default => null,
                 };
+                // A negated role is answered here, so it is inverted here, before
+                // the short-circuits below; `logged_in` cannot be negated (ADR 0139).
+                if ($answer !== null && ($rule['negate'] ?? false) === true) $answer = !$answer;
                 if ($answer === null) $leaves[] = $rule;
                 elseif ($group['match'] === 'all' && !$answer) { $resolved = false; break; }
                 elseif ($group['match'] === 'any' && $answer) { $resolved = true; break; }

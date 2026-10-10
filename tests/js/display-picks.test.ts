@@ -231,3 +231,17 @@ it('words a chip in the plural its number takes', () => {
   const one = { ...base(), ...after.apply(base(), 1) };
   expect(after.label(one)).toBe('After 1 second');
 });
+
+/** A negated rule is never a quick pick (ADR 0139). */
+describe('a negated audience rule', () => {
+  it('reads as Custom, never as the pick it would otherwise wear', async () => {
+    const { derive } = await import('../../resources/admin/src/builder/rules/picks');
+    const { ruleTypes } = await import('./support/rule-types');
+    const value = {
+      display_rules: { audience: { mode: 'groups' as const, groups: [{ id: 'g', match: 'all' as const, rules: [{ id: 'r', type: 'device', in: ['mobile'], negate: true }] }] }, opening: { mode: 'immediate' as const } },
+      targeting: {}, frequency: { maxPerSession: 1 }, schedule: {}, priority: 0,
+    };
+
+    expect(derive('who', value, ruleTypes())).toMatchObject({ open: true });
+  });
+});

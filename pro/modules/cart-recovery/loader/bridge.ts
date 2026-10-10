@@ -14,6 +14,10 @@ export function createCartEvaluator(changed: () => void): RuleEvaluator {
   }).catch(() => { status = 'unavailable'; changed(); });
   return {
     holds: rule => rule.context_key ? runtime?.cartMatch(rule.context_key) ?? false : cookieMatches(rule),
+    // A projected answer is settled only once the runtime has read the cart; the
+    // cookie is read on the spot. "Cart is empty" waits for it (ADR 0139), and
+    // `watchCart` asks the shell to decide again when it arrives.
+    known: rule => !rule.context_key || runtime?.contextStatus() === 'ready',
     diagnostic: () => runtime?.contextStatus() ?? (url ? status : ''),
     stop: url ? () => { stopped = true; stop?.(); } : undefined,
   };

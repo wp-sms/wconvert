@@ -446,7 +446,9 @@ function ruleTable(heading: string, rules: readonly RuleReport[], labels: Labels
 
     const diagnostic = report.diagnostic
       ? ` — ${text(labels, report.rule.type, report.diagnostic)}` : '';
-    words.textContent = `${text(labels, 'rules', report.rule.type)} — ${answer}${diagnostic}`;
+    // A negated rule says so, and its answer is already the one after "is not".
+    const name = report.negate ? `${text(labels, 'rules', report.rule.type)} ${text(labels, 'display', 'negated')}` : text(labels, 'rules', report.rule.type);
+    words.textContent = `${name} — ${answer}${diagnostic}`;
     item.append(mark, words);
     list.append(item);
   }

@@ -1,4 +1,4 @@
-import { openingRules, audienceRules, groupMatches, openingMatches, type Answer as MatchAnswer } from '../display-rules';
+import { openingRules, audienceRules, groupMatches, leafAnswer, openingMatches, type Answer as MatchAnswer } from '../display-rules';
 import { decide, isOverlay, isSiteCapped, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
 import type { PayloadEntry, Presenter, Rule } from '../types';
 
@@ -49,6 +49,8 @@ export interface RuleReport {
    * changing the rule.
    */
   readonly unsupported: boolean;
+  /** The rule reads "is not" (ADR 0139); {@link answer} is already after it. */
+  readonly negate: boolean;
 }
 
 export interface EntryReport {
@@ -162,14 +164,17 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
     [...decision.evaluators].map(([type, evaluator]) => [
       type,
       {
+        // Passed through, so `decide` here reads a pending answer as the page did.
+        known: evaluator.known?.bind(evaluator),
         holds: (rule: Rule): boolean => {
           try {
             const held = evaluator.holds(rule);
 
-            // Recorded as `decide` reads it — `=== true` — so a module
-            // returning something truthy-but-not-true is reported as the
-            // false the engine acted on rather than as the true it said.
-            answers.set(rule, held === true);
+            // Recorded as `decide` reads it — `=== true`, then through the
+            // same negation — so a module returning something truthy-but-not-
+            // true is reported as the false the engine acted on rather than
+            // as the true it said, and "is not" is reported after it applies.
+            answers.set(rule, leafAnswer(rule, held === true, evaluator.known?.(rule) ?? true) === true);
 
             return held;
           } catch (error) {
@@ -256,8 +261,10 @@ function sideOfWindow(entry: PayloadEntry, now: number): 'before' | 'after' | nu
  * something this browser does not have must not take the panel down with it.
  */
 function held(decision: Decision, rule: Rule): boolean {
+  const evaluator = decision.evaluators.get(rule.type);
+
   try {
-    return decision.evaluators.get(rule.type)?.holds(rule) === true;
+    return evaluator !== undefined && leafAnswer(rule, evaluator.holds(rule) === true, evaluator.known?.(rule) ?? true) === true;
   } catch {
     return false;
   }
@@ -268,4 +275,5 @@ const report = (rule: Rule, answers: ReadonlyMap<Rule, boolean>, decision: Decis
   answer: answers.has(rule) ? (answers.get(rule) as boolean) : null,
   diagnostic: decision.evaluators.get(rule.type)?.diagnostic?.(),
   unsupported: !decision.evaluators.has(rule.type) && !decision.withheld.has(rule.type),
+  negate: rule.negate === true,
 });

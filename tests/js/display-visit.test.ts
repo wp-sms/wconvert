@@ -235,3 +235,19 @@ describe('the verdict', () => {
     expect(check(base({ display_rules: undefined }))).toMatchObject({ opens: false, reason: 'Set up your display rules before testing a visit.' });
   });
 });
+
+/**
+ * Test a visit reads "is not" as the page does (ADR 0139): the facts it has
+ * fields for and the basket's cart answers flip; a yes or no the merchant gave
+ * to "Does this visitor match: {not phrase}" is already about the negated rule.
+ */
+describe('a negated rule, in a sample visit', () => {
+  it('flips the facts it reads and the basket’s answer, and not the merchant’s own', () => {
+    expect(readRule({ type: 'device', in: ['mobile'], negate: true }, visitor())).toBe(true);
+    expect(readRule({ type: 'device', in: ['mobile'], negate: true }, visitor({ device: 'mobile' }))).toBe(false);
+    expect(readRule({ id: 'c', type: 'cart_has_items', negate: true }, visitor(), { c: true })).toBe(false);
+    expect(readRule({ id: 'c', type: 'cart_has_items', negate: true }, visitor(), { c: false })).toBe(true);
+    expect(readRule({ id: 'c', type: 'cart_has_items', negate: true }, visitor(), { c: 'blocked' })).toBe('blocked');
+    expect(readRule({ id: 'x', type: 'products_ready', negate: true }, visitor({ answers: { x: true } }))).toBe(true);
+  });
+});

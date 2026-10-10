@@ -6,6 +6,11 @@ any one), and **Conditions** (*whether* the visitor is eligible — all must hol
 at the instant a Trigger fires). Cart predicates can read asynchronously prepared, expiring facts while their evaluation remains synchronous; unknown never matches ([ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md)). Within each axis the rules are a **flat list of
 `{type, scalar}` entries with implicit AND** — no groups, no nesting, ever.
 
+*Amended by [ADR 0139](0139-one-option-menu-and-sentence-rows.md): an audience leaf of a type the manifest marks
+`negatable` may carry `"negate": true` ("Device is not Phone"). It is a flag on
+one leaf, not an operator, and never applies to a group — the leaf is still one
+closed type with scalar params, so this is still no expression language.*
+
 *Amended by [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md):
 "never sent to the browser" is now **almost** true, and the exception is
 deliberate and narrow. The eligibility inspector prints the Targeting axis —

@@ -104,6 +104,22 @@ final class PayloadTest extends TestCase
      * tag is invisible to all of them and survives aggregation in place
      * (ADR 0004).
      */
+    /**
+     * A negated client-side leaf ships as stored: the browser applies "is not",
+     * never the server and the browser both (ADR 0139).
+     */
+    public function testANegatedLeafReachesTheBrowserAsStored(): void
+    {
+        $plan = ['audience' => ['mode' => 'groups', 'groups' => [['id' => 'g', 'match' => 'all', 'rules' => [
+            ['id' => 'd', 'type' => 'device', 'in' => ['mobile'], 'negate' => true],
+        ]]]], 'opening' => ['mode' => 'immediate']];
+        $set = PublishedOptin::fromSet([['id' => '01A', 'targeting' => [], 'payload' => ['display_rules' => $plan, 'display_type' => 'popup']]]);
+
+        $entries = Payload::forRequest($set, new RequestContext(path: '/'), InstalledRules::free());
+
+        $this->assertSame($plan, $entries[0]['display_rules']);
+    }
+
     public function testThePayloadTravelsAsAJsonScriptTag(): void
     {
         $tag = PayloadTag::render([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);

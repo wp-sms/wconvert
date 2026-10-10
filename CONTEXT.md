@@ -798,7 +798,8 @@ is suspended as for other authored unavailable Conditions. See
 [ADR 0109](docs/adr/0109-ad-block-observation-is-a-bounded-condition.md).
 
 Audience is Everyone or up to five alternative groups. A group requires ALL or
-ANY of up to eight Conditions/account leaves; the groups combine with OR.
+ANY of up to eight Conditions/account leaves; the groups combine with OR. A leaf
+may say "is not" — see [[Negation]].
 Required Goal predicates are outside those alternatives. The chosen expression
 must hold at the instant the opening requirements are met. They are not
 allowed to rely on expired facts: an Optin whose cart emptied while its ten
@@ -822,6 +823,22 @@ count product-link clicks. See [ADR 0120](docs/adr/0120-recommendations-distingu
 > half way", and there is no second spelling meaning "if they already had".
 > Without the split, an engine holding several eligible Optins cannot tell
 > "waiting" from "ineligible".
+
+### Negation
+
+"is not" on one audience leaf: *Device is not Phone*, *Cart is empty*, *User
+role is not Editor*. Stored as `"negate": true` on the leaf, only when true, and
+only on a type the rule manifest marks `negatable` — device, role, time of day,
+referrer, URL parameter and the cart totals. A type with an opposite of its own
+(Sign-in status, Ad blocker, "none of" in the cart sets) and every trigger are
+not negatable.
+
+**It is a flag on a leaf, never an operator**, and never applies to a group, so
+[[Condition]] groups stay ALL or ANY of flat leaves (ADR 0005). An answer that
+is not settled is not flipped: a consent block stays blocked, a rule that cannot
+answer stays false, and a cart still loading reads false rather than "empty". A
+negated rule is never a [[Quick pick]]. See
+[ADR 0139](docs/adr/0139-one-option-menu-and-sentence-rows.md).
 
 ### Goal
 
@@ -1180,6 +1197,9 @@ chip with a number reads the real number. While a question is open, an open
 pick the merchant chose (Custom…, Selected pages, Between two dates) stays
 chosen even if its value comes to match a quick pick; re-opening derives it
 again.
+
+**A negated rule is never a pick.** "Device is not Phone" reads as Custom…,
+never as *Phones only* ([[Negation]]).
 
 **It is not a preset.** *Preset* means a per-type shortcut over one rule's
 general form (`RulePreset`, `RuleLabels::presets()`); a pick names an answer to
