@@ -285,5 +285,6 @@ final class RuleLabelParityTest extends TestCase
         $this->assertNotSame([], $declared, 'no closed option set to check, so this asserts nothing');
         $this->assertSame([], array_diff($declared, array_keys(RuleLabels::options())), 'an unnamed option');
         $this->assertSame([], array_diff(array_keys(RuleLabels::options()), $declared), 'a label for no option');
+        $this->assertSame([], array_diff(array_keys(RuleLabels::optionPhrases()), $declared), 'a phrase for no option');
     }
 }

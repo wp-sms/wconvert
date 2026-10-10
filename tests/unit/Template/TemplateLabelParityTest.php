@@ -137,6 +137,23 @@ final class TemplateLabelParityTest extends TestCase
     }
 
     /**
+     * The note is a few words since ADR 0139 and the sentence behind it is
+     * ⓘ, so a layout needs both — one without the other is a menu item with a
+     * hint and nothing to say when asked, or the reverse.
+     */
+    public function testEveryLayoutHasHelp(): void
+    {
+        /** @var array<string, mixed> $layouts */
+        $layouts = self::manifest()['layouts'];
+
+        $this->assertNamesExactly(
+            array_map('strval', array_keys($layouts)),
+            TemplateLabels::layoutHelp(),
+            'layout help'
+        );
+    }
+
+    /**
      * **A layout's own settings, which the editor never offered.** `split`
      * declares `ratio`, the renderer reads it, and no control reached it — so a
      * Side by side was a fixed 50/50 and the manifest described a capability

@@ -41,7 +41,7 @@ const ENTRY = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../resour
 const INDEX: TemplateIndex = {
   templates: [{ id: ENTRY.id, name: ENTRY.name, display_type: ENTRY.display_type, tier: 'free', availability: 'ready',
     facets: { act: 'submit', captures: ['email'], shape: 'stack', has_image: false, asks_consent: false } }],
-  labels: { roles: {}, nodes: {}, layouts: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, nodeParams: {},
+  labels: { roles: {}, nodes: {}, layouts: {}, layoutHelp: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, nodeParams: {},
     nodeParamValues: {}, fields: {}, keys: {}, placeholders: {}, params: {}, tokenValues: {}, tokens: {}, facets: {}, facetValues: {} },
   facets: { shape: ['stack'], captures: ['email'], has_image: [] },
 };

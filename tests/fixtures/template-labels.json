@@ -54,6 +54,14 @@
         "media": "Image box"
     },
     "layoutNotes": {
+        "stack": "Groups blocks as one item",
+        "row": "Blocks on one line",
+        "split": "Two panes: picture and form",
+        "grid": "Three across; stacks on phones",
+        "panel": "A box with its own colors",
+        "media": "Blocks over a picture"
+    },
+    "layoutHelp": {
         "stack": "Groups blocks into one item.",
         "row": "On one line — a field, then its button.",
         "split": "Two panes — a picture, then the form.",

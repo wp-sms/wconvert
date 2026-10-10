@@ -8,13 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from '../../resources/admin/src/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../resources/admin/src/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '../../resources/admin/src/components/ui/popover';
 
 /**
  * ============================================================================
@@ -113,28 +107,23 @@ describe('the vendored Radix wrappers', () => {
   });
 
   /**
-   * **The third one never got the fix, and it was live.** Tabs and
-   * DropdownMenu were both handed `dir={useDirection()}` and both are asserted
-   * above; Select was not — so the Leads screen's Optin filter opened a popup
-   * reading left-to-right inside a right-to-left admin. Analytics and
-   * Destinations use native `<select>`s and inherit the direction for free,
-   * which is how one control came to read two ways on three screens.
+   * **A popover is portaled to `<body>`, and every one of them needs it.** The
+   * Radix `Select` that first got this fix is gone (ADR 0139: tiny lists are
+   * native, which inherit the direction for free); the popover wrapper now
+   * takes it once, so the rule picker and the phone picker stopped each
+   * remembering it at the call site.
    */
-  it('does the same for a select, which is live on the Leads filter', () => {
+  it('does the same for a popover’s portaled content', () => {
     readRightToLeft();
 
     render(
-      <Select value="all">
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Optins</SelectItem>
-        </SelectContent>
-      </Select>,
+      <Popover open>
+        <PopoverTrigger>Open</PopoverTrigger>
+        <PopoverContent aria-label="Inside">Inside</PopoverContent>
+      </Popover>,
     );
 
-    expect(screen.getByRole('combobox').closest('[dir]')).toHaveAttribute('dir', 'rtl');
+    expect(screen.getByRole('dialog', { name: 'Inside' })).toHaveAttribute('dir', 'rtl');
   });
 });
 

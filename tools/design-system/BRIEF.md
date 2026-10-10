@@ -41,7 +41,7 @@ Counted in code, comment lines excluded.
 | Thing | Count | Where |
 |---|---|---|
 | WordPress classes | **13** | `builder/Tokens.tsx` ×4 (`regular-text`), `builder/SlotFields.tsx` ×5 (`widefat`), `builder/controls.tsx` ×2 (`regular-text`), `builder/rules/ObjectPicker.tsx` ×1, `builder/DevExport.tsx` ×1 (dev-only, behind `WP_DEBUG`) |
-| Bare `<select>` | **6**, of which **2 are deliberate** | Debt: `builder/controls.tsx`, `rules/Who.tsx`, `rules/RuleRow.tsx`, `rules/AddRule.tsx`. **Keep:** `stats/Dashboard.tsx` and `destinations/settings.tsx` — both carry a docblock explaining why a native select beats the Radix one there |
+| Bare `<select>` | **64**, across 31 files | Restyled globally (`index.css`, *Native selects keep one explicit chevron*), so they look like `NativeSelect` but are not it. `NativeSelect` is the one select for new code and for every select inside a sentence (`word` / `pill`, ADR 0139); 15 files use it. The hand-copied ones in `CommerceControls`, `ExtraAnswerMapping` and `controls.tsx` moved onto it, and the unused Radix `Select` is deleted |
 | Bare `<input>` | ~30 | concentrated in `builder/Tokens.tsx`, `builder/controls.tsx`, `rules/HowOften.tsx`, `builder/SlotFields.tsx` |
 | `<textarea>` | 3 | `destinations/settings.tsx`, `builder/SlotFields.tsx`, `builder/DevExport.tsx` — no vendored `textarea` exists |
 

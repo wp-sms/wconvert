@@ -76,6 +76,8 @@ export interface Swap {
    * why their button is the kind of button it is.
    */
   readonly refused: string | null;
+  /** {@link refused} in a few words, for the menu row; the sentence is its ⓘ (ADR 0139). */
+  readonly refusedShort: string | null;
 }
 
 /**
@@ -99,24 +101,26 @@ export function swapsFor(tree: TemplateTree, path: Path, act: ConvertingAct): Sw
     const mine = capturesOf(node);
     const taken = capturesTaken(tree);
 
-    return FIELDS.map((kind) => ({
-      to: kind,
-      current: kind === mine,
-      refused:
-        kind === mine || !taken.includes(kind)
-          ? null
-          : __('This form already captures that, and two fields of one kind collide.', 'wconvert'),
-    }));
+    return FIELDS.map((kind) => {
+      const free = kind === mine || !taken.includes(kind);
+
+      return {
+        to: kind,
+        current: kind === mine,
+        refused: free ? null : __('This form already captures that, and two fields of one kind collide.', 'wconvert'),
+        refusedShort: free ? null : __('Already on this form', 'wconvert'),
+      };
+    });
   }
 
   if (node.type === 'button') {
     const mine = actionOf(node);
 
-    return ACTIONS.map((action) => ({
-      to: action,
-      current: action === mine,
-      refused: action === mine ? null : whyActionIsRefused(tree, action, act),
-    }));
+    return ACTIONS.map((action) => {
+      const refusal = action === mine ? null : whyActionIsRefused(tree, action, act);
+
+      return { to: action, current: action === mine, refused: refusal?.reason ?? null, refusedShort: refusal?.short ?? null };
+    });
   }
 
   return [];
@@ -151,24 +155,33 @@ export function swapsFor(tree: TemplateTree, path: Path, act: ConvertingAct): Sw
  * that would fail the whole save. "There are still fields" is second because
  * it is a consequence of the design the merchant is looking at.
  */
-function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingAct): string | null {
+function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingAct): { short: string; reason: string } | null {
   if ((act === 'submit' && action === 'link') || (act === 'click' && !['link', 'close'].includes(action))) {
     return act === 'submit'
-      ? __(
-          'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Look’s Browse designs and formats.',
-          'wconvert',
-        )
-      : __(
-          'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Look’s Browse designs and formats.',
-          'wconvert',
-        );
+      ? {
+          short: __('Needs a design that links away', 'wconvert'),
+          reason: __(
+            'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Look’s Browse designs and formats.',
+            'wconvert',
+          ),
+        }
+      : {
+          short: __('Needs a design that submits', 'wconvert'),
+          reason: __(
+            'A design that links away has no second step, and one that submits needs one for what the visitor sees afterwards. Pick a design that submits from the Look’s Browse designs and formats.',
+            'wconvert',
+          ),
+        };
   }
 
   if (action === 'link' && formStep(tree) !== null && fieldsIn(tree) > 0) {
-    return __(
-      'Only the step with the submit button is a form, so the fields on it would draw and be read by nothing. Remove them first.',
-      'wconvert',
-    );
+    return {
+      short: __('Remove the fields first', 'wconvert'),
+      reason: __(
+        'Only the step with the submit button is a form, so the fields on it would draw and be read by nothing. Remove them first.',
+        'wconvert',
+      ),
+    };
   }
 
   return null;

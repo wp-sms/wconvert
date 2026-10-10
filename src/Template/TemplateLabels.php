@@ -170,7 +170,39 @@ final class TemplateLabels
     }
 
     /**
-     * What each layout DOES, in one line with an example.
+     * What each layout is, in five words or fewer, under its name in the Add
+     * menus (ADR 0139).
+     *
+     * **A note under a menu item is glanced at, not studied.** The sentence
+     * with an example is {@see self::layoutHelp()}, in ⓘ; this is the line a
+     * merchant reads on the way past.
+     *
+     * Its own map rather than an entry in {@see self::layouts()}, which is
+     * pinned to exactly the manifest's layout NAMES and printed on every row.
+     *
+     * @return array<string, string>
+     */
+    public static function layoutNotes(): array
+    {
+        return [
+            /* translators: what the Column layout is for, in a few words. It groups blocks so a Row treats them as one item. */
+            'stack' => __('Groups blocks as one item', 'wconvert'),
+            /* translators: what the Row layout does, in a few words. */
+            'row' => __('Blocks on one line', 'wconvert'),
+            /* translators: what the Side by side layout does, in a few words. */
+            'split' => __('Two panes: picture and form', 'wconvert'),
+            /* translators: what the Equal columns layout does, in a few words. */
+            'grid' => __('Three across; stacks on phones', 'wconvert'),
+            /* translators: what the Coloured box layout does, in a few words. */
+            'panel' => __('A box with its own colors', 'wconvert'),
+            /* translators: what the Image box layout does, in a few words. */
+            'media' => __('Blocks over a picture', 'wconvert'),
+        ];
+    }
+
+    /**
+     * What each layout DOES, in one line with an example — the ⓘ beside its
+     * menu item since ADR 0139, under the few words of {@see self::layoutNotes()}.
      *
      * ============================================================================
      * A NAME IS NOT AN EXPLANATION, AND FOUR OF THESE NEEDED ONE.
@@ -186,11 +218,10 @@ final class TemplateLabels
      * line"* is a definition; *"a field, then its button"* is a picture, and a
      * merchant recognises the thing they were trying to build.
      *
-     * **One short line each, and the brevity is the design.** The first version
-     * wrote a full sentence with a clause of example, which at a menu's width
-     * wrapped to three lines — so ten items became a wall of prose and the note
-     * that was meant to help had to be read past to reach the thing being
-     * chosen. A note under a menu item is glanced at, not studied.
+     * **One sentence each, in ⓘ rather than under the item.** At a menu's width
+     * even these wrapped to two or three lines, so ten items were a wall of
+     * prose; the menu shows {@see self::layoutNotes()} and this is the
+     * explanation behind it.
      *
      * Its own map rather than an entry in {@see self::layouts()}, which is
      * pinned to exactly the manifest's layout NAMES — a sentence in there would
@@ -198,7 +229,7 @@ final class TemplateLabels
      *
      * @return array<string, string>
      */
-    public static function layoutNotes(): array
+    public static function layoutHelp(): array
     {
         return [
             /*
@@ -1072,6 +1103,7 @@ final class TemplateLabels
             'nodes' => self::nodes(),
             'layouts' => self::layouts(),
             'layoutNotes' => self::layoutNotes(),
+            'layoutHelp' => self::layoutHelp(),
             'layoutParams' => self::layoutParams(),
             'layoutParamValues' => self::layoutParamValues(),
             'nodeParams' => self::nodeParams(),

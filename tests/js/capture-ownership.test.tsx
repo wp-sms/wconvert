@@ -23,7 +23,7 @@ describe('explicit capture ownership', () => {
   it('opens Content for a new repair request while ordinary edits retain Style', async () => {
     const current = template();
     const path = pathOf(current.tree, 'n22');
-    const labels = { roles: {}, nodes: { consent: 'Consent' }, layouts: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, nodeParams: {}, nodeParamValues: {}, fields: {}, placeholders: {}, keys: {}, params: {}, tokens: {}, tokenValues: {} };
+    const labels = { roles: {}, nodes: { consent: 'Consent' }, layouts: {}, layoutHelp: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, nodeParams: {}, nodeParamValues: {}, fields: {}, placeholders: {}, keys: {}, params: {}, tokens: {}, tokenValues: {} };
     const props = { template: current, path, labels, act: 'match' as const, onChange: () => {}, onSwap: () => {}, look: <p>Appearance controls</p> };
     const { rerender } = render(<BlockInspector {...props} revealContent={null} />);
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));

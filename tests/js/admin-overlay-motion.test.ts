@@ -49,7 +49,6 @@ const arrivals = [
   'dialog.tsx',
   'dropdown-menu.tsx',
   'popover.tsx',
-  'select.tsx',
 ] as const;
 
 describe('admin overlay motion', () => {

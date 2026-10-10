@@ -63,7 +63,7 @@ const LABELS: TemplateLabels = {
   roles: {},
   nodes: {},
   layouts: {},
-  layoutNotes: {},
+  layoutHelp: {}, layoutNotes: {},
   layoutParams: {},
   layoutParamValues: {},
   nodeParams: {},

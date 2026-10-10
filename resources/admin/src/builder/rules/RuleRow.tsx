@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ruleHelp } from './ruleHelp';
 import { ParamField } from '../controls';
+import { NativeSelect } from '../../components/ui/native-select';
 import { fromRule, toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
 import { isFreeInstall, tierProductName } from '../../goals/availability';
@@ -83,7 +84,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
     <>
       <strong>{type.label}</strong>{' '}
       {type.presets.length > 0 && (
-        <select
+        <NativeSelect
           aria-label={type.label}
           value={preset?.id ?? ''}
           onChange={(event) => {
@@ -110,7 +111,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
               engine type and never a replacement for it (ADR 0005), so a
               merchant who wants their own `utm_term` is not locked out of one. */}
           <option value="">{__('Custom values…', 'wconvert')}</option>
-        </select>
+        </NativeSelect>
       )}
       {ruleHelp(type.type) && <p className="wconvert-rule__note text-note">{ruleHelp(type.type)}</p>}
       {editable.map(([param, declaration]) => (

@@ -54,7 +54,6 @@
 #wconvert-admin .wconvert-campaign-test-note { flex-basis:100%; margin:0; color:var(--muted-foreground); font-size:var(--text-note); }
 
 .wconvert-campaign-menu { inline-size:224px; max-inline-size:calc(100vw - 16px); }
-.wconvert-campaign-menu .wconvert-menu-heading { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .wconvert-campaign-menu .wconvert-menu-note { display:flex; align-items:flex-start; gap:8px; white-space:normal; }
 .wconvert-campaign-menu .wconvert-menu-note svg { inline-size:14px; block-size:14px; flex:none; margin-block-start:1px; }
 #wconvert-admin .wconvert-campaign-workspace :is(button,input,select,a):focus-visible { outline:2px solid var(--ring); outline-offset:3px; }
@@ -138,3 +137,5 @@
   #wconvert-admin :is(.wconvert-campaign-filterbar,.wconvert-campaign-toolbar,.wconvert-campaign-footer,.wconvert-campaign-table tr) { padding-inline:18px; }
   #wconvert-admin .wconvert-campaign-thumbnail { inline-size:70px; block-size:54px; }
 }
+/* The campaign's name heads its ⋯ menu on one line (ADR 0139). */
+.wconvert-campaign-menu .wconvert-option-menu__heading > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

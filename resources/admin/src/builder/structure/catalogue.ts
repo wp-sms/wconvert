@@ -56,6 +56,12 @@ export interface Addition {
    * one of them is possible if this list has already dropped it.
    */
   readonly refused: string | null;
+  /**
+   * The same refusal in a few words, for the menu row (ADR 0139). The full
+   * {@link refused} sentence is the row's ⓘ and its description, so neither
+   * is lost — the screen just stops wrapping three lines under every item.
+   */
+  readonly refusedShort: string | null;
 }
 
 /**
@@ -105,14 +111,19 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
     **A layout is asked the same question a leaf is**, and it used to be handed
     `refused: null` unconditionally. That was fine while nothing could refuse
     one and became a hole the moment something could: `nodeFor` has always
-    consulted `whyRefused` for every type, so a layout the guard refused was
+    consulted `refusalOf` for every type, so a layout the guard refused was
     offered by the menu and then silently built nothing when pressed.
   */
-  return [...Object.keys(LEAVES).filter(offeredHere), ...Object.keys(LAYOUTS)].map((type) => ({
-    type,
-    leaf: LEAVES[type] !== undefined,
-    refused: whyRefused(tree, type, at, act),
-  }));
+  return [...Object.keys(LEAVES).filter(offeredHere), ...Object.keys(LAYOUTS)].map((type) => {
+    const refusal = refusalOf(tree, type, at, act);
+
+    return {
+      type,
+      leaf: LEAVES[type] !== undefined,
+      refused: refusal === null ? null : REFUSALS[refusal]().reason,
+      refusedShort: refusal === null ? null : REFUSALS[refusal]().short,
+    };
+  });
 }
 
 /**
@@ -126,6 +137,26 @@ function offeredHere(type: string): boolean {
   if (type === 'products') return commerceSupported() === true;
   return type !== 'question' || journeysSupported();
 }
+
+/**
+ * Every refusal in two lengths: a few words for the menu row and the sentence
+ * for its ⓘ. Functions, so `__()` runs after the locale has loaded.
+ */
+const REFUSALS = {
+  products: () => ({ short: __('Only on a single offer screen', 'wconvert'), reason: __('Use one product recommendation block as the action of a single offer screen.', 'wconvert') }),
+  recommendations: () => ({ short: __('Recommendations are the action here', 'wconvert'), reason: __('This campaign converts through its recommendations.', 'wconvert') }),
+  link: () => ({ short: __('Already has its link', 'wconvert'), reason: __('This design already has its converting link.', 'wconvert') }),
+  followup: () => ({ short: __('Only after the signup', 'wconvert'), reason: __('Resource links belong after capture.', 'wconvert') }),
+  contact: () => ({ short: __('Only on a question screen', 'wconvert'), reason: __('Add contact fields to a question screen.', 'wconvert') }),
+  questionScreen: () => ({ short: __('Only on a question screen', 'wconvert'), reason: __('Add questions to a question screen.', 'wconvert') }),
+  questionBoundary: () => ({ short: __('Only before the result or signup', 'wconvert'), reason: __('Add questions on a screen before the result or contact submission.', 'wconvert') }),
+  tenOnPath: () => ({ short: __('Path already has ten questions', 'wconvert'), reason: __('Adding here would put more than ten questions on one path. Use a separate path or remove a question from that path.', 'wconvert') }),
+  tenInJourney: () => ({ short: __('Already has ten questions', 'wconvert'), reason: __('This journey already has ten questions.', 'wconvert') }),
+  everyField: () => ({ short: __('Every field is already here', 'wconvert'), reason: __('Every kind of detail this vocabulary can capture is already on the form.', 'wconvert') }),
+  column: () => ({ short: __('Screens are already columns', 'wconvert'), reason: __('A step is already a column. Add one inside a Row, to group blocks into a single item.', 'wconvert') }),
+} as const;
+
+type Refusal = keyof typeof REFUSALS;
 
 /**
  * Why a kind may not be added HERE, or null.
@@ -151,18 +182,18 @@ function offeredHere(type: string): boolean {
  *   rule — and it is a fact about the design rather than about the [[Goal]]
  *   over it (ADR 0059).
  */
-function whyRefused(
+function refusalOf(
   tree: TemplateTree,
   type: string,
   at: Spot,
   act: ConvertingAct,
-): string | null {
+): Refusal | null {
   const screen = tree.steps[Number(at.parent[0])];
   const products = tree.steps.some(step => walkNodes(step.content).some(node => node.type === 'products'));
-  if (type === 'products' && (tree.steps.length !== 1 || tree.submissions.length > 0 || tree.graph || buttonsIn(tree) > 0 || products)) return __('Use one product recommendation block as the action of a single offer screen.', 'wconvert');
-  if (products && ['button', 'field', 'question', 'consent'].includes(type)) return __('This campaign converts through its recommendations.', 'wconvert');
+  if (type === 'products' && (tree.steps.length !== 1 || tree.submissions.length > 0 || tree.graph || buttonsIn(tree) > 0 || products)) return 'products';
+  if (products && ['button', 'field', 'question', 'consent'].includes(type)) return 'recommendations';
   if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
-    return __('This design already has its converting link.', 'wconvert');
+    return 'link';
   }
   if (type === 'followup') {
     const primary = tree.submissions[0]?.id;
@@ -170,23 +201,21 @@ function whyRefused(
     if (acceptedAt < 0 || !screen || (tree.graph
       ? screen.id === tree.steps[acceptedAt].id || !graphReaches(tree.graph, tree.steps[acceptedAt].id, screen.id)
       : Number(at.parent[0]) <= acceptedAt)) {
-      return __('Resource links belong after capture.', 'wconvert');
+      return 'followup';
     }
   }
   if ((type === 'field' || type === 'consent') && screen?.kind !== 'input') {
-    return __('Add contact fields to a question screen.', 'wconvert');
+    return 'contact';
   }
   if (type === 'question') {
     const boundary = tree.steps.findIndex(item => item.kind === 'result' || walkNodes(item.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
-    if (screen?.kind !== 'input') return __('Add questions to a question screen.', 'wconvert');
-    if (!tree.graph && boundary >= 0 && Number(at.parent[0]) >= boundary) return __('Add questions on a screen before the result or contact submission.', 'wconvert');
-    if ((questionPath(tree, screen.id)?.count ?? 0) > MAX_PATH_QUESTIONS) return tree.graph
-      ? __('Adding here would put more than ten questions on one path. Use a separate path or remove a question from that path.', 'wconvert')
-      : __('This journey already has ten questions.', 'wconvert');
+    if (screen?.kind !== 'input') return 'questionScreen';
+    if (!tree.graph && boundary >= 0 && Number(at.parent[0]) >= boundary) return 'questionBoundary';
+    if ((questionPath(tree, screen.id)?.count ?? 0) > MAX_PATH_QUESTIONS) return tree.graph ? 'tenOnPath' : 'tenInJourney';
   }
 
   if (type === 'field' && freeCapture(tree) === null) {
-    return __('Every kind of detail this vocabulary can capture is already on the form.', 'wconvert');
+    return 'everyField';
   }
 
   /*
@@ -205,10 +234,7 @@ function whyRefused(
     tree it would have produced renders identically without it.
   */
   if (type === 'stack' && at.parent.length === 1) {
-    return __(
-      'A step is already a column. Add one inside a Row, to group blocks into a single item.',
-      'wconvert',
-    );
+    return 'column';
   }
 
   return null;
@@ -233,7 +259,7 @@ export function nodeFor(
   act: ConvertingAct,
   capture?: string,
 ): TemplateNode | null {
-  if (!offeredHere(type) || whyRefused(tree, type, at, act) !== null) {
+  if (!offeredHere(type) || refusalOf(tree, type, at, act) !== null) {
     return null;
   }
 
@@ -284,7 +310,7 @@ export function nodeFor(
     // node's.
     //
     // It is unreachable in practice — an Optin has exactly one converting act
-    // and `whyRefused` refuses a second button — and it is here because
+    // and `refusalOf` refuses a second button — and it is here because
     // deleting the only button and adding one back is the route that reaches
     // it, and the act to restore is the one the design had (ADR 0059).
     node.action = act === 'click' ? 'link' : 'next';

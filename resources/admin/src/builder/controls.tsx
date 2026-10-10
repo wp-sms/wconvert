@@ -2,6 +2,7 @@ import { CommercePicker, CommerceRange } from './CommerceControls';
 import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ObjectPicker } from './rules/ObjectPicker';
+import { NativeSelect } from '../components/ui/native-select';
 import type { RuleParam } from './api';
 
 /**
@@ -42,19 +43,19 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
     case 'money_range':
       return <CommerceRange value={value} onChange={onChange} money={param.control === 'money_range'} />;
     case 'enum':
-      return <select id={id} value={typeof value === 'string' ? value : ''}
+      return <NativeSelect id={id} value={typeof value === 'string' ? value : ''}
         onChange={event => onChange(event.target.value || undefined)}>
         <option value="">{__('Choose…', 'wconvert')}</option>
         {param.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-      </select>;
+      </NativeSelect>;
     case 'boolean':
       return (
-        <select id={id} value={typeof value === 'boolean' ? String(value) : ''}
+        <NativeSelect id={id} value={typeof value === 'boolean' ? String(value) : ''}
           onChange={event => onChange(event.target.value === '' ? undefined : event.target.value === 'true')}>
           <option value="">{__('Choose…', 'wconvert')}</option>
           <option value="true">{__('Yes', 'wconvert')}</option>
           <option value="false">{__('No', 'wconvert')}</option>
-        </select>
+        </NativeSelect>
       );
 
     case 'seconds':
@@ -116,14 +117,14 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
 
     case 'post_type':
       return (
-        <select id={id} value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
+        <NativeSelect id={id} value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
           <option value="">{__('Choose…', 'wconvert')}</option>
           {param.options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       );
 
     // Two closed sets drawn the same way, and closed for two different

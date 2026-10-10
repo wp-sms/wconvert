@@ -1,5 +1,5 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowDown, ArrowRight, ArrowUp, ChevronDown, GitBranch, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUp, ChevronDown, FilePlus2, GitBranch, ListPlus, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
 import { replaceAnswer, unreachableScreens, walkNodes } from './structure/journey';
@@ -24,7 +24,8 @@ import { tierProductName, unlessFree } from '../goals/availability';
 import { InfoTip } from '../shell/InfoTip';
 import { FieldHeading, PanelField, PanelHint, PanelSection } from './PanelSection';
 import { CheckRow } from '../shell/CheckRow';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, refusal } from '../components/ui/option-menu';
 import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 type ChoiceQuestion = QuestionNode & { id: string };
@@ -167,8 +168,10 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
       }} />}
       {path.when?.clauses.some(clause => !clause.values.length || clause.values.some(value => !value)) && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this path before publishing.', 'wconvert')}</p>}
       {onInsert && tree.steps.length < 7 && <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-routes__insert">{__('Insert on this path', 'wconvert')}</button></DropdownMenuTrigger>
-        <DropdownMenuContent align="start"><DropdownMenuItem onSelect={() => onInsert(index, 'input')}>{__('Ask a question', 'wconvert')}</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => onInsert(index, 'content')}>{__('Show a message', 'wconvert')}</DropdownMenuItem></DropdownMenuContent>
+        <OptionMenuContent align="start" aria-label={__('Insert on this path', 'wconvert')}>
+          <OptionItem icon={ListPlus} name={__('Ask a question', 'wconvert')} onSelect={() => onInsert(index, 'input')} />
+          <OptionItem icon={FilePlus2} name={__('Show a message', 'wconvert')} onSelect={() => onInsert(index, 'content')} />
+        </OptionMenuContent>
       </DropdownMenu>}
       {index < paths.length - 1 && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={index === 0} onClick={() => { const next = [...paths]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; write(next); }}>{__('Move up', 'wconvert')}</button>
@@ -298,11 +301,14 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
             return <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{at + 1}</span><input aria-label={`${__('Choice', 'wconvert')} ${at + 1}`} value={option.label} maxLength={120}
               onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
               <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert'), option.label)} title={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert'), option.label)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {onFollowup && <DropdownMenuItem aria-label={sprintf(__('Add follow-up for %s', 'wconvert'), option.label)} onSelect={() => onFollowup(question.id, option.value)}><Plus aria-hidden="true" />{__('Add follow-up', 'wconvert')}</DropdownMenuItem>}
-                  {used && <DropdownMenuItem onSelect={() => { setRepair({ question: question.id, value: option.value }); setReplacement(''); setRetiring(false); }}><GitBranch aria-hidden="true" />{__('Review uses', 'wconvert')}{uses > 0 && <span className="wconvert-menu-count">{uses}</span>}</DropdownMenuItem>}
-                  {!used && <DropdownMenuItem data-destructive="true" disabled={(question.options?.length ?? 0) <= 2} onSelect={() => change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }))}><Trash2 aria-hidden="true" />{__('Remove', 'wconvert')}</DropdownMenuItem>}
-                </DropdownMenuContent>
+                <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a choice's words. */ __('More for “%s”', 'wconvert'), option.label)}>
+                  {onFollowup && <OptionItem icon={Plus} name={__('Add follow-up', 'wconvert')} label={sprintf(__('Add follow-up for %s', 'wconvert'), option.label)} onSelect={() => onFollowup(question.id, option.value)} />}
+                  {used && <OptionItem icon={GitBranch} name={__('Review uses', 'wconvert')} trail={uses > 0 ? uses : undefined}
+                    onSelect={() => { setRepair({ question: question.id, value: option.value }); setReplacement(''); setRetiring(false); }} />}
+                  {!used && <OptionItem icon={Trash2} destructive name={__('Remove', 'wconvert')}
+                    refused={(question.options?.length ?? 0) <= 2 ? refusal(__('Keeps two choices', 'wconvert'), __('A choice question keeps at least two choices.', 'wconvert')) : null}
+                    onSelect={() => change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }))} />}
+                </OptionMenuContent>
               </DropdownMenu>
               {followups.length > 0 && <span className="wconvert-journey-settings__choice-followups">{__('Follow-up:', 'wconvert')} {followups.map(({ item, index }) => <button key={item.id} type="button" className="wconvert-tag" onClick={() => onSelect(index)}>{item.name}</button>)}</span>}
             </div>;
@@ -447,11 +453,13 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">
         <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-choice-menu" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert'), selected.heading || sprintf(__('Result %d', 'wconvert'), selectedAt + 1))}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {variants.length > 2 && <DropdownMenuItem disabled={selectedAt === 0} onSelect={() => move(selectedAt, selectedAt - 1)}><ArrowUp aria-hidden="true" />{__('Move earlier', 'wconvert')}</DropdownMenuItem>}
-            {variants.length > 2 && <DropdownMenuItem disabled={selectedAt >= variants.length - 2} onSelect={() => move(selectedAt, selectedAt + 1)}><ArrowDown aria-hidden="true" />{__('Move later', 'wconvert')}</DropdownMenuItem>}
-            <DropdownMenuItem data-destructive="true" onSelect={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }}><Trash2 aria-hidden="true" />{__('Remove result', 'wconvert')}</DropdownMenuItem>
-          </DropdownMenuContent>
+          <OptionMenuContent align="end" aria-label={sprintf(/* translators: %s: a result's heading. */ __('More for “%s”', 'wconvert'), selected.heading || sprintf(__('Result %d', 'wconvert'), selectedAt + 1))}>
+            {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move earlier', 'wconvert')} onSelect={() => move(selectedAt, selectedAt - 1)}
+              refused={selectedAt === 0 ? refusal(__('Already first', 'wconvert')) : null} />}
+            {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move later', 'wconvert')} onSelect={() => move(selectedAt, selectedAt + 1)}
+              refused={selectedAt >= variants.length - 2 ? refusal(__('The fallback stays last', 'wconvert'), __('The result for all other answers stays last.', 'wconvert')) : null} />}
+            <OptionItem icon={Trash2} destructive name={__('Remove result', 'wconvert')} onSelect={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }} />
+          </OptionMenuContent>
         </DropdownMenu>
       </div>}
     </div>}</div>)}

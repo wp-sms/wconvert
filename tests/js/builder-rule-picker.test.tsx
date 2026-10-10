@@ -2,6 +2,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { AddRule } from '../../resources/admin/src/builder/rules/AddRule';
+import { ruleCategory } from '../../resources/admin/src/builder/rules/ruleHelp';
 import { ruleTypes } from './support/rule-types';
 
 const delay = { ...ruleTypes().triggers.find(type => type.type === 'time_on_page')!, label: 'Time delay' };
@@ -36,7 +37,7 @@ describe('searchable rule picker', () => {
     const trigger = screen.getByRole('button', { name: 'Add a trigger' });
     await userEvent.click(trigger);
     await userEvent.type(screen.getByRole('searchbox'), 'nothing matches');
-    expect(screen.getByRole('status')).toHaveTextContent('No matching rules.');
+    expect(screen.getByRole('status')).toHaveTextContent('No matching rules');
     await userEvent.keyboard('{Escape}');
     expect(trigger).toHaveFocus();
     await userEvent.click(trigger);
@@ -54,12 +55,13 @@ describe('searchable rule picker', () => {
     await userEvent.type(screen.getByRole('searchbox'), 'WooCommerce');
     const dependency = screen.getByRole('group', { name: 'Needs WooCommerce' });
     expect(within(dependency).getByText('cart_has_items')).toBeInTheDocument();
-    expect(within(dependency).queryByRole('button')).not.toBeInTheDocument();
+    // Its ⓘ is a button; the rule itself is not.
+    expect(within(dependency).queryByRole('button', { name: /cart_has_items/ })).not.toBeInTheDocument();
     await userEvent.clear(screen.getByRole('searchbox'));
     await userEvent.type(screen.getByRole('searchbox'), 'click');
     const premium = screen.getByRole('group', { name: 'With WConvert Pro' });
     expect(within(premium).getByText('click_element')).toBeInTheDocument();
-    expect(within(premium).queryByRole('button')).not.toBeInTheDocument();
+    expect(within(premium).queryByRole('button', { name: /click_element/ })).not.toBeInTheDocument();
   });
 
   /** A free install is offered no paid rule, not even as an explanation (ADR 0116). */
@@ -86,5 +88,29 @@ describe('searchable rule picker', () => {
     expect(buttons.at(-1)).toHaveFocus();
     await userEvent.keyboard('{Home}{ArrowUp}');
     expect(screen.getByRole('searchbox')).toHaveFocus();
+  });
+
+  it('clears a search that found nothing, and goes back to the search box', async () => {
+    render(<AddRule axis={axis} label="Add" onAdd={vi.fn()} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+    await userEvent.type(screen.getByRole('searchbox'), 'zzz');
+    await userEvent.click(screen.getByRole('button', { name: 'Clear search' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByRole('searchbox')).toHaveFocus();
+    expect(screen.getByRole('group', { name: 'Timing' })).toBeInTheDocument();
+  });
+});
+
+/**
+ * **No catch-all section** (ADR 0139). "Their visit" used to take whatever no
+ * branch named, so a new rule type arrived there silently; now a type the
+ * picker can offer and no section claims fails here.
+ */
+describe('the picker’s sections', () => {
+  const types = ruleTypes();
+  const offered = [...types.targeting, ...types.triggers, ...types.conditions];
+
+  it.each(offered.map(type => type.type))('places %s in a named section', type => {
+    expect(ruleCategory(type)).not.toBeNull();
   });
 });

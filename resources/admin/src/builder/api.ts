@@ -80,7 +80,7 @@ export interface RuleParam {
    */
   authored: boolean;
   /** A closed option set where the param has one, resolved for this install. */
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; /** How it reads inside a sentence, where the label cannot. */ phrase?: string }[];
 }
 
 /** One legible shortcut over a type's general form. */

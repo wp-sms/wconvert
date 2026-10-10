@@ -143,7 +143,10 @@ export interface TemplateLabels {
    * Side by side gives each pane its own stack. A merchant found out which was
    * which by adding one, looking at the preview and deleting it again.
    */
+  /** A few words under a layout's name in the Add menus (ADR 0139). */
   layoutNotes: Record<string, string>;
+  /** The sentence behind {@link layoutNotes}, in ⓘ. */
+  layoutHelp: Record<string, string>;
   /**
    * What a layout's own setting is called, keyed `"{layout}.{param}"`.
    *

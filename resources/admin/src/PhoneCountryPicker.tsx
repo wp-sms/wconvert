@@ -3,7 +3,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Check, ChevronDown } from 'lucide-react';
 import { Button } from './components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover';
-import { useDirection } from './hooks/useDirection';
 import { cn } from './lib/utils';
 import { InfoTip } from './shell/InfoTip';
 
@@ -34,7 +33,6 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
   const [query, setQuery] = useState('');
   const search = useRef<HTMLInputElement>(null);
   const results = useRef<HTMLDivElement>(null);
-  const direction = useDirection();
   const chosen = countries.find(country => country.code === value);
   const site = countries.find(country => country.code === siteCountry);
   const siteChoice = site
@@ -79,7 +77,7 @@ export function PhoneCountryPicker({ label, value, countries, onChange, disabled
           <span className="truncate">{shown}</span><ChevronDown aria-hidden="true" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" dir={direction} aria-label={__('Choose a country', 'wconvert')}
+      <PopoverContent align="start" aria-label={__('Choose a country', 'wconvert')}
         className="wconvert-phone-country-picker__popup"
         onOpenAutoFocus={event => { event.preventDefault(); search.current?.focus(); }} onKeyDown={navigate}>
         <input ref={search} type="search" value={query} aria-label={__('Search countries', 'wconvert')}

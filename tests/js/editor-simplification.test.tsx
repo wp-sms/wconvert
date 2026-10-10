@@ -14,7 +14,7 @@ import coffee from '../fixtures/journey-graph-coffee.json';
 import signup from '../../resources/templates/library/journey-email-then-sms.json';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn().mockResolvedValue([]) }));
 afterEach(cleanup);
-const labels = { roles: {}, nodes: {}, layouts: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, nodeParams: {}, nodeParamValues: {}, fields: {}, keys: {}, placeholders: {}, tokens: {}, tokenValues: {} } as TemplateLabels;
+const labels = { roles: {}, nodes: {}, layouts: {}, layoutHelp: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, nodeParams: {}, nodeParamValues: {}, fields: {}, keys: {}, placeholders: {}, tokens: {}, tokenValues: {} } as TemplateLabels;
 it('keeps a child follow-up on the shared continuation until custom routing is requested', () => {
   const tree = enquiry as unknown as TemplateTree, change = vi.fn();
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(item => item.id === 'garden')} onChange={change} onInsert={() => {}} />);

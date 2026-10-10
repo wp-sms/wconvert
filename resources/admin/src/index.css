@@ -6751,3 +6751,135 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   #wconvert-admin .wconvert-measure-input > span.wconvert-measure-input__unit { display: inline-flex; align-items: center; flex: none; padding-inline: 8px; border: 1px solid var(--input); border-inline-start: 0; border-start-end-radius: var(--radius); border-end-end-radius: var(--radius); background: var(--surface); color: var(--muted-foreground); font-size: var(--text-note); }
   #wconvert-admin .wconvert-measure-input > input { block-size: var(--control-height-sm) !important; min-block-size: var(--control-height-sm) !important; }
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * THE OPTION MENU (ADR 0139): one look for every rich list.
+ * ---------------------------------------------------------------------------
+ * Add rule, Add element, the ⋯ menus and the swap menu are portaled to `<body>`,
+ * out of reach of `#wconvert-admin`, so every rule is `body`-scoped. Logical
+ * properties only — the rule picker's `padding: 0 8px 8px 34px` indented its
+ * chips from the wrong edge under a right-to-left locale — and type sizes are
+ * the `--text-*` scale and nothing else.
+ */
+body .wconvert-option-menu { display: flex; flex-direction: column; min-block-size: 0; text-align: start; }
+body .wconvert-option-menu--menu { max-block-size: min(440px, var(--radix-dropdown-menu-content-available-height)); overflow-y: auto; overscroll-behavior: contain; }
+body .wconvert-option-menu p { margin: 0; }
+body .wconvert-option-menu__body { display: flex; flex-direction: column; min-block-size: 0; max-block-size: inherit; }
+body .wconvert-option-menu__search { position: relative; flex: none; padding: 8px; border-block-end: 1px solid var(--border); }
+body .wconvert-option-menu__search > svg { position: absolute; inset-block-start: 50%; inset-inline-start: 18px; inline-size: 16px; block-size: 16px; color: var(--muted-foreground); transform: translateY(-50%); pointer-events: none; }
+body .wconvert-option-menu__search input[type='search'] { inline-size: 100%; min-inline-size: 0; min-block-size: 34px; margin: 0; padding-block: 0; padding-inline: 32px 10px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-body); box-shadow: none; }
+body .wconvert-option-menu__search input[type='search']::placeholder { color: var(--muted-foreground); }
+body .wconvert-option-menu__search input[type='search']:focus { border-color: var(--ring); outline: 2px solid color-mix(in srgb, var(--ring) 30%, transparent); outline-offset: 0; box-shadow: none; }
+body .wconvert-option-menu__list { display: grid; align-content: start; min-block-size: 0; max-block-size: 380px; padding-block: 0 6px; padding-inline: 6px; overflow-y: auto; overscroll-behavior: contain; }
+body .wconvert-option-menu__group { display: grid; }
+body .wconvert-option-menu__group + .wconvert-option-menu__group { border-block-start: 1px solid var(--border); }
+body .wconvert-option-menu__heading { position: sticky; inset-block-start: 0; z-index: 1; display: flex; align-items: center; gap: 6px; margin-inline: -6px; padding-block: 8px 4px; padding-inline: 14px 8px; background: var(--popover); color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; line-height: 1.4; }
+body .wconvert-option-menu--menu .wconvert-option-menu__heading { position: static; margin-inline: 0; padding-inline: 8px; }
+body .wconvert-option-menu__heading > svg { flex: none; inline-size: 13px; block-size: 13px; }
+body .wconvert-option-menu__heading[data-tone='dependency'] { color: var(--warning); }
+body .wconvert-option-menu__heading > :is(button, .wconvert-option-menu__glyph) { margin-inline-start: auto; }
+body .wconvert-option-menu__note { display: flex; align-items: center; gap: 4px; padding-block: 6px 2px; padding-inline: 8px; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 400; }
+body .wconvert-option-menu__option { position: relative; }
+body .wconvert-option-menu__option[data-tipped] > .wconvert-option-menu__item { padding-inline-end: 34px; }
+body .wconvert-option-menu__option > .wconvert-info-trigger { position: absolute; inset-block-start: 4px; inset-inline-end: 4px; }
+body .wconvert-option-menu__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 10px; inline-size: 100%; margin: 0; padding: 7px 8px; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--foreground); font-size: var(--text-body); text-align: start; text-decoration: none; white-space: normal; overflow-wrap: anywhere; outline: none; cursor: pointer; user-select: none; }
+body .wconvert-option-menu__item[data-icon] { grid-template-columns: 16px minmax(0, 1fr) auto; }
+body .wconvert-option-menu__item > svg, body .wconvert-option-menu__item > span[aria-hidden='true']:first-child { inline-size: 16px; block-size: 16px; margin-block-start: 2px; color: var(--muted-foreground); }
+body .wconvert-option-menu__item:is(:hover, :focus-visible, [data-highlighted], [data-state='open']):not([data-static]) { background: var(--accent); }
+body .wconvert-option-menu__item:focus-visible { box-shadow: inset 0 0 0 2px var(--ring); }
+body .wconvert-option-menu__item[data-static] { cursor: default; }
+body .wconvert-option-menu__item:is([aria-disabled='true'], [data-static]:not([aria-hidden])) { cursor: default; }
+body .wconvert-option-menu__item:is([aria-disabled='true'], [data-static]:not([aria-hidden])) .wconvert-option-menu__name { color: var(--muted-foreground); }
+body .wconvert-option-menu__item[aria-disabled='true'] > svg { opacity: .55; }
+body .wconvert-option-menu__item[data-destructive]:not([aria-disabled='true']), body .wconvert-option-menu__item[data-destructive]:not([aria-disabled='true']) > svg { color: var(--destructive); }
+body .wconvert-option-menu__item:is([aria-checked='true'], [aria-current='true']) .wconvert-option-menu__name { font-weight: 600; }
+body .wconvert-option-menu__item:is([aria-checked='true'], [aria-current='true']) > svg { color: var(--action); }
+body .wconvert-option-menu__text { display: grid; gap: 1px; min-inline-size: 0; }
+body .wconvert-option-menu__name { font-size: var(--text-body); font-weight: 500; line-height: 1.4; }
+body .wconvert-option-menu__hint { color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 400; letter-spacing: normal; line-height: 1.4; }
+body .wconvert-option-menu__trail { display: flex; align-items: center; align-self: center; gap: 4px; color: var(--muted-foreground); font-size: var(--text-micro); font-variant-numeric: tabular-nums; }
+body .wconvert-option-menu__trail > svg, body .wconvert-option-menu__glyph, body .wconvert-option-menu__glyph > svg { flex: none; inline-size: 14px; block-size: 14px; color: var(--muted-foreground); }
+body .wconvert-option-menu__glyph { display: inline-grid; place-items: center; }
+body .wconvert-option-menu__chips { display: flex; flex-wrap: wrap; gap: 6px; padding-block: 0 8px; padding-inline: 34px 8px; }
+body .wconvert-option-menu__chip { min-block-size: 28px; margin: 0; padding-block: 2px; padding-inline: 10px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-note); font-weight: 500; line-height: 1.4; cursor: pointer; }
+body .wconvert-option-menu__chip[data-custom] { border-style: dashed; color: var(--muted-foreground); }
+body .wconvert-option-menu__chip:is(:hover, :focus-visible) { border-color: var(--action); background: var(--accent); outline: none; }
+body .wconvert-option-menu__chip:focus-visible { box-shadow: 0 0 0 2px var(--ring); }
+body .wconvert-option-menu__sep { block-size: 1px; margin-block: 4px; margin-inline: -6px; background: var(--border); }
+body .wconvert-option-menu--menu .wconvert-option-menu__sep { margin-inline: -4px; }
+body .wconvert-option-menu__empty { display: grid; justify-items: start; gap: 6px; padding-block: 14px; padding-inline: 10px; color: var(--muted-foreground); font-size: var(--text-note); }
+body .wconvert-option-menu__empty > svg { inline-size: 16px; block-size: 16px; }
+body .wconvert-option-menu__empty b { color: var(--foreground); font-weight: 600; }
+body .wconvert-option-menu__empty button { margin: 0; padding: 0; border: 0; background: none; color: var(--link); font-size: var(--text-note); text-decoration-line: underline; text-underline-offset: 3px; cursor: pointer; }
+body .wconvert-option-menu__empty button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+body .wconvert-option-menu__tip { max-inline-size: 260px; }
+/* Add element's own header: a title and where the element goes. */
+body .wconvert-option-menu__head { display: grid; gap: 6px; flex: none; padding-block: 10px 4px; padding-inline: 10px; }
+body .wconvert-option-menu__head > strong { font-size: var(--text-body); font-weight: 600; }
+body .wconvert-option-menu__head > label { font-size: var(--text-note); font-weight: 500; }
+
+/*
+ * NativeSelect drawn as a word (ADR 0139): `word` in "Match [all ▾] of these",
+ * `pill` in a rule row. Inside the utilities layer with the id in front, or the
+ * global select restyle above — same layer, same importance — wins on
+ * specificity and every word grows a 36px box.
+ */
+@layer utilities {
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word:not([multiple]):not([size]:not([size="1"])) {
+    display: inline-block !important;
+    inline-size: auto !important;
+    min-inline-size: 0 !important;
+    margin: 0 !important;
+    padding-block: 0 !important;
+    font-size: var(--text-body) !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    color: var(--foreground) !important;
+    background-color: var(--card) !important;
+    background-size: 14px 14px !important;
+    box-shadow: none !important;
+    cursor: pointer;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="word"]:not([multiple]):not([size]:not([size="1"])) {
+    block-size: 28px !important;
+    min-block-size: 28px !important;
+    padding-inline: 8px 26px !important;
+    border: 1px solid var(--input) !important;
+    border-radius: var(--radius-md) !important;
+    background-position: right 7px center !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="pill"]:not([multiple]):not([size]:not([size="1"])) {
+    block-size: 30px !important;
+    min-block-size: 30px !important;
+    padding-inline: 10px 28px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 999px !important;
+    background-color: var(--surface) !important;
+    background-position: right 9px center !important;
+    font-size: var(--text-note) !important;
+    font-weight: 500 !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="pill"]:not([multiple]):not([size]:not([size="1"])):hover {
+    border-color: var(--input) !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="pill"][data-negated]:not([multiple]):not([size]:not([size="1"])) {
+    border-color: color-mix(in srgb, var(--warning) 40%, var(--border)) !important;
+    background-color: var(--warning-surface) !important;
+    color: var(--warning) !important;
+    font-weight: 600 !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="word"]:not([multiple]):not([size]:not([size="1"])):dir(rtl) {
+    background-position: left 7px center !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="popover-content"])
+    select.wconvert-select-word[data-variant="pill"]:not([multiple]):not([size]:not([size="1"])):dir(rtl) {
+    background-position: left 9px center !important;
+  }
+}
