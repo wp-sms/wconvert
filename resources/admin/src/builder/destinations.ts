@@ -76,7 +76,7 @@ const strings = (value: unknown): readonly string[] =>
 /** Where this Optin's Leads go, and anything wrong with getting them there. */
 export interface DestinationsSaid {
   readonly said: string;
-  /** Whether the sentence above is *nowhere* — which is what the hint answers. */
+  /** Whether the sentence above is *kept in WConvert only* — which is what the hint answers. */
   readonly empty: boolean;
   readonly problems: readonly string[];
 }
@@ -89,9 +89,9 @@ export interface DestinationsSaid {
  * ============================================================================
  * The local [[Lead]] log is not a Destination (CONTEXT.md, Destination): it is
  * written first and always, and CSV export works with nothing configured at
- * all. So *"nowhere"* is a perfectly good answer for a [[Standalone]] install
- * and must not read as a fault — the panel says what is true and leaves the
- * amber for the things that are actually wrong.
+ * all. So *"Kept in WConvert only"* is a perfectly good answer for a
+ * [[Standalone]] install and must not read as a fault — the panel says what is
+ * true and leaves the amber for the things that are actually wrong.
  *
  * **What IS wrong gets named per Destination rather than counted.** A merchant
  * with two Destinations and one failing needs to know which, and ADR 0039's
@@ -105,7 +105,9 @@ export function destinationsSaid(
 ): DestinationsSaid {
   if (bound.length === 0) {
     return {
-      said: __('Nowhere. Leads are still captured here, and exported.', 'wconvert'),
+      // Local mode's one name (ADR 0131 §5). Only Details reads this case; the
+      // launch review words an empty binding itself.
+      said: __('Kept in WConvert only', 'wconvert'),
       empty: true,
       problems: [],
     };

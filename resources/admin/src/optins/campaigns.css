@@ -61,20 +61,21 @@
 
 /* Details: a Medium AdminDialog (ADR 0131). Its body is a stack of groups. */
 .wconvert-campaign-detail__body { display:grid; gap:1.25rem; align-content:start; }
-.wconvert-campaign-detail .wconvert-campaign-thumbnail { inline-size:100%; block-size:180px; }
-.wconvert-campaign-detail__note { margin:0; font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; }
+.wconvert-campaign-detail .wconvert-campaign-thumbnail { inline-size:100%; block-size:220px; }
+/* One callout for everything that needs a look (ADR 0137), above the picture. */
+.wconvert-campaign-detail__notice { display:grid; gap:4px; padding:10px 12px; border:1px solid var(--border); border-inline-start:3px solid var(--warning); border-radius:var(--radius); background:var(--surface); font-size:var(--text-note); overflow-wrap:anywhere; }
+.wconvert-campaign-detail__notice > p { margin:0; }
+/* Publish and Unpublish ask here, in the footer's place — never in a second dialog. */
+.wconvert-campaign-detail__confirm > p { flex:1 1 16rem; min-inline-size:0; margin:0; font-size:var(--text-note); color:var(--muted-foreground); }
+.wconvert-campaign-detail__confirm > p > strong { color:var(--foreground); font-weight:500; }
 .wconvert-campaign-detail-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:0; }
 .wconvert-campaign-detail-stats > * { min-inline-size:0; margin:0; }
 .wconvert-campaign-detail-stats strong { display:block; font-size:var(--text-result); font-weight:500; letter-spacing:-.03em; line-height:1.3; font-variant-numeric:tabular-nums; }
 .wconvert-campaign-detail-stats span { display:block; font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; }
+.wconvert-campaign-detail-stats small { display:block; margin-block-start:2px; font-size:var(--text-micro); color:var(--muted-foreground); overflow-wrap:anywhere; }
 .wconvert-campaign-facts { display:grid; gap:8px; min-inline-size:0; padding-block-start:1.25rem; border-block-start:1px solid var(--border); }
 .wconvert-campaign-facts h3, .wconvert-product-health h3 { margin:0; font-size:var(--text-heading); font-weight:600; line-height:1.3; }
-.wconvert-campaign-facts h3 > small { display:block; margin-block-start:2px; font-size:var(--text-note); font-weight:400; color:var(--muted-foreground); }
-.wconvert-campaign-facts dl { display:grid; grid-template-columns:repeat(auto-fit,minmax(13rem,1fr)); gap:12px 16px; margin:0; }
-.wconvert-campaign-facts dt { font-size:var(--text-note); color:var(--muted-foreground); }
-.wconvert-campaign-facts dd { margin:2px 0 0; font-size:var(--text-body); overflow-wrap:anywhere; }
 .wconvert-campaign-facts p { margin:0; font-size:var(--text-body); overflow-wrap:anywhere; }
-.wconvert-campaign-facts__links { display:grid; gap:4px; margin:0; padding:0; list-style:none; font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; text-align:start; }
 
 .wconvert-product-health-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
 .wconvert-product-health { display:grid; gap:12px; border:1px solid var(--border); border-radius:var(--radius); padding:16px; font-size:var(--text-body); }

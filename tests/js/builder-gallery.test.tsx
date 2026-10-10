@@ -33,6 +33,7 @@ import type {
 const { Gallery } = await import('../../resources/admin/src/builder/Gallery');
 type Fit = import('../../resources/admin/src/builder/Gallery').Fit;
 const { TemplatePicker } = await import('../../resources/admin/src/builder/TemplatePicker');
+const { TemplatePickerDialog } = await import('../../resources/admin/src/builder/TemplatePickerDialog');
 
 /** The one collapsible's trigger is its `summary` row (ADR 0131). */
 const moreFilters = () => screen.getByText('More filters').closest('summary') as HTMLElement;
@@ -956,8 +957,7 @@ describe('inspecting before applying a design', () => {
     await userEvent.click(preview);
 
     expect(screen.queryByRole('searchbox')).toBeNull();
-    expect(screen.getByRole('heading', { name: 'Centred card' })).toHaveFocus();
-    expect(screen.getByText('Preview with sample content')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Centred card' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
     await userEvent.click(screen.getByRole('radio', { name: 'Received' }));
     expect(onChoose).not.toHaveBeenCalled();
@@ -1041,6 +1041,28 @@ describe('the note about a Goal every design refuses', () => {
   });
 });
 
+/**
+ * While a design is inspected the dialog's header is that design (ADR 0137):
+ * its name as the title, with the caret on it, what it is as the meta line,
+ * and the library switch out of the way.
+ */
+it('names the inspected design in the dialog header', async () => {
+  render(<TemplatePickerDialog open onOpenChange={vi.fn()} onCatalogInstalled={vi.fn()} index={{ templates: ENTRIES, labels: LABELS, facets: FACETS }} trees={TREES}
+    displayType="popup" chosen="centred-card" fit={ANY} busy={false} onChoose={vi.fn()} onNear={vi.fn()} />);
+  const dialog = await screen.findByRole('dialog', { name: 'Browse designs' });
+  expect(within(dialog).getByRole('group', { name: 'Library source' })).toBeInTheDocument();
+  await userEvent.click(within(dialog).getAllByRole('button', { name: 'Preview design' })[0]);
+  const title = within(dialog).getByRole('heading', { name: 'Centred card' });
+  expect(dialog).toHaveAccessibleName('Centred card');
+  await waitFor(() => expect(title).toHaveFocus());
+  expect(dialog).toHaveAccessibleDescription('Popup · Collects Email address');
+  expect(within(dialog).getAllByText('Current design').length).toBeGreaterThan(0);
+  expect(within(dialog).queryByRole('group', { name: 'Library source' })).toBeNull();
+  expect(within(dialog).queryByText(/Preview with (your|sample) content/)).toBeNull();
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Back to designs' }));
+  expect(dialog).toHaveAccessibleName('Browse designs');
+});
+
 it('compares two editor designs and reviews one without applying or losing the library search', async () => {
   const onChoose=vi.fn();
   render(<TemplatePicker index={{templates:ENTRIES,labels:LABELS,facets:FACETS}} trees={TREES} displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} />);
@@ -1050,7 +1072,7 @@ it('compares two editor designs and reviews one without applying or losing the l
   expect(screen.getByRole('heading',{name:'Compare designs'})).toHaveFocus();
   expect(screen.getAllByRole('group',{name:'Preview size'})).toHaveLength(2);
   await userEvent.click(screen.getByRole('button',{name:'Review design: Centred card'}));
-  expect(screen.getByText('Preview with sample content')).toBeVisible();
+  expect(screen.getByRole('region',{name:'Centred card'})).toBeVisible();
   expect(onChoose).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole('button',{name:'Back to comparison'}));
   expect(screen.getByRole('heading',{name:'Compare designs'})).toBeVisible();

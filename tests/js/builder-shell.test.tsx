@@ -541,10 +541,14 @@ describe('the builder shell', () => {
     expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');
     expect(picker.queryByRole('button', { name: 'Use this design' })).not.toBeInTheDocument();
     await userEvent.click(picker.getByRole('button', { name: 'Preview design' }));
-    expect(picker.getByText('Preview with your content')).toBeInTheDocument();
+    expect(picker.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
+    expect(picker.queryByText(/Preview with (your|sample) content/)).toBeNull();
     const current = picker.getByRole('button', { name: 'Current design' });
     expect(current).toHaveAttribute('aria-disabled', 'true');
-    expect(current).toHaveAccessibleDescription(/Replaces your draft’s layout.*Undo restores your previous draft/);
+    expect(current).toHaveAccessibleDescription(/current design/);
+    await userEvent.click(picker.getByRole('radio', { name: /Use the design’s sample content/ }));
+    expect(await picker.findByRole('button', { name: 'Use this design' }))
+      .toHaveAccessibleDescription(/^Replaces this draft’s design\. You can undo\./);
     expect(templates.prepareTemplate).toHaveBeenCalledWith(ENTRY.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
@@ -1669,7 +1673,7 @@ describe('changing templates in the draft', () => {
     const picker = within(await screen.findByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
       .getByRole('button', { name: 'Preview design' }));
-    await userEvent.click(picker.getByRole('radio', { name: /Use this design's sample content/ }));
+    await userEvent.click(picker.getByRole('radio', { name: /Use the design’s sample content/ }));
     await waitFor(() => expect(picker.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
     expect(templates.prepareTemplate).toHaveBeenLastCalledWith(ALTERNATE.id,
       { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens }, ALTERNATE.id, GOAL.id);

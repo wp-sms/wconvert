@@ -296,7 +296,12 @@ browser, since a class-name test cannot establish the final cascade.
   something was typed (`dirty`), and the question is drawn inside the dialog.
 - **Never nested.** A dialog that leads to another view opens it in place with
   Back. A destructive confirm is an `AlertDialog` that says what survives; red
-  is for delete and remove only.
+  is for delete and remove only. A status change asked from a details dialog
+  (Publish, Unpublish) confirms in the footer's place — the footer becomes the
+  question — rather than in a second dialog (ADR 0137).
+- **Facts are one icon list** — `shell/FactList`, a label beside a 16px icon
+  and its answer, one line each, amber for one that needs a look. Details, the
+  setup preview and the design preview all use it (ADR 0137).
 
 Template discovery dialogs are `PickerDialogContent` — a Large `AdminDialog` —
 with a single scroll body and a separate action footer. Back and Use/Install
@@ -304,7 +309,11 @@ stay reachable in short and phone windows. Pack and collection pagination stays
 outside the scroll body. Use-case choices and screen exploration belong to
 inspection, never dropdowns on result cards. A single result keeps the ordinary
 card size. Long placement, measurement and journey guidance uses labeled
-progressive disclosure beside the preview. Dialog headers align to the start
+progressive disclosure beside the preview. Inspection is for looking: the
+preview stays clickable but carries no journey test, which lives in the editor.
+Its toolbar is one row — Desktop | Mobile, a labelled Screen choice, and a fit
+toggle at the end — and it opens on the whole design on desktop and the width
+on a phone (ADR 0137). Dialog headers align to the start
 on every viewport; close controls have a 32px target (44px for coarse pointers).
 
 Creation cards open inspection before the draft action, except the one **Start

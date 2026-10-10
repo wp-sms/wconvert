@@ -243,7 +243,9 @@ describe('a goal then a draft', () => {
     // One line of why, then the facts at a glance; nothing to open first.
     expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
     expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
-    expect(screen.getByRole('heading', { name: 'Have ready' })).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'You’ll need' })).toBeVisible();
+    // The journey test lives in the editor; inspecting a setup is looking at it (ADR 0137).
+    expect(screen.queryByRole('button', { name: 'Try visitor journey' })).toBeNull();
     expect(optins.createOptin).not.toHaveBeenCalled();
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(details).toHaveFocus());
@@ -417,7 +419,7 @@ describe('a goal then a draft', () => {
     expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
     expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
-      'Format', 'Opens', 'Where', 'Who', 'How often', 'Counts',
+      'Opens', 'Where', 'Who', 'How often', 'Counts as success',
     ]);
   });
 
@@ -758,8 +760,11 @@ it('requires inspection before creating and keeps preview controls out of the ca
   const preview = await screen.findByRole('button', { name: 'Setup details for Welcome discount' });
   expect(screen.queryByRole('button', { name: 'Use this setup' })).not.toBeInTheDocument();
   await userEvent.click(preview);
-  expect(screen.getByRole('combobox', { name: 'Zoom' })).toHaveValue('width');
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Zoom' }), 'whole');
+  // Desktop opens on the whole design; the toggle says what pressing it does.
+  await userEvent.click(screen.getByRole('button', { name: 'Actual width' }));
+  expect(screen.getByRole('button', { name: 'Fit whole design' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
+  expect(screen.getByRole('button', { name: 'Fit whole design' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled();
   expect(optins.createOptin).not.toHaveBeenCalled();
 });

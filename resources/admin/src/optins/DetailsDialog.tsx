@@ -1,6 +1,6 @@
-import { lazy, Suspense, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Copy } from 'lucide-react';
+import { Copy, EyeOff, Inbox, MoreHorizontal, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Skeleton } from '../components/ui/skeleton';
@@ -11,10 +11,19 @@ import {
   AdminDialogFooter,
   AdminDialogHeader,
 } from '../components/ui/admin-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
 import { Disclosure } from '../shell/Disclosure';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { formatCount, formatRange, formatRate } from '../lib/format';
-import { statusOf, type OptinSummary } from './api';
+import { canUnpublish, statusOf, type OptinSummary } from './api';
+import { decisionCopy } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
 
 const Facts = lazy(() => import('./CampaignDetails'));
@@ -25,14 +34,22 @@ export type CampaignResults =
   | { status: 'failed' }
   | { status: 'ready'; days: number; from: string; to: string; result?: { count: number; shown: number; rate: number | null; label: string } };
 
+/** The two status changes Details can ask; delete stays in the row's menu only. */
+export type DetailsDecision = 'publish' | 'pause';
+
 /**
- * **A campaign's Details** — a Medium `AdminDialog` (ADR 0131, decision 6).
+ * **A campaign's Details** — a Medium `AdminDialog` (ADR 0131, decision 1;
+ * amended by ADR 0137).
  *
  * The header is the campaign itself: its name, its status and one line saying
- * what it is. The body reads top to bottom the way a merchant asks: what it
- * looks like, how it did, who it shows to and where, what happens after
- * signup, and whether its products still exist. The footer holds the two
- * doors out — the report and the editor.
+ * what it is. The body reads top to bottom the way a merchant asks: anything
+ * that needs attention, what it looks like, how it did, how it runs, and
+ * whether its products still exist. The footer holds a ⋯ menu for the status
+ * changes, then the report and the editor.
+ *
+ * Publish and Unpublish confirm in place — the footer becomes the question —
+ * because a dialog never stacks another (GUIDELINES "Never nested"). Delete
+ * stays in the row's menu, so the destructive action lives in one place.
  *
  * There is no ID in it, with one exception folded away at the bottom: the
  * free page events identify a campaign by nothing else.
@@ -46,8 +63,11 @@ export function CampaignDetailsDialog({
   results,
   productCheck,
   reportLink,
+  leadsLink,
   editBusy,
   onEdit,
+  onDecide,
+  onDuplicate,
   onClose,
   returnFocus,
 }: {
@@ -59,13 +79,48 @@ export function CampaignDetailsDialog({
   results: CampaignResults;
   productCheck: ReactNode;
   reportLink: string;
+  /** Its submissions for the period, only when it captures. */
+  leadsLink?: string;
   editBusy: boolean;
   onEdit: () => void;
+  onDecide: (kind: DetailsDecision) => void;
+  onDuplicate: () => void;
   onClose: () => void;
   returnFocus: RefObject<HTMLElement | null>;
 }) {
   const openEditor = useRef<HTMLButtonElement>(null);
+  const keep = useRef<HTMLButtonElement>(null);
+  const more = useRef<HTMLButtonElement>(null);
+  const question = useId();
+  const [asking, setAsking] = useState<DetailsDecision | null>(null);
   const status = row ? statusOf(row) : 'draft';
+  const arm = row !== null && row.parent_id !== null;
+  useEffect(() => setAsking(null), [row?.id]);
+  // Asking puts the caret on Cancel; backing out puts it back on the ⋯ that
+  // asked, once that has re-rendered — never on a timer a reopened menu would lose.
+  const backingOut = useRef(false);
+  useEffect(() => {
+    if (asking) keep.current?.focus();
+    else if (backingOut.current) {
+      backingOut.current = false;
+      more.current?.focus();
+    }
+  }, [asking]);
+  const notes = row ? [
+    missingDesign ? __('No design yet. Choose one in the editor before publishing.', 'wconvert') : null,
+    row.suspended || null,
+    row.has_unpublished_changes
+      ? status === 'suspended'
+        ? __('The saved draft has unpublished changes. Resolve the issue before it can show again.', 'wconvert')
+        : __('The previous version is still published. Open the editor to publish your changes.', 'wconvert')
+      : null,
+  ].filter((note): note is string => note !== null) : [];
+  const words = asking ? decisionCopy(asking, arm, name) : null;
+  const cancel = () => {
+    backingOut.current = true;
+    setAsking(null);
+  };
+  const publishes = !canUnpublish(status) || (row?.has_unpublished_changes ?? false);
   return (
     <AdminDialog
       open={row !== null}
@@ -87,25 +142,23 @@ export function CampaignDetailsDialog({
           event.preventDefault();
           returnFocus.current?.focus();
         }}
+        // Escape backs out of the question before it closes Details.
+        onEscapeKeyDown={(event) => {
+          if (!asking) return;
+          event.preventDefault();
+          cancel();
+        }}
       >
         <AdminDialogHeader title={name} badge={row && <StatusBadge status={status} />} meta={meta} />
         <AdminDialogBody className="wconvert-campaign-detail__body">
           {row && (
             <>
+              {notes.length > 0 && (
+                <div role="note" className="wconvert-campaign-detail__notice">
+                  {notes.map((note) => <p key={note}>{note}</p>)}
+                </div>
+              )}
               {thumbnail}
-              {missingDesign && (
-                <p className="wconvert-campaign-detail__note">
-                  {__('No design yet. Choose one in the editor before publishing.', 'wconvert')}
-                </p>
-              )}
-              {row.suspended && <p className="wconvert-campaign-detail__note">{row.suspended}</p>}
-              {row.has_unpublished_changes && (
-                <p className="wconvert-campaign-detail__note">
-                  {status === 'suspended'
-                    ? __('The saved draft has unpublished changes. Resolve the issue before it can show again.', 'wconvert')
-                    : __('The previous version is still published. Open the editor to publish your changes.', 'wconvert')}
-                </p>
-              )}
               <Results results={results} status={status} />
               <Suspense fallback={<RowsSkeleton rows={4} />}>
                 <Facts key={row.id} id={row.id} />
@@ -115,14 +168,73 @@ export function CampaignDetailsDialog({
             </>
           )}
         </AdminDialogBody>
-        <AdminDialogFooter>
-          <Button variant="outline" asChild>
-            <a href={reportLink}>{__('View report', 'wconvert')}</a>
-          </Button>
-          <Button ref={openEditor} disabled={editBusy} onClick={onEdit}>
-            {__('Open editor', 'wconvert')}
-          </Button>
-        </AdminDialogFooter>
+        {words && asking ? (
+          <div role="group" aria-labelledby={question} className="wconvert-dialog__footer wconvert-campaign-detail__confirm wconvert-toolbar">
+            <p id={question}>
+              <strong>{words.title}</strong> {words.description}
+            </p>
+            <div className="wconvert-dialog__actions">
+              <Button ref={keep} type="button" variant="outline" onClick={cancel}>
+                {__('Cancel', 'wconvert')}
+              </Button>
+              <Button type="button" disabled={editBusy} onClick={() => onDecide(asking)}>
+                {words.confirmLabel}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <AdminDialogFooter
+            back={row && (
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button ref={more} variant="outline" size="icon" disabled={editBusy} aria-label={sprintf(__('More actions for %s', 'wconvert'), name)}>
+                    <MoreHorizontal aria-hidden="true" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" side="top" sideOffset={5} className="wconvert-campaign-menu">
+                  {canUnpublish(status) && (
+                    <DropdownMenuItem onSelect={() => setAsking('pause')}>
+                      <EyeOff aria-hidden="true" />
+                      {arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')}
+                    </DropdownMenuItem>
+                  )}
+                  {publishes && (
+                    <DropdownMenuItem disabled={missingDesign} onSelect={() => setAsking('publish')}>
+                      <Upload aria-hidden="true" />
+                      {__('Publish saved draft', 'wconvert')}
+                    </DropdownMenuItem>
+                  )}
+                  {publishes && missingDesign && (
+                    <DropdownMenuLabel className="wconvert-menu-note text-micro font-normal text-muted-foreground">
+                      {__('Add a design in the editor before publishing.', 'wconvert')}
+                    </DropdownMenuLabel>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={onDuplicate}>
+                    <Copy aria-hidden="true" />
+                    {__('Duplicate as draft', 'wconvert')}
+                  </DropdownMenuItem>
+                  {leadsLink && (
+                    <DropdownMenuItem asChild>
+                      <a href={leadsLink}>
+                        <Inbox aria-hidden="true" />
+                        {__('View submissions', 'wconvert')}
+                      </a>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          >
+            <Button variant="outline" asChild>
+              <a href={reportLink}>{__('View report', 'wconvert')}</a>
+            </Button>
+            {/* The list's Next action says the same: a draft is still being made. */}
+            <Button ref={openEditor} disabled={editBusy} onClick={onEdit}>
+              {status === 'draft' ? __('Continue editing', 'wconvert') : __('Open editor', 'wconvert')}
+            </Button>
+          </AdminDialogFooter>
+        )}
       </AdminDialogContent>
     </AdminDialog>
   );
@@ -133,14 +245,17 @@ function Results({ results, status }: { results: CampaignResults; status: Return
   const heading = useId();
   const title =
     results.status === 'ready'
-      ? sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days)
+      ? sprintf(
+          /* translators: 1: the period, e.g. “Last 30 days”. 2: its dates, e.g. “Sep 10 – Oct 9”. */
+          __('%1$s · %2$s', 'wconvert'),
+          sprintf(_n('Last %d day', 'Last %d days', results.days, 'wconvert'), results.days),
+          formatRange(results.from, results.to),
+        )
       : __('Results', 'wconvert');
+  const result = results.status === 'ready' ? results.result : undefined;
   return (
     <section className="wconvert-campaign-facts" aria-labelledby={heading}>
-      <h3 id={heading}>
-        {title}
-        {results.status === 'ready' && <small>{formatRange(results.from, results.to)}</small>}
-      </h3>
+      <h3 id={heading}>{title}</h3>
       {results.status === 'loading' ? (
         <div className="wconvert-campaign-detail-stats" aria-hidden="true">
           {[0, 1, 2].map((key) => (
@@ -152,19 +267,24 @@ function Results({ results, status }: { results: CampaignResults; status: Return
         </div>
       ) : results.status === 'failed' ? (
         <p>{__('Results couldn’t load.', 'wconvert')}</p>
-      ) : results.result ? (
+      ) : result ? (
         <div className="wconvert-campaign-detail-stats">
           <p>
-            <strong>{formatCount(results.result.count)}</strong>
-            <span>{results.result.label}</span>
+            <strong>{formatCount(result.count)}</strong>
+            <span>{result.label}</span>
           </p>
           <p>
-            <strong>{formatCount(results.result.shown)}</strong>
+            <strong>{formatCount(result.shown)}</strong>
             <span>{__('Shown', 'wconvert')}</span>
+            {/* Submissions with no views read as a fault unless something says why. */}
+            {result.shown === 0 && result.count > 0 && (
+              <small>{__('Views are counted only from the published version.', 'wconvert')}</small>
+            )}
           </p>
           <p>
-            <strong>{formatRate(results.result.rate)}</strong>
+            <strong>{formatRate(result.rate)}</strong>
             <span>{__('Conversion rate', 'wconvert')}</span>
+            {result.rate === null && <small>{__('Shows once it has been shown', 'wconvert')}</small>}
           </p>
         </div>
       ) : (

@@ -652,11 +652,11 @@ describe('an A/B test on the list', () => {
 
 
 /**
- * Details is one Medium AdminDialog (ADR 0131, decision 6): the campaign and
- * its status in the header, the period's numbers under one name each, and the
- * report and the editor as the footer's two doors.
+ * Details is one Medium AdminDialog (ADR 0131, decision 1; amended by 0137):
+ * the campaign and its status in the header, the period's numbers under one
+ * name each, and a ⋯ menu, the report and the editor in the footer.
  */
-it('draws Details as the campaign, its numbers, and two doors out', async () => {
+it('draws Details as the campaign, its numbers, and the footer’s ways out', async () => {
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 1234, impressions: 20000, conversion_rate: 0.0617 }] }] });
   const onEdit = vi.fn();
   render(<OptinList onEdit={onEdit} />);
@@ -667,15 +667,60 @@ it('draws Details as the campaign, its numbers, and two doors out', async () => 
   expect(dialog).toHaveAttribute('data-size', 'md');
   expect(within(dialog).getByText('Draft')).toBeInTheDocument();
   expect(within(dialog).getByText('Grow my email list')).toBeInTheDocument();
-  expect(within(dialog).getByRole('heading', { name: /Last 30 days/ })).toBeInTheDocument();
+  expect(within(dialog).getByRole('heading', { name: /^Last 30 days · / })).toBeInTheDocument();
   expect(within(dialog).getByText('1,234')).toBeInTheDocument();
   expect(within(dialog).getByText('Shown')).toBeInTheDocument();
   expect(within(dialog).getByText('6.2%')).toBeInTheDocument();
   expect(within(dialog).queryByText('Times shown')).toBeNull();
   const footer = dialog.querySelector('footer')!;
+  expect(within(footer).getByRole('button', { name: `More actions for ${OPTIN.name}` })).toBeInTheDocument();
   expect(within(footer).getByRole('link', { name: 'View report' })).toHaveAttribute('href', expect.stringContaining('optin='));
-  await userEvent.click(within(footer).getByRole('button', { name: 'Open editor' }));
+  // A draft is still being made, so the primary says so, as the list's Next action does.
+  await userEvent.click(within(footer).getByRole('button', { name: 'Continue editing' }));
   expect(onEdit).toHaveBeenCalledWith(OPTIN.id);
+});
+
+it('explains a missing rate and views counted only from the published version', async () => {
+  stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 1, impressions: 0, conversion_rate: null }] }] });
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
+  const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
+  expect(await within(dialog).findByText('Shows once it has been shown')).toBeInTheDocument();
+  expect(within(dialog).getByText(/Views are counted only from the published version/)).toBeInTheDocument();
+});
+
+/**
+ * Publish and Unpublish confirm in place (ADR 0137): the footer becomes the
+ * question, because a dialog never stacks another (GUIDELINES "Never nested").
+ */
+it('unpublishes from Details by asking in its footer, never in a second dialog', async () => {
+  optins.listOptins.mockResolvedValue([{ ...OPTIN, published_at: '2026-09-10' }]);
+  optins.unpublishOptin.mockResolvedValue(undefined);
+  render(<OptinList onEdit={() => undefined} />);
+  await userEvent.click(await screen.findByRole('button', { name: OPTIN.name }));
+  const dialog = await screen.findByRole('dialog', { name: OPTIN.name });
+  expect(within(dialog).getByRole('button', { name: 'Open editor' })).toBeInTheDocument();
+  await userEvent.click(within(dialog).getByRole('button', { name: `More actions for ${OPTIN.name}` }));
+  expect(screen.queryByRole('menuitem', { name: /Delete/ })).toBeNull();
+  expect(screen.getByRole('menuitem', { name: 'Duplicate as draft' })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Unpublish campaign' }));
+
+  const question = within(dialog).getByRole('group', { name: /Unpublish this campaign\?/ });
+  expect(question).toHaveTextContent('stops showing and returns to Draft');
+  expect(screen.getAllByRole('dialog')).toHaveLength(1);
+  expect(screen.queryByRole('alertdialog')).toBeNull();
+  expect(within(question).getByRole('button', { name: 'Cancel' })).toHaveFocus();
+  expect(optins.unpublishOptin).not.toHaveBeenCalled();
+
+  await userEvent.click(within(question).getByRole('button', { name: 'Cancel' }));
+  expect(within(dialog).queryByRole('group', { name: /Unpublish this campaign/ })).toBeNull();
+  const more = within(dialog).getByRole('button', { name: `More actions for ${OPTIN.name}` });
+  expect(more).toHaveFocus();
+  await userEvent.click(more);
+  await userEvent.click(screen.getByRole('menuitem', { name: 'Unpublish campaign' }));
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Unpublish campaign' }));
+  await waitFor(() => expect(optins.unpublishOptin).toHaveBeenCalledWith(OPTIN.id));
+  await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
 });
 
 describe('the Campaigns workspace', () => {

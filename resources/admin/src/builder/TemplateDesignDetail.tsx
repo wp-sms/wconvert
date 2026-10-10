@@ -1,16 +1,16 @@
 import { contentLockDesignCompatible } from '../inlinePlacement';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ClipboardList, MousePointerClick, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { displayTypeLabel } from '../displayTypes';
 import { PickerDialogBody } from '../discovery/PickerDialog';
 import { AdminDialogFooter } from '../components/ui/admin-dialog';
 import { CheckRow } from '../shell/CheckRow';
 import { TryAgain } from '../shell/Region';
-import { PreviewControls } from '../discovery/PreviewControls';
+import { PreviewControls, usePreviewView } from '../discovery/PreviewControls';
+import { FactList, type Fact } from '../shell/FactList';
 import { PreviewFrame } from '../discovery/PreviewFrame';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
 import { dropsFieldMappings } from './destinations';
@@ -46,11 +46,34 @@ export interface TemplateDesignDetailProps {
   readonly fieldMappings?: unknown;
 }
 
-/** Inspect the exact normalized candidate before replacing the working draft. */
+/** The fields a design collects, in the merchant's words. */
+export function fieldNamesOf(entry: TemplateIndexEntry, labels: TemplateLabelsWithFacets): string[] {
+  return entry.facets.captures.map((field) =>
+    labels.fields?.[field] ?? labels.facetValues[`captures.${field}`] ?? field,
+  );
+}
+
+/** The dialog's meta line while a design is inspected: *"Popup · Collects Email address"*. */
+export function designMeta(entry: TemplateIndexEntry, labels: TemplateLabelsWithFacets): string {
+  const names = fieldNamesOf(entry, labels);
+  const does = names.length > 0
+    ? sprintf(/* translators: %s: the fields a design collects, e.g. “Email address, Name”. */ __('Collects %s', 'wconvert'), names.join(', '))
+    : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : null;
+  return [displayTypeLabel(entry.display_type), does].filter(Boolean).join(' · ');
+}
+
+/**
+ * Inspect the exact normalized candidate before replacing the working draft.
+ *
+ * The dialog's header names the design (ADR 0137), so this draws no title of
+ * its own: the preview on the start side with the setup preview's controls,
+ * the content choice and the facts beside it, and what applying does as the
+ * footer's note.
+ */
 export function TemplateDesignDetail({
   entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to designs', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings,
 }: TemplateDesignDetailProps) {
-  const [fitHeight, setFitHeight] = useState(false);
+  const { mobile, setMobile, fitHeight, setFitHeight } = usePreviewView();
   const [disableLock, setDisableLock] = useState(false);
   const [mode, setMode] = useState<TemplateContentMode>(hasCurrentDesign ? 'keep' : 'sample');
   const [attempt, setAttempt] = useState(0);
@@ -83,12 +106,9 @@ export function TemplateDesignDetail({
   const template = prepares ? candidate?.value : sample;
   const preparationError = candidate?.error;
   const retryPreview = preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry;
-  const [device, setDevice] = useState<'desktop' | 'mobile'>(() => window.innerWidth < 640 ? 'mobile' : 'desktop');
   const [step, setStep] = useState(0);
-  const heading = useRef<HTMLHeadingElement>(null);
   const [resultId, setResultId] = useState('');
   const id = useId();
-  useEffect(() => { heading.current?.focus(); }, [entry.id]);
   const refused = refusalFor(entry, fit);
   const changed = refused === null && !current ? actChangeOf(entry, fit) : null;
   const shown = Math.min(step, Math.max(0, (template?.tree.steps.length ?? 1) - 1));
@@ -126,12 +146,14 @@ export function TemplateDesignDetail({
           fromFormat, toFormat,
         );
   const losesMappings = template !== undefined && !isCurrent && dropsFieldMappings(fieldMappings, template.tree);
-  const fieldNames = entry.facets.captures.map((field) =>
-    labels.fields?.[field] ?? labels.facetValues[`captures.${field}`] ?? field,
-  );
+  const fieldNames = fieldNamesOf(entry, labels);
+  const facts: Fact[] = [
+    { icon: ClipboardList, label: __('Collects', 'wconvert'), text: fieldNames.length > 0 ? fieldNames.join(', ') : __('No form fields', 'wconvert') },
+    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: entry.facets.act === 'submit' ? __('Submits a form', 'wconvert') : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert') },
+    ...(entry.facets.asks_consent ? [{ icon: ShieldCheck, label: __('Consent', 'wconvert'), text: __('Includes a consent checkbox', 'wconvert') }] : []),
+  ];
   const describedBy = [
-    `${id}-title`, `${id}-replacement`,
-    isCurrent ? `${id}-current` : null,
+    `${id}-replacement`,
     refused !== null ? `${id}-refusal` : null,
     changed !== null ? `${id}-change` : null,
     changesFormat ? `${id}-format` : null,
@@ -140,69 +162,44 @@ export function TemplateDesignDetail({
   ].filter(Boolean).join(' ');
 
   return (
-    <section className="wconvert-design-detail" aria-labelledby={`${id}-title`}>
-      <div className="wconvert-design-detail__header wconvert-toolbar">
-        <h3 ref={heading} tabIndex={-1} id={`${id}-title`}>{entry.name}</h3>
-        {current && <Badge id={`${id}-current`} variant="secondary">{__('Current design', 'wconvert')}</Badge>}
-      </div>
-
+    <section className="wconvert-design-detail" aria-label={entry.name}>
       <PickerDialogBody className="wconvert-design-detail__document">
-        {prepares && (
-          <fieldset className="wconvert-design-detail__content-choice" disabled={busy}>
-            <legend className="text-body font-medium">{__('Content for this design', 'wconvert')}</legend>
-            <div className="wconvert-radio-cards mt-2 sm:grid-cols-2">
-              <label className="wconvert-radio-card">
-                <input type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'} disabled={!hasCurrentDesign}
-                  aria-labelledby={`${id}-keep`} aria-describedby={`${id}-keep-help`} onChange={() => setMode('keep')} />
-                <span>
-                  <span id={`${id}-keep`}>{__('Keep my content', 'wconvert')}</span>
-                  <span id={`${id}-keep-help`}>{hasCurrentDesign ? __('Fit your current words and images into this layout. Some content may move or have no matching place.', 'wconvert') : __('This draft has no design content yet. Start with sample content and customize it next.', 'wconvert')}</span>
-                </span>
-              </label>
-              <label className="wconvert-radio-card">
-                <input type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
-                  aria-labelledby={`${id}-sample`} aria-describedby={`${id}-sample-help`} onChange={() => setMode('sample')} />
-                <span>
-                  <span id={`${id}-sample`}>{__("Use this design's sample content", 'wconvert')}</span>
-                  <span id={`${id}-sample-help`}>{__('Start with its example words, images, links and form settings. Review offers and links before publishing.', 'wconvert')}</span>
-                </span>
-              </label>
-            </div>
-          </fieldset>
-        )}
-
-        <div className="wconvert-design-detail__controls wconvert-toolbar">
-          <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={device === 'mobile'} onMobile={mobile => setDevice(mobile ? 'mobile' : 'desktop')}
-            template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
-          {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %d: the result's position. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
-          <span className="text-note text-muted-foreground">
-            <span>{prepares && mode === 'keep'
-              ? __('Preview with your content', 'wconvert') : __('Preview with sample content', 'wconvert')}</span>
-            {relativeWidth && device === 'desktop' && <span className="block">{__('Full-width layout in a sample desktop area', 'wconvert')}</span>}
-          </span>
-        </div>
-
         <div className="wconvert-design-detail__layout">
-          <div className="wconvert-design-detail__preview"><PreviewFrame template={template} displayType={entry.display_type} mobile={device === 'mobile'} step={shown} result={result} fitHeight={fitHeight}>
-            {loadError || preparationError !== undefined ? (
-              <div className="wconvert-design-detail__error">
-                <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
-                {retryPreview && <TryAgain onClick={retryPreview} />}
-              </div>
-            ) : (
-              <div className="wconvert-design-detail__loading">
-                <p id={`${id}-load`} role="status">{__('Loading design preview…', 'wconvert')}</p>
-                <Skeleton aria-hidden="true" className="h-64 w-full" />
-              </div>
-            )}
-          </PreviewFrame></div>
+          <div className="wconvert-design-detail__preview">
+            <div className="wconvert-design-detail__controls wconvert-toolbar">
+              <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={mobile} onMobile={setMobile}
+                template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
+              {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %d: the result's position. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
+            </div>
+            <PreviewFrame template={template} displayType={entry.display_type} mobile={mobile} step={shown} result={result} fitHeight={fitHeight}>
+              {loadError || preparationError !== undefined ? (
+                <div className="wconvert-design-detail__error">
+                  <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
+                  {retryPreview && <TryAgain onClick={retryPreview} />}
+                </div>
+              ) : (
+                <div className="wconvert-design-detail__loading">
+                  <p id={`${id}-load`} role="status">{__('Loading design preview…', 'wconvert')}</p>
+                  <Skeleton aria-hidden="true" className="h-64 w-full" />
+                </div>
+              )}
+            </PreviewFrame>
+            {relativeWidth && !mobile && <p className="wconvert-preview-frame__hint">{__('Full-width layout in a sample desktop area', 'wconvert')}</p>}
+          </div>
 
           <div className="wconvert-design-detail__facts">
-            <dl>
-              <div><dt>{__('Collects', 'wconvert')}</dt><dd>{fieldNames.length > 0 ? fieldNames.join(', ') : __('No form fields', 'wconvert')}</dd></div>
-              <div><dt>{__('Visitor action', 'wconvert')}</dt><dd>{entry.facets.act === 'submit' ? __('Submits a form', 'wconvert') : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert')}</dd></div>
-              {entry.facets.asks_consent && <div><dt>{__('Consent', 'wconvert')}</dt><dd>{__('Includes a consent checkbox', 'wconvert')}</dd></div>}
-            </dl>
+            {prepares && (
+              <fieldset className="wconvert-design-detail__content-choice" disabled={busy}>
+                <legend>{__('Content', 'wconvert')}</legend>
+                <CheckRow type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'} disabled={!hasCurrentDesign}
+                  onChange={() => setMode('keep')} label={__('Keep my words and images', 'wconvert')}
+                  hint={hasCurrentDesign ? __('Fitted into this layout; check each screen.', 'wconvert') : __('This draft has no content yet.', 'wconvert')} />
+                <CheckRow type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
+                  onChange={() => setMode('sample')} label={__('Use the design’s sample content', 'wconvert')}
+                  hint={__('Review its offers and links before publishing.', 'wconvert')} />
+              </fieldset>
+            )}
+            <FactList facts={facts} />
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
                 {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(_n('%d picture has no clear matching place in this design and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this design and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}
@@ -213,22 +210,18 @@ export function TemplateDesignDetail({
               {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this design. The selected WordPress content will remain readable.', 'wconvert')} />}
               {/* A format change is information, not the site holding something back (§14). */}
               {formatNotice && <p id={`${id}-format`} className="text-note text-muted-foreground">{formatNotice}</p>}
-              <p id={`${id}-replacement`} className="text-note text-muted-foreground">
-                {prepares && mode === 'sample'
-                  ? __('Replaces the layout and content in your draft with the preview shown here. Undo restores your previous draft.', 'wconvert')
-                  : __('Replaces your draft’s layout. Some text may move, be hidden or left empty; added blocks may be removed. Check each screen afterwards. Undo restores your previous draft.', 'wconvert')}
-                {losesMappings && <> {__('Field mappings for fields this design doesn’t have are removed. Undo restores them.', 'wconvert')}</>}
-              </p>
               {refused !== null && <p id={`${id}-refusal`} className="text-note text-warning">{refused}</p>}
               {changed !== null && <p id={`${id}-change`} className="text-note text-warning">{changed}</p>}
               {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This design is not installed here.', 'wconvert')}</p>}
-
             </div>
           </div>
         </div>
       </PickerDialogBody>
-      {/* No footer note: the replacement sentence beside the facts already says what applying does. */}
-      <AdminDialogFooter back={
+      {/* What applying does is the note beside the button that does it. */}
+      <AdminDialogFooter note={<span id={`${id}-replacement`}>
+        {isCurrent ? __('This is the draft’s current design.', 'wconvert') : __('Replaces this draft’s design. You can undo.', 'wconvert')}
+        {losesMappings && <> {__('Field mappings for missing fields are removed.', 'wconvert')}</>}
+      </span>} back={
         <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {backLabel}

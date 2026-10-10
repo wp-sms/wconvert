@@ -30,6 +30,10 @@ found the system intact and its application drifted:
    is fixed with Back or Cancel at the start, a note, the primary action at the
    end and an error beside it. The pickers' `PickerDialog*` are now thin
    aliases of it.
+   *Amended by [0137](0137-details-and-previews-read-at-a-glance.md): campaign Details' footer holds a ⋯ menu at the start
+   (Publish or Unpublish, Duplicate, View submissions), then View report and
+   the editor — no longer only two doors out — and a status change asked there
+   confirms in the footer's place rather than in a second dialog.*
 2. **Dirty dialogs ask once.** `AdminDialogContent dirty` makes Escape, an
    outside click and ✕ ask "Discard changes?" — drawn inside the dialog, over
    its footer — only when something was typed. It replaces the Targets

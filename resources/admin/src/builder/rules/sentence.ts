@@ -381,8 +381,25 @@ function namesOf(rules: NonNullable<Targeting['include']>, types: readonly RuleT
   return names.every((name): name is string => name !== null) ? join(names, conjunction) : null;
 }
 
-/** Where it shows, as the menu's answer and as the sentence's phrase. */
-export function whereReading(pickId: string, targeting: Targeting, types: readonly RuleType[]): { answer: Summary; phrase: string } {
+/**
+ * Page names a caller has already looked up — Details resolves post and term
+ * ids, which the sentence cannot wait for. Up to three are named; past that,
+ * the first three and how many more: *"Home page, Shop, Cart +2 more"*.
+ */
+export function namedPages(names: readonly string[], total: number): string {
+  if (total <= 3) return join(names.slice(0, 3), _x('or', 'joins pages any one of which it shows on', 'wconvert'));
+  return sprintf(
+    /* translators: 1: the first page names, comma-separated. 2: how many more pages it shows on. */
+    __('%1$s +%2$d more', 'wconvert'),
+    names.slice(0, 3).join(_x(', ', 'separates all but the last item of a list', 'wconvert')), total - 3,
+  );
+}
+
+/**
+ * Where it shows, as the menu's answer and as the sentence's phrase. `named`
+ * replaces the count of included pages when the caller has their names.
+ */
+export function whereReading(pickId: string, targeting: Targeting, types: readonly RuleType[], named?: string): { answer: Summary; phrase: string } {
   const exclude = targeting.exclude ?? [];
   const include = targeting.include ?? [];
   const excepted = exclude.length === 0 ? null
@@ -403,7 +420,7 @@ export function whereReading(pickId: string, targeting: Targeting, types: readon
   if (include.length === 0) {
     return { answer: { text: __('Choose at least one page', 'wconvert'), attention: true }, phrase: __('pages you haven’t chosen yet', 'wconvert') };
   }
-  const chosen = namesOf(include, types, _x('or', 'joins pages any one of which it shows on', 'wconvert')) ?? sprintf(
+  const chosen = named ?? namesOf(include, types, _x('or', 'joins pages any one of which it shows on', 'wconvert')) ?? sprintf(
     /* translators: %d: a number of pages. */
     _n('%d selected page', '%d selected pages', include.length, 'wconvert'), include.length);
   return with_(chosen, chosen);

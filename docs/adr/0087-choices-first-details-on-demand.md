@@ -23,10 +23,12 @@ setup/measurement background is optional, while consequential warnings stay visi
 - **Setup details** opens one optional dialog for the selected setup, containing
   the full derived facts, measurement boundary, requirements, checklist and notes.
   **Amended by [0132](0132-every-screen-answers-its-first-question.md):** the
-  dialog shows the facts as one icon line each and an open **Have ready** list of
-  what the merchant must bring; the Goal's publication rule is listed only when
+  dialog shows the facts as one icon line each and an open ~~**Have ready**~~
+  list of what the merchant must bring; the Goal's publication rule is listed only when
   the design does not already meet it, and the measurement boundary lives in
-  Analytics.
+  Analytics. *Amended by [0137](0137-details-and-previews-read-at-a-glance.md): the list is **You'll need**, a plain bulleted
+  list; an email or SMS service is a muted **Optional** line rather than a
+  requirement, and the facts leave the format to the header.*
   Opening/closing details writes nothing and returns keyboard focus to its trigger.
   Draft/publication guidance is shared once, not repeated on every card.
 - Updated after editor review on 2026-10-02: the Goal, its measurement and

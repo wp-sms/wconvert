@@ -64,6 +64,7 @@ import {
 import { DataTable, DataTableHead, DataTableColumn, DataTableBody, DataTableRow, DataTableCell, DataTableActions } from '../shell/DataTable';
 import { CampaignSkeleton } from './CampaignSkeleton';
 import { CampaignDetailsDialog, type CampaignResults } from './DetailsDialog';
+import { decisionCopy, type DecisionKind } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
 
@@ -79,7 +80,7 @@ type RowResult = {
   capture: boolean;
 };
 type Decision = {
-  kind: 'delete' | 'pause' | 'publish' | 'winner';
+  kind: DecisionKind;
   row: OptinSummary;
   parent?: OptinSummary;
 };
@@ -284,6 +285,22 @@ export function OptinList({
     }
     // The effect opens a created draft after every pending write releases navigation.
   };
+  // One path for a confirmed decision, whether the list's confirm or Details' strip asked it.
+  const decide = (d: Decision) =>
+    void run(d.parent?.id ?? d.row.id, () =>
+      d.kind === 'delete'
+        ? deleteOptin(d.row.id)
+        : d.kind === 'pause'
+          ? unpublishOptin(d.row.id)
+          : d.kind === 'winner'
+            ? declareWinner(d.parent!.id, d.row.id)
+            : publishOptin(d.row.id),
+    );
+  const duplicate = (row: OptinSummary, parent: OptinSummary) =>
+    void run(parent.id, () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row))), true);
+  // An arm's A/B test is its parent row; a campaign is its own.
+  const parentOf = (row: OptinSummary) =>
+    row.parent_id === null ? row : rows.find((candidate) => candidate.id === row.parent_id) ?? row;
   const request = (next: Decision, trigger: HTMLElement | null) => {
     returnFocus.current = trigger;
     setDecision(next);
@@ -444,13 +461,7 @@ export function OptinList({
             days={period.days}
             range={report ? { from: report.from, to: report.to } : undefined}
             onDetails={(trigger) => openDetails(row, trigger)}
-            onDuplicate={() =>
-              void run(
-                parent.id,
-                () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), name)),
-                true,
-              )
-            }
+            onDuplicate={() => duplicate(row, parent)}
             onTest={() => void run(parent.id, () => createVariant(parent.id), true)}
             onDecision={(kind, trigger) => request({ kind, row, parent }, trigger)}
           />
@@ -460,8 +471,7 @@ export function OptinList({
   };
   const empty = list.status === 'ready' && rows.length === 0;
   useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
-  const decisionName = decision ? nameOf(decision.row) : '';
-  const decisionArm = decision?.row.parent_id !== null && decision?.row.parent_id !== undefined;
+  const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row)) : null;
   return (
     <div className="wconvert-campaign-workspace" data-layout={layout}>
       {/*
@@ -670,8 +680,22 @@ export function OptinList({
           />
         )}
         reportLink={selected ? reportHref({ optinId: selected.id, ...period }) : ''}
+        leadsLink={selected && reportReady && numbers[selected.id]?.capture
+          ? leadsHref({ optinId: selected.id, ...(report ? { from: report.from, to: report.to } : {}) }) : undefined}
         editBusy={busy.size > 0}
         onEdit={() => selected && edit(selected.id)}
+        onDecide={(kind) => {
+          if (!selected) return;
+          const row = selected;
+          setSelected(null);
+          decide({ kind, row, parent: parentOf(row) });
+        }}
+        onDuplicate={() => {
+          if (!selected) return;
+          const row = selected;
+          setSelected(null);
+          duplicate(row, parentOf(row));
+        }}
         onClose={() => setSelected(null)}
         returnFocus={returnFocus}
       />
@@ -681,59 +705,15 @@ export function OptinList({
         onOpenChange={(open) => {
           if (!open) setDecision(null);
         }}
-        title={
-          decision?.kind === 'delete'
-            ? decisionArm ? __('Delete this variant?', 'wconvert') : __('Delete this campaign?', 'wconvert')
-            : decision?.kind === 'pause'
-              ? decisionArm ? __('Unpublish this variant?', 'wconvert') : __('Unpublish this campaign?', 'wconvert')
-              : decision?.kind === 'winner'
-                ? __('Use this variant?', 'wconvert')
-                : __('Publish the saved draft?', 'wconvert')
-        }
-        description={
-          decision
-            ? decision.kind === 'delete'
-              ? sprintf(
-                  decisionArm
-                    ? __('“%s” stops showing and leaves this A/B test. Its leads and results are kept.', 'wconvert')
-                    : __('“%s” stops showing and leaves this list. Its leads and results are kept.', 'wconvert'),
-                  decisionName,
-                )
-              : decision.kind === 'pause'
-                ? sprintf(
-                    decisionArm
-                      ? __('“%s” stops showing. Its saved draft, leads and results are kept, and the other variants keep running.', 'wconvert')
-                      : __('“%s” stops showing and returns to Draft. Its saved draft, leads and results are kept.', 'wconvert'),
-                    decisionName,
-                  )
-                : decision.kind === 'winner'
-                  ? __('This variant becomes the campaign. The other variants stop showing; their leads and results are kept.', 'wconvert')
-                  : __('The latest saved draft becomes what visitors see, subject to its display rules.', 'wconvert')
-            : ''
-        }
-        confirmLabel={
-          decision?.kind === 'delete'
-            ? decisionArm ? __('Delete variant', 'wconvert') : __('Delete campaign', 'wconvert')
-            : decision?.kind === 'pause'
-              ? decisionArm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')
-              : decision?.kind === 'winner'
-                ? __('Use this variant', 'wconvert')
-                : __('Publish saved draft', 'wconvert')
-        }
+        title={decisionWords?.title ?? ''}
+        description={decisionWords?.description ?? ''}
+        confirmLabel={decisionWords?.confirmLabel ?? ''}
         returnFocusTo={returnFocus}
         onConfirm={() => {
           if (!decision) return;
           const d = decision;
           setDecision(null);
-          void run(d.parent?.id ?? d.row.id, () =>
-            d.kind === 'delete'
-              ? deleteOptin(d.row.id)
-              : d.kind === 'pause'
-                ? unpublishOptin(d.row.id)
-                : d.kind === 'winner'
-                  ? declareWinner(d.parent!.id, d.row.id)
-                  : publishOptin(d.row.id),
-          );
+          decide(d);
         }}
       />
     </div>

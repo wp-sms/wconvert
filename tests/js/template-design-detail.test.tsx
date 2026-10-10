@@ -62,8 +62,8 @@ describe('inspecting a design before replacing the draft', () => {
   it('starts a blank draft with sample content instead of carrying an empty form', async () => {
     const onPrepare = vi.fn().mockResolvedValue(TEMPLATE);
     const { onChoose } = detail({ onPrepare, hasCurrentDesign: false });
-    expect(await screen.findByRole('radio', { name: /Use this design's sample content/ })).toBeChecked();
-    expect(screen.getByRole('radio', { name: /Keep my content/ })).toBeDisabled();
+    expect(await screen.findByRole('radio', { name: /Use the design’s sample content/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /Keep my words and images/ })).toBeDisabled();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toBeEnabled());
     expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'sample', TEMPLATE);
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
@@ -74,7 +74,7 @@ describe('inspecting a design before replacing the draft', () => {
     const carried = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'My own invitation')) as Template;
     const onPrepare = vi.fn().mockResolvedValue(carried);
     const { onChoose } = detail({ onPrepare });
-    expect(screen.getByRole('radio', { name: /Keep my content/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /Keep my words and images/ })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
     await waitFor(() => expect(within(drawn()).getByText('My own invitation')).toBeInTheDocument());
     expect(onPrepare).toHaveBeenCalledExactlyOnceWith(ENTRY.id, 'keep', TEMPLATE);
@@ -108,7 +108,7 @@ describe('inspecting a design before replacing the draft', () => {
     expect(onChoose).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, { tree: TEMPLATE.tree, tokens: TEMPLATE.tokens });
-    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
     expect(screen.queryByText(/pictures? (has|have) no clear/)).not.toBeInTheDocument();
   });
@@ -118,12 +118,11 @@ describe('inspecting a design before replacing the draft', () => {
     const onPrepare = vi.fn().mockImplementation((_id, mode) => mode === 'keep'
       ? new Promise<Template>((resolve) => { resolveKeep = resolve; }) : Promise.resolve(TEMPLATE));
     const { onChoose } = detail({ onPrepare });
-    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
     const stale = JSON.parse(JSON.stringify(TEMPLATE).replace('Get 10% off your first order', 'Late content')) as Template;
     await act(async () => resolveKeep(stale));
     expect(within(drawn()).queryByText('Late content')).toBeNull();
-    expect(screen.getByText('Preview with sample content')).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
   });
@@ -133,12 +132,12 @@ describe('inspecting a design before replacing the draft', () => {
       .mockRejectedValueOnce(new Error('Preview service is unavailable.')).mockResolvedValueOnce(TEMPLATE);
     const { onChoose } = detail({ onPrepare });
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
-    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Preview service is unavailable.');
     expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
-    expect(screen.getByRole('radio', { name: /Use this design's sample content/ })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /Use the design’s sample content/ })).toBeChecked();
     expect(onPrepare.mock.calls.map((call) => call[1])).toEqual(['keep', 'sample', 'sample']);
     expect(onChoose).not.toHaveBeenCalled();
   });
@@ -148,7 +147,7 @@ describe('inspecting a design before replacing the draft', () => {
     const { onChoose } = detail({ current: true, onPrepare });
     await waitFor(() => expect(onPrepare).toHaveBeenCalled());
     expect(screen.getByRole('button', { name: 'Current design' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Use the design’s sample content/ }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, TEMPLATE);
@@ -167,8 +166,9 @@ describe('inspecting a design before replacing the draft', () => {
   it('shows actual fields and real screens without applying anything while inspected', async () => {
     const user = userEvent.setup();
     const { onChoose, container } = detail();
-    expect(screen.getByRole('heading', { name: 'Centred card' })).toHaveFocus();
-    expect(screen.getByText('Preview with sample content')).toBeVisible();
+    // The dialog's header names the design; the radio already says whose content it is.
+    expect(screen.queryByRole('heading', { name: 'Centred card' })).toBeNull();
+    expect(screen.queryByText(/Preview with (your|sample) content/)).toBeNull();
     expect(screen.getByText('Email address')).toBeVisible();
     expect(within(drawn()).getByRole('textbox', { name: 'Email address' })).toBeInTheDocument();
 
@@ -188,14 +188,15 @@ describe('inspecting a design before replacing the draft', () => {
     expect(preview).toHaveAttribute('inert');
     expect(preview).toHaveAttribute('aria-hidden', 'true');
     const apply = screen.getByRole('button', { name: 'Use this design' });
-    expect(apply).toHaveAccessibleDescription(/Replaces your draft’s layout.*Undo restores your previous draft/);
+    expect(apply).toHaveAccessibleDescription(/^Replaces this draft’s design\. You can undo\./);
+    expect(screen.getByText('Replaces this draft’s design. You can undo.').closest('footer')).not.toBeNull();
     await user.click(apply);
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('centred-card');
   });
 
   /** A swap keeps only the mappings the new design can feed; the sentence says so before, not after. */
   it('says field mappings are removed only when this design would remove some', () => {
-    const removed = /Field mappings for fields this design doesn’t have are removed\. Undo restores them\./;
+    const removed = /Field mappings for missing fields are removed\./;
     const { unmount } = detail({ fieldMappings: { primary: { list: { 'field:interest': 'INTEREST' } } } });
     expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAccessibleDescription(removed);
     unmount();
@@ -242,7 +243,7 @@ describe('inspecting a design before replacing the draft', () => {
     const { onChoose } = detail({ current: true });
     const apply = screen.getByRole('button', { name: 'Current design' });
     expect(apply).toHaveAttribute('aria-disabled', 'true');
-    expect(apply).toHaveAccessibleDescription(/Current design/);
+    expect(apply).toHaveAccessibleDescription(/current design/);
     await userEvent.click(apply);
     expect(onChoose).not.toHaveBeenCalled();
   });
