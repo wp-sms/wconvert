@@ -518,6 +518,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               setFollowupAnswer(undefined); setInsertLocation(`edge:${edgeId}`); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');
             }} />;
   const slim = !!editorCanvas && view === 'edit';
+  // The Edit tab's screen panel is the slim one in Flow too (ADR 0135): one panel, whatever the view.
+  const slimPanel = !!editorCanvas;
   const questionSettings = <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={!journeys ? undefined : (question, value) => { setFollowupAnswer({ question, value }); contextAddTrigger.current = document.activeElement as HTMLElement;
             const edge = followupInsertionEdge(insertionTree, current.id, question, value);
             setInsertLocation(edge ? `edge:${edge.id}` : 'choose'); setInsertIntent(undefined); insertedScreen.current = false; setAddKind('followup'); }} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />;
@@ -631,7 +633,12 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map" role="status"><span className="sr-only">{__('Loading journey map…', 'wconvert')}</span></div>}>
             <JourneyMap traceKind={traceKind} issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
-              onSelect={select} onSelectPath={(index, priority) => { select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); setPathFocus(priority); }} onConnect={journeys ? connect : undefined} onReconnect={journeys ? reconnect : undefined} samplePath={samplePath} sampleEdges={sampleEdges}
+              onSelect={select} onSelectPath={(index, priority) => {
+                // A question's paths live on the question (ADR 0134), in Flow as on the canvas.
+                const question = slimPanel && onSelectElement ? nodesOf(tree).find(block => block.path[0] === index && block.type === 'question')?.path : undefined;
+                setPathFocus(priority);
+                if (question) { onSelectElement!(question); return; }
+                select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); }} onConnect={journeys ? connect : undefined} onReconnect={journeys ? reconnect : undefined} samplePath={samplePath} sampleEdges={sampleEdges}
               onPreview={index => { previewAction.current = null; previewTrigger.current = document.activeElement as HTMLElement; setPreviewScreen(index); }}
               onAdd={journeys && tree.graph ? (index, edgeId) => {
                 contextAddTrigger.current = document.activeElement as HTMLElement;
@@ -692,23 +699,23 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           {disconnected.has(current.id) && <p className="wconvert-graph-insert__summary">{__('Visitors cannot reach this screen. Connect an incoming path from a reachable screen to include it in the journey.', 'wconvert')}</p>}
           {view !== 'edit' && !currentFollowups && <JourneyArrivalSummary tree={tree} step={step} onSelectPath={(index, priority) => { select(index); setRequestedSection('paths'); setPathFocus(priority); }} />}
           {followupSource !== undefined && <button type="button" className="wconvert-journey-inspector-back" onClick={() => select(followupSource)}>{sprintf(__('Follow-up for: %s', 'wconvert'), tree.steps[followupSource].name)}</button>}
-          {slim && <ScreenIssues issues={issues.filter(issue => issue.screenId === current.id)} onIssue={openIssue} />}
-          {slim && <ScreenThen tree={tree} step={step} editable={journeys} onChange={onChange}
+          {slimPanel && <ScreenIssues issues={issues.filter(issue => issue.screenId === current.id)} onIssue={openIssue} />}
+          {slimPanel && <ScreenThen tree={tree} step={step} editable={journeys} onChange={onChange}
             onUpgrade={next => { onChange(next); setSaid(__('This screen now chooses its own next screen. Undo goes back to one screen after another.', 'wconvert')); }}
             onEditPaths={questionPath && onSelectElement ? () => onSelectElement(questionPath) : undefined} />}
-          {journeys && (!slim || !isFirst) && <ScreenConditionSettings key={`visibility:${current.id}`} reveal={repairRequest?.screenId === current.id && repairRequest.section === 'content' && !repairRequest.focus ? repairRequest.serial : undefined} tree={tree} step={step} onChange={onChange} onSelect={select} />}
-            {!slim && <OptionStrip className="wconvert-journey-pane__tabs" label={__('Screen settings section', 'wconvert')} value={panelSection} onChange={value => setRequestedSection(value as typeof requestedSection)}
+          {journeys && (!slimPanel || !isFirst) && <ScreenConditionSettings key={`visibility:${current.id}`} reveal={repairRequest?.screenId === current.id && repairRequest.section === 'content' && !repairRequest.focus ? repairRequest.serial : undefined} tree={tree} step={step} onChange={onChange} onSelect={select} />}
+            {!slimPanel && <OptionStrip className="wconvert-journey-pane__tabs" label={__('Screen settings section', 'wconvert')} value={panelSection} onChange={value => setRequestedSection(value as typeof requestedSection)}
               options={[
                 { value: 'content', label: walkNodes(current.content).some(node => node.type === 'question') ? __('Content & answers', 'wconvert') : __('Content', 'wconvert') },
                 ...(journeys ? [{ value: 'paths', label: __('Paths', 'wconvert'), count: tree.graph ? tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length : undefined }] : []),
               ]} />}
 
-          {slim || panelSection === 'content' ? <>
+          {slimPanel || panelSection === 'content' ? <>
 
-          {!slim && journeys && questionSettings}
+          {!slimPanel && journeys && questionSettings}
           {currentFollowups && <section className="wconvert-followup-order" aria-label={__('Follow-up order', 'wconvert')}><strong>{sprintf(__('Question %1$d of %2$d matching follow-ups', 'wconvert'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</strong><p>{followupSource === undefined ? __('This group has its own incoming paths. Review them in Flow before changing the order.', 'wconvert') : __('Visitors see matching questions in this order. Other paths stay the same.', 'wconvert')}</p>{followupSource === undefined && <Button type="button" variant="outline" onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Review in Flow', 'wconvert')}</Button>}<div>{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); setSaid(__('Follow-up order updated. Test the journey with several selected interests.', 'wconvert')); }}>{direction === -1 ? __('Move up', 'wconvert') : __('Move down', 'wconvert')}</Button>)}</div></section>}
-          {!slim && <JourneyScreenContent tree={tree} step={step} onChange={onChange} />}
-          <JourneyCaptureSettings onSelectField={slim ? onSelectElement : undefined} consentEditor={labels && <JourneyConsentSettings labels={labels} tree={tree} step={step} onChange={onChange} />} tree={tree} step={step} onChange={onChange} destinationSummary={destinationSummary} onDestinations={onGoToDestinations ? () => openContext('destinations') : undefined} />
+          {!slimPanel && <JourneyScreenContent tree={tree} step={step} onChange={onChange} />}
+          <JourneyCaptureSettings onSelectField={slimPanel ? onSelectElement : undefined} consentEditor={labels && <JourneyConsentSettings labels={labels} tree={tree} step={step} onChange={onChange} />} tree={tree} step={step} onChange={onChange} destinationSummary={destinationSummary} onDestinations={onGoToDestinations ? () => openContext('destinations') : undefined} />
 
 
           {/* An imported journey on a free install is not edited further: the header already says it cannot be displayed (ADR 0116). */}
@@ -731,7 +738,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             }}>{sprintf(__('Review %s', 'wconvert'), tree.steps.find(screen => screen.id === resultAccessIssue.screenId)?.name ?? '')}</button>}</div>}
             {tree.submissions.length > 0 && <div className="wconvert-editor-help"><p>{__('Mention required contact details on the first screen.', 'wconvert')}</p><InfoTip label={__('About result access', 'wconvert')}>{__('Changing this setting moves signup before or after the result. You can undo the whole change.', 'wconvert')}</InfoTip></div>}
           </fieldset>}
-          {!slim && <Disclosure variant="inline" className="wconvert-journey-behavior-help" title={__('What happens to answers here?', 'wconvert')}><p>{current.kind === 'acknowledgement'
+          {!slimPanel && <Disclosure variant="inline" className="wconvert-journey-behavior-help" title={__('What happens to answers here?', 'wconvert')}><p>{current.kind === 'acknowledgement'
             ? tree.graph ? __('The journey ends here. Visitors arrive through its incoming paths.', 'wconvert') : __('The journey ends here. This screen always stays last.', 'wconvert')
             : submission?.required === false
               ? tree.submissions[0]?.id === submission.id
@@ -744,16 +751,16 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 : current.kind === 'result'
                   ? __('Shows the selected result. Viewing it does not save contact details or create a submission.', 'wconvert')
                 : __('New answers stay on this page until the visitor submits. Going to the next screen does not save new details.', 'wconvert')}</p></Disclosure>}
-          {!slim && journeys && (tree.graph ? tree.graph.edges.some(edge => edge.from === current.id) : step < tree.steps.length - 1) && <button type="button" className="wconvert-journey-next-summary" onClick={() => setRequestedSection('paths')}>
+          {!slimPanel && journeys && (tree.graph ? tree.graph.edges.some(edge => edge.from === current.id) : step < tree.steps.length - 1) && <button type="button" className="wconvert-journey-next-summary" onClick={() => setRequestedSection('paths')}>
             <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert') : tree.graph ? branchCount ? sprintf(_n('%d answer path and all other answers', '%d answer paths and all other answers', branchCount, 'wconvert'), branchCount) : sprintf(__('Then: %s', 'wconvert'), nextGroup ? __('Every matching follow-up', 'wconvert') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a path', 'wconvert'))
               : current.paths?.length && current.paths.length > 1 ? sprintf(_n('%d answer path and all other answers', '%d answer paths and all other answers', branchCount, 'wconvert'), branchCount)
                 : sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
             <small>{remainingFollowups ? sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === remainingFollowups.next)?.name ?? '') : __('Review where visitors go next', 'wconvert')}</small>
           </button>}
-          {slim && tree.graph && !questionPath && tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') && <Disclosure variant="inline" className="wconvert-screen-paths"
+          {slimPanel && tree.graph && !questionPath && tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') && <Disclosure variant="inline" className="wconvert-screen-paths"
             open={panelSection === 'paths' || undefined} title={__('All paths from this screen', 'wconvert')}>{routes}</Disclosure>}
-          {slim && isFirst && <ScreenFact label={__('When it opens', 'wconvert')} value={displaySummary ?? ''} action={__('Display rules', 'wconvert')} onAction={onGoToRules} />}
-          {slim && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
+          {slimPanel && isFirst && <ScreenFact label={__('When it opens', 'wconvert')} value={displaySummary ?? ''} action={__('Display rules', 'wconvert')} onAction={onGoToRules} />}
+          {slimPanel && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
 
           </> : tree.graph ? routes
             : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}

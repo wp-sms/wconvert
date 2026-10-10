@@ -49,7 +49,10 @@ three type-size words that did not match the element's own. A merchant reads
    and Show selected screen were ways around a map that did not open fitted. A
    card's issue count opens every issue about that screen, each a way to its
    fix. The first drag says once, per browser, that moving a card only tidies
-   the map.
+   the map. **The side panel in Flow is the slim screen panel** of
+   [0134](0134-one-edit-tab-look-screen-element.md), as on the canvas: it was
+   still the old inspector there, with every word as a text box and a Paths
+   tab. Clicking a question's path opens the question, where its paths live.
 7. **A skipped screen falls through along its default edge.** A screen whose
    "Show only if…" is false continues where it would have gone, so the hidden
    edge is an optional override ("If skipped, go to…"), not a requirement.
