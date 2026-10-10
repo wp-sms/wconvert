@@ -238,7 +238,8 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
     display: flex !important;
     block-size: 41px !important;
     gap: 0;
-    padding: 0 var(--wconvert-gutter) !important;
+    /* Two halves the full width of the panel, as the prototype draws them (ADR 0136). */
+    padding: 0 !important;
     margin: 0;
     inline-size: 100% !important;
     border-radius: 0 !important;
@@ -250,15 +251,19 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
     flex: 1;
     block-size: 100% !important;
     font-size: var(--text-note) !important;
+    border: 0 !important;
     border-radius: 0 !important;
+    background: transparent !important;
     box-shadow: none !important;
     border-block-end: 2px solid transparent !important;
   }
+  #wconvert-admin .wconvert-workspace .wconvert-inspector__halves button::after { display: none; }
   #wconvert-admin
     .wconvert-workspace
     .wconvert-inspector__halves
     button[data-state="active"] {
-    color: var(--action) !important;
+    color: var(--foreground) !important;
+    font-weight: 600 !important;
     border-block-end-color: var(--action) !important;
   }
 }
@@ -2532,3 +2537,18 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 #wconvert-admin .wconvert-edit-tree__elements .wconvert-block__twist { inline-size: 16px; }
 #wconvert-admin .wconvert-block__loses { display: inline-flex; flex-shrink: 0; align-items: center; color: var(--warning); }
 #wconvert-admin .wconvert-block__loses svg { inline-size: 13px; block-size: 13px; }
+
+/* Field headings are one height, with or without an InfoTip, so paired fields line up. */
+#wconvert-admin .wconvert-panel-section .wconvert-field-heading { block-size: 24px; min-block-size: 24px; }
+#wconvert-admin .wconvert-panel-section .wconvert-field-heading .wconvert-info-trigger { inline-size: 24px; block-size: 24px; min-block-size: 0; margin-block: -2px; }
+/* The font picker is a field like the select beside it. */
+#wconvert-admin .wconvert-panel-section .wconvert-token .wconvert-font { inline-size: 100%; block-size: 36px; min-block-size: 36px; border-color: var(--input); }
+
+/* A color's reset sits inside its swatch, at the end, on the same line (ADR 0136). */
+#wconvert-admin .wconvert-panel-section .wconvert-token--color { position: relative; display: block; }
+#wconvert-admin .wconvert-panel-section .wconvert-token--color:has(.wconvert-token__reset) .wconvert-swatch { padding-inline-end: 32px; }
+#wconvert-admin .wconvert-panel-section .wconvert-token--color > .wconvert-token__reset { position: absolute; inset-block-start: 50%; inset-inline-end: 6px; transform: translateY(-50%); }
+#wconvert-admin .wconvert-panel-section .wconvert-token .wconvert-font { padding-inline: 10px; }
+/* A pair that cannot be measured is not a failure: a neutral line, not amber (ADR 0135). */
+#wconvert-admin .wconvert-panel-warn[data-state='unknown'] { background: var(--surface); }
+#wconvert-admin .wconvert-panel-warn[data-state='unknown'] > svg { color: var(--muted-foreground); }
