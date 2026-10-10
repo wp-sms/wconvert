@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { ArrowRight } from 'lucide-react';
 import { humanize } from '../lib/format';
 import { __ } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
@@ -7,6 +6,7 @@ import { walkNodes } from './structure/journey';
 import { captureName, setCaptureName } from './structure/captureDetails';
 import { nodesOf, nodeAt } from './structure/tree';
 import { withValue, type Path } from './panel';
+import { ScreenFact } from './ScreenPanel';
 
 /**
  * A form screen's **Form** section (ADR 0134): its fields, each a way to that
@@ -46,8 +46,7 @@ export function JourneyCaptureSettings({ tree, step, onChange, destinationSummar
 
     {consentEditor}
     <p className="wconvert-screen-submits"><strong>{__('When submitted', 'wconvert')}</strong> · {__('Save the lead', 'wconvert')}</p>
-    {onDestinations && <div className="wconvert-screen-fact"><span className="wconvert-screen-fact__label">{__('Where leads go', 'wconvert')}</span>
-      <span className="wconvert-screen-fact__value">{destinationSummary || __('Kept in WConvert', 'wconvert')}</span>
-      <button type="button" onClick={onDestinations}>{__('Destinations', 'wconvert')} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button></div>}
+    {onDestinations && <ScreenFact label={__('Where leads go', 'wconvert')} value={destinationSummary || __('Keep in WConvert only', 'wconvert')}
+      action={__('Destinations', 'wconvert')} onAction={onDestinations} />}
   </section>;
 }

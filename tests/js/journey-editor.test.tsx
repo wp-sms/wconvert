@@ -147,13 +147,13 @@ it('clears stale branch instructions when Undo restores the prior draft', async 
   expect(screen.queryByText(/Answer path added after the existing paths/)).not.toBeInTheDocument();
 });
 
-it.each(['followup', 'branch'] as const)('starts a %s from Next screen without confusing skip and branch semantics', async intent => {
+it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusing skip and branch semantics', async intent => {
   const user = userEvent.setup();
   const initial = graphFixture as unknown as TemplateTree;
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(await screen.findByRole('button', { name: 'Select first screen' }));
-  await user.click(screen.getByRole('radio', { name: 'Next screen' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
   const action = intent === 'followup' ? 'Add conditional follow-up' : 'Add path';
   await user.click(screen.getByRole('button', { name: action }));
   expect(screen.getByRole('radio', { name: intent === 'followup' ? 'Ask a relevant follow-up' : 'Take a different path' })).toBeChecked();
@@ -184,7 +184,7 @@ it('opens a drawn graph branch for repair without guessing its condition', async
     when: { clauses: [{ question: 'n1', values: [''] }] } });
   expect(screen.getByText(/Answer path added after the existing paths/)).toBeInTheDocument();
   expect(screen.getByText('Check 1 of 1')).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
 });
 
 it('reviews newly unreachable screens before applying a canvas reconnection', async () => {
@@ -233,7 +233,7 @@ it('opens a requested graph repair on its source screen and path settings', asyn
   }
   render(<RepairEditor />);
   expect(await screen.findByRole('heading', { name: 'Interests' })).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
   expect(screen.getByRole('checkbox', { name: 'Garden' })).toHaveFocus();
 });
 it('focuses a visibility repair once and lets the merchant continue editing', async () => {
@@ -421,7 +421,7 @@ it('opens on the flow and creates an ordered answer path through the inspector',
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   expect(screen.getByRole('radio', { name: 'Flow' })).toBeChecked();
   expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
-  await user.click(screen.getByRole('radio', { name: 'Next screen' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
   await user.click(screen.getByRole('button', { name: 'Add answer path' }));
   const paths = draft().steps[0].paths!;
   expect(paths).toHaveLength(2);
@@ -436,7 +436,7 @@ it('inserts a screen on the selected branch without changing its condition or co
   const user = userEvent.setup();
   render(<Editor initial={service.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('radio', { name: 'Next screen' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
   await user.click(screen.getByRole('button', { name: 'Add answer path' }));
   const before = draft();
   await user.click(screen.getAllByRole('button', { name: 'Insert on this path' })[0]);
@@ -455,7 +455,7 @@ it('keeps an inserted screen hidden when its source is skipped', async () => {
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Repair details Continue only/ }));
-  await user.click(screen.getByRole('radio', { name: 'Next screen' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
   await user.click(screen.getByRole('button', { name: 'Insert on this path' }));
   await user.click(screen.getByRole('menuitem', { name: 'Show a message' }));
   const next = draft();
@@ -847,7 +847,7 @@ it('explains a branched result timing restriction and opens the named paths for 
   expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeDisabled();
   expect(screen.getByText(/Move any answer paths after both screens first/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Review Your result' }));
-  expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
   expect(draft()).toEqual(initial);
 });
@@ -954,11 +954,11 @@ it('follows a path to its destination and returns to Next screen without changin
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('radio', { name: 'Next screen' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
   await user.click(screen.getByRole('button', { name: 'Edit next screen' }));
   expect(screen.getByRole('heading', { level: 3, name: 'Received' })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Back to One enquiry' }));
-  expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
   expect(draft()).toEqual(graphFixture);
 });
 
@@ -1091,7 +1091,7 @@ it('restores the pending answer review after editing a referenced branch', async
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'press');
   await user.click(within(review).getByText('Stop offering this answer…'));
   await user.click(within(review).getByRole('button', { name: /Your taste Path 1/ }));
-  expect(screen.getByRole('radio', { name: 'Next screen' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Answer' }), 'press');
   const repaired = draft();
   expect(repaired).not.toEqual(initial);
@@ -1200,4 +1200,18 @@ it('tells a free install it cannot display a journey draft, without naming Pro',
   expect(screen.queryByRole('textbox', { name: 'Question' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
   expect(screen.queryByRole('menuitem', { name: 'Add question screen' })).not.toBeInTheDocument();
+});
+
+/** D4: Flow is offered only while there is more than one way through, and leaving it is automatic when the last branch goes. */
+it('falls back from Flow to the canvas when the last branch goes', async () => {
+  const branched = graphFixture as unknown as TemplateTree;
+  const straightened: TemplateTree = { ...branched, steps: branched.steps.map(item => ({ ...item, when: undefined })),
+    graph: { ...branched.graph!, edges: branched.graph!.edges.filter(edge => edge.kind === 'default') } };
+  const props = { embedded: true, editorCanvas: <div>Actual campaign canvas</div>, step: 0, onSelect: () => {}, onChange: () => {} };
+  const { rerender } = render(<JourneyEditor {...props} tree={branched} />);
+  await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
+  expect(screen.queryByText('Actual campaign canvas')).toBeNull();
+  rerender(<JourneyEditor {...props} tree={straightened} />);
+  expect(screen.queryByRole('radio', { name: 'Flow' })).toBeNull();
+  expect(await screen.findByText('Actual campaign canvas')).toBeInTheDocument();
 });

@@ -17,7 +17,6 @@ import type { RuleVocabulary } from '../api';
 
 export type { DisplayRulesValue } from './summaries';
 export interface DisplayRulesProps {
-  readonly compact?: boolean;
   readonly vocabulary: RuleVocabulary;
   readonly value: DisplayRulesValue;
   readonly overlay: boolean;
@@ -57,7 +56,7 @@ const sectionOf = (id: string | undefined): SectionId | undefined =>
  * it. The only state here is which section is open and, while it stays open,
  * which open pick the merchant chose — the sticky rule in {@see pickFor}.
  */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary);
   const asked = questions();
   const [active, setActive] = useState<SectionId>(() => sectionOf(initialSection) ?? summaries.find(section => section.attention)?.id ?? 'where');
@@ -113,7 +112,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   // Choosing the placement already wrote Right away; this keeps it there, so the refusal is here rather than at Publish.
   const held = active === 'when' && placement?.opensRightAway ? { pick: 'immediate', reason: placement.heldBy === 'content_lock' ? __('A content lock opens right away.', 'wconvert') : __('Automatic placement opens right away.', 'wconvert'), id: heldId } : null;
 
-  return <div className="wconvert-display" data-compact={compact || undefined}>
+  return <div className="wconvert-display">
     <div className="wconvert-display-header">
       <p className="wconvert-display-sentence">
         {interpolate(
@@ -125,14 +124,12 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
     {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft uses an older development rule format. Review and replace its display setup before saving or publishing.', 'wconvert')}</p>
       <Button onClick={() => update(incompletePlan())}>{__('Set up display rules', 'wconvert')}</Button></div>}
     <div className="wconvert-display-grid">
-      {compact ? <label className="wconvert-journey__field">{__('Display setting', 'wconvert')}<select value={active} onChange={event => open(event.target.value as SectionId)}>
-        {summaries.map(section => <option key={section.id} value={section.id}>{section.eyebrow}{section.attention ? ` · ${__('Needs attention', 'wconvert')}` : ''}</option>)}</select></label>
-        : <nav aria-label={__('Display rules', 'wconvert')}>
+      <nav aria-label={__('Display rules', 'wconvert')}>
           {summaries.map(section => <button type="button" key={section.id} aria-current={active === section.id ? 'true' : undefined} onClick={() => open(section.id)}>
             <span>{section.eyebrow}</span>
             <small data-attention={section.attention || undefined}>{section.attention ? __('Needs attention', 'wconvert') : section.text}</small>
           </button>)}
-        </nav>}
+        </nav>
       <section className="wconvert-display-editor" aria-labelledby="wconvert-display-heading">
         <h3 id="wconvert-display-heading" tabIndex={-1}>{current.eyebrow}</h3>
         {active === 'who' && audienceRequirement && <p role="note">{audienceRequirement}</p>}

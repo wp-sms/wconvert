@@ -170,8 +170,7 @@ describe('the look', () => {
 
     render(<Themes template={ENTRY} onChange={onChange} />);
 
-    await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
-    await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Midnight/ }));
 
     const [next] = onChange.mock.calls[0] as [{ tokens: Record<string, string>; tree: unknown }];
 

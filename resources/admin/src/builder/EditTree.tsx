@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { CircleHelp, FileText, Flag, GitBranch, Mail, Sparkles, TriangleAlert } from 'lucide-react';
 import { Disclosure } from '../shell/Disclosure';
-import type { TemplateTree } from '@renderer/types';
+import type { Template, TemplateTree } from '@renderer/types';
 import { graphDisplayOrder } from './structure/graph';
 import { followupGroups, followupGroupSource } from './structure/followupGroups';
 import { followupLabel } from './structure/followupLabel';
@@ -10,7 +10,6 @@ import { conditionText } from './structure/conditionText';
 import { walkNodes, unreachableScreenIds } from './structure/journey';
 import { issuesByScreen, type CampaignIssue } from './readiness/campaignIssues';
 import { resolvedToken } from './panel';
-import type { Template } from '@renderer/types';
 
 /** The Look row's dots: background, text and button, as the design resolves them. */
 export const lookColors = (template: Template): readonly string[] =>
@@ -31,6 +30,23 @@ export function lookSummary(displayType: string): string {
   return sprintf(__('Colors, fonts, %s position', 'wconvert'), formatWordOf(displayType));
 }
 
+/** The pinned Look row: the design's colors and what the Look holds. */
+export interface EditTreeLook {
+  readonly open: boolean;
+  /** The design's background, text and button colors, drawn as dots. */
+  readonly colors: readonly string[];
+  /** "Colors, fonts, popup position". */
+  readonly summary: string;
+  readonly onOpen: () => void;
+}
+
+export interface EditTreeRow {
+  readonly key: string;
+  readonly label: string;
+  readonly current: boolean;
+  readonly onSelect: () => void;
+}
+
 /**
  * The Edit tab's left column: the campaign's **Look**, then its screens, the
  * open one unfolded into its elements (ADR 0134, D5).
@@ -48,22 +64,6 @@ export function lookSummary(displayType: string): string {
  * "Only if…" says so, a screen on one path says which, and the Flow map is
  * where order is drawn.
  */
-export interface EditTreeLook {
-  readonly open: boolean;
-  /** The design's background, text and button colors, drawn as dots. */
-  readonly colors: readonly string[];
-  /** "Colors, fonts, popup position". */
-  readonly summary: string;
-  readonly onOpen: () => void;
-}
-
-export interface EditTreeRow {
-  readonly key: string;
-  readonly label: string;
-  readonly current: boolean;
-  readonly onSelect: () => void;
-}
-
 export function EditTree({ tree, step, editingScreen = true, issues = [], onIssue, onSelect, look, elements, extraRows = [], addScreen }: {
   tree: TemplateTree; step: number;
   /** Whether the open screen is what the panel shows; false while the Look or an extra row is open. */

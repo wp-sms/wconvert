@@ -62,19 +62,21 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   around the design opens the Look. Narrow (≤1000px), the three columns are
   three panes — Screens · Preview · Edit — and a tree row moves to the pane that
   shows what it opened.
-- **The Look** (`DesignSettings`): ready-made looks, the design's colors and
-  fonts, format and position, the reopen button, then the design's name and
+- **The Look** (`DesignSettings`): the ready-made looks, shown as a grid rather
+  than behind a toolbar button, the design's colors and fonts, format and
+  position, the reopen button, then the design's name and
   "Browse designs and formats". An inline or content-lock campaign states
   "Where on the page: …" and links to Display rules, which owns placement.
 - **The screen panel is what only a screen can answer** (`ScreenPanel`). Its
   issues; **Then →** — read-only on Free and for a screen whose answers decide
   ("Depends on the answer · Edit paths on the question"), a select on Pro that
   rewrites the screen's default edge, upgrading a straight campaign to a graph
-  the first time one screen chooses its own next; on the first screen, "When it
-  opens", linking to Display rules; **Show only if…** on any other; the
-  **Form** section on a form screen — each field a link to its element with a
-  Required box, "When submitted · Save the lead" and "Where leads go"; and
-  "On this screen", its elements as chips. The column of text boxes repeating
+  the first time one screen chooses its own next (a one-screen campaign has no
+  Then, and a final result says the campaign ends there); **Show only if…** on
+  any screen but the first; the **Form** section on a form screen — each field
+  a link to its element with a Required box, "When submitted · Save the lead"
+  and "Where leads go"; on the first screen, "When it opens", linking to
+  Display rules; and "On this screen", its elements as chips. The column of text boxes repeating
   every word on the screen, "What happens to answers here?", "Next: …" and
   "Open Design" are gone: the element panel and the Look already hold them.
 - **A question's paths live on the question.** The question element's panel is
@@ -84,10 +86,15 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   (`QuestionPanelContext`) and the element inspector draws it.
 - **Flow only where there is more than one way through** (D4).
   `hasManyWaysThrough` is true for an answer or hidden edge, a screen with a
-  condition, a v2 screen with more than one path, or a screen with more than one
-  result. A v3 graph that is still a straight line is false: upgrading is not
-  branching. Only then does the canvas bar offer Canvas | Flow, and a Flow view
-  falls back to Canvas the moment the last branch goes.
+  condition, or a v2 screen with more than one path. A v3 graph that is still a
+  straight line is false: upgrading is not branching. **Results that depend on
+  the answers are not more than one way**, although the plan's first draft
+  counted them: visitors pass the same screens, the map draws a results screen
+  as one card, and which result shows is edited on that screen — so a straight
+  quiz (project-stage-finder, gift-finder) has no Flow until a path or a
+  follow-up is added. Only then does the strip above the canvas offer
+  Canvas | Flow, and a Flow view falls back to Canvas the moment the last
+  branch goes.
 - **One Preview**, a menu of the one dialog's modes: As a visitor · This screen
   · Try answers (when there is a question), plus **Test a visit**, which moved
   out of Display rules. "Preview & test" and "Check the design" are gone.
@@ -100,9 +107,10 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
 Two items of the plan landed differently. Add screen has no separate **Form**
 and **Offer** entries: a form is the Optional signup or a Message with fields
 added, and an offer is a Message with a link button, so two more entries would
-be the same screens under other names. The theme palette is still drawn inside
-the Tokens section rather than as its own section ahead of format and
-position; phase 3's plain style pass reorders Tokens anyway.
+be the same screens under other names. And the Look has no **Advanced**
+section of its own yet: the detailed tokens and custom CSS sit behind Tokens'
+"Detailed styling…", which phase 3 renames Advanced when it gathers the exact
+values there.
 
 ### Still to land
 

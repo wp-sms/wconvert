@@ -106,11 +106,12 @@ import type { Template, Tokens as TokenMap } from '@renderer/types';
  * the design's tokens whatever is selected, so it belongs over all three panes
  * rather than inside the pane that is about one box.
  *
- * **A popover and not a `Select`**, because the swatches are the whole
+ * **A grid and not a `Select`**, because the swatches are the whole
  * affordance: ADR 0054 rule 3 is that a control shows the shape of its value,
  * and a list of names would be six words for six palettes a merchant would
- * choose between by looking. It is a popover and not the grid itself because a
- * toolbar has one line.
+ * choose between by looking. It was a popover while it sat on a toolbar, which
+ * has one line; it is the Look panel's first section now (ADR 0134), which has
+ * the room, so the looks are shown rather than behind a button.
  *
  * **Moved rather than repeated.** Two theme pickers is the same defect two
  * controls for one token is (#71): a merchant can watch them disagree.
@@ -122,9 +123,7 @@ export function Themes({
   template: Template;
   onChange: (template: Template) => void;
 }) {
-  const [open, setOpen] = useState(false);
   const presets = themePresets();
-  const current = presets.find((preset) => isApplied(preset, template.tokens));
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -136,55 +135,36 @@ export function Themes({
     });
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button type="button" variant="outline" size="sm">
-          <span aria-hidden="true" className="wconvert-theme__swatches" data-shape="row">
-            {['bg', 'fg', 'accent'].map((token) => (
-              <span
-                key={token}
-                className="wconvert-theme__swatch"
-                style={{ background: template.tokens[token] }}
-              />
-            ))}
-          </span>
-          {/*
-            **The name where there is one, and the word for "none of these"
-            where there is not.** A design the merchant has since edited matches
-            no preset, and a picker showing the first one would be claiming a
-            palette they are not on.
-          */}
-          {current?.label ?? __('Custom look', 'wconvert')}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-auto">
-        <div className="wconvert-themes" role="group" aria-label={__('Ready-made looks', 'wconvert')}>
-          {presets.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              className="wconvert-theme"
-              aria-pressed={isApplied(preset, template.tokens)}
-              onClick={() => {
-                write(preset.tokens);
-                setOpen(false);
-              }}
-            >
-              <span aria-hidden="true" className="wconvert-theme__swatches">
-                {['bg', 'fg', 'accent'].map((token) => (
-                  <span
-                    key={token}
-                    className="wconvert-theme__swatch"
-                    style={{ background: preset.tokens[token] }}
-                  />
-                ))}
-              </span>
-              {preset.label}
-            </button>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
+    <section className="wconvert-look-section" aria-label={__('Ready-made looks', 'wconvert')}>
+      <h4>{__('Ready-made looks', 'wconvert')}</h4>
+      {/*
+        None pressed is the answer for a design the merchant has since edited:
+        it matches no preset, and pressing the first would claim a palette they
+        are not on.
+      */}
+      <div className="wconvert-themes" role="group" aria-label={__('Ready-made looks', 'wconvert')}>
+        {presets.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            className="wconvert-theme"
+            aria-pressed={isApplied(preset, template.tokens)}
+            onClick={() => write(preset.tokens)}
+          >
+            <span aria-hidden="true" className="wconvert-theme__swatches">
+              {['bg', 'fg', 'accent'].map((token) => (
+                <span
+                  key={token}
+                  className="wconvert-theme__swatch"
+                  style={{ background: preset.tokens[token] }}
+                />
+              ))}
+            </span>
+            {preset.label}
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }
 

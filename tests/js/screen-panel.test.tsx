@@ -53,6 +53,26 @@ describe('Then →', () => {
     expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.from === 's1' && edge.kind === 'default')?.to).toBe('s3');
   });
 
+  it('gives a graph screen with no path out its first one', async () => {
+    const graphed = upgradeToGraph(three());
+    const open = { ...graphed, graph: { ...graphed.graph!, edges: graphed.graph!.edges.filter(edge => edge.from !== 's1') } };
+    const onChange = vi.fn();
+    render(<ScreenThen tree={open} step={0} editable onChange={onChange} />);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's3');
+    expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.from === 's1' && edge.kind === 'default')?.to).toBe('s3');
+  });
+
+  it('says a final result ends the campaign rather than offering a choice that does nothing', () => {
+    const graphed = upgradeToGraph(treeFixture({ steps: [
+      { type: 'stack', children: [{ type: 'question', id: 'q', label: 'Pick', answer_type: 'single', choices: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }] }, { type: 'button', action: 'next', label: 'Next' }] },
+      { type: 'stack', children: [{ type: 'heading', text: 'Result' }] },
+    ] }));
+    const tree = { ...graphed, steps: graphed.steps.map((item, at) => at === 1 ? { ...item, kind: 'result' as const } : item) };
+    render(<ScreenThen tree={tree} step={1} editable onChange={vi.fn()} />);
+    expect(screen.getByText('The campaign ends here')).toBeInTheDocument();
+    expect(screen.queryByRole('combobox')).toBeNull();
+  });
+
   it('sends a question with paths to the question, where its paths live', async () => {
     const tree = upgradeToGraph(three());
     const withAnswer = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,

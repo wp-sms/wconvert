@@ -3,7 +3,7 @@ import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -610,6 +610,32 @@ describe('the builder shell', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
     expect(canvas).toHaveAttribute('data-width', 'narrow');
+  });
+
+  /** D5: the empty stage around the design is the Look's, and a screen row leaves it. */
+  it('opens the Look from the empty stage and leaves it for a screen', async () => {
+    await open();
+    fireEvent.click(document.querySelector('.wconvert-canvas__stage')!);
+    expect(screen.getByRole('region', { name: 'Look' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Look/ })).toHaveAttribute('aria-current', 'true');
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign' })).getAllByRole('button', { name: /First screen/ })[0]);
+    expect(screen.queryByRole('region', { name: 'Look' })).toBeNull();
+  });
+
+  /** Content lock's preview is a row of the tree, and the Look says where the campaign sits. */
+  it('shows the locked content preview from its tree row, with the Look stating where it sits', async () => {
+    inlinePlacementControls.preview = ({ state }) => <p>Lock example: {state}</p>;
+    try {
+      builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
+      await open();
+      const row = screen.getByRole('button', { name: 'Locked content preview' });
+      await userEvent.click(row);
+      expect(row).toHaveAttribute('aria-current', 'true');
+      expect(screen.getByText('Lock example: locked')).toBeInTheDocument();
+      expect(within(screen.getByRole('region', { name: 'Look' })).getByText(/^Where on the page: Content lock/)).toBeInTheDocument();
+    } finally {
+      delete inlinePlacementControls.preview;
+    }
   });
 
   /** The menu's modes are the dialog's modes: "This screen" opens the one Preview on the screen being edited. */

@@ -89,8 +89,11 @@ export interface CampaignIssueInputs {
   readonly displayType: string;
   readonly contentLock?: unknown;
   readonly inlinePlacement?: unknown;
-  /** Undefined while the goal cannot be read; that is itself an issue. */
-  readonly outcome: OutcomeContract | undefined;
+  /**
+   * Null when the goal could not be read, which is itself an issue; undefined
+   * while it is still loading, which is not — or every setup opens on "1 to fix".
+   */
+  readonly outcome: OutcomeContract | null | undefined;
   readonly bound: readonly string[];
   readonly destinations: readonly Destination[] | null;
   readonly captureMode: CaptureMode;
@@ -130,7 +133,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       ? [issue('inline-placement', __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), 'rules', { to: 'placement' }, true)] : []),
     ...(inlineTriggerIssue ? [issue('inline-trigger', __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), 'rules', { to: 'rules', section: 'when' }, true)] : []),
     // A failed read is retried in place: reloading the page would cost unsaved edits.
-    ...(!outcome ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true, { offersRetry: true })] : []),
+    ...(outcome === null ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true, { offersRetry: true })] : []),
     ...(goalIssue ? [issue('goal', goalIssue, 'edit', template && convertingActOf(template.tree)[0] === outcome?.action ? { to: 'edit-design' } : { to: 'library' }, true)] : []),
     // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
     ...(handoffIssue ? [issue(ISSUE.handoff, handoffIssue, 'destinations', { to: 'destinations' }, true, { offersKeepLocal: true })] : []),

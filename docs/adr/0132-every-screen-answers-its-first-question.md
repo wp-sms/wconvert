@@ -66,7 +66,8 @@ is the thing they came for the most visible thing, with one way forward?
 15. **The header never reads Published over a suspended or trashed campaign.**
     "Draft saved" stays (owner's choice).
 16. Edit view drops Find (Flow keeps it) and folds More screen options into a
-    ⋯; "Let answers choose the next screen" replaces "Enable flexible paths".
+    ⋯ (*since [ADR 0134](0134-one-edit-tab-look-screen-element.md), into the tree's one **+ Add screen** menu*); "Let answers
+    choose the next screen" replaces "Enable flexible paths".
     The Design tab's "Edit screens & conditions" duplicate is gone.
 17. The design library toolbar matches creation's two rows; a colour drag is
     one Undo step; a deleted layer shows its own Undo; Campaign details says

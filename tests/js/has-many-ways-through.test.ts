@@ -37,7 +37,8 @@ describe('whether a campaign has more than one way through', () => {
       ? { ...screen, paths: [{ to: 's2', when: { match: 'all', clauses: [{ question: 'q', operator: 'is', values: ['a'] }] } }, { to: 's2' }] } : screen) })).toBe(true);
   });
 
-  it('is for results that depend on the answers, and not for one result', () => {
+  /** A straight quiz picks a result on one screen; visitors still take one way through. */
+  it('is not for results that depend on the answers', () => {
     const tree = straight();
     const withResults = (results: unknown[]) => ({ ...tree, steps: [...tree.steps.slice(0, 1),
       { id: 'r', name: 'Result', kind: 'result', content: { type: 'stack', children: [] }, results }, ...tree.steps.slice(1)] }) as unknown as TemplateTree;
@@ -45,6 +46,6 @@ describe('whether a campaign has more than one way through', () => {
     expect(hasManyWaysThrough(withResults([
       { id: 'a', heading: 'A', when: { match: 'all', clauses: [{ question: 'q', operator: 'is', values: ['a'] }] } },
       { id: 'b', heading: 'B' },
-    ]))).toBe(true);
+    ]))).toBe(false);
   });
 });

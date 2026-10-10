@@ -53,7 +53,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   const updateInternals = useUpdateNodeInternals();
   const handles = `${detourTarget ?? ''}:${detourEntry}:${editingConnections}:${incomingPorts.join(',')}:${paths.map(path => path.to).join(',')}`;
   useEffect(() => { updateInternals(id); }, [id, handles, updateInternals]);
-  const targetName = (target: string) => groupedTargets.has(target) ? __('Relevant follow-ups', 'wconvert') : tree.steps.find(item => item.id === target)?.name ?? __('Next screen', 'wconvert');
+  const targetName = (target: string) => groupedTargets.has(target) ? __('Relevant follow-ups', 'wconvert') : tree.steps.find(item => item.id === target)?.name ?? __('A later screen', 'wconvert');
   const branching = paths.some(path => 'kind' in path ? path.kind === 'answer' : !!path.when);
   const answerCount = paths.filter(path => 'kind' in path ? path.kind === 'answer' : !!path.when).length;
   const hasFallback = paths.some(path => 'kind' in path ? path.kind === 'default' : !path.when);

@@ -4,7 +4,7 @@ This extends [ADR 0067](0067-the-editor-starts-with-the-preview-and-the-selected
 
 ## Placement
 
-Layers has a searchable Add element picker. Its position control names the selected element and offers before/after, or the beginning/end of each child collection. With no element selected, it uses the current screen's root. The row menu also offers before/after and inside insertion.
+Layers has a searchable Add element picker. *(Since [ADR 0134](0134-one-edit-tab-look-screen-element.md) there is no Layers pane: the picker is the open screen's "Add element" in the Edit tree, with the same position control.)* Its position control names the selected element and offers before/after, or the beginning/end of each child collection. With no element selected, it uses the current screen's root. The row menu also offers before/after and inside insertion.
 
 Field creation offers the capture kinds from the manifest explicitly. Already-used kinds are explained and disabled; `nodeFor` independently refuses an invalid or occupied requested capture. Existing guards still protect the sole converting button, the final capture field, form-step restrictions, and unique captures. Reordering remains among siblings with pointer and keyboard routes. Adding or selecting a descendant reveals collapsed ancestors without moving focus away from a preview selection.
 

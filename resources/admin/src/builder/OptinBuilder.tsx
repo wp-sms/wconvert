@@ -193,14 +193,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
   const [copiedLook, setCopiedLook] = useState<TokenBag | null>(null);
   const [step, setStep] = useState(0);
-  const [reopenScreen, setReopenScreen] = useState(false);
   const [width, setWidth] = useState<Width>('own');
   const [selection, setSelection] = useState<Selection | null>(null);
-  // The Look is the third thing the Edit panel can show, beside a screen and
-  // an element (ADR 0134): open, it wins over both.
-  const [lookOpen, setLookOpen] = useState(false);
-  // The "Locked content preview" row: the content lock's preview on Edit.
-  const [lockRow, setLockRow] = useState(false);
+  // Which of the Edit tree's rows that are not a screen is open: the Look, the
+  // reopen button or the locked content preview (ADR 0134). One value, so
+  // opening one closes the others; null leaves the screen or element panel.
+  const [openRow, setOpenRow] = useState<'look' | 'reopen' | 'lock' | null>(null);
+  const lookOpen = openRow === 'look';
   // What the element panel's ⇄ swap said, announced in the tree's one live region.
   const [swapSaid, setSwapSaid] = useState<{ said: string; serial: number } | null>(null);
 
@@ -216,6 +215,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [changingGoal, setChangingGoal] = useState(false);
   const changeGoal = useRef<HTMLButtonElement>(null);
   const goalButton = useRef<HTMLButtonElement>(null);
+  // Change goal opens from the goal under the name or from Campaign details; focus goes back to whichever.
+  const goalOpener = useRef<HTMLElement | null>(null);
 
   const [siblingAct, setSiblingAct] = useState<ConvertingAct | null>(null);
 
@@ -576,15 +577,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     // One editing surface now, so there is no longer a tab this must NOT yank
     // a merchant away from: clicking a block asks to edit that block.
     setTab('edit');
-    setLookOpen(false);
+    setOpenRow(null);
     setOpenToken(null);
     setSelection({ path: pathOfKey(key), from: 'preview' });
   }, []);
 
   const chooseFromTree = useCallback((path: Path) => {
-    setReopenScreen(false);
-    setLockRow(false);
-    setLookOpen(false);
+    setOpenRow(null);
     setOpenToken(null);
     setSelection({ path, from: 'tree' });
 
@@ -681,15 +680,18 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   }
 
   const canPreviewReopen = !!reopenControls.preview && !!config.teaser && ['popup', 'slide_in'].includes(displayTypeOf(config, templates));
-  const showingReopen = canPreviewReopen && reopenScreen;
-  const reopenLabel = __('Reopen button', 'wconvert');
-  const showReopen = () => {
-    setReopenScreen(true);
-    setLockRow(false);
-    setLookOpen(false);
+  const showingReopen = canPreviewReopen && openRow === 'reopen';
+  const canPreviewLock = config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
+  const lockRow = canPreviewLock && openRow === 'lock';
+  const openTreeRow = (row: 'look' | 'reopen' | 'lock') => {
+    setTab('edit');
+    setOpenRow(row);
     setSelection(null);
     setOpenToken(null);
   };
+  const reopenLabel = __('Reopen button', 'wconvert');
+  const showReopen = () => openTreeRow('reopen');
+
   const previewAs = (mode: 'journey' | 'appearance' | 'sample') => {
     previewReturnTab.current = tab;
     setPreviewFromRules(tab === 'rules');
@@ -698,15 +700,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     setJourneyTestRequest(value => value + 1);
   };
   const hasQuestions = !!entry?.tree.steps.some(screen => walkNodes(screen.content).some(node => node.type === 'question'));
-  const openLook = () => {
-    setTab('edit');
-    setReopenScreen(false);
-    setLockRow(false);
-    setSelection(null);
-    setOpenToken(null);
-    setLookOpen(true);
-  };
-  const showingLock = (tab === 'rules' || (tab === 'edit' && (previewFromRules || lockRow))) && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
+  const openLook = () => openTreeRow('look');
+
+  const showingLock = canPreviewLock && (tab === 'rules' || (tab === 'edit' && (previewFromRules || lockRow)));
   const selectedResult = entry?.tree.steps[step]?.results?.find(result => result.id === editingResult);
   const canvasTemplate = entry && selectedResult ? { ...entry, tree: { ...entry.tree, steps: entry.tree.steps.map((screen, index) => index === step ? { ...screen, results: [{ ...selectedResult, when: undefined }] } : screen) } } : entry;
   const previewPane =
@@ -722,14 +718,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         tools={<><DeviceControls width={width} onChange={setWidth} /><Fullscreen /></>}
         onStage={openLook}
         hint={sprintf(__('Click anything on the %s to edit it', 'wconvert'), formatWordOf(displayTypeOf(config, templates)))}
-        screen={showingLock ? { inFlow: true, label: __('Content lock', 'wconvert'), controls: <ContentLockPreview controls template={entry} state={lockPreview} onStateChange={setLockPreview} />, content: <ContentLockPreview template={entry} state={lockPreview} onStateChange={setLockPreview} /> } : showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setReopenScreen(false); setStep(0); }} /> } : undefined}
+        screen={showingLock ? { inFlow: true, label: __('Content lock', 'wconvert'), controls: <ContentLockPreview controls template={entry} state={lockPreview} onStateChange={setLockPreview} />, content: <ContentLockPreview template={entry} state={lockPreview} onStateChange={setLockPreview} /> } : showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setOpenRow(null); setStep(0); }} /> } : undefined}
       />
     );
   const shownStep = Math.min(step, Math.max((entry?.tree.steps.length ?? 1) - 1, 0));
   const chooseStep = (next: number) => {
-    setReopenScreen(false);
-    setLockRow(false);
-    setLookOpen(false);
+    setOpenRow(null);
     setStep(next);
     setSelection(null);
     setOpenToken(null);
@@ -746,7 +740,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   // each screen's warning, each map badge and each tab's dot all read it.
   const issues = campaignIssues({ template, rules: displayRules, vocabulary, displayType: displayTypeOf(config, templates),
     contentLock: config.content_lock, inlinePlacement: config.inline_placement,
-    outcome: readinessGoal.status === 'ready' ? readinessGoal.data?.outcome : undefined,
+    outcome: readinessGoal.status === 'loading' ? undefined : readinessGoal.status === 'ready' ? readinessGoal.data?.outcome ?? null : null,
     bound, destinations: read(destinations)?.destinations ?? null, captureMode,
     submissionSettings: config.submission_settings, uncheckedLinks: config.unchecked_links,
     privacyGuidance, policyUrl: adminSettings()?.policyUrl });
@@ -756,7 +750,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const issueRoutes: IssueRoutes = {
     // The design in place: the open element if there is one, else the Look.
     onEditDesign: () => { if (selection === null) openLook(); else setTab('edit'); },
-    onEditJourney: repair => { setTab('edit'); setLookOpen(false); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); },
+    onEditJourney: repair => { setTab('edit'); setOpenRow(null); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); },
     onGoToDesign: () => { setTab('edit'); setBrowsing(true); },
     onGoToPlacement: goToInlinePlacement,
     onGoToDestinations: () => { setTab('destinations'); destinationsTab.current?.focus(); },
@@ -766,7 +760,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     onRetryGoal: loadGoals,
   };
 
-  const displayEditor = (compactPanel = false) => <DisplayRules compact={compactPanel}
+  const displayEditor = () => <DisplayRules
               reopenEnabled={canPreviewReopen}
               audienceRequirement={entryOfGoal?.audience_requirement}
               initialSection={displaySection}
@@ -883,7 +877,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             }}
           />
           {/* The goal says what this campaign is for, and changing it is one press away (ADR 0134). */}
-          {entryOfGoal && <button ref={goalButton} type="button" className="wconvert-workspace__goal" disabled={busy} onClick={() => setChangingGoal(true)}>
+          {entryOfGoal && <button ref={goalButton} type="button" className="wconvert-workspace__goal" disabled={busy} onClick={() => { goalOpener.current = goalButton.current; setChangingGoal(true); }}>
             {sprintf(__('Goal: %s', 'wconvert'), entryOfGoal.label)}
           </button>}
           <span
@@ -1011,7 +1005,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                             onBrowse={() => setBrowsing(true)}
                             displayType={displayTypeOf(config, templates)}
                             teaser={config.teaser}
-                            onTeaserChange={(teaser) => { edit({ teaser }); setReopenScreen(!!teaser); setLookOpen(!teaser); }}
+                            onTeaserChange={(teaser) => { edit({ teaser }); setOpenRow(teaser ? 'reopen' : 'look'); }}
                             placement={config.placement}
                             onPlacementChange={(placement) => edit({ placement })}
                             pageSummary={displayTypeOf(config, templates) === 'inline' ? inlineSummary : undefined}
@@ -1022,8 +1016,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               onUndo={history.canUndo && !busy ? history.undo : undefined} draft={config} focus={focusRow} announcement={swapSaid} />}
             extraRows={[
               ...(canPreviewReopen ? [{ key: 'reopen', label: reopenLabel, current: showingReopen, onSelect: showReopen }] : []),
-              ...(config.content_lock != null && displayTypeOf(config, templates) === 'inline' && inlinePlacementControls.preview
-                ? [{ key: 'lock', label: __('Locked content preview', 'wconvert'), current: lockRow, onSelect: () => { setReopenScreen(false); setLookOpen(false); setSelection(null); setLockRow(true); } }] : []),
+              ...(canPreviewLock ? [{ key: 'lock', label: __('Locked content preview', 'wconvert'), current: lockRow, onSelect: () => openTreeRow('lock') }] : []),
             ]}
             editingScreen={!lookOpen && !showingReopen && !lockRow}
             onSelectElement={chooseFromTree}
@@ -1074,6 +1067,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       type="button"
                       variant="outline"
                       onClick={() => {
+                        goalOpener.current = changeGoal.current;
                         setDetails(false);
                         setChangingGoal(true);
                       }}
@@ -1224,7 +1218,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           // exactly as the picker above: naming the control is what puts the
           // caret back rather than on `<body>`.
           if (!next) {
-            (goalButton.current ?? changeGoal.current)?.focus();
+            (goalOpener.current ?? changeGoal.current)?.focus();
           }
         }}
         goals={goals}

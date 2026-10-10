@@ -2,7 +2,7 @@ import { createContext, useContext, useId, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowRight, TriangleAlert } from 'lucide-react';
 import type { TemplateTree } from '@renderer/types';
-import { canTargetGraphScreen, reconnectGraphEdge } from './structure/graphConnections';
+import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconnectGraphEdge } from './structure/graphConnections';
 import { upgradeToGraph, graphDisplayOrder } from './structure/graph';
 import { nodesOf, type Block } from './structure/tree';
 import { nameOfBlock } from './BlockRow';
@@ -56,9 +56,13 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
     </ThenLine>;
   }
   const order = graphDisplayOrder(tree).filter(index => index !== step);
+  // A graph screen with no path out yet gets one, unless nothing may follow it (a final result).
+  if (graph && !fallback && !order.some(index => canAddGraphConnection(tree, screen.id, tree.steps[index].id))) {
+    return <ThenLine label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</ThenLine>;
+  }
   const reachable = (target: string) => graph ? canTargetGraphScreen(tree, screen.id, target) : tree.steps.findIndex(item => item.id === target) > step;
   const choose = (target: string) => {
-    if (graph && fallback) { onChange(reconnectGraphEdge(tree, fallback.id, target)); return; }
+    if (graph) { onChange(fallback ? reconnectGraphEdge(tree, fallback.id, target) : addGraphConnection(tree, screen.id, target)); return; }
     // A straight journey choosing its own next screen becomes a graph first.
     const upgraded = upgradeToGraph(tree);
     const edge = upgraded.graph?.edges.find(item => item.from === screen.id && item.kind === 'default');
@@ -69,7 +73,7 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
     <div className="wconvert-screen-then__value">
       <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
       <select id={`${id}-then`} value={nextId ?? ''} onChange={event => choose(event.target.value)}>
-        {nextId === undefined && <option value="">{__('Choose the next screen', 'wconvert')}</option>}
+        {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
         {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
       </select>
     </div>
