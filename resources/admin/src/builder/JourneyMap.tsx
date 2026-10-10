@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { Background, Handle, MarkerType, Panel, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, useUpdateNodeInternals, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import { branchRegions, layoutMap } from './structure/mapLayout';
-import { Check, CircleHelp, FileText, Flag, Send, Eye, Focus, Minus, Plus, Settings2 } from 'lucide-react';
+import { Check, CircleHelp, FileText, Flag, Send, Eye, Focus, Minus, MoreHorizontal, Plus } from 'lucide-react';
 import { SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Disclosure } from '../shell/Disclosure';
@@ -132,8 +132,8 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
 const nodeTypes = { screen: ScreenCard, followups: FollowupGroupCard };
 const edgeTypes = { journey: JourneyMapEdge };
 
-export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, selection, onNodesReady, editingConnections, onEditConnections }: {
-  editingConnections?: boolean; onEditConnections?(): void; mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; contextIds?: readonly string[]; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; selection?: { highlighted: boolean; toggle(): void }; onNodesReady(): void;
+export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, selection, onNodesReady, editingConnections, onEditConnections }: {
+  editingConnections?: boolean; onEditConnections?(): void; mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; contextIds?: readonly string[]; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; selection?: { highlighted: boolean; toggle(): void }; onNodesReady(): void;
 }) {
   const { fitView, zoomIn, zoomOut, viewportInitialized, getViewport, setViewport, getNodes } = useReactFlow();
   useEffect(() => {
@@ -179,39 +179,36 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
     const frame = requestAnimationFrame(onNodesReady);
     return () => cancelAnimationFrame(frame);
   }, [nodesReady, onNodesReady, revision]);
+  // The map opens fitted, whole (ADR 0135), and stays whole while cards measure
+  // and settle; once another screen is chosen, the camera follows the selection.
+  const openedOn = useRef(selectedId);
   useEffect(() => {
     if (!viewportInitialized || revision === 0) return;
-    const overview = width >= overviewWidth && initialOverview;
+    const overview = selectedId === openedOn.current || (width >= overviewWidth && initialOverview);
     const frame = requestAnimationFrame(() => void fitView({
       ...(overview ? {} : { nodes: cameraTargets(getNodes(), selectedId, nextId, width, height, contextIds) }),
       padding: viewPadding(), maxZoom: 1, duration: 180 }));
     return () => cancelAnimationFrame(frame);
   }, [fitView, getNodes, nextId, contextIds, initialOverview, revision, selectedId, viewportInitialized, width, height, overviewWidth, viewPadding]);
-  const focusSelection = () => void fitView({ nodes: [{ id: selectedId }], padding: viewPadding(), maxZoom: 1, duration: 180 });
-  const goToStart = () => void fitView({ nodes: [{ id: firstId }], padding: viewPadding(), maxZoom: 1, duration: 180 });
   const fitJourney = () => void fitView({ padding: viewPadding(), maxZoom: 1, duration: 180 });
-  const pan = (direction: number) => {
-    const viewport = getViewport();
-    const rtl = document.documentElement.dir === 'rtl';
-    void setViewport({ ...viewport, x: viewport.x + direction * (rtl ? -1 : 1) * width * .65 }, { duration: 180 });
-  };
   return <>
     <Panel position="bottom-left" className="wconvert-journey-map__controls">
       <div className="wconvert-journey-map__tools wconvert-journey-map__control-group" role="group" aria-label={__('Map view', 'wconvert')}>
         <button type="button" aria-label={__('Zoom out', 'wconvert')} title={__('Zoom out', 'wconvert')} onClick={() => void zoomOut()}><Minus aria-hidden="true" /></button>
         <span className="wconvert-journey-map__percentage" aria-label={__('Canvas zoom', 'wconvert')}>{zoomPercent}%</span>
         <button type="button" aria-label={__('Zoom in', 'wconvert')} title={__('Zoom in', 'wconvert')} onClick={() => void zoomIn()}><Plus aria-hidden="true" /></button>
-        <button type="button" onClick={fitJourney}><Focus aria-hidden="true" />{__('Fit journey', 'wconvert')}</button>
-        <button type="button" disabled={!selection} aria-label={__('Show selected screen', 'wconvert')} title={__('Show selected screen', 'wconvert')} onClick={focusSelection}><Focus aria-hidden="true" /></button>
-        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-map__view-options"><Settings2 aria-hidden="true" />{__('View options', 'wconvert')}</button></DropdownMenuTrigger>
+        {/*
+          One line of tools (ADR 0135): zoom, Fit, Tidy up, Highlight paths, and
+          ⋯ for the two view preferences. Going to the first screen and panning
+          earlier or later were ways around a map that did not open fitted.
+        */}
+        <button type="button" onClick={fitJourney}><Focus aria-hidden="true" />{__('Fit', 'wconvert')}</button>
+        <button type="button" onClick={onTidy}>{__('Tidy up', 'wconvert')}</button>
+        {selection && <button type="button" aria-pressed={selection.highlighted} onClick={selection.toggle}>{__('Highlight paths', 'wconvert')}</button>}
+        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-map__view-options" aria-label={__('More map options', 'wconvert')} title={__('More map options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem onSelect={goToStart}>{__('Go to first screen', 'wconvert')}</DropdownMenuItem>
-            {selection && <DropdownMenuCheckboxItem checked={selection.highlighted} onCheckedChange={selection.toggle}>{__('Highlight related paths', 'wconvert')}</DropdownMenuCheckboxItem>}
             <DropdownMenuCheckboxItem checked={preview} onCheckedChange={onPreview}>{__('Screen previews', 'wconvert')}</DropdownMenuCheckboxItem>
             {grouping && <DropdownMenuItem onSelect={grouping.toggle}>{grouping.active ? __('Expand follow-ups', 'wconvert') : __('Group follow-ups', 'wconvert')}</DropdownMenuItem>}
-            <DropdownMenuItem onSelect={onTidy}>{__('Tidy up', 'wconvert')}</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => pan(1)}>{__('Pan to earlier screens', 'wconvert')}</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => pan(-1)}>{__('Pan to later screens', 'wconvert')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
         {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done editing paths', 'wconvert') : __('Edit paths', 'wconvert')}</button>}
@@ -252,6 +249,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     if (selected !== null && tree.steps[selected]) setCameraFocus(tree.steps[selected].id);
   }, [selected, tree.steps]);
   const mapRoot = useRef<HTMLDivElement>(null);
+  // Said once per browser, the first time a card is dragged (ADR 0135).
+  const [dragNote, setDragNote] = useState(false);
   const pendingFocus = useRef<string | null>(null);
   const layoutState = useRef({ key: '', manuallyPositioned: false });
   const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
@@ -395,8 +394,12 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     return boundary < 0 || to <= boundary;
   };
   return <div ref={mapRoot} className="wconvert-journey-map" aria-label={__('Journey map', 'wconvert')}>
+    {dragNote && <p className="wconvert-journey-map__note" role="status">
+      {__('Moving a card only tidies the map. Visitors follow the paths.', 'wconvert')}
+      <button type="button" onClick={() => setDragNote(false)}>{__('Got it', 'wconvert')}</button>
+    </p>}
     <div className="wconvert-journey-node-tools" aria-label={__('Selected screen actions', 'wconvert')}>
-      {editingConnections ? <span>{__('Connect with + or use Next screen settings. Moving a card changes only its layout.', 'wconvert')}</span> : selected !== null && samplePath === null ? <>
+      {editingConnections ? <span>{__('Connect with +, or set paths on the question. Moving a card changes only its layout.', 'wconvert')}</span> : selected !== null && samplePath === null ? <>
         <strong>{selectedEdge ? `${tree.steps[selected].name} → ${tree.steps.find(screen => screen.id === selectedEdge.target)?.name}` : tree.steps[selected].name}</strong>
         <button type="button" onClick={() => onSelect(selected)}>{__('Edit screen', 'wconvert')}</button>
         {onPreview && <button type="button" onClick={() => onPreview(selected)}>{__('Preview screen', 'wconvert')}</button>}
@@ -407,7 +410,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
       proOptions={{ hideAttribution: true }}
       nodesFocusable={false} edgesFocusable={false} nodesConnectable={editingConnections} edgesReconnectable={editingConnections}
-      ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Paths can also be edited in Next screen settings.', 'wconvert') }}
+      ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Paths can also be set on the question.', 'wconvert') }}
       minZoom={mapMinZoom} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
       onNodeClick={(event, node) => { if (node.type === 'screen' && !(event.target instanceof Element && event.target.closest('button'))) onSelect(tree.steps.findIndex(step => step.id === node.id)); }}
       onEdgeClick={(_, edge) => { const data = edge.data as { sourceIndex?: number; priority?: number | 'hidden' } | undefined; if (data?.sourceIndex !== undefined) onSelectPath(data.sourceIndex, data.priority ?? 0); }}
@@ -425,13 +428,14 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         });
         const moved = changes.filter((change): change is Extract<typeof change, { type: 'position' }> => change.type === 'position' && !!change.position);
         if (moved.length) {
+          if (moved.some(change => change.dragging) && !dragNoteSeen()) { rememberDragNote(); setDragNote(true); }
           layoutState.current.manuallyPositioned = true;
           setPositions(old => ({ ...old, ...Object.fromEntries(moved.map(change => [change.id, change.position!])) }));
         }
       }}>
       <Background gap={24} size={1} color="#ddd8ca" />
       <FocusCamera editingConnections={editingConnections} onEditConnections={onConnect ? () => setEditingConnections(value => !value) : undefined} mapRoot={mapRoot} selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
-        contextIds={cameraContext} firstId={visibleId(tree.graph?.entry ?? tree.steps[0].id)}
+        contextIds={cameraContext}
         initialOverview={selected === null && cameraFocus === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
         grouping={detectedGroups.length ? { active: groups.length > 0, toggle: () => { setGrouping(groups.length === 0); setExpandedGroups([]); } } : undefined}
         revision={revision} selection={selected !== null && samplePath === null ? { highlighted: highlightRelated, toggle: () => setHighlightRelated(value => !value) } : undefined} onNodesReady={focusExpandedScreen} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
@@ -439,4 +443,13 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     </SmartEdgeProvider>
 
   </div>;
+}
+
+const DRAG_NOTE = 'wconvert:flow-drag-note';
+/** A per-browser convenience: storage may be blocked, and then the note simply shows again. */
+function dragNoteSeen(): boolean {
+  try { return window.localStorage.getItem(DRAG_NOTE) === '1'; } catch { return false; }
+}
+function rememberDragNote(): void {
+  try { window.localStorage.setItem(DRAG_NOTE, '1'); } catch { /* blocked storage: nothing to remember */ }
 }

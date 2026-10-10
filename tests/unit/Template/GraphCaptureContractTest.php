@@ -111,6 +111,16 @@ final class GraphCaptureContractTest extends TestCase
         return $tree;
     }
 
+    /** ADR 0135: a skipped follow-up falls through along its default edge, so the hidden edges are optional. */
+    public function testFollowUpsPublishWithoutHiddenEdgesAndStillSkipWhatDoesNotMatch(): void
+    {
+        foreach (['journey-graph-enquiry.json', 'journey-graph-branch-groups.json'] as $file) {
+            $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/' . $file), true);
+            $tree['graph']['edges'] = array_values(array_filter($tree['graph']['edges'], static fn (array $edge): bool => $edge['kind'] !== 'hidden'));
+            self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''), $file);
+        }
+    }
+
     public function testCombinedEnquiryCanPublishWithUnorderedScreensAndOneRequiredSave(): void
     {
         $tree = self::graphize('journey-service-enquiry');

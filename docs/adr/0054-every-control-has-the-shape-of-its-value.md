@@ -40,6 +40,11 @@ built to avoid needing one.
 
 ## 2. A free-text box is an escape you opt into, never the control you land on
 
+*Amended by [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md): the escape hatch is now behind one switch per panel,
+**Advanced**, rather than beside each control. The plain view never shows a
+typed box; a value only CSS can say reads "This value is set in CSS. Open
+Advanced to change it."*
+
 **Where a shape cannot be inferred, the manifest enumerates it.**
 
 `shadow` is the counter-example, and it is a clean one because nothing was

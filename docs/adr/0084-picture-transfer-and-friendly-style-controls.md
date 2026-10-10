@@ -39,7 +39,9 @@ strings, with no renderer or persisted document format change.
 Padding expands one through four CSS values into physical Top/Right/Bottom/Left
 controls. Unlinking writes nothing; linking explicitly applies the top value to
 all sides. Negative or complex expressions remain in Custom CSS. Units are
-explicit and changing them never guesses a conversion.
+explicit and changing them never guesses a conversion. *Amended by [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md):
+Custom CSS, units, gradient degrees and stop positions are shown under
+Advanced only; the plain view keeps presets, swatches and the color stops.*
 
 Visual gradients support a single linear gradient with two to six color stops,
 positions and direction. Alpha uses the existing color picker. Unsupported or

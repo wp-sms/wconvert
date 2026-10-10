@@ -887,8 +887,9 @@ A Free journey is linear: the merchant can arrange its screens and submission
 points, including a screen that explains an offer before asking for details.
 Pro journeys are a **graph** (`tree.graph`, v3): an entry screen and edges between
 screens. Each [[Path]] is one edge — `answer` (taken when its condition on an
-earlier choice matches), `default` (taken by [[All other answers]]) or `hidden`
-(where a screen whose [[Show only if…]] does not match sends visitors on). Paths
+earlier choice matches), `default` (taken by [[All other answers]]) or an
+optional `hidden` override (where a skipped screen sends visitors instead of
+continuing along its default — [ADR 0135](docs/adr/0135-plain-style-controls-exact-values-under-advanced.md)). Paths
 from one screen are checked top to bottom and the first match wins; a path may
 jump forward or rejoin another, but never loops back. A graph that is still a
 straight line reads exactly as the linear journey does. Its one Results screen
@@ -932,7 +933,8 @@ asked one at a time, sharing one way on.
 ### Show only if…
 
 A screen's condition on an earlier answer (`screen.when`). A screen that does
-not match is skipped. Replaces "screen visibility", "visibility rule" and "Show
+not match is skipped, and visitors continue where it would have taken them,
+unless its "If skipped, go to…" says otherwise. Replaces "screen visibility", "visibility rule" and "Show
 this screen when…".
 
 ### Form
