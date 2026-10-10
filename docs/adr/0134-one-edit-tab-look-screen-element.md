@@ -95,9 +95,12 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   follow-up is added. Only then does the strip above the canvas offer
   Canvas | Flow, and a Flow view falls back to Canvas the moment the last
   branch goes.
-- **One Preview**, a menu of the one dialog's modes: As a visitor · This screen
+- ~~**One Preview**, a menu of the one dialog's modes: As a visitor · This screen
   · Try answers (when there is a question), plus **Test a visit**, which moved
-  out of Display rules. "Preview & test" and "Check the design" are gone.
+  out of Display rules.~~ *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): one Preview button with no
+  menu, and two tabs — Try the form and Who sees it (Test a visit). Try answers
+  and This screen are gone; the canvas shows one screen.* "Preview & test" and
+  "Check the design" are gone.
 - ~~**The goal sits under the campaign name** and opens Change goal; Campaign
   details keeps analytics and developer tools.~~ *Amended by [ADR 0136](0136-one-panel-grammar.md): the goal
   left the header again. It is in Campaign details with Change goal, and the name and status pill sit side by side.*

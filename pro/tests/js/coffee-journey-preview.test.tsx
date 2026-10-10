@@ -24,7 +24,7 @@ it('simulates product failure and retry without remounting the visitor screen or
   await user.click(visitor().getByRole('checkbox', { name: 'Rich and chocolatey' }));
   await user.click(visitor().getByRole('button', { name: 'Continue' }));
   const heading = visitor().getByRole('heading', { name: 'Rich espresso, made for your mornings' });
-  await user.click(screen.getByText('Test product availability'));
+  await user.click(screen.getByText('Simulate a problem'));
   const error = screen.getByRole('radio', { name: 'Loading error' });
   error.focus(); fireEvent.click(error);
   expect(visitor().getByRole('heading', { name: 'Rich espresso, made for your mornings' })).toBe(heading);
@@ -39,11 +39,11 @@ it('simulates product failure and retry without remounting the visitor screen or
   await user.click(screen.getByRole('radio', { name: 'None available' }));
   expect(visitor().getByRole('status')).toHaveTextContent('These products are unavailable');
   expect(visitor().queryByRole('button', { name: 'Retry products' })).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
+  await user.click(screen.getByRole('button', { name: 'Start over' }));
   await user.click(visitor().getByRole('radio', { name: 'French press' }));
   await user.click(visitor().getByRole('button', { name: 'Continue' }));
   await user.click(visitor().getByRole('button', { name: 'Continue' }));
-  await user.click(screen.getByText('Test product availability'));
+  await user.click(screen.getByText('Simulate a problem'));
   expect(screen.getByRole('radio', { name: 'Available' })).toBeChecked();
   expect(visitor().getByRole('status')).toHaveTextContent('1 selected product would be checked');
   await user.click(visitor().getByRole('button', { name: 'Optional email updates' }));

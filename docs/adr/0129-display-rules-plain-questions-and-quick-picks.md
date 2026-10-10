@@ -39,8 +39,11 @@ The open answer is current, one that needs attention is amber. Every frame is a
 translated string with a `%s` — `Shows %1$s %2$s, %3$s, %4$s.`, then `on %s`,
 `to %s` — so a language that reorders them moves placeholders rather than
 splicing words. Pages are named where that needs no lookup (a URL path, a
-content type) and counted otherwise. ~~*Test a visit* sits beside it.~~ *Test a visit* is a mode of the one
-Preview menu, reachable from every tab (*amended by [ADR 0134](0134-one-edit-tab-look-screen-element.md)*).
+content type) and counted otherwise. ~~*Test a visit* sits beside it.~~ ~~*Test a visit* is a mode of the one
+Preview menu, reachable from every tab (*amended by [ADR 0134](0134-one-edit-tab-look-screen-element.md)*).~~
+*Test a visit* is Preview's **Who sees it** tab, its visitor grouped as Where,
+Who, When and Basket, with Fix in Display rules on a verdict that does not show
+(*amended by [ADR 0138](0138-one-preview-one-review-one-details.md)*).
 
 ## Quick picks first; the rule builder behind Custom…
 

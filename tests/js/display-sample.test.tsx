@@ -21,7 +21,9 @@ const choose = (name: string, value: string) => fireEvent.change(screen.getByRol
 describe('Test a visit', () => {
   it('asks only what this campaign’s rules use', () => {
     sample();
-    expect(screen.getByRole('dialog', { name: 'Test a visit' })).toBeInTheDocument();
+    // A Preview tab now, grouped Where / When; a group the rules never ask about is not drawn.
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getAllByRole('group').map(group => group.querySelector('legend')?.textContent)).toEqual(['Where', 'When']);
     expect(screen.getAllByRole('combobox')).toHaveLength(2);
     expect(screen.getByRole('combobox', { name: 'Device' })).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'Before this visit' })).toBeInTheDocument();
@@ -46,6 +48,14 @@ describe('Test a visit', () => {
     const where = screen.getByText('Where does it show?').closest('li')!;
     expect(where).toHaveAttribute('data-status', 'fail');
     expect(where).toHaveTextContent('Excluded: /checkout/*');
+  });
+
+  it('offers one fix for a visitor it doesn’t show to', () => {
+    const onOpenSection = sample({ display_rules: { audience: computersOnly, opening: after15 } });
+    expect(screen.queryByRole('button', { name: 'Fix in Display rules' })).toBeNull();
+    choose('Device', 'mobile');
+    fireEvent.click(screen.getByRole('button', { name: 'Fix in Display rules' }));
+    expect(onOpenSection).toHaveBeenCalledWith('who');
   });
 
   it('stops a second showing in one visit under Once per visit', () => {

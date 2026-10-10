@@ -188,6 +188,7 @@ const GOAL = {
   grows_a_list: true, outcome: CAPTURE_OUTCOME,
   headline_kind: 'conversion',
   headline_label: 'Email submissions',
+  rate_label: 'Email submission rate',
   tier: 'free',
   availability: 'ready' as const,
 };
@@ -251,10 +252,9 @@ const openLook = async () => {
   await userEvent.click(await screen.findByRole('button', { name: /^Look/ }));
 };
 
-/** The one Preview button, as a visitor (ADR 0134). */
+/** The one Preview button, no menu (ADR 0138): it opens on Try the form. */
 const previewAsVisitor = async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
-  await userEvent.click(await screen.findByRole('menuitem', { name: 'As a visitor' }));
 };
 
 // These existing cases exercise layout controls. Default editing has its own regression below.
@@ -603,13 +603,13 @@ describe('the builder shell', () => {
     await userEvent.click(await screen.findByRole('radio', { name: 'Mobile' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     await previewAsVisitor();
-    expect(await screen.findByRole('dialog', { name: 'Preview' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Welcome discount' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
     await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
-    expect(screen.queryByRole('dialog', { name: 'Preview' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Welcome discount' })).not.toBeInTheDocument();
     await previewAsVisitor();
-    expect(await screen.findByRole('dialog', { name: 'Preview' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Welcome discount' })).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
@@ -643,46 +643,37 @@ describe('the builder shell', () => {
     }
   });
 
-  /** The menu's modes are the dialog's modes: "This screen" opens the one Preview on the screen being edited. */
-  it('opens Preview on this screen from the Preview menu', async () => {
+  /** One Preview, two tabs (ADR 0138): Try the form, and Who sees it with Test a visit's verdict. */
+  it('opens one Preview with two tabs, the second saying who sees it', async () => {
     await open();
-    await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'This screen' }));
-    const preview = within(await screen.findByRole('dialog', { name: 'Preview' }));
-    expect(preview.getByRole('radio', { name: 'This screen' })).toBeChecked();
-    // The menu item that asked is gone; focus returns to the Preview button.
+    const button = screen.getByRole('button', { name: 'Preview' });
+    expect(button).not.toHaveAttribute('aria-haspopup');
+    await userEvent.click(button);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    const dialog = await screen.findByRole('dialog', { name: 'Welcome discount' });
+    const preview = within(dialog);
+    expect(preview.getAllByRole('tab').map(tab => tab.textContent)).toEqual(['Try the form', 'Who sees it']);
+    expect(preview.getByRole('tab', { name: 'Try the form' })).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(preview.getByRole('tab', { name: 'Who sees it' }));
+    expect(await preview.findByRole('group', { name: 'Where' })).toBeInTheDocument();
+    expect(preview.getByRole('status')).toHaveTextContent(/Opens|Doesn’t open/);
+    // The button that asked is still there; focus returns to it.
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.getByRole('button', { name: 'Preview' })).toHaveFocus());
   });
 
-  it('keeps content-lock states available in the design check opened from Display rules', async () => {
-    inlinePlacementControls.preview = ({ state }) => <p>Lock example: {state}</p>;
-    inlinePlacementControls.previewControls = ({ state, onStateChange }) => <select aria-label="Preview content lock" value={state} onChange={event => onStateChange(event.target.value as 'locked' | 'unlocked' | 'unavailable')}><option>locked</option><option>unlocked</option><option>unavailable</option></select>;
-    try {
-      builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
-      await open();
-      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-      await previewAsVisitor();
-      const preview = within(await screen.findByRole('dialog', { name: 'Preview' }));
-      await userEvent.click(preview.getByRole('radio', { name: 'This screen' }));
-      await userEvent.selectOptions(preview.getByRole('combobox', { name: 'Preview content lock' }), 'unavailable');
-      expect(preview.getByText('Lock example: unavailable')).toBeInTheDocument();
-      await userEvent.click(preview.getByRole('button', { name: 'Back to editor' }));
-      expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
-      await userEvent.click(screen.getByRole('tab', { name: 'Edit' }));
-      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
-      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-      await previewAsVisitor();
-      const again = within(await screen.findByRole('dialog', { name: 'Preview' }));
-      await userEvent.click(again.getByRole('radio', { name: 'As a visitor' }));
-      await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
-      expect(screen.getByRole('tab', { name: 'Edit' })).toHaveAttribute('aria-selected', 'true');
-      expect(screen.queryByRole('dialog', { name: 'Preview' })).not.toBeInTheDocument();
-      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
-    } finally {
-      delete inlinePlacementControls.preview;
-      delete inlinePlacementControls.previewControls;
-    }
+  it('returns to Display rules when Preview opened there closes, and to Edit from Edit this screen', async () => {
+    await open();
+    await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    await previewAsVisitor();
+    const preview = within(await screen.findByRole('dialog', { name: 'Welcome discount' }));
+    await userEvent.click(preview.getByRole('button', { name: 'Done' }));
+    expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
+    await previewAsVisitor();
+    const again = within(await screen.findByRole('dialog', { name: 'Welcome discount' }));
+    await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
+    expect(screen.getByRole('tab', { name: 'Edit' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByRole('dialog', { name: 'Welcome discount' })).not.toBeInTheDocument();
   });
 
   /**
@@ -745,7 +736,7 @@ describe('the builder shell', () => {
    * own docblock, naming the failure this strip had. There is at most one
    * emphasised number per row, and it is the one the Goal is judged on.
    */
-  it('spends the emphasis on the Goal’s own number and nowhere else', async () => {
+  it('names the rate in the Goal’s own words, as the list’s Details does', async () => {
     builder.getOptin.mockResolvedValue(optin({ published_at: '2026-08-01 09:00:00' }));
     stats.readDashboard.mockResolvedValue({
       from: '',
@@ -767,9 +758,10 @@ describe('the builder shell', () => {
 
     const headline = await screen.findByText('42');
 
-    expect(headline).toHaveClass('text-figure');
-    expect(screen.getByText('1,000')).not.toHaveClass('text-figure');
-    expect(screen.getByText('4.2%')).not.toHaveClass('text-figure');
+    // The Goal's number first, under the Goal's word for it.
+    expect(headline.nextElementSibling).toHaveTextContent('Email submissions');
+    expect(screen.getByText('4.2%').nextElementSibling).toHaveTextContent('Email submission rate');
+    expect(screen.queryByText('Conversion rate')).toBeNull();
   });
 
   /**
@@ -798,7 +790,7 @@ describe('the builder shell', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    expect(await screen.findByText('The last 7 days')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Last 7 days' })).toBeInTheDocument();
   });
 
   /**
@@ -818,10 +810,11 @@ describe('the builder shell', () => {
     // different state and would otherwise be what this matched.
 
 
-    expect(screen.getByText('Loading…')).toBeInTheDocument();
-    // Three stats' worth of placeholders — a label and a figure each — plus the
-    // caption line under them, which is where the 72px shift used to come from.
-    expect(document.querySelectorAll('[data-slot="skeleton"]')).toHaveLength(7);
+    // Three stats' worth of placeholders — a figure and a label each — the
+    // list's Details reserves the same (ADR 0138).
+    const dialog = await screen.findByRole('dialog', { name: 'Welcome discount' });
+    expect(within(dialog).getByRole('heading', { name: 'Results' })).toBeInTheDocument();
+    expect(dialog.querySelectorAll('.wconvert-campaign-detail-stats [data-slot="skeleton"]')).toHaveLength(6);
   });
 
   /**
@@ -1033,7 +1026,7 @@ describe('the summary', () => {
    * query for one named *"When"* matches nothing at all.
    */
   const fact = (name: string) =>
-    screen.getByRole('button', { name }).closest('dt')?.nextElementSibling;
+    screen.getByText(name, { selector: 'dt' }).nextElementSibling;
 
   /**
    * Press the trigger in the page-header band.
@@ -1062,6 +1055,20 @@ describe('the summary', () => {
     expect(screen.queryByText('Started from')).toBeNull();
   });
 
+  /** One body for both Details (ADR 0138): the editor's says How it runs too, from the draft in hand. */
+  it('shows How it runs in the editor’s Details, with the report and Close in its footer', async () => {
+    await open();
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Welcome discount' });
+    const runs = within(dialog).getByRole('region', { name: 'How it runs' });
+    expect([...runs.querySelectorAll('dt')].map((term) => term.textContent)).toEqual(['Who', 'Where', 'Opens', 'How often', 'Runs', 'Leads go to']);
+    const footer = dialog.querySelector('footer')!;
+    expect(within(footer).getByRole('link', { name: 'View report' })).toHaveAttribute('href', expect.stringContaining('optin='));
+    await userEvent.click(within(footer).getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog', { name: 'Welcome discount' })).not.toBeInTheDocument();
+  });
+
   it('keeps the goal and its measurement in header details', async () => {
     await open();
     const goal = await screen.findByRole('button', { name: 'Campaign actions' });
@@ -1073,7 +1080,10 @@ describe('the summary', () => {
     await userEvent.click(goal);
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     expect(await screen.findByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
-    expect(screen.getByText('Grow my email list · counts Email submissions')).toBeVisible();
+    const section = screen.getByRole('region', { name: 'Goal' });
+    expect(within(section).getByText('Grow my email list')).toBeVisible();
+    expect(section).toHaveTextContent('Counts as success: Email submissions');
+    expect(section).toHaveTextContent(CAPTURE_OUTCOME.measurement);
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(goal).toHaveFocus());
   });
@@ -1210,11 +1220,12 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Where does it show?')?.textContent).toBe('Entire site');
-    expect(fact('When does it open?')?.textContent).toBe('After 8 seconds');
-    expect(fact('Who sees it?')?.textContent).toBe('Everyone');
-    expect(fact('How often?')?.textContent).toBe('Every page they see');
-    expect(fact('Dates')?.textContent).toBe('Runs until you unpublish it');
+    // How it runs, the list's own words (ADR 0138); each answer opens its section.
+    expect(fact('Where')?.textContent).toBe('Entire site');
+    expect(fact('Opens')?.textContent).toBe('After 8 seconds');
+    expect(fact('Who')?.textContent).toBe('Everyone');
+    expect(fact('How often')?.textContent).toBe('Every page they see');
+    expect(fact('Runs')?.textContent).toBe('Runs until you unpublish it');
   });
 
   /**
@@ -1313,7 +1324,7 @@ describe('the summary', () => {
 
     await summary();
 
-    expect(await screen.findByText('WP SMS contacts', { selector: 'p' })).toBeInTheDocument();
+    await waitFor(() => expect(fact('Leads go to')).toHaveTextContent('WP SMS contacts'));
 
     // Out of the modal before touching the screen behind it.
     await userEvent.keyboard('{Escape}');
@@ -1444,7 +1455,7 @@ describe('whole-draft Undo and Redo', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     const review = within(await screen.findByRole('dialog'));
-    expect(review.getByRole('button', { name: 'Position: Top' })).toBeVisible();
+    expect(review.getByRole('button', { name: 'Top' })).toBeVisible();
     expect(review.getByText(/top bar moves the page down/)).toBeVisible();
     await userEvent.keyboard('{Escape}');
 
@@ -1753,7 +1764,7 @@ describe('publishing from the editor', () => {
     await userEvent.click(dialog.getByRole('button', { name: 'Save & publish' }));
     expect(await dialog.findByRole('alert')).toHaveTextContent('This field is invalid.');
     expect(publishing.publishOptin).not.toHaveBeenCalled();
-    await userEvent.click(dialog.getByRole('button', { name: 'Keep editing' }));
+    await userEvent.click(dialog.getByRole('button', { name: 'Close' }));
     expect(screen.getByLabelText('Name')).toHaveValue('Welcome discount updated');
     expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
   });

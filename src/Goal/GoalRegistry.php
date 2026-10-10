@@ -44,6 +44,7 @@ final class GoalRegistry
                 ? __('Required for this Goal: the visitor’s cart contains items. Every audience group must also meet this requirement.', 'wconvert') : null,
             'headline_kind' => $goal->headlineKind()->value,
             'headline_label' => $goal->headlineLabel(),
+            'rate_label' => $goal->rateLabel(),
             'tier' => $goal->tier()->value,
             'availability' => $this->availabilityOf($goal)->value,
         ], Goal::cases());

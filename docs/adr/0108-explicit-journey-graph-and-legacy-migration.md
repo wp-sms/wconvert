@@ -51,6 +51,8 @@ Edit and Flow share screen/element controls and draft history. Consent wording
 and visibility reuse the element controls beside capture fields. Theme & layout
 owns campaign-wide styling, with presets first and detailed controls on request.
 Result selection is preview-only state and does not rewrite matching rules.
+*Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): the standalone screen preview that offered it is gone;
+the result being edited is the one the canvas draws.*
 Referenced single/multiple-choice type changes require review, preserve choice
 IDs/order and map compatible comparison operators in one draft edit. Free-text
 conversion and multi-value-to-single comparisons require explicit rule repair;

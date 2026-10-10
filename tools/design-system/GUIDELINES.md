@@ -301,7 +301,15 @@ browser, since a class-name test cannot establish the final cascade.
   question — rather than in a second dialog (ADR 0137).
 - **Facts are one icon list** — `shell/FactList`, a label beside a 16px icon
   and its answer, one line each, amber for one that needs a look. Details, the
-  setup preview and the design preview all use it (ADR 0137).
+  setup preview and the design preview all use it (ADR 0137). **How it runs**
+  is one list, `optins/campaignFacts`, in Review & publish and both Details
+  (ADR 0138).
+- **One body per subject.** Two dialogs about one thing share their body and
+  differ only in header, footer and the sections only their host has: campaign
+  Details is `optins/CampaignSummary` in the list and the editor (ADR 0138).
+- **A mode is a tab, not a menu.** Preview is one button and one dialog with two
+  tabs, Try the form and Who sees it; one screen is looked at on the canvas,
+  never in a second preview (ADR 0138).
 
 Template discovery dialogs are `PickerDialogContent` — a Large `AdminDialog` —
 with a single scroll body and a separate action footer. Back and Use/Install

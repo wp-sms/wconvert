@@ -159,8 +159,9 @@ test('the editor tests the unsaved cross-sell draft with a sample basket', async
   await page.getByRole('combobox', { name: 'Recommendation source', exact: true }).selectOption('cross_sells');
   await page.getByRole('tab', { name: 'Display rules', exact: true }).click();
   await page.getByRole('button', { name: 'Preview', exact: true }).click();
-  await page.getByRole('menuitem', { name: 'Test a visit', exact: true }).click();
   const dialog = page.getByRole('dialog');
+  // Test a visit is Preview's Who sees it tab (ADR 0138).
+  await dialog.getByRole('tab', { name: 'Who sees it', exact: true }).click();
   await expect(dialog.getByRole('heading', { name: 'Sample basket', exact: true })).toBeVisible();
   await dialog.getByLabel('Find products or variations', { exact: true }).fill('Coffee machine');
   await dialog.getByRole('button', { name: 'Add Coffee machine', exact: true }).click();

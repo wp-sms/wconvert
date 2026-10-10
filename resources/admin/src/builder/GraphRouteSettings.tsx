@@ -1,6 +1,6 @@
 import { followupGroups, followupGroupSource } from './structure/followupGroups';
 import { useEffect, useId, useRef, useState } from 'react';
-import { ArrowRight, ChevronDown, Eye } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -14,9 +14,9 @@ import { graphInsertionLocations } from './structure/graphInsertion';
 import { FieldHeading, PanelHint } from './PanelSection';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
-export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd, onSelect, onPreview }: {
+export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd, onSelect }: {
   tree: TemplateTree; step: number; focusPath?: number | 'hidden' | null; onChange(next: TemplateTree): void;
-  focusTarget?: boolean; onSelect?(index: number): void; onPreview?(index: number): void;
+  focusTarget?: boolean; onSelect?(index: number): void;
   onInsert(edgeId: string, kind: 'content' | 'input'): void; onOpenInsert?(edgeId: string): void; onAdd?(intent: 'followup' | 'branch'): void;
 }) {
   const graph = tree.graph;
@@ -114,9 +114,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       }}>
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label>
-      {(onSelect || onPreview) && <div className="wconvert-journey-route-destination">
-        {onSelect && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{__('Edit next screen', 'wconvert')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>}
-        {onPreview && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onPreview(tree.steps.findIndex(item => item.id === edge.to))}><Eye aria-hidden="true" size={14}/>{__('Preview', 'wconvert')}</button>}
+      {onSelect && <div className="wconvert-journey-route-destination">
+        <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{__('Edit next screen', 'wconvert')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>
       </div>}
       {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(__('Check its “Shown if” on arrival: %s', 'wconvert'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
       {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Insert a screen on this path', 'wconvert')}</button> : <>

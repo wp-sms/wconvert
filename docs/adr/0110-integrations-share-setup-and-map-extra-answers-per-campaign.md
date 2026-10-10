@@ -37,7 +37,9 @@ summary uses the shared supporting-text size (13px) with a neutral outlined coun
 keeping the destination identity above it. The mapping disclosure spans the full
 destination row below its identity and Settings action, and its summary wraps
 without overlapping the count. The Destinations tab uses a centered settings
-column without a design canvas; the global Preview & test action stays available.
+column without a design canvas; the global ~~Preview & test~~ Preview action stays available (*renamed by
+[0134](0134-one-edit-tab-look-screen-element.md); one button with two tabs since
+[ADR 0138](0138-one-preview-one-review-one-details.md)*).
 Unsupported mapping is a neutral inset note, shared by both signup flows; it is not styled as a delivery failure. The
 automatic-field summary does not repeat the target already shown beside the provider.
 

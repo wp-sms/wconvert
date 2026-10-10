@@ -1,7 +1,6 @@
 import { planFrom } from '../builder/rules/plan';
 import { useEffect, useId, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
-import { CalendarDays, Clock, ExternalLink, Inbox, ListChecks, MapPin, MousePointerClick, Repeat, ShoppingBasket, Users } from 'lucide-react';
+import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
 import { getOptin, getRules, type Frequency, type RuleType, type Targeting } from '../builder/api';
 import { summarise, summaryOf, type DisplayRulesValue } from '../builder/rules/summaries';
@@ -9,12 +8,12 @@ import { derive } from '../builder/rules/picks';
 import { namedPages, whereReading } from '../builder/rules/sentence';
 import { resolveObjects } from '../builder/rules/objects';
 import { convertingActOf } from '../builder/structure/guards';
-import { nodeAt, nodesOf } from '../builder/structure/tree';
 import { destinationsSaid } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
 import { listGoals } from '../goals/api';
 import { FactList, type Fact } from '../shell/FactList';
+import { campaignFacts, linksIn } from './campaignFacts';
 import { RegionError } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { messageOf } from '../shell/loadable';
@@ -75,12 +74,6 @@ async function readContext(id: string) {
   const where = names ? whereReading(pick, targeting, vocabulary.targeting, namedPages(names, include.length)).answer : summaryOf(rules, 'where');
   const bound = Array.isArray(config.destinations) ? (config.destinations as string[]) : [];
   const forwarding = destinationsSaid(bound, destinations.destinations, capturedFields(template));
-  const links = template
-    ? nodesOf(template.tree).flatMap((block) => {
-        const node = nodeAt(template.tree, block.path);
-        return node?.type === 'button' && 'action' in node && node.action === 'link' && 'href' in node && typeof node.href === 'string' && node.href ? [node.href] : [];
-      })
-    : [];
   return {
     rules,
     where,
@@ -88,21 +81,21 @@ async function readContext(id: string) {
     act,
     counts: goals.find((goal) => goal.id === draft.goal)?.headline_label ?? null,
     inline,
-    links: [...new Set(links)],
+    links: linksIn(template),
   };
 }
 
 /**
  * **How it runs** — the saved campaign's rules and where its leads go, as one
- * icon list (ADR 0137), the same list the setup preview reads. Loaded only
- * when Details opens; it shares the editor's rule and forwarding summaries, so
- * the two never describe one campaign differently.
+ * icon list (ADR 0137), the same list Review & publish reads (ADR 0138).
+ * Loaded only when Details opens from the list; it shares the editor's rule
+ * and forwarding summaries, so the two never describe one campaign
+ * differently.
  */
 export default function CampaignDetails({ id }: { id: string }) {
   const [context, setContext] = useState<Awaited<ReturnType<typeof readContext>> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
-  const heading = useId();
   useEffect(() => {
     let active = true;
     setContext(null);
@@ -120,52 +113,15 @@ export default function CampaignDetails({ id }: { id: string }) {
   }, [id, attempt]);
   if (error) return <RegionError message={error} onRetry={() => setAttempt((n) => n + 1)} />;
   if (!context) return <RowsSkeleton rows={4} />;
-  const rule = (key: 'who' | 'when' | 'how-often' | 'dates') => summaryOf(context.rules, key);
-  const fact = (icon: Fact['icon'], label: string, said: { text: string; attention: boolean }): Fact =>
-    ({ icon, label, text: said.text, tone: said.attention ? 'warning' : undefined });
-  const facts: Fact[] = [
-    fact(Users, __('Who', 'wconvert'), rule('who')),
-    context.inline
-      ? { icon: MapPin, label: __('Where', 'wconvert'), text: __('Where you place its block or shortcode', 'wconvert') }
-      : fact(MapPin, __('Where', 'wconvert'), context.where),
-    fact(Clock, __('Opens', 'wconvert'), rule('when')),
-    fact(Repeat, __('How often', 'wconvert'), rule('how-often')),
-    fact(CalendarDays, __('Runs', 'wconvert'), rule('dates')),
-  ];
-  if (context.act === 'submit') {
-    const { said, problems } = context.forwarding;
-    facts.push({
-      icon: Inbox,
-      label: __('Leads go to', 'wconvert'),
-      tone: problems.length > 0 ? 'warning' : undefined,
-      text: <>{said}{problems.map((problem) => <span key={problem} className="wconvert-facts__warning">{problem}</span>)}</>,
-    });
-  } else if (context.act === 'click') {
-    facts.push({
-      icon: ExternalLink,
-      label: __('Visitors go to', 'wconvert'),
-      text: <>
-        {context.links.length > 0
-          ? <ul className="wconvert-facts__links">{context.links.map((link) => <li key={link} dir="ltr">{link}</li>)}</ul>
-          // Product cards and other designed links carry no button href to list.
-          : __('Where its links point', 'wconvert')}
-        <span className="block text-note text-muted-foreground">{__('Counts the click. No lead is saved.', 'wconvert')}</span>
-      </>,
-    });
-  } else if (context.act === 'match' || context.act === 'add_to_cart') {
-    facts.push({
-      icon: context.act === 'match' ? ListChecks : ShoppingBasket,
-      label: __('Visitor action', 'wconvert'),
-      text: <>
-        {context.act === 'match' ? __('Shows a matching result', 'wconvert') : __('Adds to the basket', 'wconvert')}
-        {context.counts && <span className="block text-note text-muted-foreground">
-          {/* translators: %s: what the Goal's number is called, e.g. “Matches”. */ sprintf(__('Counts %s', 'wconvert'), context.counts)}
-        </span>}
-      </>,
-    });
-  } else {
-    facts.push({ icon: MousePointerClick, label: __('Visitor action', 'wconvert'), tone: 'warning', text: __('Choose what a visitor does in the editor.', 'wconvert') });
-  }
+  return <HowItRuns facts={campaignFacts({
+    ...context,
+    where: context.inline ? { text: __('Where you place its block or shortcode', 'wconvert') } : context.where,
+  })} />;
+}
+
+/** The section both Details hosts draw the facts in. */
+export function HowItRuns({ facts }: { facts: readonly Fact[] }) {
+  const heading = useId();
   return (
     <section className="wconvert-campaign-facts" aria-labelledby={heading}>
       <h3 id={heading}>{__('How it runs', 'wconvert')}</h3>

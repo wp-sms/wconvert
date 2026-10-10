@@ -1,10 +1,14 @@
-/* Preview & test is the shared Large dialog (ADR 0131) at a fixed height, so
- * switching between its three checks does not move the frame. */
+/* Preview is the shared Large dialog (ADR 0131) at a fixed height, so
+ * switching between its two tabs does not move the frame (ADR 0138). */
 .wconvert-journey-test-dialog { block-size: min(820px, calc(100dvh - 48px)); }
+.wconvert-preview-tabs { display: flex; flex: 1; flex-direction: column; gap: 0; min-block-size: 0; }
+/* Full width with the dialog's gutter: set as utilities on the list, which outrank this layer. */
+.wconvert-preview-tabs__list { flex: none; border-block-end: 1px solid var(--border); }
+.wconvert-preview-tabs__visit { display: flex; flex: 1; flex-direction: column; min-block-size: 0; }
+.wconvert-preview-tabs__visit > .wconvert-sample-body { flex: 1; min-block-size: 0; overflow: auto; }
 /* An uppercase caption over a list or a panel. */
 .wconvert-preview-test__eyebrow { display: block; color: var(--muted-foreground); font-size: var(--text-meta); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
-.wconvert-preview-test__mode,.wconvert-journey-test-dialog__body { flex: 1; display: flex; flex-direction: column; min-block-size: 0; min-inline-size: 0; overflow: hidden; padding: 0; }
-.wconvert-journey-test-dialog__body[hidden] { display: none; }
+.wconvert-journey-test-dialog__body { flex: 1; display: flex; flex-direction: column; min-block-size: 0; min-inline-size: 0; overflow: hidden; padding: 0; }
 .wconvert-journey-test { display: grid; grid-template-columns: minmax(0,1fr) 300px; grid-template-rows: minmax(0,1fr) auto; flex: 1; min-block-size: 0; gap: 0; }
 .wconvert-journey-test__visitor { display: flex; flex-direction: column; min-block-size: 0; min-inline-size: 0; background: var(--surface); }
 .wconvert-preview-test__toolbar { display: flex; align-items: center; justify-content: space-between; flex: none; flex-wrap: wrap; gap: 10px; padding: 12px 20px; border-block-end: 1px solid var(--border); color: var(--muted-foreground); font-size: var(--text-micro); }
@@ -18,7 +22,20 @@
 .wconvert-journey-test__side h3 { font-size: var(--text-heading); line-height: 1.4; }
 .wconvert-journey-test__side p { font-size: var(--text-note); line-height: 1.6; color: var(--muted-foreground); }
 .wconvert-journey-test__side small { font-size: var(--text-micro); color: var(--muted-foreground); }
-.wconvert-journey-test__status { display: flex; justify-content: space-between; gap: 12px; }
+.wconvert-journey-test__status { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.wconvert-journey-test__status h3 { margin: 0; }
+.wconvert-journey-test__status small { padding: 2px 8px; border-radius: 999px; background: var(--secondary); color: var(--action); font-weight: 600; }
+.wconvert-journey-test__status small[data-complete] { background: var(--success-surface); color: var(--success); }
+/* Screens off this path: one muted line each (ADR 0138). */
+.wconvert-journey-test__others { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 6px; font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-journey-test__side .wconvert-journey-test__others ul { display: contents; }
+.wconvert-journey-test__side .wconvert-journey-test__others li { display: inline-flex; align-items: baseline; gap: 6px; padding: 0; font-weight: 400; color: inherit; }
+.wconvert-journey-test__others li:not(:last-child)::after { content: ','; }
+.wconvert-journey-test__others button { padding: 0; border: 0; background: none; color: var(--action); font: inherit; text-decoration-line: underline; cursor: pointer; }
+.wconvert-journey-test__side .wconvert-journey-test__scope { margin-block-start: auto; font-size: var(--text-micro); line-height: 1.5; }
+.wconvert-journey-test__side .wconvert-journey-test__complete { color: var(--foreground); }
+.wconvert-journey-test__change { padding: 10px 12px; border-radius: var(--radius); background: var(--info-surface); }
+.wconvert-journey-test__side .wconvert-journey-test__change p { margin: 0; color: var(--foreground); }
 .wconvert-journey-test__side .wconvert-journey-test__timeline,.wconvert-journey-test__timeline { list-style: none; padding: 0; margin-block: 12px; }
 .wconvert-journey-test__timeline li { display: flex; gap: 12px; position: relative; padding-block: 0 20px; font-size: var(--text-note); }
 .wconvert-journey-test__timeline li:last-child { padding-block-end: 0; }
@@ -29,71 +46,24 @@
 .wconvert-journey-test__timeline small { display: block; margin-block-start: 3px; font-weight: 400; }
 .wconvert-journey-test__side > .wconvert-disclosure { border-block-start: 1px solid var(--border); font-size: var(--text-note); }
 .wconvert-journey-test__side .wconvert-disclosure p { margin-block: 6px; }
-.wconvert-journey-test__side .wconvert-journey-test__history { border-block-end: 0; }
-.wconvert-journey-test__side .wconvert-journey-test__history ol { margin-block-start: 8px; }
 .wconvert-journey-test__capture { background: color-mix(in srgb, var(--secondary) 35%, var(--card)); }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dl { gap: 14px; }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dl > div { display: grid; gap: 4px; }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dd { text-align: start; }
-.wconvert-test-diagnostics label { margin-block: 12px; font-size: var(--text-note); }
-.wconvert-journey-test__complete { display: grid; gap: 10px; margin-block: 6px; }
+.wconvert-test-diagnostics label { display: flex; align-items: center; gap: 8px; margin-block: 8px; font-size: var(--text-note); }
+.wconvert-test-diagnostics fieldset { min-inline-size: 0; margin: 12px 0 0; padding: 0; border: 0; }
+.wconvert-test-diagnostics legend { padding: 0; font-size: var(--text-note); font-weight: 600; }
 .wconvert-preview-test__footer { grid-column: 1 / -1; }
-.wconvert-journey-appearance-test { display: grid; grid-template-columns: 220px minmax(0,1fr); align-content: stretch; gap: 0; padding: 0; min-block-size: 0; flex: 1; overflow: hidden; }
-.wconvert-preview-test__screens { min-block-size: 0; overflow: auto; border-inline-end: 1px solid var(--border); padding: 20px 12px; }
-.wconvert-preview-test__screens > span { padding: 0 8px 12px; }
-/* One-of-N screens as native radios in rows; the row, not the dot, shows the choice. */
-.wconvert-preview-test__screen-choices { display: grid; gap: 2px; }
-.wconvert-preview-test__screen-choices > label { position: relative; display: block; padding: 12px 8px; border-radius: var(--radius); font-size: var(--text-note); color: var(--foreground); overflow-wrap: anywhere; cursor: pointer; }
-.wconvert-preview-test__screen-choices > label:hover { background: var(--accent); }
-.wconvert-preview-test__screen-choices > label:has(input:checked) { color: var(--action); background: var(--secondary); }
-.wconvert-preview-test__screen-choices > label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: -2px; }
-:is(#wconvert-admin, [data-slot="dialog-content"]) .wconvert-preview-test__screen-choices > label > input { position: absolute; appearance: none; inline-size: 1px; block-size: 1px; min-block-size: 0; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
-.wconvert-preview-test__design { display: flex; flex-direction: column; min-block-size: 0; min-inline-size: 0; background: var(--stage); }
-.wconvert-preview-test__design > p { padding-inline: 20px; font-size: var(--text-note); }
-.wconvert-preview-test__design .wconvert-journey-screen-preview__stage { flex: 1; min-block-size: 0; background: var(--stage); }
-.wconvert-preview-test__design .wconvert-journey-screen-preview__result { display: flex; gap: 12px; align-items: center; padding: 12px 20px; font-size: var(--text-note); }
-.wconvert-preview-test__design .wconvert-journey-screen-preview__result label { flex: none; }
-.wconvert-journey-sample.wconvert-journey-sample--explorer { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); flex: 1; min-block-size: 0; padding: 0; margin: 0; border: 0; border-radius: 0; overflow: auto; background: var(--card); }
-.wconvert-journey-sample__choices,.wconvert-journey-sample__prediction { padding: 24px 28px; min-inline-size: 0; overflow-wrap: anywhere; }
-.wconvert-journey-sample__prediction { background: var(--surface); border-inline-start: 1px solid var(--border); }
-.wconvert-journey-sample--explorer h3 { margin-block: 6px 12px; font-size: var(--text-heading); }
-.wconvert-journey-sample--explorer p { font-size: var(--text-note); line-height: 1.6; color: var(--muted-foreground); }
-.wconvert-journey-sample--explorer fieldset { border: 0; padding: 0; margin-block: 20px; }
-.wconvert-journey-sample--explorer legend { font-weight: 500; margin-block-end: 8px; }
-.wconvert-journey-sample__choice { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-block: 6px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--text-note); cursor: pointer; }
-.wconvert-journey-sample__choice:has(input:checked) { background: var(--secondary); border-color: var(--action); }
-.wconvert-journey-sample__action { display: grid; gap: 8px; margin-block: 20px; font-size: var(--text-note); }
-.wconvert-journey-sample__action select { inline-size: 100%; min-inline-size: 0; border: 1px solid var(--input); border-radius: var(--radius); padding: 8px; background: var(--card); color: var(--foreground); font: inherit; }
-.wconvert-journey-sample__prediction .wconvert-journey-test__timeline button { display: inline-flex; align-items: center; gap: 8px; padding: 0; background: transparent; border: 0; color: var(--action); text-align: start; font: inherit; cursor: pointer; }
-.wconvert-journey-sample__boundary { padding: 12px; border: 1px solid var(--border); background: var(--card); border-radius: var(--radius); }
-.wconvert-journey-sample__prediction > small { display: block; margin-block-start: 16px; color: var(--muted-foreground); font-size: var(--text-micro); line-height: 1.5; }
 @media (max-width: 800px) {
   .wconvert-journey-test { display: flex; flex-direction: column; overflow: auto; }
   .wconvert-journey-test__visitor,.wconvert-journey-test__side { flex: none; overflow: visible; }
   .wconvert-journey-test__canvas { overflow: visible; flex: none; }
   .wconvert-journey-test__side { border-inline-start: 0; border-block-start: 1px solid var(--border); }
   .wconvert-journey-test > .wconvert-preview-test__footer { position: sticky; inset-block-end: 0; z-index: 1; margin-block-start: auto; }
-  .wconvert-journey-appearance-test { display: flex; flex-direction: column; }
-  .wconvert-preview-test__screens { display: flex; flex: none; gap: 8px; padding: 10px; border-inline-end: 0; border-block-end: 1px solid var(--border); }
-  .wconvert-preview-test__screens > span { display: none; }
-  .wconvert-preview-test__screen-choices { display: flex; gap: 8px; }
-  .wconvert-preview-test__screen-choices > label { min-inline-size: 130px; flex: none; }
-  .wconvert-preview-test__design { flex: 1; }
-  .wconvert-journey-sample.wconvert-journey-sample--explorer { display: block; }
-  .wconvert-journey-sample__prediction { border-inline-start: 0; border-block-start: 1px solid var(--border); }
 }
 @media (max-width: 550px) {
   .wconvert-journey-test-dialog { block-size: calc(100dvh - 16px); }
   .wconvert-journey-test__canvas { padding: 16px; }
   .wconvert-preview-test__toolbar { padding: 10px 16px; }
-  .wconvert-journey-sample__choices,.wconvert-journey-sample__prediction { padding: 20px; }
-  .wconvert-preview-test__design .wconvert-journey-screen-preview__result { flex-wrap: wrap; }
 }
-/* The same answer explorer also lives in the narrow flow-editor sidebar. */
-.wconvert-journey-side > .wconvert-journey-sample--explorer { display: block; overflow: auto; }
-.wconvert-journey-side > .wconvert-journey-sample--explorer .wconvert-journey-sample__choices,
-.wconvert-journey-side > .wconvert-journey-sample--explorer .wconvert-journey-sample__prediction { padding: 16px 20px; }
-.wconvert-journey-side > .wconvert-journey-sample--explorer .wconvert-journey-sample__prediction { border-inline-start: 0; border-block-start: 1px solid var(--border); }
 
-
-.wconvert-preview-test__placement { flex: 1; min-block-size: 0; min-inline-size: 0; overflow: auto; }

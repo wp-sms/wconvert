@@ -21,7 +21,7 @@ const FORM = design('centred-card');
 const LINK = design('offer-panel');
 const GOAL: GoalEntry = {
   id: 'collect-subscribers', label: 'Collect subscribers', description: '',
-  outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions',
+  outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions', rate_label: 'Conversion rate',
   tier: 'free', availability: 'ready',
 };
 const NOTICE_GOAL: GoalEntry = {
@@ -31,16 +31,21 @@ const NOTICE_GOAL: GoalEntry = {
   outcome: { ...CAPTURE_OUTCOME, audience_channel: null },
 };
 
-type ReviewProps = Omit<ReadinessDialogProps, 'issues'> & { readonly issues?: ReadinessDialogProps['issues'] };
+type ReviewProps = Omit<ReadinessDialogProps, 'issues'> & { readonly issues?: ReadinessDialogProps['issues']; readonly policyUrl?: string };
 
 /** The list the builder hands the review, computed from the same inputs (ADR 0133). */
 const issuesFor = (p: ReviewProps) => campaignIssues({ template: p.template, rules: p.rules, vocabulary: p.vocabulary, displayType: p.displayType,
   contentLock: p.contentLock, inlinePlacement: p.inlinePlacement, outcome: p.goal.status === 'ready' ? p.goal.data?.outcome : undefined,
   bound: p.bound, destinations: p.destinations, captureMode: p.captureMode ?? 'local', privacyGuidance: p.privacyGuidance, policyUrl: p.policyUrl });
 
-function Review(p: ReviewProps) {
-  return <ReadinessDialog {...p} issues={p.issues ?? issuesFor(p)} />;
+function Review({ policyUrl: _policyUrl, ...p }: ReviewProps) {
+  return <ReadinessDialog {...p} issues={p.issues ?? issuesFor({ ...p, policyUrl: _policyUrl })} />;
 }
+
+/** The fix beside one blocker, named for where it goes (ADR 0138). */
+const fixFor = (said: RegExp | string) => within(screen.getByText(said).closest('li')!).getAllByRole('button')[0];
+/** One answer in How it runs. */
+const fact = (label: string) => screen.getByText(label, { selector: 'dt' }).nextElementSibling as HTMLElement;
 
 function props(overrides: Partial<ReviewProps> = {}): ReviewProps {
   return {
@@ -77,7 +82,7 @@ describe('reviewing before publishing', () => {
     ] } } };
     await open({ template, onEditJourney });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('button', { name: /Choose an answer for the path from “Interests” to “Balcony details”/ }));
+    await userEvent.click(fixFor(/Choose an answer for the path from “Interests” to “Balcony details”/));
     await waitFor(() => expect(onEditJourney).toHaveBeenCalledExactlyOnceWith({ screenId: 'interests', section: 'paths', edgeId: 'unfinished' }));
   });
 
@@ -87,7 +92,7 @@ describe('reviewing before publishing', () => {
     expect(screen.getByRole('dialog', { name: 'Spring sale' })).toBeInTheDocument();
     const publish = screen.getByRole('button', { name: 'Publish campaign' });
     expect(publish).not.toBeDisabled();
-    expect(publish).toHaveAccessibleDescription('Fix the items under “Before you can publish” first.');
+    expect(publish).toHaveAccessibleDescription('Fix the item above first.');
     await userEvent.click(publish);
     expect(supplied.onPublish).not.toHaveBeenCalled();
   });
@@ -101,14 +106,16 @@ describe('reviewing before publishing', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('puts required fixes before the recap and keeps measurement guidance optional', async () => {
+  it('puts required fixes first, then what counts as success, never folded away', async () => {
     const { supplied } = await open({ captureMode: 'connected' });
-    const required = screen.getByRole('heading', { name: 'Before you can publish' });
-    const recap = screen.getByRole('heading', { name: 'Design' });
-    expect(required.compareDocumentPosition(recap) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.getByText(GOAL.outcome.measurement)).not.toBeVisible();
-    await userEvent.click(screen.getByText('Measurement & setup details'));
+    const required = screen.getByRole('heading', { name: '1 thing to fix before publishing' });
+    const runs = screen.getByRole('heading', { name: 'How it runs' });
+    expect(required.compareDocumentPosition(runs) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText('Counts as success')).toBeVisible();
+    expect(screen.getByText(GOAL.headline_label)).toBeVisible();
     expect(screen.getByText(GOAL.outcome.measurement)).toBeVisible();
+    expect(screen.queryByText('Measurement & setup details')).toBeNull();
+    for (const gone of ['Design', 'Placement & timing', 'Where leads go', 'Privacy']) expect(screen.queryByRole('heading', { name: gone })).toBeNull();
     expect(supplied.onPublish).not.toHaveBeenCalled();
   });
 
@@ -118,7 +125,7 @@ describe('reviewing before publishing', () => {
     expect(screen.getByText(/Before you can publish, connect a service/)).toBeVisible();
     rerender(<Review {...supplied} captureMode="local" />);
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
-    expect(screen.getByText(/Keep in WConvert only: leads stay in Leads/)).toBeVisible();
+    expect(fact('Leads go to')).toHaveTextContent('Kept in WConvert only');
   });
 
   it('answers the service blocker in place, without leaving the review', async () => {
@@ -139,7 +146,7 @@ describe('reviewing before publishing', () => {
     expect(trigger).toHaveAccessibleDescription('2 items block publishing');
     expect(new Set(issuesFor(supplied).filter(issue => issue.blocks).map(issue => issue.tab))).toEqual(new Set(['edit', 'destinations']));
     await userEvent.click(trigger);
-    await userEvent.click(screen.getByRole('button', { name: 'Choose a design before publishing.' }));
+    await userEvent.click(fixFor('Choose a design before publishing.'));
     expect(screen.queryByRole('dialog')).toBeNull();
     await userEvent.click(await screen.findByRole('button', { name: 'Back to review · 2 left' }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -173,7 +180,7 @@ describe('reviewing before publishing', () => {
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
     expect(supplied.onPublish).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: /Nothing on this design counts as a conversion/ }));
+    await userEvent.click(fixFor(/Nothing on this design counts as a conversion/));
     expect(supplied.onEditDesign).toHaveBeenCalledOnce();
     expect(supplied.onGoToDesign).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -195,7 +202,7 @@ describe('reviewing before publishing', () => {
     ] }] }) };
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('button', { name: /Set up the interest choices/ }));
+    await userEvent.click(fixFor(/Set up the interest choices/));
     expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
     expect(supplied.onEditDesign).not.toHaveBeenCalled();
     expect(supplied.onPublish).not.toHaveBeenCalled();
@@ -207,7 +214,7 @@ describe('reviewing before publishing', () => {
     ] }] }) };
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('button', { name: /Add an email or phone field/ }));
+    await userEvent.click(fixFor(/Add an email or phone field/));
     expect(supplied.onEditDesign).toHaveBeenCalledOnce();
     expect(supplied.onPublish).not.toHaveBeenCalled();
   });
@@ -215,7 +222,7 @@ describe('reviewing before publishing', () => {
   it('blocks publishing a click-only design under a capture Goal', async () => {
     await open({ template: LINK });
     expect(screen.getByText(CAPTURE_OUTCOME.requirement)).toBeInTheDocument();
-    expect(screen.getByText('Before you can publish')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '1 thing to fix before publishing' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
@@ -231,59 +238,49 @@ describe('reviewing before publishing', () => {
 
   it('describes an unfinished service choice without suggesting local collection was chosen', async () => {
     await open({ captureMode: 'connected' });
-    expect(screen.getByText('No destination selected. Finish setup in Destinations.')).toBeVisible();
+    expect(fact('Leads go to')).toHaveTextContent('Saved in LeadsNo service chosen yet');
+    expect(fact('Leads go to').parentElement).toHaveAttribute('data-tone', 'warning');
     expect(screen.queryByText(/You can export captured leads/)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('allows saving leads locally with no forwarding route', async () => {
     const { supplied } = await open();
-    expect(screen.getByText('New leads are saved in WConvert.')).toBeInTheDocument();
-    expect(screen.getByText(/Keep in WConvert only: leads stay in Leads/)).toBeInTheDocument();
+    expect(fact('Collects')).toHaveTextContent('Email address');
+    expect(fact('Leads go to')).toHaveTextContent(/^Kept in WConvert only$/);
     await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
     await waitFor(() => expect(supplied.onPublish).toHaveBeenCalledOnce());
   });
 
   it('names destination data that could not be checked without inventing a delivery result', async () => {
     await open({ bound: ['forwarding-route'], destinations: null });
-    expect(screen.getByText(/Destination details could not be checked/)).toBeInTheDocument();
+    expect(fact('Leads go to')).toHaveTextContent(/Destination details could not be checked/);
     expect(screen.getByText(/Publishing does not test delivery/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
   });
 
-  it('shows a compact privacy review and opens the existing notice control', async () => {
+  it('says privacy as one Consent line, with nothing to review when the notice links', async () => {
     const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'button', action: 'submit', label: 'Send' },
       { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
     ] }, { type: 'stack', children: [] }] }) };
-    const { supplied } = await open({
-      template,
-      goal: ready(NOTICE_GOAL),
-      privacyGuidance: true,
-      policyUrl: 'https://example.test/privacy/',
-    });
-
-    expect(screen.getByRole('heading', { name: 'Privacy' })).toBeInTheDocument();
-    expect(screen.getByText('This form links to your Privacy Policy.')).toBeInTheDocument();
-    expect(screen.getByText('This form shows a privacy notice without a consent checkbox.')).toBeInTheDocument();
-    expect(screen.queryByText(/no Privacy Policy page selected/)).toBeNull();
-
-    await userEvent.click(screen.getByRole('button', { name: 'Edit notice' }));
-    expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 2]);
+    await open({ template, goal: ready(NOTICE_GOAL), privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
+    expect(screen.queryByRole('heading', { name: 'Privacy' })).toBeNull();
+    expect(fact('Consent')).toHaveTextContent('Not asked on this form');
+    expect(screen.queryByText(/Privacy Policy/)).toBeNull();
   });
 
-  it('does not claim an unresolved notice already links somewhere', async () => {
+  it('lists an unresolved notice for review, with a way to set the policy page', async () => {
     const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'button', action: 'submit', label: 'Send' },
       { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
     ] }, { type: 'stack', children: [] }] }) };
     await open({ template, goal: ready(NOTICE_GOAL), privacyGuidance: true });
-
-    expect(screen.getByText('This form includes a Privacy Policy notice.')).toBeInTheDocument();
-    expect(screen.queryByText('This form links to your Privacy Policy.')).toBeNull();
-    expect(screen.getByText(/WordPress has no Privacy Policy page selected/)).toBeInTheDocument();
+    const review = screen.getByRole('heading', { name: '2 things to review' }).closest('section')!;
+    expect(review).toHaveTextContent(/WordPress has no Privacy Policy page selected/);
+    expect(within(review).getByRole('link', { name: 'Set the Privacy Policy page' })).toHaveAttribute('href', 'options-privacy.php');
   });
 
   it('flags missing consent for an ongoing marketing list and opens that exact control', async () => {
@@ -295,9 +292,10 @@ describe('reviewing before publishing', () => {
     ] }, { type: 'stack', children: [] }] }) };
     const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
-    expect(screen.getByText('No consent checkbox is shown for this mailing list.')).toBeInTheDocument();
+    expect(fact('Consent')).toHaveTextContent('Not shown');
+    expect(fact('Consent').parentElement).toHaveAttribute('data-tone', 'warning');
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
-    await userEvent.click(screen.getByRole('button', { name: 'Edit consent' }));
+    await userEvent.click(screen.getByRole('button', { name: 'No consent checkbox is shown for this mailing list.' }));
     expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
   });
 
@@ -310,7 +308,7 @@ describe('reviewing before publishing', () => {
     ] }, { type: 'stack', children: [] }] }) };
     await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
-    expect(screen.getByText('Required consent is shown for this mailing list.')).toBeInTheDocument();
+    expect(fact('Consent')).toHaveTextContent(/^Shown$/);
     expect(screen.queryByText('No consent checkbox is shown for this mailing list.')).toBeNull();
   });
 
@@ -322,7 +320,8 @@ describe('reviewing before publishing', () => {
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
 
     rerender(<Review {...supplied} privacyGuidance={false} />);
-    expect(screen.queryByRole('heading', { name: 'Privacy' })).toBeNull();
+    expect(screen.queryByText('Consent', { selector: 'dt' })).toBeNull();
+    expect(screen.queryByText('No Privacy Policy notice is shown on this form.')).toBeNull();
   });
 });
 
@@ -348,14 +347,14 @@ describe('publication progress and recovery', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByRole('button', { name: 'Publishing…' })).toBeDisabled();
-    expect(within(dialog).getByRole('button', { name: 'Keep editing' })).toBeDisabled();
+    expect(within(dialog).getByRole('button', { name: 'Preview' })).toBeDisabled();
     expect(within(dialog).queryByRole('button', { name: 'Close' })).toBeNull();
     await userEvent.keyboard('{Escape}');
     expect(dialog).toBeInTheDocument();
     // The native inert region prevents interaction in the browser; the event
     // guard also protects against a queued action while publication is pending.
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Preview design' }));
-    expect(supplied.onPreview).not.toHaveBeenCalled();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Display rules' }));
+    expect(supplied.onGoToRules).not.toHaveBeenCalled();
     expect(dialog).toBeInTheDocument();
     expect(onPublish).toHaveBeenCalledOnce();
     await act(async () => { finish(); });
@@ -385,17 +384,17 @@ describe('publication progress and recovery', () => {
 
 describe('review actions return to the place that can resolve them', () => {
   it.each([
-    ['Where does it show?', 'where'], ['When does it open?', 'when'], ['Who sees it?', 'who'], ['How often?', 'how-often'], ['Dates', 'dates'],
-  ])('opens the %s rules and closes review', async (label, section) => {
+    ['Where', 'where'], ['Opens', 'when'], ['Who', 'who'], ['How often', 'how-often'], ['Runs', 'dates'],
+  ])('opens the rules from the %s answer and closes review', async (label, section) => {
     const { supplied } = await open();
-    await userEvent.click(screen.getByRole('button', { name: label }));
+    await userEvent.click(within(fact(label)).getByRole('button'));
     expect(supplied.onGoToRules).toHaveBeenCalledWith(section);
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('opens destinations and closes review', async () => {
-    const { supplied } = await open();
-    await userEvent.click(screen.getByRole('button', { name: 'Edit destinations' }));
+  it('opens destinations from a delivery note and closes review', async () => {
+    const { supplied } = await open({ bound: ['forwarding-route'], destinations: null });
+    await userEvent.click(screen.getByRole('button', { name: 'Send a test first' }));
     expect(supplied.onGoToDestinations).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
@@ -412,7 +411,7 @@ describe('review actions return to the place that can resolve them', () => {
     const onPreview = vi.fn(() => { screen.getByRole('button', { name: 'Preview canvas' }).focus(); });
     render(<><button>Preview canvas</button><Review {...props({ onPreview })} /></>);
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Preview design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
     expect(onPreview).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).toBeNull();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Preview canvas' })).toHaveFocus());
@@ -441,8 +440,20 @@ it('opens the exact unassigned consent block and blocks publication until it is 
   const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: 'email', capture_any_of: [] } };
   const { supplied } = await open({ template, goal: ready(goal), goalId: goal.id });
   expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-  await userEvent.click(screen.getByRole('button', { name: 'Assign the consent checkbox to “Optional email signup” under Saved by.' }));
+  await userEvent.click(fixFor('Assign the consent checkbox to “Optional email signup” under Saved by.'));
   const at = original.tree.steps.findIndex(step => step.id === 'email');
   expect(supplied.onGoTo).toHaveBeenCalledWith([at, 'children', 3]);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('says what a quiz counts and how it runs, in the list’s words', async () => {
+  const template = coffee.template as Template;
+  const goal = { ...GOAL, id: 'find_match', headline_label: 'Quiz completions', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: null, capture_any_of: [],
+    measurement: 'Counts quiz results shown. Product clicks and purchases are separate.' } };
+  await open({ template, goal: ready(goal), goalId: goal.id });
+  expect(screen.getByText('Counts as success')).toBeVisible();
+  expect(screen.getByText('Counts quiz results shown. Product clicks and purchases are separate.')).toBeVisible();
+  expect(fact('Visitor action')).toHaveTextContent('Shows a matching resultCounts Quiz completions');
+  expect(fact('Visitor action').parentElement).not.toHaveAttribute('data-tone');
+  expect(screen.getByRole('button', { name: 'Preview' })).toBeInTheDocument();
 });

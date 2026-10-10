@@ -33,6 +33,8 @@ export interface GoalEntry {
   audience_requirement?: string | null;
   headline_kind: string;
   headline_label: string;
+  /** What its rate is called, e.g. “Quiz completion rate”. */
+  rate_label: string;
   tier: string;
   availability: Availability;
 }
