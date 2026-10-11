@@ -715,7 +715,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         onSelect={chooseFromPreview}
         displayType={displayTypeOf(config, templates)}
         placement={config.placement}
-        tools={<><DeviceControls width={width} onChange={setWidth} /><Fullscreen /></>}
+        tools={<DeviceControls width={width} onChange={setWidth} />}
+        view={<Fullscreen />}
         onStage={openLook}
         hint={sprintf(__('Click anything on the %s to edit it', 'wconvert'), formatWordOf(displayTypeOf(config, templates)))}
         screen={showingLock ? { inFlow: true, label: __('Content lock', 'wconvert'), controls: <ContentLockPreview controls template={entry} state={lockPreview} onStateChange={setLockPreview} />, content: <ContentLockPreview template={entry} state={lockPreview} onStateChange={setLockPreview} /> } : showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setOpenRow(null); setStep(0); }} /> } : undefined}

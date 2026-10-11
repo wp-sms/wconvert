@@ -42,6 +42,7 @@ export function EditorCanvas({
   placement,
   screen,
   tools,
+  view,
   hint,
   onStage,
 }: {
@@ -53,8 +54,10 @@ export function EditorCanvas({
   displayType: string;
   placement?: unknown;
   screen?: { label: string; content: ReactNode; controls?: ReactNode; inFlow?: boolean };
-  /** Desktop/Mobile and full screen, beside the zoom: one bar for the canvas (ADR 0134). */
+  /** Desktop/Mobile, in the middle of the bar: one bar for the canvas (ADR 0134). */
   tools?: ReactNode;
+  /** Full screen, grouped with the zoom at the end: both change how the canvas is viewed, not what is on it. */
+  view?: ReactNode;
   /** "Click anything on the popup to edit it": what the bar says while the design is the thing on screen. */
   hint?: string;
   /** A click on the empty stage around the design: the Edit tab opens the Look. */
@@ -106,15 +109,18 @@ export function EditorCanvas({
       <div className="wconvert-canvas__bar">
         {screen?.label ? <span>{screen.label}</span> : hint ? <span className="wconvert-canvas__hint-line"><MousePointer2 aria-hidden="true" />{hint}</span> : <span>{template.tree.steps[shown]?.name}</span>}
         {tools}
-        <label>
-          <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
-          <select value={zoom} onChange={(event) => setZoom(event.target.value)}>
-            <option value="fit">
-              {__('Fit', 'wconvert')} · {Math.round(scale * 100)}%
-            </option>
-            <option value="actual">100%</option>
-          </select>
-        </label>
+        <div className="wconvert-canvas__view">
+          {view}
+          <label>
+            <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
+            <select value={zoom} onChange={(event) => setZoom(event.target.value)}>
+              <option value="fit">
+                {__('Fit', 'wconvert')} · {Math.round(scale * 100)}%
+              </option>
+              <option value="actual">100%</option>
+            </select>
+          </label>
+        </div>
       </div>
       {screen?.controls}
       {/* The stage, the page around the design and its ghost lines are all "not the design". */}

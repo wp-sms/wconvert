@@ -828,6 +828,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 /* The Add submenus are option menus (ADR 0139); this is only their width. */
 body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 24px); }
 :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__bar label { flex: none; }
+:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-canvas__view { display: flex; flex: none; align-items: center; gap: 6px; }
 
 #wconvert-admin .wconvert-shadow-adjust { border: 1px solid var(--border); border-radius: 5px; padding: 10px; }
 #wconvert-admin .wconvert-shadow-values { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-block: 12px; }
