@@ -128,6 +128,7 @@
 # Documentation and agent instructions. readme.txt is the plugin's
 # documentation and stays.
 /README.md
+/CHANGELOG.md
 /CLAUDE.md
 /CONTEXT.md
 /docs

@@ -53,7 +53,7 @@ defined('ABSPATH') || exit;
  * ============================================================================
  * `window.wconvert.candidates` behind a guessable query parameter exposes
  * campaign ids and rule state on a page that may sit in a public full-page
- * cache, and a capability check cannot rescue it: `Routes::canCapture()`
+ * cache, and a capability check cannot rescue it: the public-routes note in `Routes`
  * already records why nothing baked into a cached page authenticates anyone.
  * Here the capability is checked in PHP, on an uncached request, before a
  * single byte is printed.

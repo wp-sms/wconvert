@@ -70,8 +70,8 @@ final class BeaconController implements RestController
             [
                 'methods' => 'POST',
                 'callback' => [$this, 'record'],
-                'permission_callback' => [Routes::class, 'canBeacon'],
-                // Public and nonce-free on purpose — Routes::canBeacon() says
+                'permission_callback' => '__return_true',
+                // Public and nonce-free on purpose — the note at the end of Routes says
                 // why. No `type` and no `sanitize_callback`: every field of
                 // the body is checked by {@see Beacon} against a closed enum or
                 // a ULID pattern, which is stricter than anything

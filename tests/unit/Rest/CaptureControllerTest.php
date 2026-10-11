@@ -105,8 +105,7 @@ final class CaptureControllerTest extends TestCase
     {
         $permission = self::captureRoute()['args'][0]['permission_callback'];
 
-        $this->assertSame([Routes::class, 'canCapture'], $permission);
-        $this->assertTrue(Routes::canCapture());
+        $this->assertSame('__return_true', $permission);
     }
 
     /**
