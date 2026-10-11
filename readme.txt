@@ -133,8 +133,8 @@ repository, using Node.js 22.
 2. Open **WConvert** in the admin menu and click **Create campaign**.
 3. Pick a goal, choose a setup, change anything you like, and publish.
 
-**Multisite:** activate WConvert on each site on its own, not across the whole
-network.
+**Multisite:** activate WConvert on each site on its own. Network activation is
+not supported and is refused with a message.
 
 == Frequently Asked Questions ==
 

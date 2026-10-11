@@ -23,10 +23,10 @@ final class ProtectionController implements RestController
         register_rest_route(Routes::NAMESPACE, '/protection/test', [
             'methods' => 'POST', 'callback' => [$this, 'test'], 'permission_callback' => [Routes::class, 'canManage'],
         ]);
-        // Public like the capture it guards (Routes::canCapture()), and it takes
+        // Public like the capture it guards (see the note at the end of Routes), and it takes
         // no input: the page is built from the saved settings alone.
         register_rest_route(Routes::NAMESPACE, '/protection/challenge', [
-            'methods' => 'GET', 'callback' => [$this, 'challenge'], 'permission_callback' => [Routes::class, 'canCapture'], 'args' => [],
+            'methods' => 'GET', 'callback' => [$this, 'challenge'], 'permission_callback' => '__return_true', 'args' => [],
         ]);
         add_filter('rest_pre_serve_request', static function (bool $served, $result, WP_REST_Request $request): bool {
             if ($request->get_route() !== '/' . Routes::NAMESPACE . '/protection/challenge' || $request->get_method() !== 'GET') { return $served; }
@@ -72,7 +72,8 @@ final class ProtectionController implements RestController
      * `wp_head()` here for an enqueued script to print in, and the page must
      * load nothing but the provider's widget. So the two script tags come from
      * WordPress's own tag functions rather than the enqueue, and the version
-     * query is added by hand the way the enqueue would add it.
+     * query is added by hand the way the enqueue would add it. The stylesheet
+     * is registered and printed by `wp_print_styles()` for the same reason.
      */
     public function challenge(): WP_REST_Response
     {
@@ -81,8 +82,12 @@ final class ProtectionController implements RestController
             'origin' => self::origin(home_url('/')), 'waiting' => __('Complete verification to continue.', 'wconvert'),
             'failed' => __('Verification is unavailable. Please try again.', 'wconvert')];
         $script = add_query_arg('ver', WCONVERT_VERSION, WCONVERT_URL . 'public/protection/protection.js');
+        wp_register_style('wconvert-protection', WCONVERT_URL . 'public/protection/protection.css', [], WCONVERT_VERSION);
+        ob_start();
+        wp_print_styles(['wconvert-protection']);
+        $styles = (string) ob_get_clean();
         $html = '<!doctype html><html lang="' . esc_attr(get_bloginfo('language')) . '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>'
-            . esc_html__('Verify your submission', 'wconvert') . '</title><style>body{margin:0;padding:16px;font:16px/1.5 system-ui;color:#17202a;background:white}#widget{margin:16px 0}a{color:#164da0}</style></head><body><p id="status" role="status">'
+            . esc_html__('Verify your submission', 'wconvert') . '</title>' . $styles . '</head><body><p id="status" role="status">'
             . esc_html($config['waiting']) . '</p><div id="widget"></div>'
             . wp_get_inline_script_tag((string) wp_json_encode($config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT), ['type' => 'application/json', 'id' => 'wconvert-verification-config'])
             . wp_get_script_tag(['type' => 'module', 'src' => esc_url_raw($script)])

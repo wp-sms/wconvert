@@ -150,8 +150,10 @@ final class AdminNotices
      * **The problem is not that network activation fails. It is that it works
      * on the sites you looked at.**
      *
-     * {@see \WConvert\Bootstrap::activate()} installs tables for whichever
-     * site's `$wpdb->prefix` was current and ignores `$network_wide`. The rest
+     * {@see \WConvert\Bootstrap::activate()} now refuses network activation,
+     * so this is the fallback for an install that got there another way (a
+     * copied `active_sitewide_plugins` option, a migration). Such a network
+     * has tables only for whichever site's `$wpdb->prefix` was current. The rest
      * of the network is not left broken forever — options are per-site and
      * `admin_init` fires per site, so a site with no `wconvert_db_version`
      * installs on its first dashboard visit. What that does not cover is a

@@ -158,7 +158,7 @@ final class ProAdminEnqueue
         // Pro reaching into free, which is the one direction the split allows.
         wp_add_inline_script(
             self::HANDLE,
-            'window.wconvertAdmin = ' . wp_json_encode(AdminMenu::settings()) . ';',
+            'window.wconvertAdmin = ' . wp_json_encode(AdminMenu::settings(), JSON_HEX_TAG | JSON_HEX_AMP) . ';',
             'before'
         );
 

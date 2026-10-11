@@ -82,8 +82,7 @@ final class BeaconControllerTest extends TestCase
     {
         $permission = self::beaconRoute()['args'][0]['permission_callback'];
 
-        $this->assertSame([Routes::class, 'canBeacon'], $permission);
-        $this->assertTrue(Routes::canBeacon());
+        $this->assertSame('__return_true', $permission);
     }
 
     /**
@@ -110,20 +109,23 @@ final class BeaconControllerTest extends TestCase
     }
 
     /**
-     * **Two public permissions, and exactly two.**
+     * **Three public routes, and exactly three.**
      *
      * Everything else WConvert exposes is an administration surface behind
-     * `manage_options`. Counting them by reflection rather than naming them is
-     * what makes this an assertion about the class rather than about the two
-     * somebody remembered: a third `can*` returning true unconditionally is a
-     * third public route, and it should have to argue for itself here.
+     * `manage_options`. Counting `'__return_true'` across the REST sources
+     * rather than naming the routes is what makes this an assertion about the
+     * code rather than about the three somebody remembered: a fourth is a
+     * fourth public route, and it should have to argue for itself here.
      */
-    public function testWConvertHasExactlyTwoPublicPermissions(): void
+    public function testWConvertHasExactlyThreePublicRoutes(): void
     {
-        $source = (string) file_get_contents(__DIR__ . '/../../../src/Rest/Routes.php');
+        $found = [];
+        foreach ((array) glob(__DIR__ . '/../../../src/{Rest,Frontend}/*.php', GLOB_BRACE) as $file) {
+            $count = substr_count((string) file_get_contents((string) $file), "'permission_callback' => '__return_true'");
+            if ($count > 0) $found[basename((string) $file)] = $count;
+        }
+        ksort($found);
 
-        preg_match_all('/public static function (\w+)\(\): bool\s*\{\s*return true;/', $source, $matches);
-
-        $this->assertSame(['canCapture', 'canBeacon'], $matches[1]);
+        $this->assertSame(['BeaconController.php' => 1, 'CaptureController.php' => 1, 'ProtectionController.php' => 1], $found);
     }
 }

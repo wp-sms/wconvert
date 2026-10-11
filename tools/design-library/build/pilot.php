@@ -20,6 +20,8 @@ define('WCONVERT_VERSION', '0.1.0');
 function __(string $text, string $domain = ''): string { return $text; }
 // A portable catalog has no installed modules or site-owned checkout page to resolve.
 function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return $value; }
+// A portable catalog has no site of its own; offer links point at the site root.
+function home_url(string $path = ''): string { return $path === '' ? '/' : $path; }
 function wp_parse_url(string $url, int $component = -1): mixed { return parse_url($url, $component); }
 function esc_html(string $text): string { return htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); }
 function esc_html__(string $text, string $domain = ''): string { return esc_html($text); }

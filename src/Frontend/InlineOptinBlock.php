@@ -218,7 +218,7 @@ final class InlineOptinBlock
     {
         wp_add_inline_script(
             self::HANDLE,
-            'window.' . self::DATA . ' = ' . (string) wp_json_encode($this->choices()) . ';',
+            'window.' . self::DATA . ' = ' . (string) wp_json_encode($this->choices(), JSON_HEX_TAG | JSON_HEX_AMP) . ';',
             'before'
         );
     }
