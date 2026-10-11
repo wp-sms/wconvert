@@ -27,6 +27,10 @@ the full record for the team.
     where they are registered.
   - Network activation on multisite is refused with a message. Activate
     WConvert on each site instead.
+- On PHP older than 8.1, WConvert now shows a notice and stays paused instead
+  of crashing the whole site with a parse error. The plugin header's
+  `Requires PHP` only blocks activation from the Plugins screen, not a site
+  that moves to an older PHP or a WP-CLI run on one.
 - The design library build stubs `home_url()`, so `bin/build.sh` runs outside
   WordPress again.
 
