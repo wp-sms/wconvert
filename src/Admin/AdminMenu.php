@@ -186,7 +186,7 @@ final class AdminMenu
         // the setting actually has.
         wp_add_inline_script(
             self::SCRIPT_HANDLE,
-            'window.wconvertAdmin = ' . wp_json_encode(self::settings()) . ';',
+            'window.wconvertAdmin = ' . wp_json_encode(self::settings(), JSON_HEX_TAG | JSON_HEX_AMP) . ';',
             'before'
         );
     }

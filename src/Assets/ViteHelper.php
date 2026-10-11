@@ -245,7 +245,7 @@ final class ViteHelper
 
         wp_add_inline_script(
             $handle,
-            'wp.i18n.setLocaleData( ' . wp_json_encode($messages) . ', "' . esc_js($textDomain) . '" );',
+            'wp.i18n.setLocaleData( ' . wp_json_encode($messages, JSON_HEX_TAG | JSON_HEX_AMP) . ', "' . esc_js($textDomain) . '" );',
             'before'
         );
     }

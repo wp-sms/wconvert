@@ -54,8 +54,11 @@ final class Routes
         return current_user_can('edit_posts') || current_user_can('edit_pages');
     }
 
-    /**
-     * The capture endpoint, and it is public **by nature**.
+    /*
+     * WHY THREE ROUTES ARE PUBLIC (`'__return_true'`).
+     *
+     * The capture endpoint (and the verification page that guards it) is
+     * public **by nature**.
      *
      * The visitor filling in a popup is not logged in and has no capability to
      * check. A nonce is no substitute either: the payload is baked into HTML
@@ -63,19 +66,13 @@ final class Routes
      * it is the same nonce for every visitor for the cache's lifetime and
      * authenticates nothing (ADR 0004).
      *
-     * So this returns true, deliberately and permanently, and the protection
+     * So the route is public, deliberately and permanently, and the protection
      * lives where it can actually hold — in
      * {@see \WConvert\Rest\CaptureController} re-reading everything about the
      * form from the server's own published copy, and trusting the client for
      * nothing but the values a person typed.
-     */
-    public static function canCapture(): bool
-    {
-        return true;
-    }
-
-    /**
-     * The analytics beacon, and it is public for the same reason and one more.
+     *
+     * The analytics beacon is public for the same reason and one more.
      *
      * The same reason: it fires from a page the full-page cache serves
      * byte-identically to every visitor, so a nonce in it is the same nonce for
@@ -92,9 +89,8 @@ final class Routes
      * prerender and bot traffic is dropped. It stops there, because what abuse
      * costs is a wrong number on one merchant's dashboard rather than data loss
      * or a breach (ADR 0019).
+     *
+     * Each of the three registers `'__return_true'` itself, so the route says
+     * it is public where it is declared.
      */
-    public static function canBeacon(): bool
-    {
-        return true;
-    }
 }

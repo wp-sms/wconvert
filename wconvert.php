@@ -30,6 +30,29 @@ defined('ABSPATH') || exit;
 | WSMS ships one plugin in per-tier builds, and this one does not.
 */
 
+/*
+|--------------------------------------------------------------------------
+| PHP 8.1 or newer, checked before any 8.1 code is read
+|--------------------------------------------------------------------------
+| "Requires PHP" only stops activation from the Plugins screen. A site that
+| moves to an older PHP, or a WP-CLI run on one, still loads this file, and
+| the first class with a readonly property is a parse error that takes the
+| whole site down. So this file and the notice below stay PHP 7 syntax.
+*/
+if (version_compare(PHP_VERSION, '8.1', '<')) {
+    add_action('admin_notices', static function () {
+        echo '<div class="notice notice-error"><p>';
+        echo esc_html(sprintf(
+            /* translators: %s: the PHP version the site runs, for example 8.0.30. */
+            __('WConvert needs PHP 8.1 or newer, and this site runs PHP %s. WConvert is paused until PHP is updated. Your host can update it for you.', 'wconvert'),
+            PHP_VERSION
+        ));
+        echo '</p></div>';
+    });
+
+    return;
+}
+
 require_once __DIR__ . '/src/constants.php';
 
 // The ZIP carries packages/autoload.php (wp-scoper's, or the PSR-4 template's) and
