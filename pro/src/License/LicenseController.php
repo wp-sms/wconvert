@@ -115,8 +115,9 @@ final class LicenseController implements RestController
 
     /**
      * Swap this site's key for another, without a gap in updates and without
-     * orphaning the old seat (veronalabs/wp-premium-sdk#30): the new key is
-     * activated first, and only then is the old one's seat released.
+     * orphaning the old seat (veronalabs/wp-premium-sdk#30): the SDK's
+     * `replaceKey()` activates the new key first, and only then releases the
+     * old one's seat — never when both are the same licence, in any case.
      *
      * @return WP_REST_Response|WP_Error
      */
@@ -124,21 +125,16 @@ final class LicenseController implements RestController
     {
         return $this->changing(function () use ($request): array {
             $manager = $this->sdk->licenseManager();
-            $old = $manager->getLicenseKey();
-            $readable = $old !== null || !$manager->isActivated();
-            $new = self::requiredKey($request);
+            $readable = $manager->getLicenseKey() !== null || !$manager->isActivated();
 
-            $manager->activate($new);
+            $released = $manager->replaceKey(self::requiredKey($request))['released'];
 
-            // Nothing to free when there was no key; a key that no longer
-            // decrypts cannot be released, and that is said rather than hidden.
-            $released = $readable
+            // The SDK says null when there was nothing to release. A key that no
+            // longer decrypts could not be released, and that is said rather
+            // than hidden.
+            $released ??= $readable
                 ? ['removed_remotely' => true, 'error_code' => null]
-                : ['removed_remotely' => false, 'error_code' => 'key_unreadable'];
-
-            if ($old !== null && $old !== $new) {
-                $released = $manager->releaseSeat($old, Request::currentDomain());
-            }
+                : ['removed_remotely' => false, 'error_code' => LicenseErrorCode::KEY_UNREADABLE];
 
             return ['released' => $released];
         });
@@ -213,10 +209,6 @@ final class LicenseController implements RestController
             return self::error(LicenseErrorCode::KEY_FROM_CONSTANT, 403);
         }
 
-        if ($this->sdk->accountManager()->isSignInOfOtherUser()) {
-            return self::otherAdministrator();
-        }
-
         $authorize = $this->sdk->accountManager()->getAuthorizeUrl(admin_url('admin.php?page=wconvert#license'));
 
         return new WP_REST_Response(['url' => $authorize['authorize_url']]);
@@ -225,25 +217,24 @@ final class LicenseController implements RestController
     /**
      * The signed-in account and its licences for this product — masked keys,
      * and whether each still has a site free. Read fresh from the store, never
-     * from the pending choice the SDK keeps raw keys in (#36).
+     * from the pending choice the SDK keeps raw keys in (#36). A sign-in that
+     * went wrong says so once, with the SDK's code (`no_licenses`, a store
+     * refusal, or `account_error`) beside its message (#32).
      *
      * @return WP_REST_Response|WP_Error
      */
     public function account()
     {
         $account = $this->sdk->accountManager();
-
-        if ($account->isSignInOfOtherUser()) {
-            return self::otherAdministrator();
-        }
-
         $user = $account->getUser();
-        $flash = $account->consumeFlashError();
+        $flash = $account->consumeFlashErrorDetail();
+        $flashCode = $flash['code'] ?? null;
+        $flashMessage = $flash['message'] ?? null;
 
         if ($user === null) {
             // A session past its 24 hours is dropped as it is read; the SDK
             // remembers that it lapsed, and the page says so (S5).
-            return new WP_REST_Response(['signed_in' => false, 'email_masked' => null, 'licenses' => [], 'error_code' => $account->hasSession() ? LicenseErrorCode::ACCOUNT_EXPIRED : null, 'message' => $flash]);
+            return new WP_REST_Response(['signed_in' => false, 'email_masked' => null, 'licenses' => [], 'error_code' => $account->hasSession() ? LicenseErrorCode::ACCOUNT_EXPIRED : $flashCode, 'message' => $flashMessage]);
         }
 
         try {
@@ -264,8 +255,8 @@ final class LicenseController implements RestController
             'signed_in' => true,
             'email_masked' => LicenseState::maskEmail((string) $user['email']),
             'licenses' => array_values(array_map(static fn (array $license): array => self::accountLicense($license, $here), $licenses)),
-            'error_code' => null,
-            'message' => $flash,
+            'error_code' => $flashCode,
+            'message' => $flashMessage,
         ]);
     }
 
@@ -273,10 +264,6 @@ final class LicenseController implements RestController
     public function choose(WP_REST_Request $request)
     {
         $id = (int) $request->get_param('license_id');
-
-        if ($this->sdk->accountManager()->isSignInOfOtherUser()) {
-            return self::otherAdministrator();
-        }
 
         return $this->changing(function () use ($id): array {
             foreach ($this->accountLicenses() as $license) {
@@ -293,9 +280,9 @@ final class LicenseController implements RestController
     }
 
     /**
-     * Sign out of the account. Only the administrator who signed in: the SDK
-     * keeps one sign-in per site, and another's token is not this one's to
-     * revoke.
+     * Sign out of the account. The sign-in belongs to the site, not to the
+     * administrator who started it (SDK 1.0.0-beta.9), so any administrator
+     * may end it.
      *
      * @return WP_REST_Response|WP_Error
      */
@@ -303,10 +290,6 @@ final class LicenseController implements RestController
     {
         if ($this->managed()) {
             return self::error(LicenseErrorCode::KEY_FROM_CONSTANT, 403);
-        }
-
-        if ($this->sdk->accountManager()->isSignInOfOtherUser()) {
-            return self::otherAdministrator();
         }
 
         $this->sdk->accountManager()->logout();
@@ -422,11 +405,6 @@ final class LicenseController implements RestController
         }
 
         return $key;
-    }
-
-    private static function otherAdministrator(): WP_Error
-    {
-        return self::error(LicenseErrorCode::SIGN_IN_OTHER_USER, 409, [], __('Another administrator is signing in to the account.', 'wconvert-pro'));
     }
 
     private static function fromException(Throwable $e): WP_Error

@@ -74,6 +74,15 @@ final class UpdateGateTest extends TestCase
         $this->assertArrayNotHasKey(self::BASENAME, $this->gate()->gate($this->offer())->response);
     }
 
+    /** The store has no activation for this address: no update until it is activated here (wp-premium-sdk#37). */
+    public function testASiteTheStoreHasNoActivationForMovesTheOffer(): void
+    {
+        $this->nexusLicense = ['site' => ['active' => false, 'is_counted' => true]];
+        $this->activateLicenseHere();
+
+        $this->assertArrayNotHasKey(self::BASENAME, $this->gate()->gate($this->offer())->response);
+    }
+
     public function testANonObjectTransientPassesThrough(): void
     {
         $this->assertFalse($this->gate()->gate(false));
@@ -119,6 +128,7 @@ final class UpdateGateTest extends TestCase
         yield 'another plan' => [['tier_slug' => 'unlimited', 'max_activations' => 0]];
         yield 'a site freed' => [['activation_count' => 0]];
         yield 'a new status' => [['status' => 'suspended']];
+        yield 'no activation here' => [['site' => ['active' => false, 'is_counted' => true]]];
     }
 
     /** @param array<string, mixed> $answer */

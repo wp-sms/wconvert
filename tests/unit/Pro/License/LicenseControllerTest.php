@@ -133,6 +133,19 @@ final class LicenseControllerTest extends TestCase
         $this->assertSame('••••0002', $data['key']['masked']);
     }
 
+    /** The same key in other letter case is the same licence to the store: re-entering it frees nothing (#30). */
+    public function testReplacingAKeyWithItselfInOtherCaseReleasesNothing(): void
+    {
+        $this->activateLicenseHere('wcv-same-0000-0001');
+        $this->nexusCalls = [];
+
+        $data = $this->data($this->controller()->replace($this->request(['key' => 'WCV-SAME-0000-0001'])));
+
+        $this->assertSame([], $this->nexusCallsTo('/api/v1/license/deactivate'), 'the seat just activated was released');
+        $this->assertTrue($data['released']['removed_remotely']);
+        $this->assertSame('active', $data['state']);
+    }
+
     /** Rotated salts: the old seat cannot be released, and the answer says so rather than claiming it was. */
     public function testReplacingAKeyThatNoLongerDecryptsSaysTheOldSeatWasNotFreed(): void
     {
@@ -310,23 +323,38 @@ final class LicenseControllerTest extends TestCase
         $this->assertSame('account_expired', $data['error_code']);
     }
 
-    /** One sign-in per site: another administrator's is not this one's to read or end. */
-    public function testAnotherAdministratorsSignInIsLeftAlone(): void
+    /** The sign-in belongs to the site (SDK 1.0.0-beta.9): every administrator shares it, and any of them may end it. */
+    public function testEveryAdministratorSharesTheSignIn(): void
     {
         $this->nexusAccountLicenses = [self::accountLicense(11, 'WCV-AAAA-BBBB-1111', 5, []), self::accountLicense(12, 'WCV-CCCC-DDDD-2222', 5, [])];
         $this->signInToTheAccount();
         $GLOBALS['wconvertTestUserId'] = 2;
 
         try {
-            $out = $this->controller()->signOut();
-            $list = $this->controller()->account();
+            $list = $this->data($this->controller()->account());
+            $out = $this->data($this->controller()->signOut());
         } finally {
             unset($GLOBALS['wconvertTestUserId']);
         }
 
-        $this->assertInstanceOf(WP_Error::class, $out);
-        $this->assertSame('sign_in_other_user', $out->get_error_code());
-        $this->assertInstanceOf(WP_Error::class, $list);
+        $this->assertTrue($list['signed_in']);
+        $this->assertCount(2, $list['licenses']);
+        $this->assertFalse($out['signed_in']);
+    }
+
+    /** A sign-in that went wrong says so once, with the SDK's code beside the message (#32). */
+    public function testASignInErrorComesBackWithItsCodeOnce(): void
+    {
+        $this->signInToTheAccount();
+        $this->freshSdk()->accountManager()->setFlashError('Your account has no licenses for this product.', 'no_licenses');
+
+        $first = $this->data($this->controller()->account());
+        $second = $this->data($this->controller()->account());
+
+        $this->assertSame('no_licenses', $first['error_code']);
+        $this->assertSame('Your account has no licenses for this product.', $first['message']);
+        $this->assertNull($second['error_code']);
+        $this->assertNull($second['message']);
     }
 
     /** S5: an expired sign-in signs out and says so. */

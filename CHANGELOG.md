@@ -12,6 +12,20 @@ the full record for the team.
 
 ## [Unreleased]
 
+### Changed
+
+- Pro: the licence SDK (`veronalabs/wp-premium-sdk`) moves from 1.0.0-beta.8
+  to 1.0.0-beta.9, which needs Nexus v2.3.1 or later (the update check sends
+  the key in a header, not in the URL).
+  - The account sign-in belongs to the site, so every administrator sees and
+    can end the same sign-in; nobody is refused as "another administrator".
+  - A copy the store has no activation for on this address
+    (`not_activated_here`) gets no updates until it is activated here.
+  - Replacing the key with the same key in other letter case no longer frees
+    the seat it just took.
+  - A sign-in error, such as an account with no licences (`no_licenses`),
+    comes back to the License page with its code.
+
 ### Fixed
 
 - Changes asked for in the first WordPress.org plugin review (October 2026):
