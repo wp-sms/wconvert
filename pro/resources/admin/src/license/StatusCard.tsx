@@ -27,6 +27,7 @@ export interface StatusActions {
   onSites: () => void;
   onMove: (keepOld?: boolean) => void;
   onRekey: (key: string) => void;
+  onReactivate: () => void;
   rekeyError?: ReactNode;
 }
 
@@ -96,6 +97,7 @@ function Doors({ door, license, actions }: { door: Door | null; license: License
       <Button aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onMove(false)}>{__('Move license here', 'wconvert-pro')}</Button>
       {!license.domain_change?.was_dev && <Button variant="outline" aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onMove(true)}>{__('Keep it on both', 'wconvert-pro')}</Button>}
     </>; break;
+    case 'activate_here': doors = <Button aria-disabled={actions.busy !== null || undefined} onClick={() => actions.busy === null && actions.onReactivate()}>{actions.busy === 'reactivate' ? __('Activating…', 'wconvert-pro') : __('Activate on this site', 'wconvert-pro')}</Button>; break;
     case 'contact': doors = license.managed?.email ? <Contact email={license.managed.email} /> : null; break;
     default: doors = null;
   }

@@ -20,7 +20,8 @@ import { formatLongDay, formatShortDay } from '@/lib/format';
 
 export type LicenseStateName =
   | 'none' | 'active' | 'expiring' | 'cancelled' | 'manual' | 'lifetime' | 'trial' | 'trial_ended'
-  | 'expired' | 'payment_failed' | 'disabled' | 'over_limit' | 'moved' | 'copy' | 'key_unreadable' | 'stopped';
+  | 'expired' | 'payment_failed' | 'disabled' | 'over_limit' | 'moved' | 'copy' | 'key_unreadable' | 'stopped'
+  | 'not_activated_here';
 
 export interface LicenseSite {
   domain: string;
@@ -61,7 +62,7 @@ export type Icon = 'checkCircle' | 'key' | 'globe' | 'alert' | 'warn' | 'clock' 
 /** The one action the status card offers; the page draws it. */
 export type Door =
   | 'account' | 'renew_soon' | 'renewal_on' | 'buy' | 'renew' | 'payment' | 'support'
-  | 'sites' | 'activate_copy' | 'move' | 'rekey' | 'contact';
+  | 'sites' | 'activate_copy' | 'move' | 'rekey' | 'contact' | 'activate_here';
 
 export interface LicenseFact { label: string; value: string; sub?: string | null; tone?: 'warning' | 'danger' }
 
@@ -86,7 +87,7 @@ const STOPPED: readonly LicenseStateName[] = ['key_unreadable', 'disabled', 'tri
 export function describeLicense(license: LicensePayload, now = Date.now()): LicenseDescription {
   const days = license.days_left ?? 0;
   const stopped = STOPPED.includes(license.state);
-  const elsewhere = license.state === 'moved' || license.state === 'copy';
+  const elsewhere = license.state === 'moved' || license.state === 'copy' || license.state === 'not_activated_here';
   const mode = license.renewal?.mode ?? 'manual';
   const ends = license.expires_at;
   const keepWorking = __('Pro features keep working.', 'wconvert-pro');
@@ -108,6 +109,10 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
     case 'moved':
       card = hero('warning', 'globe', sprintf(__('This site moved from %s', 'wconvert-pro'), license.domain_change?.was ?? ''),
         sprintf(__('The license is still on %s, so updates are off here.', 'wconvert-pro'), license.domain_change?.was ?? ''), 'move');
+      break;
+    case 'not_activated_here':
+      card = hero('warning', 'globe', __('This site isn’t on your license', 'wconvert-pro'),
+        `${__('Your license doesn’t list this site any more, so updates are off here. Activate it here to turn them back on.', 'wconvert-pro')} ${keepWorking}`, 'activate_here');
       break;
     case 'disabled':
       card = hero('danger', 'alert', __('This license was turned off', 'wconvert-pro'), `${__('Updates and support stopped.', 'wconvert-pro')} ${keepWorking}`, 'support');

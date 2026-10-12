@@ -42,7 +42,7 @@ final class LicenseControllerTest extends TestCase
         $this->controller()->registerRoutes();
 
         $routes = array_filter($GLOBALS['wconvertTestRoutes'], static fn (array $r): bool => str_starts_with($r['route'], '/license'));
-        $this->assertCount(11, $routes);
+        $this->assertCount(12, $routes);
 
         foreach ($routes as $route) {
             $this->assertSame(Routes::NAMESPACE, $route['namespace']);
@@ -190,6 +190,17 @@ final class LicenseControllerTest extends TestCase
 
         $this->assertSame('active', $data['state']);
         $this->assertNull($data['domain_change']);
+    }
+
+    /** Removed from the account elsewhere: one press activates the stored key here again. */
+    public function testReactivatingUsesTheStoredKey(): void
+    {
+        $this->activateLicenseHere('WCV-KEPT-0000-0001');
+        $this->nexusCalls = [];
+
+        $this->data($this->controller()->reactivate());
+
+        $this->assertSame('WCV-KEPT-0000-0001', $this->nexusCallsTo('/api/v1/license/activate')[0]['license_key']);
     }
 
     /** L3: removed from this site, with the store reachable or not. */

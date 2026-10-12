@@ -34,6 +34,7 @@ final class LicenseNoticeTest extends TestCase
         yield 'M5 over limit' => [['state' => 'over_limit', 'plan' => ['max' => 5, 'used' => 6]], 'amber', '6 sites use a 5-site license.'];
         yield 'C1 moved' => [['state' => 'moved', 'domain_change' => ['was' => 'old-example.com']], 'amber', 'This site moved from old-example.com, so updates are off here.'];
         yield 'C2 copy' => [['state' => 'copy', 'domain_change' => ['was' => 'example.com']], 'amber', 'This is a copy of example.com, so updates are off here.'];
+        yield 'removed from the account' => [['state' => 'not_activated_here'], 'amber', 'This site isn’t on your license, so updates are off here.'];
         yield 'C7 key unreadable' => [['state' => 'key_unreadable'], 'red', 'WordPress can’t read your license key, so updates stopped.'];
     }
 
