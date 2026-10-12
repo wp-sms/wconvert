@@ -131,13 +131,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2 and WP-CLI
+      - name: Setup PHP 8.2
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, mysqli, mysqlnd
-          tools: composer, wp-cli
+          tools: composer
           coverage: none
+
+      # setup-php's wp-cli tool failed three runs in a row on hosted runners
+      # ("Could not setup wp-cli"), token or not; a pinned release with its
+      # published checksum does not depend on it.
+      - name: Install WP-CLI
+        run: |
+          set -euo pipefail
+          base=https://github.com/wp-cli/wp-cli/releases/download/v2.12.0
+          curl -fsSL --retry 3 -o wp-cli.phar "$base/wp-cli-2.12.0.phar"
+          echo "$(curl -fsSL --retry 3 "$base/wp-cli-2.12.0.phar.sha512" | awk '{print $1}')  wp-cli.phar" | sha512sum -c -
+          sudo install -m 0755 wp-cli.phar /usr/local/bin/wp
+          rm wp-cli.phar
+          wp --info
 
       - name: Install plugin dependencies
         run: |

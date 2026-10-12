@@ -261,7 +261,8 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       {showingPrevious && !updating && <RegionBody><p className="m-0 text-note">{__('Showing the previous results.', 'wconvert')}</p></RegionBody>}
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} onRetry={retryLog} />}
-      {namesError !== null && log.status !== 'failed' && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
+      {/* Only beside a loaded log: while the log is still loading, a names door would re-read only the names. */}
+      {namesError !== null && log.status === 'ready' && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
       <div aria-busy={updating || undefined} className={updating && !quiet && data !== null ? 'opacity-60' : undefined}>
       {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         hasAppliedFilters ? <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : __('No matching submissions', 'wconvert')}
@@ -296,8 +297,11 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         </div>
       </RegionFooter>}
     </Region>
-    {/* One outage is one door: while the log has failed, its Try again re-reads this too. */}
-    {log.status !== 'failed' && <RetentionSummary refreshKey={retry} />}
+    {/* One outage is one door: the policy is read once the log has loaded, so
+        a failure while the log is still loading cannot draw a second Try again
+        that re-reads only the policy; while the log has failed, its Try again
+        re-reads this too. */}
+    {log.status === 'ready' && <RetentionSummary refreshKey={retry} />}
     <AdminDialog open={opened !== null} onOpenChange={(isOpen) => { if (!isOpen) setOpened(null); }}>
       <AdminDialogContent size="md" onCloseAutoFocus={(event) => {
         // "See all from" re-renders the table, so the row that opened the

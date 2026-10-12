@@ -175,7 +175,7 @@ reaches for first.
 
 `npm run check:loader` is the **one build a pull request pays for**, and it
 earns it: both of its assertions are about build output. Free's and Pro's
-loader, gzip -9, hard-fail at 14,592 / 25,088 / 26,624 / 26,880 bytes for Free / Basic / Pro / Elite (ADR 0111); and free's loader is scanned for
+loader, gzip -9 on Node 22, hard-fail at 14,720 / 25,472 / 27,040 / 27,712 bytes for Free / Basic / Pro / Elite (ADR 0139, amended); and free's loader is scanned for
 every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
