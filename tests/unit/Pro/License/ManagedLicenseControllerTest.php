@@ -87,6 +87,7 @@ final class ManagedLicenseControllerTest extends TestCase
         $fields = (new \WConvert\Pro\License\SiteHealth($this->freshSdk()))->addSection([])[\WConvert\Pro\License\SiteHealth::SECTION]['fields'];
 
         $this->assertSame(['status', 'updates', 'key_source', 'managed_by'], array_keys($fields));
+        $this->assertSame('Updates on', $fields['status']['value'], 'a managed licence\'s renewal is the agency\'s business');
 
         $screen = new \WConvert\Pro\License\PluginsScreen($this->freshSdk(), 'wconvert-pro/wconvert-pro.php');
         ob_start();

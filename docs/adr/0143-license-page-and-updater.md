@@ -7,7 +7,8 @@ anywhere; the SDK as a private repository; Nexus serving a tier-matched ZIP),
 [0056](0056-the-tier-ladder-is-a-manifest.md) (no licence read; Nexus matching
 a licence to a tier), [0035](0035-the-admin-owns-its-page.md) (a submenu on the
 one page), [0082](0082-template-packs-install-as-validated-local-data.md) (the
-SDK authorizes no pack download), [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md)
+SDK authorizes no pack download), [0116](0116-free-shows-nothing-it-cannot-run.md)
+(free's two upsell places gain "Already bought?"), [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md)
 and [0097](0097-harbor-is-the-shared-admin-frame.md) (the plan badge as a live
 link with the licence's status).
 
@@ -116,9 +117,11 @@ nothing, and asserts no file on the front-end read path touches it.
     License action link and, when the licence needs something, one line in
     WordPress's own update-message markup with one way forward — the same words
     as the badge's reason. Site Health gains a *WConvert Pro license* section
-    (state, plan, end date, sites, the store's error code, last good check;
-    never the key). Both are for `manage_options` only and say nothing about a
-    managed licence's details. Free's two upsell places each gain a plain
+    (state, plan, end date, renewal, sites, the store's error code, the domain
+    it is activated on, last check and last good check; never the key). Both
+    are for `manage_options` only — Site Health itself opens to anyone who may
+    install plugins — say nothing about a managed licence's details, and the
+    Plugins line never shows on the network's Plugins screen. Free's two upsell places each gain a plain
     "Already bought?" link to the account's downloads.
 12. **Only an administrator finishes a sign-in.** The account sign-in's return
     parameters are dropped on `admin_init` at 9 unless the user has

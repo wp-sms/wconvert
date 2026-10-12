@@ -13,9 +13,14 @@ defined('ABSPATH') || exit;
  * the two can never tell a different story.
  *
  * **Never the key**, not even masked. A managed licence (a key in
- * wp-config.php) shows only whether updates are on and where the key comes
- * from — no plan, dates or sites (ADR 0143, decision 9). The store's own
- * error code is shown for everybody else: it is what support asks for first.
+ * wp-config.php) shows only whether updates are on, where the key comes from,
+ * who manages it and — when the key was refused — the store's code; no plan,
+ * dates, renewal or sites (ADR 0143, decision 9). The store's own error code
+ * is shown wherever there is one: it is what support asks for first.
+ *
+ * Site Health opens for anybody who may install plugins; the section is added
+ * only for somebody who may manage the licence, as every other licence
+ * surface is.
  *
  * @since 0.1.0
  */
@@ -40,6 +45,10 @@ final class SiteHealth
     {
         $info = is_array($info) ? $info : [];
 
+        if (!current_user_can('manage_options')) {
+            return $info;
+        }
+
         $info[self::SECTION] = [
             'label' => __('WConvert Pro license', 'wconvert-pro'),
             'fields' => self::fields(LicenseState::current($this->sdk)),
@@ -58,19 +67,29 @@ final class SiteHealth
         $state = (string) $license['state'];
         $updates = $license['updates'];
 
+        $managed = $license['managed'] !== null;
+        $stopped = in_array($state, [...LicenseState::NO_UPDATES, 'stopped'], true);
+
         $fields = [
-            'status' => $field(__('Status', 'wconvert-pro'), self::statusLabel($state), $state),
+            'status' => $field(__('Status', 'wconvert-pro'), $managed ? self::managedLabel($state) : self::statusLabel($state), $state),
             'updates' => $field(
                 __('Updates', 'wconvert-pro'),
-                $updates['latest'] !== $updates['installed']
-                    /* translators: 1: installed version, 2: version on offer */
-                    ? sprintf(__('%1$s installed, %2$s available', 'wconvert-pro'), $updates['installed'], $updates['latest'])
-                    : $updates['installed'],
-                $updates['installed'] . ' / ' . $updates['latest'] . ($updates['file_mods'] ? '' : ' (file changes disabled)')
+                $stopped
+                    /* translators: %s: installed version */
+                    ? sprintf(__('Stopped at %s', 'wconvert-pro'), $updates['installed'])
+                    : ($updates['latest'] !== $updates['installed']
+                        /* translators: 1: installed version, 2: version on offer */
+                        ? sprintf(__('%1$s installed, %2$s available', 'wconvert-pro'), $updates['installed'], $updates['latest'])
+                        : $updates['installed']),
+                $updates['installed'] . ' / ' . $updates['latest'] . ($stopped ? ' (stopped)' : '') . ($updates['file_mods'] ? '' : ' (file changes disabled)')
             ),
         ];
 
-        if ($license['managed'] !== null) {
+        if (($license['error_code'] ?? '') !== '') {
+            $fields['error_code'] = $field(__('Store error code', 'wconvert-pro'), (string) $license['error_code']);
+        }
+
+        if ($managed) {
             $fields['key_source'] = $field(__('Key source', 'wconvert-pro'), __('wp-config.php', 'wconvert-pro'), 'constant');
             $by = $license['managed']['by'] ?? null;
 
@@ -100,11 +119,22 @@ final class SiteHealth
             $max === null ? __('Unlimited', 'wconvert-pro') : sprintf(__('%1$d of %2$d', 'wconvert-pro'), (int) $plan['used'], (int) $max),
             $max === null ? 'unlimited' : $plan['used'] . '/' . $max
         );
+        $fields['renewal'] = $field(__('Renewal', 'wconvert-pro'), self::renewalLabel((string) ($license['renewal']['mode'] ?? '')), (string) ($license['renewal']['mode'] ?? ''));
         $fields['key_source'] = $field(__('Key source', 'wconvert-pro'), __('License page', 'wconvert-pro'), (string) ($license['key']['source'] ?? 'manual'));
 
-        if (($license['error_code'] ?? '') !== '') {
-            $fields['error_code'] = $field(__('Store error code', 'wconvert-pro'), (string) $license['error_code']);
+        $change = $license['domain_change'];
+
+        if ($change !== null) {
+            /* translators: 1: the domain the licence is on, 2: this site's domain */
+            $fields['domain'] = $field(__('Activated on', 'wconvert-pro'), sprintf(__('%1$s (this site is %2$s)', 'wconvert-pro'), $change['was'], $change['now']), $change['was'] . ' -> ' . $change['now']);
         }
+
+        $checked = $license['last_checked_at'];
+        $fields['last_checked'] = $field(
+            __('Last check', 'wconvert-pro'),
+            $checked === null ? __('Never', 'wconvert-pro') : self::date('@' . $checked, true),
+            $checked === null ? 'never' : gmdate('c', (int) $checked)
+        );
 
         $last = $license['last_success_at'];
         $fields['last_success'] = $field(
@@ -122,9 +152,9 @@ final class SiteHealth
     {
         $labels = [
             'none' => __('Not activated', 'wconvert-pro'),
-            'active' => __('Active, renews automatically', 'wconvert-pro'),
-            'manual' => __('Active, manual renewal', 'wconvert-pro'),
-            'cancelled' => __('Active, renewal off', 'wconvert-pro'),
+            'active' => __('Active', 'wconvert-pro'),
+            'manual' => __('Active', 'wconvert-pro'),
+            'cancelled' => __('Active', 'wconvert-pro'),
             'lifetime' => __('Lifetime', 'wconvert-pro'),
             'expiring' => __('Expiring soon', 'wconvert-pro'),
             'trial' => __('Trial', 'wconvert-pro'),
@@ -140,6 +170,26 @@ final class SiteHealth
         ];
 
         return $labels[$state] ?? $state;
+    }
+
+    /** What a managed licence's client may read: whether updates are on (P1). */
+    private static function managedLabel(string $state): string
+    {
+        return match ($state) {
+            'none' => __('Not activated', 'wconvert-pro'),
+            'stopped' => __('Updates stopped', 'wconvert-pro'),
+            default => __('Updates on', 'wconvert-pro'),
+        };
+    }
+
+    private static function renewalLabel(string $mode): string
+    {
+        return match ($mode) {
+            'auto' => __('Automatic', 'wconvert-pro'),
+            'cancelled' => __('Off', 'wconvert-pro'),
+            'lifetime' => __('Lifetime', 'wconvert-pro'),
+            default => __('Manual', 'wconvert-pro'),
+        };
     }
 
     private static function date(string $value, bool $withTime = false): string

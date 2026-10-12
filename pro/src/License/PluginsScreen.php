@@ -11,8 +11,10 @@ defined('ABSPATH') || exit;
  * under the row when the licence needs something — the same words and the
  * same one way forward as the header badge's reason ({@see LicenseNotice}).
  *
- * For somebody who may manage the licence only (P4), and never for a managed
- * licence: an agency's client is reminded of nothing (ADR 0143, decision 9).
+ * For somebody who may manage the licence only (P4), never for a managed
+ * licence — an agency's client is reminded of nothing (ADR 0143, decision 9) —
+ * and never on the network's Plugins screen: the licence belongs to each site,
+ * and its page is in that site's admin.
  * WordPress's own update row is untouched — an update offered to this site
  * shows there, with its auto-update toggle, as for any plugin.
  *
@@ -21,9 +23,6 @@ defined('ABSPATH') || exit;
 final class PluginsScreen
 {
     private const CAPABILITY = 'manage_options';
-
-    /** @var array<string, mixed>|null The licence, read once per screen. */
-    private ?array $license = null;
 
     public function __construct(
         private readonly PremiumServiceProvider $sdk,
@@ -57,17 +56,15 @@ final class PluginsScreen
     /**
      * The line under the row, in WordPress's own update-message markup.
      *
-     * @param string $file
      * @param array<string, mixed> $data
-     * @param string $status
      */
-    public function row($file = '', $data = [], $status = ''): void
+    public function row(string $file = '', array $data = [], string $status = ''): void
     {
         if (!$this->speaks()) {
             return;
         }
 
-        $license = $this->license();
+        $license = LicenseState::current($this->sdk);
         $notice = $license['notice'];
 
         if ($notice['row'] === null) {
@@ -92,19 +89,18 @@ final class PluginsScreen
                 esc_url($href),
                 $external ? ' target="_blank" rel="noreferrer"' : '',
                 esc_html($cta['label']),
-                $external ? ' <span aria-hidden="true">↗</span><span class="screen-reader-text"> ' . esc_html__('(opens in a new tab)', 'wconvert-pro') . '</span>' : ' →'
+                $external
+                    ? ' <span aria-hidden="true">↗</span><span class="screen-reader-text"> ' . esc_html__('(opens in a new tab)', 'wconvert-pro') . '</span>'
+                    : ' <span aria-hidden="true">' . (is_rtl() ? '←' : '→') . '</span>'
             )
         );
     }
 
+    /** For a manager, on a site's own Plugins screen, about a licence that is not managed. */
     private function speaks(): bool
     {
-        return current_user_can(self::CAPABILITY) && $this->sdk->keySource()->constantKey() === null;
-    }
-
-    /** @return array<string, mixed> */
-    private function license(): array
-    {
-        return $this->license ??= LicenseState::current($this->sdk);
+        return current_user_can(self::CAPABILITY)
+            && !is_network_admin()
+            && $this->sdk->keySource()->constantKey() === null;
     }
 }

@@ -2360,3 +2360,19 @@ if (!function_exists('wp_date')) {
         return gmdate($format, $timestamp ?? time());
     }
 }
+
+$GLOBALS['wconvertTestNetworkAdmin'] = false;
+
+if (!function_exists('is_network_admin')) {
+    function is_network_admin(): bool
+    {
+        return (bool) $GLOBALS['wconvertTestNetworkAdmin'];
+    }
+}
+
+if (!function_exists('is_rtl')) {
+    function is_rtl(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestRtl'] ?? false);
+    }
+}

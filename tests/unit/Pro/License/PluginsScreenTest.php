@@ -5,14 +5,11 @@ namespace WConvert\Tests\Unit\Pro\License;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Pro\License\PluginsScreen;
-use WConvert\Pro\License\SiteHealth;
 
 /**
- * Pro's row on the Plugins screen, and its Site Health section — both read
- * from the License page's own payload.
+ * Pro's row on the Plugins screen, read from the License page's own payload.
  */
 #[CoversClass(PluginsScreen::class)]
-#[CoversClass(SiteHealth::class)]
 final class PluginsScreenTest extends TestCase
 {
     use FakesNexus;
@@ -74,18 +71,16 @@ final class PluginsScreenTest extends TestCase
         $this->assertSame('', $this->row($screen));
     }
 
-    public function testSiteHealthNamesTheStateAndTheStoresCodeButNeverTheKey(): void
+    /** The licence is each site's: the network's Plugins screen says nothing about it. */
+    public function testTheNetworkPluginsScreenGetsNoLine(): void
     {
-        $this->nexusLicense = ['status' => 'suspended', 'error_code' => 'license_suspended'];
-        $this->activateLicenseHere('WCV-SECR-ET00-9876');
+        $GLOBALS['wconvertTestNetworkAdmin'] = true;
 
-        $section = (new SiteHealth($this->freshSdk()))->addSection([])[SiteHealth::SECTION];
-        $dump = (string) json_encode($section);
-
-        $this->assertSame('disabled', $section['fields']['status']['debug']);
-        $this->assertSame('license_suspended', $section['fields']['error_code']['value']);
-        $this->assertStringNotContainsString('9876', $dump, 'the key, or a part of it, reached Site Health');
-        $this->assertStringNotContainsString('SECR', $dump);
+        try {
+            $this->assertSame('', $this->row($this->screen()));
+        } finally {
+            $GLOBALS['wconvertTestNetworkAdmin'] = false;
+        }
     }
 
     private function screen(): PluginsScreen

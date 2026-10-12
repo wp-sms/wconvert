@@ -64,7 +64,6 @@ the full record for the team.
   needs something; Site Health gains a WConvert Pro license section.
 - Free: "Already bought Pro?" links to the account's downloads, beside Explore Pro
   and under More with Pro.
-
 - First public release: popups and inline forms created goal-first, a library
   of 68 designs, design import and export, a lead log with consent records and
   CSV export, analytics by goal with monthly targets, and MailPoet and WP SMS
