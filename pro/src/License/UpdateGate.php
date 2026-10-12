@@ -21,7 +21,8 @@ defined('ABSPATH') || exit;
  *    timestamp, the key encrypted afresh — and almost none of those writes
  *    mean anything to the updater. The caches are dropped only when what the
  *    update depends on changes: which activation is stored, and its status,
- *    expiry, plan and site count. Otherwise the Plugins screen waits out a
+ *    expiry, plan, site count and whether the store still holds an
+ *    activation for this address. Otherwise the Plugins screen waits out a
  *    12-hour transient after an activation, or refetches on every refresh.
  *
  * A licence never gates a feature (ADR 0015); this gates the download of the
@@ -116,6 +117,8 @@ final class UpdateGate
             'expires_at' => (string) ($license['expires_at'] ?? ''),
             'plan' => (string) ($license['tier_slug'] ?? ''),
             'sites' => [(int) ($license['activation_count'] ?? 0), (int) ($license['max_activations'] ?? 0)],
+            // Whether the store holds an activation for this address (#37).
+            'here' => is_array($license['site'] ?? null) ? ($license['site']['active'] ?? null) : null,
         ];
     }
 

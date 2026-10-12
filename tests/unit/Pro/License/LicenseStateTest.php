@@ -326,6 +326,24 @@ final class LicenseStateTest extends TestCase
         $this->assertTrue($payload['domain_change']['was_dev']);
     }
 
+    /**
+     * The store says this address holds no activation, on the address the
+     * licence was activated on (removed from the account): no updates until
+     * it is activated here, as the SDK decides (wp-premium-sdk#37).
+     */
+    public function testASiteTheStoreHasNoActivationForGetsNoUpdates(): void
+    {
+        $facts = [
+            'manifest' => ['update_available' => true, 'manifest' => ['version' => '1.5.0']],
+            'updateUrl' => 'https://example.com/wp-admin/update.php?x',
+        ];
+        $license = self::license(['site' => ['active' => false, 'is_counted' => true], 'activation_count' => 5]);
+
+        $this->assertSame('not_activated_here', $this->payload($license, facts: $facts)['state']);
+        $this->assertNull($this->payload($license, facts: $facts)['updates']['update_url']);
+        $this->assertFalse(LicenseState::updatesAllowed(new LicenseFacts(license: $license, key: 'WCV-8K2D-L9QX-AB12', now: self::NOW, installed: '1.4.2', here: 'example.com')));
+    }
+
     /** http→https and www are one site to the store, so no banner and "here" still matches. */
     public function testC4AWwwOrSchemeChangeIsTheSameSite(): void
     {

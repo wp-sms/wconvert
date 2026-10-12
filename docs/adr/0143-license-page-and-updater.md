@@ -27,9 +27,10 @@ nothing, and asserts no file on the front-end read path touches it.
 ## Decisions
 
 1. **The SDK is in Pro only, scoped.** `pro/composer.json` (Pro's first) pins
-   `veronalabs/wp-premium-sdk` to **exactly `1.0.0-beta.8`** — the gaps below
-   are worked around against that version, so a newer beta is a deliberate
-   upgrade. The package is public and fetched over HTTPS; ADR 0015's "private
+   `veronalabs/wp-premium-sdk` to **exactly `1.0.0-beta.9`** (raised from
+   beta.8; beta.9 needs Nexus v2.3.1, which reads the key from the
+   `X-License-Key` header) — the gaps below are worked around against that
+   version, so a newer beta is a deliberate upgrade. The package is public and fetched over HTTPS; ADR 0015's "private
    repository" blocker is gone. wp-scoper copies it to `pro/packages/` under
    `WConvert\Pro\Deps`, and `pro/src/autoload.php` requires that classmap
    unconditionally. The build strips `vendor/` whole, and the artifact contract
@@ -71,16 +72,23 @@ nothing, and asserts no file on the front-end read path touches it.
    License key card.
    The payload's `state` is one of `none`, `active`, `expiring`, `cancelled`,
    `manual`, `lifetime`, `trial`, `trial_ended`, `expired`, `payment_failed`,
-   `disabled`, `over_limit`, `moved`, `copy`, `key_unreadable` — decided once,
+   `disabled`, `over_limit`, `moved`, `copy`, `key_unreadable`,
+   `not_activated_here` — decided once,
    in `LicenseState`, in the prototype's order (whatever stops updates first).
    A failed payment is read from Nexus's renewal block (`state:
    payment_failed`), because the licence's own status stays `active` through
    the grace period, which runs past the renewal date. A key the store
    refused (the SDK's `invalid`) stops updates like any other stopped
-   licence. `UpdateGate` asks the same model, so the Plugins screen and the
+   licence. So does `not_activated_here`: the store says this address holds
+   no activation (`site.active` false), the SDK's `isValid()` is false from
+   beta.9 (wp-premium-sdk#37), and the owner decided such a copy gets no
+   updates until it is activated on its own address. `UpdateGate` asks the same model, so the Plugins screen and the
    page never disagree about whether updates are on. `GET ?check=1` asks the
-   store at most once a minute. The account's sign-in belongs to the
-   administrator who started it; another gets `sign_in_other_user`. Moving
+   store at most once a minute. The account's sign-in belongs to the site,
+   and every administrator shares it: any of them sees it, chooses a
+   licence from it and signs out of it (SDK beta.9 made it the site's;
+   `sign_in_other_user` is never sent). A sign-in error comes back once with
+   the SDK's code (`no_licenses`, a store refusal, `account_error`). Moving
    a licence without saying whether to keep the old site leaves that to the
    SDK, which frees the old seat only when this domain holds one.
 9. **Agency (managed) mode.** `WCONVERT_LICENSE_KEY` in wp-config turns it on. The
@@ -110,6 +118,19 @@ grace and trial from the raw renewal fields); the updater keeps its own offer
 for an invalid licence (decision 5); there is no change event (decision 5); the
 key travels in the manifest's GET query; `refreshStatus()` has no throttle (the
 60-second one above); and #28 (decision 11).
+
+**Status at beta.9.** The SDK fixed all of them (#28 to #41). WConvert's own
+workarounds stay where they still do their job and do not act twice: the
+store read and `key_unreadable` state, the 60-second throttle, `UpdateGate`
+(the SDK now withdraws its own offer too; moving an entry already gone is a
+no-op), and the guard of decision 11. Replace now calls the SDK's
+`replaceKey()`, which also treats the same key in other letter case as the
+same licence and releases nothing. The SDK codes `key_unreadable`,
+`not_activated_here`, `no_licenses`, `manifest_auth_missing` and `forbidden`
+reach the page unchanged as `error_code` / `state`, for its copy to name;
+`forbidden` comes only from the SDK's admin-ajax endpoints, which stay
+unhooked, and `manifest_auth_missing` only from the updater's background
+fetch, which records it rather than throwing.
 
 ## Consequences
 

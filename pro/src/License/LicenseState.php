@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
 final class LicenseState
 {
     /** The states in which this site gets no update (ADR 0143); `UpdateGate` reads the same list. */
-    public const NO_UPDATES = ['none', 'key_unreadable', 'moved', 'copy', 'disabled', 'expired', 'trial_ended'];
+    public const NO_UPDATES = ['none', 'key_unreadable', 'moved', 'copy', 'disabled', 'expired', 'trial_ended', 'not_activated_here'];
 
     private const CHECKOUT = 'https://wconvert.io/pro/';
 
@@ -218,6 +218,16 @@ final class LicenseState
             return 'trial_ended';
         }
 
+        // The store says this address holds no activation (`site.active`
+        // false) — removed from the account, or a copy it never saw. The SDK
+        // offers no update until the licence is activated here (wp-premium-sdk
+        // #37), and the owner decided the same: no updates.
+        $site = is_array($license['site'] ?? null) ? $license['site'] : [];
+
+        if (($site['active'] ?? null) === false) {
+            return 'not_activated_here';
+        }
+
         // The status stays `active` through Nexus's recovery grace — which
         // runs PAST the renewal date — and only the renewal block says the
         // charge failed (veronalabs/nexus RenewalOfferService). So it is read
@@ -248,9 +258,10 @@ final class LicenseState
     }
 
     /**
-     * More counted sites than the plan holds, with this one among them — the
-     * SDK's rule (`LicenseManager::isOverLimit()`). Five of five is full, not
-     * over; a staging copy holds no seat; an unlimited plan has no ceiling.
+     * More counted sites than the plan holds — the SDK's rule
+     * (`LicenseManager::isOverLimit()`). Five of five is full, not over; a
+     * staging copy holds no seat; an unlimited plan has no ceiling. A site
+     * with no activation here never gets this far (`not_activated_here`).
      *
      * @param array<string, mixed> $license
      */
@@ -263,9 +274,7 @@ final class LicenseState
             return false;
         }
 
-        $count = (int) ($license['activation_count'] ?? 0);
-
-        return ($site['active'] ?? null) === false ? $count >= $max : $count > $max;
+        return (int) ($license['activation_count'] ?? 0) > $max;
     }
 
     /**
