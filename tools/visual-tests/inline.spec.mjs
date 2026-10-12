@@ -90,7 +90,7 @@ async function selectedMarker(page) {
 // The Edit tab's Look row. Narrow, the tree is the "Screens" pane, and the row
 // moves to the pane that shows the Look's panel (ADR 0134).
 async function openLook(page) {
-  const screens = page.getByRole('group', { name: 'Mobile journey view', exact: true }).getByRole('radio', { name: 'Screens', exact: true });
+  const screens = page.getByRole('group', { name: 'Phone view', exact: true }).getByRole('radio', { name: 'Screens', exact: true });
   if (await screens.isVisible()) await screens.locator('xpath=..').click();
   await page.getByRole('navigation', { name: 'Campaign', exact: true }).getByRole('button', { name: /^Look/ }).click();
 }
