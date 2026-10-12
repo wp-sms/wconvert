@@ -1910,6 +1910,9 @@ if (!function_exists('rest_url')) {
 */
 $GLOBALS['wconvertTestOptionTable'] = [];
 $GLOBALS['wconvertTestSiteTransients'] = [];
+
+// Pro's version, which the licence reports beside what the store offers.
+defined('WCONVERT_PRO_VERSION') || define('WCONVERT_PRO_VERSION', '1.4.2');
 $GLOBALS['wconvertTestMultisite'] = false;
 
 if (!function_exists('plugin_basename')) {
@@ -2258,3 +2261,83 @@ if (!function_exists('get_current_user_id')) {
     }
 }
 
+/** WordPress's update screen, as far as the License page links into it. */
+if (!function_exists('self_admin_url')) {
+    function self_admin_url(string $path = ''): string
+    {
+        return admin_url($path);
+    }
+}
+
+if (!function_exists('wp_nonce_url')) {
+    function wp_nonce_url(string $url, string $action = '-1', string $name = '_wpnonce'): string
+    {
+        return $url . (str_contains($url, '?') ? '&' : '?') . $name . '=' . wp_create_nonce($action);
+    }
+}
+
+$GLOBALS['wconvertTestFileMods'] = true;
+
+if (!function_exists('wp_is_file_mod_allowed')) {
+    function wp_is_file_mod_allowed(string $context): bool
+    {
+        return (bool) $GLOBALS['wconvertTestFileMods'];
+    }
+}
+
+if (!function_exists('wp_update_plugins')) {
+    /** @param array<string, mixed> $extra */
+    function wp_update_plugins(array $extra = []): void
+    {
+        $GLOBALS['wconvertTestPluginUpdateChecks'] = ($GLOBALS['wconvertTestPluginUpdateChecks'] ?? 0) + 1;
+    }
+}
+
+/*
+ * Transients, OFF unless a test turns them on.
+ *
+ * WordPress never promises a transient survives — an object cache may drop it
+ * at once — and free's tests are written against that: `MappingFields` caches
+ * a provider's fields only where `get_transient()` exists, and the suite runs
+ * as the site whose cache kept nothing. The licence SDK keeps its sign-in
+ * state in one, so `FakesNexus` switches the table on (an array) and back off
+ * (null) around each test that signs in.
+ *
+ * @var array<string, mixed>|null $wconvertTestTransients
+ */
+$GLOBALS['wconvertTestTransients'] = null;
+
+if (!function_exists('get_transient')) {
+    /** @return mixed */
+    function get_transient(string $name)
+    {
+        return is_array($GLOBALS['wconvertTestTransients']) ? ($GLOBALS['wconvertTestTransients'][$name] ?? false) : false;
+    }
+}
+
+if (!function_exists('set_transient')) {
+    /** @param mixed $value */
+    function set_transient(string $name, $value, int $expiration = 0): bool
+    {
+        if (!is_array($GLOBALS['wconvertTestTransients'])) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestTransients'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_transient')) {
+    function delete_transient(string $name): bool
+    {
+        if (!is_array($GLOBALS['wconvertTestTransients']) || !array_key_exists($name, $GLOBALS['wconvertTestTransients'])) {
+            return false;
+        }
+
+        unset($GLOBALS['wconvertTestTransients'][$name]);
+
+        return true;
+    }
+}

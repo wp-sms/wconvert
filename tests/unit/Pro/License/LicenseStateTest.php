@@ -501,6 +501,16 @@ final class LicenseStateTest extends TestCase
         $this->assertSame('constant', $payload['key']['source']);
     }
 
+    /** The wp-config key was refused: the code, and when the SDK tries it again. */
+    public function testP3AManagedKeyThatWasRefusedSaysWhyAndWhenItRetries(): void
+    {
+        $payload = $this->payload(null, facts: ['managed' => true, 'autoActivation' => ['error_code' => 'invalid_key', 'retry_at' => self::NOW + 3600]]);
+
+        $this->assertSame('none', $payload['state']);
+        $this->assertSame('invalid_key', $payload['error_code']);
+        $this->assertSame(self::NOW + 3600, $payload['retry_at']);
+    }
+
     public function testAManualLicenceIsNotManaged(): void
     {
         $this->assertNull($this->payload(self::license())['managed']);

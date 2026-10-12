@@ -33,6 +33,9 @@ final class SdkConfig
     /** The wp-config constant that hands the licence to an agency (managed mode). */
     public const KEY_CONSTANT = 'WCONVERT_LICENSE_KEY';
 
+    /** Who manages a wp-config licence: 'Acme Studio <help@acme.studio>'. */
+    public const CONTACT_CONSTANT = 'WCONVERT_LICENSE_CONTACT';
+
     private const DEFAULT_STORE = 'https://my.wconvert.io';
 
     /** The store's product slug; the catalog item is `wconvert-pro`. */
@@ -67,7 +70,8 @@ final class SdkConfig
         return new PremiumServiceProvider(self::build(), plugin_basename(WCONVERT_PRO_MAIN_FILE));
     }
 
-    private static function storeUrl(): string
+    /** The store's base URL, `WCONVERT_NEXUS_URL` or my.wconvert.io. */
+    public static function storeUrl(): string
     {
         $url = defined('WCONVERT_NEXUS_URL') ? (string) constant('WCONVERT_NEXUS_URL') : '';
 

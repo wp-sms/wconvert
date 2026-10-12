@@ -52,7 +52,10 @@ final class LicenseState
 
         return [
             'state' => $state,
-            'error_code' => '',
+            // A wp-config key's refusal is the agency's to fix and the client's
+            // to pass on, so it survives; a licence's own codes do not.
+            'error_code' => $state === 'none' ? $payload['error_code'] : '',
+            'retry_at' => $payload['retry_at'],
             'plan' => null,
             'expires_at' => null,
             'days_left' => null,
@@ -96,9 +99,12 @@ final class LicenseState
         $license = $facts->license;
 
         if ($license === null || empty($license['license_key'])) {
+            // Not activated. With a wp-config key that is a refusal the SDK
+            // will retry, and the page names both (P3).
             return [
                 'state' => 'none',
-                'error_code' => '',
+                'error_code' => (string) ($facts->autoActivation['error_code'] ?? ''),
+                'retry_at' => $facts->autoActivation['retry_at'] ?? null,
                 'plan' => null,
                 'expires_at' => null,
                 'days_left' => null,
@@ -142,6 +148,7 @@ final class LicenseState
         return [
             'state' => $state,
             'error_code' => (string) ($license['error_code'] ?? ''),
+            'retry_at' => null,
             'plan' => self::plan($license),
             'expires_at' => $expires,
             'days_left' => $daysLeft,

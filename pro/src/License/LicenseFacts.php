@@ -2,6 +2,9 @@
 
 namespace WConvert\Pro\License;
 
+use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
+use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Support\Request;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -29,6 +32,7 @@ final class LicenseFacts
      * @param string $store The store's base URL.
      * @param bool $managed Whether the key comes from wp-config.php (`WCONVERT_LICENSE_KEY`).
      * @param string $contact `WCONVERT_LICENSE_CONTACT`: 'Acme Studio <help@acme.studio>', a name, or an address.
+     * @param array{error_code: string|null, retry_at: int}|null $autoActivation The SDK's last failed wp-config activation.
      */
     public function __construct(
         public readonly ?array $license,
@@ -44,6 +48,39 @@ final class LicenseFacts
         public readonly string $store = 'https://my.wconvert.io',
         public readonly bool $managed = false,
         public readonly string $contact = '',
+        public readonly ?array $autoActivation = null,
     ) {
+    }
+
+    /**
+     * Read what this request knows, without asking the store anything.
+     *
+     * The key is decrypted here and only here: null means none is stored or
+     * it no longer decrypts (rotated salts, veronalabs/wp-premium-sdk#29), and
+     * `getLicenseData()` — which fatals on exactly that — is never called.
+     */
+    public static function fromSite(PremiumServiceProvider $sdk): self
+    {
+        $license = $sdk->store()->get('license');
+        $basename = plugin_basename(WCONVERT_PRO_MAIN_FILE);
+        $updates = get_site_transient('update_plugins');
+        $contact = defined(SdkConfig::CONTACT_CONSTANT) ? constant(SdkConfig::CONTACT_CONSTANT) : '';
+
+        return new self(
+            license: $license,
+            key: $license === null ? null : $sdk->licenseManager()->getLicenseKey(),
+            now: time(),
+            installed: WCONVERT_PRO_VERSION,
+            here: Request::normaliseDomain(Request::currentDomain()),
+            domainChange: $sdk->licenseManager()->domainChange(),
+            manifest: $sdk->pluginUpdater()->cachedManifest(),
+            fileMods: wp_is_file_mod_allowed('wconvert_pro_update'),
+            updateUrl: wp_nonce_url(self_admin_url('update.php?action=upgrade-plugin&plugin=' . rawurlencode($basename)), 'upgrade-plugin_' . $basename),
+            updatesCheckedAt: is_object($updates) && isset($updates->last_checked) ? (int) $updates->last_checked : null,
+            store: SdkConfig::storeUrl(),
+            managed: $sdk->keySource()->constantKey() !== null,
+            contact: is_string($contact) ? $contact : '',
+            autoActivation: $sdk->autoActivator()->lastFailure(),
+        );
     }
 }
