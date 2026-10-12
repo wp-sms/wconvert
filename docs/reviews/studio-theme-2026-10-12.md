@@ -32,3 +32,7 @@ The report is `studio-theme-2026-10-12-report.json`. Representative rendered
 screens are alongside it with the same prefix (pilot, dialog, collections and
 workbench). These checks concern local authoring UI, not hosted release or
 external delivery. The existing draft PR remains unmerged, and CI is skipped.
+
+## Merge review against main
+
+The three template commits were rebased cleanly onto main `a8cd98a6`, excluding the separate unfinished Flow branch. Independent standards and requirements reviews found no blocking findings. On this base, 2,819 PHP tests, 4,255 JavaScript tests and 38 studio/export tests passed, together with PHPStan, TypeScript, ESLint, production builds, source-contract checks and all 107 design registrations. The commerce gate retained 6/6 current approvals. Native WordPress 7.1.3 / PHP 8.5.10 verified all five packs, 19 installed designs, 22 setups, three collections, offline reads and artwork reuse across updates. CI remains intentionally skipped by user instruction.
