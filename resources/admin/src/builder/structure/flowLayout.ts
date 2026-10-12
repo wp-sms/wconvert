@@ -31,9 +31,12 @@ const RANK_GAP = 36;
 /** Room for a line's label and its "+": generous, so the real pill always fits inside it. */
 export function pillSize(line: Pick<FlowLine, 'label' | 'colour' | 'insertEdgeId'>, coarse = false): { width: number; height: number } | null {
   const plus = line.insertEdgeId ? (coarse ? 44 : 26) + 4 : 0;
-  const label = line.label ? Math.min(220, 24 + line.label.length * 7.2 + (line.colour ? 13 : 0)) : 0;
+  // A label wraps at 220px rather than cutting a condition short (GUIDELINES §21).
+  const text = line.label ? line.label.length * 7.2 + (line.colour ? 13 : 0) : 0;
+  const rows = Math.max(1, Math.ceil(text / 196));
+  const label = line.label ? Math.min(220, 24 + text) : 0;
   if (!plus && !label) return null;
-  return { width: Math.ceil(label + plus), height: coarse ? 44 : 26 };
+  return { width: Math.ceil(label + plus), height: Math.max(coarse ? 44 : 26, 10 + rows * 16) };
 }
 
 /** A first guess at a card's height, until the browser has measured it. */
@@ -53,8 +56,9 @@ export function layoutInput(model: FlowModel, measured: (id: string) => number |
     boxes: [...model.cards.map(card => ({ id: card.id, width: CARD_WIDTH, height: measured(card.id) ?? estimateCard(card) })),
       ...model.groups.map(group => ({ id: group.id, width: GROUP_WIDTH, height: measured(group.id) ?? estimateGroup(group) }))],
     lines: model.lines.map(line => ({ id: line.id, from: line.from, to: line.to, label: pillSize(line, coarse),
-      // The main line holds its course; a line around a screen bends to make room.
-      weight: line.style === 'around' || line.style === 'skipped' ? 0.5 : 2 })),
+      // An answer line holds its target in the row below its question, as the
+      // prototype does; a line around a screen bends to make room.
+      weight: line.style === 'answer' ? 8 : line.style === 'plain' ? 2 : 0.5 })),
   };
 }
 
@@ -65,7 +69,10 @@ export function flowLayout({ boxes, lines }: { boxes: readonly LayoutBox[]; line
   const ids = new Set(boxes.map(box => box.id));
   boxes.forEach(box => graph.setNode(box.id, { width: box.width, height: box.height }));
   const drawn = lines.filter(line => ids.has(line.from) && ids.has(line.to) && line.from !== line.to);
-  drawn.forEach(line => graph.setEdge({ v: line.from, w: line.to, name: line.id },
+  // Dagre lays a box's lines out in the reverse of the order they were added.
+  // Added last to first, a question's lines read left to right in the order
+  // they are checked, with "All other answers" last (ADR 0142).
+  [...drawn].reverse().forEach(line => graph.setEdge({ v: line.from, w: line.to, name: line.id },
     { width: line.label?.width ?? 0, height: line.label?.height ?? 0, labelpos: 'c', weight: line.weight, minlen: 1 }));
   dagre.layout(graph);
   const { width = 0, height = 0 } = graph.graph() as { width?: number; height?: number };

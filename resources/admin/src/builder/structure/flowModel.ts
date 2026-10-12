@@ -228,7 +228,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     return target;
   };
 
-  const groups = followupGroups(tree);
+  const groups = followupGroups(tree, { messages: true });
   const groupOf = new Map(groups.flatMap(group => group.screens.map(index => [tree.steps[index].id, group] as const)));
   const nodeOf = (id: string) => groupOf.get(id)?.id ?? id;
   const conditional = tree.steps.filter(screen => screen.when).map(screen => screen.id);

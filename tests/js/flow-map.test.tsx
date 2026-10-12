@@ -51,8 +51,9 @@ describe('the Flow map (ADR 0142)', () => {
     expect(document.activeElement).toHaveTextContent('2 lines · Any of these, None of these');
     // Then its lines' words and "+", across the page in the reading direction.
     const pills = [...document.querySelectorAll<HTMLElement>('.wconvert-flow-pill button')].filter(button => button.tabIndex === 0).map(button => button.getAttribute('aria-label'));
-    expect(pills).toEqual(['None of these: Interests to One enquiry. Edit', 'Any of these: Interests to Follow-ups · Interests. Edit',
-      'Add a screen on the line Any of these: Interests to Follow-ups · Interests']);
+    // The line through the follow-ups first, the one around them last, as they are checked (ADR 0142).
+    expect(pills).toEqual(['Any of these: Interests to Follow-ups · Interests. Edit',
+      'Add a screen on the line Any of these: Interests to Follow-ups · Interests', 'None of these: Interests to One enquiry. Edit']);
     for (const name of pills) { await user.tab(); expect(document.activeElement?.getAttribute('aria-label')).toBe(name); }
     await user.tab();
     expect(document.activeElement).toHaveAccessibleName('Zoom out');
@@ -97,9 +98,9 @@ describe('the Flow map (ADR 0142)', () => {
     const onClearTrace = vi.fn();
     render(<FlowMap {...props()} samplePath={trace.indices} sampleEdges={journeyTraceEdges(tree, trace.decisions)} onClearTrace={onClearTrace} />);
     expect(screen.getByText('This visitor is asked 2 of 3.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Indoor details.*skipped in this trace/ })).toHaveAttribute('data-trace', 'off');
-    expect(document.querySelector('[data-flow-node="received"]')).toHaveAttribute('data-trace', 'on');
-    expect(document.querySelector('.wconvert-flow-line[data-trace="on"]')).not.toBeNull();
+    expect(screen.getByRole('button', { name: /Indoor details.*skipped in this trace/ })).toHaveAttribute('data-state', 'off');
+    expect(document.querySelector('[data-flow-node="received"]')).toHaveAttribute('data-state', 'on');
+    expect(document.querySelector('.wconvert-flow-line[data-state="on"]')).not.toBeNull();
     screen.getByRole('button', { name: /^Question: Interests/ }).focus();
     await user.keyboard('{Escape}');
     expect(onClearTrace).toHaveBeenCalledOnce();
@@ -142,16 +143,15 @@ describe('the Flow map (ADR 0142)', () => {
     expect(document.querySelector('.wconvert-flow-viewport')).toHaveAttribute('dir', 'ltr');
   });
 
-  it('zooms from its toolbar, and Fit returns to fitting', async () => {
+  it('zooms in tenths from its toolbar', async () => {
     const user = userEvent.setup();
     render(<FlowMap {...props()} />);
     const zoom = screen.getByRole('group', { name: 'Zoom' });
     expect(within(zoom).getByLabelText('Zoom level')).toHaveTextContent('100%');
     await user.click(within(zoom).getByRole('button', { name: 'Zoom out' }));
     expect(within(zoom).getByLabelText('Zoom level')).toHaveTextContent('90%');
-    expect(within(zoom).getByRole('button', { name: 'Fit' })).toHaveAttribute('aria-pressed', 'false');
-    await user.click(within(zoom).getByRole('button', { name: 'Fit' }));
-    expect(within(zoom).getByRole('button', { name: 'Fit' })).toHaveAttribute('aria-pressed', 'true');
+    await user.click(within(zoom).getByRole('button', { name: 'Zoom in' }));
+    expect(within(zoom).getByLabelText('Zoom level')).toHaveTextContent('100%');
   });
 
   it('tries a visitor in the map: the loader’s own route, marked, and the result it reaches', async () => {
@@ -165,11 +165,11 @@ describe('the Flow map (ADR 0142)', () => {
     await user.selectOptions(within(strip).getByRole('combobox', { name: 'How do you make your coffee?' }), 'filter');
     expect(within(strip).getByRole('combobox', { name: 'Do you grind your own beans?' })).toBeInTheDocument();
     expect(within(strip).getByRole('status')).toHaveTextContent(/result: /);
-    expect(document.querySelector('[data-flow-node="grind"]')).toHaveAttribute('data-trace', 'on');
+    expect(document.querySelector('[data-flow-node="grind"]')).toHaveAttribute('data-state', 'on');
     expect(document.querySelector('.wconvert-flow-card__sub[data-shown]')).not.toBeNull();
     await user.click(within(strip).getByRole('button', { name: 'Stop' }));
     expect(screen.queryByRole('group', { name: 'Try a visitor' })).toBeNull();
-    expect(document.querySelector('[data-trace]')).toBeNull();
+    expect(document.querySelector('[data-state]')).toBeNull();
   });
 
   it('says how many follow-ups a visitor is asked, and starts again after an edit', async () => {

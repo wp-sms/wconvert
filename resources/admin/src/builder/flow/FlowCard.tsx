@@ -25,7 +25,7 @@ export function FlowCard({ card, selected, destinationSummary, shownResult, box,
   const Icon = kindIcon[card.kind];
   const tab = active ? 0 : -1;
   const shown = card.results?.slice(0, 3) ?? [];
-  return <div ref={measureRef} className="wconvert-flow-card" data-flow-node={card.id} data-kind={card.kind} data-colour={card.colour} data-trace={state}
+  return <div ref={measureRef} className="wconvert-flow-card" data-flow-node={card.id} data-kind={card.kind} data-colour={card.colour} data-state={state}
     data-unreachable={card.unreachable || undefined} data-selected={selected || undefined} dir={rtl ? 'rtl' : 'ltr'}
     style={{ left: box.x, top: box.y, width: box.width }}>
     <button ref={focusRef} type="button" className="wconvert-flow-card__main" data-flow-key={card.id} tabIndex={tab} aria-current={selected ? 'true' : undefined}
@@ -35,7 +35,7 @@ export function FlowCard({ card, selected, destinationSummary, shownResult, box,
       <strong className="wconvert-flow-card__name"><bdi>{card.name}</bdi></strong>
       {card.unreachable ? <span className="wconvert-flow-chip" data-warn="true">{__('No line reaches this screen', 'wconvert')}</span>
         : card.onlyIf && <span className="wconvert-flow-chip" data-colour={card.onlyIf.colour}><bdi>{sprintf(/* translators: %s: a rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert'), card.onlyIf.text)}</bdi></span>}
-      {card.kind === 'form' && <span className="wconvert-flow-card__sub"><b>{card.optional ? __('Can save', 'wconvert') : __('Saves the lead', 'wconvert')}</b>{destinationSummary ? <> · <bdi>{destinationSummary}</bdi></> : null}</span>}
+      {card.kind === 'form' && <span className="wconvert-flow-card__sub"><b>{card.optional ? __('Can save', 'wconvert') : __('Saves the lead', 'wconvert')}</b>{destinationSummary ? <span>· <bdi>{destinationSummary}</bdi></span> : null}</span>}
       {shown.map(result => <span key={result.id} className="wconvert-flow-card__sub" data-shown={shownResult === result.id || undefined}>
         <span className="wconvert-flow-dot" data-colour={result.colour} aria-hidden="true" /><bdi>{result.heading}</bdi>
         {result.fallback && <small> · {__('all other answers', 'wconvert')}</small>}
@@ -64,7 +64,7 @@ export function FlowGroup({ group, selected, visited, box, rtl, state, active, i
   const asked = visited ? group.members.filter(member => visited.has(member.id)).length : undefined;
   const last = group.members[group.members.length - 1];
   return <div ref={measureRef} role="group" aria-label={sprintf(/* translators: %s: the box's title. */ __('%s: every match is asked, one at a time', 'wconvert'), group.title)}
-    className="wconvert-flow-group" data-flow-node={group.id} data-colour={group.colour} data-trace={state} data-unreachable={group.unreachable || undefined}
+    className="wconvert-flow-group" data-flow-node={group.id} data-colour={group.colour} data-state={state} data-unreachable={group.unreachable || undefined}
     dir={rtl ? 'rtl' : 'ltr'} style={{ left: box.x, top: box.y, width: box.width }}>
     <span className="wconvert-flow-group__title"><span className="wconvert-flow-tile" data-kind="question" aria-hidden="true"><CircleHelp /></span><bdi>{group.title}</bdi></span>
     <span className="wconvert-flow-group__sub">{group.unreachable ? __('No line reaches these follow-ups', 'wconvert') : asked === undefined
@@ -72,7 +72,7 @@ export function FlowGroup({ group, selected, visited, box, rtl, state, active, i
       : sprintf(/* translators: 1: how many follow-ups this visitor is asked. 2: how many there are. */ __('This visitor is asked %1$d of %2$d.', 'wconvert'), asked, group.members.length)}</span>
     {group.members.map((member, at) => <button key={member.id} ref={member === target ? focusRef : undefined} type="button" className="wconvert-flow-group__member"
       data-flow-key={member === target ? group.id : undefined} tabIndex={tab} aria-current={selected === member.index ? 'true' : undefined}
-      data-trace={visited ? visited.has(member.id) ? 'on' : 'off' : undefined} onClick={() => onSelect(member.index)} onFocus={onFocusNode}
+      data-state={visited ? visited.has(member.id) ? 'on' : 'off' : undefined} onClick={() => onSelect(member.index)} onFocus={onFocusNode}
       aria-label={sprintf(/* translators: 1: its place. 2: how many. 3: its name. 4: its answer. */ __('Follow-up %1$d of %2$d: %3$s, only if %4$s', 'wconvert'), at + 1, group.members.length, member.name, member.answer)
         + (visited ? `, ${visited.has(member.id) ? __('asked in this trace', 'wconvert') : __('skipped in this trace', 'wconvert')}` : '')}>
       <span className="wconvert-flow-dot" data-colour={member.colour} aria-hidden="true" /><strong><bdi>{member.name}</bdi></strong><small><bdi>{member.answer}</bdi></small>

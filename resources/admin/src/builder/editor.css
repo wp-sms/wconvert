@@ -2351,14 +2351,13 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-nudge__locked svg { inline-size: 14px; block-size: 14px; }
 .wconvert-flow-region { position: relative; flex: 1; display: flex; flex-direction: column; min-block-size: 0; }
 .wconvert-flow-viewport { position: relative; flex: 1; min-inline-size: 0; overflow: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; }
-.wconvert-flow-sizer { position: relative; margin-inline: auto; }
+.wconvert-flow-sizer { position: relative; margin-inline: auto; margin-block-end: 64px; }
 .wconvert-flow-canvas { position: absolute; inset-block-start: 0; inset-inline-start: 0; transform-origin: 0 0; }
 .wconvert-flow-lines { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
 .wconvert-flow-line { fill: none; stroke: var(--flow-ink); stroke-width: 1.8; }
 .wconvert-flow-line:is([data-style='around'], [data-style='skipped']) { stroke-dasharray: 6 5; }
-.wconvert-flow-line[data-related] { stroke-width: 2.6; }
 .wconvert-flow-line[data-selected] { stroke-width: 3.5; }
-.wconvert-flow-line[data-trace='on'] { stroke-width: 3.5; }
+.wconvert-flow-line[data-state='on'] { stroke-width: 3.5; }
 .wconvert-flow-arrow { fill: var(--flow-ink); }
 .wconvert-flow-line[data-colour='1'], .wconvert-flow-arrow[data-marker='answer-1'] { --flow-ink: var(--answer-1); }
 :is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='1'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='1'] { --flow-answer: var(--answer-1); --flow-answer-surface: var(--answer-1-surface); }
@@ -2374,15 +2373,17 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 :is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='6'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='6'] { --flow-answer: var(--answer-6); --flow-answer-surface: var(--answer-6-surface); }
 /* A trace and a problem outrank an answer's colour. */
 .wconvert-flow-line[data-problem] { --flow-ink: var(--destructive); }
-.wconvert-flow-line[data-trace='on'], .wconvert-flow-arrow[data-marker='on'] { --flow-ink: var(--action); }
-.wconvert-flow-line[data-trace='off'], .wconvert-flow-arrow[data-marker='off'] { --flow-ink: var(--border); }
-.wconvert-flow-card, .wconvert-flow-group { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); text-align: start; box-shadow: 0 1px 2px rgb(48 39 32 / 0.06); }
+.wconvert-flow-line[data-state='on']:not([data-colour]), .wconvert-flow-arrow[data-marker='on'] { --flow-ink: var(--action); }
+.wconvert-flow[data-trace] .wconvert-flow-line[data-state='off'], .wconvert-flow-arrow[data-marker='off'] { --flow-ink: var(--border); }
+.wconvert-flow-card, .wconvert-flow-group { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); text-align: start; }
 .wconvert-flow-card { padding: 10px 12px; }
 .wconvert-flow-card[data-colour] { border-block-start: 3px solid var(--flow-answer); padding-block-start: 8px; }
 .wconvert-flow-card:hover { border-color: var(--input); }
-.wconvert-flow-card[data-selected], .wconvert-flow-group:has([aria-current='true']) { border-color: var(--action); box-shadow: 0 0 0 2px var(--action), 0 0 0 6px var(--ice); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-trace='on'] { box-shadow: 0 0 0 2px var(--action); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-trace='off'], :is(.wconvert-flow-card, .wconvert-flow-group)[data-unreachable] { border-style: dashed; background: var(--background); box-shadow: none; }
+/* Outlines, not shadows: they survive forced colours (GUIDELINES §22). */
+.wconvert-flow-card[data-selected], .wconvert-flow-group:has([aria-current='true']) { border-color: var(--action); outline: 2px solid var(--action); outline-offset: 1px; }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-state='on'] { outline: 2px solid var(--action); outline-offset: 0; }
+/* A trace dashes the screens it skipped; a selection only outlines its neighbours. */
+.wconvert-flow[data-trace] :is(.wconvert-flow-card, .wconvert-flow-group)[data-state='off'], :is(.wconvert-flow-card, .wconvert-flow-group)[data-unreachable] { border-style: dashed; background: var(--background); }
 .wconvert-flow-card[data-unreachable] { border-color: var(--warning); }
 .wconvert-flow-card__main { display: flex; flex-direction: column; gap: 4px; min-inline-size: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; }
 .wconvert-flow-card__kind { display: flex; align-items: center; gap: 6px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-label); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
@@ -2393,16 +2394,16 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-tile[data-kind='form'] { background: var(--kind-form-surface); color: var(--kind-form); }
 .wconvert-flow-tile[data-kind='result'] { background: var(--kind-result-surface); color: var(--kind-result); }
 .wconvert-flow-tile[data-kind='ending'] { background: var(--kind-ending-surface); color: var(--kind-ending); }
-.wconvert-flow-card__name { overflow: hidden; font-size: var(--text-item); line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
-.wconvert-flow-chip { align-self: flex-start; max-inline-size: 100%; overflow: hidden; padding: 1px 6px; border: 1px solid var(--flow-answer, var(--input)); border-radius: 4px; background: var(--flow-answer-surface, var(--card)); color: var(--foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-card__name { overflow-wrap: anywhere; font-size: var(--text-item); line-height: 1.4; }
+.wconvert-flow-chip { align-self: flex-start; max-inline-size: 100%; padding: 1px 6px; border: 1px solid var(--flow-answer, var(--input)); border-radius: 4px; background: var(--flow-answer-surface, var(--card)); color: var(--foreground); font-size: var(--text-micro); overflow-wrap: anywhere; }
 .wconvert-flow-chip[data-warn] { border-color: transparent; background: var(--warning-surface); color: var(--warning); }
-.wconvert-flow-card__sub { display: flex; align-items: center; gap: 6px; min-inline-size: 0; overflow: hidden; color: var(--muted-foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-card__sub { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 6px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-micro); overflow-wrap: anywhere; }
 .wconvert-flow-card__sub b { color: var(--success); font-weight: 600; }
 .wconvert-flow-card__sub[data-shown] { color: var(--foreground); font-weight: 600; }
 .wconvert-flow-card__sub [data-problem] { color: var(--destructive); }
 .wconvert-flow-dot { flex: none; display: inline-block; inline-size: 9px; block-size: 9px; border: 1.5px solid var(--input); border-radius: 50%; background: transparent; }
 .wconvert-flow-dot[data-colour] { border-color: var(--flow-answer); background: var(--flow-answer); }
-.wconvert-flow-card__foot { overflow: hidden; padding: 0; border: 0; background: none; color: var(--muted-foreground); font: inherit; font-size: var(--text-micro); text-align: start; text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-card__foot { padding: 0; border: 0; background: none; color: var(--muted-foreground); font: inherit; font-size: var(--text-micro); text-align: start; overflow-wrap: anywhere; }
 button.wconvert-flow-card__foot { cursor: pointer; }
 button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: underline; }
 .wconvert-flow-card__foot b { color: var(--foreground); font-weight: 600; }
@@ -2410,29 +2411,33 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-card__foot[data-early] { color: var(--foreground); }
 /* The issue count sits on the card's top edge like a badge, clear of its words. */
 .wconvert-flow :is(.wconvert-flow-card, .wconvert-flow-group) .wconvert-flow-issue { position: absolute; inset-block-start: -11px; inset-inline-end: 8px; margin: 0; min-block-size: 22px; padding: 1px 6px; border-color: var(--destructive); }
-.wconvert-flow-group { padding: 10px; border: 1.5px solid var(--action); background: var(--ice); }
-.wconvert-flow-group__title { display: flex; align-items: center; gap: 6px; min-inline-size: 0; overflow: hidden; font-size: var(--text-note); font-weight: 600; white-space: nowrap; }
-.wconvert-flow-group__sub { overflow: hidden; color: var(--muted-foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
-.wconvert-flow-group__member { position: relative; display: flex; align-items: center; gap: 7px; inline-size: 100%; min-block-size: 30px; padding: 0 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: inherit; font: inherit; text-align: start; cursor: pointer; }
-.wconvert-flow-group__member strong { flex: 1; min-inline-size: 0; overflow: hidden; font-size: var(--text-note); text-overflow: ellipsis; white-space: nowrap; }
-.wconvert-flow-group__member small { max-inline-size: 90px; overflow: hidden; color: var(--muted-foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
-.wconvert-flow-group__member[aria-current='true'] { box-shadow: 0 0 0 2px var(--action); }
-.wconvert-flow-group__member[data-trace='off'] { border-style: dashed; background: var(--background); }
+.wconvert-flow-group { padding: 10px; border-width: 1.5px; }
+.wconvert-flow-group__title { display: flex; align-items: center; gap: 6px; min-inline-size: 0; font-size: var(--text-note); font-weight: 600; overflow-wrap: anywhere; }
+.wconvert-flow-group__sub { color: var(--muted-foreground); font-size: var(--text-micro); }
+.wconvert-flow-group__member { position: relative; display: flex; align-items: center; gap: 7px; inline-size: 100%; min-block-size: 30px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.wconvert-flow-group__member strong { flex: 1; min-inline-size: 0; font-size: var(--text-note); overflow-wrap: anywhere; }
+.wconvert-flow-group__member small { max-inline-size: 45%; color: var(--muted-foreground); font-size: var(--text-micro); overflow-wrap: anywhere; text-align: end; }
+.wconvert-flow-group__member[aria-current='true'] { outline: 2px solid var(--action); outline-offset: 1px; }
+.wconvert-flow-group__member[data-state='off'] { border-style: dashed; background: var(--background); }
 .wconvert-flow-group__issue { display: grid; place-items: center; min-inline-size: 18px; block-size: 18px; padding: 0 5px; border-radius: 9px; background: var(--destructive); color: var(--card); font-size: var(--text-label); font-weight: 700; }
 .wconvert-flow-pill { position: absolute; display: flex; align-items: center; justify-content: center; gap: 4px; }
-.wconvert-flow-pill__label { display: inline-flex; align-items: center; gap: 5px; min-inline-size: 0; max-inline-size: 220px; padding: 1px 9px 1px 7px; border: 1.5px solid var(--flow-answer, var(--input)); border-radius: 999px; background: var(--card); color: var(--flow-answer, var(--foreground)); font-size: var(--text-micro); white-space: nowrap; cursor: pointer; }
-.wconvert-flow-pill__label>span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.wconvert-flow-pill__label { display: inline-flex; align-items: center; gap: 5px; min-inline-size: 0; max-inline-size: 220px; padding-block: 1px; padding-inline: 7px 9px; border: 1.5px solid var(--flow-answer, var(--input)); border-radius: 13px; background: var(--card); color: var(--flow-answer, var(--foreground)); font-size: var(--text-micro); line-height: 16px; overflow-wrap: anywhere; text-align: center; cursor: pointer; }
 .wconvert-flow-pill:is([data-style='around'], [data-style='skipped']) .wconvert-flow-pill__label { border-style: dashed; }
 .wconvert-flow-pill__label:hover { background: var(--surface); }
 .wconvert-flow-pill__label:disabled { cursor: default; }
-.wconvert-flow-pill[data-selected] .wconvert-flow-pill__label, .wconvert-flow-pill[data-trace='on'] .wconvert-flow-pill__label { font-weight: 600; }
-.wconvert-flow-pill[data-trace='off'] .wconvert-flow-pill__label { border-color: var(--border); border-style: dashed; }
+.wconvert-flow-pill[data-selected] .wconvert-flow-pill__label, .wconvert-flow-pill[data-state='on'] .wconvert-flow-pill__label { font-weight: 600; }
+.wconvert-flow[data-trace] .wconvert-flow-pill[data-state='off'] .wconvert-flow-pill__label { border-color: var(--border); }
 .wconvert-flow-pill[data-problem] .wconvert-flow-pill__label { border-color: var(--destructive); background: var(--destructive-surface); color: var(--destructive); }
 .wconvert-flow-pill__add { flex: none; display: grid; place-items: center; inline-size: 24px; block-size: 24px; padding: 0; border: 1px solid var(--input); border-radius: 50%; background: var(--card); color: var(--foreground); cursor: pointer; }
 .wconvert-flow-pill__add svg { inline-size: 14px; block-size: 14px; }
 .wconvert-flow-pill__add:hover { border-color: var(--action); background: var(--action); color: var(--card); }
-@media (pointer: coarse) { .wconvert-flow-pill__add { inline-size: 44px; block-size: 44px; } .wconvert-flow-pill__label { min-block-size: 44px; } }
+@media (pointer: coarse) {
+  .wconvert-flow-pill__add { inline-size: 44px; block-size: 44px; }
+  :is(.wconvert-flow-pill__label, .wconvert-flow-zoom button, .wconvert-flow-group__member, button.wconvert-flow-card__foot, .wconvert-flow-try) { min-block-size: 44px; }
+  .wconvert-flow-zoom button { min-inline-size: 44px; }
+}
 .wconvert-flow :is(button, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-flow-loading { display: flex; flex-direction: column; align-items: center; gap: 36px; padding-block-start: 48px; }
 .wconvert-flow-try { align-self: flex-end; margin: 10px 16px 0; padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
 .wconvert-flow-try:hover { border-color: var(--input); }
 .wconvert-flow-visitor { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 16px; margin: 12px 16px 0; padding: 10px 12px; border: 1px solid var(--action); border-radius: var(--radius); background: var(--card); font-size: var(--text-note); }
@@ -2442,7 +2447,6 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-visitor fieldset { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0; border: 0; }
 .wconvert-flow-visitor fieldset legend { flex-basis: 100%; padding: 0; margin-block-end: 3px; }
 .wconvert-flow-visitor fieldset label { display: inline-flex; align-items: center; gap: 4px; }
-.wconvert-flow-visitor select { min-block-size: 30px; border: 1px solid var(--input); border-radius: var(--radius); }
 .wconvert-flow-visitor p { flex-basis: 100%; margin: 0; padding: 6px 10px; border-radius: var(--radius); background: var(--surface); }
 .wconvert-flow-zoom { position: absolute; inset-block-end: 16px; inset-inline-start: 16px; z-index: 3; display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
 .wconvert-flow-zoom button { display: grid; place-items: center; min-inline-size: 32px; min-block-size: 32px; padding: 4px 9px; border: 0; border-radius: 4px; background: none; color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
@@ -2476,6 +2480,7 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 /* High contrast keeps the dashes, which carry "goes around" without colour. */
 @media (forced-colors: active) {
   .wconvert-flow-line { stroke: CanvasText; }
-  .wconvert-flow-line[data-trace='on'] { stroke: Highlight; }
+  .wconvert-flow-line[data-state='on'] { stroke: Highlight; }
   .wconvert-flow-arrow { fill: CanvasText; }
+  .wconvert-flow-card[data-selected], :is(.wconvert-flow-card, .wconvert-flow-group)[data-state='on'] { outline-color: Highlight; }
 }

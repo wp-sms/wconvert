@@ -4,15 +4,20 @@ import { walkNodes } from './journey';
 
 export interface FollowupGroup { id: string; screens: readonly number[]; next: string; }
 
-/** A view of an independently checked sequence, never a new routing node. */
-export function followupGroups(tree: TemplateTree): FollowupGroup[] {
+/**
+ * A view of an independently checked sequence, never a new routing node.
+ * The Flow map also boxes a run of messages shown "Only if…" the same
+ * question (`messages`), as the prototype does; the panel's follow-up order
+ * stays about questions.
+ */
+export function followupGroups(tree: TemplateTree, { messages = false }: { messages?: boolean } = {}): FollowupGroup[] {
   if (!tree.graph) return [];
   const graph = tree.graph;
   const eligible = new Map<string, { index: number; next: string; sources: string }>();
   tree.steps.forEach((screen, index) => {
     if (screen.id === graph.entry || !screen.when?.clauses.length || !['input', 'content'].includes(screen.kind)) return;
     const nodes = walkNodes(screen.content);
-    if (!nodes.some(node => node.type === 'question') || nodes.some(node => node.type === 'field' || node.type === 'consent'
+    if (!(nodes.some(node => node.type === 'question') || messages && screen.kind === 'content') || nodes.some(node => node.type === 'field' || node.type === 'consent'
       || node.type === 'button' && 'action' in node && node.action === 'submit')) return;
     const routes = graph.edges.filter(edge => edge.from === screen.id);
     const normal = routes.find(edge => edge.kind === 'default');

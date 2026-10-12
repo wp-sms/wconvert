@@ -819,13 +819,21 @@ review gate: claude.ai/artifact/PcrNs8xzRCGvrvcKt4u3C9.
   "Without X" on choose-several, "X" / "All other answers" on choose-one). With
   several lines in, it stays inline with its own dashed "If skipped" line.
 - **Several follow-ups are one box**: "Any of these" in, "None of these" dashed
-  around, members listed in asking order.
+  around, members listed in asking order. A run of follow-up messages is boxed
+  the same way.
 - **Every line has a "+"** that inserts a screen there; a line's label opens the
   exact rule. Labels and "+" are reserved in the layout, so they never cover a
   card or each other, and are at least 44px on a coarse pointer. There is no
   drawing mode and nothing drags.
 - **Highlighting never fades text.** The selected card has an outline and
-  `aria-current`; a trace marks visited cards and lines and dashes skipped ones.
+  `aria-current`; its own lines are drawn strongly (an answer's line keeps its
+  colour) and its neighbours outlined. A trace dashes the screens it skipped
+  and draws the lines it did not take quietly. Outlines, not shadows, so both
+  survive forced colours.
+- **A question's lines read in the order they are checked**, left to right
+  (right to left in RTL), "All other answers" last, and the screens they lead
+  to share the row below it. Crossing fewer lines can override the order on a
+  dense map; the pills still say which answer each line is.
 - **Keyboard**: one roving tab stop. ↑/↓ move through cards in reading order,
   ←/→ along a row (swapped in RTL), Home/End, Enter selects, Escape clears a
   trace. Tab goes from the active card to its buttons, then its line labels and

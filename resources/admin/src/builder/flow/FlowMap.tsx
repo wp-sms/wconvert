@@ -16,6 +16,8 @@ import type { Answers } from '../../../../loader/src/journey-rules';
 
 const noIssues: readonly CampaignIssue[] = [];
 const PAD = 16;
+/** Kept clear below the map at Fit, so the zoom bar never covers the last card (GUIDELINES §22). */
+const TOOLBAR = 64;
 
 function useMedia(query: string): boolean {
   const [matches, setMatches] = useState(() => typeof window.matchMedia === 'function' && window.matchMedia(query).matches);
@@ -104,7 +106,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const pending = useRef<{ left: number; top: number } | null>(null);
   useLayoutEffect(() => {
     if (!fitted || !view.width) return;
-    const next = fitZoom({ width: view.width - PAD, height: view.height - PAD }, layout);
+    const next = fitZoom({ width: view.width - PAD, height: view.height - PAD - TOOLBAR }, layout);
     if (next !== zoomRef.current) setZoom(next);
   }, [fitted, view, layout]);
   const zoomTo = useCallback((next: number, anchor?: { x: number; y: number }) => {
@@ -186,9 +188,17 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const clearTrace = () => { if (visitor) setVisitor(null); else onClearTrace?.(); };
   // A trace marks the screens shown and the lines taken; everything else is drawn quietly.
   const trace = useMemo(() => path ? { screens: new Set(path.map(index => tree.steps[index]?.id).filter((item): item is string => !!item)), edges: new Set(pathEdges ?? []) } : null, [path, pathEdges, tree.steps]);
-  const lineStates = useMemo(() => new Map(model.lines.map(line => [line.id, trace ? lineIsOn(line, trace) ? 'on' as const : 'off' as const : undefined])), [model.lines, trace]);
-  const nodeState = (screens: readonly string[]): TraceState => trace ? screens.some(item => trace.screens.has(item)) ? 'on' : 'off' : undefined;
-  const related = useMemo(() => new Set(trace || !selectedNode ? [] : model.lines.filter(line => line.from === selectedNode || line.to === selectedNode).map(line => line.id)), [trace, selectedNode, model.lines]);
+  // Without a trace, the selected card's own lines and neighbours are drawn strongly and the rest quietly,
+  // as in the prototype; no text fades either way (GUIDELINES §22).
+  const near = useMemo(() => {
+    if (trace || !selectedNode) return null;
+    const lines = new Set(model.lines.filter(line => line.from === selectedNode || line.to === selectedNode).map(line => line.id));
+    return { lines, nodes: new Set(model.lines.filter(line => lines.has(line.id)).flatMap(line => [line.from, line.to])) };
+  }, [trace, selectedNode, model.lines]);
+  const lineStates = useMemo(() => new Map(model.lines.map(line => [line.id, trace ? lineIsOn(line, trace) ? 'on' as const : 'off' as const
+    : near ? near.lines.has(line.id) ? 'on' as const : 'off' as const : undefined])), [model.lines, trace, near]);
+  const nodeState = (node: string, screens: readonly string[]): TraceState => trace ? screens.some(item => trace.screens.has(item)) ? 'on' : 'off'
+    : near ? node === selectedNode ? undefined : near.nodes.has(node) ? 'on' : 'off' : undefined;
   const focusedLine = focusedPath !== null && selected !== null ? model.lines.find(line => line.select?.index === selected && line.select.priority === focusedPath)?.id : undefined;
   const byScreen = useMemo(() => issuesByScreen(issues), [issues]);
   const label = (node: string) => model.cards.find(card => card.id === node)?.name ?? model.groups.find(group => group.id === node)?.title ?? '';
@@ -198,7 +208,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   };
   const pills = (node: string) => model.lines.filter(line => line.from === node && layout.lines.get(line.id)?.label)
     .sort((a, b) => (layout.lines.get(a.id)!.label!.x - layout.lines.get(b.id)!.label!.x) * (rtl ? -1 : 1));
-  const pill = (line: FlowLine) => <LinePill key={line.id} line={line} rect={layout.lines.get(line.id)!.label!} fromName={label(line.from)} toName={label(line.to)}
+  const pill = (line: FlowLine) => <LinePill key={line.id} line={line} rtl={rtl} rect={layout.lines.get(line.id)!.label!} fromName={label(line.from)} toName={label(line.to)}
     state={lineStates.get(line.id)} selected={focusedLine === line.id} tabbable={line.from === current}
     onLabel={line.select ? () => onSelectPath(line.select!.index, line.select!.priority) : undefined}
     onAdd={onAdd && line.insertEdgeId && edgeSource(line.insertEdgeId) >= 0 ? () => onAdd(edgeSource(line.insertEdgeId!), line.insertEdgeId!) : undefined} />;
@@ -221,7 +231,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
         : <button type="button" className="wconvert-flow-try" onClick={() => setVisitor({})}>{__('Try a visitor', 'wconvert')}</button>}
       <p id={`${id}-keys`} className="sr-only">{__('Arrow keys move between screens in reading order. Tab reaches a screen’s buttons and its lines. Plus and minus zoom; 0 fits.', 'wconvert')}</p>
       <FlowViewport viewport={viewport} surface={region} width={layout.width} height={layout.height} zoom={zoom} onZoom={zoomTo} onScroll={onScroll}>
-        <FlowLines id={id} layout={layout} lines={model.lines} states={lineStates} related={related} focused={focusedLine} />
+        <FlowLines id={id} layout={layout} lines={model.lines} states={lineStates} focused={focusedLine} />
         {layout.order.map(node => {
           const box = layout.boxes.get(node)!;
           const card = model.cards.find(item => item.id === node);
@@ -229,9 +239,9 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
           const common = { box, rtl, active: node === current, onIssue, onSelect, onSelectPath, onFocusNode: () => { setActive(node); reveal(node, false); },
             focusRef: focusRef(node), measureRef: measureRef(node) };
           return <Fragment key={node}>
-            {card && <FlowCard {...common} card={card} selected={card.index === selected} state={nodeState([card.id])} issues={byScreen.get(card.id) ?? noIssues} destinationSummary={destinationSummary}
+            {card && <FlowCard {...common} card={card} selected={card.index === selected} state={nodeState(card.id, [card.id])} issues={byScreen.get(card.id) ?? noIssues} destinationSummary={destinationSummary}
               shownResult={visitorRoute?.result?.screen === card.id ? visitorRoute.result.id : undefined} />}
-            {group && <FlowGroup {...common} group={group} selected={selected} state={nodeState(group.members.map(member => member.id))} visited={trace?.screens}
+            {group && <FlowGroup {...common} group={group} selected={selected} state={nodeState(group.id, group.members.map(member => member.id))} visited={trace?.screens}
               issues={group.members.flatMap(member => byScreen.get(member.id) ?? [])}
               nextPriority={model.lines.find(line => line.from === group.id)?.select?.priority as number | undefined} />}
             {pills(node).map(pill)}
@@ -242,13 +252,13 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
         <button type="button" aria-label={__('Zoom out', 'wconvert')} title={__('Zoom out', 'wconvert')} onClick={() => zoomTo(stepZoom(zoom, -1))}><Minus aria-hidden="true" /></button>
         <output aria-label={__('Zoom level', 'wconvert')}>{Math.round(zoom * 100)}%</output>
         <button type="button" aria-label={__('Zoom in', 'wconvert')} title={__('Zoom in', 'wconvert')} onClick={() => zoomTo(stepZoom(zoom, 1))}><Plus aria-hidden="true" /></button>
-        <button type="button" aria-pressed={fitted} onClick={() => setFitted(true)}>{__('Fit', 'wconvert')}</button>
+        <button type="button" onClick={() => setFitted(true)}>{__('Fit', 'wconvert')}</button>
       </div>
       {overflows ? <FlowOverview width={layout.width} height={layout.height}
         boxes={layout.order.map(node => ({ id: node, ...layout.boxes.get(node)!, colour: model.cards.find(card => card.id === node)?.colour }))}
         view={{ x: scroll.left / zoom, y: scroll.top / zoom, width: view.width / zoom, height: view.height / zoom }}
         onJump={(x, y) => viewport.current?.scrollTo?.({ left: x * zoom - view.width / 2, top: y * zoom - view.height / 2, behavior: reduced ? 'auto' : 'smooth' })} />
-        : !model.straight && <FlowLegend />}
+        : <FlowLegend />}
     </section>
   </div>;
 }

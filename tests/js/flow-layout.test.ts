@@ -27,6 +27,13 @@ describe.each(Object.entries(fixtures))('the %s map', (_, tree) => {
     }
   });
 
+  it('keeps every answer line’s screen in one row below its question', () => {
+    for (const card of model.cards) {
+      const rows = new Set(model.lines.filter(line => line.from === card.id && line.style === 'answer').map(line => ltr.row.get(line.to)));
+      expect(rows.size, card.id).toBeLessThanOrEqual(1);
+    }
+  });
+
   it('keeps cards, labels and “+” clear of one another', () => {
     const rects = [...ltr.boxes.entries(), ...[...ltr.lines.entries()].flatMap(([id, line]) => line.label ? [[`label:${id}`, line.label] as const] : [])];
     for (let a = 0; a < rects.length; a++) for (let b = a + 1; b < rects.length; b++) {

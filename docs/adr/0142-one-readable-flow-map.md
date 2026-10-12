@@ -99,3 +99,11 @@ a live copy is paused; your draft keeps saving" — what `OptinController` and
   button that opens its screen, as in the prototype.
 - The first card no longer repeats the display rules, and the form card says
   where leads go without a link: both are one click away in the panel.
+- A question's lines are laid out in the order they are checked, "All other
+  answers" last, with their screens on one row (dagre is fed the lines last
+  to first, and answer lines weigh 8). Several follow-up messages on one
+  question are one box on the map, as follow-up questions are.
+- Where the prototype and decision 8 disagree, decision 8 holds: the
+  prototype let an ending reached both with and without the gate pass as
+  "early"; the server and the editor refuse it, because some visitors would
+  finish there without the form.

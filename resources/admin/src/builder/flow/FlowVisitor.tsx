@@ -5,6 +5,8 @@ import { chooseResult, journeyTrace, type Answers } from '../../../../loader/src
 import { graphTrace } from '../../../../loader/src/journey-graph';
 import { journeyTraceEdges } from '../structure/journeyTraceEdges';
 import { walkNodes } from '../structure/journey';
+import { CheckRow } from '../../shell/CheckRow';
+import { NativeSelect } from '../../components/ui/native-select';
 
 export interface VisitorTrace {
   readonly screens: readonly number[];
@@ -44,22 +46,22 @@ export function FlowVisitor({ tree, answers, trace, onAnswers, onStop }: {
         ? <fieldset key={question.id}><legend><bdi>{question.label}</bdi> · {__('choose several', 'wconvert')}</legend>
           {question.options?.map(option => {
             const picked = Array.isArray(answers[question.id]) ? answers[question.id] as string[] : [];
-            return <label key={option.value}><input type="checkbox" checked={picked.includes(option.value)} onChange={event => onAnswers({ ...answers,
-              [question.id]: event.target.checked ? [...picked, option.value] : picked.filter(value => value !== option.value) })} /><bdi>{option.label}</bdi></label>;
+            return <CheckRow key={option.value} className="wconvert-check" label={option.label} checked={picked.includes(option.value)} onChange={event => onAnswers({ ...answers,
+              [question.id]: event.target.checked ? [...picked, option.value] : picked.filter(value => value !== option.value) })} />;
           })}
         </fieldset>
         : <span key={question.id} className="wconvert-flow-visitor__field"><label htmlFor={`${id}-${question.id}`}><bdi>{question.label}</bdi></label>
-          <select id={`${id}-${question.id}`} value={typeof answers[question.id] === 'string' ? answers[question.id] as string : ''} onChange={event => {
+          <NativeSelect id={`${id}-${question.id}`} value={typeof answers[question.id] === 'string' ? answers[question.id] as string : ''} onChange={event => {
             const next = { ...answers };
             if (event.target.value) next[question.id] = event.target.value; else delete next[question.id];
             onAnswers(next);
           }}>
             <option value="">{__('No answer', 'wconvert')}</option>
             {question.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select></span>)}
+          </NativeSelect></span>)}
     </div>
     <p role="status">{[sprintf(/* translators: %d: how many screens this visitor sees. */ __('Sees %d screens', 'wconvert'), trace.screens.length),
-      ...(trace.skipped.length ? [sprintf(/* translators: %s: screen names. */ __('skips %s', 'wconvert'), trace.skipped.map(screen => `“${name(screen)}”`).join(', '))] : []),
+      ...(trace.skipped.length ? [sprintf(/* translators: %s: screen names. */ __('skips %s', 'wconvert'), trace.skipped.map(screen => sprintf(/* translators: %s: a screen's name. */ __('“%s”', 'wconvert'), name(screen))).join(__(', ', 'wconvert')))] : []),
       ...(trace.result ? [sprintf(/* translators: %s: a result's heading. */ __('result: %s', 'wconvert'), trace.result.heading)] : [])].join(' · ')}</p>
     <button type="button" className="wconvert-panel-link" onClick={onStop}>{__('Stop', 'wconvert')}</button>
   </div>;

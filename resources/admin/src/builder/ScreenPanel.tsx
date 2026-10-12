@@ -7,6 +7,8 @@ import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconn
 import { upgradeToGraph, graphDisplayOrder } from './structure/graph';
 import { nodesOf, type Block } from './structure/tree';
 import { nameOfBlock } from './BlockRow';
+import { conditionText } from './structure/conditionText';
+import { followupGroups } from './structure/followupGroups';
 import type { Path } from './panel';
 import type { CampaignIssue } from './readiness/campaignIssues';
 import type { TemplateLabels } from '../templates/api';
@@ -24,7 +26,7 @@ import type { TemplateLabels } from '../templates/api';
  */
 
 /** "Then → Thank you": where this screen goes next, and the one control that changes it. */
-export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgrade }: {
+export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgrade, onBranch }: {
   tree: TemplateTree; step: number;
   /** Pro: a select. Free, or a screen whose answers decide: read-only. */
   editable: boolean;
@@ -33,6 +35,8 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
   onEditPaths?(): void;
   /** A linear journey becomes a graph the moment one screen chooses its own next. */
   onUpgrade?(next: TemplateTree): void;
+  /** A choice question with no answer lines yet: start one (ADR 0142). */
+  onBranch?(): void;
 }) {
   const id = useId();
   const screen = tree.steps[step];
@@ -68,12 +72,21 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
     const edge = upgraded.graph?.edges.find(item => item.from === screen.id && item.kind === 'default');
     if (edge) (onUpgrade ?? onChange)(reconnectGraphEdge(upgraded, edge.id, target));
   };
-  return <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
-    <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
-      {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
-      {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
-    </select>
-  </FactRow>;
+  const box = next ? followupGroups(tree).find(group => tree.steps[group.screens[0]].id === next.id) : undefined;
+  // When the next screen has "Only if…", say who sees it and where everyone else goes (the prototype's panel, ADR 0142).
+  const skipTo = graph && next?.when ? (graph.edges.find(edge => edge.from === next.id && edge.kind === 'hidden') ?? graph.edges.find(edge => edge.from === next.id && edge.kind === 'default'))?.to : undefined;
+  return <>
+    <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
+      <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
+        {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
+        {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
+      </select>
+    </FactRow>
+    {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”.', 'wconvert'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
+      : next?.when && skipTo && <PanelHint>{sprintf(/* translators: 1: a rule. 2, 3: screen names. */ __('Only visitors with %1$s see “%2$s”. All other answers go to “%3$s”.', 'wconvert'),
+        conditionText(tree, next.when), next.name, tree.steps.find(item => item.id === skipTo)?.name ?? '')}</PanelHint>}
+    {onBranch && <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>}
+  </>;
 }
 
 /** This screen's issues from the campaign's one list (ADR 0133), each a way to its fix. */

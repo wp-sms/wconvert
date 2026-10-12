@@ -111,6 +111,15 @@ describe('“Only if” splits the line (ADR 0142)', () => {
   });
 });
 
+describe('several follow-up messages (ADR 0142)', () => {
+  it('are one box on the map, as several follow-up questions are', () => {
+    const tree = build([{ id: 'which', ask: ['multi', 'ferns', 'orchids'] }, { id: 'fern', kind: 'content', when: ['which', 'includes_any', 'ferns'] },
+      { id: 'orchid', kind: 'content', when: ['which', 'includes_any', 'orchids'] }, { id: 'thanks', kind: 'acknowledgement' }],
+    ['which>fern', 'fern>orchid', 'orchid>thanks']);
+    expect(summary(tree)).toEqual(['which>followups:fern “Any of these” plain', 'which>thanks “None of these” around', 'followups:fern>thanks plain']);
+  });
+});
+
 describe('colour means an answer (ADR 0142)', () => {
   const coffeeTree = (coffee as unknown as { template?: { tree: TemplateTree } }).template?.tree ?? coffee as unknown as TemplateTree;
 
