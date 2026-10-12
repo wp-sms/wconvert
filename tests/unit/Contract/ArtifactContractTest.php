@@ -40,6 +40,9 @@ use PHPUnit\Framework\TestCase;
 #[CoversNothing]
 final class ArtifactContractTest extends TestCase
 {
+    /** Where wp-scoper puts the SDK's provider in a staged Pro tree. */
+    private const SCOPED_SDK = 'packages/veronalabs/wp-premium-sdk/src/Container/PremiumServiceProvider.php';
+
     private const SCRIPT = __DIR__ . '/../../../bin/verify-artifact-contract.sh';
 
     /**
@@ -226,6 +229,12 @@ final class ArtifactContractTest extends TestCase
             // loader, and shows the customer the same locked upsell cards free
             // shows.
             'modules/display-types/templates/bar-announcement.json' => "{\"id\":\"bar-announcement\",\"tier\":\"basic\",\"tree\":{}}\n",
+            // The licence SDK, scoped by wp-scoper into packages/ (ADR 0143).
+            // Every Pro artifact carries it: without it the updater and the
+            // License page are gone and every test still passes.
+            'packages/autoload.php' => "<?php\n",
+            'packages/autoload-classmap.php' => "<?php\nreturn ['WConvert\\\\Pro\\\\Deps\\\\VeronaLabs\\\\WpPremiumSdk\\\\Container\\\\PremiumServiceProvider' => 'veronalabs/wp-premium-sdk/src/Container/PremiumServiceProvider.php'];\n",
+            self::SCOPED_SDK => "<?php\n\nnamespace WConvert\\Pro\\Deps\\VeronaLabs\\WpPremiumSdk\\Container;\n\nclass PremiumServiceProvider {}\n",
             ...$overrides,
         ]);
     }
@@ -565,10 +574,11 @@ final class ArtifactContractTest extends TestCase
     //
     // A licence gates updates and support and never a feature (ADR 0015), so
     // the code that reads one is Pro's alone. Checked at the ARTIFACT because
-    // `vendor/` is GENERATED: the SDK is vendored in through a Composer scoper
-    // profile, so no source file in this repository ever names it and
+    // the SDK is GENERATED into the stage: wp-scoper copies it into Pro's
+    // packages/ on the stage's own `composer install` (ADR 0143), so
     // bin/verify-source-contract.sh cannot see it however hard it looks — the
-    // same argument (c) makes about the autoload map.
+    // same argument (c) makes about the autoload map. Pro must carry it, and
+    // only the scoped copy.
     // =========================================================================
 
     public function testFailsWhenTheFreeArtifactCarriesTheLicensingSdk(): void
@@ -584,14 +594,45 @@ final class ArtifactContractTest extends TestCase
         }
     }
 
-    /** Pro is where it belongs, so a Pro artifact carrying it is clean. */
-    public function testAProArtifactMayCarryTheLicensingSdk(): void
+    /** Pro is where it belongs, scoped, so a Pro artifact carrying it is clean. */
+    public function testAProArtifactCarriesTheScopedLicensingSdk(): void
     {
-        $result = $this->verify($this->stagedPro([
-            'vendor/veronalabs/wp-premium-sdk/src/LicenseManager.php' => "<?php\n",
-        ]));
+        $result = $this->verify($this->stagedPro());
 
         $this->assertSame(0, $result['status'], $result['output']);
+        $this->assertStringContainsString('scoped licensing SDK is in the Pro artifact', $result['output']);
+    }
+
+    /**
+     * AND MUST, since ADR 0143. A Pro without it boots — the autoloader's
+     * require would fatal, but a build that dropped the SDK and kept a stub
+     * autoloader would not — and the customer's licence then buys nothing.
+     *
+     * @return iterable<string, array{array<string, string|null>, string}>
+     */
+    public static function brokenSdks(): iterable
+    {
+        yield 'no SDK at all' => [[self::SCOPED_SDK => null], 'carries no licensing SDK'];
+        yield 'no scoped autoloader' => [['packages/autoload.php' => null], 'no packages/autoload.php'];
+        yield 'an unscoped SDK' => [
+            [self::SCOPED_SDK => "<?php\n\nnamespace VeronaLabs\\WpPremiumSdk\\Container;\n\nclass PremiumServiceProvider {}\n"],
+            'not scoped under',
+        ];
+        yield 'a classmap that cannot reach it' => [['packages/autoload-classmap.php' => "<?php\nreturn [];\n"], 'does not map the SDK'];
+        yield 'the unscoped original left in vendor/' => [
+            ['vendor/veronalabs/wp-premium-sdk/src/License/LicenseManager.php' => "<?php\n"],
+            'carries vendor/',
+        ];
+    }
+
+    /** @param array<string, string|null> $overrides */
+    #[\PHPUnit\Framework\Attributes\DataProvider('brokenSdks')]
+    public function testFailsWhenTheProArtifactsSdkIsMissingOrUnscoped(array $overrides, string $reason): void
+    {
+        $result = $this->verify($this->stagedPro($overrides));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString($reason, $result['output']);
     }
     // =========================================================================
     // (c) NO PATH UNDER PRO'S PLUGIN DIRECTORY.

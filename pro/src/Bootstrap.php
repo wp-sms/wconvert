@@ -6,6 +6,7 @@ use WConvert\Bootstrap as Core;
 use WConvert\Pro\Boot\BootGuard;
 use WConvert\Pro\Boot\PageCache;
 use WConvert\Pro\Container\ProServiceProvider;
+use WConvert\Pro\License\LicenseServiceProvider;
 
 defined('ABSPATH') || exit;
 
@@ -31,9 +32,9 @@ final class Bootstrap
          *
          * Pro replaces free's loader and dequeues it, so turning Pro on or off
          * changes the `<script src>` on every already-cached page (ADR 0014).
-         * These two moments are the whole trigger: a licence never gated a
-         * feature (ADR 0015), so there is no licence webhook in this design to
-         * miss and no licence event that could stand in for one.
+         * These two moments are the whole trigger: a licence never gates a
+         * feature (ADR 0015), so no licence change can alter what a cached page
+         * should load, and none needs to purge it.
          *
          * Registered OUTSIDE the min-core guard below, deliberately. A Pro
          * that refuses to boot still changes nothing about what the pages
@@ -77,20 +78,28 @@ final class Bootstrap
          * Pro's services bind into the container FREE created rather than
          * standing up a second one (ADR 0015).
          *
-         * Registered and booted in one breath, which free's Bootstrap
-         * deliberately does not do: free separates the two phases so a
-         * provider's boot() may resolve a service another provider registered,
-         * whatever the order. Pro has ONE provider, and it runs at
-         * `plugins_loaded` priority 20 — after every free provider has both
-         * registered and booted — so there is no ordering left for a second
-         * phase to fix. A loop and a two-phase pass over a list of one would be
-         * scaffolding for a need no ticket has yet (ADR 0029).
+         * Two providers, registered and then booted, as free's Bootstrap does.
+         * Both run at `plugins_loaded` priority 20 — after every free provider
+         * has registered and booted — so neither phase has an ordering left to
+         * fix inside free; the split is for Pro's own two, which share nothing
+         * today and should not start depending on the order they are listed in.
+         *
+         * The licence's provider is the second and is deliberately its own
+         * (ADR 0143): it supplies updates and support, never a feature, and
+         * keeping it out of ProServiceProvider is what lets
+         * `NoLicenceOnTheFrontEndTest` name the one directory it may live in.
          */
         $container = Core::container();
 
-        $provider = new ProServiceProvider();
-        $provider->register($container);
-        $provider->boot($container);
+        $providers = [new ProServiceProvider(), new LicenseServiceProvider()];
+
+        foreach ($providers as $provider) {
+            $provider->register($container);
+        }
+
+        foreach ($providers as $provider) {
+            $provider->boot($container);
+        }
 
         /**
          * Fires once WConvert Pro is fully loaded.

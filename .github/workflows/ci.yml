@@ -132,6 +132,7 @@ jobs:
               - '**.php'
               - 'composer.json'
               - 'composer.lock'
+              - 'pro/composer.*'
               - 'phpstan*.neon*'
               - 'phpstan-bootstrap.php'
               - 'phpunit.xml*'

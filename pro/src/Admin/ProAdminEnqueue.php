@@ -45,7 +45,8 @@ defined('ABSPATH') || exit;
  *
  * THERE IS NO ENTITLEMENT CHECK HERE, and nothing is missing. Being loaded IS
  * the entitlement (ADR 0015): this class is in Pro's ZIP and a free install has
- * never contained it.
+ * never contained it. A lapsed licence stops updates; it never reaches the
+ * screen this swaps in (ADR 0143).
  *
  * @since 0.1.0
  */

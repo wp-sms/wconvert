@@ -54,7 +54,7 @@
 # exists is a ZIP somebody can upload; the check has to be what decides
 # whether one is written.
 #
-# Requirements: php, zip, and — for free — composer.
+# Requirements: php, zip and composer — free and Pro both install in the stage.
 
 set -euo pipefail
 
@@ -294,8 +294,12 @@ build_one() {
         composer dist --working-dir="$stage" --quiet
 
         # The plugin loads packages/autoload.php. wp-scoper writes it even with
-        # no package to prefix; the template is the fallback if it ever does not.
-        if [ ! -f "$stage/packages/autoload.php" ]; then
+        # no package to prefix; the template is free's fallback if it ever does
+        # not. NOT Pro's: Pro's packages/ is the scoped licence SDK (ADR 0143),
+        # and a template there would be a Pro with no updater that boots fine —
+        # so Pro has no fallback, and the artifact contract's check (g) refuses
+        # the stage instead.
+        if [ ! -f "$stage/packages/autoload.php" ] && [ -z "$tier_slug" ]; then
             mkdir -p "$stage/packages"
             cp "$SCRIPT_DIR/autoload-template.php" "$stage/packages/autoload.php"
         fi

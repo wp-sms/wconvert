@@ -6,15 +6,25 @@
 # one of them, which is how a rule meant for free ends up silently doing
 # nothing to Pro.
 #
-# Short, because pro/ is already almost all shippable code: it has no Composer
-# manifest, no node_modules and no build config of its own — Pro's Vite config
-# lives at the repo root and is stripped by never being copied.
+# Short, because pro/ is already almost all shippable code: no node_modules and
+# no build config of its own — Pro's Vite config lives at the repo root and is
+# stripped by never being copied.
 #
 # `resources/` STAYS, as it does for free. Pro is not distributed on wp.org so
 # Guideline 4 does not reach it, but Pro's loader source is the honest record
 # of what its bundle is, and there is no reason to ship less of it than free
 # ships of its own. bin/verify-artifact-contract.sh does not assert it here —
 # see the note in that script on why (d) has one direction.
+
+# Composer. Pro's one runtime dependency, the licence SDK, ships scoped in
+# packages/ (ADR 0143). vendor/ is stripped WHOLE: after `composer dist` it
+# holds Composer's own autoloader and the UNSCOPED SDK reinstalled beside the
+# scoped one, and Pro loads neither. bin/ is the post-install step that keeps
+# Composer's install record honest after wp-scoper deletes the original.
+/composer.json
+/composer.lock
+/vendor
+/bin
 
 # Tests and analysis
 /tests

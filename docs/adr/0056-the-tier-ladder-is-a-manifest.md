@@ -116,6 +116,12 @@ that point: the tiers differ by which features are present, never by a limit
 inside the plugin. The build is the gate, Nexus serves the tier-matched ZIP, and
 a licence governs updates and support only.
 
+*Corrected by [ADR 0143](0143-license-page-and-updater.md): Nexus does not
+serve a tier-matched ZIP. Its tiers for WConvert are **plans** — `single-site`,
+`5-sites`, `unlimited` — which change how many sites a licence covers, not which
+build is installed, and the elite ZIP is posted once per plan. Still no runtime
+licence check: Pro reads one for updates and the License page only.*
+
 `WCONVERT_MIN_CORE` remains **one constant across all three tiers** — see
 [ADR 0030](0030-free-and-pro-release-on-independent-tags.md). Pro makes exactly
 one statement about free, and it is the same statement at every rung.
@@ -130,6 +136,8 @@ one statement about free, and it is the same statement at every rung.
   rung. They are one plugin at three tiers, so moving up replaces an install
   rather than adding a second beside it; only the ZIP's file name carries the
   tier, which is what Nexus matches a licence against.
+  *Corrected by [ADR 0143](0143-license-page-and-updater.md): Nexus matches a
+  licence to a **plan**, not a rung, and every plan is offered the elite ZIP.*
 - **Pro's provider registers the rule types for each rung it supplies**, walking
   `Tier::paid()` and stopping where the installed tier stops. It still names no
   rule type: it asks the one manifest both plugins read for the types filed at

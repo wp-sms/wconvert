@@ -29,7 +29,9 @@ defined('ABSPATH') || exit;
 | There is no licence check here, and there will not be one. A licence buys
 | updates and support, never the features themselves (ADR 0015): possession
 | is the gate, so once the code is genuinely absent from free there is
-| nothing left to guard.
+| nothing left to guard. The licence code that does exist (src/License/,
+| ADR 0143) runs the updater and the License page, and nothing it decides
+| reaches a feature.
 */
 
 require_once __DIR__ . '/src/constants.php';

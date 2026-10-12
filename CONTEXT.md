@@ -1615,8 +1615,8 @@ rather than replacing it. Pro does not *unlock* premium features — it **suppli
 them. The code for exit intent, A/B testing, `floating_bar`, `slide_in` and the ESP
 [[Destination]]s exists only inside Pro, and a free install has never contained it.
 
-A licence buys **updates and support, never the features themselves**. An expired
-licence stops the updater; it does not change what a running site does.
+A [[Licence]] buys **updates and support, never the features themselves**. An
+expired licence stops the updater; it does not change what a running site does.
 
 > Counterpart to [[Standalone]]: both name an install shape by what is *absent*, and
 > both must be a fully working install. A free install is not a crippled Pro install —
@@ -1624,6 +1624,32 @@ licence stops the updater; it does not change what a running site does.
 
 Pro is **one plugin at three [[Tier]]s**, and a customer moving up replaces their
 install rather than adding a second beside it.
+
+### Licence
+
+What a Pro customer bought from the store (Nexus, at my.wconvert.io): a key that
+entitles **one [[Plan]]'s worth of sites** to Pro's updates and to support. It is
+activated per site, and a site's activation is its **seat**.
+
+A licence **never gates a feature** — [[Pro]]'s capabilities are present because
+they shipped. Expired, cancelled, over the limit or unreadable, Pro keeps
+working; only its updates stop. The code that reads one lives in
+`pro/src/License/` and nowhere else.
+
+*Managed*: a licence given by the `WCONVERT_LICENSE_KEY` constant, typically by an
+agency. The site's own administrators see only whether updates are on and who
+manages it.
+
+> Spelled *licence* in prose and *license* in code, URLs and the menu, which
+> follow the SDK and WordPress.
+
+### Plan
+
+What a [[Licence]] was bought as, and so **how many sites** it covers:
+`single-site` (1), `5-sites` (5) or `unlimited`. Nexus calls these *tiers*;
+they are **not** [[Tier]]s, and nothing about a plan decides which build is
+installed — every plan gets the same Pro. Plan slugs never appear in
+`tiers.json`, which ships in free.
 
 ### Tier
 
