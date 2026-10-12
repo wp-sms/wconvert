@@ -14,7 +14,7 @@ strip, used up to five words for one idea ("Collect details", "Shown if",
 "Check next", "fallback", "Everyone else"), buried branching in a drawing mode,
 and appeared and disappeared as a campaign gained and lost its last branch. Two
 review rounds agreed the twelve decisions below. The approved clickable
-prototype is the review gate: claude.ai/artifact/PcrNs8xzRCGvrvcKt4u3C9 (ten
+prototype is the review gate: claude.ai/artifact/DSepKjR4jpkGcKEKiFM2m9 (ten
 scenarios), reviewed at claude.ai/artifact/2Hk19gwMXdFXvtpSeN2Q5u.
 
 ## Decisions

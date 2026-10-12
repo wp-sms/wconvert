@@ -802,7 +802,7 @@ must not imply that mutually exclusive paths are sequential visitor steps.
 ## 22. Journey map hierarchy
 
 The Flow map is one readable map (ADR 0142). The approved prototype is the
-review gate: claude.ai/artifact/PcrNs8xzRCGvrvcKt4u3C9.
+review gate: claude.ai/artifact/DSepKjR4jpkGcKEKiFM2m9.
 
 - **Top to bottom, readable at Fit.** Fit never goes below 70%; a larger map
   scrolls, and the overview in the corner shows where you are and pans on
