@@ -1897,10 +1897,10 @@ if (!function_exists('rest_url')) {
 |--------------------------------------------------------------------------
 | Pro's licence code is the one place in either plugin that talks to the
 | options table and the site transients directly rather than through
-| `OptionStore`: the SDK it wraps calls `get_option()` itself, and the updater
-| gate is a reaction to WordPress's own `update_option_{name}` events. So the
-| table is in memory here, and **writing an option fires the same three events
-| WordPress fires**, because what the gate is FOR is reacting to them.
+| `OptionStore`: the SDK it wraps calls `get_option()` itself. So the table is
+| in memory here, and **writing an option fires the same three events
+| WordPress fires** (`add_option_`, `update_option_`, `delete_option_`), so code
+| that reacts to a licence changing can be tested against the real sequence.
 |
 | `plugin_basename()` is computed exactly the way WordPress computes it for a
 | plugin in its own directory: the last two path segments.

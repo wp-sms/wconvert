@@ -1,6 +1,7 @@
 # 0143: The License page and the updater
 
-Date: 2026-10-12. Status: accepted.
+Date: 2026-10-12. Status: accepted; lands in six slices, one pull request
+each, so a decision below may describe code a later slice brings.
 Amends [0015](0015-enforcement-is-by-non-registration.md) (no licence read
 anywhere; the SDK as a private repository; Nexus serving a tier-matched ZIP) and
 [0056](0056-the-tier-ladder-is-a-manifest.md) (no licence read; Nexus matching
@@ -33,8 +34,11 @@ line that runs it, and asserts no file on the front-end read path touches it.
    unconditionally. The build strips `vendor/` whole, and the artifact contract
    (check g) refuses a Pro ZIP without the scoped SDK, or with an unscoped one,
    as it already refused a free ZIP with any.
-2. **The SDK's module loader is unhooked.** It would switch code on by licence;
-   the build already decided.
+2. **The SDK's module loader and its admin-ajax endpoints are unhooked.** The
+   loader would switch code on by licence, and the build already decided; the
+   endpoints would be a second door beside our REST (decision 6) without its
+   managed-key refusals or its masking. `WCONVERT_NEXUS_URL` points the SDK at a
+   staging store.
 3. **Store and plans.** Store slug `wconvert`, catalog item `wconvert-pro`.
    Nexus calls them tiers; WConvert calls them **plans**, because they are not
    the rungs of `tiers.json`: `single-site` (1 site), `5-sites` (5),

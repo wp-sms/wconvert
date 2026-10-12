@@ -21,6 +21,9 @@ defined('ABSPATH') || exit;
  */
 final class LicenseServiceProvider implements ServiceProvider
 {
+    /** The SDK's three admin-ajax endpoints, by the names it registers them under. */
+    private const SDK_AJAX_ACTIONS = ['license', 'account', 'network_license'];
+
     public function register(ServiceContainer $container): void
     {
         $container->register(
@@ -37,14 +40,22 @@ final class LicenseServiceProvider implements ServiceProvider
         /** @var PremiumServiceProvider $sdk */
         $sdk = $container->get(PremiumServiceProvider::class);
 
-        // The updater filter, the account sign-in return, the constant-key
-        // activation on admin_init, and the SDK's own admin-ajax endpoints.
-        // Building it reads nothing: no option, no request, no translation.
+        // The updater filter, the account sign-in return and the constant-key
+        // activation on admin_init. Building it reads nothing: no option, no
+        // request, no translation.
         $sdk->register();
 
         // The build is the gate. A premium module is present because it shipped
         // in this ZIP, and the licence never switches one on or off.
         remove_action('init', [$sdk->moduleLoader(), 'loadLicensedModules'], 20);
+
+        // And the SDK's admin-ajax endpoints go too. The License page talks to
+        // `wconvert/v1/license`, which holds the managed-key refusals and keeps
+        // raw keys server-side (ADR 0143); a second door beside it would hold
+        // neither.
+        foreach (self::SDK_AJAX_ACTIONS as $action) {
+            remove_all_actions('wp_ajax_' . $sdk->config()->ajaxAction() . '_' . $action);
+        }
 
         (new SignInGuard(array_values($sdk->config()->oauthCallbackParams())))->hooks();
     }

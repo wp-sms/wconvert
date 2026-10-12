@@ -63,9 +63,16 @@ final class LicenseServiceProviderTest extends TestCase
         );
     }
 
-    public function testBootingHooksTheUpdaterAndUnhooksTheModuleLoader(): void
+    public function testBootingHooksTheUpdaterAndUnhooksTheModuleLoaderAndTheSdksAjax(): void
     {
         $sdk = $this->boot();
+
+        foreach (['license', 'account', 'network_license'] as $action) {
+            $this->assertEmpty(
+                $GLOBALS['wconvertTestActions']['wp_ajax_wconvert_pro_' . $action] ?? [],
+                sprintf('the SDK\'s "%s" admin-ajax endpoint is still hooked — a door beside the REST routes', $action)
+            );
+        }
 
         $this->assertNotEmpty($GLOBALS['wconvertTestFilters']['pre_set_site_transient_update_plugins'] ?? [], 'the updater is not hooked');
 
@@ -105,7 +112,7 @@ final class LicenseServiceProviderTest extends TestCase
         $this->assertSame('y', $_GET['wcv_oauth_state']);
     }
 
-    public function testTheConfigurationNamesTheStoreAndKeepsTheTierInert(): void
+    public function testTheConfigurationNamesTheStoreAndLeavesTheSdksInstalledTierUnset(): void
     {
         $config = SdkConfig::build();
 

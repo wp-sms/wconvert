@@ -24,7 +24,7 @@ use WConvert\Tests\Unit\Support\PhpSource;
  *    where the question is asked; exactly one file reads the constant.
  * 2. **No licence value is read outside `pro/src/License/`, and none on any
  *    front-end request.** ADR 0015 permits two readers — Pro's updater and
- *    Pro's admin screens — and ADR 0143 put both, and nothing else, in that
+ *    Pro's admin screens — and ADR 0143 puts both, and nothing else, in that
  *    one directory. Free reads none at all.
  * 3. **The front-end path asks no tier question at all.** Not "is Pro loaded",
  *    not a licence, not anything: an entitlement branch on the request path is
@@ -55,10 +55,11 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
     private const THE_LICENCE = 'pro/src/License/';
 
     /**
-     * And the one file outside it that may name it: Pro's bootstrap, which
-     * runs the licence's provider beside the capabilities' one.
+     * And the one file outside it that may name it: Pro's bootstrap — the same
+     * file that states Pro is loaded — which runs the licence's provider beside
+     * the capabilities' one.
      */
-    private const THE_WIRING = 'pro/src/Bootstrap.php';
+    private const THE_WIRING = self::THE_DEFINITION;
 
     /**
      * Every PHP file that SHIPS, in both plugins.
@@ -108,37 +109,30 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
      * @param list<string> $relativePaths
      * @return list<string> Those whose CODE contains the needle.
      */
-    private static function containing(array $relativePaths, string $needle): array
+    private static function containing(array $relativePaths, string $needle, bool $anyCase = false): array
     {
         return array_values(array_filter(
             $relativePaths,
-            static fn (string $path): bool => str_contains(PhpSource::code(self::ROOT . '/' . $path), $needle)
+            static fn (string $path): bool => self::holds(PhpSource::code(self::ROOT . '/' . $path), $needle, $anyCase)
         ));
     }
 
-    /**
-     * @param list<string> $relativePaths
-     * @return list<string> Those whose CODE contains the needle in any case.
-     */
-    private static function containingIgnoringCase(array $relativePaths, string $needle): array
+    private static function holds(string $code, string $needle, bool $anyCase): bool
     {
-        return array_values(array_filter(
-            $relativePaths,
-            static fn (string $path): bool => stripos(PhpSource::code(self::ROOT . '/' . $path), $needle) !== false
-        ));
+        return $anyCase ? stripos($code, $needle) !== false : str_contains($code, $needle);
     }
 
     /**
      * @param list<string> $absolutePaths
      * @return list<string> Those whose CODE contains the needle, tree-relative.
      */
-    private static function absoluteContaining(array $absolutePaths, string $needle): array
+    private static function absoluteContaining(array $absolutePaths, string $needle, bool $anyCase = false): array
     {
         $root = (string) realpath(self::ROOT);
 
         return array_values(array_map(
             static fn (string $path): string => ltrim(str_replace($root, '', (string) realpath($path)), '/'),
-            array_filter($absolutePaths, static fn (string $path): bool => str_contains(PhpSource::code($path), $needle))
+            array_filter($absolutePaths, static fn (string $path): bool => self::holds(PhpSource::code($path), $needle, $anyCase))
         ));
     }
 
@@ -180,7 +174,7 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
      * NO LICENCE VALUE IS READ OUTSIDE `pro/src/License/`.
      * ========================================================================
      * ADR 0015 permits exactly two readers — Pro's updater and Pro's admin
-     * screens — and ADR 0143 put both in one directory. Until it did, this was
+     * screens — and ADR 0143 puts both in one directory. Until it did, this was
      * the total assertion: the word did not appear in code in either tree. It
      * is narrowed to that directory and the bootstrap line that runs it, and no
      * further, so a licence read anywhere else is still a decision somebody
@@ -209,7 +203,7 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
         foreach (['licence', 'license', 'activation_key'] as $needle) {
             $this->assertSame(
                 $needle === 'license' ? [self::THE_WIRING] : [],
-                self::containingIgnoringCase($outside, $needle),
+                self::containing($outside, $needle, anyCase: true),
                 sprintf('a licence value ("%s") read by shipped code outside %s', $needle, self::THE_LICENCE)
             );
         }
@@ -268,7 +262,7 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
         foreach (['licence', 'license'] as $needle) {
             $this->assertSame(
                 [],
-                array_values(array_filter($files, static fn (string $path): bool => stripos(PhpSource::code($path), $needle) !== false)),
+                self::absoluteContaining($files, $needle, anyCase: true),
                 sprintf('the front-end request path touches the licence ("%s")', $needle)
             );
         }

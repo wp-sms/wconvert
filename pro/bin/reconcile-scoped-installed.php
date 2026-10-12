@@ -2,26 +2,17 @@
 /**
  * Reconcile vendor/composer/installed.json after wp-scoper runs.
  *
- * wp-scoper (delete_vendor_packages: true) copies the scoped source packages
- * into packages/ and then deletes the originals from vendor/, but it never
- * removes them from Composer's install record (vendor/composer/installed.json).
+ * Copied from WSMS. wp-scoper (delete_vendor_packages: true) copies the licence
+ * SDK into packages/ and deletes the original from vendor/, but never removes
+ * it from Composer's install record. Composer regenerates its autoloader from
+ * that record on the next install and whenever it runs a script (`composer
+ * dist`), and warns or fatals on a package whose files are gone.
  *
- * Composer regenerates its autoloader from that record on the next
- * `composer install` *and* whenever it runs a script (`composer dist` →
- * `composer run-script`). With the files gone it warns on classmap dirs and —
- * for packages with a `files` autoload entry such as thecodingmachine/safe
- * (deprecated/apc.php) — fatals outright:
- *
- *   require(.../thecodingmachine/safe/deprecated/apc.php): Failed to open stream
- *
- * Dropping the install record for any package whose vendor directory no longer
- * exists keeps the autoloader generation consistent. Composer simply reinstalls
- * those packages (from cache) on the next install, dumps a clean autoloader,
- * and wp-scoper deletes + this script reconciles again — a stable cycle.
- *
- * Idempotent: a no-op when nothing was deleted (e.g. the free/unscoped install
- * or a fresh tree). Runs as a composer post-install-cmd / post-update-cmd and
- * after the standalone `scope` / `scope:premium` scripts.
+ * Dropping the record for any package whose vendor directory no longer exists
+ * keeps that consistent: Composer reinstalls it from cache on the next install,
+ * wp-scoper deletes it again, and this reconciles again — a stable cycle.
+ * Idempotent, and a no-op on a fresh tree. Runs as post-install-cmd and
+ * post-update-cmd.
  */
 
 $root        = dirname(__DIR__);
