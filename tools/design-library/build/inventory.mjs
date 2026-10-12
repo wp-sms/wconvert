@@ -33,7 +33,7 @@ export function canonicalDesign(design, includeStyle = false) {
   collect(design.tree);
   function normal(value, key = '') {
     if (Array.isArray(value)) return value.map(item => normal(item, key));
-    if (!value || typeof value !== 'object') return ['id', 'question', 'submission', 'fields', 'consents', 'to'].includes(key) && ids.has(value) ? ids.get(value) : value;
+    if (!value || typeof value !== 'object') return ['id', 'question', 'submission', 'fields', 'consents', 'to', 'from', 'entry'].includes(key) && ids.has(value) ? ids.get(value) : value;
     return Object.fromEntries(Object.entries(value).filter(([k]) =>
       !COPY.has(k) && k !== 'name' && (includeStyle || !['tokens', 'narrow'].includes(k)))
       .map(([k, v]) => [k, normal(v, k)]));

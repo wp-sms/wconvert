@@ -1,0 +1,94 @@
+{
+  "id": "basket-companion",
+  "name": "Basket companion",
+  "display_type": "inline",
+  "tier": "elite",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#302c27",
+    "muted": "#615347",
+    "accent": "#684534",
+    "accent-fg": "#ffffff",
+    "border": "#697e72",
+    "input-bg": "#ffffff",
+    "heading-size": "1.75rem",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "0",
+    "gap": "1.25rem",
+    "width": "44rem",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [],
+    "steps": [
+      {
+        "id": "suggestions",
+        "name": "Basket extras",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "Before you check out"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "One more useful thing?"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Optional extras for the items in your basket."
+                }
+              ],
+              "tokens": {
+                "bg": "#302c27",
+                "fg": "#fffaf2",
+                "muted": "#eee2d3",
+                "radius": "0.75rem 0.75rem 0 0",
+                "pad": "1.5rem",
+                "gap": "0.5rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "products",
+                  "id": "n4",
+                  "product_ids": [],
+                  "exclude_cart": true,
+                  "action": "add_to_cart",
+                  "context": "cart",
+                  "source": "cross_sells"
+                }
+              ],
+              "tokens": {
+                "bg": "#faf5ee",
+                "pad": "1.5rem",
+                "radius": "0 0 0.75rem 0.75rem",
+                "gap": "1rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ]
+  }
+}

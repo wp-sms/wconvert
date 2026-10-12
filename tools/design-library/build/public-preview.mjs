@@ -20,10 +20,11 @@ export function publicPreview(pack, renderer, media = []) {
     for (const design of pack.templates) for (const [index, step] of design.tree.steps.entries()) for (const variant of step.results?.length ? step.results : [null]) {
       const node = rendererApi.render(design.tree, design.tokens, index);
       if (variant) {
+        rendererApi.previewResult?.(node, variant, step.products_required);
         const heading = node.querySelector('[data-result-heading]'), body = node.querySelector('[data-result-body]'), link = node.querySelector('[data-result-link]');
         if (heading) heading.textContent = variant.heading;
         if (body) body.textContent = variant.body;
-        if (link) { link.hidden = false; link.textContent = variant.link_label || 'Review the destination in the editor'; }
+        if (link) { link.hidden = !variant.href; link.textContent = variant.link_label || ''; }
       }
       for (const timer of node.querySelectorAll('[role=timer]')) { timer.textContent = '02d 14h 00m'; timer.setAttribute('aria-label', 'Example countdown, not a live deadline'); timer.setAttribute('title', 'Example countdown. Set your own campaign deadline.'); }
       // All actions stay in the showcase toolbar. Samples cannot navigate or submit.

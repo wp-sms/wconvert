@@ -7,4 +7,5 @@ return [
     'service-enquiries' => ['name' => __('Make the next enquiry easier', 'wconvert'), 'description' => __('Quote requests, callbacks and project discussions. A request is not a confirmed booking.', 'wconvert')],
     'reader-relationships' => ['name' => __('Give readers a reason to return', 'wconvert'), 'description' => __('Useful newsletters and resources, with a clear promise and an easy next step.', 'wconvert')],
     'black-friday-2026' => ['name' => __('Prepare for Black Friday', 'wconvert'), 'description' => __('Start with early access, a clear offer or a final-day announcement. Review the offer and your own dates.', 'wconvert')],
+    'help-shoppers-choose' => ['name' => __('Help shoppers choose', 'wconvert'), 'description' => __('Useful accessories, optional basket extras and a short product finder. Choose the help your shop needs.', 'wconvert')],
 ];

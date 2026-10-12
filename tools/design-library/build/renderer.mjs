@@ -44,6 +44,8 @@ writeFileSync(
   entry,
   [
     `export { prepareControls, readFields, restoreFields, disposePreview, validQuestions } from '${resolve(PLUGIN, 'tools/design-library/preview/controls')}';`,
+    `export { previewResult } from '${resolve(PLUGIN, 'tools/design-library/preview/results')}';`,
+    `export { graphTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-graph')}';`,
     `export { render } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,

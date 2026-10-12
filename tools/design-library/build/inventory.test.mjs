@@ -17,6 +17,21 @@ test('renaming IDs and copy cannot disguise the same composition', () => {
   assert.equal(analyseDesigns([original, { ...renamed, id: 'renamed' }])[0].nearest[0].same_design, true);
 });
 
+test('flow IDs are cosmetic while changing a route remains a real difference', () => {
+  const tree = JSON.parse(readFileSync(resolve(root, 'tests/fixtures/journey-graph-enquiry.json')));
+  const design = { ...original, tree };
+  const ids = new Set();
+  const walk = value => { if (!value || typeof value !== 'object') return; if (value.id) ids.add(value.id); Object.values(value).forEach(walk); };
+  walk(tree);
+  const rename = (value, key = '') => Array.isArray(value) ? value.map(item => rename(item, key))
+    : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [k, rename(v, k)]))
+      : ['id', 'entry', 'from', 'to', 'question', 'submission', 'fields', 'consents'].includes(key) && ids.has(value) ? 'renamed-' + value : value;
+  const renamed = rename(design);
+  assert.deepEqual(canonicalDesign(design), canonicalDesign(renamed));
+  renamed.tree.graph.entry = renamed.tree.steps[1].id;
+  assert.notDeepEqual(canonicalDesign(design), canonicalDesign(renamed));
+});
+
 test('colour variants share structure but not the style fingerprint', () => {
   const other = structuredClone(original); other.id = 'recolour'; other.tokens.bg = '#000000';
   const nearest = analyseDesigns([original, other])[0].nearest[0];
@@ -51,10 +66,12 @@ test('every pilot is a registered, complete snapshot with the intended privacy b
   for (const entry of entries) {
     const all = nodes(entry.tree);
     assert.ok(all.some(node => node.type === 'heading' && node.text?.trim()), entry.id);
-    assert.ok(all.some(node => node.type === 'button' && node.label?.trim()), entry.id);
+    assert.ok(all.some(node => node.type === 'button' && node.label?.trim() || node.type === 'products'), entry.id);
     if (['grow_email_list', 'grow_sms_list'].includes(entry.goal)) assert.ok(all.some(node => node.type === 'consent' && !node.hidden), entry.id);
     if (entry.goal === 'collect_enquiries') assert.ok(all.filter(node => node.type === 'consent').every(node => node.hidden), entry.id);
     assert.ok(entry.notes && entry.requirements.length && entry.config.display_rules);
+    // Authoring previews stay portable; actual site links are filled only in WordPress.
+    assert.ok(all.filter(node => node.type === 'button' && node.action === 'link').every(node => !node.href), entry.id);
     if (entry.goal === 'recover_cart') {
       assert.equal(entry.tier, 'elite');
       assert.equal(entry.tree.submissions.length, 0);

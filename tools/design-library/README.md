@@ -518,3 +518,14 @@ representative composition first, then every sibling's actual copy, screens,
 privacy and destinations before approving that sibling. Rebuild the live queue
 before each batch; this file is a dated priority list, not an approval source.
 Hosted API/licensing, CI, external delivery and merge remain deferred.
+
+
+### 12 October compatibility and shopping batch
+
+The current studio has **128 setups / 75 designs**, with **107 designs / 153 registered setups** across the plugin sources. Help shoppers choose contains three existing compositions and three new ones: Accessory workbench, Basket companion and Coffee finder board. Desktop, phone, RTL, every result variant and practical WooCommerce behaviour were reviewed. See `docs/reviews/commerce-refresh-2026-10-12.md`.
+
+The standalone Prefill uses an explicit empty site destination; WordPress retains real shop/home defaults. Product result previews include inert sample cards, and optional empty result links stay hidden. Graph preview traversal comes from the shipping loader. Remote v3 graph packs and explicitly declared, tier-checked paid targeting rules are now accepted by the strict importer. New source-format compatibility does not silently approve older content.
+
+Six curated collections have current reviews for their 24 unique setups. **104 other studio approvals remain stale** and should be re-reviewed in focused batches. The current local release is 22 setups / 19 designs / five packs / three complete collections. The premium pack is a private local fixture, not a live premium download service. Hosting, licence authorization and real delivery remain deferred.
+
+Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.

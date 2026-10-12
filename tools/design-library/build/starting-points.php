@@ -15,6 +15,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
 define('ABSPATH', '/');
+function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return $value; }
 function __(string $text, string $domain = ''): string { return $text; }
 function _doing_it_wrong(string $function, string $message, string $version): void
 {
@@ -34,7 +35,7 @@ $supplied = new SuppliedRules();
 foreach (Tier::cases() as $tier) {
     $supplied->add(...$rules->typesAt($tier, $site));
 }
-$prefill = new Prefill($playbooks, $templates, $vocabulary, new Degradation($rules, $supplied));
+$prefill = new Prefill($playbooks, $templates, $vocabulary, new Degradation($rules, $supplied), null, static fn (): array => ['href' => '', 'place' => 'home']);
 $entries = [];
 foreach (FlagshipCollection::GROUPS as $audience => $ids) {
     foreach ($ids as $id) {

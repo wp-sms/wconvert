@@ -40,8 +40,7 @@ service's packs remain JSON schema 1. **Amended by [ADR 0112](0112-template-disc
 minimum plugin version, tree version and capabilities. Required capabilities are
 derived from the actual nodes and must be declared. `requires.tree` is mandatory
 for the pack; individual bundled-style trees may omit `v`, in which case this
-explicit pack version supplies it. Any supplied `v` must agree, and every
-normalized preview/installed library tree carries the current `v`. Layouts carry
+explicit pack version supplies it. A supplied `v` cannot exceed the declared pack version; mixed v2/v3 packs declare tree 3 and each used tree capability. A missing `v` inherits the declared version. Every normalized preview/installed tree preserves its validated version. Layouts carry
 no IDs; leaf IDs must be unique. An index pins its exact
 bytes with SHA-256; install rechecks the digest the merchant previewed.
 
@@ -111,3 +110,12 @@ and fake WordPress/database functions.
 Schema 2 adds `pack-images:1`, a hash/size/MIME/dimension/access manifest and separate `{template_id,node_id,asset_id}` bindings. Only normalized image leaves can bind. Free designs cannot reference premium assets. No remote/data URL is accepted in a downloadable tree. The client derives Free image paths from its configured catalog origin, stages and verifies the complete set, and commits the marker before registering the immutable pack. Runtime hydration uses verified local URLs; the archived JSON and digest are unchanged. Missing/corrupt images fail closed and can be repaired by explicit preview. Old media URLs are retained for existing campaigns; there is no automatic garbage collection. Premium image downloads remain closed pending the licence adapter.
 
 The image budget is 16 files, 5 MiB per file and 20 MiB per pack, PNG/JPEG/WebP only, up to 4096px per dimension. Installed set markers are bounded to 128; this is not an unlimited cache. Native verification uses `bin/verify-template-media.php` and the actual-release verifier `bin/verify-template-release.php`. The latter exercises the Homeware care pack, exact preview/install agreement, offline reads, a synthetic next-version update with image reuse, and retention of the original design/image references. Bundled SVG stays compact; the internal publisher accepts only an explicitly reviewed raster derivative bound to the source URI, raster and evidence hashes. Conversion is never implicit during a build.
+
+
+## 2026-10-12 — current flow and commerce pack compatibility
+
+The reader accepts explicitly declared `template-tree:3` with graph structure, reference validation and the shipping GraphCaptureContract. The remote screen budget remains seven (portable merchant files retain their separate 256-screen v3 allowance); node/depth/byte limits are unchanged. Installed v3 designs use that graph contract during library registration instead of being silently rejected as linear journeys. A regression installs, updates and reopens an archive offline, preserving original route/style baselines. Malformed routes, unknown graph keys and authored URLs still fail.
+
+`paid-campaign-rules:1` permits supported rule shapes at the receiving install's actual tier. Rule definitions still come from the manifest, unknown parameters are rejected and authored page/product/element identifiers remain forbidden. Thus an Elite basket condition can survive pack import without being weakened to “everyone”; Free/Basic cannot import that condition. Export access classification includes rule tiers as well as design/Goal tiers. This is client compatibility, not a replacement for hosted licence authorization.
+
+The internal exporter supplies narrow filesystem adapters for its temporary validation archive, so the actual illustrated pack reader runs without WordPress. Native WordPress verification remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` explicitly allows the local verifier to read a private rehearsal pack; it creates no network entitlement path. Premium hosted downloads and premium media authorization remain closed pending the deferred licence adapter.

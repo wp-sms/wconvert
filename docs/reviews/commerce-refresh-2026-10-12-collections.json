@@ -1,0 +1,50 @@
+[
+  {
+    "day": "2026-10-12",
+    "business": "stores",
+    "plan": "pro",
+    "collections": [
+      "Introduce a collection",
+      "Plan a useful sale",
+      "Help shoppers choose"
+    ]
+  },
+  {
+    "day": "2026-10-12",
+    "business": "stores",
+    "plan": "free",
+    "collections": [
+      "Introduce a collection",
+      "Plan a useful sale"
+    ]
+  },
+  {
+    "day": "2026-10-12",
+    "business": "services",
+    "plan": "pro",
+    "collections": [
+      "Make the next enquiry easier"
+    ]
+  },
+  {
+    "day": "2026-11-10",
+    "business": "stores",
+    "plan": "pro",
+    "collections": [
+      "Prepare for Black Friday",
+      "Introduce a collection",
+      "Plan a useful sale",
+      "Help shoppers choose"
+    ]
+  },
+  {
+    "day": "2026-12-01",
+    "business": "stores",
+    "plan": "pro",
+    "collections": [
+      "Introduce a collection",
+      "Plan a useful sale",
+      "Help shoppers choose"
+    ]
+  }
+]

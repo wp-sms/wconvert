@@ -5,7 +5,7 @@
       "id": "stores-starts",
       "name": "Stores starting points",
       "description": "Reviewed campaign starting points for stores.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "setups": [
         "edition-early-access",
         "first-order-receipt",
@@ -17,7 +17,7 @@
       "id": "services-starts",
       "name": "Services starting points",
       "description": "Reviewed campaign starting points for services.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "setups": [
         "cleaning-quote",
         "home-repair-quote",
@@ -31,7 +31,7 @@
       "id": "publishers-starts",
       "name": "Publishers starting points",
       "description": "Reviewed campaign starting points for publishers.",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "setups": [
         "editorial-weekly",
         "reading-notes-guide",
@@ -44,15 +44,30 @@
       "id": "homeware-care",
       "name": "Care for handmade homeware",
       "description": "An illustrated starting point for useful monthly homeware care notes.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "setups": [
         "homeware-care-notes"
+      ]
+    },
+    {
+      "id": "shopping-help",
+      "name": "Helpful shopping journeys",
+      "description": "Reviewed product accessories, basket extras and a coffee finder. Requires matching Pro capabilities and this shop’s WooCommerce product choices.",
+      "version": "1.0.0",
+      "setups": [
+        "recommend-accessory",
+        "explore-compatible-extras",
+        "add-useful-extras",
+        "basket-cross-sells",
+        "coffee-taste-finder",
+        "shopping-guidance"
       ]
     }
   ],
   "collections": [
     "service-enquiries",
-    "reader-relationships"
+    "reader-relationships",
+    "help-shoppers-choose"
   ],
   "deferred": [
     {
@@ -68,7 +83,7 @@
     "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152": {
       "redistribution": true,
       "source": "Original WConvert homeware-shelf.svg, extracted unchanged from product-shelf; GPL-2.0-or-later. Raster export: homeware-shelf.png. See pilot/assets/README.md.",
-      "reviewedBy": "Codex \u2014 source/provenance review, 2026-10-01",
+      "reviewedBy": "Codex — source/provenance review, 2026-10-01",
       "access": "free"
     }
   },

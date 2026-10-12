@@ -36,6 +36,12 @@ $transport = new class($directory) implements CatalogTransport, CatalogImageTran
         if ($this->offline) throw new RuntimeException('Offline test');
         $key = parse_url($url, PHP_URL_PATH);
         if (isset($this->fixtures[$key])) return $this->fixtures[$key];
+        // Explicit offline rehearsal only, not a production entitlement adapter.
+        if (getenv('WCONVERT_VERIFY_PREMIUM_FIXTURES') === '1' && is_string($key) && preg_match('~^/downloads/([a-f0-9]{64})\.json$~D', $key, $match)) {
+            $bytes = file_get_contents($this->directory . '/private/packs/' . $match[1] . '.json');
+            if ($bytes === false) throw new RuntimeException('Missing private rehearsal fixture');
+            return $bytes;
+        }
         if (!is_string($key) || !preg_match('~^/(manifest\.json|packs/[a-f0-9]{64}\.json|releases/[a-f0-9]{64}/page-[0-9]+\.json)$~D', $key)) throw new RuntimeException('Only public release fixtures are read by this verifier');
         $bytes = file_get_contents($this->directory . '/public' . $key);
         if ($bytes === false) throw new RuntimeException('Missing release fixture');

@@ -5,6 +5,7 @@ namespace WConvert\Template\Catalog;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Rules\RuleManifest;
 use WConvert\Rules\RuleVocabulary;
+use WConvert\Support\Tier;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateSource;
@@ -16,7 +17,7 @@ defined('ABSPATH') || exit;
 /** Strict JSON grammar before the shared Playbook registration checks. */
 final class PackPlaybooks
 {
-    public function __construct(private readonly TemplateVocabulary $vocabulary) {}
+    public function __construct(private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free) {}
 
     /** @param array<string, mixed> $pack */
     public function validate(array $pack): void
@@ -40,12 +41,12 @@ final class PackPlaybooks
             PackValidator::words($entry['name'] ?? null, 120);
             PackValidator::words($entry['notes'] ?? '', 2000);
             PackValidator::check(is_array($entry['copy'] ?? null), __('This campaign setup has invalid wording.', 'wconvert'));
-            $this->rules($entry['rules'] ?? null, $manifest['triggers'] + $manifest['conditions']);
+            $this->rules($entry['rules'] ?? null, $manifest['triggers'] + $manifest['conditions'], $pack['requires']['capabilities']);
             $targeting = $entry['targeting'] ?? [];
             PackValidator::check(is_array($targeting), __('This campaign setup has invalid targeting.', 'wconvert'));
             PackValidator::keys($targeting, ['include', 'exclude', 'logged_in']);
             foreach (['include', 'exclude'] as $axis) {
-                if (array_key_exists($axis, $targeting)) $this->rules($targeting[$axis], array_filter($manifest['targeting'], static fn (array $rule): bool => $rule['kind'] === 'page'));
+                if (array_key_exists($axis, $targeting)) $this->rules($targeting[$axis], array_filter($manifest['targeting'], static fn (array $rule): bool => $rule['kind'] === 'page'), $pack['requires']['capabilities']);
             }
             if (array_key_exists('logged_in', $targeting)) PackValidator::check(is_bool($targeting['logged_in']), __('This campaign setup has invalid audience settings.', 'wconvert'));
             $hint = $entry['destination_hint'] ?? [];
@@ -111,14 +112,17 @@ final class PackPlaybooks
 
     /** @param mixed $rules
      * @param array<string, array<string, mixed>> $definitions
+     * @param list<string> $capabilities
      */
-    private function rules($rules, array $definitions): void
+    private function rules($rules, array $definitions, array $capabilities): void
     {
         PackValidator::check(is_array($rules) && array_is_list($rules) && count($rules) <= 20, __('This campaign setup has an invalid rule list.', 'wconvert'));
         foreach ($rules as $rule) {
             PackValidator::check(is_array($rule) && is_string($rule['type'] ?? null), __('This campaign setup has an invalid rule.', 'wconvert'));
             $definition = $definitions[$rule['type']] ?? null;
-            PackValidator::check(is_array($definition) && $definition['tier'] === 'free', __('This campaign setup needs rules this pack format does not support.', 'wconvert'));
+            $tier = is_array($definition) ? Tier::tryFrom($definition['tier'] ?? '') : null;
+            PackValidator::check($tier !== null && $this->installedTier->includes($tier), __('This campaign setup needs rules this install does not support.', 'wconvert'));
+            PackValidator::check($tier === Tier::Free || in_array('paid-campaign-rules:1', $capabilities, true), __('This pack does not declare its paid rule requirements.', 'wconvert'));
             $params = $definition['params'];
             $allowed = ['type'];
             foreach (array_keys($params) as $name) {
