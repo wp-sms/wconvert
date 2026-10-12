@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { graphReaches } from './graph';
+import { gateEndings, gateFaults } from './gateEndings';
 import { submissionScreen, walkNodes } from './journey';
 import type { JourneyReadinessIssue } from './journeyReadiness';
 
@@ -30,10 +31,12 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
   const name = (id: string) => tree.steps.find(screen => screen.id === id)?.name ?? id;
   const result = tree.steps.find(screen => screen.kind === 'result');
   if (action === 'match' && result) {
-    const endings = new Set(tree.steps.filter(screen => !tree.graph!.edges.some(edge => edge.from === screen.id)).map(screen => screen.id));
+    // An ending that skips the result on purpose is early and allowed (ADR 0142).
+    const sides = gateEndings(tree, result.id);
+    const endings = new Set(gateFaults(sides));
     for (const { target, edge } of bypasses(tree, result.id, endings)) issues.push({
       key: `result-bypass:${target}`,
-      said: sprintf(__('A path reaches “%1$s” without showing “%2$s”. Reconnect the path from “%3$s” through the result.', 'wconvert'), name(target), result.name, name(edge.from)),
+      said: sprintf(__('A line reaches “%1$s” without showing “%2$s”. Send the line from “%3$s” through the result.', 'wconvert'), name(target), result.name, name(edge.from)),
       repair: { screenId: edge.from, section: 'paths', edgeId: edge.id, focus: edge.kind === 'hidden' ? 'hidden-route' : 'route-target' },
     });
   }
@@ -44,7 +47,7 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
     if (screen.id === primary.id || !graphReaches(tree.graph, primary.id, screen.id)) continue;
     if (!walkNodes(screen.content).some(node => node.type === 'question')) continue;
     issues.push({ key: `question-after-save:${screen.id}`,
-      said: sprintf(__('The questions on “%1$s” come after “%2$s” saves the answers. Move this screen before that save in Screens, or remove its questions.', 'wconvert'), screen.name, primary.name),
+      said: sprintf(__('The questions on “%1$s” come after “%2$s” saves the answers. Move this screen before that save, or remove its questions.', 'wconvert'), screen.name, primary.name),
       repair: { screenId: screen.id, section: 'content', focus: 'questions' },
     });
   }
@@ -53,7 +56,7 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
     if (at < 0 || at === primaryAt) continue;
     for (const { edge } of bypasses(tree, primary.id, new Set([tree.steps[at].id]))) issues.push({
       key: `secondary-before-primary:${save.id}`,
-      said: sprintf(__('A path reaches “%1$s” before the primary save at “%2$s”. Reconnect the path from “%3$s” through the primary save.', 'wconvert'), tree.steps[at].name, primary.name, name(edge.from)),
+      said: sprintf(__('A line reaches “%1$s” before the main form at “%2$s”. Send the line from “%3$s” through the main form.', 'wconvert'), tree.steps[at].name, primary.name, name(edge.from)),
       repair: { screenId: edge.from, section: 'paths', edgeId: edge.id, focus: edge.kind === 'hidden' ? 'hidden-route' : 'route-target' },
     });
   }

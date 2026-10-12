@@ -939,20 +939,25 @@ its elements; the canvas shows one at a time.
 One way from a screen to the next screen (a graph edge). **Not** a
 [[Connection]] — that word stays the stored credentials for a remote account, and
 the journey sense was renamed to avoid the collision. "Branch" and "route" are
-retired synonyms.
+retired synonyms. On the Flow map a path is drawn as a **line** ("Send some
+answers to a different screen", "+ on a line"); a line labelled with an answer
+is an answer line, and one answer line may match several answers ("My home or
+My flat", ADR 0142).
 
 ### Follow-up question
 
 A question screen shown only to visitors whose earlier answer matched, by its
-[[Show only if…]]. Several follow-ups for one multi-choice question form a group
+[[Only if…]]. Several follow-ups for one multi-choice question form a group
 asked one at a time, sharing one way on.
 
-### Show only if…
+### Only if…
 
 A screen's condition on an earlier answer (`screen.when`). A screen that does
 not match is skipped, and visitors continue where it would have taken them,
-unless its "If skipped, go to…" says otherwise. Replaces "screen visibility", "visibility rule" and "Show
-this screen when…".
+unless its "If skipped → X" says otherwise. On the map it splits the line it
+sits on (ADR 0142): "Includes X" / "Without X" after a choose-several question.
+Replaces "Show only if…", "Shown if", "screen visibility", "visibility rule"
+and "Show this screen when…".
 
 ### Form
 
@@ -967,8 +972,14 @@ last. Replaces "Everyone else" and "fallback".
 
 ### Then
 
-Where a screen goes next: "Then → Thank you". On a straight journey there is one
-answer; on a question with paths it depends on the answer.
+Where a screen goes next: "Then → Thank you", a button on its Flow card that
+opens the control setting it. On a straight campaign there is one answer; on a
+question with answer lines it depends on the answer. Replaces "Next screen" and
+"Check next". An ending that no route reaches through the required form (or,
+for find-a-match, the result) is an **early ending** and says "Ends without
+saving details"; one some visitors reach both ways says "Some visitors end
+here without saving details". Both are allowed while another ending comes
+after the form (ADR 0142).
 
 ### Template
 

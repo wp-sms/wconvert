@@ -13,9 +13,9 @@ it.each(['default','answer'] as const)('previews and inserts on exactly the sele
   let changed: TemplateTree | undefined;
   const insert = vi.fn((location, type, _name, when, hidden) => { changed = addGraphScreen(tree, location, type, when, hidden); });
   render(<Dialog open><DialogContent><GraphScreenInsert tree={tree} source="scope" kind="input" initialLocation={`edge:${edge.id}`} onInsert={insert} onCancel={() => {}} /></DialogContent></Dialog>);
-  const context = screen.getByLabelText('Resulting journey');
-  if (kind === 'default') expect(context).toHaveTextContent('Path for all other answers');
-  expect(context).toHaveTextContent('Only visitors taking this path will see the new screen.');
+  const context = screen.getByLabelText('Where it goes');
+  if (kind === 'default') expect(context).toHaveTextContent('All other answers');
+  expect(context).toHaveTextContent(kind === 'default' ? 'Everyone on this line sees it.' : /Only visitors on the “.+” line see it\./);
   expect(context).toHaveTextContent(tree.steps.find(step => step.id === edge.to)!.name);
   expect(context.compareDocumentPosition(screen.getByRole('textbox',{name:'Question'})) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   fireEvent.change(screen.getByRole('textbox',{name:'Question'}),{target:{value:'When should we contact you?'}});
@@ -31,8 +31,8 @@ it.each(['default','answer'] as const)('previews and inserts on exactly the sele
 it('does not promise continuation when the merchant chooses to finish the path', () => {
   const edge = tree.graph!.edges.find(edge => edge.from === 'scope' && edge.kind === 'default')!;
   render(<Dialog open><DialogContent><GraphScreenInsert tree={tree} source="scope" kind="input" initialLocation={`edge:${edge.id}`} onInsert={()=>{}} onCancel={()=>{}} /></DialogContent></Dialog>);
-  fireEvent.click(screen.getByRole('radio',{name:/Finish this path/}));
-  const context=screen.getByLabelText('Resulting journey');
+  fireEvent.click(screen.getByRole('radio',{name:/Finish this line/}));
+  const context=screen.getByLabelText('Where it goes');
   expect(within(context).getByText('Ending')).toBeInTheDocument();
   expect(context).not.toHaveTextContent(tree.steps.find(step=>step.id===edge.to)!.name);
   expect(screen.queryByText(/continues to the following screen automatically/)).toBeNull();

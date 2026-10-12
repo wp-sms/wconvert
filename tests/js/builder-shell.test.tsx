@@ -1798,11 +1798,11 @@ it('prevents opening a second save path while a draft save is pending', async ()
 
 
 /** D4: a straight campaign is one way through, so there is no Flow map to switch to. */
-it('starts on the campaign itself and offers no Flow for a straight line', async () => {
+it('starts on the campaign itself and offers Flow even for a straight line (ADR 0142)', async () => {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
   expect(await screen.findByRole('tab', { name: 'Edit' })).toHaveAttribute('aria-selected', 'true');
   expect(screen.getByRole('region', { name: 'Design canvas' })).toBeInTheDocument();
   expect(screen.getByRole('navigation', { name: 'Campaign' })).toBeInTheDocument();
-  expect(screen.queryByRole('radio', { name: 'Flow' })).toBeNull();
+  expect(screen.getByRole('radio', { name: 'Flow' })).not.toBeChecked();
   expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
 });

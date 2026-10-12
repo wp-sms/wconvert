@@ -95,7 +95,8 @@ final class OptinRepositoryTest extends TestCase
         $this->assertSame([$optin->id], array_column($this->publishedSet->all(), 'id'));
     }
 
-    public function testGraphPublicationPromotesAValidCombinedEnquiryAndKeepsItsLiveSnapshotWhenABranchBypassesCapture(): void
+    /** A branch that skips the form may publish (ADR 0142); a rule naming an answer that does not exist may not. */
+    public function testGraphPublicationPromotesAValidCombinedEnquiryAndKeepsItsLiveSnapshotWhenADraftCannotPublish(): void
     {
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
         $config = ['template' => ['tree' => $tree], 'capture_mode' => 'local', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
@@ -108,8 +109,15 @@ final class OptinRepositoryTest extends TestCase
         $config['template']['tree']['graph']['edges'][] = ['id' => 'bypass', 'from' => 'interests', 'to' => 'received', 'kind' => 'answer',
             'when' => ['match' => 'all', 'clauses' => [['question' => 'n1', 'operator' => 'includes_any', 'values' => ['garden']]]]];
         $this->repository->saveDraft($optin->id, null, null, $config);
+        self::assertNotNull($this->repository->publish($optin->id));
+        $live = $this->repository->find($optin->id)?->publishedConfig['template']['tree'];
+
+        $config['template']['tree']['graph']['edges'][] = ['id' => 'broken', 'from' => 'interests', 'to' => 'contact', 'kind' => 'answer',
+            'when' => ['match' => 'all', 'clauses' => [['question' => 'n1', 'operator' => 'includes_any', 'values' => ['nowhere']]]]];
+        $this->repository->saveDraft($optin->id, null, null, $config);
         self::assertNull($this->repository->publish($optin->id));
-        self::assertSame($tree, $this->repository->find($optin->id)?->publishedConfig['template']['tree']);
+        self::assertSame($live, $this->repository->find($optin->id)?->publishedConfig['template']['tree']);
+        self::assertNotSame($tree, $live);
     }
 
     public function testGraphPublicationUsesTheQuizGoalToAllowAnAnonymousResult(): void

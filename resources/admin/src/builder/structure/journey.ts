@@ -207,16 +207,16 @@ export function graphResultAccessIssue(tree: TemplateTree, required: boolean): {
   const issue = (message: string, screenId: string, section: 'content' | 'paths' = 'paths') => ({ message, screenId, section });
   if (result.id === graph.entry || signup.id === graph.entry)
     return issue(__('Start with a question screen before the result and signup.', 'wconvert'), graph.entry);
-  if (signup.when) return issue(__('Show the signup to everyone on this path before changing result access.', 'wconvert'), signup.id, 'content');
+  if (signup.when) return issue(__('Show the signup to everyone on this line before changing result access.', 'wconvert'), signup.id, 'content');
   if (!walkNodes(signup.content).some(node => node.type === 'field' && 'id' in node && submission.fields.includes(node.id ?? '')
     && 'name' in node && node.name === 'email' && 'required' in node && node.required))
     return issue(__('Place the required email field on the signup screen before changing result access.', 'wconvert'), signup.id, 'content');
   const first = required ? result : signup, second = required ? signup : result;
   const outgoing = graph.edges.filter(edge => edge.from === first.id);
   if (outgoing.length !== 1 || outgoing[0].kind !== 'default' || outgoing[0].to !== second.id)
-    return issue(sprintf(__('Connect “%1$s” directly to “%2$s” with one path for all answers. Move any answer paths after both screens first.', 'wconvert'), first.name, second.name), first.id);
+    return issue(sprintf(__('Connect “%1$s” directly to “%2$s” with one line for all answers. Move any answer lines after both screens first.', 'wconvert'), first.name, second.name), first.id);
   const otherIncoming = graph.edges.find(edge => edge.to === second.id && edge.id !== outgoing[0].id);
-  if (otherIncoming) return issue(sprintf(__('The path from “%1$s” enters “%2$s” separately. Connect it to “%3$s” first so both screens move together.', 'wconvert'),
+  if (otherIncoming) return issue(sprintf(__('The line from “%1$s” enters “%2$s” separately. Connect it to “%3$s” first so both screens move together.', 'wconvert'),
     tree.steps.find(screen => screen.id === otherIncoming.from)?.name ?? otherIncoming.from, second.name, first.name), otherIncoming.from);
   if (!required) {
     const questions = new Set(walkNodes(signup.content).filter(node => node.type === 'question' && 'id' in node).map(node => 'id' in node ? node.id : ''));
@@ -441,7 +441,7 @@ export function whyScreenStays(tree: TemplateTree, index: number): Refusal | nul
   if (screen.kind === 'acknowledgement') return { short: __('Keeps the ending', 'wconvert'), reason: __('Keep this ending so visitors have somewhere to finish.', 'wconvert') };
   if (tree.steps.length <= 2) return { short: __('Needs two screens', 'wconvert'), reason: __('A campaign keeps at least two screens.', 'wconvert') };
   if (tree.steps.some(item => item.paths?.some(path => path.to === screen.id))) {
-    return { short: __('A path leads here', 'wconvert'), reason: __('Another screen’s path leads here. Change that path first.', 'wconvert') };
+    return { short: __('A line leads here', 'wconvert'), reason: __('Another screen’s line leads here. Change that line first.', 'wconvert') };
   }
   if (walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) {
     return { short: __('Other screens use its answers', 'wconvert'), reason: __('Answers on this screen are used by rules on other screens. Update those rules first.', 'wconvert') };
@@ -468,21 +468,3 @@ export function removedScreen(tree: TemplateTree, index: number): TemplateTree {
   });
 }
 
-/**
- * Whether visitors can take more than one way through this campaign — the one
- * question that decides whether the editor offers the Flow map at all (D4).
- *
- * A straight line, linear or graph, is one way: a list of screens says all
- * there is to say about it, and a map of it is a second picture of the same
- * thing. Any answer path, any skipped screen (a `hidden` edge or a "Show only
- * if…") and any linear screen with more than one path make it more than one way.
- *
- * **Results that depend on the answers do not.** Visitors still pass the same
- * screens; the map draws a results screen as one card ("3 possible results"),
- * and which result shows is edited on that screen. A straight quiz is a
- * straight line until a path or a follow-up is added.
- */
-export function hasManyWaysThrough(tree: TemplateTree): boolean {
-  if (tree.graph?.edges.some(edge => edge.kind === 'answer' || edge.kind === 'hidden')) return true;
-  return tree.steps.some(screen => screen.when !== undefined || (screen.paths?.length ?? 0) > 1);
-}

@@ -66,6 +66,22 @@ final class JourneyRulesTest extends TestCase
         self::assertNull(JourneyRules::normalize($condition));
     }
 
+    /** "is any of": one answer line may match several answers of a choose-one question (ADR 0142). */
+    public function testAChooseOneRuleMayNameSeveralAnswers(): void
+    {
+        $condition = ['match' => 'all', 'clauses' => [['question' => 'q_project', 'operator' => 'is', 'values' => ['garden', 'balcony']]]];
+        self::assertSame($condition, JourneyRules::normalize($condition));
+        self::assertTrue(JourneyRules::matches($condition, ['q_project' => 'garden']));
+        self::assertTrue(JourneyRules::matches($condition, ['q_project' => 'balcony']));
+        self::assertFalse(JourneyRules::matches($condition, ['q_project' => 'other']));
+        $condition['clauses'][0]['operator'] = 'is_not';
+        self::assertSame($condition, JourneyRules::normalize($condition));
+        self::assertTrue(JourneyRules::matches($condition, ['q_project' => 'other']));
+        self::assertFalse(JourneyRules::matches($condition, ['q_project' => 'balcony']));
+        $condition['clauses'][0]['values'] = array_map(static fn (int $at): string => "a$at", range(1, 13));
+        self::assertNull(JourneyRules::normalize($condition));
+    }
+
     public function testTraceNamesTheWinningRouteAndWhyScreensWereSkipped(): void
     {
         $fixture = json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/fixtures/journey-paths.json'), true);

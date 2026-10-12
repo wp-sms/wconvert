@@ -49,7 +49,7 @@ describe('explicit capture ownership', () => {
     const path = pathOf(tree, 'n1');
     const source = tree.steps[Number(path[0])];
     const conditional = { ...tree, steps: tree.steps.map(step => step.id === source.id ? { ...step, when: { match: 'all' as const, clauses: [] } } : step) };
-    expect(captureOwnership(conditional, path)?.choices[0].reason).toMatch(/Every path/);
+    expect(captureOwnership(conditional, path)?.choices[0].reason).toMatch(/Every line/);
     expect(withCaptureOwner(conditional, path, 'enquiry')).toBe(conditional);
   });
 

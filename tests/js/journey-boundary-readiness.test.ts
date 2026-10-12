@@ -1,3 +1,4 @@
+import { earlyEnding } from '../../resources/admin/src/builder/structure/gateEndings';
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import coffee from '../fixtures/journey-graph-coffee.json';
@@ -12,16 +13,14 @@ it('accepts the complete quiz, enquiry and progressive save boundaries', () => {
   expect(journeyBoundaryIssues(upgradeToGraph(progressive.tree as TemplateTree), 'submit')).toEqual([]);
 });
 
-it('repairs a result bypass before the shared join instead of pointing at the ending edge', () => {
+/** Some visitors may finish without the result (ADR 0142): the map says so on the ending, and nothing blocks publishing. */
+it('lets some visitors skip the result on the way to a shared ending', () => {
   const original = coffee.template.tree as TemplateTree;
   const tree = { ...original, graph: { ...original.graph!, edges: [...original.graph!.edges,
     { id: 'bypass_result', from: 'brew', to: 'email', kind: 'answer' as const, when: { match: 'all' as const, clauses: [] } },
   ] } };
-  const issues = journeyBoundaryIssues(tree, 'match');
-  expect(issues).toHaveLength(1);
-  expect(issues[0].said).toMatch(/without showing “Your coffee match”/);
-  expect(issues[0].repair).toEqual({ screenId: 'brew', section: 'paths', edgeId: 'bypass_result', focus: 'route-target' });
-  expect(journeyBoundaryIssues({ ...tree, steps: [...tree.steps].reverse() }, 'match')).toEqual(issues);
+  expect(journeyBoundaryIssues(tree, 'match')).toEqual([]);
+  expect(earlyEnding(tree, 'thanks')).toEqual([{ gate: 'result', always: false }]);
 });
 
 it('names a question added after the combined enquiry save', () => {
@@ -31,7 +30,7 @@ it('names a question added after the combined enquiry save', () => {
   } }], graph: { ...original.graph!, edges: [...original.graph!.edges.map(edge => edge.id === 'submitted' ? { ...edge, to: 'late' } : edge),
     { id: 'late_end', from: 'late', to: 'received', kind: 'default' }] } };
   expect(journeyBoundaryIssues(tree, 'submit')).toEqual([{ key: 'question-after-save:late',
-    said: 'The questions on “Too late” come after “One enquiry” saves the answers. Move this screen before that save in Screens, or remove its questions.',
+    said: 'The questions on “Too late” come after “One enquiry” saves the answers. Move this screen before that save, or remove its questions.',
     repair: { screenId: 'late', section: 'content', focus: 'questions' } }]);
 });
 

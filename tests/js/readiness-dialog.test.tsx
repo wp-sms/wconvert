@@ -82,7 +82,7 @@ describe('reviewing before publishing', () => {
     ] } } };
     await open({ template, onEditJourney });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(fixFor(/Choose an answer for the path from “Interests” to “Balcony details”/));
+    await userEvent.click(fixFor(/Choose an answer for the line from “Interests” to “Balcony details”/));
     await waitFor(() => expect(onEditJourney).toHaveBeenCalledExactlyOnceWith({ screenId: 'interests', section: 'paths', edgeId: 'unfinished' }));
   });
 

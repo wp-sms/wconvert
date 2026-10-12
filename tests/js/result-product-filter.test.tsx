@@ -25,7 +25,7 @@ it('does not fetch incomplete matches and explains empty and failed reads', asyn
   expect(screen.getByRole('status')).toHaveTextContent('Choose a category');
   vi.mocked(apiFetch).mockResolvedValueOnce([]);
   rerender(<LiveProductMatches filter={{ category_id: 7, attributes: [] }} />);
-  await screen.findByText('No available matches. Visitors can use your fallback link.');
+  await screen.findByText('No available matches. Visitors can still use the result’s link.');
   vi.mocked(apiFetch).mockRejectedValueOnce(Error('Removed'));
   rerender(<LiveProductMatches filter={{ category_id: 8, attributes: [] }} />);
   await screen.findByRole('alert');

@@ -13,9 +13,9 @@ it('distinguishes completing and skipping the incoming screen and opens the exac
   const next = tree.graph!.edges.find(edge => edge.from === 'garden' && edge.kind === 'default')!.to;
   render(<JourneyArrivalSummary tree={tree} step={tree.steps.findIndex(step => step.id === next)} onSelectPath={select} />);
   await user.click(screen.getByText('Arrives from Garden details'));
-  await user.click(screen.getByRole('button', { name: 'Garden details When that screen is skipped' }));
+  await user.click(screen.getByRole('button', { name: 'Garden details If skipped' }));
   expect(select).toHaveBeenLastCalledWith(garden, 'hidden');
-  await user.click(screen.getByRole('button', { name: 'Garden details After completing that screen' }));
+  await user.click(screen.getByRole('button', { name: 'Garden details Then' }));
   expect(select).toHaveBeenLastCalledWith(garden, 0);
 });
 it('identifies the actual entry even when it is not first in storage order', () => {
