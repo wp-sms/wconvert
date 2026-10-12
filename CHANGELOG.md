@@ -30,9 +30,9 @@ the full record for the team.
 
 - Leads: when the server fails while the list is loading, the page shows
   one "Try again", and it reloads the list. The line saying how long
-  submissions are kept now loads after the list. Before, its own error and
-  "Try again" could appear first, and that button reloaded only that line,
-  not the list.
+  submissions are kept now loads after the list, and a campaign-names error
+  shows only beside a loaded list. Before, either could show its own error
+  and "Try again" first, and that button reloaded only itself, not the list.
 - The loader size limits are now Free 14,720 B, Basic 25,472 B, Pro 27,040 B
   and Elite 27,712 B (gzip on Node 22), approved by Mostafa on 2026-10-12.
   The "is not" rule (#244) was measured on Node 20's gzip, and the template

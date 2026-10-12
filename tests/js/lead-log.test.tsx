@@ -238,6 +238,23 @@ describe('capture history', () => {
     expect(log.saveRetention).not.toHaveBeenCalled();
   });
 
+  it('draws no names door while the log is still loading, so its one Try again re-reads both', async () => {
+    let failLog: (cause: Error) => void = () => {};
+    log.readLog.mockImplementationOnce(() => new Promise((_resolve, reject) => { failLog = reject; }));
+    optins.listOptins.mockRejectedValueOnce(new Error('Names unavailable.'));
+    render(<LeadLog />);
+    await waitFor(() => expect(optins.listOptins).toHaveBeenCalledTimes(1));
+    await act(async () => { await Promise.resolve(); });
+    expect(screen.queryByText(/Names unavailable\./)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Try again' })).not.toBeInTheDocument();
+    await act(async () => { failLog(new Error('Submissions unavailable.')); });
+    await screen.findByText('Submissions unavailable.');
+    expect(screen.getAllByRole('button', { name: 'Try again' })).toHaveLength(1);
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
+    await screen.findByRole('link', { name: 'Newsletter footer' });
+  });
+
   it('can retry the first failed read without reloading the whole page', async () => {
     log.readLog.mockRejectedValueOnce(new Error('History unavailable.'));
     render(<LeadLog />);
