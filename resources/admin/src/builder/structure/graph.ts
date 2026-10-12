@@ -59,6 +59,11 @@ export function graphTargets(tree: TemplateTree, source: string): readonly Templ
   return tree.steps.filter(screen => screen.id !== source && !graphReaches(tree.graph!, screen.id, source));
 }
 
+/** Where visitors who skip a screen go: its "If skipped" line, else its "Then" line. */
+export function skipEdge(graph: JourneyGraph, screen: string): JourneyGraphEdge | undefined {
+  return graph.edges.find(edge => edge.from === screen && edge.kind === 'hidden') ?? graph.edges.find(edge => edge.from === screen && edge.kind === 'default');
+}
+
 export function graphEdgeId(graph: JourneyGraph): string {
   const used = new Set(graph.edges.map(edge => edge.id));
   let serial = 1;

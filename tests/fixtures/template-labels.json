@@ -213,7 +213,7 @@
     "params": {
         "submit": "Sends the form",
         "link": "Goes somewhere else",
-        "next": "Continues the journey",
+        "next": "Goes to the next screen",
         "back": "Returns to the previous screen",
         "skip": "Skips optional signup",
         "close": "Closes the popup"

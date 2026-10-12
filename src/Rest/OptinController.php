@@ -431,7 +431,7 @@ final class OptinController implements RestController
 
         if ($stored !== null && $checked !== null && $checked->value !== $stored->goal && !$stored->canChangeGoal()) {
             return new WP_Error('wconvert_optin_goal_locked',
-                __('This Goal is fixed after first publish or while part of an A/B test. Duplicate this Campaign for a different Goal to keep its history unchanged.', 'wconvert'),
+                __('This goal is fixed after first publish or while part of an A/B test. Duplicate this campaign for a different Goal to keep its history unchanged.', 'wconvert'),
                 ['status' => 409]);
         }
 
@@ -587,7 +587,7 @@ final class OptinController implements RestController
         if (!$optin->hasDesign()) {
             return new WP_Error(
                 'wconvert_optin_needs_a_design',
-                __('Choose a design before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
+                __('Choose a design before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
                 ['status' => 400]
             );
         }
@@ -599,30 +599,30 @@ final class OptinController implements RestController
 
         $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url(), true);
         if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !\WConvert\Template\JourneySupport::active()) {
-            return new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display. You can keep saving this Campaign as a draft.', 'wconvert'), ['status' => 400]);
+            return new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display. You can keep saving this campaign as a draft.', 'wconvert'), ['status' => 400]);
         }
         if ($issue !== null) {
             $message = match ($issue) {
-                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
-                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
+                'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this campaign as a draft.', 'wconvert'),
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
                 // A free install names no product (ADR 0116 §3); it says what a question block says.
                 'quiz_cart', 'commerce_products' => (new \WConvert\Support\WpProPresence())->installedTier() === \WConvert\Support\Tier::Free
-                    ? __('This design uses elements this site can’t display. You can keep saving this Campaign as a draft.', 'wconvert')
+                    ? __('This design uses elements this site can’t display. You can keep saving this campaign as a draft.', 'wconvert')
                     : ($issue === 'quiz_cart'
                         ? __('Quiz cart buttons need WConvert Pro and WooCommerce. Choose products for each result that uses them.', 'wconvert')
                         : __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one recommendation block on a single offer screen before publishing.', 'wconvert')),
                 'products' => __('Connect WooCommerce and choose products for each matching result before publishing.', 'wconvert'),
-                'link' => __('A link in your text has no web address. Add one, or remove the link. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'link' => __('A link in your text has no web address. Add one, or remove the link. You can keep saving this campaign as a draft.', 'wconvert'),
                 'result_link' => __('Give each result link some words for its button, or remove its address.', 'wconvert'),
-                'routes' => __('In Edit, connect every screen, give continuing screens a line for all other answers, and remove loops. You can keep saving this Campaign as a draft.', 'wconvert'),
-                'capture_paths' => __('In Edit, put the required form before the result and before every later question, and make sure an ending comes after it.', 'wconvert'),
+                'routes' => __('In Edit, connect every screen, give continuing screens a line for all other answers, and remove loops. You can keep saving this campaign as a draft.', 'wconvert'),
+                'capture_paths' => __('In Edit, put the required form before the result, before every later question and before any second form.', 'wconvert'),
                 'question_path_limit' => __('One line can ask at most ten questions. In Edit, remove questions from that line or move them to a separate line.', 'wconvert'),
-                'conditions' => __('In Edit, complete each rule using a question available before it. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'conditions' => __('In Edit, complete each rule using a question available before it. You can keep saving this campaign as a draft.', 'wconvert'),
                 'questions' => __('In Edit, complete the question text and answer choices. Choice questions need 2 to 12 named answers.', 'wconvert'),
                 'results' => __('In Edit, give each result a heading and a condition, with one result for all other answers last.', 'wconvert'),
                 'navigation' => __('Review each screen’s buttons in Edit. Continuing screens need either Continue or Save, not both. Optional saves also need No thanks.', 'wconvert'),
-                default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
+                default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this campaign as a draft.', 'wconvert'),
             };
             return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400, 'issue' => $issue]);
         }
@@ -1272,6 +1272,6 @@ final class OptinController implements RestController
 
     private static function notFound(): WP_Error
     {
-        return new WP_Error('wconvert_optin_not_found', __('No such Campaign.', 'wconvert'), ['status' => 404]);
+        return new WP_Error('wconvert_optin_not_found', __('No such campaign.', 'wconvert'), ['status' => 404]);
     }
 }

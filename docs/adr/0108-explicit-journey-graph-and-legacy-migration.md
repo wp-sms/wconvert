@@ -41,11 +41,11 @@ group intact; expanding individual connections is explicit. Ambiguous ownership
 or multiple incoming paths remains un-nested rather than implying a false parent.
 The ordinary inspector exposes one shared continuation for a group, both from
 its source and from each member. It updates the last member's shown and hidden
-exits together. Individual exits remain available through explicit Custom routing (*"Send some answers down another path", on the question element's "Where visitors go next", since [ADR 0134](0134-one-edit-tab-look-screen-element.md)*);
+exits together. Individual exits remain available through explicit Custom routing (*"Send some answers down another path", on the question element's "Where visitors go next", since [ADR 0134](0134-one-edit-tab-look-screen-element.md); "Send some answers to a different screen" since [ADR 0142](0142-one-readable-flow-map.md)*);
 changing them can dissolve the inferred group, and existing impact review still
 applies. Broken-path repair opens the necessary individual control directly.
 The canvas defaults to selection and layout: drawing/reconnecting requires Edit
-connections (*"Edit paths" since [ADR 0134](0134-one-edit-tab-look-screen-element.md)*). This is an authoring guard, not a new stored graph mode.
+connections (*"Edit paths" since [ADR 0134](0134-one-edit-tab-look-screen-element.md)*). This is an authoring guard, not a new stored graph mode. *Amended by [ADR 0142](0142-one-readable-flow-map.md): there is no drawing mode, no "Edit paths" and no dragging; every line has a "+" and lines are set on their question.*
 
 Edit and Flow share screen/element controls and draft history. Consent wording
 and visibility reuse the element controls beside capture fields. Theme & layout

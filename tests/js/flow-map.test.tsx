@@ -9,8 +9,11 @@ import type { CampaignIssue } from '../../resources/admin/src/builder/readiness/
 import enquiry from '../fixtures/journey-graph-enquiry.json';
 import splitCapture from '../fixtures/journey-graph-split-capture.json';
 import coffee from '../fixtures/journey-graph-coffee.json';
+import large12 from '../fixtures/journey-graph-large-12.json';
 
-afterEach(() => { cleanup(); document.documentElement.dir = ''; });
+// The page's direction as WordPress gives it: the attribute, and the computed style jsdom does not derive from it.
+const setDir = (dir: string) => { document.documentElement.dir = dir; document.documentElement.style.direction = dir; };
+afterEach(() => { cleanup(); setDir(''); });
 const tree = enquiry as unknown as TemplateTree;
 const at = (id: string) => tree.steps.findIndex(screen => screen.id === id);
 const props = () => ({ tree, selected: null, onSelect: vi.fn(), onSelectPath: vi.fn() });
@@ -46,6 +49,23 @@ describe('the Flow map (ADR 0142)', () => {
     expect(document.activeElement?.getAttribute('data-flow-key')).toBe('received');
     await user.keyboard('{Home}');
     expect(document.activeElement?.getAttribute('data-flow-key')).toBe('interests');
+  });
+
+  it.each([['ltr', '{ArrowRight}', '{ArrowLeft}'], ['rtl', '{ArrowLeft}', '{ArrowRight}']])('moves across a row with ←/→ in %s, in the reading direction', async (dir, forward, back) => {
+    setDir(dir);
+    const user = userEvent.setup();
+    render(<FlowMap {...props()} tree={large12 as unknown as TemplateTree} />);
+    await user.tab();
+    await user.tab();
+    await user.keyboard('{ArrowDown}');
+    // The first branch in reading order: on the left in LTR, on the right in RTL.
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('garden_01');
+    await user.keyboard(forward);
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('business_01');
+    await user.keyboard(forward);
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('business_01');
+    await user.keyboard(back);
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('garden_01');
   });
 
   it('tabs from a card to its own buttons, then its lines, in that order', async () => {
@@ -139,7 +159,7 @@ describe('the Flow map (ADR 0142)', () => {
   });
 
   it('reads right to left in RTL, names isolated', () => {
-    document.documentElement.dir = 'rtl';
+    setDir('rtl');
     render(<FlowMap {...props()} />);
     const contact = document.querySelector('[data-flow-node="contact"]')!;
     expect(contact).toHaveAttribute('dir', 'rtl');

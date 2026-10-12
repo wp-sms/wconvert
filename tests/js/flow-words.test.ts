@@ -5,10 +5,10 @@ import { describe, expect, it } from 'vitest';
 /**
  * One idea, one word (ADR 0142). The Flow review found the same setting under
  * five names — "Shown if", "Show only if…", "Only if" — and retired words still
- * on screen. This reads every translatable string in the builder, so a new
+ * on screen. This reads every translatable string in the admin, so a new
  * file cannot bring one back unseen.
  */
-const root = resolve(__dirname, '../../resources/admin/src/builder');
+const root = resolve(__dirname, '../../resources/admin/src');
 const retired: readonly [RegExp, string][] = [
   [/Collect details/, 'Form'],
   [/Journey complete/, 'Ends the campaign'],

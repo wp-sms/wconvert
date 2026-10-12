@@ -10,7 +10,7 @@ import type { TraceState } from './FlowLines';
 export const kindIcon = { question: CircleHelp, message: FileText, form: Send, result: Flag, ending: Check } satisfies Record<CardKind, unknown>;
 
 /** "Then → X": a directional glyph, so it is mirrored in RTL (GUIDELINES §15). */
-const Arrow = () => <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>;
+export const Arrow = () => <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>;
 
 export interface NodeProps {
   box: Rect; rtl: boolean; state: TraceState; active: boolean; issues: readonly CampaignIssue[];

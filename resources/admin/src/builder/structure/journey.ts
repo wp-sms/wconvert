@@ -1,12 +1,17 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { Refusal } from '../../components/ui/option-menu';
-import type { QuestionCondition, TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
+import type { QuestionCondition, QuestionNode, TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
 import { graphEdgeId, graphReaches } from './graph';
 
 export function walkNodes(node: TemplateNode, includeHidden = true): TemplateNode[] {
   if (!includeHidden && 'hidden' in node && node.hidden) return [];
   const b = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
   return [node, ...[...(b.children ?? []), ...(b.start ?? []), ...(b.end ?? [])].flatMap(child => walkNodes(child, includeHidden))];
+}
+
+/** The questions under a node that a rule can name (they have an id), in content order. */
+export function questionsIn(node: TemplateNode): (QuestionNode & { id: string })[] {
+  return walkNodes(node).filter((item): item is QuestionNode & { id: string } => item.type === 'question' && 'id' in item && typeof item.id === 'string');
 }
 
 /**

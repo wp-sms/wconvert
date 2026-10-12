@@ -1,5 +1,5 @@
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
-import { graphReaches } from './graph';
+import { graphReaches, skipEdge } from './graph';
 import { submissionScreen } from './journey';
 
 /**
@@ -15,13 +15,11 @@ export interface GateSides {
   readonly after: readonly string[];
   readonly early: readonly string[];
   readonly shared: readonly string[];
-  /** The campaign may publish as far as this gate is concerned. */
-  readonly holds: boolean;
   /** Screens some route reaches without the gate, and the line it arrived on. */
   readonly without: ReadonlyMap<string, JourneyGraphEdge | undefined>;
 }
 
-const none: GateSides = { after: [], early: [], shared: [], holds: true, without: new Map() };
+const none: GateSides = { after: [], early: [], shared: [], without: new Map() };
 
 /** Screens with no line out that a visitor can reach, in storage order. */
 export function endingsOf(tree: TemplateTree): readonly string[] {
@@ -39,9 +37,7 @@ export function gateEndings(tree: TemplateTree, gate: string): GateSides {
   // A gate with "Only if…" can itself be skipped: that visitor goes on along
   // its skip line without passing it (ADR 0135). The server refuses a
   // condition on a form, but the editor still has to say what it would do.
-  const skip = tree.steps.find(screen => screen.id === gate)?.when
-    ? graph.edges.find(edge => edge.from === gate && edge.kind === 'hidden') ?? graph.edges.find(edge => edge.from === gate && edge.kind === 'default')
-    : undefined;
+  const skip = tree.steps.find(screen => screen.id === gate)?.when ? skipEdge(graph, gate) : undefined;
   let skipped = false;
   while (pending.length) {
     const { id, via } = pending.pop()!;
@@ -56,7 +52,7 @@ export function gateEndings(tree: TemplateTree, gate: string): GateSides {
     const skipping = without.has(ending);
     (withGate && skipping ? shared : withGate ? after : early).push(ending);
   }
-  return { after, early, shared, holds: after.length + shared.length > 0, without };
+  return { after, early, shared, without };
 }
 
 /** The required form's screen and the result screen, where each exists. */
@@ -79,12 +75,6 @@ export function earlyEnding(tree: TemplateTree, id: string): readonly SkippedGat
     const gate = gates[kind];
     if (!gate) return [];
     const sides = gateEndings(tree, gate);
-    if (!sides.holds) return [];
     return sides.early.includes(id) ? [{ gate: kind, always: true }] : sides.shared.includes(id) ? [{ gate: kind, always: false }] : [];
   });
-}
-
-/** The endings that keep a gate from holding: every one of them, when none comes after it. */
-export function gateFaults(sides: GateSides): readonly string[] {
-  return sides.holds ? [] : sides.early;
 }

@@ -9,7 +9,7 @@ import { graphEdgeId, graphTargets } from './structure/graph';
 import { answerLinesOverlap, conditionText } from './structure/conditionText';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { graphChoiceSources } from './structure/graphConnections';
-import { unreachableScreens, walkNodes } from './structure/journey';
+import { questionsIn, unreachableScreens } from './structure/journey';
 import { answerColorOf, answerColors } from './structure/flowModel';
 import { graphInsertionLocations } from './structure/graphInsertion';
 import { FieldHeading, PanelHint } from './PanelSection';
@@ -56,7 +56,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   const hidden = routes.find(edge => edge.kind === 'hidden');
   const overlap = answerLinesOverlap(tree, answers);
   // The color each answer line has on the Flow map (ADR 0142).
-  const { colors } = answerColors(tree, walkNodes(screen.content).flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : [])[0]);
+  const { colors } = answerColors(tree, questionsIn(screen.content)[0]?.id);
   const targets = graphTargets(tree, screen.id);
   const sources = graphChoiceSources(tree, screen.id);
   const apply = (next: readonly JourneyGraphEdge[]) => {

@@ -2,15 +2,16 @@ import { createContext, useContext, useId, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { FactRow, PanelHint, PanelSection } from './PanelSection';
-import type { QuestionNode, TemplateTree } from '@renderer/types';
+import type { TemplateTree } from '@renderer/types';
 import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconnectGraphEdge } from './structure/graphConnections';
-import { upgradeToGraph, graphDisplayOrder } from './structure/graph';
+import { upgradeToGraph, graphDisplayOrder, skipEdge } from './structure/graph';
 import { nodesOf, type Block } from './structure/tree';
 import { nameOfBlock } from './BlockRow';
 import { conditionText } from './structure/conditionText';
 import { followupGroups } from './structure/followupGroups';
 import { answerColor, answerColors, flowModel } from './structure/flowModel';
-import { walkNodes } from './structure/journey';
+import { questionsIn } from './structure/journey';
+import { Arrow } from './flow/FlowCard';
 import type { Path } from './panel';
 import type { CampaignIssue } from './readiness/campaignIssues';
 import type { TemplateLabels } from '../templates/api';
@@ -51,15 +52,14 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEdit
   const answers = graph ? graph.edges.filter(edge => edge.from === screen.id && edge.kind === 'answer') : (screen.paths ?? []).filter(path => path.when);
   if (answers.length > 0) {
     // Each line as the map draws it: its answer's color, its words, where it goes (ADR 0142).
-    const selected = walkNodes(screen.content).flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : [])[0];
+    const selected = questionsIn(screen.content)[0]?.id;
     const model = graph ? flowModel(tree, { selectedQuestion: selected }) : undefined;
     const lines = model?.lines.filter(line => line.from === screen.id && line.style !== 'skipped') ?? [];
-    const name = (node: string) => model?.cards.find(card => card.id === node)?.name ?? model?.groups.find(group => group.id === node)?.title ?? '';
     return <>
       <FactRow label={__('Then', 'wconvert')} action={__('Edit lines', 'wconvert')} onAction={onEditPaths}>{__('First match wins, top to bottom', 'wconvert')}</FactRow>
       {lines.length > 0 && <ol className="wconvert-screen-lines">{lines.map(line => {
         const words = <><span className="wconvert-flow-dot" data-color={line.color} aria-hidden="true" /><span><bdi>{line.label ?? __('All other answers', 'wconvert')}</bdi>
-          {' '}<span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>{' '}<b><bdi>{name(line.to)}</bdi></b></span></>;
+          {' '}<Arrow />{' '}<b><bdi>{model?.nameOf(line.to)}</bdi></b></span></>;
         const priority = line.select?.priority;
         return <li key={line.id}>{onEditLine && typeof priority === 'number'
           ? <button type="button" onClick={() => onEditLine(priority)}>{words}</button> : words}</li>;
@@ -90,7 +90,7 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEdit
   };
   const box = next ? followupGroups(tree).find(group => tree.steps[group.screens[0]].id === next.id) : undefined;
   // When the next screen has "Only if…", say who sees it and where everyone else goes (the prototype's panel, ADR 0142).
-  const skipTo = graph && next?.when ? (graph.edges.find(edge => edge.from === next.id && edge.kind === 'hidden') ?? graph.edges.find(edge => edge.from === next.id && edge.kind === 'default'))?.to : undefined;
+  const skipTo = graph && next?.when ? skipEdge(graph, next.id)?.to : undefined;
   return <>
     <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
       <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
@@ -114,7 +114,7 @@ export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
   /** Starts a follow-up question for one answer; absent where follow-ups are not offered. */
   onFollowup?(question: string, value: string): void;
 }) {
-  const question = walkNodes(tree.steps[step].content).find((node): node is QuestionNode & { id: string } => node.type === 'question' && 'id' in node && typeof node.id === 'string' && node.answer_type !== 'text');
+  const question = questionsIn(tree.steps[step].content).find(node => node.answer_type !== 'text');
   if (!question?.options?.length) return null;
   const { colors, focusQuestion } = answerColors(tree, question.id);
   const followups = (value: string) => tree.steps.map((screen, index) => ({ screen, index }))

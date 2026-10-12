@@ -66,7 +66,7 @@ it('does not block an ending some visitors reach without the required form', () 
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.map(edge =>
     edge.id === 'balcony_hidden' ? { ...edge, to: 'received' } : edge) } };
   expect(journeyReadinessIssues(tree).some(issue => issue.key.startsWith('capture-path:'))).toBe(false);
-  expect(requiredSaveBypasses(tree, { shared: true })).toEqual([expect.objectContaining({ endingId: 'received', reason: 'shared',
+  expect(requiredSaveBypasses(tree, { endings: true })).toEqual([expect.objectContaining({ endingId: 'received', reason: 'ending',
     edge: expect.objectContaining({ id: 'balcony_hidden' }) })]);
 });
 

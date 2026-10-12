@@ -22,6 +22,7 @@ import { followupGroups, followupGroupSource } from './structure/followupGroups'
 import { JourneyScreenCard } from './JourneyScreenCard';
 import { JourneyArrivalSummary } from './JourneyArrivalSummary';
 import { FlowMapBoundary } from './FlowMapBoundary';
+import { FlowSkeleton } from './flow/FlowSkeleton';
 import { QuestionSettings, type QuestionReviewContext, ResultSettings, RouteSettings, ScreenConditionSettings } from './JourneySettings';
 import { JourneyTest } from './JourneyTest';
 import { GraphRouteSettings } from './GraphRouteSettings';
@@ -40,7 +41,6 @@ import { graphRemovalPlan } from './structure/graphRemoval';
 import { addGraphBranchScreen, addGraphScreen, type GraphScreenKind } from './structure/graphInsertion';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
-import { Skeleton } from '../components/ui/skeleton';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
 import { addGraphResultSignup, graphResultSignupTarget, duplicateScreen, freshScreen, referencedJourney, usesJourneyElements, walkNodes, submissionScreen, movedScreen, screenMoveRefusal, screenRemoval, whyScreenStays, removedScreen, resultAccess, graphResultAccessIssue, unreachableScreenIds, withBackButton } from './structure/journey';
 import { graphChangeImpact } from './structure/graphChangeImpact';
@@ -564,7 +564,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             </div>}
           </div>}
         </div>
-          {!journeys && usesJourneyElements(tree) && <p className="wconvert-journey-settings__warning" role="status">{__('This site’s plan can’t show answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.', 'wconvert')}</p>}
+          {!journeys && usesJourneyElements(tree) && <p className="wconvert-journey-settings__warning" role="status">{__('This site’s plan can’t show questions, results, answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.', 'wconvert')}</p>}
           <div className="wconvert-journey-dialog__header-actions">
             {embedded && view !== 'edit' && <Button ref={focusTrigger} type="button" variant="outline" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
               {focused ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
@@ -613,7 +613,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</select></label></div>
           {view === 'edit' && <><EditTree tree={tree} step={step} editingScreen={editingScreen && !look?.open} issues={issues} onIssue={openIssue} onSelect={select}
             look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
-          {view === 'flow' && <FlowMapBoundary><Suspense fallback={<FlowLoading />}>
+          {view === 'flow' && <FlowMapBoundary><Suspense fallback={<FlowSkeleton />}>
             <JourneyMap issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && (panelSection === 'paths' || !!elementPanel) ? pathFocus : null}
               onSelect={select} onSelectPath={openLine} samplePath={samplePath} sampleEdges={sampleEdges}
               onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Cleared. Every screen and line is shown again.', 'wconvert')); }}
@@ -897,14 +897,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       </AdminDialogContent>
     </Dialog>
   </>;
-}
-
-/** While the map's code loads: the shape of a map, three cards down the middle (GUIDELINES §12). */
-function FlowLoading() {
-  return <div className="wconvert-journey-map wconvert-flow-loading">
-    <span role="status" className="sr-only">{__('Loading the Flow map…', 'wconvert')}</span>
-    {[0, 1, 2].map(card => <Skeleton key={card} aria-hidden="true" className="h-20 w-60" />)}
-  </div>;
 }
 
 function renameNewQuestion(node: TemplateNode, label: string, answerType?: QuestionNode['answer_type']): TemplateNode {
