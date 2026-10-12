@@ -210,8 +210,8 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
     }
 
     /**
-     * And the wiring line names the provider, nothing more: the bootstrap
-     * runs the licence; it does not ask it anything.
+     * And the bootstrap names the provider, nothing more: it runs the licence
+     * and stops its daily check on deactivation; it does not ask it anything.
      */
     public function testTheBootstrapOnlyRunsTheLicenceProvider(): void
     {
@@ -220,8 +220,8 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
         preg_match_all('/\\b\\w*licen[cs]e\\w*\\b/i', $code, $matches);
 
         $this->assertSame(
-            ['License', 'LicenseServiceProvider', 'LicenseServiceProvider'],
-            $matches[0],
+            ['License', 'LicenseServiceProvider'],
+            array_values(array_unique($matches[0])),
             'Pro\'s bootstrap does more with the licence than run its provider'
         );
     }

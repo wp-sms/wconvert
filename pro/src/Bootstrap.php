@@ -42,8 +42,10 @@ final class Bootstrap
          * deactivating a Pro that never booted is exactly the person whose
          * cache should not be left holding a decision nobody made.
          */
-        register_activation_hook(WCONVERT_PRO_MAIN_FILE, [PageCache::class, 'purge']);
+        register_activation_hook(WCONVERT_PRO_MAIN_FILE, [self::class, 'activate']);
         register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [PageCache::class, 'purge']);
+        // The licence's daily check stops with Pro; the licence itself stays.
+        register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [LicenseServiceProvider::class, 'deactivate']);
 
         /*
          * Priority 20 — after free's own setup at 10, and NOT hooked to the
@@ -53,6 +55,28 @@ final class Bootstrap
          * failure that stays silent.
          */
         add_action('plugins_loaded', [self::class, 'setup'], 20);
+    }
+
+    /**
+     * Pro refuses network activation, as free does (`WConvert\Bootstrap`).
+     *
+     * Each site holds its own licence and its own seat (ADR 0143), and the
+     * SDK's updater caches one answer per network — so a network-active Pro
+     * would offer every subsite the update one subsite's licence earned.
+     * Activating on each site works. Stopped here, before WordPress records
+     * the plugin as network-active.
+     */
+    public static function activate(bool $networkWide = false): void
+    {
+        if ($networkWide && is_multisite()) {
+            wp_die(
+                esc_html__('WConvert Pro cannot be activated for the whole network. Activate it on each site instead, from that site\'s Plugins screen.', 'wconvert-pro'),
+                esc_html__('Plugin not activated', 'wconvert-pro'),
+                ['back_link' => true]
+            );
+        }
+
+        PageCache::purge();
     }
 
     public static function setup(): void
