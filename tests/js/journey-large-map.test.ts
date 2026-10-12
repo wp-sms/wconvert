@@ -7,7 +7,6 @@ import large20 from '../fixtures/journey-graph-large-20.json';
 import { journeyBoundaryIssues } from '../../resources/admin/src/builder/structure/journeyBoundaryReadiness';
 import { journeyReadinessIssues } from '../../resources/admin/src/builder/structure/journeyReadiness';
 import { questionPath } from '../../resources/admin/src/builder/structure/questionBudget';
-import { branchRegions, layoutMap, type MapBox, type MapLink } from '../../resources/admin/src/builder/structure/mapLayout';
 
 const fixtures = [
   { total: 12, tree: large12 as unknown as TemplateTree, gardenQuestions: 4, businessQuestions: 5, maxQuestions: 6 },
@@ -57,36 +56,4 @@ it.each(fixtures)('$total-screen graph matches exclusive arms, falls back, prune
 
   const reordered = { ...tree, steps: [...tree.steps].reverse() };
   expect(screenIds(reordered, { q_interests: 'garden', q_garden_01: 'garden note' }).ids).toEqual(gardenRoute);
-});
-
-it.each(fixtures)('$total-screen map reserves varied card sizes without overlap and mirrors in RTL', ({ total, tree }) => {
-  const boxes: MapBox[] = tree.steps.map((screen, index) => ({
-    id: screen.id,
-    width: 276 + (index % 3) * 28,
-    height: 192 + (index % 4) * 34,
-  }));
-  const links: MapLink[] = tree.graph!.edges.map(edge => ({ source: edge.from, target: edge.to }));
-  const regions = branchRegions(boxes.map(box => box.id), links, new Set([tree.graph!.entry]));
-  const region = regions.find(item => item.source === tree.graph!.entry);
-  const gardenIds = boxes.map(box => box.id).filter(id => /^garden_\d+$/.test(id));
-  const businessIds = boxes.map(box => box.id).filter(id => /^business_\d+$/.test(id));
-  expect(region).toEqual({ source: 'interests', join: 'capture', arms: [gardenIds, businessIds, []], detour: false });
-
-  const ltr = layoutMap(boxes, links, regions);
-  const rtl = layoutMap(boxes, links, regions, true);
-  const width = Math.max(...boxes.map(box => ltr[box.id].x + box.width));
-  for (const box of boxes) {
-    expect(rtl[box.id].x).toBeCloseTo(width - ltr[box.id].x - box.width, 6);
-    expect(rtl[box.id].y).toBeCloseTo(ltr[box.id].y, 6);
-  }
-  for (const positions of [ltr, rtl]) {
-    for (let left = 0; left < boxes.length; left++) for (let right = left + 1; right < boxes.length; right++) {
-      const a = boxes[left], b = boxes[right];
-      const separated = positions[a.id].x + a.width <= positions[b.id].x
-        || positions[b.id].x + b.width <= positions[a.id].x
-        || positions[a.id].y + a.height <= positions[b.id].y
-        || positions[b.id].y + b.height <= positions[a.id].y;
-      expect(separated, `${a.id} overlaps ${b.id} in ${total}-screen layout`).toBe(true);
-    }
-  }
 });

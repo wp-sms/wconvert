@@ -97,6 +97,18 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-answer-1: var(--answer-1);
+  --color-answer-1-surface: var(--answer-1-surface);
+  --color-answer-2: var(--answer-2);
+  --color-answer-2-surface: var(--answer-2-surface);
+  --color-answer-3: var(--answer-3);
+  --color-answer-3-surface: var(--answer-3-surface);
+  --color-answer-4: var(--answer-4);
+  --color-answer-4-surface: var(--answer-4-surface);
+  --color-answer-5: var(--answer-5);
+  --color-answer-5-surface: var(--answer-5-surface);
+  --color-answer-6: var(--answer-6);
+  --color-answer-6-surface: var(--answer-6-surface);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -444,6 +456,27 @@
   --chart-3: #8a5a00;
   --chart-4: #b42318;
   --chart-5: #7a6f63;
+
+  /*
+   * Answer colours (ADR 0142): on the Flow map a colour means one answer — its
+   * line, its "Only if" chip and the result that uses it. Okabe–Ito based,
+   * darkened until a line holds 3:1 on the canvas and the surface tint and a
+   * pill's text 4.5:1 on white (`tests/js/answer-palette.test.ts` measures
+   * them). Never the chart ramp, never red: red is for problems. Each surface
+   * carries espresso text, not its own hue.
+   */
+  --answer-1: #0b6fa8;
+  --answer-1-surface: #e9f2f7;
+  --answer-2: #c4500b;
+  --answer-2-surface: #faefe9;
+  --answer-3: #0a8063;
+  --answer-3-surface: #e9f4f1;
+  --answer-4: #a24f8a;
+  --answer-4-surface: #f7eff4;
+  --answer-5: #8f6400;
+  --answer-5-surface: #f5f1e8;
+  --answer-6: #3d6fd1;
+  --answer-6-surface: #eef2fb;
 
   /*
    * Named because the shadcn contract spells them and a component vendored

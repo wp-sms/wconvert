@@ -56,17 +56,14 @@ async function resultAction(user: User, name: string) {
 
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
-vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect, onAdd, onGoToRules, onGoToDestinations }: {
-  onGoToRules?(): void; onGoToDestinations?(): void;
-  onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void; onSelect(index: number): void; onAdd(index: number, edgeId?: string): void;
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onSelect, onAdd }: {
+  onSelect(index: number): void; onAdd(index: number, edgeId?: string): void;
 }) => <div aria-label="Journey map">
-  {onGoToRules && <button onClick={onGoToRules}>Edit display rules</button>}
-  {onGoToDestinations && <button onClick={onGoToDestinations}>Edit destinations</button>}
   <button onClick={() => onSelect(0)}>Select first screen</button>
+  <button onClick={() => onSelect(2)}>Select interests</button>
+  <button onClick={() => onSelect(4)}>Select balcony</button>
   <button onClick={() => onAdd(0, 'saved')}>Insert after save</button>
-  <button onClick={() => onConnect('interests', 'contact')}>Draw test branch</button>
-  <button onClick={() => onReconnect('start', 'contact')}>Reconnect test route</button>
-  <button onClick={() => onReconnect('balcony_hidden', 'received')}>Bypass test save</button>
+  <button onClick={() => onAdd(2, 'start')}>Insert test screen</button>
 </div> }));
 // Journey authoring is offered only where Pro's `journeys` module registered it (ADR 0116).
 beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); window.wconvertAdmin = { exportUrl: '', journeys: true }; });
@@ -161,10 +158,11 @@ it('clears stale branch instructions when Undo restores the prior draft', async 
       <JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} /></>;
   }
   render(<HistoryEditor />);
-  await user.click(await screen.findByRole('button', { name: 'Draw test branch' }));
-  expect(screen.getByText(/Answer path added after the existing paths/)).toBeInTheDocument();
+  await user.click(await screen.findByRole('button', { name: 'Insert test screen' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen here' }));
+  expect(screen.getByText(/Screen added at the chosen location/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Undo fixture edit' }));
-  expect(screen.queryByText(/Answer path added after the existing paths/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Screen added at the chosen location/)).not.toBeInTheDocument();
 });
 
 it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusing skip and branch semantics', async intent => {
@@ -196,23 +194,16 @@ it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusi
     expect(next.graph!.edges.filter(edge => edge.from === added.id).map(edge => edge.kind)).toEqual(['default']);
   }
 });
-it('opens a drawn graph branch for repair without guessing its condition', async () => {
+/** With no drawing on the map (ADR 0142), a line changes in the panel, and the same review guards it. */
+it('reviews newly unreachable screens before applying a changed line', async () => {
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(await screen.findByRole('button', { name: 'Draw test branch' }));
-  expect(draft().graph!.edges.at(-1)).toMatchObject({ from: 'interests', to: 'contact', kind: 'answer',
-    when: { clauses: [{ question: 'n1', values: [''] }] } });
-  expect(screen.getByText(/Answer path added after the existing paths/)).toBeInTheDocument();
-  expect(screen.getByText('Line 1 of 1')).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
-});
-
-it('reviews newly unreachable screens before applying a canvas reconnection', async () => {
-  const user = userEvent.setup();
-  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
-  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(await screen.findByRole('button', { name: 'Reconnect test route' }));
+  await user.click(await screen.findByRole('button', { name: 'Select interests' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  // A follow-up box keeps its lines folded until asked.
+  await user.click(screen.getAllByRole('button', { name: 'Send some answers to a different screen' })[0]);
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 'contact');
   expect(screen.getByRole('heading', { name: 'Check this change' })).toBeInTheDocument();
   const explanation = screen.getByText(/These screens would become unreachable:/);
   for (const name of ['Garden details', 'Indoor details', 'Balcony details']) expect(explanation).toHaveTextContent(name);
@@ -221,15 +212,20 @@ it('reviews newly unreachable screens before applying a canvas reconnection', as
   expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe('contact');
   expect(draft().steps).toEqual(graphFixture.steps);
 });
-it('reviews a canvas save bypass even when no screens are disconnected', async () => {
+it('reviews a save bypass even when no screens are disconnected', async () => {
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(await screen.findByRole('button', { name: 'Bypass test save' }));
+  await user.click(await screen.findByRole('button', { name: 'Select balcony' }));
+  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  // A follow-up box keeps its lines folded until asked.
+  await user.click(screen.getAllByRole('button', { name: 'Send some answers to a different screen' })[0]);
+  const skip = screen.getByRole('combobox', { name: 'If skipped' });
+  await user.selectOptions(skip, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
   expect(draft().graph!.edges.find(edge => edge.id === 'balcony_hidden')?.to).toBe('contact');
   await user.click(screen.getByRole('button', { name: 'Cancel' }));
-  expect(screen.getByRole('heading', { name: 'Balcony details' })).toHaveFocus();
+  expect(skip).toHaveFocus();
   expect(draft().graph!.edges.find(edge => edge.id === 'balcony_hidden')?.to).toBe('contact');
 });
 it('returns focus to the Preview button when Preview closes', async () => {
@@ -936,17 +932,6 @@ it('inserts into legacy campaigns as one undoable edit and leaves Cancel unchang
 });
 
 /** Display rules and Destinations are tabs of their own (ADR 0134): the map's links go there, not into a side panel. */
-it('sends the map’s destinations link to the Destinations tab', async () => {
-  const user = userEvent.setup(); const rules = vi.fn(); const destinations = vi.fn();
-  render(<JourneyEditor embedded tree={graphFixture as unknown as TemplateTree} step={0} onSelect={() => {}} onChange={() => {}}
-    displaySummary="After 5 seconds" destinationSummary="Local storage" onGoToRules={rules} onGoToDestinations={destinations} />);
-  await screen.findByLabelText('Journey map');
-  expect(screen.queryByRole('button', { name: 'Edit display rules' })).toBeNull();
-  await user.click(screen.getByRole('button', { name: 'Edit destinations' }));
-  expect(destinations).toHaveBeenCalledOnce();
-  expect(screen.queryByRole('region', { name: 'Destinations' })).not.toBeInTheDocument();
-});
-
 it('opens the exact referenced show condition and returns to its source question without editing the draft', async () => {
   const user = userEvent.setup();
   const initial = graphFixture as unknown as TemplateTree;
@@ -1193,7 +1178,8 @@ it('tells a free install it cannot display a journey draft, without naming Pro',
 });
 
 /** D4: Flow is offered only while there is more than one way through, and leaving it is automatic when the last branch goes. */
-it('falls back from Flow to the canvas when the last branch goes', async () => {
+/** Flow is always there (ADR 0142): a campaign that loses its last branch keeps its map. */
+it('keeps Flow when the last branch goes', async () => {
   const branched = graphFixture as unknown as TemplateTree;
   const straightened: TemplateTree = { ...branched, steps: branched.steps.map(item => ({ ...item, when: undefined })),
     graph: { ...branched.graph!, edges: branched.graph!.edges.filter(edge => edge.kind === 'default') } };
@@ -1202,6 +1188,6 @@ it('falls back from Flow to the canvas when the last branch goes', async () => {
   await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
   expect(screen.queryByText('Actual campaign canvas')).toBeNull();
   rerender(<JourneyEditor {...props} tree={straightened} />);
-  expect(screen.queryByRole('radio', { name: 'Flow' })).toBeNull();
-  expect(await screen.findByText('Actual campaign canvas')).toBeInTheDocument();
+  expect(screen.getByRole('radio', { name: 'Flow' })).toBeChecked();
+  expect(screen.queryByText('Actual campaign canvas')).toBeNull();
 });

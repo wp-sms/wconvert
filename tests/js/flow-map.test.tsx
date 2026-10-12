@@ -1,0 +1,151 @@
+import { cleanup, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { TemplateTree } from '@renderer/types';
+import { graphTrace } from '@loader/journey-graph';
+import { FlowMap } from '../../resources/admin/src/builder/flow/FlowMap';
+import { journeyTraceEdges } from '../../resources/admin/src/builder/structure/journeyTraceEdges';
+import type { CampaignIssue } from '../../resources/admin/src/builder/readiness/campaignIssues';
+import enquiry from '../fixtures/journey-graph-enquiry.json';
+import splitCapture from '../fixtures/journey-graph-split-capture.json';
+
+afterEach(() => { cleanup(); document.documentElement.dir = ''; });
+const tree = enquiry as unknown as TemplateTree;
+const at = (id: string) => tree.steps.findIndex(screen => screen.id === id);
+const props = () => ({ tree, selected: null, onSelect: vi.fn(), onSelectPath: vi.fn() });
+const mains = () => [...document.querySelectorAll<HTMLElement>('[data-flow-key]')];
+
+describe('the Flow map (ADR 0142)', () => {
+  it('lays the cards out in reading order, with one box for the follow-ups', () => {
+    render(<FlowMap {...props()} />);
+    const region = screen.getByRole('region', { name: 'Flow map' });
+    expect(mains().map(element => element.dataset.flowKey)).toEqual(['interests', 'followups:garden', 'contact', 'received']);
+    expect(within(region).getByRole('group', { name: /Follow-ups · Interests: every match is asked/ })).toBeInTheDocument();
+    expect(within(region).getByRole('button', { name: 'Question: Interests, 2 lines · Any of these, None of these' })).toBeInTheDocument();
+    expect(within(region).getByRole('button', { name: /^Follow-up 2 of 3: Indoor details, only if Indoors/ })).toBeInTheDocument();
+  });
+
+  it('is one tab stop that the arrow keys move through, top to bottom', async () => {
+    const user = userEvent.setup();
+    render(<FlowMap {...props()} />);
+    expect(mains().filter(element => element.tabIndex === 0).map(element => element.dataset.flowKey)).toEqual(['interests']);
+    await user.tab();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /^Question: Interests/ }));
+    await user.keyboard('{ArrowDown}');
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('followups:garden');
+    await user.keyboard('{End}');
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('received');
+    await user.keyboard('{Home}');
+    expect(document.activeElement?.getAttribute('data-flow-key')).toBe('interests');
+  });
+
+  it('tabs from a card to its own buttons, then its lines, in that order', async () => {
+    const user = userEvent.setup();
+    render(<FlowMap {...props()} onAdd={vi.fn()} />);
+    await user.tab();
+    await user.tab();
+    expect(document.activeElement).toHaveTextContent('2 lines · Any of these, None of these');
+    // Then its lines' words and "+", across the page in the reading direction.
+    const pills = [...document.querySelectorAll<HTMLElement>('.wconvert-flow-pill button')].filter(button => button.tabIndex === 0).map(button => button.getAttribute('aria-label'));
+    expect(pills).toEqual(['None of these: Interests to One enquiry. Edit', 'Any of these: Interests to Follow-ups · Interests. Edit',
+      'Add a screen on the line Any of these: Interests to Follow-ups · Interests']);
+    for (const name of pills) { await user.tab(); expect(document.activeElement?.getAttribute('aria-label')).toBe(name); }
+    await user.tab();
+    expect(document.activeElement).toHaveAccessibleName('Zoom out');
+  });
+
+  it('opens a screen, the control behind “Then →”, a line’s rule, and inserts on a line', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn(), onSelectPath = vi.fn(), onAdd = vi.fn();
+    render(<FlowMap {...props()} onSelect={onSelect} onSelectPath={onSelectPath} onAdd={onAdd} />);
+    await user.click(screen.getByRole('button', { name: /^Form: One enquiry/ }));
+    expect(onSelect).toHaveBeenLastCalledWith(at('contact'));
+    await user.click(screen.getByRole('button', { name: 'Then Received' }));
+    expect(onSelectPath).toHaveBeenLastCalledWith(at('contact'), 0);
+    await user.click(screen.getByRole('button', { name: /^None of these: .*Edit$/ }));
+    expect(onSelectPath).toHaveBeenLastCalledWith(at('interests'), 0);
+    await user.click(screen.getByRole('button', { name: /^Add a screen on the line Any of these/ }));
+    expect(onAdd).toHaveBeenLastCalledWith(at('interests'), 'start');
+    await user.click(screen.getByRole('button', { name: /^Follow-up 1 of 3: Garden details/ }));
+    expect(onSelect).toHaveBeenLastCalledWith(at('garden'));
+  });
+
+  it('offers no “+” where screens cannot be inserted, and none on a line drawn only', () => {
+    const { rerender } = render(<FlowMap {...props()} />);
+    expect(screen.queryByRole('button', { name: /^Add a screen/ })).toBeNull();
+    rerender(<FlowMap {...props()} onAdd={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: /^Add a screen on the line None of these/ })).toBeNull();
+  });
+
+  it('opens every issue on a screen from its card', async () => {
+    const user = userEvent.setup();
+    const issue = { key: 'x', said: 'Choose an answer for this line.', screenId: 'contact', blocks: true } as unknown as CampaignIssue;
+    const onIssue = vi.fn();
+    render(<FlowMap {...props()} issues={[issue]} onIssue={onIssue} />);
+    await user.click(screen.getByRole('button', { name: '1 issue on this screen. Show them' }));
+    await user.click(await screen.findByRole('button', { name: 'Choose an answer for this line.' }));
+    expect(onIssue).toHaveBeenCalledWith(issue);
+  });
+
+  it('marks one visitor’s path, says how many follow-ups they were asked, and clears on Escape', async () => {
+    const user = userEvent.setup();
+    const trace = graphTrace(tree.steps, tree.graph!, { n1: ['garden', 'balcony'], n2: 'small', n4: 'large' });
+    const onClearTrace = vi.fn();
+    render(<FlowMap {...props()} samplePath={trace.indices} sampleEdges={journeyTraceEdges(tree, trace.decisions)} onClearTrace={onClearTrace} />);
+    expect(screen.getByText('This visitor is asked 2 of 3.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Indoor details.*skipped in this trace/ })).toHaveAttribute('data-trace', 'off');
+    expect(document.querySelector('[data-flow-node="received"]')).toHaveAttribute('data-trace', 'on');
+    expect(document.querySelector('.wconvert-flow-line[data-trace="on"]')).not.toBeNull();
+    screen.getByRole('button', { name: /^Question: Interests/ }).focus();
+    await user.keyboard('{Escape}');
+    expect(onClearTrace).toHaveBeenCalledOnce();
+  });
+
+  it('invites the first branch on a straight campaign, or says it comes with Pro', async () => {
+    const user = userEvent.setup();
+    const straight = splitCapture as unknown as TemplateTree;
+    const onBranch = vi.fn();
+    const { rerender } = render(<FlowMap {...props()} tree={straight} onBranch={onBranch} />);
+    expect(screen.getByText('Every visitor sees these screens in order.')).toBeInTheDocument();
+    // No choice question yet, so there is nothing to send elsewhere.
+    expect(screen.getByText('Add a question to send answers to different screens.')).toBeInTheDocument();
+    rerender(<FlowMap {...props()} tree={straight} branchLocked />);
+    expect(screen.getByText(/Sending answers to different screens comes with/)).toBeInTheDocument();
+    const withQuestion: TemplateTree = { ...straight, steps: straight.steps.map((step, index) => index === 0 ? { ...step, content: { type: 'stack', children: [
+      { type: 'question', id: 'q', label: 'Which?', answer_type: 'single', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] }] } } : step) } as TemplateTree;
+    rerender(<FlowMap {...props()} tree={withQuestion} onBranch={onBranch} />);
+    await user.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
+    expect(onBranch).toHaveBeenCalledOnce();
+  });
+
+  it('labels disconnected follow-ups and keeps them selectable', async () => {
+    const onSelect = vi.fn();
+    const detached = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.filter(edge => edge.id !== 'start') } };
+    render(<FlowMap {...props()} tree={detached} onSelect={onSelect} />);
+    expect(screen.getByText('No line reaches these follow-ups')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /^Follow-up 1 of 3: Garden details/ }));
+    expect(onSelect).toHaveBeenCalledWith(at('garden'));
+  });
+
+  it('reads right to left in RTL, names isolated', () => {
+    document.documentElement.dir = 'rtl';
+    render(<FlowMap {...props()} />);
+    const contact = document.querySelector('[data-flow-node="contact"]')!;
+    expect(contact).toHaveAttribute('dir', 'rtl');
+    expect(contact.querySelector('bdi')).toHaveTextContent('One enquiry');
+    expect(within(contact as HTMLElement).getByRole('button', { name: 'Then Received' })).toHaveTextContent('Then ← Received');
+    expect(document.querySelector('.wconvert-flow-viewport')).toHaveAttribute('dir', 'ltr');
+  });
+
+  it('zooms from its toolbar, and Fit returns to fitting', async () => {
+    const user = userEvent.setup();
+    render(<FlowMap {...props()} />);
+    const zoom = screen.getByRole('group', { name: 'Zoom' });
+    expect(within(zoom).getByLabelText('Zoom level')).toHaveTextContent('100%');
+    await user.click(within(zoom).getByRole('button', { name: 'Zoom out' }));
+    expect(within(zoom).getByLabelText('Zoom level')).toHaveTextContent('90%');
+    expect(within(zoom).getByRole('button', { name: 'Fit' })).toHaveAttribute('aria-pressed', 'false');
+    await user.click(within(zoom).getByRole('button', { name: 'Fit' }));
+    expect(within(zoom).getByRole('button', { name: 'Fit' })).toHaveAttribute('aria-pressed', 'true');
+  });
+});

@@ -12,9 +12,13 @@ add_action('init', static function (): void {
         'branches' => 'tests/fixtures/journey-graph-branch-groups.json',
         'large-12' => 'tests/fixtures/journey-graph-large-12.json',
         'large-20' => 'tests/fixtures/journey-graph-large-20.json',
+        'enquiry' => 'tests/fixtures/journey-graph-enquiry.json',
+        'straight' => 'tests/fixtures/journey-graph-split-capture.json',
+        'coffee' => 'tests/fixtures/journey-graph-coffee.json',
     ];
     $case = isset($cases[$_GET['wconvert_visual_flow']]) ? $_GET['wconvert_visual_flow'] : 'branches';
     $tree = json_decode(file_get_contents(WCONVERT_DIR . $cases[$case]), true, 512, JSON_THROW_ON_ERROR);
+    $tree = $tree['template']['tree'] ?? $tree;
     $issue = \WConvert\Template\JourneyGraph::issue($tree);
     if ($issue !== null) wp_die('Invalid flow fixture: ' . esc_html($issue));
     $container = \WConvert\Bootstrap::container();

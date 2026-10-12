@@ -69,7 +69,7 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
     if (edge) (onUpgrade ?? onChange)(reconnectGraphEdge(upgraded, edge.id, target));
   };
   return <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
-    <select id={`${id}-then`} value={nextId ?? ''} onChange={event => choose(event.target.value)}>
+    <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
       {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
       {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
     </select>

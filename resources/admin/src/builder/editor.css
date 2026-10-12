@@ -890,7 +890,6 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-border-preview[data-edges='all'] { border-color: currentColor; }
 .wconvert-border-preview[data-edges='block-start'] { border-block-start-color: currentColor; }
 
-
 .wconvert-fields .wconvert-token__slider { inline-size: 100%; min-inline-size: 0; }
 #wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] .wconvert-token__exact { inline-size: 0; min-inline-size: 48px; }
 
@@ -931,7 +930,6 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 #wconvert-admin .wconvert-token .wconvert-font { block-size: 32px; min-block-size: 32px; }
 /* Reserve two label lines so paired sliders and inputs keep the same baseline. */
 .wconvert-fields__item[data-compact] .wconvert-field-heading { min-block-size: 32px; }
-
 
 /* The feature title is a control label, not the small field-caption style. */
 #wconvert-admin .wconvert-workspace .wconvert-inspector__body .wconvert-reopen-toggle {
@@ -1119,7 +1117,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
   #wconvert-admin .wconvert-journey-workspace:has(.wconvert-journey-side[data-mobile-pane='details']) .wconvert-journey-view,
   #wconvert-admin .wconvert-journey-workspace:has(.wconvert-journey-side[data-mobile-pane='details']) .wconvert-journey-context { display: none; }
   #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding-block: 12px 8px; }
-  .wconvert-journey-map__hint { max-inline-size: calc(100% - 32px); }
+
 }
 @media (max-width: 640px) {
   .wconvert-journey-side { display: flex; flex-direction: column; }
@@ -1212,69 +1210,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-journey-side[data-panel-open='false']:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr); }
 /* Canvas tools use the map width, including when an inspector is open. */
 .wconvert-journey-map { position: relative; container: journey-map / inline-size; display: grid; grid-template-rows: auto minmax(0, 1fr); min-inline-size: 0; min-block-size: 0; background: var(--surface); border-inline-end: 1px solid var(--border); }
-.wconvert-journey-map .react-flow { grid-row: 2; inline-size: 100%; block-size: 100%; }
-.wconvert-journey-map__hint { grid-row: 1; margin: 0; padding: 8px 18px; border-block-end: 1px solid var(--border); background: #fff; color: var(--muted-foreground); font-size: var(--text-micro); }
-.wconvert-journey-map .react-flow__panel { margin: 16px; }
-.wconvert-journey-map__percentage { min-inline-size: 42px; text-align: center; color: var(--foreground); font-size: var(--text-note); font-variant-numeric: tabular-nums; }
-.wconvert-journey-map__controls { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; max-inline-size: calc(100% - 32px); pointer-events: none !important; }
-.wconvert-journey-map__control-group { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); pointer-events: auto; }
-.wconvert-journey-map__control-group button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-block-size: 34px; padding: 6px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--muted-foreground); font-size: var(--text-micro); line-height: 1.4; white-space: nowrap; box-shadow: none; cursor: pointer; }
-.wconvert-journey-map__control-group button svg { inline-size: 16px; block-size: 16px; flex: none; }
-.wconvert-journey-map__control-group button:hover { background: var(--surface); color: var(--foreground); }
-.wconvert-journey-map__control-group button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-journey-map__control-group button[aria-pressed='true'] { background: var(--secondary); color: var(--foreground); }
-.wconvert-journey-map__pan span { font-size: var(--text-label); color: var(--muted-foreground); }
-.wconvert-journey-map__pan button { inline-size: 34px; padding: 4px; }
-.wconvert-journey-map .wconvert-journey-map__pan { margin-block-end: 28px; }
-.wconvert-journey-map .wconvert-journey-map__controls { margin-block-end: 28px; }
-.wconvert-journey-map__tools .wconvert-journey-map__mobile-tool { display: none; }
-[dir='rtl'] .wconvert-journey-map__direction { transform: scaleX(-1); }
-@container journey-map (max-width: 1000px) {
-  .wconvert-journey-map__pan { display: none; }
-}
-@container journey-map (max-width: 700px) {
-  .wconvert-journey-map__tools .wconvert-journey-map__desktop-tool { display: none; }
-  .wconvert-journey-map__tools .wconvert-journey-map__mobile-tool { display: inline-flex; }
-  .wconvert-journey-map__selection { flex-wrap: wrap; }
-  .wconvert-journey-map__control-group button { min-block-size: 36px; }
-}
-@container journey-map (max-width: 400px) {
-  .wconvert-journey-map .react-flow__panel { margin-inline: 10px; }
-  .wconvert-journey-map__controls { max-inline-size: calc(100% - 20px); gap: 6px; }
-  .wconvert-journey-map__selection { gap: 0; }
-  .wconvert-journey-map__selection button { padding-inline: 6px; font-size: var(--text-micro); }
-}
-.wconvert-flow-node { inline-size: 252px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); text-align: start; }
-.wconvert-flow-node.is-selected { border-color: var(--action); outline: 2px solid var(--action); outline-offset: 1px; }
-.wconvert-flow-node.is-muted, .wconvert-followup-group.is-muted { border-color: var(--border); box-shadow: none; }
-.wconvert-flow-node.is-compact-ending { inline-size: 176px; }
-.wconvert-followup-group { inline-size: 320px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); text-align: start; }
-.wconvert-followup-group { position: relative; }
-.wconvert-followup-group__members { padding-block: 4px; border-block: 1px solid var(--border); }
-.wconvert-followup-group__members { padding-inline: 12px; }
-.wconvert-followup-group header { display: flex; justify-content: space-between; gap: 8px; padding: 10px 12px 0; }
-.wconvert-followup-group header strong { font-size: var(--text-body); }
-.wconvert-followup-group header span { flex: none; font-size: var(--text-label); color: var(--muted-foreground); }
-.wconvert-followup-group>p { margin: 4px 12px 8px; font-size: var(--text-micro); line-height: 1.4; }
-.wconvert-followup-group ol { display: grid; gap: 4px; max-block-size: 240px; overflow: auto; overscroll-behavior: contain; list-style: none; margin: 0; padding: 0 10px; }
-.wconvert-followup-group li { margin: 0; }
-.wconvert-followup-group li.is-muted button { background: var(--surface); }
-.wconvert-followup-group li button { display: grid; gap: 3px; inline-size: 100%; padding: 6px 8px; border: 1px solid transparent; border-radius: 6px; background: white; text-align: start; color: var(--foreground); cursor: pointer; }
-.wconvert-followup-group li button:is(:hover, :focus-visible) { background: var(--accent); }
-.wconvert-followup-group li button[aria-pressed='true'] { border-color: var(--action); box-shadow: 0 0 0 2px color-mix(in srgb, var(--action) 12%, transparent); }
-.wconvert-followup-group li strong { font-size: var(--text-micro); line-height: 1.3; }
-.wconvert-followup-group li span,.wconvert-followup-group li small { font-size: var(--text-micro); line-height: 1.35; color: var(--muted-foreground); }
-.wconvert-followup-group footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 7px; padding: 8px 12px; font-size: var(--text-micro); }
-.wconvert-followup-group footer button { justify-self: start; border: 0; padding: 0; background: none; color: var(--link); text-decoration-line: underline; cursor: pointer; }
-.wconvert-followup-group button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-followup-group .react-flow__handle { inline-size: 10px; block-size: 10px; background: var(--action); border: 2px solid white; }
-.wconvert-flow-node__main { display: grid; gap: 7px; inline-size: 100%; padding: 16px; border: 0; background: none; text-align: start; color: var(--foreground); cursor: grab; }
-.wconvert-flow-node__heading { display: flex; align-items: center; gap: 9px; }
-.wconvert-flow-node__heading>div { display: grid; gap: 4px; min-inline-size: 0; }
-.wconvert-flow-node__main .wconvert-flow-node__type-icon { display: grid; place-items: center; inline-size: 30px; block-size: 30px; flex: none; border-radius: 7px; background: var(--secondary); color: var(--muted-foreground); }
-.wconvert-flow-node__type-icon svg { inline-size: 17px; block-size: 17px; }
-.wconvert-flow-node__ending { display: flex; align-items: center; gap: 6px; padding: 9px 14px; border-block-start: 1px solid var(--border); background: var(--surface); color: var(--muted-foreground); border-radius: 0 0 12px 12px; font-size: var(--text-label); }
-.wconvert-flow-node__ending svg { inline-size: 14px; block-size: 14px; }
+
 .wconvert-journey-arrival { margin-block-end: 16px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; font-size: var(--text-micro); }
 
 .wconvert-journey-arrival p { color: var(--muted-foreground); margin: 8px 0; }
@@ -1283,33 +1219,7 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-journey-arrival button span { color: var(--muted-foreground); }
 .wconvert-journey-arrival button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-journey-arrival__entry { color: var(--muted-foreground); font-size: var(--text-micro); margin: 0 0 16px; }
-.wconvert-flow-node__main:active { cursor: grabbing; }
-.wconvert-flow-node__main small { color: var(--muted-foreground); font-size: var(--text-label); text-transform: uppercase; letter-spacing: .05em; }
-.wconvert-flow-node__main strong { font-size: var(--text-body); line-height: 1.3; overflow-wrap: anywhere; }
-.wconvert-flow-node__main span,.wconvert-flow-node__main em { font-size: var(--text-micro); line-height: 1.45; color: var(--muted-foreground); font-style: normal; overflow-wrap: anywhere; }
-.wconvert-flow-node__main em { padding: 5px 7px; border-radius: 5px; background: var(--secondary); color: var(--foreground); }
-.wconvert-flow-node__preview { display: grid; gap: 4px; margin: 0 12px 10px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--foreground); }
-.wconvert-flow-node__preview small { color: var(--muted-foreground); text-transform: uppercase; }
-.wconvert-flow-node__preview strong { font-size: var(--text-micro); }
-.wconvert-flow-node__preview span { font-size: var(--text-label); }
-.wconvert-flow-node__save { display: grid; gap: 3px; padding: 10px 15px; border-block-start: 1px solid #cfe5d7; background: #f0f9f2; color: var(--success); font-size: var(--text-micro); }
-.wconvert-flow-node__save span { overflow-wrap: anywhere; color: var(--muted-foreground); }
-.wconvert-flow-node__save button { justify-self: start; padding: 1px 0; border: 0; background: none; color: var(--success); text-decoration-line: underline; cursor: pointer; }
-.wconvert-flow-node__paths { position: relative; display: grid; gap: 2px; padding: 9px 12px 12px; border-block-start: 1px solid var(--border); }
-.wconvert-flow-node__continue { position: relative; padding: 8px 12px; border-block-start: 1px solid var(--border); }
-.wconvert-flow-node__continue button { padding: 0; border: 0; background: none; color: var(--foreground); font-size: var(--text-micro); text-align: start; cursor: pointer; }
-.wconvert-flow-node__continue .react-flow__handle { inset-inline-end: -6px; inset-block-start: 50%; }
-.wconvert-flow-node__paths>small { margin-block-end: 2px; color: var(--muted-foreground); font-size: var(--text-meta); text-transform: uppercase; }
-.wconvert-flow-node__paths button { inline-size: 100%; padding: 4px; border: 0; background: none; color: var(--foreground); text-align: start; font-size: var(--text-micro); cursor: pointer; }
-.wconvert-flow-node__path { position: relative; }
-.wconvert-flow-node__path .react-flow__handle { inset-inline-end: -18px; inset-block-start: 50%; }
-.wconvert-flow-node__paths span { display: block; color: var(--muted-foreground); }
-.wconvert-flow-node__hidden { position: relative; padding: 7px 15px; border-block-start: 1px solid var(--border); color: var(--muted-foreground); font-size: var(--text-micro); }
-.wconvert-flow-node__hidden button { inline-size: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: start; cursor: pointer; }
-.wconvert-flow-node__hidden .react-flow__handle { inset-inline-end: -6px; inset-block-start: 50%; }
-.wconvert-flow-node__add { padding: 7px 15px; border-block-start: 1px solid var(--border); color: var(--action); font-size: var(--text-micro); }
-.wconvert-flow-node :is(button):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-flow-node .react-flow__handle { inline-size: 10px; block-size: 10px; background: var(--action); border: 2px solid white; }
+
 .wconvert-journey-routes__list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .wconvert-journey-routes__list>li { display: grid; gap: 12px; min-inline-size: 0; margin: 0; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
 .wconvert-journey-routes__list>li.wconvert-journey-routes__disclosure { padding: 0; }
@@ -1594,35 +1504,6 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 /* Display choices explain the decision at the point where it is made. */
 .wconvert-display-rule-help { margin: .5rem 0 1rem; font-size: var(--text-note); line-height: 1.6; color: var(--muted-foreground); }
 
-.wconvert-flow-node.is-unreachable, .wconvert-followup-group.is-unreachable { border-style: dashed; }
-
-/* Context actions stay in screen space; overview summaries keep node geometry
-   unchanged so zoom never feeds back into layout or reroutes every edge. */
-.wconvert-flow-node { position: relative; }
-.wconvert-journey-node-tools { grid-row: 1; display: flex; align-items: center; flex-wrap: wrap; min-inline-size: 0; min-block-size: 42px; padding: 4px 12px; gap: 3px; background: var(--card); border-block-end: 1px solid var(--border); }
-.wconvert-journey-node-tools>strong { margin-inline-end: auto; max-inline-size: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-note); }
-.wconvert-journey-node-tools>span { color: var(--muted-foreground); font-size: var(--text-note); }
-.wconvert-journey-node-tools button { padding: 7px 9px; border: 0; border-radius: 4px; background: transparent; font-size: var(--text-note); color: var(--foreground); cursor: pointer; }
-.wconvert-journey-node-tools button:hover { background: var(--accent); }
-.wconvert-journey-node-tools button:focus-visible, .wconvert-journey-edge-insert:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-flow-node__add button { display: inline-flex; align-items: center; gap: 5px; padding: 0; border: 0; background: none; color: var(--action); cursor: pointer; font: inherit; }
-.wconvert-flow-node__add button svg { inline-size: 13px; block-size: 13px; }
-.wconvert-flow-node__add:has(button)>span { display: block; font-size: var(--text-micro); margin-block-start: 4px; color: var(--muted-foreground); }
-.wconvert-journey-edge-tools { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.wconvert-journey-edge-label { max-inline-size: 216px; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--action); font-size: var(--text-micro); line-height: 1.45; text-align: center; white-space: normal; overflow-wrap: anywhere; pointer-events: auto; cursor: pointer; }
-.wconvert-journey-edge-label>span { display: block; overflow-wrap: anywhere; }
-.wconvert-journey-edge-label:is(:hover,:focus-visible) { background: var(--accent); outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-journey-edge-insert { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-block-size: 30px; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--action); font-size: var(--text-micro); white-space: nowrap; pointer-events: auto; cursor: pointer; opacity: 0; }
-.wconvert-journey-edge-insert svg { inline-size: 14px; block-size: 14px; }
-.wconvert-journey-edge-tools:is(:hover,:focus-within,[data-selected]) .wconvert-journey-edge-insert { opacity: 1; }
-.wconvert-journey-edge-insert:is(:hover,:focus-visible) { background: var(--accent); outline: 2px solid var(--ring); outline-offset: 2px; }
-@media (hover: none) { .wconvert-journey-edge-insert { opacity: 1; } }
-.wconvert-followup-group.is-overview>:not(.wconvert-flow-node__overview):not(.react-flow__handle):not(.wconvert-flow-issue),
-.wconvert-flow-node.is-overview>:not(.wconvert-flow-node__overview):not(.react-flow__handle):not(.wconvert-flow-issue) { visibility: hidden; pointer-events: none; }
-.wconvert-flow-node__overview { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 14px; overflow: hidden; background: var(--card); color: var(--foreground); border: 0; border-radius: inherit; text-align: start; cursor: pointer; }
-.wconvert-flow-node__overview small { font-size: var(--text-heading); color: var(--muted-foreground); }
-.wconvert-flow-node__overview strong { font-size: var(--text-title); line-height: 1.25; overflow-wrap: anywhere; }
-.wconvert-flow-node__overview span { font-size: var(--text-heading); line-height: 1.4; overflow-wrap: anywhere; }
 .wconvert-graph-insert__intents { display: grid; gap: 8px; margin: 0; padding: 0; border: 0; }
 .wconvert-graph-insert__intents legend { margin-block-end: 8px; font-weight: 600; }
 
@@ -1653,8 +1534,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-path-disclosure__body { display: grid; gap: 12px; min-inline-size: 0; padding: 12px; border-block-start: 1px solid var(--border); }
 
 /* Keep authoring tools contextual without resizing cards on selection. */
-.wconvert-flow-node .wconvert-flow-node__new-connection { opacity: 0; pointer-events: none; inline-size: 16px; block-size: 16px; border: 2px solid white; background: var(--action); }
-.wconvert-flow-node.is-selected .wconvert-flow-node__new-connection { opacity: 1; pointer-events: auto; }
+
 .wconvert-journey-behavior-help { margin-block-start: 16px; font-size: var(--text-note); color: var(--muted-foreground); }
 
 .wconvert-journey-behavior-help p { margin-block: 8px 0; line-height: 1.5; }
@@ -1715,7 +1595,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 @media(max-width: 600px) { .wconvert-graph-insert__intents,.wconvert-graph-insert__types { grid-template-columns: minmax(0, 1fr); } }
 
 .wconvert-journey-capture-fields { display: grid; gap: 8px; }
-.wconvert-flow-node__new-connection span { display: block; color: white; font: 12px/12px sans-serif; text-align: center; pointer-events: none; }
+
 /* Multi-answer rules need the inspector width; a half-width checklist obscures choices. */
 .wconvert-journey-pane .wconvert-journey-settings__clause:has(.wconvert-journey-settings__answers) { grid-template-columns: minmax(0, 1fr); }
 .wconvert-journey-pane .wconvert-journey-settings__answers { max-block-size: 220px; }
@@ -1823,17 +1703,15 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
   #wconvert-admin .wconvert-journey-dialog__header-actions [data-slot='button'] { block-size: 32px !important; }
 }
 
-
 /* Show conditional ownership, rather than numbering every possible screen as a visit. */
 .wconvert-campaign-screens__row .wconvert-campaign-screens__answer { margin-block: 0 3px; color: var(--action); font-size: var(--text-micro); }
 .wconvert-campaign-screens__row .wconvert-campaign-screens__path { margin-block: 0 5px; border-inline-start: 2px solid var(--action); padding-inline-start: 6px; color: var(--action); }
 .wconvert-campaign-screens__items section { background: color-mix(in srgb, var(--secondary) 45%, transparent); border-radius: 0 6px 6px 0; }
 .wconvert-campaign-screens__items .wconvert-campaign-screens__group-help { margin-block: 4px 8px; }
-.wconvert-followup-group li .wconvert-followup-group__answer { color: var(--action); font-weight: 500; }
+
 .wconvert-journey-test__side .wconvert-journey-test__current { padding: 10px 12px; list-style: none; border: 1px solid var(--border); border-radius: var(--radius); background: var(--secondary); }
 .wconvert-journey-test__side .wconvert-journey-test__current li { padding: 0; }
 .wconvert-journey-test__current span { display: block; margin-block-start: 3px; }
-
 
 .wconvert-campaign-screens__items section .wconvert-disclosure > summary { padding-inline: 8px; font-size: var(--text-micro); }
 
@@ -1841,15 +1719,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-result-products { margin-block: 12px; }
 
 .wconvert-journey-test-dialog__body[hidden] { display: none; }
-.wconvert-journey-map__tools button[aria-pressed="true"] { background: var(--secondary); color: var(--foreground); }
-
-.wconvert-journey-map__view-options { white-space: nowrap; }
-
-.wconvert-flow-node__results { padding: 8px 12px; border-top: 1px solid var(--border); font-size: var(--text-micro); }
-
-.wconvert-flow-node__results ol { padding-inline-start: 18px; margin-block: 8px 0; }
-.wconvert-flow-node__results li { margin-block: 6px; }
-.wconvert-flow-node__results small { display: block; color: var(--muted-foreground); }
 
 .wconvert-insert-existing { text-align: start; margin-block-start: 8px; text-decoration-line: underline; text-underline-offset: 3px; }
 
@@ -1857,7 +1726,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-pane__tabs { flex-wrap: wrap; flex-shrink: 0; }
 .wconvert-journey-settings button:not([data-slot], .wconvert-journey-result-summary):not(:disabled):not([aria-disabled='true']):hover { text-decoration-line: underline; text-underline-offset: 3px; }
 .wconvert-journey-settings .wconvert-journey-result-summary:is(:hover, :focus-visible) { background: var(--accent); }
-
 .wconvert-journey-options .wconvert-journey-arrival { margin-block-start: 12px; }
 .wconvert-editor-help { display: flex; align-items: center; gap: 6px; }
 .wconvert-editor-help > :first-child { flex: 1; min-inline-size: 0; }
@@ -1923,17 +1791,8 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-graph-insert .wconvert-journey-settings__clause:has(.wconvert-journey-settings__answers) { grid-template-columns: minmax(0, 1fr); }
 .wconvert-graph-insert .wconvert-journey-settings__answers label { font-weight: 500; }
 
-/* Issues remain actionable in both detailed and overview maps. */
-.wconvert-flow-issue { display: flex; align-items: center; gap: 6px; min-block-size: 32px; margin: 6px 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--destructive); font-size: var(--text-micro); cursor: pointer; }
-.is-overview:has(> .wconvert-flow-issue) > .wconvert-flow-node__overview { padding-block-end: 48px; }
-.is-overview > .wconvert-flow-issue { position: relative; z-index: 1; }
-.wconvert-flow-issue:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-
 /* Device guidance stays beside the selector. */
 .wconvert-device-controls { display: flex; align-items: center; gap: 4px; }
-.wconvert-flow-node__rules { display: grid; gap: 3px; padding: 10px 15px; border-block-start: 1px solid var(--border); background: var(--surface); font-size: var(--text-micro); }
-.wconvert-flow-node__rules span { overflow-wrap: anywhere; color: var(--muted-foreground); }
-.wconvert-flow-node__rules button { justify-self: start; padding: 1px 0; border: 0; background: none; color: var(--link); text-decoration-line: underline; cursor: pointer; }
 
 /* Transfer shares the picker scroll boundary, with a steady preview beside the review. */
 .wconvert-transfer-dialog[data-slot="dialog-content"] { --wconvert-picker-width: 42rem; block-size: auto; max-block-size: calc(100dvh - 2rem); }
@@ -2067,15 +1926,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__name { flex: 1 1 auto; min-inline-size: 0; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements .wconvert-block__label { flex: 0 1 auto; min-inline-size: 0; overflow: hidden; }
 #wconvert-admin .wconvert-workspace .wconvert-edit-tree__elements :is(.wconvert-block__chip, .wconvert-block__off) { flex-shrink: 0; }
-/* A Flow card's issues, listed (ADR 0135): each line opens its fix. */
-.wconvert-flow-issue__list { inline-size: min(320px, calc(100vw - 32px)); padding: 6px; }
-.wconvert-flow-issue__list ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
-.wconvert-flow-issue__list button { display: block; inline-size: 100%; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--foreground); font-size: var(--text-note); text-align: start; cursor: pointer; }
-.wconvert-flow-issue__list button:hover, .wconvert-flow-issue__list button:focus-visible { background: var(--accent); }
-/* The one-time drag note sits over the map's top edge, never over a card's controls. */
-.wconvert-journey-map__note { position: absolute; inset-block-start: 12px; inset-inline-start: 50%; z-index: 6; display: flex; align-items: center; gap: 10px; margin: 0; padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08)); font-size: var(--text-note); transform: translateX(-50%); }
-.wconvert-journey-map__note:dir(rtl) { transform: translateX(50%); }
-.wconvert-journey-map__note button { padding: 2px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font-size: var(--text-micro); cursor: pointer; }
 
 /* ===========================================================================
    One panel grammar (ADR 0136): header, section, fact row, field heading,
@@ -2488,3 +2338,134 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* A pair that cannot be measured is not a failure: a neutral line, not amber (ADR 0135). */
 #wconvert-admin .wconvert-panel-warn[data-state='unknown'] { background: var(--surface); }
 #wconvert-admin .wconvert-panel-warn[data-state='unknown'] > svg { color: var(--muted-foreground); }
+
+/* ===========================================================================
+   The Flow map (ADR 0142): one readable map. Cards and pills are HTML in
+   reading order, the lines one SVG. A colour means one answer; grey is
+   everyone; dashed goes around or is skipped; red is a problem. The viewport
+   is left-to-right because the layout has mirrored RTL already.
+   =========================================================================== */
+.wconvert-flow { display: flex; flex-direction: column; --flow-ink: var(--input); }
+.wconvert-flow-nudge { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 16px 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); font-size: var(--text-note); }
+.wconvert-flow-nudge__locked { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-foreground); }
+.wconvert-flow-nudge__locked svg { inline-size: 14px; block-size: 14px; }
+.wconvert-flow-region { position: relative; flex: 1; display: flex; flex-direction: column; min-block-size: 0; }
+.wconvert-flow-viewport { position: relative; flex: 1; min-inline-size: 0; overflow: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; }
+.wconvert-flow-sizer { position: relative; margin-inline: auto; }
+.wconvert-flow-canvas { position: absolute; inset-block-start: 0; inset-inline-start: 0; transform-origin: 0 0; }
+.wconvert-flow-lines { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.wconvert-flow-line { fill: none; stroke: var(--flow-ink); stroke-width: 1.8; }
+.wconvert-flow-line:is([data-style='around'], [data-style='skipped']) { stroke-dasharray: 6 5; }
+.wconvert-flow-line[data-related] { stroke-width: 2.6; }
+.wconvert-flow-line[data-selected] { stroke-width: 3.5; }
+.wconvert-flow-line[data-trace='on'] { stroke-width: 3.5; }
+.wconvert-flow-arrow { fill: var(--flow-ink); }
+.wconvert-flow-line[data-colour='1'], .wconvert-flow-arrow[data-marker='answer-1'] { --flow-ink: var(--answer-1); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='1'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='1'] { --flow-answer: var(--answer-1); --flow-answer-surface: var(--answer-1-surface); }
+.wconvert-flow-line[data-colour='2'], .wconvert-flow-arrow[data-marker='answer-2'] { --flow-ink: var(--answer-2); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='2'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='2'] { --flow-answer: var(--answer-2); --flow-answer-surface: var(--answer-2-surface); }
+.wconvert-flow-line[data-colour='3'], .wconvert-flow-arrow[data-marker='answer-3'] { --flow-ink: var(--answer-3); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='3'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='3'] { --flow-answer: var(--answer-3); --flow-answer-surface: var(--answer-3-surface); }
+.wconvert-flow-line[data-colour='4'], .wconvert-flow-arrow[data-marker='answer-4'] { --flow-ink: var(--answer-4); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='4'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='4'] { --flow-answer: var(--answer-4); --flow-answer-surface: var(--answer-4-surface); }
+.wconvert-flow-line[data-colour='5'], .wconvert-flow-arrow[data-marker='answer-5'] { --flow-ink: var(--answer-5); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='5'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='5'] { --flow-answer: var(--answer-5); --flow-answer-surface: var(--answer-5-surface); }
+.wconvert-flow-line[data-colour='6'], .wconvert-flow-arrow[data-marker='answer-6'] { --flow-ink: var(--answer-6); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='6'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='6'] { --flow-answer: var(--answer-6); --flow-answer-surface: var(--answer-6-surface); }
+/* A trace and a problem outrank an answer's colour. */
+.wconvert-flow-line[data-problem] { --flow-ink: var(--destructive); }
+.wconvert-flow-line[data-trace='on'], .wconvert-flow-arrow[data-marker='on'] { --flow-ink: var(--action); }
+.wconvert-flow-line[data-trace='off'], .wconvert-flow-arrow[data-marker='off'] { --flow-ink: var(--border); }
+.wconvert-flow-card, .wconvert-flow-group { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); text-align: start; box-shadow: 0 1px 2px rgb(48 39 32 / 0.06); }
+.wconvert-flow-card { padding: 10px 12px; }
+.wconvert-flow-card[data-colour] { border-block-start: 3px solid var(--flow-answer); padding-block-start: 8px; }
+.wconvert-flow-card:hover { border-color: var(--input); }
+.wconvert-flow-card[data-selected], .wconvert-flow-group:has([aria-current='true']) { border-color: var(--action); box-shadow: 0 0 0 2px var(--action), 0 0 0 6px var(--ice); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-trace='on'] { box-shadow: 0 0 0 2px var(--action); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-trace='off'], :is(.wconvert-flow-card, .wconvert-flow-group)[data-unreachable] { border-style: dashed; background: var(--background); box-shadow: none; }
+.wconvert-flow-card[data-unreachable] { border-color: var(--warning); }
+.wconvert-flow-card__main { display: flex; flex-direction: column; gap: 4px; min-inline-size: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.wconvert-flow-card__kind { display: flex; align-items: center; gap: 6px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-label); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.wconvert-flow-tile { flex: none; display: grid; place-items: center; inline-size: 16px; block-size: 16px; border-radius: 4px; }
+.wconvert-flow-tile svg { inline-size: 12px; block-size: 12px; }
+.wconvert-flow-tile[data-kind='question'] { background: var(--ice); color: var(--action); }
+.wconvert-flow-tile[data-kind='message'] { background: #f3ead9; color: #7a5b2e; }
+.wconvert-flow-tile[data-kind='form'] { background: var(--success-surface); color: var(--success); }
+.wconvert-flow-tile[data-kind='result'] { background: #efe6f6; color: #6a3d8f; }
+.wconvert-flow-tile[data-kind='ending'] { background: #ebe8e1; color: #5f574f; }
+.wconvert-flow-card__name { overflow: hidden; font-size: var(--text-item); line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-chip { align-self: flex-start; max-inline-size: 100%; overflow: hidden; padding: 1px 6px; border: 1px solid var(--flow-answer, var(--input)); border-radius: 4px; background: var(--flow-answer-surface, var(--card)); color: var(--foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-chip[data-warn] { border-color: transparent; background: var(--warning-surface); color: var(--warning); }
+.wconvert-flow-card__sub { display: flex; align-items: center; gap: 6px; min-inline-size: 0; overflow: hidden; color: var(--muted-foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-card__sub b { color: var(--success); font-weight: 600; }
+.wconvert-flow-card__sub[data-shown] { color: var(--foreground); font-weight: 600; }
+.wconvert-flow-card__sub [data-problem] { color: var(--destructive); }
+.wconvert-flow-dot { flex: none; display: inline-block; inline-size: 9px; block-size: 9px; border: 1.5px solid var(--input); border-radius: 50%; background: transparent; }
+.wconvert-flow-dot[data-colour] { border-color: var(--flow-answer); background: var(--flow-answer); }
+.wconvert-flow-card__foot { overflow: hidden; padding: 0; border: 0; background: none; color: var(--muted-foreground); font: inherit; font-size: var(--text-micro); text-align: start; text-overflow: ellipsis; white-space: nowrap; }
+button.wconvert-flow-card__foot { cursor: pointer; }
+button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: underline; }
+.wconvert-flow-card__foot b { color: var(--foreground); font-weight: 600; }
+.wconvert-flow-card__foot[data-problem] { color: var(--destructive); font-weight: 600; }
+.wconvert-flow-card__foot[data-early] { color: var(--foreground); }
+/* The issue count sits on the card's top edge like a badge, clear of its words. */
+.wconvert-flow :is(.wconvert-flow-card, .wconvert-flow-group) .wconvert-flow-issue { position: absolute; inset-block-start: -11px; inset-inline-end: 8px; margin: 0; min-block-size: 22px; padding: 1px 6px; border-color: var(--destructive); }
+.wconvert-flow-group { padding: 10px; border: 1.5px solid var(--action); background: #eef6f8; }
+.wconvert-flow-group__title { display: flex; align-items: center; gap: 6px; min-inline-size: 0; overflow: hidden; font-size: var(--text-note); font-weight: 600; white-space: nowrap; }
+.wconvert-flow-group__sub { overflow: hidden; color: var(--muted-foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-group__member { position: relative; display: flex; align-items: center; gap: 7px; inline-size: 100%; min-block-size: 30px; padding: 0 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.wconvert-flow-group__member strong { flex: 1; min-inline-size: 0; overflow: hidden; font-size: var(--text-note); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-group__member small { max-inline-size: 90px; overflow: hidden; color: var(--muted-foreground); font-size: var(--text-micro); text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-flow-group__member[aria-current='true'] { box-shadow: 0 0 0 2px var(--action); }
+.wconvert-flow-group__member[data-trace='off'] { border-style: dashed; background: var(--background); }
+.wconvert-flow-group__member[data-trace='off'] strong { color: var(--muted-foreground); }
+.wconvert-flow-group__issue { display: grid; place-items: center; min-inline-size: 18px; block-size: 18px; padding: 0 5px; border-radius: 9px; background: var(--destructive); color: #fff; font-size: var(--text-label); font-weight: 700; }
+.wconvert-flow-pill { position: absolute; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.wconvert-flow-pill__label { display: inline-flex; align-items: center; gap: 5px; min-inline-size: 0; max-inline-size: 220px; padding: 1px 9px 1px 7px; border: 1.5px solid var(--flow-answer, var(--input)); border-radius: 999px; background: var(--card); color: var(--flow-answer, var(--foreground)); font-size: var(--text-micro); white-space: nowrap; cursor: pointer; }
+.wconvert-flow-pill__label>span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.wconvert-flow-pill:is([data-style='around'], [data-style='skipped']) .wconvert-flow-pill__label { border-style: dashed; }
+.wconvert-flow-pill__label:hover { background: var(--surface); }
+.wconvert-flow-pill__label:disabled { cursor: default; }
+.wconvert-flow-pill[data-selected] .wconvert-flow-pill__label, .wconvert-flow-pill[data-trace='on'] .wconvert-flow-pill__label { font-weight: 600; }
+.wconvert-flow-pill[data-trace='off'] .wconvert-flow-pill__label { border-color: var(--border); color: var(--muted-foreground); }
+.wconvert-flow-pill[data-problem] .wconvert-flow-pill__label { border-color: var(--destructive); background: var(--destructive-surface); color: var(--destructive); }
+.wconvert-flow-pill__add { flex: none; display: grid; place-items: center; inline-size: 24px; block-size: 24px; padding: 0; border: 1px solid var(--input); border-radius: 50%; background: var(--card); color: var(--foreground); cursor: pointer; }
+.wconvert-flow-pill__add svg { inline-size: 14px; block-size: 14px; }
+.wconvert-flow-pill__add:hover { border-color: var(--action); background: var(--action); color: #fff; }
+@media (pointer: coarse) { .wconvert-flow-pill__add { inline-size: 44px; block-size: 44px; } .wconvert-flow-pill__label { min-block-size: 44px; } }
+.wconvert-flow :is(button, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-flow-zoom { position: absolute; inset-block-end: 16px; inset-inline-start: 16px; z-index: 3; display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.wconvert-flow-zoom button { display: grid; place-items: center; min-inline-size: 32px; min-block-size: 32px; padding: 4px 9px; border: 0; border-radius: 4px; background: none; color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
+.wconvert-flow-zoom button svg { inline-size: 16px; block-size: 16px; }
+.wconvert-flow-zoom button:hover { background: var(--surface); }
+.wconvert-flow-zoom output { min-inline-size: 44px; font-size: var(--text-note); font-variant-numeric: tabular-nums; text-align: center; }
+.wconvert-flow-legend, .wconvert-flow-overview { position: absolute; inset-block-end: 16px; inset-inline-end: 16px; z-index: 3; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.wconvert-flow-legend { display: grid; gap: 4px; padding: 8px 10px; color: var(--muted-foreground); font-size: var(--text-micro); }
+.wconvert-flow-legend span { display: flex; align-items: center; gap: 8px; }
+.wconvert-flow-legend svg { flex: none; inline-size: 28px; block-size: 8px; }
+.wconvert-flow-legend path { stroke: var(--input); stroke-width: 2; }
+.wconvert-flow-legend path[data-style='answer'] { stroke: var(--answer-1); }
+.wconvert-flow-legend path[data-style='around'] { stroke-dasharray: 5 4; }
+.wconvert-flow-overview { padding: 4px; cursor: pointer; }
+.wconvert-flow-overview svg { display: block; max-inline-size: 142px; max-block-size: 160px; }
+.wconvert-flow-overview rect { fill: #cfc8bc; }
+.wconvert-flow-overview rect[data-colour='1'] { fill: var(--answer-1); }
+.wconvert-flow-overview rect[data-colour='2'] { fill: var(--answer-2); }
+.wconvert-flow-overview rect[data-colour='3'] { fill: var(--answer-3); }
+.wconvert-flow-overview rect[data-colour='4'] { fill: var(--answer-4); }
+.wconvert-flow-overview rect[data-colour='5'] { fill: var(--answer-5); }
+.wconvert-flow-overview rect[data-colour='6'] { fill: var(--answer-6); }
+.wconvert-flow-overview .wconvert-flow-overview__view { fill: rgb(31 90 107 / 0.12); stroke: var(--action); stroke-width: 1; }
+.wconvert-flow-issue { display: flex; align-items: center; gap: 6px; min-block-size: 32px; margin: 6px 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--destructive); font-size: var(--text-micro); cursor: pointer; }
+.wconvert-flow-issue svg { inline-size: 14px; block-size: 14px; }
+.wconvert-flow-issue__list { inline-size: min(320px, calc(100vw - 32px)); padding: 6px; }
+.wconvert-flow-issue__list ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.wconvert-flow-issue__list button { display: block; inline-size: 100%; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--foreground); font-size: var(--text-note); text-align: start; cursor: pointer; }
+.wconvert-flow-issue__list button:hover, .wconvert-flow-issue__list button:focus-visible { background: var(--accent); }
+@media (max-width: 900px) { .wconvert-flow-legend { display: none; } }
+/* High contrast keeps the dashes, which carry "goes around" without colour. */
+@media (forced-colors: active) {
+  .wconvert-flow-line { stroke: CanvasText; }
+  .wconvert-flow-line[data-trace='on'] { stroke: Highlight; }
+  .wconvert-flow-arrow { fill: CanvasText; }
+}
