@@ -21,6 +21,8 @@
 #wconvert-admin .wconvert-brand-plan { align-self:stretch; display:flex; align-items:center; color:var(--frame-muted); }
 #wconvert-admin .wconvert-header-tools { margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
 #wconvert-admin .wconvert-header-tools .wconvert-explore-pro { color:var(--ice); font-size:var(--text-note); font-weight:500; text-decoration:none; white-space:nowrap; }
+#wconvert-admin .wconvert-already-bought { color:var(--frame-muted); font-size:var(--text-note); white-space:nowrap; }
+#wconvert-admin .wconvert-already-bought a { color:var(--frame-text); }
 #wconvert-admin .wconvert-notifications-trigger { position:relative; }
 /* A count, not a dot: what needs attention is readable without opening the bell. */
 #wconvert-admin .wconvert-notification-count { position:absolute; inset-block-start:-2px; inset-inline-end:-4px; min-inline-size:18px; block-size:18px; padding-inline:5px; border-radius:999px; background:var(--frame-signal); color:var(--frame-ink); font-size:var(--text-label); font-weight:700; line-height:18px; text-align:center; font-variant-numeric:tabular-nums; }
@@ -106,7 +108,7 @@
   #wconvert-admin .wconvert-brand { gap:8px; }
   #wconvert-admin .wconvert-brand-mark { inline-size:29px; block-size:29px; }
   #wconvert-admin .wconvert-header-tools { gap:3px; }
-  #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-brand-plan { display:none; }
+  #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-already-bought, #wconvert-admin .wconvert-brand-plan { display:none; }
   /* A badge that is a link and may carry a dot moves to the tools row on a phone instead of vanishing. */
   #wconvert-admin .wconvert-plan-mobile { display:inline-flex; margin-inline-end:4px; }
   #wconvert-admin .wconvert-section-nav ul { justify-content:space-between; gap:12px; }

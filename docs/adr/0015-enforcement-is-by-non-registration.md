@@ -106,7 +106,9 @@ and would put a branch on the request path 0004 exists to protect.
   *upsell copy* is a different conversation with the review team than fetching a
   template library the user asked for.
   *Still true after [ADR 0116](0116-free-shows-nothing-it-cannot-run.md). Free's only upsell copy is the header link and the static
-  "More with Pro" list, both bundled.*
+  "More with Pro" list, both bundled.* *Amended by
+  [ADR 0143](0143-license-page-and-updater.md): each carries a plain "Already
+  bought?" link to the account's downloads — bundled, no fetch.*
   *Both halves acted on by
   [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md), and the
   distinction this sentence draws is the one it splits on. The **locked

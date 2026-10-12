@@ -79,4 +79,20 @@ final class ManagedLicenseControllerTest extends TestCase
         $this->assertStringNotContainsString('AGEN', $json);
         $this->assertDoesNotMatchRegularExpression('/\d{4}-\d{2}-\d{2}/', $json, 'a date reached the client');
     }
+
+    /** Site Health, Plugins row and badge stay quiet about a managed licence's details. */
+    public function testSiteHealthAndThePluginsScreenSayNothingAboutTheDetails(): void
+    {
+        $GLOBALS['wconvertTestCapabilities'] = ['manage_options'];
+        $fields = (new \WConvert\Pro\License\SiteHealth($this->freshSdk()))->addSection([])[\WConvert\Pro\License\SiteHealth::SECTION]['fields'];
+
+        $this->assertSame(['status', 'updates', 'key_source', 'managed_by'], array_keys($fields));
+        $this->assertSame('Updates on', $fields['status']['value'], 'a managed licence\'s renewal is the agency\'s business');
+
+        $screen = new \WConvert\Pro\License\PluginsScreen($this->freshSdk(), 'wconvert-pro/wconvert-pro.php');
+        ob_start();
+        $screen->row();
+        $this->assertSame('', ob_get_clean());
+        $this->assertArrayNotHasKey('license', $screen->actionLinks([]));
+    }
 }

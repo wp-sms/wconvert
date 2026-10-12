@@ -1694,7 +1694,8 @@ load-bearing:
 - **`locked`** — absent because the install does not have the [[Tier]] the member
   is declared at. Buyable from us. **Hidden on a free install, upsold on a paid
   one** ([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). Free's
-  only upsell is its header link and one static "More with Pro" list.
+  only upsell is its header link and one static "More with Pro" list, each with
+  a plain "Already bought?" link to the account's downloads (ADR 0143).
 - **`unavailable`** — absent because something the *site* would need is missing: no
   WooCommerce, no WSMS, no MailPoet. Not buyable from us.
 
