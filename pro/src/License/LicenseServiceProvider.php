@@ -69,6 +69,8 @@ final class LicenseServiceProvider implements ServiceProvider
 
         if (is_admin()) {
             (new AdminSurfaces($sdk))->hooks();
+            (new PluginsScreen($sdk, plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
+            (new SiteHealth($sdk))->hooks();
         }
 
         // On `rest_api_init`, which fires on requests WordPress does not

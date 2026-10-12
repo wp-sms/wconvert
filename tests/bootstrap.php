@@ -2353,3 +2353,10 @@ if (!function_exists('add_submenu_page')) {
         return $parent . '_page_' . $slug;
     }
 }
+
+if (!function_exists('wp_date')) {
+    function wp_date(string $format, ?int $timestamp = null, mixed $timezone = null): string
+    {
+        return gmdate($format, $timestamp ?? time());
+    }
+}

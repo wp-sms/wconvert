@@ -52,6 +52,19 @@ the full record for the team.
 
 ### Added
 
+- Pro: a License page (WConvert → License, and the header's plan badge) to
+  activate by signing in to your account or with a key, see your sites and free
+  one, swap or remove the key, and see whether updates and support are on. A
+  licence never changes what Pro does: every problem state says Pro features keep
+  working. Updates are offered only while the licence covers this site, and
+  deleting Pro frees its site. A key in `WCONVERT_LICENSE_KEY` (optionally with
+  `WCONVERT_LICENSE_CONTACT`) shows the site's owner only whether updates are on
+  and who manages the licence. Pro refuses network activation, as free does.
+- Pro: the Plugins screen shows a License link and one line when the licence
+  needs something; Site Health gains a WConvert Pro license section.
+- Free: "Already bought Pro?" links to the account's downloads, beside Explore Pro
+  and under More with Pro.
+
 - First public release: popups and inline forms created goal-first, a library
   of 68 designs, design import and export, a lead log with consent records and
   CSV export, analytics by goal with monthly targets, and MailPoet and WP SMS

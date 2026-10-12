@@ -46,6 +46,12 @@ rung is information it can act on.
 one static *More with Pro* list in Settings. Both are bundled copy with no
 remote fetch.
 
+> _Amended by [ADR 0143](0143-license-page-and-updater.md): each now carries one
+> more plain link for a customer who already paid — "Already bought? Download it"
+> beside *Explore Pro*, and "Already bought Pro? Download it from your account"
+> under the list — to the account's downloads page. Still bundled, still no
+> remote call, and still nothing locked is shown._
+
 **3. Free names no product when it explains an absence.** A state a free site
 only reaches after Pro was removed (a suspended rule, a saved destination of a
 Pro type, saved email filters, a journey draft) says what is missing *on this

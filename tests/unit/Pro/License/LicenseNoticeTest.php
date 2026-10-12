@@ -47,6 +47,29 @@ final class LicenseNoticeTest extends TestCase
         $this->assertSame($row, $notice['row']);
     }
 
+    /** @return iterable<string, array{string, string, string}> */
+    public static function doors(): iterable
+    {
+        yield 'S1 activate' => ['none', 'Activate', 'page'];
+        yield 'C7 enter the key' => ['key_unreadable', 'Enter key', 'page'];
+        yield 'C1 review' => ['moved', 'Review', 'page'];
+        yield 'M2 update payment' => ['payment_failed', 'Update payment', 'payment'];
+        yield 'M4 contact support' => ['disabled', 'Contact support', 'support'];
+        yield 'M3 renew' => ['expired', 'Renew', 'renew'];
+        yield 'D5 buy' => ['trial_ended', 'Buy', 'checkout'];
+        yield 'M5 manage sites' => ['over_limit', 'Manage sites', 'page'];
+        yield 'M1 renew' => ['expiring', 'Renew', 'renew'];
+    }
+
+    /** The Plugins row's one link: the License page, or the store page the fix is on. */
+    #[DataProvider('doors')]
+    public function testEachLineHasOneWayForward(string $state, string $label, string $where): void
+    {
+        $notice = LicenseNotice::for(['state' => $state, 'managed' => null, 'days_left' => 3], static fn (string $iso): string => $iso);
+
+        $this->assertSame(['label' => $label, 'to' => $where], $notice['cta']);
+    }
+
     /** P1: an agency's client is reminded of nothing, even when it expired. */
     public function testAManagedLicenceRemindsNobody(): void
     {

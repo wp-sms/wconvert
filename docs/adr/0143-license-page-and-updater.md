@@ -112,10 +112,18 @@ nothing, and asserts no file on the front-end read path touches it.
     holds its own licence; there is no network page. Deleting Pro still visits
     every site of a network to release its seat (WP Statistics' uninstaller,
     budget and all), because per-site activation is allowed.
-11. **Only an administrator finishes a sign-in.** The account sign-in's return
+11. **Around the app.** WConvert Pro's row on the Plugins screen carries a
+    License action link and, when the licence needs something, one line in
+    WordPress's own update-message markup with one way forward — the same words
+    as the badge's reason. Site Health gains a *WConvert Pro license* section
+    (state, plan, end date, sites, the store's error code, last good check;
+    never the key). Both are for `manage_options` only and say nothing about a
+    managed licence's details. Free's two upsell places each gain a plain
+    "Already bought?" link to the account's downloads.
+12. **Only an administrator finishes a sign-in.** The account sign-in's return
     parameters are dropped on `admin_init` at 9 unless the user has
     `manage_options` (veronalabs/wp-premium-sdk#28; a port of WSMS's guard).
-12. **Freeing a site before activating** links to the portal in v1 ("Manage
+13. **Freeing a site before activating** links to the portal in v1 ("Manage
     sites ↗"); the in-place version waits on the SDK.
 
 ## Upstream gaps, and the workaround each ships with
@@ -127,7 +135,7 @@ first, then releases); unknown statuses fold into `invalid` (WConvert derives
 grace and trial from the raw renewal fields); the updater keeps its own offer
 for an invalid licence (decision 5); there is no change event (decision 5); the
 key travels in the manifest's GET query; `refreshStatus()` has no throttle (the
-60-second one above); and #28 (decision 11).
+60-second one above); and #28 (decision 12).
 
 **Status at beta.9.** The SDK fixed all of them (#28 to #41). WConvert's own
 workarounds stay where they still do their job and do not act twice: the
