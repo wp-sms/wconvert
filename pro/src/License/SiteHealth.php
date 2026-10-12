@@ -165,6 +165,7 @@ final class SiteHealth
             'over_limit' => __('Over the site limit', 'wconvert-pro'),
             'moved' => __('On another domain', 'wconvert-pro'),
             'copy' => __('Staging or local copy', 'wconvert-pro'),
+            'not_activated_here' => __('Not activated on this site', 'wconvert-pro'),
             'key_unreadable' => __('Key can’t be read', 'wconvert-pro'),
             'stopped' => __('Updates stopped', 'wconvert-pro'),
         ];

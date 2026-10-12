@@ -141,6 +141,12 @@ describe('describeLicense', () => {
     expect(d).toMatchObject({ tone: 'info', headline: 'This is a copy of example.com', door: 'activate_copy' });
   });
 
+  it('removed from the account: updates are off here, and one door activates it again', () => {
+    const d = at(base({ state: 'not_activated_here' }));
+    expect(d).toMatchObject({ tone: 'warning', headline: 'This site isn’t on your license', door: 'activate_here', elsewhere: true, stopped: false });
+    expect(d.facts[0]).toMatchObject({ label: 'Updates', value: 'Off on this site' });
+  });
+
   it('C7: a key that cannot be read — enter it again, right here', () => {
     const d = at(base({ state: 'key_unreadable', key: { masked: null, source: 'manual' } }));
     expect(d).toMatchObject({ tone: 'danger', headline: 'Enter your license key again', door: 'rekey', stopped: true });

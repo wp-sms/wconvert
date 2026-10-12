@@ -47,6 +47,10 @@ export const activateKey = (key: string) =>
 export const replaceKey = (key: string) =>
   apiFetch<Changed>({ path: `${PATH}/replace`, method: 'POST', data: { key } });
 
+/** Activate the stored key here again (the store no longer lists this site). */
+export const reactivate = () =>
+  apiFetch<Changed>({ path: `${PATH}/reactivate`, method: 'POST' });
+
 export const removeLicense = () =>
   apiFetch<Changed>({ path: PATH, method: 'DELETE' });
 

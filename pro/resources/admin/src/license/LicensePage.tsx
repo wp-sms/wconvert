@@ -7,7 +7,7 @@ import { RegionSkeleton } from '@/shell/RegionSkeleton';
 import { LOADING, messageOf, ready, type Loadable } from '@/shell/loadable';
 import { setPlanBadge } from '@/shell/planBadge';
 import {
-  activateKey, asLicenseError, checkUpdates, goSignIn, moveLicense, readLicense, removeLicense, removeSite, replaceKey,
+  activateKey, asLicenseError, checkUpdates, goSignIn, moveLicense, reactivate, readLicense, removeLicense, removeSite, replaceKey,
   type Changed, type LicenseError,
 } from './api';
 import { type LicensePayload, type LicenseSite } from './describeLicense';
@@ -230,6 +230,7 @@ export function LicensePage() {
         busy, checking, updatesFailed, onCheck: () => void checkNow(), onMove: move,
         onSites: () => { sitesHeading.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }); sitesHeading.current?.focus({ preventScroll: true }); },
         onRekey: (key) => replace(key, 'rekey'), rekeyError: errorFor('rekey'),
+        onReactivate: () => void run('reactivate', reactivate, () => say('success', __('WConvert Pro is activated on this site', 'wconvert-pro'))),
       }} />
       {data.managed ? (
         <p className="wconvert-license-managed"><Info aria-hidden="true" />{__('To change or remove the license, edit WCONVERT_LICENSE_KEY in wp-config.php.', 'wconvert-pro')}</p>

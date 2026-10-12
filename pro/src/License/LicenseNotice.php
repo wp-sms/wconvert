@@ -75,6 +75,13 @@ final class LicenseNotice
                     $title
                 ), self::cta(__('Review', 'wconvert-pro'), 'page'));
 
+            case 'not_activated_here':
+                return self::amber(
+                    __('This site isn’t on your license', 'wconvert-pro'),
+                    __('This site isn’t on your license, so updates are off here.', 'wconvert-pro'),
+                    self::cta(__('Activate here', 'wconvert-pro'), 'page')
+                );
+
             case 'payment_failed':
                 $grace = (string) (($payload['renewal'] ?? [])['grace_ends_at'] ?? '');
 

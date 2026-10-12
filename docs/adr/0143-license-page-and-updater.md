@@ -95,7 +95,10 @@ nothing, and asserts no file on the front-end read path touches it.
    licence. So does `not_activated_here`: the store says this address holds
    no activation (`site.active` false), the SDK's `isValid()` is false from
    beta.9 (wp-premium-sdk#37), and the owner decided such a copy gets no
-   updates until it is activated on its own address. `UpdateGate` asks the same model, so the Plugins screen and the
+   updates until it is activated on its own address. The page says so in
+   amber ("This site isn’t on your license"), as do the badge and the
+   Plugins line, and offers one door — `POST /license/reactivate`, which
+   activates the stored key here again. `UpdateGate` asks the same model, so the Plugins screen and the
    page never disagree about whether updates are on. `GET ?check=1` asks the
    store at most once a minute. The account's sign-in belongs to the site,
    and every administrator shares it: any of them sees it, chooses a
@@ -150,7 +153,9 @@ no-op), and the guard of decision 11. Replace now calls the SDK's
 `replaceKey()`, which also treats the same key in other letter case as the
 same licence and releases nothing. The SDK codes `key_unreadable`,
 `not_activated_here`, `no_licenses`, `manifest_auth_missing` and `forbidden`
-reach the page unchanged as `error_code` / `state`, for its copy to name;
+reach the page unchanged as `error_code` / `state`, for its copy to name
+(`not_activated_here` has its own card; the others use the error copy, with
+the code shown for an unknown one);
 `forbidden` comes only from the SDK's admin-ajax endpoints, which stay
 unhooked, and `manifest_auth_missing` only from the updater's background
 fetch, which records it rather than throwing.

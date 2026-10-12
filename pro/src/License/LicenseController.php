@@ -75,6 +75,7 @@ final class LicenseController implements RestController
         $route('', 'GET', [$this, 'show'], ['check' => ['type' => 'boolean', 'default' => false]]);
         $route('/activate', 'POST', [$this, 'activate'], ['key' => ['type' => 'string', 'required' => true]]);
         $route('/replace', 'POST', [$this, 'replace'], ['key' => ['type' => 'string', 'required' => true]]);
+        $route('/reactivate', 'POST', [$this, 'reactivate']);
         $route('', 'DELETE', [$this, 'remove']);
         $route('/sites/(?P<domain>[A-Za-z0-9.\-:]+)', 'DELETE', [$this, 'removeSite']);
         $route('/move', 'POST', [$this, 'move'], ['keep_old' => ['type' => 'boolean']]);
@@ -137,6 +138,29 @@ final class LicenseController implements RestController
                 : ['removed_remotely' => false, 'error_code' => LicenseErrorCode::KEY_UNREADABLE];
 
             return ['released' => $released];
+        });
+    }
+
+    /**
+     * The store no longer holds an activation for this address
+     * (`not_activated_here`): activate the stored key here again, without the
+     * merchant finding and pasting it.
+     *
+     * @return WP_REST_Response|WP_Error
+     */
+    public function reactivate()
+    {
+        return $this->changing(function (): array {
+            $manager = $this->sdk->licenseManager();
+            $key = $manager->getLicenseKey();
+
+            if ($key === null) {
+                throw new LicenseActionException(LicenseErrorCode::KEY_UNREADABLE, __('Enter your license key again.', 'wconvert-pro'));
+            }
+
+            $manager->activate($key);
+
+            return [];
         });
     }
 

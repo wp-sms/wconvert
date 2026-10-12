@@ -48,6 +48,7 @@ final class ManagedLicenseControllerTest extends TestCase
         foreach ([
             'activate' => $controller->activate($request),
             'replace' => $controller->replace($request),
+            'reactivate' => $controller->reactivate(),
             'remove' => $controller->remove(),
             'removeSite' => $controller->removeSite($request),
             'move' => $controller->move($request),
