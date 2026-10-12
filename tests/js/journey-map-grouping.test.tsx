@@ -169,7 +169,7 @@ it('opens normal and hidden paths without the enclosing card overriding the acti
   const user = userEvent.setup(), select = vi.fn(), path = vi.fn();
   const changed = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'garden_hidden' ? { ...edge, to: 'contact' } : edge) } };
   render(<JourneyMap tree={changed} selected={null} onSelect={select} onSelectPath={path} onConnect={() => {}} />);
-  await user.click(screen.getByRole('button', { name: 'Check next: Garden details' }));
+  await user.click(screen.getByRole('button', { name: 'Only if it matches → Garden details' }));
   expect(path).toHaveBeenLastCalledWith(tree.steps.findIndex(step => step.id === 'interests'), 0);
   expect(select).not.toHaveBeenCalled();
   await user.click(screen.getByRole('button', { name: 'When skipped → One enquiry' }));

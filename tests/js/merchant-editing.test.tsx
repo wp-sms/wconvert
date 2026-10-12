@@ -95,7 +95,7 @@ it('summarizes grouped deletion before exposing alternate continuations', async 
   render(<AlertDialog open><AlertDialogContent><GraphScreenRemove tree={tree} screenId="garden" onRemove={() => {}} onCancel={() => {}} /></AlertDialogContent></AlertDialog>);
   expect(screen.getByLabelText('After removing')).toHaveTextContent('remaining matching follow-ups');
   expect(screen.queryByRole('combobox')).toBeNull();
-  fireEvent.click(screen.getByText('Change continuation'));
+  fireEvent.click(screen.getByText('Change where they go'));
   expect(await screen.findByRole('combobox')).toHaveValue('indoors');
 });
 

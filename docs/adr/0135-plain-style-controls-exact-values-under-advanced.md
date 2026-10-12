@@ -45,14 +45,14 @@ three type-size words that did not match the element's own. A merchant reads
    being edited — its style tokens on desktop, its mobile bag on mobile — and is
    disabled when it sets none. Its Size, shape and other settings are content
    choices and stay. It replaces the mobile-only reset.
-6. **The Flow map opens fitted**, whole, and then follows the selection. Its
+6. ~~**The Flow map opens fitted**, whole, and then follows the selection. Its
    tools are one line: − % + · Fit · Tidy up · Highlight paths · ⋯ (Screen
    previews, Group follow-ups). Go to first screen, panning earlier or later
    and Show selected screen were ways around a map that did not open fitted. A
    card's issue count opens every issue about that screen, each a way to its
    fix. The first drag says once, per browser, that moving a card only tidies
    the map. The camera keeps the whole map until the selection first changes,
-   then follows it. **The side panel in Flow is the slim screen panel** of
+   then follows it.~~ *Amended by [ADR 0142](0142-one-readable-flow-map.md): the map opens at Fit, never below 70%, and scrolls; its tools are − % + · Fit. Tidy up, Highlight paths, Screen previews, Group follow-ups and dragging are gone. A card's issue marker still opens every issue about that screen.* **The side panel in Flow is the slim screen panel** of
    [0134](0134-one-edit-tab-look-screen-element.md), as on the canvas: it was
    still the old inspector there, with every word as a text box and a Paths
    tab. Clicking a question's path opens the question, where its paths live.

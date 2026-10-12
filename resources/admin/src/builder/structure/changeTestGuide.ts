@@ -25,6 +25,6 @@ export function changeTestGuide(tree: TemplateTree, screenId: string): string[] 
     else cases.push(sprintf(__('Answer “%s”, continue, then go Back and edit it. Check the updated answer before submitting.', 'wconvert'), question.label));
   }
   if (walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'skip')) cases.push(__('Try submitting this signup and skipping it in separate visits. Check which details are submitted.', 'wconvert'));
-  if (!cases.length) cases.push(__('Follow the affected path and check the next screen. Go Back once to check the return journey.', 'wconvert'));
+  if (!cases.length) cases.push(__('Follow the changed line and check the screen after it. Go Back once to check the way back.', 'wconvert'));
   return [...new Set(cases)];
 }

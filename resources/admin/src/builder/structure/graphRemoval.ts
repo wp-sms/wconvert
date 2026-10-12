@@ -23,7 +23,7 @@ export function graphRemovalPlan(tree: TemplateTree, screenId: string) {
     [item.when, ...(item.paths?.map(path => path.when) ?? []), ...(item.results?.map(result => result.when) ?? [])].some(references)
     || graph?.edges.some(edge => edge.from === item.id && references(edge.when))));
   // Each refusal in two lengths: a few words for the menu row, the sentence for its ⓘ (ADR 0139).
-  const refusal = !graph || !screen ? [__('No longer in the journey', 'wconvert'), __('This screen is no longer in the journey.', 'wconvert')]
+  const refusal = !graph || !screen ? [__('No longer in the campaign', 'wconvert'), __('This screen is no longer in the campaign.', 'wconvert')]
     : screen.kind === 'result'
       ? [__('Keeps the recommendation', 'wconvert'), __('Keep this result screen for the campaign’s recommendation. Edit its results, content or incoming paths here.', 'wconvert')]
     : screen.kind === 'acknowledgement' && tree.steps.filter(item => item.kind === 'acknowledgement').length === 1

@@ -616,7 +616,7 @@ final class OptinController implements RestController
                 'link' => __('A link in your text has no web address. Add one, or remove the link. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'result_link' => __('Give each result link some words for its button, or remove its address.', 'wconvert'),
                 'routes' => __('In Edit, connect every screen, give continuing screens a path for all other answers, and remove loops. You can keep saving this Campaign as a draft.', 'wconvert'),
-                'capture_paths' => __('Every path to the ending must pass the required form or result screen. Review the paths in Edit.', 'wconvert'),
+                'capture_paths' => __('At least one ending must come after the required form or result screen, and no ending may be reachable both with and without it. Check the lines in Edit.', 'wconvert'),
                 'question_path_limit' => __('One path can ask at most ten questions. In Edit, remove questions from that path or move them to a separate path.', 'wconvert'),
                 'conditions' => __('In Edit, complete each rule using a question available before it. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'questions' => __('In Edit, complete the question text and answer choices. Choice questions need 2 to 12 named answers.', 'wconvert'),

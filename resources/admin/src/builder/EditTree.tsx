@@ -110,7 +110,7 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
           <strong>{screen.name}</strong>
           {unreachable.has(screen.id) ? <small>{__('Not connected', 'wconvert')}</small> : screen.when && !nested ? <small>{sprintf(__('Only if %s', 'wconvert'), conditionText(tree, screen.when))}</small>
             : screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? <small>{__('First screen', 'wconvert')}</small> : null}
-          {branches > 0 && <small><GitBranch aria-hidden="true" size={12} />{__('Only one path is followed', 'wconvert')}</small>}
+          {branches > 0 && <small><GitBranch aria-hidden="true" size={12} />{__('First match wins', 'wconvert')}</small>}
         </span>
       </button>{warning}
       {step === index && elements !== undefined && <div className="wconvert-edit-tree__elements" role="group" aria-label={sprintf(__('Elements on %s', 'wconvert'), screen.name)}>{elements}</div>}
@@ -119,7 +119,7 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
   const renderGroup = (group: typeof groups[number]) => <section key={group.id} aria-label={sprintf(__('Follow-ups: %s', 'wconvert'), owners.has(group.id) ? tree.steps[owners.get(group.id)!].name : tree.steps[group.screens[0]].name)}>
     <Disclosure variant="inline" open={group.screens.includes(step) || owners.get(group.id) === step} title={sprintf(_n('%d follow-up question', '%d follow-up questions', group.screens.length, 'wconvert'), group.screens.length)} summary={__('Asked one at a time, to each matching answer.', 'wconvert')}>
     {group.screens.map(index => item(index, true))}
-    <p>{sprintf(__('Then: %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? '')}</p></Disclosure>
+    <p>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(screen => screen.id === group.next)?.name ?? '')}</p></Disclosure>
   </section>;
   return <nav className="wconvert-campaign-screens wconvert-edit-tree" aria-label={__('Campaign', 'wconvert')}>
     {look && <button type="button" className="wconvert-edit-tree__look" aria-current={look.open ? 'true' : undefined} onClick={look.onOpen}>

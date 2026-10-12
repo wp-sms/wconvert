@@ -139,6 +139,11 @@ colour.
   which is information a user needs to identify a component and owes 3:1 under
   WCAG 1.4.11.
 - Every contrast figure in the Foundations card is measured, not estimated.
+- **Answer colours** (`--answer-1…6`, each with a `-surface`) mean one answer
+  on the Flow map: its line, its "Only if" chip and the result that uses it
+  (ADR 0142). They are never decoration, never the chart palette, and never red,
+  which stays for problems. Lines hold 3:1 on the card and the canvas; text in
+  a pill holds 4.5:1 (`tests/js/answer-palette.test.ts` measures both).
 
 ## 6. Quiet surfaces
 
@@ -789,70 +794,44 @@ must not imply that mutually exclusive paths are sequential visitor steps.
 
 ## 22. Journey map hierarchy
 
-- Keep all cards and connections readable during selection and testing. Emphasize
-  relevant connections with stroke weight and selected cards with an outline;
-  never fade an entire card's text to imply that it is unrelated.
-- Below 80% zoom, show a larger-type summary within unchanged card geometry,
-  including on the selected card. Select a summary to inspect locally. Overview
-  is for orientation; use Show selected screen for detailed reading.
-- Keep zoom, its percentage, Fit journey, Show selected screen, View options and
-  Edit connections together in one wrapping toolbar. Grouping, previews, Tidy up
-  and keyboard-accessible pan actions belong in View options.
-- A follow-up group starts with its source, count, “ask every match” explanation
-  and named continuation. Show questions discloses the members; Edit individual
-  connections expands the graph. These are distinct actions.
-- A branching card summarizes the answer-path count and fallback. The editable
-  connections carry full condition labels without line clamping; the inspector
-  retains exact rules and priority.
-- Expose journey issues through one count/list and affected card/group markers.
-  Reuse the publication validators and their repair addresses. Repair opens the
-  exact existing control and offers Back to issues; an empty list does not prove
-  that all visitor cases have been tested.
-- ~~Preview & test separates Check the design, Try as a visitor and Explore answer paths.
-  Predictions begin without assumed answers and stop at each unanswered question
-  or submission choice.~~ Preview is two tabs, Try the form and Who sees it; answer
-  paths are explored by trying the real form (ADR 0138). Diagnostics appear progressively beside the form. Walkthroughs
-  highlight only reached transitions. Reset remains available, tree edits clear
-  stale map traces, and neither mode creates Leads or sends destination requests.
-- Keep the ordinary sequence horizontal. Place a proven optional detour below
-  its entry, with top/bottom ports and the shared continuation on the main row.
-  Vertical proximity must not imply that mutually exclusive paths both run.
-- Stack competing alternatives in separate lanes in priority order. Show the
-  shared result or submission once after those paths rejoin. Keep “ask every
-  match” groups distinct from “choose one path” branches.
-- Only simplify closed, single-entry paths with an identifiable rejoin. Keep
-  nested forks and external entries explicit; never infer visitor behavior from
-  a diagram's positions. Manual arrangements persist until Tidy up or a change
-  that requires a new layout.
-- Use meaningful condition labels and “Everyone else,” with numbers only when
-  priority distinguishes multiple conditional paths. Labels open the exact rule;
-  insertion buttons are separate. Prefer long straight segments over short
-  elbows beside cards. Keep full rules in the inspector and accessible labels.
-- Keep selection actions outside the pannable map, so they cannot obscure
-  nodes/lines. Selecting a small detour includes its rejoin when readable;
-  narrow or dense views prioritize the selected screen. Explicit “Show selected
-  screen” always focuses that screen alone.
-- Check simple sequences, one/multi-screen detours, ordered alternatives,
-  grouped follow-ups, expanded groups, shared endings, external entries, measured
-  long cards and RTL. Check actual browser framing at laptop sizes in addition
-  to pure layout tests. Overlapping manually moved cards still need repositioning.
+The Flow map is one readable map (ADR 0142). The approved prototype is the
+review gate: claude.ai/artifact/PcrNs8xzRCGvrvcKt4u3C9.
 
-- Screen numbers are inventory positions, not visit order. Do not display them
-  on flow cards or the flow inspector; keep numbers only for genuine sequences
-  and a path's top-to-bottom order. Names, screen type and Start orient the map.
-- Edge insertion uses “Add screen here”, revealed on path selection, hover or
-  keyboard focus (always available on touch). Its accessible name includes the
-  visible label and destination. Drawing a path remains a separate mode.
-- Put the affected path and resulting source → new screen → destination at the
-  top of insertion dialogs. Explicitly state path-only scope. Update the preview
-  for a renamed screen, a closing screen, a changed location or an existing
-  screen connection. Never promise continuation for a closing screen.
-- Give distinct paths into a shared screen stable, separate attachment points
-  and approach lanes; do not merge their editable lines before the destination.
-- Prefer a central orthogonal corridor when clear; fall back to obstacle routing
-  when a card blocks it. Reserve measured label/action rectangles against cards,
-  including keyboard-revealed actions. If no safe location exists, keep controls
-  in the path inspector rather than covering content.
+- **Top to bottom, readable at Fit.** Fit never goes below 70%; a larger map
+  scrolls, and the overview in the corner shows where you are and pans on
+  click. Plain wheel scrolls; Ctrl/⌘-wheel and pinch zoom inside the map only.
+  The toolbar is − % + · Fit, nothing else.
+- **A card is kind, name, and where it goes.** Kind tile and word (Question,
+  Message, Form, Result, Ending), the name in `<bdi>`, an "Only if …" chip, and
+  "Then → X" or "If skipped → X" as buttons that open the control which sets
+  them. A form says what it saves; a result lists its results with answer dots;
+  an early ending says "Ends without saving details". Screen numbers never
+  appear on the map.
+- **"Only if" splits the line.** A screen with one plain line in draws the
+  labelled line through it and a dashed line around it ("Includes X" /
+  "Without X" on choose-several, "X" / "All other answers" on choose-one). With
+  several lines in, it stays inline with its own dashed "If skipped" line.
+- **Several follow-ups are one box**: "Any of these" in, "None of these" dashed
+  around, members listed in asking order.
+- **Every line has a "+"** that inserts a screen there; a line's label opens the
+  exact rule. Labels and "+" are reserved in the layout, so they never cover a
+  card or each other, and are at least 44px on a coarse pointer. There is no
+  drawing mode and nothing drags.
+- **Highlighting never fades text.** The selected card has an outline and
+  `aria-current`; a trace marks visited cards and lines and dashes skipped ones.
+- **Keyboard**: one roving tab stop. ↑/↓ move through cards in reading order,
+  ←/→ along a row (swapped in RTL), Home/End, Enter selects, Escape clears a
+  trace. Tab goes from the active card to its buttons, then its line labels and
+  "+", then out of the map. Reading order is DOM order.
+- **Try a visitor** lives inside the map: one control per question reached,
+  resolved by the loader's own trace. Any edit clears it.
+- Expose journey issues through one count/list and affected card markers.
+  Reuse the publication validators and their repair addresses; an empty list
+  does not prove that all visitor cases have been tested.
+- Check straight campaigns, one follow-up, answer lines rejoining, follow-up
+  boxes, two forms, quiz results, several endings, "Only if" at a rejoin, 12 and
+  20 screens, a version 2 tree and RTL with mixed-direction names, at 1440,
+  1280×800, 900, 390 and 320 wide.
 
 ### Merchant editing tasks
 
@@ -860,8 +839,8 @@ must not imply that mutually exclusive paths are sequential visitor steps.
   collection, explain the constraint and offer a named valid position. Never
   silently redirect an explicit path insertion.
 - For independent follow-ups, show the source answer, position in the group and
-  shared continuation. Reorder both shown and skipped paths as one undoable edit;
-  dragging map cards changes layout only. Preserve custom order.
+  shared continuation. Reorder both shown and skipped paths as one undoable edit.
+  Preserve custom order.
 - Lead deletion dialogs with the visitor outcome. Hide alternate continuation
   controls for a unique safe continuation, but keep them available. Ambiguous
   exits require an explicit choice. Optional signup removal includes its fields,

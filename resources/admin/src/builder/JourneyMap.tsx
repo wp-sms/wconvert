@@ -65,16 +65,16 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   const hiddenId = hiddenFor(tree, index);
   const hiddenTarget = hiddenId && !paths.some(path => path.to === hiddenId) ? tree.steps.find(item => item.id === hiddenId) : undefined;
   const kind = screen.kind === 'acknowledgement' ? __('Ending', 'wconvert') : screen.kind === 'result' ? __('Result', 'wconvert')
-    : question ? __('Question', 'wconvert') : savesDetails ? __('Collect details', 'wconvert') : __('Message', 'wconvert');
+    : question ? __('Question', 'wconvert') : savesDetails ? __('Form', 'wconvert') : __('Message', 'wconvert');
   const KindIcon = screen.kind === 'acknowledgement' ? Check : screen.kind === 'result' ? Flag : question ? CircleHelp : savesDetails ? Send : FileText;
   return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}${overview ? ' is-overview' : ''}`}>
     {overview && <button type="button" className="wconvert-flow-node__overview" aria-label={sprintf(__('Open %s', 'wconvert'), screen.name)} onClick={() => select(index)}>
       <small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
       {screen.when && <span>{sprintf(__('Only if %s', 'wconvert'), conditionText(tree, screen.when))}</span>}
-      {branching && <span>{__('Choose one path', 'wconvert')} · {pathSummary}</span>}
+      {branching && <span>{__('First match wins', 'wconvert')} · {pathSummary}</span>}
       {savesDetails && <span>{capture?.required === false ? __('Optional signup', 'wconvert') : __('Details saved here', 'wconvert')}</span>}
       {screen.kind === 'result' && <span>{sprintf(__('%d possible results', 'wconvert'), screen.results?.length ?? 0)}</span>}
-      {screen.kind === 'acknowledgement' && <span>{__('Journey complete', 'wconvert')}</span>}
+      {screen.kind === 'acknowledgement' && <span>{__('Ends the campaign', 'wconvert')}</span>}
     </button>}
     {(incomingPorts.length < 2 || editingConnections) && <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} />}
     {incomingPorts.length > 1 && incomingPorts.map((edge, at) => <Handle key={edge} id={`in:${edge}`} type="target" position={rtl ? Position.Right : Position.Left} isConnectable={false}
@@ -101,7 +101,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       {goToDestinations && <button type="button" className="nodrag" onClick={goToDestinations}>{__('Edit destinations', 'wconvert')}</button>}
     </div>}
     {branching && <div className="wconvert-flow-node__paths">
-      <small>{paths.length > 2 ? __('The first path that matches, top to bottom', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('Choose one path', 'wconvert')}</small>
+      <small>{paths.length > 2 ? __('The first path that matches, top to bottom', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('First match wins', 'wconvert')}</small>
       <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>{pathSummary}</button>
       {paths.map((path, priority) => (groupedTargets.get(path.to) ?? path.to) !== detourTarget && <Handle
         key={'id' in path ? String(path.id) : `${path.to}-${priority}`} id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false}
@@ -109,7 +109,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
     </div>}
     {!branching && paths.length === 1 && <div className="wconvert-flow-node__continue">
       <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>
-        {sprintf(!groupedTargets.has(paths[0].to) && tree.steps.find(item => item.id === paths[0].to)?.when ? __('Check next: %s', 'wconvert') : __('Then: %s', 'wconvert'), targetName(paths[0].to))}
+        {sprintf(!groupedTargets.has(paths[0].to) && tree.steps.find(item => item.id === paths[0].to)?.when ? __('Only if it matches → %s', 'wconvert') : __('Then → %s', 'wconvert'), targetName(paths[0].to))}
       </button>
       {(groupedTargets.get(paths[0].to) ?? paths[0].to) !== detourTarget && <Handle id="route-0" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />}
     </div>}
@@ -121,7 +121,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       <Handle id="hidden" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       }
     </div>}
-    {screen.kind === 'acknowledgement' && <div className="wconvert-flow-node__ending"><Check aria-hidden="true" />{__('Journey complete', 'wconvert')}</div>}
+    {screen.kind === 'acknowledgement' && <div className="wconvert-flow-node__ending"><Check aria-hidden="true" />{__('Ends the campaign', 'wconvert')}</div>}
     <JourneyIssueMarker issues={issues} onIssue={onIssue} />
     {canDraw && editingConnections && <Handle id="new" type="source" position={Position.Bottom} className="wconvert-flow-node__new-connection"
       title={missingContinuation ? __('Drag to connect the next screen', 'wconvert') : __('Drag to add an answer path', 'wconvert')}
@@ -395,7 +395,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       || walkNodes(step.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')));
     return boundary < 0 || to <= boundary;
   };
-  return <div ref={mapRoot} className="wconvert-journey-map" aria-label={__('Journey map', 'wconvert')}>
+  return <div ref={mapRoot} className="wconvert-journey-map" aria-label={__('Flow map', 'wconvert')}>
     {dragNote && <p className="wconvert-journey-map__note" role="status">
       {__('Moving a card only tidies the map. Visitors follow the paths.', 'wconvert')}
       <button type="button" onClick={() => setDragNote(false)}>{__('Got it', 'wconvert')}</button>

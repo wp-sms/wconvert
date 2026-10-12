@@ -33,7 +33,7 @@ export function graphCaptureInsertion(tree: TemplateTree, primaryChannel: string
     : tree.submissions.length !== 1 || !tree.submissions[0].required
       ? __('Keep one required primary signup before adding an optional second signup.', 'wconvert')
       : tree.steps.flatMap(screen => walkNodes(screen.content)).some(node => node.type === 'field' && 'name' in node && node.name === channel)
-        ? __('This journey already collects that contact channel. Review its existing fields before adding another signup.', 'wconvert') : null;
+        ? __('This campaign already collects that contact channel. Review its existing fields before adding another signup.', 'wconvert') : null;
   const locations = reason ? [] : graphInsertionLocations(tree).filter(location => location.id.startsWith('edge:')
     && acceptedBeforeEdge(tree, tree.submissions[0].id, location.id.slice(5)));
   return { channel, locations, reason: reason ?? (!locations.length

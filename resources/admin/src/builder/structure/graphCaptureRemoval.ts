@@ -43,10 +43,10 @@ export function graphCaptureRemovalPlan(tree: TemplateTree, submissionId: string
     return { from, incoming: incoming.filter(edge => edge.to === from), targets, preferred: targets.length === 1 ? targets[0].id : '' };
   });
   // Each refusal in two lengths: a few words for the menu row, the sentence for its ⓘ (ADR 0139).
-  const refusal = !tree.graph || !sub || !screens.length ? [__('No longer in the journey', 'wconvert'), __('This signup is no longer in the journey.', 'wconvert')]
+  const refusal = !tree.graph || !sub || !screens.length ? [__('No longer in the campaign', 'wconvert'), __('This signup is no longer in the campaign.', 'wconvert')]
     : sub.required ? [__('This signup is required', 'wconvert'), __('This signup is required. Change the campaign’s capture requirement before removing it.', 'wconvert')]
       : tree.submissions.length === 1 && !tree.steps.some(screen => screen.kind === 'result')
-        ? [__('The only signup', 'wconvert'), __('This is the campaign’s only signup. Keep a capture point for this campaign, or use a result journey that can finish without contact details.', 'wconvert')]
+        ? [__('The only signup', 'wconvert'), __('This is the campaign’s only signup. Keep a capture point for this campaign, or show a result that can finish without contact details.', 'wconvert')]
         : screens.some(screen => screen.kind === 'result' || screen.kind === 'acknowledgement')
           ? [__('Shares a result or ending', 'wconvert'), __('This signup shares a result or ending screen. Move its contact fields and save action to a separate screen before removing it.', 'wconvert')]
           : shared.length || tree.submissions.some(other => other.id !== sub.id && [...other.fields, ...other.consents].some(id => owned.has(id)))

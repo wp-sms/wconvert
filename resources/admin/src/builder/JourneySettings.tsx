@@ -55,7 +55,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
   const initial = (q: ChoiceQuestion): QuestionClause => ({ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: deliberate ? [] : [q.options?.[0]?.value ?? ''] });
   const patch = (index: number, clause: QuestionCondition['clauses'][number]) => onChange({ match: value?.match ?? 'all', clauses: (value?.clauses ?? []).map((old, at) => at === index ? clause : old) });
   return <div className="wconvert-journey-settings wconvert-condition-settings">
-    {!required && <label>{__('Show only if…', 'wconvert')}
+    {!required && <label>{__('Only if…', 'wconvert')}
       <select value={value ? 'match' : 'always'} onChange={event => onChange(event.target.value === 'match' && sources[0] ? { match: 'all', clauses: [initial(sources[0])] } : undefined)}>
         <option value="always">{__('For everyone', 'wconvert')}</option>
         <option value="match" disabled={!sources.length}>{__('Only if an answer matches', 'wconvert')}</option>
@@ -102,7 +102,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
       })}
       {value.clauses.length < 5 && <button type="button" disabled={!sources.length} onClick={() => { if (sources[0]) onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] }); }}>{value.clauses.length ? __('Add another condition', 'wconvert') : __('Add condition', 'wconvert')}</button>}
       <div className="wconvert-editor-help"><p>{purpose === 'route'
-        ? __('Otherwise, check the next path.', 'wconvert')
+        ? __('Otherwise, the next line is checked.', 'wconvert')
         : required
           ? __('Otherwise, check the next result.', 'wconvert')
           : __('Otherwise, skip this screen.', 'wconvert')}</p>
@@ -156,19 +156,19 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
   };
   // The section around this names it and carries the explainer as an InfoTip (ADR 0136).
   return <div className="wconvert-journey-settings wconvert-journey-routes">
-    {screen.when && screen.paths && <PanelHint>{__('Skipped visitors continue to the next screen without checking these paths.', 'wconvert')}</PanelHint>}
+    {screen.when && screen.paths && <PanelHint>{__('Skipped visitors go on to the following screen without checking these lines.', 'wconvert')}</PanelHint>}
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{paths.map((path, index) => <li key={`${index}-${path.to}`} data-path-priority={index}>
-      <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), index + 1)}</strong>
-      <label>{__('Go to', 'wconvert')}<select value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
+      <strong>{index === paths.length - 1 ? __('All other answers', 'wconvert') : sprintf(/* translators: %d: the line's place. */ __('Line %d', 'wconvert'), index + 1)}</strong>
+      <label>{__('Then', 'wconvert')}<select value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
         {targets.map(target => <option key={target.id} value={target.id} disabled={paths.some((item, at) => at !== index && item.to === target.id)}>{target.name}</option>)}
       </select></label>
       {path.when && <ConditionSettings required purpose="route" value={path.when} sources={sources} onChange={when => {
         if (when) write(paths.map((item, at) => at === index ? { ...item, when } : item));
       }} />}
-      {path.when?.clauses.some(clause => !clause.values.length || clause.values.some(value => !value)) && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this path before publishing.', 'wconvert')}</p>}
-      {onInsert && tree.steps.length < 7 && <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-routes__insert">{__('Insert on this path', 'wconvert')}</button></DropdownMenuTrigger>
-        <OptionMenuContent align="start" aria-label={__('Insert on this path', 'wconvert')}>
+      {path.when?.clauses.some(clause => !clause.values.length || clause.values.some(value => !value)) && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this line before publishing.', 'wconvert')}</p>}
+      {onInsert && tree.steps.length < 7 && <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-routes__insert">{__('Add a screen on this line', 'wconvert')}</button></DropdownMenuTrigger>
+        <OptionMenuContent align="start" aria-label={__('Add a screen on this line', 'wconvert')}>
           <OptionItem icon={ListPlus} name={__('Ask a question', 'wconvert')} onSelect={() => onInsert(index, 'input')} />
           <OptionItem icon={FilePlus2} name={__('Show a message', 'wconvert')} onSelect={() => onInsert(index, 'content')} />
         </OptionMenuContent>
@@ -176,15 +176,15 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
       {index < paths.length - 1 && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={index === 0} onClick={() => { const next = [...paths]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; write(next); }}>{__('Move up', 'wconvert')}</button>
         <button type="button" disabled={index >= paths.length - 2} onClick={() => { const next = [...paths]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; write(next); }}>{__('Move down', 'wconvert')}</button>
-        <button type="button" data-destructive="true" onClick={() => write(paths.filter((_, at) => at !== index))}>{__('Remove path', 'wconvert')}</button>
+        <button type="button" data-destructive="true" onClick={() => write(paths.filter((_, at) => at !== index))}>{__('Remove line', 'wconvert')}</button>
       </div>}
     </li>)}</ol>
-    {sources.length > 0 && unused && paths.length < 6 && <button type="button" className="wconvert-panel-link" onClick={add}>{__('Send some answers elsewhere', 'wconvert')}</button>}
-    {!sources.length && targets.length > 1 && <PanelHint>{__('Add a choice question to send answers down different paths.', 'wconvert')}</PanelHint>}
-    {unreachable.length > 0 && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: %s: screen names. */ __('No path reaches %s.', 'wconvert'), unreachable.join(', '))}</p>}
-    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')}
+    {sources.length > 0 && unused && paths.length < 6 && <button type="button" className="wconvert-panel-link" onClick={add}>{__('Send some answers to a different screen', 'wconvert')}</button>}
+    {!sources.length && targets.length > 1 && <PanelHint>{__('Add a choice question before this screen to send answers to different screens.', 'wconvert')}</PanelHint>}
+    {unreachable.length > 0 && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: %s: screen names. */ __('No line reaches %s.', 'wconvert'), unreachable.join(', '))}</p>}
+    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Check this change', 'wconvert')}
       description={pending ? sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert'), pending.disconnected.join(', ')) : ''}
-      confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
+      confirmLabel={__('Change anyway', 'wconvert')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
   </div>;
 }
 
@@ -202,7 +202,7 @@ export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect
     ?? tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'default');
   const hiddenDestination = tree.graph && tree.steps.find(item => item.id === skipTo?.to);
   return <Disclosure variant="inline" className="wconvert-journey-visibility" open={open} onToggle={setOpen}
-    title={__('Shown if', 'wconvert')} summary={screen.when ? conditionText(tree, screen.when) : __('Everyone who reaches it', 'wconvert')}>
+    title={__('Only if…', 'wconvert')} summary={screen.when ? conditionText(tree, screen.when) : __('Everyone who reaches it', 'wconvert')}>
     <ConditionSettings value={screen.when} sources={sources} onChange={when => {
       const steps = tree.steps.map((item, at) => at === step ? { ...item, when } : item);
       if (!tree.graph) { onChange({ ...tree, steps }); return; }
@@ -281,7 +281,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert')}>
           <strong>{__('Review the affected conditions', 'wconvert')}</strong>
           <p>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert')
-            : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and paths will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to exclusive paths and results. Test the journey after this change.', 'wconvert')
+            : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and paths will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to exclusive paths and results. Try the form after this change.', 'wconvert')
             : __('Some conditions compare several choices at once. Edit those conditions to use one choice each before switching to Choose one.', 'wconvert')}</p>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}>{reference.label} · {reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button>)}
           <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!questionTypeChange(tree, question.id, typeReview.type)} onClick={() => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); }}>{__('Apply answer type change', 'wconvert')}</button><button type="button" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert')}</button></div>
@@ -314,7 +314,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
             </div>;
           })}
           {repair?.question === question.id && <div tabIndex={-1} className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert')}>
-            <strong>{sprintf(reviewRefs.length ? __('“%s” is used in journey rules', 'wconvert') : __('No rules use “%s” now', 'wconvert'), question.options?.find(option => option.value === repair.value)?.label ?? __('This answer', 'wconvert'))}</strong>
+            <strong>{sprintf(reviewRefs.length ? __('“%s” is used in rules', 'wconvert') : __('No rules use “%s” now', 'wconvert'), question.options?.find(option => option.value === repair.value)?.label ?? __('This answer', 'wconvert'))}</strong>
             <p>{reviewRefs.length ? __('Review the rules below. Replace this answer with another choice, or stop offering it and review what will be removed.', 'wconvert') : __('Your rule changes are kept. You can now remove this choice without changing other behavior.', 'wconvert')}</p>
             <div>{reviewRefs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></small></button>)}</div>
             {retirement && (question.options?.length ?? 0) > 2 && <Disclosure variant="inline" className="wconvert-answer-retirement" open={retiring} onToggle={setRetiring} title={__('Stop offering this answer…', 'wconvert')}>
@@ -416,7 +416,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     move, remove — is one ⋯ rather than three links along its foot.
   */
   return <PanelSection ref={settingsRoot} className="wconvert-journey-settings" title={__('Results', 'wconvert')}
-    tipLabel={__('How results are chosen', 'wconvert')} tip={__('Visitors see the first result that matches, top to bottom. Everyone else sees the last one. Move results to change the order.', 'wconvert')}
+    tipLabel={__('How results are chosen', 'wconvert')} tip={__('First match wins, top to bottom. All other answers see the last one. Move results to change the order.', 'wconvert')}
     action={variants.length < 6 && sources.length > 0 ? <button type="button" onClick={() => setDraftResult({ heading: '', when: { match: 'all', clauses: [{ question: '', operator: 'is', values: [] }] } })}>{__('Add result', 'wconvert')}</button> : undefined}>
     {overlap && <p className="wconvert-panel-warn" role="status">{sprintf(__('“%1$s” and “%2$s” may match the same answers. The one listed first wins.', 'wconvert'), overlap[0].heading, overlap[1].heading)}</p>}
     <div className="wconvert-journey-results" role="group" aria-label={__('Possible results', 'wconvert')}>
@@ -457,7 +457,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
             {variants.length > 2 && <OptionItem icon={ArrowUp} name={__('Move earlier', 'wconvert')} onSelect={() => move(selectedAt, selectedAt - 1)}
               refused={selectedAt === 0 ? refusal(__('Already first', 'wconvert')) : null} />}
             {variants.length > 2 && <OptionItem icon={ArrowDown} name={__('Move later', 'wconvert')} onSelect={() => move(selectedAt, selectedAt + 1)}
-              refused={selectedAt >= variants.length - 2 ? refusal(__('The fallback stays last', 'wconvert'), __('The result for all other answers stays last.', 'wconvert')) : null} />}
+              refused={selectedAt >= variants.length - 2 ? refusal(__('All other answers stays last', 'wconvert'), __('The result for all other answers stays last.', 'wconvert')) : null} />}
             <OptionItem icon={Trash2} destructive name={__('Remove result', 'wconvert')} onSelect={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }} />
           </OptionMenuContent>
         </DropdownMenu>

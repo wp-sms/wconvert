@@ -162,7 +162,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
   for (const id of unreachableScreenIds(tree)) {
     const name = tree.steps.find(screen => screen.id === id)?.name ?? id;
     issues.push({ key: `unreachable:${id}`,
-      said: sprintf(__('No journey path reaches “%s”. Connect or remove this screen.', 'wconvert'), name),
+      said: sprintf(__('No line reaches “%s”. Connect one to it, or delete it.', 'wconvert'), name),
       repair: { screenId: id, section: 'content' } });
   }
   return issues;

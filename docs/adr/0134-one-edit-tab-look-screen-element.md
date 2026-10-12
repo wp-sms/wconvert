@@ -84,7 +84,7 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   path, per-choice "Goes to", "+ Follow-up question"). The journey editor owns
   the dialogs those open, so it provides that panel by context
   (`QuestionPanelContext`) and the element inspector draws it.
-- **Flow only where there is more than one way through** (D4).
+- ~~**Flow only where there is more than one way through** (D4).
   `hasManyWaysThrough` is true for an answer or hidden edge, a screen with a
   condition, or a v2 screen with more than one path. A v3 graph that is still a
   straight line is false: upgrading is not branching. **Results that depend on
@@ -94,7 +94,7 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   quiz (project-stage-finder, gift-finder) has no Flow until a path or a
   follow-up is added. Only then does the strip above the canvas offer
   Canvas | Flow, and a Flow view falls back to Canvas the moment the last
-  branch goes.
+  branch goes.~~ *Amended by [ADR 0142](0142-one-readable-flow-map.md): Flow is always available. A straight campaign shows its one line and offers "Send some answers to a different screen".*
 - ~~**One Preview**, a menu of the one dialog's modes: As a visitor · This screen
   · Try answers (when there is a question), plus **Test a visit**, which moved
   out of Display rules.~~ *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): one Preview button with no

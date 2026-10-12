@@ -6,7 +6,7 @@ import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { ConditionSettings } from './JourneySettings';
 import { graphEdgeId, graphTargets } from './structure/graph';
-import { conditionText } from './structure/conditionText';
+import { answerLinesOverlap, conditionText } from './structure/conditionText';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { graphChoiceSources } from './structure/graphConnections';
 import { unreachableScreens } from './structure/journey';
@@ -53,6 +53,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   const memberGroup = groups.find(item => item.screens.includes(step));
   const group = memberGroup ?? (!answers.length ? groups.find(item => followupGroupSource(tree, item) === step) : undefined);
   const hidden = routes.find(edge => edge.kind === 'hidden');
+  const overlap = answerLinesOverlap(tree, answers);
   const targets = graphTargets(tree, screen.id);
   const sources = graphChoiceSources(tree, screen.id);
   const apply = (next: readonly JourneyGraphEdge[]) => {
@@ -93,20 +94,20 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
         const description = graphChangeImpact(tree, next);
         if (description) { returnFocus.current = event.currentTarget; setPending({ tree: next, description }); } else onChange(next);
       }}>{graphTargets(tree, tree.steps[group.screens[group.screens.length - 1]].id).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}</select></label>
-      <button type="button" aria-expanded={connectionsOpen || focusPath != null} onClick={() => setConnectionsOpen(value => !value)}>{connectionsOpen || focusPath != null ? __('Hide other paths', 'wconvert') : __('Send some answers down another path', 'wconvert')}</button>
+      <button type="button" aria-expanded={connectionsOpen || focusPath != null} onClick={() => setConnectionsOpen(value => !value)}>{connectionsOpen || focusPath != null ? __('Hide answer lines', 'wconvert') : __('Send some answers to a different screen', 'wconvert')}</button>
     </div>}
     <div hidden={!!group && !connectionsOpen && focusPath == null}>
     {group && <PanelHint className="wconvert-journey-settings__warning">{__('Changing one path can separate this question from its follow-ups.', 'wconvert')}</PanelHint>}
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} className="wconvert-journey-routes__disclosure" data-path-priority={priority}>
       <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
-      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : __('Continue', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(__('Go to %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
+      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : __('Then', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
       <div className="wconvert-journey-path-disclosure__body">
-      {edge.kind === 'answer' && <><strong>{sprintf(__('Check %1$d of %2$d', 'wconvert'), priority + 1, answers.length)}</strong>
+      {edge.kind === 'answer' && <><strong>{sprintf(/* translators: 1: this line's place. 2: how many answer lines. */ __('Line %1$d of %2$d', 'wconvert'), priority + 1, answers.length)}</strong>
         <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
           onChange={when => { if (when) write(answers.map(item => item.id === edge.id ? { ...item, when } : item)); }} />
       </>}
-      <label>{__('Go to', 'wconvert')}<select data-route-target value={edge.to} onChange={event => {
+      <label>{__('Then', 'wconvert')}<select data-route-target value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
         // A skip edge that only copied the old destination goes, so the screen keeps falling through (ADR 0135).
         if (edge.kind === 'default') write(answers, updated, hidden && hidden.to === edge.to ? null : hidden);
@@ -115,44 +116,47 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label>
       {onSelect && <div className="wconvert-journey-route-destination">
-        <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{__('Edit next screen', 'wconvert')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>
+        <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{sprintf(/* translators: %s: a screen's name. */ __('Open %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? '')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>
       </div>}
-      {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(__('Check its “Shown if” on arrival: %s', 'wconvert'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
-      {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Insert a screen on this path', 'wconvert')}</button> : <>
-      <button type="button" className="wconvert-journey-routes__insert" disabled={!canAsk(edge.id)} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this path', 'wconvert')}</button>
-      <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'content')}>{__('Show a message on this path', 'wconvert')}</button>
+      {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(/* translators: %s: the screen's rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
+      {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Add a screen on this line', 'wconvert')}</button> : <>
+      <button type="button" className="wconvert-journey-routes__insert" disabled={!canAsk(edge.id)} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this line', 'wconvert')}</button>
+      <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'content')}>{__('Show a message on this line', 'wconvert')}</button>
       </>}
       {edge.kind === 'answer' && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={priority === 0} onClick={() => { const next = [...answers]; [next[priority - 1], next[priority]] = [next[priority], next[priority - 1]]; write(next); }}>{__('Move up', 'wconvert')}</button>
         <button type="button" disabled={priority === answers.length - 1} onClick={() => { const next = [...answers]; [next[priority], next[priority + 1]] = [next[priority + 1], next[priority]]; write(next); }}>{__('Move down', 'wconvert')}</button>
-        <button type="button" data-destructive="true" onClick={() => write(answers.filter(item => item.id !== edge.id))}>{__('Remove path', 'wconvert')}</button>
+        <button type="button" data-destructive="true" onClick={() => write(answers.filter(item => item.id !== edge.id))}>{__('Remove line', 'wconvert')}</button>
       </div>}
       </div></details>
     </li>)}{!fallback && <li data-path-priority={answers.length}>
-      <strong>{answers.length ? __('All other answers', 'wconvert') : __('Continue to the next screen', 'wconvert')}</strong>
-      <p>{__('This screen needs a next path before visitors can continue.', 'wconvert')}</p>
-      <label>{__('Go to', 'wconvert')}<select value="" onChange={event => {
+      <strong>{answers.length ? __('All other answers', 'wconvert') : __('Then', 'wconvert')}</strong>
+      <p>{__('Choose where visitors go after this screen.', 'wconvert')}</p>
+      <label>{__('Then', 'wconvert')}<select value="" onChange={event => {
         if (event.target.value) write(answers, { id: graphEdgeId(graph), from: screen.id, to: event.target.value, kind: 'default' });
-      }}><option value="" disabled>{__('Choose next screen…', 'wconvert')}</option>
+      }}><option value="" disabled>{__('Choose a screen…', 'wconvert')}</option>
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label>
     </li>}</ol>
+    {overlap && <p className="wconvert-panel-warn" role="status">{overlap.answers[0] === overlap.answers[1]
+      ? sprintf(/* translators: 1: an answer. 2, 3: line numbers. */ __('Lines %2$d and %3$d both use “%1$s”. Visitors who pick it take line %2$d.', 'wconvert'), overlap.answers[0], overlap.first + 1, overlap.second + 1)
+      : sprintf(/* translators: 1, 2: answers. */ __('Someone who picks both “%1$s” and “%2$s” takes the first line: %1$s.', 'wconvert'), overlap.answers[0], overlap.answers[1])}</p>}
     {questionAfterSave && <PanelHint>{__('Ask questions before this save so their answers are included.', 'wconvert')}</PanelHint>}
-    {fallback && sources.length > 0 && onAdd && <div className="wconvert-journey-next-actions"><button type="button" onClick={() => onAdd('followup')}>{__('Add conditional follow-up', 'wconvert')}</button><button type="button" onClick={() => onAdd('branch')}>{__('Add path', 'wconvert')}</button></div>}
-    {fallback && sources.length > 0 && targets.length > 0 && !onAdd && <button type="button" className="wconvert-panel-link" onClick={add}>{__('Send some answers elsewhere', 'wconvert')}</button>}
-    {!sources.length && <PanelHint>{__('Add a choice question to send answers down different paths.', 'wconvert')}</PanelHint>}
+    {fallback && sources.length > 0 && onAdd && <div className="wconvert-journey-next-actions"><button type="button" onClick={() => onAdd('followup')}>{__('Add a follow-up question', 'wconvert')}</button><button type="button" onClick={() => onAdd('branch')}>{__('Send some answers to a different screen', 'wconvert')}</button></div>}
+    {fallback && sources.length > 0 && targets.length > 0 && !onAdd && <button type="button" className="wconvert-panel-link" onClick={add}>{__('Send some answers to a different screen', 'wconvert')}</button>}
+    {!sources.length && <PanelHint>{__('Add a choice question before this screen to send answers to different screens.', 'wconvert')}</PanelHint>}
     {screen.when && <div className="wconvert-journey-settings__skip">
       {/* A skipped screen continues where it would have; choosing a screen here is an override (ADR 0135). */}
-      <FieldHeading label={__('If skipped, go to', 'wconvert')} htmlFor={`${skipId}-skip`} tip={__('Skipped screens do not collect an answer or submit details.', 'wconvert')} />
+      <FieldHeading label={__('If skipped', 'wconvert')} htmlFor={`${skipId}-skip`} tip={__('Skipped screens don’t collect answers or save details.', 'wconvert')} />
       <select id={`${skipId}-skip`} ref={hiddenSelect} value={hidden && hidden.to !== fallback?.to ? hidden.to : ''} onChange={event => write(answers, fallback,
         event.target.value === '' ? null : { id: hidden?.id ?? graphEdgeId(graph), from: screen.id, kind: 'hidden', to: event.target.value })}>
         <option value="">{fallback ? sprintf(__('Where it would have gone (%s)', 'wconvert'), tree.steps.find(item => item.id === fallback.to)?.name ?? '') : __('Where it would have gone', 'wconvert')}</option>
         {targets.filter(target => target.id !== fallback?.to).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></div>}
     </div>
-    {unreachableScreens(tree).length > 0 && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: %s: screen names. */ __('No path reaches %s.', 'wconvert'), unreachableScreens(tree).join(', '))}</p>}
-    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={returnFocus}
+    {unreachableScreens(tree).length > 0 && <p className="wconvert-panel-warn" role="status">{sprintf(/* translators: %s: screen names. */ __('No line reaches %s.', 'wconvert'), unreachableScreens(tree).join(', '))}</p>}
+    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Check this change', 'wconvert')} returnFocusTo={returnFocus}
       description={pending?.description ?? ''}
-      confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
+      confirmLabel={__('Change anyway', 'wconvert')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
   </div>;
 }

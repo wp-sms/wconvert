@@ -71,7 +71,7 @@ campaign Goal: an enquiry route must reach its one combined submission; a
 quiz or content route may finish anonymously unless its Goal requires capture.
 Publishing must reject cycles, dangling or duplicate edges, missing defaults
 ~~or hidden exits~~ (*a hidden exit is optional since [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md)*), unreachable screens, impossible rule sources, invalid capture
-ownership and any path that bypasses required capture.
+ownership and any path that bypasses required capture. *Amended by [ADR 0142](0142-one-readable-flow-map.md): an ending that no route reaches through the gate is an early ending and is allowed, while at least one ending comes after the gate and none is reachable both with and without it.*
 
 Version 2 journeys remain on their existing ordered evaluator until explicitly
 upgraded in a draft. Migration creates explicit default and answer edges from
@@ -94,7 +94,7 @@ consent ownership stays explicit, merchant-written copy stays intact, and a
 more complex topology requires manual route editing rather than a silent
 rearrangement.
 
-React Flow is an admin view of this data, not the source of routing semantics.
+React Flow is an admin view of this data, not the source of routing semantics. *Amended by [ADR 0142](0142-one-readable-flow-map.md): the view is a plain map now; the rest of this paragraph holds.*
 The Screens inventory and inspector must support every authoring action without
 dragging, including changing priority, fallback and hidden exits. Route lists own
 their layout through an explicit list class, so disclosure or visibility wrappers
@@ -106,7 +106,7 @@ viewport metadata stay outside the visitor graph. The product-facing scale
 limit will follow payload, loader and dense-map measurements rather than the
 old seven-screen limit or a new arbitrary number.
 
-Before Dagre, a conservative presentation pass identifies single-entry paths
+~~Before Dagre, a conservative presentation pass identifies single-entry paths
 that rejoin. One optional detour is stacked below its entry; competing paths
 occupy priority-ordered lanes; the shared continuation appears once. Independent
 matching follow-ups retain their own grouped semantics. Nested forks, outside
@@ -120,7 +120,7 @@ routing updates while dragging; retained measurements and controlled positions
 prevent layout resets. When workers are unavailable it routes on the main
 thread. This is a presentation dependency only; visitor traversal and server
 validation never import it. Overlapping cards still need repositioning, and
-dense-map browser measurements remain part of the release gate.
+dense-map browser measurements remain part of the release gate.~~ *Amended by [ADR 0142](0142-one-readable-flow-map.md): there are no detour regions, lanes, corridors or Smart Edge. Dagre lays out the whole map top to bottom; an "Only if" screen splits its line, several follow-ups are one box, and labels and "+" are reserved as dagre edge labels so nothing overlaps.*
 
 ### Product recovery and paid byte caps
 

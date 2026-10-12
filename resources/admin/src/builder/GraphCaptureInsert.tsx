@@ -27,7 +27,7 @@ export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onC
           <option value="" disabled>{__('Choose a path…', 'wconvert')}</option>
           {plan.locations.map(location => <option key={location.id} value={location.id}>{location.label}</option>)}
         </select>
-        <p>{__('Only visitors on this path see it. Signing up and “No thanks” both continue to the same next screen, and the main signup is not sent again. Check its consent text and Destinations afterwards.', 'wconvert')}</p>
+        <p>{__('Only visitors on this path see it. Signing up and “No thanks” both continue to the same screen, and the main signup is not sent again. Check its consent text and Destinations afterwards.', 'wconvert')}</p>
       </>}
     </AdminDialogBody>
     <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onCancel}>{__('Cancel', 'wconvert')}</Button>}

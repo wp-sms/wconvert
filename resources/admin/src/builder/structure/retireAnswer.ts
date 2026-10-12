@@ -10,7 +10,7 @@ export function retireAnswerPlan(tree: TemplateTree, questionId: string, value: 
   const removed: string[] = [];
   const blocked = (reason: string) => ({ removed, reason });
   const question = tree.steps.flatMap(screen => walkNodes(screen.content)).find(node => node.type === 'question' && 'id' in node && node.id === questionId);
-  if (!tree.graph || !question || question.type !== 'question' || !('options' in question)) return blocked(__('Edit the listed rules individually for this journey.', 'wconvert'));
+  if (!tree.graph || !question || question.type !== 'question' || !('options' in question)) return blocked(__('Edit the listed rules one at a time.', 'wconvert'));
   if ((question.options?.length ?? 0) <= 2) return blocked(__('Keep at least two choices. Add another choice before removing this one.', 'wconvert'));
   const uses = (when?: QuestionCondition) => when?.clauses.some(clause => clause.question === questionId && clause.values.includes(value));
   const only = (when?: QuestionCondition) => when?.clauses.length === 1 && when.clauses[0].question === questionId

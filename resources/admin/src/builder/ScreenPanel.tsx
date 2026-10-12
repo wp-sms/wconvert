@@ -1,5 +1,5 @@
 import { createContext, useContext, useId, type ReactNode } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { FactRow, PanelHint, PanelSection } from './PanelSection';
 import type { TemplateTree } from '@renderer/types';
@@ -42,8 +42,8 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
   const graph = tree.graph;
   const answers = graph ? graph.edges.filter(edge => edge.from === screen.id && edge.kind === 'answer') : (screen.paths ?? []).filter(path => path.when);
   if (answers.length > 0) {
-    return <FactRow label={__('Then', 'wconvert')} action={__('Edit paths', 'wconvert')} onAction={onEditPaths}>
-      {__('Depends on the answer', 'wconvert')}
+    return <FactRow label={__('Then', 'wconvert')} action={__('Edit lines', 'wconvert')} onAction={onEditPaths}>
+      {sprintf(/* translators: %d: how many lines leave the screen. */ _n('%d line · first match wins', '%d lines · first match wins', answers.length + 1, 'wconvert'), answers.length + 1)}
     </FactRow>;
   }
   const fallback = graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'default');

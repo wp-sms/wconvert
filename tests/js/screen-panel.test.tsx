@@ -79,8 +79,8 @@ describe('Then →', () => {
       { id: 'a', from: 's1', to: 's3', kind: 'answer' as const, when: { match: 'all' as const, clauses: [{ question: 'q', operator: 'is' as const, values: ['x'] }] } }] } };
     const onEditPaths = vi.fn();
     render(<ScreenThen tree={withAnswer} step={0} editable onChange={vi.fn()} onEditPaths={onEditPaths} />);
-    expect(screen.getByText('Depends on the answer')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Edit paths' }));
+    expect(screen.getByText('2 lines · first match wins')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Edit lines' }));
     expect(onEditPaths).toHaveBeenCalledOnce();
   });
 });
