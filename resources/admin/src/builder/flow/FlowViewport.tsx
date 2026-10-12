@@ -84,7 +84,7 @@ export function FlowViewport({ viewport, surface, width, height, zoom, onZoom, o
 
 /** Where the view is on a map larger than it, and a click to go elsewhere. Decorative: the cards are all in the tab order already. */
 export function FlowOverview({ width, height, boxes, view, onJump }: {
-  width: number; height: number; boxes: readonly (Rect & { id: string; colour?: number })[];
+  width: number; height: number; boxes: readonly (Rect & { id: string; color?: number })[];
   view: Rect; onJump(x: number, y: number): void;
 }) {
   // At most 142 × 160: a tall map gets a narrow overview, not a tall one.
@@ -92,7 +92,7 @@ export function FlowOverview({ width, height, boxes, view, onJump }: {
   return <div className="wconvert-flow-overview" aria-hidden="true" title={__('Overview: click to go there', 'wconvert')}
     onClick={event => { const rect = event.currentTarget.getBoundingClientRect(); onJump((event.clientX - rect.left) / rect.width * width, (event.clientY - rect.top) / rect.height * height); }}>
     <svg width={width * scale} height={height * scale} viewBox={`0 0 ${width * scale} ${height * scale}`}>
-      {boxes.map(box => <rect key={box.id} x={box.x * scale} y={box.y * scale} width={box.width * scale} height={box.height * scale} rx="1.5" data-colour={box.colour} />)}
+      {boxes.map(box => <rect key={box.id} x={box.x * scale} y={box.y * scale} width={box.width * scale} height={box.height * scale} rx="1.5" data-color={box.color} />)}
       <rect className="wconvert-flow-overview__view" x={view.x * scale} y={view.y * scale} width={view.width * scale} height={view.height * scale} />
     </svg>
   </div>;
@@ -102,7 +102,7 @@ export function FlowOverview({ width, height, boxes, view, onJump }: {
 export function FlowLegend() {
   return <div className="wconvert-flow-legend" role="note" aria-label={__('Line key', 'wconvert')}>
     <span><svg viewBox="0 0 28 8" aria-hidden="true"><path d="M0 4H28" data-style="plain" /></svg>{__('Everyone on this line', 'wconvert')}</span>
-    <span><svg viewBox="0 0 28 8" aria-hidden="true"><path d="M0 4H28" data-style="answer" /></svg>{__('Only visitors with that answer', 'wconvert')}</span>
+    <span><svg viewBox="0 0 28 8" aria-hidden="true"><path d="M0 4H9" data-style="answer" /><path d="M10 4H18" /><path d="M19 4H28" /></svg>{__('Only visitors with that answer', 'wconvert')}</span>
     <span><svg viewBox="0 0 28 8" aria-hidden="true"><path d="M0 4H28" data-style="around" /></svg>{__('Goes around · if skipped', 'wconvert')}</span>
   </div>;
 }

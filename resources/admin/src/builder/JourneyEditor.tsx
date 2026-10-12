@@ -454,6 +454,19 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const panelOpen = inspecting;
   // Display rules and Destinations are tabs of their own, one click away (ADR 0134).
   const openContext = (kind: 'rules' | 'destinations') => { setOpen(false); (kind === 'rules' ? onGoToRules : onGoToDestinations)?.(); };
+  // Opens one of a screen's lines where it is edited, from the map or the panel.
+  const openLine = (index: number, priority: number | 'hidden') => {
+    // A question's lines live on the question (ADR 0134), in Flow as on the canvas.
+    const question = slim && onSelectElement ? nodesOf(tree).find(block => block.path[0] === index && block.type === 'question')?.path : undefined;
+    setPathFocus(priority);
+    if (question) { if (JSON.stringify(question) !== elementKey) lineToMark.current = priority; onSelectElement!(question); return; }
+    select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); setPathFocus(priority);
+    // "Then → X" opens the select that sets it: the screen's own Then, where it has no other lines.
+    if (priority !== 'hidden') requestAnimationFrame(() => {
+      const pane = settingsHeading.current?.closest('.wconvert-journey-pane');
+      if (pane && !pane.querySelector('.wconvert-journey-routes')) pane.querySelector<HTMLElement>('[data-then]')?.focus();
+    });
+  };
   // "Send some answers to a different screen": the insert dialog, on its branch intent (ADR 0142).
   const branchFrom = (index: number) => {
     contextAddTrigger.current = document.activeElement as HTMLElement;
@@ -601,18 +614,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <Suspense fallback={<FlowLoading />}>
             <JourneyMap issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && (panelSection === 'paths' || !!elementPanel) ? pathFocus : null}
-              onSelect={select} onSelectPath={(index, priority) => {
-                // A question's lines live on the question (ADR 0134), in Flow as on the canvas.
-                const question = slim && onSelectElement ? nodesOf(tree).find(block => block.path[0] === index && block.type === 'question')?.path : undefined;
-                setPathFocus(priority);
-                if (question) { if (JSON.stringify(question) !== elementKey) lineToMark.current = priority; onSelectElement!(question); return; }
-                select(index); setRequestedSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); setPathFocus(priority);
-                // "Then → X" opens the select that sets it: the screen's own Then, where it has no other lines.
-                if (priority !== 'hidden') requestAnimationFrame(() => {
-                  const pane = settingsHeading.current?.closest('.wconvert-journey-pane');
-                  if (pane && !pane.querySelector('.wconvert-journey-routes')) pane.querySelector<HTMLElement>('[data-then]')?.focus();
-                });
-              }} samplePath={samplePath} sampleEdges={sampleEdges}
+              onSelect={select} onSelectPath={openLine} samplePath={samplePath} sampleEdges={sampleEdges}
               onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Cleared. Every screen and line is shown again.', 'wconvert')); }}
               onAdd={journeys && tree.graph ? (index, edgeId) => {
                 contextAddTrigger.current = document.activeElement as HTMLElement;
@@ -706,6 +708,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               {slim && <ScreenThen tree={tree} step={step} editable={journeys} onChange={onChange}
                 onUpgrade={next => { onChange(next); setSaid(__('This screen now chooses its own next screen. Undo goes back to one screen after another.', 'wconvert')); }}
                 onEditPaths={questionPath && onSelectElement ? () => onSelectElement(questionPath) : undefined}
+                onEditLine={questionPath && onSelectElement ? priority => openLine(step, priority) : undefined}
                 onBranch={journeys && tree.graph && walkNodes(current.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text')
                   && !tree.graph.edges.some(edge => edge.from === current.id && edge.kind === 'answer') ? () => branchFrom(step) : undefined} />}
               {slim && isFirst && <FactRow label={__('When it opens', 'wconvert')} action={__('Display rules', 'wconvert')} onAction={onGoToRules}>{displaySummary ?? ''}</FactRow>}

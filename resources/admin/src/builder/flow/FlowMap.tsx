@@ -255,7 +255,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
         <button type="button" onClick={() => setFitted(true)}>{__('Fit', 'wconvert')}</button>
       </div>
       {overflows ? <FlowOverview width={layout.width} height={layout.height}
-        boxes={layout.order.map(node => ({ id: node, ...layout.boxes.get(node)!, colour: model.cards.find(card => card.id === node)?.colour }))}
+        boxes={layout.order.map(node => ({ id: node, ...layout.boxes.get(node)!, color: model.cards.find(card => card.id === node)?.color }))}
         view={{ x: scroll.left / zoom, y: scroll.top / zoom, width: view.width / zoom, height: view.height / zoom }}
         onJump={(x, y) => viewport.current?.scrollTo?.({ left: x * zoom - view.width / 2, top: y * zoom - view.height / 2, behavior: reduced ? 'auto' : 'smooth' })} />
         : <FlowLegend />}

@@ -3,14 +3,14 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
- * Answer colours are measured, not estimated (GUIDELINES §5, ADR 0142). A line
+ * Answer colors are measured, not estimated (GUIDELINES §5, ADR 0142). A line
  * is information a merchant needs to tell one answer from another, so it owes
  * 3:1 against whatever it crosses; a pill's label is text and owes 4.5:1.
  */
 const css = readFileSync(resolve(__dirname, '../../resources/admin/src/index.css'), 'utf8');
 const token = (name: string) => {
   const found = new RegExp(`--${name}:\\s*(#[0-9a-f]{6})\\s*;`, 'i').exec(css);
-  if (!found) throw new Error(`--${name} is not a hex colour`);
+  if (!found) throw new Error(`--${name} is not a hex color`);
   return found[1];
 };
 const luminance = (hex: string) => {
@@ -39,7 +39,7 @@ describe('the answer palette', () => {
     expect(contrast(token(`kind-${kind}`), token(`kind-${kind}-surface`))).toBeGreaterThanOrEqual(3);
   });
 
-  it('is six distinct colours, none of them the chart ramp or the problem red', () => {
+  it('is six distinct colors, none of them the chart ramp or the problem red', () => {
     const lines = answers.map(answer => answer.line.toLowerCase());
     expect(new Set(lines).size).toBe(6);
     const reserved = [token('destructive'), token('action'), ...[2, 3, 4, 5].map(slot => token(`chart-${slot}`))].map(hex => hex.toLowerCase());

@@ -44,10 +44,10 @@ scenarios), reviewed at claude.ai/artifact/2Hk19gwMXdFXvtpSeN2Q5u.
    Check next, Choose one path, fallback, Everyone else, Next screen, and
    "journey" in merchant-facing copy. A test in `tests/js/flow-words.test.ts`
    keeps them retired.
-7. **Colour means an answer.** Each answer some rule uses gets one of six
-   answer colours (`--answer-1…6`), in reading order, shared by its line, the
+7. **Color means an answer.** Each answer some rule uses gets one of six
+   answer colors (`--answer-1…6`), in reading order, shared by its line, the
    "Only if" chip and the result that uses it. Past six, only the selected
-   question's answers keep colour. A line keeps its colour until a card with
+   question's answers keep color. A line keeps its color until a card with
    more than one line in. Red stays for problems; the chart palette is never
    used.
 8. **Endings may skip the gate, computed, not stored.** The gate is the
@@ -109,3 +109,10 @@ a live copy is paused; your draft keeps saving" — what `OptinController` and
   where the prototype allowed it. Asked on 2026-10-12, the decision went to the
   prototype: it publishes, with the note on its card. A visitor who skips the
   form on the way there leaves no lead; the merchant sees that on the map.
+- Colors, checked against the prototype and the real panel on 2026-10-12:
+  only an answer named alone by a rule gets a color, since only those rules
+  show one; an answer used inside a two-part rule stayed colored in the panel
+  but appeared nowhere on the map. The screen panel lists a question's lines
+  with their colors, and Results and "Arrives from" carry the same dots.
+  Around a selection, grey lines turn dark rather than teal: teal is a
+  visitor's path only. The line key stays three short items.

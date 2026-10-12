@@ -2341,7 +2341,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 
 /* ===========================================================================
    The Flow map (ADR 0142): one readable map. Cards and pills are HTML in
-   reading order, the lines one SVG. A colour means one answer; grey is
+   reading order, the lines one SVG. A color means one answer; grey is
    everyone; dashed goes around or is skipped; red is a problem. The viewport
    is left-to-right because the layout has mirrored RTL already.
    =========================================================================== */
@@ -2359,27 +2359,29 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-line[data-selected] { stroke-width: 3.5; }
 .wconvert-flow-line[data-state='on'] { stroke-width: 3.5; }
 .wconvert-flow-arrow { fill: var(--flow-ink); }
-.wconvert-flow-line[data-colour='1'], .wconvert-flow-arrow[data-marker='answer-1'] { --flow-ink: var(--answer-1); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='1'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='1'] { --flow-answer: var(--answer-1); --flow-answer-surface: var(--answer-1-surface); }
-.wconvert-flow-line[data-colour='2'], .wconvert-flow-arrow[data-marker='answer-2'] { --flow-ink: var(--answer-2); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='2'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='2'] { --flow-answer: var(--answer-2); --flow-answer-surface: var(--answer-2-surface); }
-.wconvert-flow-line[data-colour='3'], .wconvert-flow-arrow[data-marker='answer-3'] { --flow-ink: var(--answer-3); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='3'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='3'] { --flow-answer: var(--answer-3); --flow-answer-surface: var(--answer-3-surface); }
-.wconvert-flow-line[data-colour='4'], .wconvert-flow-arrow[data-marker='answer-4'] { --flow-ink: var(--answer-4); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='4'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='4'] { --flow-answer: var(--answer-4); --flow-answer-surface: var(--answer-4-surface); }
-.wconvert-flow-line[data-colour='5'], .wconvert-flow-arrow[data-marker='answer-5'] { --flow-ink: var(--answer-5); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='5'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='5'] { --flow-answer: var(--answer-5); --flow-answer-surface: var(--answer-5-surface); }
-.wconvert-flow-line[data-colour='6'], .wconvert-flow-arrow[data-marker='answer-6'] { --flow-ink: var(--answer-6); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-colour='6'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-colour='6'] { --flow-answer: var(--answer-6); --flow-answer-surface: var(--answer-6-surface); }
-/* A trace and a problem outrank an answer's colour. */
+.wconvert-flow-line[data-color='1'], .wconvert-flow-arrow[data-marker='answer-1'] { --flow-ink: var(--answer-1); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='1'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='1'] { --flow-answer: var(--answer-1); --flow-answer-surface: var(--answer-1-surface); }
+.wconvert-flow-line[data-color='2'], .wconvert-flow-arrow[data-marker='answer-2'] { --flow-ink: var(--answer-2); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='2'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='2'] { --flow-answer: var(--answer-2); --flow-answer-surface: var(--answer-2-surface); }
+.wconvert-flow-line[data-color='3'], .wconvert-flow-arrow[data-marker='answer-3'] { --flow-ink: var(--answer-3); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='3'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='3'] { --flow-answer: var(--answer-3); --flow-answer-surface: var(--answer-3-surface); }
+.wconvert-flow-line[data-color='4'], .wconvert-flow-arrow[data-marker='answer-4'] { --flow-ink: var(--answer-4); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='4'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='4'] { --flow-answer: var(--answer-4); --flow-answer-surface: var(--answer-4-surface); }
+.wconvert-flow-line[data-color='5'], .wconvert-flow-arrow[data-marker='answer-5'] { --flow-ink: var(--answer-5); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='5'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='5'] { --flow-answer: var(--answer-5); --flow-answer-surface: var(--answer-5-surface); }
+.wconvert-flow-line[data-color='6'], .wconvert-flow-arrow[data-marker='answer-6'] { --flow-ink: var(--answer-6); }
+:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='6'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='6'] { --flow-answer: var(--answer-6); --flow-answer-surface: var(--answer-6-surface); }
+/* A trace and a problem outrank an answer's color. */
 .wconvert-flow-line[data-problem] { --flow-ink: var(--destructive); }
-.wconvert-flow-line[data-state='on']:not([data-colour]), .wconvert-flow-arrow[data-marker='on'] { --flow-ink: var(--action); }
+/* Around a selection a grey line turns dark; teal is only a visitor's path, so it never reads as an answer. */
+.wconvert-flow-line[data-state='on']:not([data-color]), .wconvert-flow-arrow[data-marker='strong'] { --flow-ink: var(--foreground); }
+.wconvert-flow[data-trace] .wconvert-flow-line[data-state='on']:not([data-color]), .wconvert-flow-arrow[data-marker='on'] { --flow-ink: var(--action); }
 .wconvert-flow[data-trace] :is(.wconvert-flow-line[data-state='off'], .wconvert-flow-arrow[data-marker='off']) { --flow-ink: var(--border); }
 .wconvert-flow-card, .wconvert-flow-group { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); text-align: start; }
 .wconvert-flow-card { padding: 10px 12px; }
-.wconvert-flow-card[data-colour] { border-block-start: 3px solid var(--flow-answer); padding-block-start: 8px; }
+.wconvert-flow-card[data-color] { border-block-start: 3px solid var(--flow-answer); padding-block-start: 8px; }
 .wconvert-flow-card:hover { border-color: var(--input); }
-/* Outlines, not shadows: they survive forced colours (GUIDELINES §22). */
+/* Outlines, not shadows: they survive forced colors (GUIDELINES §22). */
 .wconvert-flow-card[data-selected], .wconvert-flow-group:has([aria-current='true']) { border-color: var(--action); outline: 2px solid var(--action); outline-offset: 1px; }
 :is(.wconvert-flow-card, .wconvert-flow-group)[data-state='on'] { outline: 2px solid var(--action); outline-offset: 0; }
 /* A trace dashes the screens it skipped; a selection only outlines its neighbours. */
@@ -2405,7 +2407,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-card__sub[data-shown] { color: var(--foreground); font-weight: 600; }
 .wconvert-flow-card__sub [data-problem] { color: var(--destructive); }
 .wconvert-flow-dot { flex: none; display: inline-block; inline-size: 9px; block-size: 9px; border: 1.5px solid var(--input); border-radius: 50%; background: transparent; }
-.wconvert-flow-dot[data-colour] { border-color: var(--flow-answer); background: var(--flow-answer); }
+.wconvert-flow-dot[data-color] { border-color: var(--flow-answer); background: var(--flow-answer); }
 .wconvert-flow-card__foot { padding: 0; border: 0; background: none; color: var(--muted-foreground); font: inherit; font-size: var(--text-micro); text-align: start; overflow-wrap: anywhere; }
 button.wconvert-flow-card__foot { cursor: pointer; }
 button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: underline; }
@@ -2462,16 +2464,18 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-legend svg { flex: none; inline-size: 28px; block-size: 8px; }
 .wconvert-flow-legend path { stroke: var(--input); stroke-width: 2; }
 .wconvert-flow-legend path[data-style='answer'] { stroke: var(--answer-1); }
+.wconvert-flow-legend path[data-style='answer'] + path { stroke: var(--answer-2); }
+.wconvert-flow-legend path[data-style='answer'] + path + path { stroke: var(--answer-3); }
 .wconvert-flow-legend path[data-style='around'] { stroke-dasharray: 5 4; }
 .wconvert-flow-overview { padding: 4px; cursor: pointer; }
 .wconvert-flow-overview svg { display: block; max-inline-size: 142px; max-block-size: 160px; }
 .wconvert-flow-overview rect { fill: var(--border); }
-.wconvert-flow-overview rect[data-colour='1'] { fill: var(--answer-1); }
-.wconvert-flow-overview rect[data-colour='2'] { fill: var(--answer-2); }
-.wconvert-flow-overview rect[data-colour='3'] { fill: var(--answer-3); }
-.wconvert-flow-overview rect[data-colour='4'] { fill: var(--answer-4); }
-.wconvert-flow-overview rect[data-colour='5'] { fill: var(--answer-5); }
-.wconvert-flow-overview rect[data-colour='6'] { fill: var(--answer-6); }
+.wconvert-flow-overview rect[data-color='1'] { fill: var(--answer-1); }
+.wconvert-flow-overview rect[data-color='2'] { fill: var(--answer-2); }
+.wconvert-flow-overview rect[data-color='3'] { fill: var(--answer-3); }
+.wconvert-flow-overview rect[data-color='4'] { fill: var(--answer-4); }
+.wconvert-flow-overview rect[data-color='5'] { fill: var(--answer-5); }
+.wconvert-flow-overview rect[data-color='6'] { fill: var(--answer-6); }
 .wconvert-flow-overview .wconvert-flow-overview__view { fill: rgb(31 90 107 / 0.12); stroke: var(--action); stroke-width: 1; }
 .wconvert-flow-issue { display: flex; align-items: center; gap: 6px; min-block-size: 32px; margin: 6px 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--destructive); font-size: var(--text-micro); cursor: pointer; }
 .wconvert-flow-issue svg { inline-size: 14px; block-size: 14px; }
@@ -2480,17 +2484,22 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-issue__list button { display: block; inline-size: 100%; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--foreground); font-size: var(--text-note); text-align: start; cursor: pointer; }
 .wconvert-flow-issue__list button:hover, .wconvert-flow-issue__list button:focus-visible { background: var(--accent); }
 @media (max-width: 900px) { .wconvert-flow-legend { display: none; } }
-/* High contrast keeps the dashes, which carry "goes around" without colour. */
+/* High contrast keeps the dashes, which carry "goes around" without color. */
 @media (forced-colors: active) {
   .wconvert-flow-line { stroke: CanvasText; }
   .wconvert-flow-line[data-state='on'] { stroke: Highlight; }
   .wconvert-flow-arrow { fill: CanvasText; }
   .wconvert-flow-card[data-selected], :is(.wconvert-flow-card, .wconvert-flow-group)[data-state='on'] { outline-color: Highlight; }
 }
-/* A question screen's answers in the panel, in their Flow map colours (ADR 0142). */
+/* A question screen's answers in the panel, in their Flow map colors (ADR 0142). */
 .wconvert-screen-answers { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .wconvert-screen-answers li { display: flex; align-items: baseline; gap: 8px; font-size: var(--text-note); }
 .wconvert-screen-answers .wconvert-flow-dot { align-self: center; }
 .wconvert-screen-answers__label { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; }
 .wconvert-screen-answers__followups { display: grid; justify-items: end; gap: 2px; max-inline-size: 60%; text-align: end; }
 .wconvert-journey-path-disclosure summary .wconvert-flow-dot { margin-inline-end: 6px; vertical-align: middle; }
+.wconvert-screen-lines { display: grid; gap: 4px; margin: 4px 0 0; padding: 0; list-style: none; font-size: var(--text-note); }
+.wconvert-screen-lines li, .wconvert-screen-lines button { display: flex; align-items: baseline; gap: 8px; }
+.wconvert-screen-lines button { inline-size: 100%; padding: 4px 6px; margin-inline: -6px; border: 0; border-radius: var(--radius-sm); background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.wconvert-screen-lines button:hover { background: var(--accent); }
+.wconvert-screen-lines .wconvert-flow-dot, .wconvert-journey-result-summary .wconvert-flow-dot, .wconvert-journey-arrival .wconvert-flow-dot { align-self: center; margin-inline-end: 6px; }

@@ -139,13 +139,16 @@ colour.
   which is information a user needs to identify a component and owes 3:1 under
   WCAG 1.4.11.
 - Every contrast figure in the Foundations card is measured, not estimated.
-- **Answer colours** (`--answer-1…6`, each with a `-surface`) mean one answer
+- **Answer colors** (`--answer-1…6`, each with a `-surface`) mean one answer
   on the Flow map: its line, its "Only if" chip and the result that uses it
   (ADR 0142). They are never decoration, never the chart palette, and never red,
   which stays for problems. Lines hold 3:1 on the card and the canvas; text in
   a pill holds 4.5:1 (`tests/js/answer-palette.test.ts` measures both). The
   map's kind tiles (`--kind-*`) are the one other hue set: a quiet tile beside
   the kind's word, its icon at 3:1 on its surface.
+  Only an answer that a one-answer rule uses gets a color, so every color in
+  the side panel (answers, lines, results, "Arrives from") also appears on
+  the map.
 
 ## 6. Quiet surfaces
 
@@ -828,10 +831,11 @@ review gate: claude.ai/artifact/DSepKjR4jpkGcKEKiFM2m9.
   card or each other, and are at least 44px on a coarse pointer. There is no
   drawing mode and nothing drags.
 - **Highlighting never fades text.** The selected card has an outline and
-  `aria-current`; its own lines are drawn strongly (an answer's line keeps its
-  colour) and its neighbours outlined. A trace dashes the screens it skipped
+  `aria-current`; its own lines are drawn dark and bold (an answer's line keeps
+  its color, bolder) and its neighbours outlined. Teal marks only a visitor's
+  path, so it never reads as an answer. A trace dashes the screens it skipped
   and draws the lines it did not take quietly. Outlines, not shadows, so both
-  survive forced colours.
+  survive forced colors.
 - **A question's lines read in the order they are checked**, left to right
   (right to left in RTL), "All other answers" last, and the screens they lead
   to share the row below it. Crossing fewer lines can override the order on a

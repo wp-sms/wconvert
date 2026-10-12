@@ -29,10 +29,10 @@ export const GROUP_WIDTH = 272;
 const RANK_GAP = 36;
 
 /** Room for a line's label and its "+": generous, so the real pill always fits inside it. */
-export function pillSize(line: Pick<FlowLine, 'label' | 'colour' | 'insertEdgeId'>, coarse = false): { width: number; height: number } | null {
+export function pillSize(line: Pick<FlowLine, 'label' | 'color' | 'insertEdgeId'>, coarse = false): { width: number; height: number } | null {
   const plus = line.insertEdgeId ? (coarse ? 44 : 26) + 4 : 0;
   // A label wraps at 220px rather than cutting a condition short (GUIDELINES §21).
-  const text = line.label ? line.label.length * 7.2 + (line.colour ? 13 : 0) : 0;
+  const text = line.label ? line.label.length * 7.2 + (line.color ? 13 : 0) : 0;
   const rows = Math.max(1, Math.ceil(text / 196));
   const label = line.label ? Math.min(220, 24 + text) : 0;
   if (!plus && !label) return null;
@@ -43,7 +43,7 @@ export function pillSize(line: Pick<FlowLine, 'label' | 'colour' | 'insertEdgeId
 export function estimateCard(card: FlowCard): number {
   const rows = [16, 20, ...(card.onlyIf || card.unreachable ? [20] : []), ...(card.kind === 'form' ? [17] : []),
     ...(card.results ? [...card.results.slice(0, 3).map(() => 17), ...(card.results.length > 3 ? [17] : [])] : []), 18, ...(card.skip ? [18] : [])];
-  return 22 + (card.colour ? 2 : 0) + rows.reduce((sum, row) => sum + row, 0) + 4 * (rows.length - 1);
+  return 22 + (card.color ? 2 : 0) + rows.reduce((sum, row) => sum + row, 0) + 4 * (rows.length - 1);
 }
 
 export function estimateGroup(group: FlowGroupBox): number {

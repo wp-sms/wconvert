@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
 import { journeyTrace } from '@loader/journey-rules';
-import { flowModel, lineIsOn } from '../../resources/admin/src/builder/structure/flowModel';
+import { answerColors, flowModel, lineIsOn } from '../../resources/admin/src/builder/structure/flowModel';
 import { journeyTraceEdges } from '../../resources/admin/src/builder/structure/journeyTraceEdges';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import splitCapture from '../fixtures/journey-graph-split-capture.json';
@@ -120,29 +120,31 @@ describe('several follow-up messages (ADR 0142)', () => {
   });
 });
 
-describe('colour means an answer (ADR 0142)', () => {
+describe('color means an answer (ADR 0142)', () => {
   const coffeeTree = (coffee as unknown as { template?: { tree: TemplateTree } }).template?.tree ?? coffee as unknown as TemplateTree;
 
-  it('gives a line, the card it leads to and the result that use one answer one colour', () => {
+  it('gives a line, the card it leads to and the result that use one answer one color', () => {
     const model = flowModel(coffeeTree);
     const filter = model.lines.find(line => line.to === 'grind')!;
-    expect(filter.colour).toBe(2);
-    expect(model.cards.find(card => card.id === 'grind')?.colour).toBe(2);
-    expect(model.lines.find(line => line.id === 'grind>result')?.colour).toBe(2);
-    expect(model.cards.find(card => card.id === 'result')?.colour).toBeUndefined();
-    expect(model.cards.find(card => card.id === 'result')?.results?.map(result => [result.id, result.colour, result.fallback])).toEqual([['espresso', undefined, false], ['filter', 2, false], ['fallback', undefined, true]]);
+    expect(filter.color).toBe(1);
+    expect(model.cards.find(card => card.id === 'grind')?.color).toBe(1);
+    expect(model.lines.find(line => line.id === 'grind>result')?.color).toBe(1);
+    expect(model.cards.find(card => card.id === 'result')?.color).toBeUndefined();
+    // Espresso and "Rich and chocolatey" only appear together in a two-part rule, which stays grey: no color for them anywhere.
+    expect([...answerColors(coffeeTree).colors.keys()]).toEqual(['n1\u0000filter']);
+    expect(model.cards.find(card => card.id === 'result')?.results?.map(result => [result.id, result.color, result.fallback])).toEqual([['espresso', undefined, false], ['filter', 1, false], ['fallback', undefined, true]]);
   });
 
-  it('past six coloured answers, keeps colour only on the question in focus', () => {
+  it('past six colored answers, keeps color only on the question in focus', () => {
     const values = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
     const tree = build([{ id: 'pick', ask: ['single', ...values] }, { id: 'size', ask: ['single', 'big', 'small'] }, ...values.map(value => ({ id: `go${value}`, kind: 'content' as const })),
       { id: 'tip', kind: 'content', when: ['size', 'is', 'big'] }, { id: 'end', kind: 'acknowledgement' }],
     ['pick>size', ...values.map(value => `size>go${value}?pick:is:${value}`), 'size>tip', 'tip>end', ...values.map(value => `go${value}>end`)]);
-    const answerColours = (selectedQuestion?: string) => flowModel(tree, { selectedQuestion }).lines.filter(line => line.style === 'answer').map(line => line.colour);
+    const lineColors = (selectedQuestion?: string) => flowModel(tree, { selectedQuestion }).lines.filter(line => line.style === 'answer').map(line => line.color);
     expect(flowModel(tree).focusQuestion).toBe('q_pick');
-    expect(answerColours()).toEqual([1, 2, 3, 4, 5, 6, undefined, undefined]);
+    expect(lineColors()).toEqual([1, 2, 3, 4, 5, 6, undefined, undefined]);
     expect(flowModel(tree, { selectedQuestion: 'q_size' }).focusQuestion).toBe('q_size');
-    expect(answerColours('q_size')).toEqual([undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1]);
+    expect(lineColors('q_size')).toEqual([undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1]);
   });
 });
 

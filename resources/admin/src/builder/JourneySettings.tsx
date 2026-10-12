@@ -8,6 +8,7 @@ import { questionTypeChange } from './structure/questionTypeChange';
 import { retireAnswerPlan } from './structure/retireAnswer';
 import { answerReferences } from './structure/answerReferences';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
+import { answerColorOf, answerColors } from './structure/flowModel';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { graphReaches } from './structure/graph';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -414,6 +415,8 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     a result's row is its heading and its rule, and what acts on one result —
     move, remove — is one ⋯ rather than three links along its foot.
   */
+  // Each result's dot is its answer's color on the Flow map (ADR 0142).
+  const resultColors = answerColors(tree).colors;
   return <PanelSection ref={settingsRoot} className="wconvert-journey-settings" title={__('Results', 'wconvert')}
     tipLabel={__('How results are chosen', 'wconvert')} tip={__('First match wins, top to bottom. All other answers see the last one. Move results to change the order.', 'wconvert')}
     action={variants.length < 6 && sources.length > 0 ? <button type="button" onClick={() => setDraftResult({ heading: '', when: { match: 'all', clauses: [{ question: '', operator: 'is', values: [] }] } })}>{__('Add result', 'wconvert')}</button> : undefined}>
@@ -421,7 +424,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     <div className="wconvert-journey-results" role="group" aria-label={__('Possible results', 'wconvert')}>
       {variants.map((variant, at) => <div className="wconvert-journey-result-card" key={variant.id}><button className="wconvert-journey-result-summary" type="button" id={`${tabsId}-result-${at}`} aria-controls={`${tabsId}-panel-${at}`}
         aria-expanded={selected?.id === variant.id} onClick={() => setSelectedId(selected?.id === variant.id ? null : variant.id)}>
-        <strong>{at === variants.length - 1 ? __('All other answers', 'wconvert') : variant.heading || sprintf(__('Result %d', 'wconvert'), at + 1)}</strong>
+        <strong><span className="wconvert-flow-dot" data-color={answerColorOf(resultColors, variant.when)} aria-hidden="true" />{at === variants.length - 1 ? __('All other answers', 'wconvert') : variant.heading || sprintf(__('Result %d', 'wconvert'), at + 1)}</strong>
         <span>{at === variants.length - 1 ? __('When no other result matches', 'wconvert')
           : variant.when ? sprintf(__('If %s', 'wconvert'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert')}</span><ChevronDown aria-hidden="true" className="wconvert-journey-result-chevron" />
       </button>

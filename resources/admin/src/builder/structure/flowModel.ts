@@ -9,7 +9,7 @@ import { unreachableScreenIds, walkNodes } from './journey';
 /**
  * What the Flow map draws (ADR 0142), worked out once from the tree and never
  * stored: the cards in reading order, the follow-up boxes, and the lines with
- * their words, answer colours and what a click or "+" on each one opens.
+ * their words, answer colors and what a click or "+" on each one opens.
  * `flowLayout` places them; the components only draw. Version 2 trees and
  * graphs read the same, and every line keeps the edge ids a trace names
  * (`${screen}-${priority}`, `${screen}-hidden` for version 2), so
@@ -41,8 +41,8 @@ export interface FlowLine {
   readonly to: string;
   readonly style: LineStyle;
   readonly label?: string;
-  /** Answer colour slot, 1–6. */
-  readonly colour?: AnswerColour;
+  /** Answer color slot, 1–6. */
+  readonly color?: AnswerColor;
   readonly edgeIds: readonly string[];
   /** The graph edge "+" inserts a screen on; absent where the line is drawn only. */
   readonly insertEdgeId?: string;
@@ -53,7 +53,7 @@ export interface FlowLine {
   readonly trace: readonly TraceRule[];
 }
 
-export interface FlowResult { readonly id: string; readonly heading: string; readonly colour?: AnswerColour; readonly fallback: boolean; readonly needsCondition: boolean }
+export interface FlowResult { readonly id: string; readonly heading: string; readonly color?: AnswerColor; readonly fallback: boolean; readonly needsCondition: boolean }
 
 export interface FlowCard {
   readonly id: string;
@@ -63,7 +63,7 @@ export interface FlowCard {
   readonly first: boolean;
   readonly multi: boolean;
   readonly optional: boolean;
-  readonly onlyIf?: { readonly text: string; readonly colour?: AnswerColour };
+  readonly onlyIf?: { readonly text: string; readonly color?: AnswerColor };
   readonly then?: { readonly target: string; readonly name: string; readonly priority: number };
   readonly skip?: { readonly target: string; readonly name: string };
   /** "3 lines · first match wins", when more than one line leaves the card. */
@@ -78,13 +78,13 @@ export interface FlowCard {
   readonly unreachable: boolean;
   /** Nowhere to go next, where something has to follow. */
   readonly missingThen: boolean;
-  /** The colour of the one answer every line into this card carries. */
-  readonly colour?: AnswerColour;
+  /** The color of the one answer every line into this card carries. */
+  readonly color?: AnswerColor;
   /** Its whole sentence, for a screen reader. */
   readonly label: string;
 }
 
-export interface FlowMember { readonly id: string; readonly index: number; readonly name: string; readonly answer: string; readonly colour?: AnswerColour }
+export interface FlowMember { readonly id: string; readonly index: number; readonly name: string; readonly answer: string; readonly color?: AnswerColor }
 export interface FlowGroupBox {
   readonly id: string;
   readonly screens: readonly number[];
@@ -92,7 +92,7 @@ export interface FlowGroupBox {
   readonly title: string;
   readonly next: string;
   readonly nextName: string;
-  readonly colour?: AnswerColour;
+  readonly color?: AnswerColor;
   readonly unreachable: boolean;
 }
 
@@ -102,7 +102,7 @@ export interface FlowModel {
   readonly lines: readonly FlowLine[];
   /** No line says who takes it: every visitor sees every screen. */
   readonly straight: boolean;
-  /** Set when more answers are used than there are colours: only this question's keep theirs. */
+  /** Set when more answers are used than there are colors: only this question's keep theirs. */
   readonly focusQuestion?: string;
   /** The card or box a screen is drawn in. */
   readonly nodeOf: (screenId: string) => string;
@@ -163,18 +163,23 @@ export function endingWords(skipped: readonly SkippedGate[] | undefined, lead = 
     : result ? __('ends without a result', 'wconvert') : __('ends the campaign', 'wconvert');
 }
 
-/** Which colour slot, 1–6, an answer has on the map. */
-export type AnswerColour = number;
+/** Which color slot, 1–6, an answer has on the map. */
+export type AnswerColor = number;
 
 const pair = (question: string, value: string) => `${question}\u0000${value}`;
 
 /**
- * One colour per answer some rule uses, in reading order (ADR 0142). Past six,
- * only the question in focus keeps its colours, so two answers never share one.
+ * One color per answer some rule uses, in reading order (ADR 0142). Past six,
+ * only the question in focus keeps its colors, so two answers never share one.
  */
-export function answerColours(tree: TemplateTree, focus?: string): { colours: ReadonlyMap<string, number>; focusQuestion?: string } {
+export function answerColors(tree: TemplateTree, focus?: string): { colors: ReadonlyMap<string, number>; focusQuestion?: string } {
   const used = new Set<string>();
-  const note = (when?: QuestionCondition) => when?.clauses.forEach(clause => clause.values.forEach(value => { if (value) used.add(pair(clause.question, value)); }));
+  // Only a rule that names one answer shows a color (a line, a chip, a result dot), so only those answers get one:
+  // a color in the panel always appears on the map too.
+  const note = (when?: QuestionCondition) => {
+    const clause = when?.clauses.length === 1 ? when.clauses[0] : undefined;
+    if (clause && ['is', 'includes_any'].includes(clause.operator) && clause.values.length === 1 && clause.values[0]) used.add(pair(clause.question, clause.values[0]));
+  };
   tree.steps.forEach(screen => { note(screen.when); screen.paths?.forEach(path => note(path.when)); screen.results?.forEach(result => note(result.when)); });
   tree.graph?.edges.forEach(edge => note(edge.when));
   const ordered: { question: string; key: string }[] = [];
@@ -182,19 +187,19 @@ export function answerColours(tree: TemplateTree, focus?: string): { colours: Re
     if (node.type !== 'question' || !('id' in node) || typeof node.id !== 'string') continue;
     for (const option of (node as QuestionNode).options ?? []) if (used.has(pair(node.id, option.value))) ordered.push({ question: node.id, key: pair(node.id, option.value) });
   }
-  if (ordered.length <= 6) return { colours: new Map(ordered.map((item, at) => [item.key, at + 1])) };
+  if (ordered.length <= 6) return { colors: new Map(ordered.map((item, at) => [item.key, at + 1])) };
   const focusQuestion = focus && ordered.some(item => item.question === focus) ? focus : ordered[0].question;
-  return { colours: new Map(ordered.filter(item => item.question === focusQuestion).slice(0, 6).map((item, at) => [item.key, at + 1])), focusQuestion };
+  return { colors: new Map(ordered.filter(item => item.question === focusQuestion).slice(0, 6).map((item, at) => [item.key, at + 1])), focusQuestion };
 }
 
-/** The colour slot of a rule that names one answer positively, if that answer has one. */
-export function answerColourOf(colours: ReadonlyMap<string, number>, when?: QuestionCondition): AnswerColour | undefined {
+/** The color slot of a rule that names one answer positively, if that answer has one. */
+export function answerColorOf(colors: ReadonlyMap<string, number>, when?: QuestionCondition): AnswerColor | undefined {
   const clause = when?.clauses.length === 1 ? when.clauses[0] : undefined;
-  return clause && ['is', 'includes_any'].includes(clause.operator) && clause.values.length === 1 ? colours.get(pair(clause.question, clause.values[0])) : undefined;
+  return clause && ['is', 'includes_any'].includes(clause.operator) && clause.values.length === 1 ? colors.get(pair(clause.question, clause.values[0])) : undefined;
 }
 
-/** One answer's colour slot, by question and value. */
-export const answerColour = (colours: ReadonlyMap<string, number>, question: string, value: string): AnswerColour | undefined => colours.get(pair(question, value));
+/** One answer's color slot, by question and value. */
+export const answerColor = (colors: ReadonlyMap<string, number>, question: string, value: string): AnswerColor | undefined => colors.get(pair(question, value));
 
 export function lineIsOn(line: FlowLine, trace: FlowTrace): boolean {
   return line.trace.some(rule => rule.edges.some(edge => trace.edges.has(edge))
@@ -216,8 +221,8 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     .filter((node): node is QuestionNode & { id: string } => node.type === 'question' && 'id' in node && typeof node.id === 'string').map(node => [node.id, node]));
   const own = (id: string) => new Set(walkNodes(byId.get(id)?.screen.content ?? { type: 'stack' } as never)
     .flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : []));
-  const { colours, focusQuestion } = answerColours(tree, selectedQuestion);
-  const colourOf = (when?: QuestionCondition) => answerColourOf(colours, when);
+  const { colors, focusQuestion } = answerColors(tree, selectedQuestion);
+  const colorOf = (when?: QuestionCondition) => answerColorOf(colors, when);
   const answerWords = (question: string, values: readonly string[]) => values.map(value => questions.get(question)?.options?.find(option => option.value === value)?.label ?? value)
     .join(` ${__('or', 'wconvert')} `);
   /** "Growing", "Includes Growing", "Without Growing" on the question's own lines; the whole rule elsewhere. */
@@ -276,7 +281,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     const answers = answersOf(id), fallback = defaultOf(id);
     answers.forEach(edge => {
       const words = edge.when ? ruleWords(edge.when, id) : { text: __('Choose an answer', 'wconvert'), problem: true };
-      raw.push({ from: id, to: nodeOf(edge.to), style: 'answer', label: words.text, colour: colourOf(edge.when), problem: words.problem, edgeIds: [edge.id],
+      raw.push({ from: id, to: nodeOf(edge.to), style: 'answer', label: words.text, color: colorOf(edge.when), problem: words.problem, edgeIds: [edge.id],
         insertEdgeId: tree.graph ? edge.id : undefined, select: { index, priority: edge.priority }, trace: [{ edges: [edge.id] }] });
     });
     if (fallback) {
@@ -296,7 +301,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
         const clause = when.clauses.length === 1 ? when.clauses[0] : undefined;
         const ownRule = !!clause && own(id).has(clause.question);
         raw.push({ from: id, to: fallback.to, style: 'answer', label: ownRule ? words.text : sprintf(/* translators: %s: a rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert'), conditionText(tree, when)),
-          colour: colourOf(when), edgeIds: [fallback.id], insertEdgeId, select, trace: [{ edges: [fallback.id], all: [id, fallback.to] }] });
+          color: colorOf(when), edgeIds: [fallback.id], insertEdgeId, select, trace: [{ edges: [fallback.id], all: [id, fallback.to] }] });
         const skip = skipTarget(fallback.to);
         const around = answers.length || !clause || clause.operator !== 'includes_any' ? __('All other answers', 'wconvert')
           : ownRule ? sprintf(/* translators: %s: one or more answers. */ __('Without %s', 'wconvert'), answerWords(clause.question, clause.values))
@@ -327,25 +332,25 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     if (at < 0) { lines.push({ ...line, id: `${line.from}>${line.to}` }); continue; }
     const before = lines[at];
     const label = [before.label, line.label].filter(Boolean).join(' / ') || undefined;
-    lines[at] = { ...before, label, colour: before.colour === line.colour ? before.colour : undefined,
+    lines[at] = { ...before, label, color: before.color === line.color ? before.color : undefined,
       style: before.style === 'answer' || line.style === 'answer' ? 'answer' : before.style === 'plain' || line.style === 'plain' ? 'plain' : before.style,
       problem: before.problem || line.problem, edgeIds: [...new Set([...before.edgeIds, ...line.edgeIds])], trace: [...before.trace, ...line.trace] };
   }
 
-  // A line keeps its answer's colour until a card with more than one line in.
+  // A line keeps its answer's color until a card with more than one line in.
   const nodes = [...new Set(order.map(index => nodeOf(tree.steps[index].id)))];
-  const nodeColour = new Map<string, number | undefined>();
+  const nodeColor = new Map<string, number | undefined>();
   for (let pass = 0; pass < 12; pass++) {
     let changed = false;
     for (const node of nodes) {
       const into = lines.filter(line => line.to === node);
-      const colour = into.length && into.every(line => line.colour && line.colour === into[0].colour) ? into[0].colour : undefined;
-      if (nodeColour.get(node) !== colour) { nodeColour.set(node, colour); changed = true; }
+      const color = into.length && into.every(line => line.color && line.color === into[0].color) ? into[0].color : undefined;
+      if (nodeColor.get(node) !== color) { nodeColor.set(node, color); changed = true; }
     }
     lines.forEach((line, at) => {
       if (line.style !== 'plain' || line.label) return;
-      const colour = nodeColour.get(line.from);
-      if (line.colour !== colour) { lines[at] = { ...line, colour }; changed = true; }
+      const color = nodeColor.get(line.from);
+      if (line.color !== color) { lines[at] = { ...line, color }; changed = true; }
     });
     if (!changed) break;
   }
@@ -370,13 +375,13 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     const submit = walkNodes(screen.content).find(node => node.type === 'button' && 'action' in node && node.action === 'submit');
     const optional = !!submit && 'submission' in submit && tree.submissions.find(item => item.id === submit.submission)?.required === false;
     const skip = screen.when && !splits(screen.id) ? skipTarget(screen.id) : undefined;
-    const onlyIf = screen.when ? { text: conditionText(tree, screen.when), colour: colourOf(screen.when) } : undefined;
+    const onlyIf = screen.when ? { text: conditionText(tree, screen.when), color: colorOf(screen.when) } : undefined;
     const linesText = leaving.length > 1 ? sprintf(/* translators: 1: how many lines leave a screen. 2: “first match wins”, or their answers. */ _n('%1$d line · %2$s', '%1$d lines · %2$s', leaving.length, 'wconvert'),
       leaving.length, answers.length ? __('first match wins', 'wconvert') : leaving.map(line => line.label).filter(Boolean).join(', ')) : undefined;
     const then = fallback ? { target: fallback.to, name: targetName(nodeOf(fallback.to)), priority: Number(fallback.priority) } : undefined;
     const skipped = kind === 'ending' ? earlyEnding(tree, screen.id) : [];
     const endsWithout = skipped.length ? skipped : undefined;
-    const results = screen.results?.map((result, at, all) => ({ id: result.id, heading: result.heading, colour: colourOf(result.when),
+    const results = screen.results?.map((result, at, all) => ({ id: result.id, heading: result.heading, color: colorOf(result.when),
       fallback: !result.when && at === all.length - 1, needsCondition: !result.when && at < all.length - 1 }));
     const missingThen = !fallback && !['ending', 'result'].includes(kind) && (!!tree.graph || index < tree.steps.length - 1);
     const sentence = [sprintf(/* translators: 1: a screen's kind. 2: its name. */ __('%1$s: %2$s', 'wconvert'), kindWord(kind), screen.name),
@@ -390,7 +395,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
       ...(skip && skip !== fallback?.to ? { skip: { target: skip, name: targetName(nodeOf(skip)) } } : {}),
       ...(linesText ? { linesText, linePriority: Number(answers[0]?.priority ?? fallback?.priority ?? 0) } : {}),
       ...(endsWithout ? { endsWithout } : {}), ...(results ? { results } : {}),
-      fallbackPriority: answers.length, unreachable: unreachable.has(screen.id), missingThen, colour: nodeColour.get(screen.id), label: sentence.join(', ') };
+      fallbackPriority: answers.length, unreachable: unreachable.has(screen.id), missingThen, color: nodeColor.get(screen.id), label: sentence.join(', ') };
   });
   const boxes: FlowGroupBox[] = groups.map(group => {
     const source = followupGroupSource(tree, group);
@@ -399,10 +404,10 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
       members: group.screens.map(at => {
         const screen = tree.steps[at];
         const clause = screen.when?.clauses.length === 1 ? screen.when.clauses[0] : undefined;
-        return { id: screen.id, index: at, name: screen.name, answer: clause ? answerWords(clause.question, clause.values) : conditionText(tree, screen.when!), colour: colourOf(screen.when) };
+        return { id: screen.id, index: at, name: screen.name, answer: clause ? answerWords(clause.question, clause.values) : conditionText(tree, screen.when!), color: colorOf(screen.when) };
       }),
       title: sprintf(/* translators: %s: a question or screen. */ __('Follow-ups · %s', 'wconvert'), source !== undefined ? tree.steps[source].name : questions.get(question ?? '')?.label ?? ''),
-      next: nodeOf(group.next), nextName: targetName(nodeOf(group.next)), colour: nodeColour.get(group.id),
+      next: nodeOf(group.next), nextName: targetName(nodeOf(group.next)), color: nodeColor.get(group.id),
       unreachable: unreachable.has(tree.steps[group.screens[0]].id) };
   });
   return { cards, groups: boxes, lines, straight: !lines.some(line => line.label) && !cards.some(card => card.onlyIf), focusQuestion, nodeOf };

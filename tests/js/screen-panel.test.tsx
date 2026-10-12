@@ -78,9 +78,15 @@ describe('Then →', () => {
     const tree = upgradeToGraph(three());
     const withAnswer = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
       { id: 'a', from: 's1', to: 's3', kind: 'answer' as const, when: { match: 'all' as const, clauses: [{ question: 'q', operator: 'is' as const, values: ['x'] }] } }] } };
-    const onEditPaths = vi.fn();
-    render(<ScreenThen tree={withAnswer} step={0} editable onChange={vi.fn()} onEditPaths={onEditPaths} />);
-    expect(screen.getByText('2 lines · first match wins')).toBeInTheDocument();
+    const onEditPaths = vi.fn(), onEditLine = vi.fn();
+    render(<ScreenThen tree={withAnswer} step={0} editable onChange={vi.fn()} onEditPaths={onEditPaths} onEditLine={onEditLine} />);
+    expect(screen.getByText('First match wins, top to bottom')).toBeInTheDocument();
+    // Each line as the map draws it, in the order it is checked, "All other answers" last (ADR 0142).
+    const lines = [...document.querySelectorAll('.wconvert-screen-lines li')].map(item => item.textContent);
+    expect(lines).toHaveLength(2);
+    expect(lines[1]).toBe('All other answers → Screen 2');
+    await userEvent.click(screen.getByRole('button', { name: /All other answers/ }));
+    expect(onEditLine).toHaveBeenCalledWith(1);
     await userEvent.click(screen.getByRole('button', { name: 'Edit lines' }));
     expect(onEditPaths).toHaveBeenCalledOnce();
   });
@@ -120,16 +126,16 @@ it('drops a copied skip edge when the screen’s next screen changes, and keeps 
   expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.id === 'skip')?.to).toBe('s4');
 });
 
-/** The panel shows each answer in the colour it has on the Flow map, with the follow-ups it opens (ADR 0142). */
+/** The panel shows each answer in the color it has on the Flow map, with the follow-ups it opens (ADR 0142). */
 describe('a question screen’s answers', () => {
   const tree = enquiry as unknown as TemplateTree;
   const at = tree.steps.findIndex(item => item.id === 'interests');
 
-  it('dots each answer in its map colour and opens its follow-up', async () => {
+  it('dots each answer in its map color and opens its follow-up', async () => {
     const onSelect = vi.fn();
     render(<ScreenAnswers tree={tree} step={at} onSelect={onSelect} />);
     expect(screen.getByText('Answers · choose several')).toBeInTheDocument();
-    const dots = [...document.querySelectorAll('.wconvert-screen-answers .wconvert-flow-dot')].map(dot => dot.getAttribute('data-colour'));
+    const dots = [...document.querySelectorAll('.wconvert-screen-answers .wconvert-flow-dot')].map(dot => dot.getAttribute('data-color'));
     expect(dots).toEqual(['1', '2', '3']);
     await userEvent.click(screen.getByRole('button', { name: 'Follow-up: Garden details' }));
     expect(onSelect).toHaveBeenCalledWith(tree.steps.findIndex(item => item.id === 'garden'));
@@ -141,6 +147,6 @@ describe('a question screen’s answers', () => {
     render(<ScreenAnswers tree={bare} step={at} onSelect={vi.fn()} onFollowup={onFollowup} />);
     await userEvent.click(screen.getByRole('button', { name: 'Add a follow-up for “Balcony”' }));
     expect(onFollowup).toHaveBeenCalledWith('n1', 'balcony');
-    expect(document.querySelectorAll('.wconvert-screen-answers .wconvert-flow-dot')[2]).not.toHaveAttribute('data-colour');
+    expect(document.querySelectorAll('.wconvert-screen-answers .wconvert-flow-dot')[2]).not.toHaveAttribute('data-color');
   });
 });

@@ -1,5 +1,5 @@
 import { createContext, useContext, useId, type ReactNode } from 'react';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { FactRow, PanelHint, PanelSection } from './PanelSection';
 import type { QuestionNode, TemplateTree } from '@renderer/types';
@@ -9,7 +9,7 @@ import { nodesOf, type Block } from './structure/tree';
 import { nameOfBlock } from './BlockRow';
 import { conditionText } from './structure/conditionText';
 import { followupGroups } from './structure/followupGroups';
-import { answerColour, answerColours } from './structure/flowModel';
+import { answerColor, answerColors, flowModel } from './structure/flowModel';
 import { walkNodes } from './structure/journey';
 import type { Path } from './panel';
 import type { CampaignIssue } from './readiness/campaignIssues';
@@ -28,13 +28,15 @@ import type { TemplateLabels } from '../templates/api';
  */
 
 /** "Then → Thank you": where this screen goes next, and the one control that changes it. */
-export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgrade, onBranch }: {
+export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEditLine, onUpgrade, onBranch }: {
   tree: TemplateTree; step: number;
   /** Pro: a select. Free, or a screen whose answers decide: read-only. */
   editable: boolean;
   onChange(next: TemplateTree): void;
   /** For a question with paths: open the question, where its paths live. */
   onEditPaths?(): void;
+  /** Opens one of the question's lines where it is edited, on the question. */
+  onEditLine?(priority: number): void;
   /** A linear journey becomes a graph the moment one screen chooses its own next. */
   onUpgrade?(next: TemplateTree): void;
   /** A choice question with no answer lines yet: start one (ADR 0142). */
@@ -48,9 +50,21 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
   const graph = tree.graph;
   const answers = graph ? graph.edges.filter(edge => edge.from === screen.id && edge.kind === 'answer') : (screen.paths ?? []).filter(path => path.when);
   if (answers.length > 0) {
-    return <FactRow label={__('Then', 'wconvert')} action={__('Edit lines', 'wconvert')} onAction={onEditPaths}>
-      {sprintf(/* translators: %d: how many lines leave the screen. */ _n('%d line · first match wins', '%d lines · first match wins', answers.length + 1, 'wconvert'), answers.length + 1)}
-    </FactRow>;
+    // Each line as the map draws it: its answer's color, its words, where it goes (ADR 0142).
+    const selected = walkNodes(screen.content).flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : [])[0];
+    const model = graph ? flowModel(tree, { selectedQuestion: selected }) : undefined;
+    const lines = model?.lines.filter(line => line.from === screen.id && line.style !== 'skipped') ?? [];
+    const name = (node: string) => model?.cards.find(card => card.id === node)?.name ?? model?.groups.find(group => group.id === node)?.title ?? '';
+    return <>
+      <FactRow label={__('Then', 'wconvert')} action={__('Edit lines', 'wconvert')} onAction={onEditPaths}>{__('First match wins, top to bottom', 'wconvert')}</FactRow>
+      {lines.length > 0 && <ol className="wconvert-screen-lines">{lines.map(line => {
+        const words = <><span className="wconvert-flow-dot" data-color={line.color} aria-hidden="true" /><span><bdi>{line.label ?? __('All other answers', 'wconvert')}</bdi>
+          {' '}<span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>{' '}<b><bdi>{name(line.to)}</bdi></b></span></>;
+        const priority = line.select?.priority;
+        return <li key={line.id}>{onEditLine && typeof priority === 'number'
+          ? <button type="button" onClick={() => onEditLine(priority)}>{words}</button> : words}</li>;
+      })}</ol>}
+    </>;
   }
   const fallback = graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'default');
   const nextId = graph ? fallback?.to : screen.paths?.[0]?.to ?? tree.steps[step + 1]?.id;
@@ -92,7 +106,7 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
 }
 
 /**
- * A question screen's answers, each in the colour its lines, chips and
+ * A question screen's answers, each in the color its lines, chips and
  * results carry on the Flow map (ADR 0142), with the follow-ups it opens.
  */
 export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
@@ -102,7 +116,7 @@ export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
 }) {
   const question = walkNodes(tree.steps[step].content).find((node): node is QuestionNode & { id: string } => node.type === 'question' && 'id' in node && typeof node.id === 'string' && node.answer_type !== 'text');
   if (!question?.options?.length) return null;
-  const { colours, focusQuestion } = answerColours(tree, question.id);
+  const { colors, focusQuestion } = answerColors(tree, question.id);
   const followups = (value: string) => tree.steps.map((screen, index) => ({ screen, index }))
     .filter(({ screen }) => screen.when?.clauses.some(clause => clause.question === question.id && clause.values.includes(value)));
   const multi = question.answer_type === 'multi';
@@ -111,7 +125,7 @@ export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
     <ul className="wconvert-screen-answers">{question.options.map(option => {
       const shown = followups(option.value);
       return <li key={option.value}>
-        <span className="wconvert-flow-dot" data-colour={answerColour(colours, question.id, option.value)} aria-hidden="true" />
+        <span className="wconvert-flow-dot" data-color={answerColor(colors, question.id, option.value)} aria-hidden="true" />
         <span className="wconvert-screen-answers__label"><bdi>{option.label}</bdi></span>
         {shown.length ? <span className="wconvert-screen-answers__followups">{shown.map(({ screen, index }) =>
           <button key={screen.id} type="button" className="wconvert-panel-link" onClick={() => onSelect(index)}>{sprintf(/* translators: %s: a follow-up's name. */ __('Follow-up: %s', 'wconvert'), screen.name)}</button>)}</span>
@@ -119,7 +133,7 @@ export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
             aria-label={sprintf(/* translators: %s: an answer. */ __('Add a follow-up for “%s”', 'wconvert'), option.label)}>{__('+ Follow-up', 'wconvert')}</button>}
       </li>;
     })}</ul>
-    {focusQuestion && focusQuestion !== question.id && <PanelHint>{__('More answers are used than there are colours, so only one question’s answers are coloured on the map. Select a question to colour its answers.', 'wconvert')}</PanelHint>}
+    {focusQuestion && focusQuestion !== question.id && <PanelHint>{__('Too many answers to color them all. Select a question to color its answers.', 'wconvert')}</PanelHint>}
   </PanelSection>;
 }
 
