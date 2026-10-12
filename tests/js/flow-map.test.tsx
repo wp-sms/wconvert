@@ -26,6 +26,12 @@ describe('the Flow map (ADR 0142)', () => {
     expect(within(region).getByRole('button', { name: /^Follow-up 2 of 3: Indoor details, only if Indoors/ })).toBeInTheDocument();
   });
 
+  it('draws one arrowhead where lines arrive, whatever their weight', () => {
+    render(<FlowMap {...props()} />);
+    const targets = new Set(['followups:garden', 'contact', 'received']);
+    expect(document.querySelectorAll('.wconvert-flow-arrow')).toHaveLength(targets.size);
+  });
+
   it('is one tab stop that the arrow keys move through, top to bottom', async () => {
     const user = userEvent.setup();
     render(<FlowMap {...props()} />);

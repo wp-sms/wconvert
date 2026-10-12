@@ -2,13 +2,15 @@ import { createContext, useContext, useId, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { FactRow, PanelHint, PanelSection } from './PanelSection';
-import type { TemplateTree } from '@renderer/types';
+import type { QuestionNode, TemplateTree } from '@renderer/types';
 import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconnectGraphEdge } from './structure/graphConnections';
 import { upgradeToGraph, graphDisplayOrder } from './structure/graph';
 import { nodesOf, type Block } from './structure/tree';
 import { nameOfBlock } from './BlockRow';
 import { conditionText } from './structure/conditionText';
 import { followupGroups } from './structure/followupGroups';
+import { answerColour, answerColours } from './structure/flowModel';
+import { walkNodes } from './structure/journey';
 import type { Path } from './panel';
 import type { CampaignIssue } from './readiness/campaignIssues';
 import type { TemplateLabels } from '../templates/api';
@@ -87,6 +89,38 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onUpgr
         conditionText(tree, next.when), next.name, tree.steps.find(item => item.id === skipTo)?.name ?? '')}</PanelHint>}
     {onBranch && <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>}
   </>;
+}
+
+/**
+ * A question screen's answers, each in the colour its lines, chips and
+ * results carry on the Flow map (ADR 0142), with the follow-ups it opens.
+ */
+export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
+  tree: TemplateTree; step: number; onSelect(index: number): void;
+  /** Starts a follow-up question for one answer; absent where follow-ups are not offered. */
+  onFollowup?(question: string, value: string): void;
+}) {
+  const question = walkNodes(tree.steps[step].content).find((node): node is QuestionNode & { id: string } => node.type === 'question' && 'id' in node && typeof node.id === 'string' && node.answer_type !== 'text');
+  if (!question?.options?.length) return null;
+  const { colours, focusQuestion } = answerColours(tree, question.id);
+  const followups = (value: string) => tree.steps.map((screen, index) => ({ screen, index }))
+    .filter(({ screen }) => screen.when?.clauses.some(clause => clause.question === question.id && clause.values.includes(value)));
+  const multi = question.answer_type === 'multi';
+  return <PanelSection title={multi ? __('Answers · choose several', 'wconvert') : __('Answers · choose one', 'wconvert')}
+    tip={multi ? __('Visitors can pick several. Every matching follow-up is asked, one at a time.', 'wconvert') : undefined}>
+    <ul className="wconvert-screen-answers">{question.options.map(option => {
+      const shown = followups(option.value);
+      return <li key={option.value}>
+        <span className="wconvert-flow-dot" data-colour={answerColour(colours, question.id, option.value)} aria-hidden="true" />
+        <span className="wconvert-screen-answers__label"><bdi>{option.label}</bdi></span>
+        {shown.length ? <span className="wconvert-screen-answers__followups">{shown.map(({ screen, index }) =>
+          <button key={screen.id} type="button" className="wconvert-panel-link" onClick={() => onSelect(index)}>{sprintf(/* translators: %s: a follow-up's name. */ __('Follow-up: %s', 'wconvert'), screen.name)}</button>)}</span>
+          : onFollowup && <button type="button" className="wconvert-panel-link" onClick={() => onFollowup(question.id, option.value)}
+            aria-label={sprintf(/* translators: %s: an answer. */ __('Add a follow-up for “%s”', 'wconvert'), option.label)}>{__('+ Follow-up', 'wconvert')}</button>}
+      </li>;
+    })}</ul>
+    {focusQuestion && focusQuestion !== question.id && <PanelHint>{__('More answers are used than there are colours, so only one question’s answers are coloured on the map. Select a question to colour its answers.', 'wconvert')}</PanelHint>}
+  </PanelSection>;
 }
 
 /** This screen's issues from the campaign's one list (ADR 0133), each a way to its fix. */

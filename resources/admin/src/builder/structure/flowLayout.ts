@@ -86,7 +86,8 @@ export function flowLayout({ boxes, lines }: { boxes: readonly LayoutBox[]; line
   placed.forEach(({ line, edge }) => { if (line.label && edge.y !== undefined) note(edge.y, line.label.height / 2); edge.points.slice(1, -1).forEach(point => note(point.y, 0)); });
   const half = (y: number) => reach.get(Math.round(y)) ?? 0;
 
-  // Lines leaving or entering one box spread across its edge, in the order they travel.
+  // Lines leaving one box spread across its edge, in the order they travel;
+  // lines into one box meet at the middle of its top, under one arrowhead.
   const spread = (id: string, list: { line: LayoutLine; x: number }[]) => {
     const box = centre(id);
     const step = Math.min(16, (box.width - 24) / Math.max(1, list.length));
@@ -95,7 +96,7 @@ export function flowLayout({ boxes, lines }: { boxes: readonly LayoutBox[]; line
   const starts = new Map<string, number>(), ends = new Map<string, number>();
   for (const id of ids) {
     spread(id, placed.filter(item => item.line.from === id).map(item => ({ line: item.line, x: item.edge.points[1]?.x ?? centre(item.line.to).x }))).forEach((x, line) => starts.set(line, x));
-    spread(id, placed.filter(item => item.line.to === id).map(item => ({ line: item.line, x: item.edge.points.at(-2)?.x ?? centre(item.line.from).x }))).forEach((x, line) => ends.set(line, x));
+    placed.filter(item => item.line.to === id).forEach(item => ends.set(item.line.id, centre(id).x));
   }
 
   const flip = (x: number) => rtl ? width - x : x;

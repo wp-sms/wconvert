@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogContent } from '../components/ui/alert-dialog';
 import { EditTree, screenIconOf, type EditTreeLook, type EditTreeRow } from './EditTree';
 import { FactList, FactRow, PanelHeader, PanelHint, PanelSection } from './PanelSection';
 import { CheckRow } from '../shell/CheckRow';
-import { QuestionPanelContext, ScreenChips, ScreenIssues, ScreenThen } from './ScreenPanel';
+import { QuestionPanelContext, ScreenAnswers, ScreenChips, ScreenIssues, ScreenThen } from './ScreenPanel';
 import { nodesOf } from './structure/tree';
 import type { Path } from './panel';
 import type { JourneyChange } from './structure/changeTestGuide';
@@ -474,9 +474,11 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const onCanvas = !!editorCanvas && view === 'edit';
   // The Edit tab's screen panel is the slim one in Flow too (ADR 0135): one panel, whatever the view.
   const slim = !!editorCanvas;
-  const questionSettings = <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={!journeys ? undefined : (question, value) => { setFollowupAnswer({ question, value }); contextAddTrigger.current = document.activeElement as HTMLElement;
-            const edge = followupInsertionEdge(insertionTree, current.id, question, value);
-            setInsertLocation(edge ? `edge:${edge.id}` : 'choose'); setInsertIntent(undefined); insertedScreen.current = false; setAddKind('followup'); }} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />;
+  // "+ Follow-up" on an answer, from the question's settings or the screen's answers.
+  const startFollowup = (question: string, value: string) => { setFollowupAnswer({ question, value }); contextAddTrigger.current = document.activeElement as HTMLElement;
+    const edge = followupInsertionEdge(insertionTree, current.id, question, value);
+    setInsertLocation(edge ? `edge:${edge.id}` : 'choose'); setInsertIntent(undefined); insertedScreen.current = false; setAddKind('followup'); };
+  const questionSettings = <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={!journeys ? undefined : startFollowup} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />;
   // The question element's panel on the Edit tab: its settings, then where
   // visitors go next — "Send some answers down another path" (ADR 0134).
   const questionPanel = () => <>
@@ -773,6 +775,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </button>}
           {slim && tree.graph && !questionPath && (tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') || !!current.when) && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
             open={panelSection === 'paths' || undefined} title={__('Paths', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d path', '%d paths', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{routes}</Disclosure></PanelSection>}
+          {slim && tree.graph && <ScreenAnswers tree={tree} step={step} onSelect={select} onFollowup={journeys ? startFollowup : undefined} />}
           {slim && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
 
           </> : tree.graph ? routes

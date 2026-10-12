@@ -2374,7 +2374,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* A trace and a problem outrank an answer's colour. */
 .wconvert-flow-line[data-problem] { --flow-ink: var(--destructive); }
 .wconvert-flow-line[data-state='on']:not([data-colour]), .wconvert-flow-arrow[data-marker='on'] { --flow-ink: var(--action); }
-.wconvert-flow[data-trace] .wconvert-flow-line[data-state='off'], .wconvert-flow-arrow[data-marker='off'] { --flow-ink: var(--border); }
+.wconvert-flow[data-trace] :is(.wconvert-flow-line[data-state='off'], .wconvert-flow-arrow[data-marker='off']) { --flow-ink: var(--border); }
 .wconvert-flow-card, .wconvert-flow-group { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: var(--foreground); text-align: start; }
 .wconvert-flow-card { padding: 10px 12px; }
 .wconvert-flow-card[data-colour] { border-block-start: 3px solid var(--flow-answer); padding-block-start: 8px; }
@@ -2399,6 +2399,9 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-chip[data-warn] { border-color: transparent; background: var(--warning-surface); color: var(--warning); }
 .wconvert-flow-card__sub { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 6px; min-inline-size: 0; color: var(--muted-foreground); font-size: var(--text-micro); overflow-wrap: anywhere; }
 .wconvert-flow-card__sub b { color: var(--success); font-weight: 600; }
+/* A result's dot stays beside its heading however long it wraps. */
+.wconvert-flow-card__sub:has(> .wconvert-flow-card__result) { flex-wrap: nowrap; }
+.wconvert-flow-card__result { flex: 1; min-inline-size: 0; }
 .wconvert-flow-card__sub[data-shown] { color: var(--foreground); font-weight: 600; }
 .wconvert-flow-card__sub [data-problem] { color: var(--destructive); }
 .wconvert-flow-dot { flex: none; display: inline-block; inline-size: 9px; block-size: 9px; border: 1.5px solid var(--input); border-radius: 50%; background: transparent; }
@@ -2484,3 +2487,10 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
   .wconvert-flow-arrow { fill: CanvasText; }
   .wconvert-flow-card[data-selected], :is(.wconvert-flow-card, .wconvert-flow-group)[data-state='on'] { outline-color: Highlight; }
 }
+/* A question screen's answers in the panel, in their Flow map colours (ADR 0142). */
+.wconvert-screen-answers { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.wconvert-screen-answers li { display: flex; align-items: baseline; gap: 8px; font-size: var(--text-note); }
+.wconvert-screen-answers .wconvert-flow-dot { align-self: center; }
+.wconvert-screen-answers__label { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; }
+.wconvert-screen-answers__followups { display: grid; justify-items: end; gap: 2px; max-inline-size: 60%; text-align: end; }
+.wconvert-journey-path-disclosure summary .wconvert-flow-dot { margin-inline-end: 6px; vertical-align: middle; }

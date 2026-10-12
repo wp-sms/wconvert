@@ -37,9 +37,9 @@ export function FlowCard({ card, selected, destinationSummary, shownResult, box,
         : card.onlyIf && <span className="wconvert-flow-chip" data-colour={card.onlyIf.colour}><bdi>{sprintf(/* translators: %s: a rule, e.g. “Interests includes Growing”. */ __('Only if %s', 'wconvert'), card.onlyIf.text)}</bdi></span>}
       {card.kind === 'form' && <span className="wconvert-flow-card__sub"><b>{card.optional ? __('Can save', 'wconvert') : __('Saves the lead', 'wconvert')}</b>{destinationSummary ? <span>· <bdi>{destinationSummary}</bdi></span> : null}</span>}
       {shown.map(result => <span key={result.id} className="wconvert-flow-card__sub" data-shown={shownResult === result.id || undefined}>
-        <span className="wconvert-flow-dot" data-colour={result.colour} aria-hidden="true" /><bdi>{result.heading}</bdi>
+        <span className="wconvert-flow-dot" data-colour={result.colour} aria-hidden="true" /><span className="wconvert-flow-card__result"><bdi>{result.heading}</bdi>
         {result.fallback && <small> · {__('all other answers', 'wconvert')}</small>}
-        {result.needsCondition && <small data-problem="true"> · {__('needs a condition', 'wconvert')}</small>}
+        {result.needsCondition && <small data-problem="true"> · {__('needs a condition', 'wconvert')}</small>}</span>
       </span>)}
       {(card.results?.length ?? 0) > 3 && <span className="wconvert-flow-card__sub">{sprintf(/* translators: %d: how many more results. */ __('+%d more · first match wins', 'wconvert'), card.results!.length - 3)}</span>}
     </button>

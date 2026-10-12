@@ -34,6 +34,13 @@ describe.each(Object.entries(fixtures))('the %s map', (_, tree) => {
     }
   });
 
+  it('brings every line into a box to one point, the middle of its top', () => {
+    for (const line of model.lines) {
+      const box = ltr.boxes.get(line.to)!;
+      expect(ltr.lines.get(line.id)!.points.at(-1)![0], line.id).toBeCloseTo(box.x + box.width / 2, 3);
+    }
+  });
+
   it('keeps cards, labels and “+” clear of one another', () => {
     const rects = [...ltr.boxes.entries(), ...[...ltr.lines.entries()].flatMap(([id, line]) => line.label ? [[`label:${id}`, line.label] as const] : [])];
     for (let a = 0; a < rects.length; a++) for (let b = a + 1; b < rects.length; b++) {

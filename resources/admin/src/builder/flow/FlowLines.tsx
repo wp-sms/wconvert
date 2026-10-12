@@ -6,27 +6,37 @@ import type { FlowLayout, Rect } from '../structure/flowLayout';
 /** On a trace or around the selection: drawn strongly (`on`) or quietly (`off`); `undefined` when nothing is emphasised. */
 export type TraceState = 'on' | 'off' | undefined;
 
-/** Arrowheads, one per colour a line can take: SVG markers cannot inherit a stroke everywhere yet. */
-const markers = ['neutral', 'on', 'off', ...[1, 2, 3, 4, 5, 6].map(slot => `answer-${slot}`)];
 // A coloured line keeps its answer's colour when it is drawn strongly; only a grey one turns teal.
-const marker = (line: FlowLine, state: TraceState) => state === 'off' ? 'off' : line.colour ? `answer-${line.colour}` : state === 'on' ? 'on' : 'neutral';
+// Only a trace draws untaken lines quietly; around a selection they keep their colour.
+const marker = (line: FlowLine, state: TraceState, quiet: boolean) => state === 'off' && quiet ? 'off' : line.colour ? `answer-${line.colour}` : state === 'on' ? 'on' : 'neutral';
 
-/** Every line, drawn once and hidden from assistive tech: the cards and pills say it all in words. */
-export function FlowLines({ id, layout, lines, states, focused }: {
+/**
+ * Every line, drawn once and hidden from assistive tech: the cards and pills
+ * say it all in words. Lines into one box meet at the middle of its top and
+ * share one arrowhead, of one size whatever the line's weight: the strongest
+ * line's colour, so a trace or a selection still shows where it arrives.
+ */
+export function FlowLines({ id, layout, lines, states, focused, quiet }: {
   id: string; layout: FlowLayout; lines: readonly FlowLine[]; states: ReadonlyMap<string, TraceState>; focused?: string;
+  /** A trace is showing: lines it did not take are drawn quietly. */
+  quiet: boolean;
 }) {
+  const arrivals = [...new Set(lines.map(line => line.to))].flatMap(to => {
+    const into = lines.filter(line => line.to === to && layout.lines.has(line.id));
+    if (!into.length) return [];
+    const end = layout.lines.get(into[0].id)!.points.at(-1)!;
+    const strongest = into.find(line => states.get(line.id) === 'on') ?? into.find(line => states.get(line.id) !== 'off') ?? into[0];
+    return [{ to, x: end[0], y: end[1], marker: marker(strongest, states.get(strongest.id), quiet) }];
+  });
   return <svg className="wconvert-flow-lines" width={layout.width} height={layout.height} aria-hidden="true" focusable="false">
-    <defs>{markers.map(name => <marker key={name} id={`${id}-${name}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" className="wconvert-flow-arrow" data-marker={name} />
-    </marker>)}</defs>
     {lines.map(line => {
       const placed = layout.lines.get(line.id);
       if (!placed) return null;
-      const state = states.get(line.id);
       return <path key={line.id} d={placed.path} className="wconvert-flow-line" data-style={line.style} data-colour={line.colour}
-        data-state={state} data-selected={focused === line.id || undefined} data-problem={line.problem || undefined}
-        markerEnd={`url(#${id}-${marker(line, state)})`} />;
+        data-state={states.get(line.id)} data-selected={focused === line.id || undefined} data-problem={line.problem || undefined} />;
     })}
+    {arrivals.map(arrival => <path key={`${id}-${arrival.to}`} className="wconvert-flow-arrow" data-marker={arrival.marker}
+      d={`M${arrival.x - 6},${arrival.y - 9} L${arrival.x + 6},${arrival.y - 9} L${arrival.x},${arrival.y} Z`} />)}
   </svg>;
 }
 

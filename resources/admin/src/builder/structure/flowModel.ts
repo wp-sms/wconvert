@@ -187,6 +187,15 @@ export function answerColours(tree: TemplateTree, focus?: string): { colours: Re
   return { colours: new Map(ordered.filter(item => item.question === focusQuestion).slice(0, 6).map((item, at) => [item.key, at + 1])), focusQuestion };
 }
 
+/** The colour slot of a rule that names one answer positively, if that answer has one. */
+export function answerColourOf(colours: ReadonlyMap<string, number>, when?: QuestionCondition): AnswerColour | undefined {
+  const clause = when?.clauses.length === 1 ? when.clauses[0] : undefined;
+  return clause && ['is', 'includes_any'].includes(clause.operator) && clause.values.length === 1 ? colours.get(pair(clause.question, clause.values[0])) : undefined;
+}
+
+/** One answer's colour slot, by question and value. */
+export const answerColour = (colours: ReadonlyMap<string, number>, question: string, value: string): AnswerColour | undefined => colours.get(pair(question, value));
+
 export function lineIsOn(line: FlowLine, trace: FlowTrace): boolean {
   return line.trace.some(rule => rule.edges.some(edge => trace.edges.has(edge))
     && (rule.all ?? []).every(id => trace.screens.has(id))
@@ -208,10 +217,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
   const own = (id: string) => new Set(walkNodes(byId.get(id)?.screen.content ?? { type: 'stack' } as never)
     .flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : []));
   const { colours, focusQuestion } = answerColours(tree, selectedQuestion);
-  const colourOf = (when?: QuestionCondition) => {
-    const clause = when?.clauses.length === 1 ? when.clauses[0] : undefined;
-    return clause && ['is', 'includes_any'].includes(clause.operator) && clause.values.length === 1 ? colours.get(pair(clause.question, clause.values[0])) : undefined;
-  };
+  const colourOf = (when?: QuestionCondition) => answerColourOf(colours, when);
   const answerWords = (question: string, values: readonly string[]) => values.map(value => questions.get(question)?.options?.find(option => option.value === value)?.label ?? value)
     .join(` ${__('or', 'wconvert')} `);
   /** "Growing", "Includes Growing", "Without Growing" on the question's own lines; the whole rule elsewhere. */

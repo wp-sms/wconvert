@@ -9,7 +9,8 @@ import { graphEdgeId, graphTargets } from './structure/graph';
 import { answerLinesOverlap, conditionText } from './structure/conditionText';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { graphChoiceSources } from './structure/graphConnections';
-import { unreachableScreens } from './structure/journey';
+import { unreachableScreens, walkNodes } from './structure/journey';
+import { answerColourOf, answerColours } from './structure/flowModel';
 import { graphInsertionLocations } from './structure/graphInsertion';
 import { FieldHeading, PanelHint } from './PanelSection';
 
@@ -54,6 +55,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   const group = memberGroup ?? (!answers.length ? groups.find(item => followupGroupSource(tree, item) === step) : undefined);
   const hidden = routes.find(edge => edge.kind === 'hidden');
   const overlap = answerLinesOverlap(tree, answers);
+  // The colour each answer line has on the Flow map (ADR 0142).
+  const { colours } = answerColours(tree, walkNodes(screen.content).flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : [])[0]);
   const targets = graphTargets(tree, screen.id);
   const sources = graphChoiceSources(tree, screen.id);
   const apply = (next: readonly JourneyGraphEdge[]) => {
@@ -101,7 +104,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} className="wconvert-journey-routes__disclosure" data-path-priority={priority}>
       <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
-      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : __('Then', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
+      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'answer' && <span className="wconvert-flow-dot" data-colour={answerColourOf(colours, edge.when)} aria-hidden="true" />}{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : __('Then', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
       <div className="wconvert-journey-path-disclosure__body">
       {edge.kind === 'answer' && <><strong>{sprintf(/* translators: 1: this line's place. 2: how many answer lines. */ __('Line %1$d of %2$d', 'wconvert'), priority + 1, answers.length)}</strong>
         <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}

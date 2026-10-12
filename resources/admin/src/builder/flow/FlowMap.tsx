@@ -231,7 +231,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
         : <button type="button" className="wconvert-flow-try" onClick={() => setVisitor({})}>{__('Try a visitor', 'wconvert')}</button>}
       <p id={`${id}-keys`} className="sr-only">{__('Arrow keys move between screens in reading order. Tab reaches a screen’s buttons and its lines. Plus and minus zoom; 0 fits.', 'wconvert')}</p>
       <FlowViewport viewport={viewport} surface={region} width={layout.width} height={layout.height} zoom={zoom} onZoom={zoomTo} onScroll={onScroll}>
-        <FlowLines id={id} layout={layout} lines={model.lines} states={lineStates} focused={focusedLine} />
+        <FlowLines id={id} layout={layout} lines={model.lines} states={lineStates} focused={focusedLine} quiet={!!trace} />
         {layout.order.map(node => {
           const box = layout.boxes.get(node)!;
           const card = model.cards.find(item => item.id === node);
