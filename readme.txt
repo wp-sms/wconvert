@@ -1,4 +1,4 @@
-=== WConvert – Popups and Inline Forms for Lead Capture ===
+=== WConvert: Popups and Inline Forms for Lead Capture ===
 Contributors: veronalabs, mostafa.s1990, kashani
 Tags: popup, lead capture, email list, optin form, newsletter
 Requires at least: 6.8
