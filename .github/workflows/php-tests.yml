@@ -133,6 +133,10 @@ jobs:
 
       - name: Setup PHP 8.2 and WP-CLI
         uses: shivammathur/setup-php@v2
+        # setup-php finds the WP-CLI release through the GitHub API; without a
+        # token, shared hosted runners hit its rate limit ("Could not setup wp-cli").
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: '8.2'
           extensions: mbstring, mysqli, mysqlnd
