@@ -3,6 +3,7 @@
 namespace WConvert\Pro\License;
 
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Config\ClientConfig;
+use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 
 defined('ABSPATH') || exit;
 
@@ -55,6 +56,15 @@ final class SdkConfig
             'ajax_action' => 'wconvert_pro',
             'license_key_constant' => self::KEY_CONSTANT,
         ]);
+    }
+
+    /**
+     * The SDK for the current site. The container holds the request's one
+     * copy; the uninstaller, which has no container, builds its own per site.
+     */
+    public static function sdk(): PremiumServiceProvider
+    {
+        return new PremiumServiceProvider(self::build(), plugin_basename(WCONVERT_PRO_MAIN_FILE));
     }
 
     private static function storeUrl(): string

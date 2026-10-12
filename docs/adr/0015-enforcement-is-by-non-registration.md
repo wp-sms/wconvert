@@ -9,8 +9,8 @@ asked is "is [[Pro]] loaded", and it is answered by the registries themselves: a
 premium capability is *absent* from a free install rather than present and guarded.
 
 ***Amended by [ADR 0143](0143-license-page-and-updater.md):** Pro now reads a
-licence — for its updater and its License page, in `pro/src/License/` and
-nowhere else. It is still never a **check**: nothing it reads switches a
+licence — for its updater, its daily refresh, its uninstaller and its License
+page, in `pro/src/License/` and nowhere else. It is still never a **check**: nothing it reads switches a
 capability on or off, and no front-end request reads it.*
 
 ***Amended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md) on the second
@@ -171,6 +171,9 @@ and would put a branch on the request path 0004 exists to protect.
   fails open — and a ladder that fails open is not a ladder.
 - **The licence option is read by Pro's updater and admin screens only**, and never on
   a front-end request.
+  *Amended by [ADR 0143](0143-license-page-and-updater.md): and by the two
+  things that keep them true — the daily refresh and the uninstaller — all in
+  `pro/src/License/`.*
   *As of [#32](https://github.com/navidkashani/wconvert/issues/32) neither
   exists, so the assertion available is the total one — nothing that ships
   reads a licence value anywhere. The updater will be the first hit, and
@@ -193,7 +196,7 @@ and would put a branch on the request path 0004 exists to protect.
   else to scope, so a profile would be a switch with one position. And Nexus
   does not serve a tier-matched ZIP: its tiers for WConvert are **plans** (how
   many sites), and the elite ZIP is posted once per plan. The test is narrowed
-  to `pro/src/License/` and the bootstrap line that runs it.*
+  to `pro/src/License/` and Pro's bootstrap, which runs it and asks it nothing.*
 
   ***What that work is, written down while it is fresh.** `veronalabs/wp-premium-sdk`
   is a private VCS repository, and the delivery decision is VeronaLabs' Nexus,

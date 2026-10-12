@@ -2142,6 +2142,115 @@ if (!function_exists('wp_die')) {
     }
 }
 
+/*
+ * A network, as thinly as Pro's uninstaller walks one: each site has its own
+ * option table, and switching swaps it in.
+ *
+ * @var array<int, array<string, mixed>> $wconvertTestBlogTables
+ */
+$GLOBALS['wconvertTestBlogId'] = 1;
+$GLOBALS['wconvertTestBlogTables'] = [];
+$GLOBALS['wconvertTestBlogStack'] = [];
+
+if (!function_exists('get_current_blog_id')) {
+    function get_current_blog_id(): int
+    {
+        return (int) $GLOBALS['wconvertTestBlogId'];
+    }
+}
+
+if (!function_exists('get_sites')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return list<int>
+     */
+    function get_sites(array $args = []): array
+    {
+        $ids = array_values(array_unique(array_map('intval', [...array_keys($GLOBALS['wconvertTestBlogTables']), $GLOBALS['wconvertTestBlogId']])));
+        sort($ids);
+
+        return $ids;
+    }
+}
+
+if (!function_exists('switch_to_blog')) {
+    function switch_to_blog(int $blogId): bool
+    {
+        $GLOBALS['wconvertTestBlogStack'][] = (int) $GLOBALS['wconvertTestBlogId'];
+        $GLOBALS['wconvertTestBlogTables'][(int) $GLOBALS['wconvertTestBlogId']] = $GLOBALS['wconvertTestOptionTable'];
+        $GLOBALS['wconvertTestBlogId'] = $blogId;
+        $GLOBALS['wconvertTestOptionTable'] = $GLOBALS['wconvertTestBlogTables'][$blogId] ?? [];
+
+        return true;
+    }
+}
+
+if (!function_exists('restore_current_blog')) {
+    function restore_current_blog(): bool
+    {
+        $previous = array_pop($GLOBALS['wconvertTestBlogStack']);
+
+        if ($previous === null) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestBlogTables'][(int) $GLOBALS['wconvertTestBlogId']] = $GLOBALS['wconvertTestOptionTable'];
+        $GLOBALS['wconvertTestBlogId'] = $previous;
+        $GLOBALS['wconvertTestOptionTable'] = $GLOBALS['wconvertTestBlogTables'][$previous] ?? [];
+
+        return true;
+    }
+}
+
+/** Network-wide options, which the SDK reads on a network for a network key. */
+$GLOBALS['wconvertTestSiteOptions'] = [];
+
+if (!function_exists('get_site_option')) {
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    function get_site_option(string $name, $default = false)
+    {
+        return $GLOBALS['wconvertTestSiteOptions'][$name] ?? $default;
+    }
+}
+
+if (!function_exists('update_site_option')) {
+    /** @param mixed $value */
+    function update_site_option(string $name, $value): bool
+    {
+        $GLOBALS['wconvertTestSiteOptions'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_site_option')) {
+    function delete_site_option(string $name): bool
+    {
+        $existed = array_key_exists($name, $GLOBALS['wconvertTestSiteOptions']);
+        unset($GLOBALS['wconvertTestSiteOptions'][$name]);
+
+        return $existed;
+    }
+}
+
+if (!function_exists('is_plugin_active_for_network')) {
+    function is_plugin_active_for_network(string $plugin): bool
+    {
+        return false;
+    }
+}
+
+if (!function_exists('get_main_site_id')) {
+    function get_main_site_id(): int
+    {
+        return 1;
+    }
+}
+
+/** The SDK records which administrator started an account sign-in. */
 if (!function_exists('get_current_user_id')) {
     function get_current_user_id(): int
     {

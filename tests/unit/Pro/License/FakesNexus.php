@@ -56,7 +56,7 @@ trait FakesNexus
                 return new \WP_Error('http_request_failed', 'cURL error 28: Operation timed out');
             }
 
-            $licence = array_merge([
+            $license = array_merge([
                 'status' => 'active',
                 'tier_slug' => '5-sites',
                 'expires_at' => gmdate('Y-m-d H:i:s', time() + 200 * DAY_IN_SECONDS),
@@ -66,7 +66,7 @@ trait FakesNexus
 
             return [
                 'headers' => [],
-                'body' => (string) json_encode(['success' => true, 'license' => $licence]),
+                'body' => (string) json_encode(['success' => true, 'license' => $license]),
                 'response' => ['code' => 200, 'message' => 'OK'],
             ];
         }, 10, 3);
@@ -77,6 +77,8 @@ trait FakesNexus
         $GLOBALS['wconvertTestFilters'] = $this->filtersBeforeNexus;
         $GLOBALS['wconvertTestOptionTable'] = $this->optionsBeforeNexus;
         $GLOBALS['wconvertTestSiteTransients'] = $this->siteTransientsBeforeNexus;
+        $GLOBALS['wconvertTestSiteOptions'] = [];
+        $GLOBALS['wconvertTestBlogTables'] = [];
         $this->nexusCalls = [];
         $this->nexusLicense = [];
         $this->nexusDown = false;
@@ -85,11 +87,11 @@ trait FakesNexus
     /** A fresh SDK for this site, as `pro/uninstall.php` builds one. */
     protected function freshSdk(): PremiumServiceProvider
     {
-        return new PremiumServiceProvider(SdkConfig::build(), plugin_basename(WCONVERT_PRO_MAIN_FILE));
+        return SdkConfig::sdk();
     }
 
     /** Store a licence through the SDK's own activate(). */
-    protected function activateLicenceHere(string $key = 'WCV-TEST-KEY-0001'): void
+    protected function activateLicenseHere(string $key = 'WCV-TEST-KEY-0001'): void
     {
         $this->freshSdk()->licenseManager()->activate($key);
     }

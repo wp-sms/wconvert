@@ -33,7 +33,7 @@ defined('ABSPATH') || exit;
 final class UpdateGate
 {
     public function __construct(
-        private readonly LicenseManager $licence,
+        private readonly LicenseManager $license,
         private readonly PluginUpdater $updater,
         private readonly string $basename,
     ) {
@@ -106,18 +106,18 @@ final class UpdateGate
      */
     public static function entitlement($option): ?array
     {
-        $licence = is_array($option) ? ($option['license'] ?? null) : null;
+        $license = is_array($option) ? ($option['license'] ?? null) : null;
 
-        if (!is_array($licence) || empty($licence['license_key'])) {
+        if (!is_array($license) || empty($license['license_key'])) {
             return null;
         }
 
         return [
-            'activated_at' => $licence['activated_at'] ?? null,
-            'status' => (string) ($licence['status'] ?? ''),
-            'expires_at' => (string) ($licence['expires_at'] ?? ''),
-            'plan' => (string) ($licence['tier_slug'] ?? ''),
-            'sites' => [(int) ($licence['activation_count'] ?? 0), (int) ($licence['max_activations'] ?? 0)],
+            'activated_at' => $license['activated_at'] ?? null,
+            'status' => (string) ($license['status'] ?? ''),
+            'expires_at' => (string) ($license['expires_at'] ?? ''),
+            'plan' => (string) ($license['tier_slug'] ?? ''),
+            'sites' => [(int) ($license['activation_count'] ?? 0), (int) ($license['max_activations'] ?? 0)],
         ];
     }
 
@@ -128,6 +128,6 @@ final class UpdateGate
      */
     private function entitled(): bool
     {
-        return $this->licence->isValid() && $this->licence->getLicenseKey() !== null;
+        return $this->license->isValid() && $this->license->getLicenseKey() !== null;
     }
 }

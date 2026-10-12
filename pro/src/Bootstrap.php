@@ -7,6 +7,7 @@ use WConvert\Pro\Boot\BootGuard;
 use WConvert\Pro\Boot\PageCache;
 use WConvert\Pro\Container\ProServiceProvider;
 use WConvert\Pro\License\LicenseServiceProvider;
+use WConvert\Pro\License\RefreshCron;
 
 defined('ABSPATH') || exit;
 
@@ -41,11 +42,13 @@ final class Bootstrap
          * cached before it was activated should say — and a merchant
          * deactivating a Pro that never booted is exactly the person whose
          * cache should not be left holding a decision nobody made.
+         *
+         * The two callbacks carry two more things each: activation refuses a
+         * whole network before anything else, and deactivation stops the
+         * licence's daily check (ADR 0143).
          */
         register_activation_hook(WCONVERT_PRO_MAIN_FILE, [self::class, 'activate']);
-        register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [PageCache::class, 'purge']);
-        // The licence's daily check stops with Pro; the licence itself stays.
-        register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [LicenseServiceProvider::class, 'deactivate']);
+        register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [self::class, 'deactivate']);
 
         /*
          * Priority 20 — after free's own setup at 10, and NOT hooked to the
@@ -77,6 +80,16 @@ final class Bootstrap
         }
 
         PageCache::purge();
+    }
+
+    /**
+     * The page cache is purged, and the licence's daily check stops. The
+     * licence itself stays: only deleting Pro releases its seat.
+     */
+    public static function deactivate(): void
+    {
+        PageCache::purge();
+        RefreshCron::unschedule();
     }
 
     public static function setup(): void

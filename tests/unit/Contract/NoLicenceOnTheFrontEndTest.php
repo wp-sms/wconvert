@@ -176,7 +176,7 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
      * ADR 0015 permits exactly two readers — Pro's updater and Pro's admin
      * screens — and ADR 0143 puts both in one directory. Until it did, this was
      * the total assertion: the word did not appear in code in either tree. It
-     * is narrowed to that directory and the bootstrap line that runs it, and no
+     * is narrowed to that directory and Pro's bootstrap, which runs it, and no
      * further, so a licence read anywhere else is still a decision somebody
      * has to come here and take on purpose rather than one that arrives inside
      * a feature branch.

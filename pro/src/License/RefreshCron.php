@@ -3,6 +3,7 @@
 namespace WConvert\Pro\License;
 
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\LicenseManager;
+use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Store\PremiumStore;
 
 defined('ABSPATH') || exit;
 
@@ -36,8 +37,10 @@ final class RefreshCron
 
     private const STALE_AFTER = 7 * DAY_IN_SECONDS;
 
-    public function __construct(private readonly LicenseManager $licence)
-    {
+    public function __construct(
+        private readonly LicenseManager $license,
+        private readonly PremiumStore $store,
+    ) {
     }
 
     public function hooks(): void
@@ -56,10 +59,9 @@ final class RefreshCron
 
     public function run(): void
     {
-        $stored = get_option(SdkConfig::OPTION_KEY);
-        $licence = is_array($stored) && is_array($stored['license'] ?? null) ? $stored['license'] : null;
+        $license = $this->store->get('license');
 
-        if ($licence === null || !self::isDue($licence, time())) {
+        if ($license === null || !self::isDue($license, time())) {
             return;
         }
 
@@ -67,26 +69,32 @@ final class RefreshCron
         // only with this site's domain, which Nexus answers only for a domain
         // holding a seat — so the status check is what still lands when this
         // site has lost its own.
-        $this->licence->refreshStatus();
-        $this->licence->refreshSites();
+        $this->license->refreshStatus();
+        $this->license->refreshSites();
     }
 
     /**
-     * @param array<string, mixed> $licence The stored licence.
+     * @param array<string, mixed> $license The stored licence.
      */
-    public static function isDue(array $licence, int $now): bool
+    public static function isDue(array $license, int $now): bool
     {
-        if (empty($licence['license_key'])) {
+        if (empty($license['license_key'])) {
             return false;
         }
 
-        $lastSuccess = (int) ($licence['last_success_at'] ?? 0);
+        $lastSuccess = (int) ($license['last_success_at'] ?? 0);
 
         if ($lastSuccess === 0 || $now - $lastSuccess >= self::STALE_AFTER) {
             return true;
         }
 
-        $expires = strtotime((string) ($licence['expires_at'] ?? ''));
+        // Refused as expired: the SDK records the status and keeps the date,
+        // which may still be far off — or absent.
+        if (($license['status'] ?? '') === 'expired') {
+            return true;
+        }
+
+        $expires = strtotime((string) ($license['expires_at'] ?? ''));
 
         // No end date: the staleness floor above is the whole schedule.
         if ($expires === false) {

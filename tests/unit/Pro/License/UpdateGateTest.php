@@ -39,7 +39,7 @@ final class UpdateGateTest extends TestCase
 
     public function testAValidLicenceKeepsTheOffer(): void
     {
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
 
         $transient = $this->gate()->gate($this->offer());
 
@@ -58,7 +58,7 @@ final class UpdateGateTest extends TestCase
     public function testAnExpiredLicenceMovesTheOffer(): void
     {
         $this->nexusLicense = ['expires_at' => gmdate('Y-m-d H:i:s', time() - DAY_IN_SECONDS)];
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
 
         $this->assertArrayNotHasKey(self::BASENAME, $this->gate()->gate($this->offer())->response);
     }
@@ -66,7 +66,7 @@ final class UpdateGateTest extends TestCase
     /** Rotated salts: the SDK still says active, and nothing can be downloaded (#29). */
     public function testAKeyThatNoLongerDecryptsMovesTheOffer(): void
     {
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
         $stored = get_option(SdkConfig::OPTION_KEY);
         $stored['license']['license_key'] = base64_encode(str_repeat('x', 64));
         $GLOBALS['wconvertTestOptionTable'][SdkConfig::OPTION_KEY] = $stored;
@@ -84,14 +84,14 @@ final class UpdateGateTest extends TestCase
         $this->gate()->hooks();
         $GLOBALS['wconvertTestSiteTransients']['update_plugins'] = (object) ['response' => []];
 
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
 
         $this->assertFalse(get_site_transient('update_plugins'), 'activation left WordPress\'s update list stale');
     }
 
     public function testARefreshThatChangesNothingTheUpdaterReadsKeepsTheCaches(): void
     {
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
         $this->gate()->hooks();
         $GLOBALS['wconvertTestSiteTransients']['update_plugins'] = (object) ['response' => []];
 
@@ -103,7 +103,7 @@ final class UpdateGateTest extends TestCase
 
     public function testARefreshThatChangesTheExpiryFlushes(): void
     {
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
         $this->gate()->hooks();
         $GLOBALS['wconvertTestSiteTransients']['update_plugins'] = (object) ['response' => []];
 
@@ -113,9 +113,31 @@ final class UpdateGateTest extends TestCase
         $this->assertFalse(get_site_transient('update_plugins'), 'a renewal did not reach the updater');
     }
 
+    /** @return iterable<string, array{array<string, mixed>}> */
+    public static function entitlementChanges(): iterable
+    {
+        yield 'another plan' => [['tier_slug' => 'unlimited', 'max_activations' => 0]];
+        yield 'a site freed' => [['activation_count' => 0]];
+        yield 'a new status' => [['status' => 'suspended']];
+    }
+
+    /** @param array<string, mixed> $answer */
+    #[\PHPUnit\Framework\Attributes\DataProvider('entitlementChanges')]
+    public function testARefreshThatChangesWhatTheUpdaterReadsFlushes(array $answer): void
+    {
+        $this->activateLicenseHere();
+        $this->gate()->hooks();
+        $GLOBALS['wconvertTestSiteTransients']['update_plugins'] = (object) ['response' => []];
+
+        $this->nexusLicense = $answer;
+        $this->freshSdk()->licenseManager()->refreshStatus();
+
+        $this->assertFalse(get_site_transient('update_plugins'));
+    }
+
     public function testRemovingTheLicenceFlushes(): void
     {
-        $this->activateLicenceHere();
+        $this->activateLicenseHere();
         $this->gate()->hooks();
         $GLOBALS['wconvertTestSiteTransients']['update_plugins'] = (object) ['response' => []];
 

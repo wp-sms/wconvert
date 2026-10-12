@@ -28,10 +28,7 @@ final class LicenseServiceProvider implements ServiceProvider
     {
         $container->register(
             PremiumServiceProvider::class,
-            static fn (): PremiumServiceProvider => new PremiumServiceProvider(
-                SdkConfig::build(),
-                plugin_basename(WCONVERT_PRO_MAIN_FILE)
-            )
+            static fn (): PremiumServiceProvider => SdkConfig::sdk()
         );
     }
 
@@ -59,15 +56,6 @@ final class LicenseServiceProvider implements ServiceProvider
 
         (new SignInGuard(array_values($sdk->config()->oauthCallbackParams())))->hooks();
         (new UpdateGate($sdk->licenseManager(), $sdk->pluginUpdater(), plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
-        (new RefreshCron($sdk->licenseManager()))->hooks();
-    }
-
-    /**
-     * Pro's deactivation: the daily check stops, and the licence stays. Only
-     * deleting Pro releases the seat ({@see Uninstall}).
-     */
-    public static function deactivate(): void
-    {
-        RefreshCron::unschedule();
+        (new RefreshCron($sdk->licenseManager(), $sdk->store()))->hooks();
     }
 }
