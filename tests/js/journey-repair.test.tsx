@@ -21,7 +21,7 @@ it('shows an unavailable question explicitly until the merchant chooses its repl
   const user = userEvent.setup();
   render(<Rule initial={{ match: 'all', clauses: [{ question: 'deleted', operator: 'is', values: ['old'] }] }} />);
   expect(screen.getByRole('combobox', { name: 'Question' })).toHaveValue('deleted');
-  expect(screen.getByRole('option', { name: /Question unavailable/ })).toBeInTheDocument();
+  expect(screen.getByRole('option', { name: /Question not asked before this line/ })).toBeInTheDocument();
   expect(screen.getByRole('combobox', { name: 'Answer' })).toBeDisabled();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Question' }), 'q1');
   expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses[0]).toEqual({ question: 'q1', operator: 'includes_any', values: ['garden'] });
@@ -60,7 +60,7 @@ it('repairs a missing continuation through controls, and offers the skip overrid
   const repaired = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
   expect(repaired.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([expect.objectContaining({ kind: 'default', to: 'indoors' })]);
   expect(journeyReadinessIssues(repaired)).toEqual([]);
-  await user.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
+  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
   await user.selectOptions(screen.getByRole('combobox', { name: 'If skipped' }), 'contact');
   const tree = JSON.parse(screen.getByTestId('tree').textContent!) as TemplateTree;
   expect(tree.graph?.edges.filter(edge => edge.from === 'garden')).toEqual([
@@ -111,7 +111,7 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
       <output data-testid="tree">{JSON.stringify(tree)}</output></>;
   }
   render(<Routes />);
-  await user.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
+  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
   const hiddenDestination = screen.getByRole('combobox', { name: 'If skipped' });
   await user.selectOptions(hiddenDestination, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');

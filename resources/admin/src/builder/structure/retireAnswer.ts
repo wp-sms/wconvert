@@ -34,7 +34,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
   }) } };
   for (const screen of tree.steps.filter(screen => uses(screen.when))) {
     const plan = graphRemovalPlan(next, screen.id);
-    if (plan.reason || !plan.preferred) return blocked(plan.reason ?? __('A follow-up has different continuations. Choose its remaining path before retiring this answer.', 'wconvert'));
+    if (plan.reason || !plan.preferred) return blocked(plan.reason ?? __('A follow-up goes different ways. Choose where its line goes before retiring this answer.', 'wconvert'));
     const removal = graphRemoval(next, screen.id, plan.preferred);
     if (!removal) return blocked(__('Review the affected follow-up before removing it.', 'wconvert'));
     removed.push(screen.name); next = removal.next;
@@ -48,7 +48,7 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
     const screen = next.steps.find(item => item.id === id)!;
     if (plan.reason) return blocked(plan.reason);
     const removal = graphRemoval(next, id, plan.preferred || plan.targets[0]?.id);
-    if (!removal) return blocked(__('A disconnected screen needs a continuation. Review its paths first.', 'wconvert'));
+    if (!removal) return blocked(__('A screen no line reaches needs somewhere to go. Check its lines first.', 'wconvert'));
     removed.push(screen.name); next = removal.next;
   }
   const removeChoice = (node: TemplateNode): TemplateNode => {

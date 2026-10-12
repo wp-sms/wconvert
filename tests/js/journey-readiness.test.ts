@@ -50,7 +50,7 @@ it('names the exact graph path with an unfinished answer and its repair target',
       when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: [] }] } },
   ] } };
   expect(journeyReadinessIssues(tree)).toContainEqual({ key: 'edge:new_branch',
-    said: 'Choose an answer for the path from “Interests” to “Balcony details”.',
+    said: 'Choose an answer for the line from “Interests” to “Balcony details”.',
     repair: { screenId: 'interests', section: 'paths', edgeId: 'new_branch' } });
 });
 

@@ -77,7 +77,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
         return <div key={index} className="wconvert-journey-settings__clause">
           <span>{index === 0 ? __('If', 'wconvert') : value.match === 'all' ? __('And', 'wconvert') : __('Or', 'wconvert')}</span>
           <select aria-label={__('Question', 'wconvert')} value={clause.question} onChange={event => { const q = sources.find(item => item.id === event.target.value)!; patch(index, initial(q)); }}>
-            {!source && <option value={clause.question} disabled>{clause.question ? __('Question unavailable on this path — choose another', 'wconvert') : __('Choose a question…', 'wconvert')}</option>}
+            {!source && <option value={clause.question} disabled>{clause.question ? __('Question not asked before this line — choose another', 'wconvert') : __('Choose a question…', 'wconvert')}</option>}
             {sources.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
           </select>
           <select aria-label={__('Comparison', 'wconvert')} value={clause.operator} disabled={!source} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
@@ -270,7 +270,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         <PanelField label={__('Question', 'wconvert')} htmlFor={`${question.id}-label`}><AutoGrowTextarea id={`${question.id}-label`} value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }), 'label')} /></PanelField>
 
         <PanelField label={__('Answer type', 'wconvert')} htmlFor={`${question.id}-type`}
-          tip={refs.length > 0 ? __('Changing it asks you to review the rules that use these answers. Renaming a choice keeps its paths.', 'wconvert') : undefined}>
+          tip={refs.length > 0 ? __('Changing it asks you to review the rules that use these answers. Renaming a choice keeps its lines.', 'wconvert') : undefined}>
           <select id={`${question.id}-type`} value={question.answer_type} onChange={event => {
           const type = event.target.value as QuestionNode['answer_type'];
           if (refs.length) { setTypeReview({ question: question.id, type }); return; }
@@ -281,7 +281,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert')}>
           <strong>{__('Review the affected conditions', 'wconvert')}</strong>
           <p>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert')
-            : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and paths will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to exclusive paths and results. Try the form after this change.', 'wconvert')
+            : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and lines will stay. Condition operators will be updated. Choosing several answers can match several rules; the top-to-bottom order still applies to answer lines and results. Try the form after this change.', 'wconvert')
             : __('Some conditions compare several choices at once. Edit those conditions to use one choice each before switching to Choose one.', 'wconvert')}</p>
           {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}>{reference.label} · {reference.detail} <ArrowRight aria-hidden="true" className="inline size-3 rtl:-scale-x-100" /></button>)}
           <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!questionTypeChange(tree, question.id, typeReview.type)} onClick={() => { const next = questionTypeChange(tree, question.id, typeReview.type); if (next) onChange(next); setTypeReview(null); }}>{__('Apply answer type change', 'wconvert')}</button><button type="button" onClick={() => setTypeReview(null)}>{__('Cancel', 'wconvert')}</button></div>

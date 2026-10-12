@@ -300,7 +300,7 @@ describe('graph capture readiness follows connections instead of storage order',
       { id: 'start', name: 'Start', kind: 'content', content: { type: 'button', action: 'next', label: 'Continue' } }],
       graph: { entry: 'start', edges: [...template.tree.graph!.edges,
         { id: 'direct', from: 'start', to: 'save', kind: 'default' }, { id: 'via-details', from: 'start', to: 'details', kind: 'answer' }] } } };
-    expect(blocking(branched)).toContainEqual(expect.objectContaining({ path: [2, 'children', 0], said: expect.stringContaining('Every path to this field’s save') }));
+    expect(blocking(branched)).toContainEqual(expect.objectContaining({ path: [2, 'children', 0], said: expect.stringContaining('Every line to this field’s form') }));
   });
   it('rejects conditional owned fields and a resource reachable without saving', () => {
     const conditional: Template = { ...template, tree: { ...template.tree, steps: template.tree.steps.map(step => step.id === 'details'

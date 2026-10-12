@@ -37,7 +37,7 @@ export function graphCaptureInsertion(tree: TemplateTree, primaryChannel: string
   const locations = reason ? [] : graphInsertionLocations(tree).filter(location => location.id.startsWith('edge:')
     && acceptedBeforeEdge(tree, tree.submissions[0].id, location.id.slice(5)));
   return { channel, locations, reason: reason ?? (!locations.length
-    ? __('Connect a path after the primary save first. Visitors must complete that signup before reaching the optional one.', 'wconvert') : null) };
+    ? __('Connect a line after the main form first. Visitors must complete that signup before reaching the optional one.', 'wconvert') : null) };
 }
 
 export function addGraphCapture(tree: TemplateTree, primaryChannel: string | null | undefined, locationId: string): TemplateTree {

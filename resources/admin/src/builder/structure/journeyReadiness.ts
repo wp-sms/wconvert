@@ -43,7 +43,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     const screenId = budget.screens[budget.screens.length - 1];
     const names = budget.screens.map(id => tree.steps.find(screen => screen.id === id)?.name ?? id).join(' → ');
     issues.push({ key: 'question-path-limit',
-      said: sprintf(__('This path asks %1$d questions; the limit is ten: %2$s. Remove questions or move them to a separate path.', 'wconvert'), budget.count, names),
+      said: sprintf(__('This line asks %1$d questions; the limit is ten: %2$s. Remove questions or move them to a separate line.', 'wconvert'), budget.count, names),
       repair: { screenId, section: 'content', focus: 'questions' } });
   }
   const incomplete = (condition: QuestionCondition | undefined) => !condition || !condition.clauses.length
@@ -137,8 +137,8 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       const reason = incomplete(path.when) ? null : invalid(path.when, screen.id, true);
       if (!incomplete(path.when) && !reason) return;
       issues.push({ key: `path:${screen.id}:${index}`,
-        said: reason ? sprintf(__('Review path %1$d from “%2$s”: %3$s', 'wconvert'), index + 1, screen.name, reason)
-          : sprintf(__('Choose an answer for path %1$d from “%2$s”.', 'wconvert'), index + 1, screen.name),
+        said: reason ? sprintf(__('Check line %1$d from “%2$s”: %3$s', 'wconvert'), index + 1, screen.name, reason)
+          : sprintf(__('Choose an answer for line %1$d from “%2$s”.', 'wconvert'), index + 1, screen.name),
         repair: { screenId: screen.id, section: 'paths', pathPriority: index } });
     });
   }
@@ -149,8 +149,8 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     const source = tree.steps.find(screen => screen.id === edge.from)?.name ?? edge.from;
     const target = tree.steps.find(screen => screen.id === edge.to)?.name ?? edge.to;
     issues.push({ key: `edge:${edge.id}`,
-      said: reason ? sprintf(__('Review the path from “%1$s” to “%2$s”: %3$s', 'wconvert'), source, target, reason)
-        : sprintf(__('Choose an answer for the path from “%1$s” to “%2$s”.', 'wconvert'), source, target),
+      said: reason ? sprintf(__('Check the line from “%1$s” to “%2$s”: %3$s', 'wconvert'), source, target, reason)
+        : sprintf(__('Choose an answer for the line from “%1$s” to “%2$s”.', 'wconvert'), source, target),
       repair: { screenId: edge.from, section: 'paths', edgeId: edge.id } });
   }
   if (tree.graph) for (const screen of tree.steps) {

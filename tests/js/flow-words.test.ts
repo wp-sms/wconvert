@@ -20,6 +20,8 @@ const retired: readonly [RegExp, string][] = [
   [/Everyone else/, 'All other answers'],
   [/\bNext screen\b/, 'Then'],
   [/\bjourney\b/i, 'campaign, screens or line'],
+  // A URL's path ("/pricing/") is another thing; a way between screens is a line.
+  [/\bpaths?\b(?! such as)/i, 'line'],
 ];
 
 function files(directory: string): string[] {

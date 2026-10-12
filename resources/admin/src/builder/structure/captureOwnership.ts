@@ -18,7 +18,7 @@ export function captureOwnership(tree: TemplateTree, path: Path) {
     const name = tree.steps[at]?.name ?? __('Unnamed screen', 'wconvert');
     const reason = at < 0 ? __('Add a Save button for this form first.', 'wconvert')
       : source.kind !== 'input' || source.when || !graphRequiresScreen(tree.graph!, source.id, tree.steps[at].id)
-        ? sprintf(__('Every path to “%s” must include this input screen. Move this element onto that screen or reconnect the paths.', 'wconvert'), name)
+        ? sprintf(__('Every line to “%s” must pass this input screen. Move this element onto that screen or change the lines.', 'wconvert'), name)
         : key === 'consents' && save.consents.some(other => other !== id)
           ? sprintf(__('“%s” already has a consent checkbox. Use that checkbox or remove it first.', 'wconvert'), name)
           : null;

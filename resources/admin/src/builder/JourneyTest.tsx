@@ -211,7 +211,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
           const id = button.dataset.submission ?? '';
           if (failNextRef.current) { setAnswers(currentAnswers); failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can retry.', 'wconvert')); return; }
           const snapshot = testCaptureSnapshot(tree, step, id, currentAnswers, draft);
-          if (!snapshot) { setAnswers(currentAnswers); setFeedback(__('This save is incomplete or is not on the visited path. Check its contact fields and submission settings before testing again.', 'wconvert')); return; }
+          if (!snapshot) { setAnswers(currentAnswers); setFeedback(__('This save is incomplete or was not reached in this visit. Check its contact fields and submission settings before testing again.', 'wconvert')); return; }
           setAccepted(previous => previous.includes(id) ? previous : [...previous, id]);
           setSnapshots(previous => ({ ...previous, [id]: previous[id] ?? snapshot }));
           setAcceptedQuestions(previous => [...new Set([...previous, ...snapshot.questionIds])]);
@@ -257,9 +257,9 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         ? sprintf(__('Hidden because %s did not match', 'wconvert'), conditionText(tree, source.when))
         : __('Hidden screen continues', 'wconvert')
         : decision.kind === 'answer' ? edge?.when
-          ? sprintf(__('First matching path %1$d: %2$s', 'wconvert'), (decision.priority ?? 0) + 1, conditionText(tree, edge.when))
-          : sprintf(__('Answer path %d', 'wconvert'), (decision.priority ?? 0) + 1)
-          : branches ? __('All other answers: no answer path matched', 'wconvert') : __('Continue', 'wconvert');
+          ? sprintf(__('First matching line %1$d: %2$s', 'wconvert'), (decision.priority ?? 0) + 1, conditionText(tree, edge.when))
+          : sprintf(__('Answer line %d', 'wconvert'), (decision.priority ?? 0) + 1)
+          : branches ? __('All other answers: no answer line matched', 'wconvert') : __('Continue', 'wconvert');
       /* translators: 1: the screen a visitor left, 2: the screen they reached, 3: why. */
       return [{ id: decision.edge, label: sprintf(__('%1$s to %2$s: %3$s', 'wconvert'), from, to, action) }];
     }
@@ -267,7 +267,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     const from = tree.steps[decision.from]?.name ?? '';
     const to = tree.steps[Number(decision.to)]?.name ?? '';
     const action = decision.kind === 'hidden' ? __('Hidden screen continues', 'wconvert')
-      : decision.kind === 'route' ? sprintf(__('Answer path %d', 'wconvert'), (decision.priority ?? 0) + 1)
+      : decision.kind === 'route' ? sprintf(__('Answer line %d', 'wconvert'), (decision.priority ?? 0) + 1)
         : __('Continue', 'wconvert');
     return [{ id: `${decision.from}-${decision.to}`, label: sprintf(__('%1$s to %2$s: %3$s', 'wconvert'), from, to, action) }];
   });
@@ -319,16 +319,16 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         // Screens off this path are one muted line each, never a list to open (ADR 0138).
         return screens.length > 0 && <div key={category} className="wconvert-journey-test__others" data-category={category}>
           <span>{category === 'pending' ? __('Not reached yet:', 'wconvert') : __('Skipped:', 'wconvert')}</span>
-          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Bypassed by another path', 'wconvert') : __('Show condition did not match', 'wconvert')}>
+          <ul>{screens.map((at, position) => <li key={tree.steps[at].id} data-current="false" title={progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Skipped by another line', 'wconvert') : __('Show condition did not match', 'wconvert')}>
             <bdi>{tree.steps[at].name}</bdi>
             {category === 'skipped' && <button type="button" onClick={() => onEdit(at, progress.states[at] === 'hidden' ? 'condition' : undefined)}>{progress.states[at] === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
             {/* translators: follows each but the last screen name in a one-line list. */ position < screens.length - 1 && __(',', 'wconvert')}
           </li>)}</ul>
         </div>;
       })}
-      {routeSteps.length > 0 && <Disclosure variant="inline" className="wconvert-journey-test__route" title={__('Why this path?', 'wconvert')}>
+      {routeSteps.length > 0 && <Disclosure variant="inline" className="wconvert-journey-test__route" title={__('Why these screens?', 'wconvert')}>
         <ol>{routeSteps.map(item => <li key={item.id} data-edge-id={item.id}>{item.label}</li>)}</ol></Disclosure>}
-      {onShowPath && visited.length > 1 && <Button variant="link" size="sm" className="wconvert-journey-test__map self-start px-0" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this path on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
+      {onShowPath && visited.length > 1 && <Button variant="link" size="sm" className="wconvert-journey-test__map self-start px-0" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this visit on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
       {shownSubmissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Test submissions', 'wconvert')}</h4>
         <ol>{shownSubmissions.map(submission => <li key={submission.id} className="wconvert-journey-test__checkpoint"><div><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? __('Signup', 'wconvert')}</strong><span>{accepted.includes(submission.id) ? __('Accepted in test', 'wconvert') : __('Skipped', 'wconvert')}</span></div>
           {accepted.includes(submission.id) && <>
@@ -348,7 +348,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         </li>)}</ol>
         <small>{__('No real submission or delivery occurred.', 'wconvert')}</small>
       </section>}
-      {complete && <p className="wconvert-journey-test__complete">{accepted.length ? __('This path is complete. Start over to try another.', 'wconvert') : __('This path is complete, and no contact details were submitted on it. Start over to try another.', 'wconvert')}</p>}
+      {complete && <p className="wconvert-journey-test__complete">{accepted.length ? __('This visit is complete. Start over to try another.', 'wconvert') : __('This visit is complete, and no contact details were submitted. Start over to try another.', 'wconvert')}</p>}
       {/* Every way to make the run go wrong, folded into one place (ADR 0138). */}
       {(failable || hasProducts) && <Disclosure variant="inline" className="wconvert-test-diagnostics" title={__('Simulate a problem', 'wconvert')}>
         {failable && <>

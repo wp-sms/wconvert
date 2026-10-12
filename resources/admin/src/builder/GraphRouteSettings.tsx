@@ -88,23 +88,23 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     InfoTip. Only follow-up groups, which behave differently, say so here.
   */
   return <div className="wconvert-journey-settings wconvert-journey-routes">
-    {group && <><FieldHeading as="span" label={__('Relevant follow-ups', 'wconvert')} /><PanelHint>{__('Each matching question is asked in order, then all continue together.', 'wconvert')}</PanelHint></>}
+    {group && <><FieldHeading as="span" label={__('Follow-ups', 'wconvert')} /><PanelHint>{__('Every match, one at a time. Then all continue.', 'wconvert')}</PanelHint></>}
     {group && <div className="wconvert-followup-continuation">
       {!memberGroup && group.screens.map(index => <button type="button" key={tree.steps[index].id} onClick={() => onSelect?.(index)}><strong>{tree.steps[index].name}</strong><small>{conditionText(tree, tree.steps[index].when!)}</small></button>)}
-      <label>{__('After the relevant questions', 'wconvert')}<select value={group.next} onChange={event => {
+      <label>{__('After the follow-ups', 'wconvert')}<select value={group.next} onChange={event => {
         const last = tree.steps[group.screens[group.screens.length - 1]].id;
         const next = { ...tree, graph: { ...graph, edges: graph.edges.map(edge => edge.from === last && ['default', 'hidden'].includes(edge.kind) ? { ...edge, to: event.target.value } : edge) } };
         const description = graphChangeImpact(tree, next);
         if (description) { returnFocus.current = event.currentTarget; setPending({ tree: next, description }); } else onChange(next);
       }}>{graphTargets(tree, tree.steps[group.screens[group.screens.length - 1]].id).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}</select></label>
-      <button type="button" aria-expanded={connectionsOpen || focusPath != null} onClick={() => setConnectionsOpen(value => !value)}>{connectionsOpen || focusPath != null ? __('Hide answer lines', 'wconvert') : __('Send some answers to a different screen', 'wconvert')}</button>
+      <button type="button" aria-expanded={connectionsOpen || focusPath != null} onClick={() => setConnectionsOpen(value => !value)}>{connectionsOpen || focusPath != null ? __('Hide answer lines', 'wconvert') : __('Show answer lines', 'wconvert')}</button>
     </div>}
     <div hidden={!!group && !connectionsOpen && focusPath == null}>
-    {group && <PanelHint className="wconvert-journey-settings__warning">{__('Changing one path can separate this question from its follow-ups.', 'wconvert')}</PanelHint>}
+    {group && <PanelHint className="wconvert-journey-settings__warning">{__('Changing one line can separate this question from its follow-ups.', 'wconvert')}</PanelHint>}
     {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
     <ol ref={list} className="wconvert-journey-routes__list" role="list">{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} className="wconvert-journey-routes__disclosure" data-path-priority={priority}>
       <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
-      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'answer' && <span className="wconvert-flow-dot" data-color={answerColorOf(colors, edge.when)} aria-hidden="true" />}{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : __('Then', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
+      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'answer' && <span className="wconvert-flow-dot" data-color={answerColorOf(colors, edge.when)} aria-hidden="true" />}{edge.kind === 'default' ? answers.length ? __('All other answers', 'wconvert') : group && !memberGroup ? __('Any of these', 'wconvert') : __('Everyone', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(/* translators: %s: a screen's name. */ __('Then → %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
       <div className="wconvert-journey-path-disclosure__body">
       {edge.kind === 'answer' && <><strong>{sprintf(/* translators: 1: this line's place. 2: how many answer lines. */ __('Line %1$d of %2$d', 'wconvert'), priority + 1, answers.length)}</strong>
         <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}

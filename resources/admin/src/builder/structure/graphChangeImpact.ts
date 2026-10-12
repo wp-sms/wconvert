@@ -42,5 +42,5 @@ export function graphChangeImpact(before: TemplateTree, after: TemplateTree): st
     messages.push(sprintf(__('A line could reach %1$s without saving at %2$s. Visitors on that line would not submit those details. Check the rules and try the form before publishing.', 'wconvert'),
       `“${name(bypass.endingId)}”`, bypass.saving.map(screen => `“${screen.name}”`).join(', ')));
   }
-  return messages.length ? [...messages, __('Undo restores the previous paths.', 'wconvert')].join(' ') : null;
+  return messages.length ? [...messages, __('Undo restores the previous lines.', 'wconvert')].join(' ') : null;
 }

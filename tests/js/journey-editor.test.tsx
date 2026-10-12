@@ -171,7 +171,7 @@ it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusi
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(await screen.findByRole('button', { name: 'Select first screen' }));
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   const action = intent === 'followup' ? 'Add a follow-up question' : 'Send some answers to a different screen';
   await user.click(screen.getByRole('button', { name: action }));
   expect(screen.getByRole('radio', { name: intent === 'followup' ? 'Only if…' : 'Send some answers to a different screen' })).toBeChecked();
@@ -200,9 +200,9 @@ it('reviews newly unreachable screens before applying a changed line', async () 
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(await screen.findByRole('button', { name: 'Select interests' }));
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   // A follow-up box keeps its lines folded until asked.
-  await user.click(screen.getAllByRole('button', { name: 'Send some answers to a different screen' })[0]);
+  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 'contact');
   expect(screen.getByRole('heading', { name: 'Check this change' })).toBeInTheDocument();
   const explanation = screen.getByText(/These screens would become unreachable:/);
@@ -217,9 +217,9 @@ it('reviews a save bypass even when no screens are disconnected', async () => {
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(await screen.findByRole('button', { name: 'Select balcony' }));
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   // A follow-up box keeps its lines folded until asked.
-  await user.click(screen.getAllByRole('button', { name: 'Send some answers to a different screen' })[0]);
+  await user.click(screen.getByRole('button', { name: 'Show answer lines' }));
   const skip = screen.getByRole('combobox', { name: 'If skipped' });
   await user.selectOptions(skip, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
@@ -255,7 +255,7 @@ it('opens a requested graph repair on its source screen and path settings', asyn
   }
   render(<RepairEditor />);
   expect(await screen.findByRole('heading', { name: 'Interests' })).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Lines' })).toBeChecked();
   expect(screen.getByRole('checkbox', { name: 'Garden' })).toHaveFocus();
 });
 it('focuses a visibility repair once and lets the merchant continue editing', async () => {
@@ -445,7 +445,7 @@ it('opens on the flow and creates an ordered answer path through the inspector',
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   expect(screen.getByRole('radio', { name: 'Flow' })).toBeChecked();
   expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   await user.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
   const paths = draft().steps[0].paths!;
   expect(paths).toHaveLength(2);
@@ -460,7 +460,7 @@ it('inserts a screen on the selected branch without changing its condition or co
   const user = userEvent.setup();
   render(<Editor initial={service.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   await user.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
   const before = draft();
   await user.click(screen.getAllByRole('button', { name: 'Add a screen on this line' })[0]);
@@ -479,7 +479,7 @@ it('keeps an inserted screen hidden when its source is skipped', async () => {
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Repair details Continue only/ }));
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   await user.click(screen.getByRole('button', { name: 'Add a screen on this line' }));
   await user.click(screen.getByRole('menuitem', { name: 'Show a message' }));
   const next = draft();
@@ -855,9 +855,9 @@ it('explains a branched result timing restriction and opens the named paths for 
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
   expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeDisabled();
-  expect(screen.getByText(/Move any answer paths after both screens first/)).toBeInTheDocument();
+  expect(screen.getByText(/Move any answer lines after both screens first/)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Review Your result' }));
-  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Lines' })).toBeChecked();
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
   expect(draft()).toEqual(initial);
 });
@@ -953,11 +953,11 @@ it('follows a path to its destination and returns to Next screen without changin
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('radio', { name: 'Paths' }));
+  await user.click(screen.getByRole('radio', { name: 'Lines' }));
   await user.click(screen.getByRole('button', { name: 'Open Received' }));
   expect(screen.getByRole('heading', { level: 3, name: 'Received' })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Back to One enquiry' }));
-  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Lines' })).toBeChecked();
   expect(draft()).toEqual(graphFixture);
 });
 
@@ -1022,9 +1022,9 @@ it('reviews a shared follow-up continuation change and updates shown and skipped
   }
   render(<Campaign />);
   // On the Edit tab a question's paths are on the question's own panel: "Where visitors go next" (ADR 0134).
-  expect(screen.getByText('Relevant follow-ups')).toBeInTheDocument();
+  expect(screen.getByText('Follow-ups')).toBeInTheDocument();
   expect(screen.queryByRole('combobox', { name: 'Then' })).toBeNull();
-  await user.selectOptions(screen.getByRole('combobox', { name: 'After the relevant questions' }), 'received');
+  await user.selectOptions(screen.getByRole('combobox', { name: 'After the follow-ups' }), 'received');
   expect(screen.getByRole('alertdialog', { name: 'Check this change' })).toBeInTheDocument();
   expect(draft()).toEqual(initial);
   await user.click(screen.getByRole('button', { name: 'Change anyway' }));
@@ -1089,8 +1089,8 @@ it('restores the pending answer review after editing a referenced branch', async
   const review = screen.getByRole('region', { name: 'Review answer uses' });
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'press');
   await user.click(within(review).getByText('Stop offering this answer…'));
-  await user.click(within(review).getByRole('button', { name: /Your taste Path 1/ }));
-  expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
+  await user.click(within(review).getByRole('button', { name: /Your taste Line 1/ }));
+  expect(screen.getByRole('radio', { name: 'Lines' })).toBeChecked();
   await user.click(screen.getByRole('checkbox', { name: 'French press' }));
   await user.click(screen.getByRole('checkbox', { name: 'Filter or pour-over' }));
   const repaired = draft();

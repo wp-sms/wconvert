@@ -46,7 +46,7 @@ function journeyEditLabel(before: TemplateTree, after: TemplateTree): string {
     if (previous.name !== screen.name) return sprintf(__('Rename screen “%s”', 'wconvert'), previous.name);
     if (!same(previous.when, screen.when)) return sprintf(__('Change when “%s” appears', 'wconvert'), screen.name);
     if (!same(previous.results, screen.results)) return sprintf(__('Change results on “%s”', 'wconvert'), screen.name);
-    if (!same(previous.paths, screen.paths)) return sprintf(__('Change paths from “%s”', 'wconvert'), screen.name);
+    if (!same(previous.paths, screen.paths)) return sprintf(__('Change lines from “%s”', 'wconvert'), screen.name);
     if (!same(previous.content, screen.content)) {
       const questions = (tree: typeof screen) => walkNodes(tree.content).filter(node => node.type === 'question');
       return sprintf(!same(questions(previous), questions(screen)) ? __('Edit questions on “%s”', 'wconvert') : __('Edit content on “%s”', 'wconvert'), screen.name);
@@ -63,7 +63,7 @@ function journeyEditLabel(before: TemplateTree, after: TemplateTree): string {
       const oldEdges = before.graph.edges.filter(edge => edge.from === id);
       const newEdges = after.graph.edges.filter(edge => edge.from === id);
       const orderingOnly = oldEdges.length === newEdges.length && oldEdges.every(edge => same(edge, newEdges.find(item => item.id === edge.id)));
-      return sprintf(orderingOnly ? __('Reorder paths from “%s”', 'wconvert') : __('Change paths from “%s”', 'wconvert'), sources[0].name);
+      return sprintf(orderingOnly ? __('Reorder lines from “%s”', 'wconvert') : __('Change lines from “%s”', 'wconvert'), sources[0].name);
     }
   }
   if (!same(before.steps.map(screen => screen.id), after.steps.map(screen => screen.id))) return __('Reorder screens', 'wconvert');

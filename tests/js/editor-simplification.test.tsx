@@ -18,9 +18,9 @@ const labels = { roles: {}, nodes: {}, layouts: {}, layoutHelp: {}, layoutNotes:
 it('keeps a child follow-up on the shared continuation until custom routing is requested', () => {
   const tree = enquiry as unknown as TemplateTree, change = vi.fn();
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(item => item.id === 'garden')} onChange={change} onInsert={() => {}} />);
-  expect(screen.getByRole('combobox', { name: 'After the relevant questions' })).toHaveValue('contact');
+  expect(screen.getByRole('combobox', { name: 'After the follow-ups' })).toHaveValue('contact');
   expect(screen.queryByRole('combobox', { name: 'If skipped' })).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Show answer lines' }));
   // A skip edge to where the screen would have gone anyway reads as falling through (ADR 0135).
   expect(screen.getByRole('combobox', { name: 'If skipped' })).toHaveValue('');
   expect(change).not.toHaveBeenCalled();

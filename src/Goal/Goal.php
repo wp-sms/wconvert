@@ -25,7 +25,7 @@ enum Goal: string
                 __('Use an enquiry form with an email or phone field before publishing.', 'wconvert'),
                 __('Counts enquiries submitted here. Replies, bookings and completed work in another service are not measured.', 'wconvert'), 'captured'),
             self::FindMatch => new OutcomeContract('match', [],
-                __('Use a journey with a Results screen and a valid question path.', 'wconvert'),
+                __('Use a campaign with a Result screen and questions that lead to it.', 'wconvert'),
                 __('Counts quiz results shown. Product clicks and purchases are separate.', 'wconvert'), 'quiz_completed'),
             self::IncreaseBasketValue => new OutcomeContract('add_to_cart', [],
                 __('Use product recommendations with Add to cart before publishing.', 'wconvert'),

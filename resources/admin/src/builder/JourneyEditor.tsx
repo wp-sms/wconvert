@@ -628,7 +628,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               destinationSummary={destinationSummary} />
           </Suspense>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>
-            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(__('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Paths may skip screens', 'wconvert') : __('Up to 7 screens without answer paths', 'wconvert')}</small></div>
+            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(__('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('All screens', 'wconvert')}>
               {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} index={index} ordinal={position + 1} selected={index === step}
                 scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(__('Only if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
@@ -720,7 +720,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             {!slim && <OptionStrip className="wconvert-journey-pane__tabs" label={__('Screen settings section', 'wconvert')} value={panelSection} onChange={value => setRequestedSection(value as typeof requestedSection)}
               options={[
                 { value: 'content', label: walkNodes(current.content).some(node => node.type === 'question') ? __('Content & answers', 'wconvert') : __('Content', 'wconvert') },
-                ...(journeys ? [{ value: 'paths', label: __('Paths', 'wconvert'), count: tree.graph ? tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length : undefined }] : []),
+                ...(journeys ? [{ value: 'paths', label: __('Lines', 'wconvert'), count: tree.graph ? tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length : undefined }] : []),
               ]} />}
 
           {slim || panelSection === 'content' ? <>
@@ -771,13 +771,13 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                   ? __('Shows the selected result. Viewing it does not save contact details or create a submission.', 'wconvert')
                 : __('New answers stay on this page until the visitor submits. Going to the next screen does not save new details.', 'wconvert')}</p></Disclosure>}
           {!slim && journeys && (tree.graph ? tree.graph.edges.some(edge => edge.from === current.id) : step < tree.steps.length - 1) && <button type="button" className="wconvert-journey-next-summary" onClick={() => setRequestedSection('paths')}>
-            <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert') : tree.graph ? branchCount ? sprintf(_n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert'), branchCount) : sprintf(__('Then: %s', 'wconvert'), nextGroup ? __('Every matching follow-up', 'wconvert') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a path', 'wconvert'))
+            <strong>{remainingFollowups ? __('Check remaining follow-ups', 'wconvert') : tree.graph ? branchCount ? sprintf(_n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert'), branchCount) : sprintf(__('Then: %s', 'wconvert'), nextGroup ? __('Every matching follow-up', 'wconvert') : tree.steps.find(item => item.id === nextId)?.name ?? __('Choose a line', 'wconvert'))
               : current.paths?.length && current.paths.length > 1 ? sprintf(_n('%d answer line and all other answers', '%d answer lines and all other answers', branchCount, 'wconvert'), branchCount)
                 : sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
             <small>{remainingFollowups ? sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === remainingFollowups.next)?.name ?? '') : __('Review where visitors go next', 'wconvert')}</small>
           </button>}
           {slim && tree.graph && !questionPath && (tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') || !!current.when) && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
-            open={panelSection === 'paths' || undefined} title={__('Paths', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d path', '%d paths', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{routes}</Disclosure></PanelSection>}
+            open={panelSection === 'paths' || undefined} title={__('Lines', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d line', '%d lines', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{routes}</Disclosure></PanelSection>}
           {slim && tree.graph && <ScreenAnswers tree={tree} step={step} onSelect={select} onFollowup={journeys ? startFollowup : undefined} />}
           {slim && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
 
@@ -888,7 +888,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </TabsList>}
           {/* Kept mounted, so a run survives a look at Who sees it. */}
           <TabsContent value="journey" forceMount className="wconvert-journey-test-dialog__body data-[state=inactive]:hidden">
-            <JourneyTest onClose={closeTest} active={previewMode === 'journey'} changeToCheck={testChange} onShowPath={(screens, edges) => { setSamplePath(screens); setSampleEdges(edges); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); setSaid(__('The screens and paths visited in your test are highlighted. Future screens are not predicted.', 'wconvert')); }} template={testTemplate} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
+            <JourneyTest onClose={closeTest} active={previewMode === 'journey'} changeToCheck={testChange} onShowPath={(screens, edges) => { setSamplePath(screens); setSampleEdges(edges); setInspecting(false); setMobilePane('map'); setView('flow'); leaveTest(); setOpen(true); setSaid(__('The screens and lines visited in your test are highlighted. Future screens are not predicted.', 'wconvert')); }} template={testTemplate} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
               onEdit={(index, focus) => { returnToTestTrigger.current = false; select(index); leaveTest(); setOpen(true); if (focus === 'condition') setReferenceRequest({ screenId: tree.steps[index].id, section: 'content', serial: --referenceSerial.current }); }} />
           </TabsContent>
           {whoSeesIt && <TabsContent value="visit" className="wconvert-preview-tabs__visit wconvert-sample-dialog">{whoSeesIt(closeTest)}</TabsContent>}
