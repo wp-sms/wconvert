@@ -28,6 +28,15 @@ the full record for the team.
 
 ### Fixed
 
+- The loader size limits are now Free 14,720 B, Basic 25,472 B, Pro 27,040 B
+  and Elite 27,712 B (gzip on Node 22), approved by Mostafa on 2026-10-12.
+  The "is not" rule (#244) was measured on Node 20's gzip, and the template
+  polish (#251: 14px minimum text, new close button) went in while CI was not
+  running, so both had grown past the old limits unnoticed.
+- The MySQL journey check loads its test destination type by file path, so it
+  runs again now that the plugin starts from `packages/autoload.php`.
+- The inline visual test looks for the "Phone view" switch, its name since
+  ADR 0142.
 - Changes asked for in the second WordPress.org plugin review (October 2026):
   - The content lock block and shortcode escape their markup after the
     `wconvert_content_region_html` filter as well, with the same rules as the

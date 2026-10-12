@@ -12,8 +12,8 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14336 B; Basic 24832 B;
-//      Pro 26368 B; Elite 26624 B (ADR 0109), per build. It blocks rather than warns, and there is no
+//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 14720 B; Basic 25472 B;
+//      Pro 27040 B; Elite 27712 B (ADR 0139, amended), per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -89,19 +89,23 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  */
 // ADR 0111: 256 B per rung for pre-capture verification after ADR 0110 events.
 // ADR 0124: Node 22 gzip normalization, +32 B; Free asset is byte-identical.
-const FREE_BYTE_BUDGET = 14624;
+// ADR 0139 amendment (2026-10-12, approved by Mostafa): +96 B, measured on Node 22.
+const FREE_BYTE_BUDGET = 14720;
 // ADR 0103: shared journeys plus paid recovery/content access.
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
 // ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
 // ADR 0124: +160 B Basic/Pro and +448 B Elite; measured on Node 22.
-const PAID_BYTE_BUDGET = 25376;
+// ADR 0139 amendment (2026-10-12, approved by Mostafa): +96 B, measured on Node 22.
+const PAID_BYTE_BUDGET = 25472;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
 // ADR 0121: server-counted conversion notification adds a bounded renderer seam.
 // ADR 0139: user-approved +32 B for the one shared "is not" helper (leafAnswer).
-const PRO_BYTE_BUDGET = 26976;
+// ADR 0139 amendment (2026-10-12, approved by Mostafa): +64 B, measured on Node 22.
+const PRO_BYTE_BUDGET = 27040;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
 // ADR 0139: user-approved +32 B for "is not" and the cart bridge's known().
-const ELITE_BYTE_BUDGET = 27648;
+// ADR 0139 amendment (2026-10-12, approved by Mostafa): +64 B, measured on Node 22.
+const ELITE_BYTE_BUDGET = 27712;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

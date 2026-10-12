@@ -105,5 +105,14 @@ Before this:
 - The loader budget grew, approved by the user: +32 B for Pro (26,976 B) and
   Elite (27,648 B) for `leafAnswer` and the cart bridge's `known()`. Free
   fits unchanged (`bin/check-loader.mjs`).
+  ***Corrected 2026-10-12, approved by Mostafa:*** those figures were measured
+  with Node 20's gzip. On Node 22, which CI and `.nvmrc` use, this change
+  adds about 45 B to every loader, so Free and Basic were already over and
+  Pro was 10 B over. #251 (template polish, merged `[skip ci]`) then added
+  46 to 53 B more: the 14px minimum on secondary text (`max(.875rem,…)`) and
+  the new close button. CI was down from Oct 6, so neither was measured. The
+  caps are now Free 14,720 B, Basic 25,472 B, Pro 27,040 B and Elite
+  27,712 B: the Node 22 sizes rounded up to 32 B. The analytics and commerce
+  combined checks use the same numbers.
 - `User role` reads in the Who sentence ("their role is Editor"), so a Visitor
   fact on the Targeting axis may carry a phrase; a Page rule still may not.
