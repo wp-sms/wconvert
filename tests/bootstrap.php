@@ -2028,3 +2028,233 @@ if (!function_exists('is_multisite')) {
         return (bool) $GLOBALS['wconvertTestMultisite'];
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| The HTTP API, answered in-process
+|--------------------------------------------------------------------------
+| No unit test reaches the network. A request goes through `pre_http_request`
+| first, exactly as WordPress offers it, so a test (or `FakesNexus`) answers by
+| hooking the filter; failing that, `$GLOBALS['wconvertHttpReply']` answers;
+| failing both, it is the transport error WordPress returns when the network
+| is down. Responses are WordPress's own shape, so the code under test reads
+| them through the same `wp_remote_retrieve_*` calls it makes in production.
+*/
+if (!function_exists('wp_remote_request')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error
+     */
+    function wp_remote_request(string $url, array $args = [])
+    {
+        $preempt = apply_filters('pre_http_request', false, $args, $url);
+
+        if ($preempt !== false) {
+            return $preempt;
+        }
+
+        if (isset($GLOBALS['wconvertHttpReply'])) {
+            return ($GLOBALS['wconvertHttpReply'])($url, $args);
+        }
+
+        return new WP_Error('http_request_failed', 'No network in unit tests: ' . $url);
+    }
+}
+
+if (!function_exists('wp_remote_get')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error
+     */
+    function wp_remote_get(string $url, array $args = [])
+    {
+        return wp_remote_request($url, ['method' => 'GET'] + $args);
+    }
+}
+
+if (!function_exists('wp_remote_post')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error
+     */
+    function wp_remote_post(string $url, array $args = [])
+    {
+        return wp_remote_request($url, ['method' => 'POST'] + $args);
+    }
+}
+
+if (!function_exists('is_wp_error')) {
+    function is_wp_error(mixed $thing): bool
+    {
+        return $thing instanceof WP_Error;
+    }
+}
+
+if (!function_exists('wp_remote_retrieve_response_code')) {
+    /** @param array<string, mixed>|WP_Error $response */
+    function wp_remote_retrieve_response_code($response): int|string
+    {
+        return is_array($response) ? ($response['response']['code'] ?? '') : '';
+    }
+}
+
+if (!function_exists('wp_remote_retrieve_body')) {
+    /** @param array<string, mixed>|WP_Error $response */
+    function wp_remote_retrieve_body($response): string
+    {
+        return is_array($response) ? (string) ($response['body'] ?? '') : '';
+    }
+}
+
+if (!function_exists('wp_remote_retrieve_header')) {
+    /**
+     * @param array<string, mixed>|WP_Error $response
+     * @return string|array<string>
+     */
+    function wp_remote_retrieve_header($response, string $header)
+    {
+        if (!is_array($response)) {
+            return '';
+        }
+
+        $headers = array_change_key_case((array) ($response['headers'] ?? []));
+
+        return $headers[strtolower($header)] ?? '';
+    }
+}
+
+/**
+ * `wp_die()` ends the request in WordPress. Here it throws, so a test can
+ * assert both that it was reached and what it said.
+ */
+final class WConvertTestDied extends RuntimeException
+{
+}
+
+if (!function_exists('wp_die')) {
+    /**
+     * @param string|WP_Error $message
+     * @param array<string, mixed> $args
+     */
+    function wp_die($message = '', string $title = '', array $args = []): never
+    {
+        throw new WConvertTestDied(is_string($message) ? $message : $message->get_error_message());
+    }
+}
+
+/*
+ * A network, as thinly as Pro's uninstaller walks one: each site has its own
+ * option table, and switching swaps it in.
+ *
+ * @var array<int, array<string, mixed>> $wconvertTestBlogTables
+ */
+$GLOBALS['wconvertTestBlogId'] = 1;
+$GLOBALS['wconvertTestBlogTables'] = [];
+$GLOBALS['wconvertTestBlogStack'] = [];
+
+if (!function_exists('get_current_blog_id')) {
+    function get_current_blog_id(): int
+    {
+        return (int) $GLOBALS['wconvertTestBlogId'];
+    }
+}
+
+if (!function_exists('get_sites')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return list<int>
+     */
+    function get_sites(array $args = []): array
+    {
+        $ids = array_values(array_unique(array_map('intval', [...array_keys($GLOBALS['wconvertTestBlogTables']), $GLOBALS['wconvertTestBlogId']])));
+        sort($ids);
+
+        return $ids;
+    }
+}
+
+if (!function_exists('switch_to_blog')) {
+    function switch_to_blog(int $blogId): bool
+    {
+        $GLOBALS['wconvertTestBlogStack'][] = (int) $GLOBALS['wconvertTestBlogId'];
+        $GLOBALS['wconvertTestBlogTables'][(int) $GLOBALS['wconvertTestBlogId']] = $GLOBALS['wconvertTestOptionTable'];
+        $GLOBALS['wconvertTestBlogId'] = $blogId;
+        $GLOBALS['wconvertTestOptionTable'] = $GLOBALS['wconvertTestBlogTables'][$blogId] ?? [];
+
+        return true;
+    }
+}
+
+if (!function_exists('restore_current_blog')) {
+    function restore_current_blog(): bool
+    {
+        $previous = array_pop($GLOBALS['wconvertTestBlogStack']);
+
+        if ($previous === null) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestBlogTables'][(int) $GLOBALS['wconvertTestBlogId']] = $GLOBALS['wconvertTestOptionTable'];
+        $GLOBALS['wconvertTestBlogId'] = $previous;
+        $GLOBALS['wconvertTestOptionTable'] = $GLOBALS['wconvertTestBlogTables'][$previous] ?? [];
+
+        return true;
+    }
+}
+
+/** Network-wide options, which the SDK reads on a network for a network key. */
+$GLOBALS['wconvertTestSiteOptions'] = [];
+
+if (!function_exists('get_site_option')) {
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    function get_site_option(string $name, $default = false)
+    {
+        return $GLOBALS['wconvertTestSiteOptions'][$name] ?? $default;
+    }
+}
+
+if (!function_exists('update_site_option')) {
+    /** @param mixed $value */
+    function update_site_option(string $name, $value): bool
+    {
+        $GLOBALS['wconvertTestSiteOptions'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_site_option')) {
+    function delete_site_option(string $name): bool
+    {
+        $existed = array_key_exists($name, $GLOBALS['wconvertTestSiteOptions']);
+        unset($GLOBALS['wconvertTestSiteOptions'][$name]);
+
+        return $existed;
+    }
+}
+
+if (!function_exists('is_plugin_active_for_network')) {
+    function is_plugin_active_for_network(string $plugin): bool
+    {
+        return false;
+    }
+}
+
+if (!function_exists('get_main_site_id')) {
+    function get_main_site_id(): int
+    {
+        return 1;
+    }
+}
+
+/** The SDK records which administrator started an account sign-in. */
+if (!function_exists('get_current_user_id')) {
+    function get_current_user_id(): int
+    {
+        return (int) ($GLOBALS['wconvertTestUserId'] ?? 1);
+    }
+}
+

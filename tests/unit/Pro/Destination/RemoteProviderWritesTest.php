@@ -4,23 +4,6 @@ namespace {
     if (!function_exists('is_email')) {
         function is_email(string $value): bool { return filter_var($value, FILTER_VALIDATE_EMAIL) !== false; }
     }
-    if (!function_exists('wp_remote_request')) {
-        /** @param array<string, mixed> $args
-         * @return array<string, mixed>
-         */
-        function wp_remote_request(string $url, array $args): array { return ($GLOBALS['wconvertHttpReply'])($url, $args); }
-    }
-    if (!function_exists('is_wp_error')) {
-        function is_wp_error(mixed $value): bool { return false; }
-    }
-    if (!function_exists('wp_remote_retrieve_body')) {
-        /** @param array<string, mixed> $response */
-        function wp_remote_retrieve_body(array $response): string { return $response['body']; }
-    }
-    if (!function_exists('wp_remote_retrieve_response_code')) {
-        /** @param array<string, mixed> $response */
-        function wp_remote_retrieve_response_code(array $response): int { return $response['status']; }
-    }
 }
 
 namespace WConvert\Tests\Unit\Pro\Destination {
@@ -44,7 +27,7 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             $GLOBALS['wconvertHttpReply'] = function (string $url, array $args) use (&$statuses): array {
                 $this->calls[] = [$url, $args];
                 [$status, $body] = array_shift($statuses);
-                return ['status' => $status, 'body' => json_encode($body)];
+                return ['response' => ['code' => $status], 'body' => json_encode($body)];
             };
         }
 
@@ -356,7 +339,7 @@ namespace WConvert\Tests\Unit\Pro\Destination {
                 $this->calls[] = [$url, $args];
                 if ($replies === []) throw new \RuntimeException('cURL error 28 for a@example.com');
                 [$status, $body] = array_shift($replies);
-                return ['status' => $status, 'body' => json_encode($body)];
+                return ['response' => ['code' => $status], 'body' => json_encode($body)];
             };
             $result = $this->mailtrap($subject);
             self::assertTrue($result->retryable);

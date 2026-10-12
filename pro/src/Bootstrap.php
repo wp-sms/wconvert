@@ -7,6 +7,7 @@ use WConvert\Pro\Boot\BootGuard;
 use WConvert\Pro\Boot\PageCache;
 use WConvert\Pro\Container\ProServiceProvider;
 use WConvert\Pro\License\LicenseServiceProvider;
+use WConvert\Pro\License\RefreshCron;
 
 defined('ABSPATH') || exit;
 
@@ -41,9 +42,13 @@ final class Bootstrap
          * cached before it was activated should say — and a merchant
          * deactivating a Pro that never booted is exactly the person whose
          * cache should not be left holding a decision nobody made.
+         *
+         * The two callbacks carry two more things each: activation refuses a
+         * whole network before anything else, and deactivation stops the
+         * licence's daily check (ADR 0143).
          */
-        register_activation_hook(WCONVERT_PRO_MAIN_FILE, [PageCache::class, 'purge']);
-        register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [PageCache::class, 'purge']);
+        register_activation_hook(WCONVERT_PRO_MAIN_FILE, [self::class, 'activate']);
+        register_deactivation_hook(WCONVERT_PRO_MAIN_FILE, [self::class, 'deactivate']);
 
         /*
          * Priority 20 — after free's own setup at 10, and NOT hooked to the
@@ -53,6 +58,38 @@ final class Bootstrap
          * failure that stays silent.
          */
         add_action('plugins_loaded', [self::class, 'setup'], 20);
+    }
+
+    /**
+     * Pro refuses network activation, as free does (`WConvert\Bootstrap`).
+     *
+     * Each site holds its own licence and its own seat (ADR 0143), and the
+     * SDK's updater caches one answer per network — so a network-active Pro
+     * would offer every subsite the update one subsite's licence earned.
+     * Activating on each site works. Stopped here, before WordPress records
+     * the plugin as network-active.
+     */
+    public static function activate(bool $networkWide = false): void
+    {
+        if ($networkWide && is_multisite()) {
+            wp_die(
+                esc_html__('WConvert Pro cannot be activated for the whole network. Activate it on each site instead, from that site\'s Plugins screen.', 'wconvert-pro'),
+                esc_html__('Plugin not activated', 'wconvert-pro'),
+                ['back_link' => true]
+            );
+        }
+
+        PageCache::purge();
+    }
+
+    /**
+     * The page cache is purged, and the licence's daily check stops. The
+     * licence itself stays: only deleting Pro releases its seat.
+     */
+    public static function deactivate(): void
+    {
+        PageCache::purge();
+        RefreshCron::unschedule();
     }
 
     public static function setup(): void

@@ -20,8 +20,9 @@ clickable prototype is the review gate: claude.ai/artifact/EovSgYnM27kRV686LKGgW
 ADR 0056): a capability is present because it shipped in the ZIP. A licence buys
 updates and support. Every problem state on the License page says "Pro features
 keep working", and no code path outside `pro/src/License/` reads a licence —
-`NoLicenceOnTheFrontEndTest` holds it to that directory and to the one bootstrap
-line that runs it, and asserts no file on the front-end read path touches it.
+`NoLicenceOnTheFrontEndTest` holds it to that directory and to Pro's bootstrap,
+which runs its provider and stops its daily check on deactivation and asks it
+nothing, and asserts no file on the front-end read path touches it.
 
 ## Decisions
 
@@ -74,7 +75,9 @@ line that runs it, and asserts no file on the front-end read path touches it.
    Every other detail is **redacted server-side**; every mutating route answers
    403 `key_from_constant`; nothing reminds anyone.
 10. **Multisite.** Pro refuses network activation, as free does. Each subsite
-    holds its own licence; there is no network page.
+    holds its own licence; there is no network page. Deleting Pro still visits
+    every site of a network to release its seat (WP Statistics' uninstaller,
+    budget and all), because per-site activation is allowed.
 11. **Only an administrator finishes a sign-in.** The account sign-in's return
     parameters are dropped on `admin_init` at 9 unless the user has
     `manage_options` (veronalabs/wp-premium-sdk#28; a port of WSMS's guard).

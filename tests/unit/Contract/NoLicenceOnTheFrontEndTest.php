@@ -176,7 +176,7 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
      * ADR 0015 permits exactly two readers — Pro's updater and Pro's admin
      * screens — and ADR 0143 puts both in one directory. Until it did, this was
      * the total assertion: the word did not appear in code in either tree. It
-     * is narrowed to that directory and the bootstrap line that runs it, and no
+     * is narrowed to that directory and Pro's bootstrap, which runs it, and no
      * further, so a licence read anywhere else is still a decision somebody
      * has to come here and take on purpose rather than one that arrives inside
      * a feature branch.
@@ -210,8 +210,8 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
     }
 
     /**
-     * And the wiring line names the provider, nothing more: the bootstrap
-     * runs the licence; it does not ask it anything.
+     * And the bootstrap names the provider, nothing more: it runs the licence
+     * and stops its daily check on deactivation; it does not ask it anything.
      */
     public function testTheBootstrapOnlyRunsTheLicenceProvider(): void
     {
@@ -220,8 +220,8 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
         preg_match_all('/\\b\\w*licen[cs]e\\w*\\b/i', $code, $matches);
 
         $this->assertSame(
-            ['License', 'LicenseServiceProvider', 'LicenseServiceProvider'],
-            $matches[0],
+            ['License', 'LicenseServiceProvider'],
+            array_values(array_unique($matches[0])),
             'Pro\'s bootstrap does more with the licence than run its provider'
         );
     }
