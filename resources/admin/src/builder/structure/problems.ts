@@ -264,7 +264,7 @@ function whatCapturesNothing(template: Template): Problem[] {
     said: boundaries.every(at => at < 0)
       ? __('This design captures something but has no button that submits, so what a visitor types goes nowhere.', 'wconvert')
       : template.tree.graph && template.tree.submissions.some(submission => submission.fields.includes((nodeAt(template.tree, block.path) as FieldNode).id ?? ''))
-      ? __('Every path to this field’s save must include its screen. Move the field onto the save screen or reconnect the paths.', 'wconvert')
+      ? __('Every line to this field’s form must pass its screen. Move the field onto the form’s screen or change the lines.', 'wconvert')
       : __('Assign this field to a submission after its screen so the answer can be saved.', 'wconvert'),
     path: block.path,
     check: 'captures',

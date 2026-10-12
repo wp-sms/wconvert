@@ -27,7 +27,7 @@ it('shows at most three observations with inspectable denominators and a scoped 
 it('refuses journey numbers from a different reporting period', async () => {
   vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-01', to: '2026-09-07', rows: [], definitions: {}, days: 7 });
   render(<JourneyReport id="campaign" period={{ from: '2026-09-24', to: '2026-09-30', days: 7 }} />);
-  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Could not load matching journey totals'));
+  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Could not load matching screen totals'));
   expect(vi.mocked(apiFetch).mock.calls[0][0].path).toContain('complete=1');
   expect(screen.queryByText('No journey activity in this period.')).not.toBeInTheDocument();
 });

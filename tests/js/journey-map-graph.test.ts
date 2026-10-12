@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
-import { hiddenFor, routesFor } from '../../resources/admin/src/builder/JourneyMap';
+import { hiddenFor, routesFor } from '../../resources/admin/src/builder/structure/flowModel';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 
 it('draws stored connections from graph IDs rather than adjacent array positions', () => {

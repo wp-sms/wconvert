@@ -20,8 +20,8 @@ final class JourneyRules
             if (!is_array($clause) || !CaptureJourney::identifier($clause['question'] ?? null)
                 || !in_array($clause['operator'] ?? null, ['is', 'is_not', 'includes_any', 'includes_none'], true)
                 || !is_array($clause['values'] ?? null) || !array_is_list($clause['values'])
-                || count($clause['values']) < 1 || count($clause['values']) > 12
-                || (in_array($clause['operator'], ['is', 'is_not'], true) && count($clause['values']) !== 1)) { return null; }
+                // One to twelve answers for every operator: "is any of" too (ADR 0142).
+                || count($clause['values']) < 1 || count($clause['values']) > 12) { return null; }
             foreach ($clause['values'] as $answer) {
                 if (!CaptureJourney::identifier($answer)) { return null; }
             }

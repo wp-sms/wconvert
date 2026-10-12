@@ -76,7 +76,7 @@ it('starts a graph test at its entry screen and resets to that entry', async () 
   render(<JourneyTest template={template} onEdit={() => {}} />);
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
   expect(screen.getByText('One enquiry').closest('li')).toHaveAttribute('data-current', 'false');
-  expect(screen.queryByText('Why this path?')).not.toBeInTheDocument();
+  expect(screen.queryByText('Why these screens?')).not.toBeInTheDocument();
   // Off-path screens are one muted line, never a list to open (ADR 0138).
   expect(screen.getByText('Garden details').closest('[data-category]')).toHaveTextContent(/^Not reached yet:/);
   expect(screen.getByText('Garden details')).toBeVisible();
@@ -144,7 +144,7 @@ it('keeps a malformed imported save on its screen instead of accepting an empty 
   await user.type(screen.getByLabelText('Optional note'), 'Please keep this draft');
   await user.click(screen.getByLabelText('Consent'));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  expect(screen.getByRole('status')).toHaveTextContent('This save is incomplete or is not on the visited path.');
+  expect(screen.getByRole('status')).toHaveTextContent('This save is incomplete or was not reached in this visit.');
   expect(screen.getByLabelText('Optional note')).toHaveValue('Please keep this draft');
   expect(screen.queryByText('Accepted in test')).not.toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.test');
@@ -154,11 +154,11 @@ it('keeps a malformed imported save on its screen instead of accepting an empty 
 it('returns only the path actually visited to the map, before and after a save', async () => {
   const user = userEvent.setup(), show = vi.fn();
   render(<JourneyTest template={source as Template} onEdit={() => {}} onShowPath={show} />);
-  expect(screen.queryByRole('button', { name: 'Show this path on the map' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Show this visit on the map' })).not.toBeInTheDocument();
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  await user.click(screen.getByRole('button', { name: 'Show this path on the map' }));
+  await user.click(screen.getByRole('button', { name: 'Show this visit on the map' }));
   expect(show.mock.lastCall?.[0]).toEqual([0, 1]);
   expect(show.mock.lastCall?.[1]).toHaveLength(1);
 });

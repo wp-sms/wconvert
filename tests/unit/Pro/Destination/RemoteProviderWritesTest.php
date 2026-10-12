@@ -305,6 +305,27 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             self::assertSame([], $this->calls);
         }
 
+        /** Two lists is not ready before a push, and still refused by one (#223). */
+        public function testOneListServicesAreNotReadyWithTwoAndPushRefusesThem(): void
+        {
+            foreach ([
+                [new MailchimpDestinationType(), 'audiences', ['api_key' => 'secret-us1'], 'Choose one Mailchimp audience.'],
+                [new BrevoDestinationType(), 'lists', ['api_key' => 'secret'], 'Choose one Brevo list.'],
+                [new MailtrapDestinationType(), 'lists', ['api_token' => 'secret'], 'Choose one Mailtrap list.'],
+            ] as [$type, $key, $credentials, $reason]) {
+                self::assertSame(1, $type->requirements()->settings[$key]['max'] ?? null);
+                self::assertSame(1, $type->settingsSchema([])[$key]['max'] ?? null, 'The admin draws it from the schema.');
+                self::assertSame([$key], $type->requirements()->missingSettings([$key => ['7', '8']]));
+                self::assertSame([], $type->requirements()->missingSettings([$key => ['7']]));
+                self::assertSame([], $type->requirements()->missingSettings([$key => ['7', '7']]), 'One id, repeated, is one.');
+                $this->reply([]);
+                $result = $type->push(PushSubject::test(['email' => 'a@example.com']), new PushContext(null, [$key => ['7', '8']], $credentials));
+                self::assertTrue($result->needsAttention);
+                self::assertSame($reason, $result->reason);
+                self::assertSame([], $this->calls);
+            }
+        }
+
         public function testMailtrapClassifiesEachRequestByStatus(): void
         {
             $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada']);

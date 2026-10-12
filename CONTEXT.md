@@ -903,7 +903,7 @@ This contract is implemented under
 A Free journey is linear: the merchant can arrange its screens and submission
 points, including a screen that explains an offer before asking for details.
 Pro journeys are a **graph** (`tree.graph`, v3): an entry screen and edges between
-screens. Each [[Path]] is one edge — `answer` (taken when its condition on an
+screens. Each [[Line]] is one edge — `answer` (taken when its condition on an
 earlier choice matches), `default` (taken by [[All other answers]]) or an
 optional `hidden` override (where a skipped screen sends visitors instead of
 continuing along its default — [ADR 0135](docs/adr/0135-plain-style-controls-exact-values-under-advanced.md)). Paths
@@ -934,25 +934,32 @@ One step a visitor sees in a [[Capture journey]]: a message, a [[Form]], a
 question, a result or an ending. The left tree lists screens and opens each into
 its elements; the canvas shows one at a time.
 
-### Path
+### Line
 
-One way from a screen to the next screen (a graph edge). **Not** a
-[[Connection]] — that word stays the stored credentials for a remote account, and
-the journey sense was renamed to avoid the collision. "Branch" and "route" are
-retired synonyms.
+One way from a screen to the next screen (a graph edge; version 2 stores them
+as `paths`, and the code keeps that name). **Not** a [[Connection]] — that word
+stays the stored credentials for a remote account, and the journey sense was
+renamed to avoid the collision. Merchant-facing copy says **line**, as the Flow
+map draws it ("Send some answers to a different screen", "+ on a line"); "path"
+was retired from copy by ADR 0142, a URL's path in display rules aside, and
+"branch" and "route" before it. A line labelled with an answer is an answer
+line, and one answer line may match several answers ("My home or My flat").
+One run through Preview or Try a visitor is a **visit**.
 
 ### Follow-up question
 
 A question screen shown only to visitors whose earlier answer matched, by its
-[[Show only if…]]. Several follow-ups for one multi-choice question form a group
+[[Only if…]]. Several follow-ups for one multi-choice question form a group
 asked one at a time, sharing one way on.
 
-### Show only if…
+### Only if…
 
 A screen's condition on an earlier answer (`screen.when`). A screen that does
 not match is skipped, and visitors continue where it would have taken them,
-unless its "If skipped, go to…" says otherwise. Replaces "screen visibility", "visibility rule" and "Show
-this screen when…".
+unless its "If skipped → X" says otherwise. On the map it splits the line it
+sits on (ADR 0142): "Includes X" / "Without X" after a choose-several question.
+Replaces "Show only if…", "Shown if", "screen visibility", "visibility rule"
+and "Show this screen when…".
 
 ### Form
 
@@ -967,8 +974,14 @@ last. Replaces "Everyone else" and "fallback".
 
 ### Then
 
-Where a screen goes next: "Then → Thank you". On a straight journey there is one
-answer; on a question with paths it depends on the answer.
+Where a screen goes next: "Then → Thank you", a button on its Flow card that
+opens the control setting it. On a straight campaign there is one answer; on a
+question with answer lines it depends on the answer. Replaces "Next screen" and
+"Check next". An ending that no route reaches through the required form (or,
+for find-a-match, the result) is an **early ending** and says "Ends without
+saving details"; one some visitors reach both ways says "Some visitors end
+here without saving details". Both publish (ADR 0142); a change that makes
+one is checked once.
 
 ### Template
 
@@ -1440,7 +1453,9 @@ Destination is a **named route**, and the name is the merchant's own: two
 Destinations of one type over one [[Connection]] differ only in what they point
 at, so *"Newsletter signups"* and *"Product updates"* are two MailPoet
 Destinations and the name is what tells them apart on the [[Optin]] that binds
-one. Renaming breaks nothing — the binding is by id. Whatever the selector is, it
+one. Renaming breaks nothing — the binding is by id. Some services take exactly
+one list (Mailchimp, Brevo, Mailtrap); their selector says `max: 1`, and a
+Destination holding two is not ready (ADR 0074). Whatever the selector is, it
 is only ever **added**: a Lead arriving cannot remove the audience or tag
 membership a [[Contact]] already has, because that membership is a decision the
 owning system made and WConvert has no standing to revise. An
@@ -1561,7 +1576,7 @@ shown alongside Destination health, with no durable delivery ledger.
 
 ### Connection
 
-*Not the journey sense: a way between two screens is a [[Path]].*
+*Not the journey sense: a way between two screens is a [[Line]].*
 
 Stored credentials for one remote account — a Mailchimp API key, a Brevo key. One
 Connection backs one or more [[Destination]]s, so two Mailchimp audiences are two

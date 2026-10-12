@@ -62,3 +62,19 @@ describe('forward paths', () => {
     expect(noAnswer.skips).toContainEqual({ index: 2, reason: 'condition', missingQuestions: ['q_interest'] });
   });
 });
+
+/** "is any of" (ADR 0142): one answer line on a choose-one question routes every answer it names. */
+describe('an answer line with several answers', () => {
+  it('routes each named answer down it and the rest down all other answers', async () => {
+    const { graphTrace } = await import('@loader/journey-graph');
+    const graph = { entry: 'project', edges: [
+      { id: 'many', from: 'project', to: 'size', kind: 'answer' as const, when: { match: 'all' as const, clauses: [{ question: 'q_project', operator: 'is' as const, values: ['garden', 'balcony'] }] } },
+      { id: 'rest', from: 'project', to: 'result', kind: 'default' as const },
+      { id: 'size_next', from: 'size', to: 'result', kind: 'default' as const },
+    ] };
+    const plain = steps.map(step => ({ ...step, when: undefined }));
+    for (const answer of ['garden', 'balcony']) expect(graphTrace(plain, graph, { q_project: answer }).decisions[0]).toMatchObject({ edge: 'many', to: 'size' });
+    expect(graphTrace(plain, graph, { q_project: 'other' }).decisions[0]).toMatchObject({ edge: 'rest', to: 'result' });
+    expect(matches({ match: 'all', clauses: [{ question: 'q_project', operator: 'is_not', values: ['garden', 'balcony'] }] }, { q_project: 'balcony' })).toBe(false);
+  });
+});

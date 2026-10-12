@@ -1,3 +1,4 @@
+import { requiredSaveBypasses } from '../../resources/admin/src/builder/structure/graphChangeImpact';
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { journeyReadinessIssues } from '../../resources/admin/src/builder/structure/journeyReadiness';
@@ -49,25 +50,24 @@ it('names the exact graph path with an unfinished answer and its repair target',
       when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: [] }] } },
   ] } };
   expect(journeyReadinessIssues(tree)).toContainEqual({ key: 'edge:new_branch',
-    said: 'Choose an answer for the path from “Interests” to “Balcony details”.',
+    said: 'Choose an answer for the line from “Interests” to “Balcony details”.',
     repair: { screenId: 'interests', section: 'paths', edgeId: 'new_branch' } });
 });
 
 it('locates a disconnected screen by stable ID even when names can change', () => {
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.filter(edge => edge.id !== 'submitted') } };
   expect(journeyReadinessIssues(tree)).toContainEqual({ key: 'unreachable:received',
-    said: 'No journey path reaches “Received”. Connect or remove this screen.',
+    said: 'No line reaches “Received”. Connect one to it, or delete it.',
     repair: { screenId: 'received', section: 'content' } });
 });
 
-it('blocks a required-save bypass and locates its hidden continuation', () => {
+/** Some visitors may reach an ending without the required form (ADR 0142): a note on the map, not a blocker. */
+it('does not block an ending some visitors reach without the required form', () => {
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.map(edge =>
     edge.id === 'balcony_hidden' ? { ...edge, to: 'received' } : edge) } };
-  expect(journeyReadinessIssues(tree)).toContainEqual({ key: 'capture-path:enquiry:received',
-    said: 'A path reaches “Received” without the required save at “One enquiry”. Reconnect this path through the save screen.',
-    repair: { screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' } });
-  const optional: TemplateTree = { ...tree, submissions: tree.submissions.map(item => ({ ...item, required: false })) };
-  expect(journeyReadinessIssues(optional).some(issue => issue.key.startsWith('capture-path:'))).toBe(false);
+  expect(journeyReadinessIssues(tree).some(issue => issue.key.startsWith('capture-path:'))).toBe(false);
+  expect(requiredSaveBypasses(tree, { endings: true })).toEqual([expect.objectContaining({ endingId: 'received', reason: 'ending',
+    edge: expect.objectContaining({ id: 'balcony_hidden' }) })]);
 });
 
 /** A result's link is optional (ADR 0133): no address hides its button. An address needs words. */

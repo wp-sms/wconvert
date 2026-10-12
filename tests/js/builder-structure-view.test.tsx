@@ -2061,7 +2061,7 @@ describe('adaptive editor and signup deletion', () => {
     try {
       await structure();
       // Narrow, the Edit tab is three panes taken one at a time: Screens · Preview · Edit (ADR 0134).
-      const panes = screen.getByRole('group', { name: 'Mobile journey view' });
+      const panes = screen.getByRole('group', { name: 'Phone view' });
       await userEvent.click(within(panes).getByRole('radio', { name: 'Screens' }));
       await userEvent.click(screen.getByRole('button', { name: 'Headline Get 10% off your first order' }));
       const text = within(screen.getByRole('group', { name: 'Headline' })).getByRole('textbox', { name: 'Text' });

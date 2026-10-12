@@ -1,0 +1,1569 @@
+{
+ "about": "Early endings (ADR 0142): GraphCaptureContract and structure/gateEndings.ts read the same cases. `issue` is what publishing says; without it, a case publishes. A gate with no ending after it is only possible when the gate is disconnected, and that is refused as `routes` first.",
+ "cases": [
+  {
+   "name": "an early ending skips the form",
+   "goal": "collect_enquiries",
+   "gate": "contact",
+   "tree": {
+    "v": 3,
+    "submissions": [
+     {
+      "id": "enquiry",
+      "required": true,
+      "fields": [
+       "n9"
+      ],
+      "consents": []
+     }
+    ],
+    "steps": [
+     {
+      "id": "service",
+      "name": "What do you need?",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n1",
+         "text": "Tell us what you need",
+         "role": "headline"
+        },
+        {
+         "type": "question",
+         "id": "n2",
+         "label": "What can we help with?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "design",
+           "label": "Design"
+          },
+          {
+           "value": "repair",
+           "label": "Repair"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n3",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        }
+       ]
+      }
+     },
+     {
+      "id": "repair",
+      "name": "Repair details",
+      "kind": "content",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n4",
+         "text": "A little about the repair",
+         "role": "headline"
+        },
+        {
+         "type": "text",
+         "id": "n5",
+         "text": "We can usually advise after hearing about the item.",
+         "role": "body"
+        },
+        {
+         "type": "button",
+         "id": "n6",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        },
+        {
+         "type": "button",
+         "id": "n7",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "when": {
+       "match": "all",
+       "clauses": [
+        {
+         "question": "n2",
+         "operator": "is",
+         "values": [
+          "repair"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "contact",
+      "name": "Contact details",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n8",
+         "text": "How can we reach you?",
+         "role": "headline"
+        },
+        {
+         "type": "field",
+         "id": "n9",
+         "name": "email",
+         "required": true,
+         "label": "Email address",
+         "tokens": {
+          "border": "#6b94b5"
+         }
+        },
+        {
+         "type": "button",
+         "id": "n10",
+         "label": "Send enquiry",
+         "action": "submit",
+         "submission": "enquiry",
+         "role": "cta_label"
+        },
+        {
+         "type": "button",
+         "id": "n11",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "id": "received",
+      "name": "Request received",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n12",
+         "text": "Request received",
+         "role": "success_headline"
+        },
+        {
+         "type": "text",
+         "id": "n13",
+         "text": "We will review your enquiry and reply using the details you supplied.",
+         "role": "success_body"
+        },
+        {
+         "type": "button",
+         "id": "n14",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "id": "not_fit",
+      "name": "Not a fit",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "text": "Thanks for looking"
+        }
+       ]
+      }
+     }
+    ],
+    "graph": {
+     "entry": "service",
+     "edges": [
+      {
+       "id": "next_service",
+       "from": "service",
+       "to": "repair",
+       "kind": "default"
+      },
+      {
+       "id": "next_repair",
+       "from": "repair",
+       "to": "contact",
+       "kind": "default"
+      },
+      {
+       "id": "hidden_repair",
+       "from": "repair",
+       "to": "contact",
+       "kind": "hidden"
+      },
+      {
+       "id": "next_contact",
+       "from": "contact",
+       "to": "received",
+       "kind": "default"
+      },
+      {
+       "id": "to_not_fit",
+       "from": "service",
+       "to": "not_fit",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n2",
+          "operator": "is",
+          "values": [
+           "design"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "after": [
+    "received"
+   ],
+   "early": [
+    "not_fit"
+   ],
+   "shared": []
+  },
+  {
+   "name": "an ending is reached with and without the form",
+   "goal": "collect_enquiries",
+   "gate": "contact",
+   "tree": {
+    "v": 3,
+    "submissions": [
+     {
+      "id": "enquiry",
+      "required": true,
+      "fields": [
+       "n9"
+      ],
+      "consents": []
+     }
+    ],
+    "steps": [
+     {
+      "id": "service",
+      "name": "What do you need?",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n1",
+         "text": "Tell us what you need",
+         "role": "headline"
+        },
+        {
+         "type": "question",
+         "id": "n2",
+         "label": "What can we help with?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "design",
+           "label": "Design"
+          },
+          {
+           "value": "repair",
+           "label": "Repair"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n3",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        }
+       ]
+      }
+     },
+     {
+      "id": "repair",
+      "name": "Repair details",
+      "kind": "content",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n4",
+         "text": "A little about the repair",
+         "role": "headline"
+        },
+        {
+         "type": "text",
+         "id": "n5",
+         "text": "We can usually advise after hearing about the item.",
+         "role": "body"
+        },
+        {
+         "type": "button",
+         "id": "n6",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        },
+        {
+         "type": "button",
+         "id": "n7",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "when": {
+       "match": "all",
+       "clauses": [
+        {
+         "question": "n2",
+         "operator": "is",
+         "values": [
+          "repair"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "contact",
+      "name": "Contact details",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n8",
+         "text": "How can we reach you?",
+         "role": "headline"
+        },
+        {
+         "type": "field",
+         "id": "n9",
+         "name": "email",
+         "required": true,
+         "label": "Email address",
+         "tokens": {
+          "border": "#6b94b5"
+         }
+        },
+        {
+         "type": "button",
+         "id": "n10",
+         "label": "Send enquiry",
+         "action": "submit",
+         "submission": "enquiry",
+         "role": "cta_label"
+        },
+        {
+         "type": "button",
+         "id": "n11",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "id": "received",
+      "name": "Request received",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n12",
+         "text": "Request received",
+         "role": "success_headline"
+        },
+        {
+         "type": "text",
+         "id": "n13",
+         "text": "We will review your enquiry and reply using the details you supplied.",
+         "role": "success_body"
+        },
+        {
+         "type": "button",
+         "id": "n14",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "id": "not_fit",
+      "name": "Not a fit",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "text": "Thanks for looking"
+        }
+       ]
+      }
+     }
+    ],
+    "graph": {
+     "entry": "service",
+     "edges": [
+      {
+       "id": "next_service",
+       "from": "service",
+       "to": "repair",
+       "kind": "default"
+      },
+      {
+       "id": "next_repair",
+       "from": "repair",
+       "to": "contact",
+       "kind": "default"
+      },
+      {
+       "id": "hidden_repair",
+       "from": "repair",
+       "to": "contact",
+       "kind": "hidden"
+      },
+      {
+       "id": "next_contact",
+       "from": "contact",
+       "to": "received",
+       "kind": "default"
+      },
+      {
+       "id": "to_not_fit",
+       "from": "service",
+       "to": "not_fit",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n2",
+          "operator": "is",
+          "values": [
+           "design"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "id": "shared",
+       "from": "service",
+       "to": "received",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n2",
+          "operator": "is",
+          "values": [
+           "repair"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "after": [],
+   "early": [
+    "not_fit"
+   ],
+   "shared": [
+    "received"
+   ]
+  },
+  {
+   "name": "an early ending skips the result",
+   "goal": "find_match",
+   "gate": "match",
+   "tree": {
+    "v": 3,
+    "submissions": [],
+    "steps": [
+     {
+      "id": "need",
+      "name": "What are you shopping for?",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n1",
+         "text": "Find the right products",
+         "role": "headline"
+        },
+        {
+         "type": "text",
+         "id": "n2",
+         "text": "Two quick questions help us recommend the right products.",
+         "role": "body"
+        },
+        {
+         "type": "question",
+         "id": "n3",
+         "label": "Where will you use it?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "garden",
+           "label": "Garden"
+          },
+          {
+           "value": "balcony",
+           "label": "Balcony"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n4",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        }
+       ]
+      }
+     },
+     {
+      "id": "garden",
+      "name": "Your garden",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n5",
+         "text": "Tell us about your garden",
+         "role": "headline"
+        },
+        {
+         "type": "question",
+         "id": "n6",
+         "label": "How much sun does it get?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "sun",
+           "label": "Mostly sunny"
+          },
+          {
+           "value": "shade",
+           "label": "Mostly shady"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n7",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        },
+        {
+         "type": "button",
+         "id": "n8",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "when": {
+       "match": "all",
+       "clauses": [
+        {
+         "question": "n3",
+         "operator": "is",
+         "values": [
+          "garden"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "match",
+      "name": "Your result",
+      "kind": "result",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "button",
+         "id": "n9",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "results": [
+       {
+        "id": "garden_sun",
+        "heading": "Sunny garden picks",
+        "body": "Here are products for a sunny garden. If they are unavailable, browse the shop.",
+        "product_ids": [],
+        "when": {
+         "match": "all",
+         "clauses": [
+          {
+           "question": "n3",
+           "operator": "is",
+           "values": [
+            "garden"
+           ]
+          },
+          {
+           "question": "n6",
+           "operator": "is",
+           "values": [
+            "sun"
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "id": "balcony",
+        "heading": "Balcony picks",
+        "body": "These products work in compact spaces. If none are available, browse the shop.",
+        "product_ids": [],
+        "when": {
+         "match": "all",
+         "clauses": [
+          {
+           "question": "n3",
+           "operator": "is",
+           "values": [
+            "balcony"
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "id": "fallback",
+        "heading": "Explore the shop",
+        "body": "Browse the full range if your preferences did not match or products are unavailable.",
+        "product_ids": []
+       }
+      ],
+      "products_required": true
+     },
+     {
+      "id": "browse",
+      "name": "Not a fit",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "text": "Thanks for looking"
+        }
+       ]
+      }
+     }
+    ],
+    "graph": {
+     "entry": "need",
+     "edges": [
+      {
+       "id": "next_need",
+       "from": "need",
+       "to": "garden",
+       "kind": "default"
+      },
+      {
+       "id": "next_garden",
+       "from": "garden",
+       "to": "match",
+       "kind": "default"
+      },
+      {
+       "id": "hidden_garden",
+       "from": "garden",
+       "to": "match",
+       "kind": "hidden"
+      },
+      {
+       "id": "to_browse",
+       "from": "need",
+       "to": "browse",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n3",
+          "operator": "is",
+          "values": [
+           "balcony"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "after": [
+    "match"
+   ],
+   "early": [
+    "browse"
+   ],
+   "shared": []
+  },
+  {
+   "name": "an ending is reached with and without the result",
+   "goal": "find_match",
+   "gate": "match",
+   "tree": {
+    "v": 3,
+    "submissions": [],
+    "steps": [
+     {
+      "id": "need",
+      "name": "What are you shopping for?",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n1",
+         "text": "Find the right products",
+         "role": "headline"
+        },
+        {
+         "type": "text",
+         "id": "n2",
+         "text": "Two quick questions help us recommend the right products.",
+         "role": "body"
+        },
+        {
+         "type": "question",
+         "id": "n3",
+         "label": "Where will you use it?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "garden",
+           "label": "Garden"
+          },
+          {
+           "value": "balcony",
+           "label": "Balcony"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n4",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        }
+       ]
+      }
+     },
+     {
+      "id": "garden",
+      "name": "Your garden",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n5",
+         "text": "Tell us about your garden",
+         "role": "headline"
+        },
+        {
+         "type": "question",
+         "id": "n6",
+         "label": "How much sun does it get?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "sun",
+           "label": "Mostly sunny"
+          },
+          {
+           "value": "shade",
+           "label": "Mostly shady"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n7",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        },
+        {
+         "type": "button",
+         "id": "n8",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "when": {
+       "match": "all",
+       "clauses": [
+        {
+         "question": "n3",
+         "operator": "is",
+         "values": [
+          "garden"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "match",
+      "name": "Your result",
+      "kind": "result",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "button",
+         "id": "n9",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        },
+        {
+         "type": "button",
+         "action": "next",
+         "label": "Done"
+        }
+       ]
+      },
+      "results": [
+       {
+        "id": "garden_sun",
+        "heading": "Sunny garden picks",
+        "body": "Here are products for a sunny garden. If they are unavailable, browse the shop.",
+        "product_ids": [],
+        "when": {
+         "match": "all",
+         "clauses": [
+          {
+           "question": "n3",
+           "operator": "is",
+           "values": [
+            "garden"
+           ]
+          },
+          {
+           "question": "n6",
+           "operator": "is",
+           "values": [
+            "sun"
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "id": "balcony",
+        "heading": "Balcony picks",
+        "body": "These products work in compact spaces. If none are available, browse the shop.",
+        "product_ids": [],
+        "when": {
+         "match": "all",
+         "clauses": [
+          {
+           "question": "n3",
+           "operator": "is",
+           "values": [
+            "balcony"
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "id": "fallback",
+        "heading": "Explore the shop",
+        "body": "Browse the full range if your preferences did not match or products are unavailable.",
+        "product_ids": []
+       }
+      ],
+      "products_required": true
+     },
+     {
+      "id": "browse",
+      "name": "Not a fit",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "text": "Thanks for looking"
+        }
+       ]
+      }
+     }
+    ],
+    "graph": {
+     "entry": "need",
+     "edges": [
+      {
+       "id": "next_need",
+       "from": "need",
+       "to": "garden",
+       "kind": "default"
+      },
+      {
+       "id": "next_garden",
+       "from": "garden",
+       "to": "match",
+       "kind": "default"
+      },
+      {
+       "id": "hidden_garden",
+       "from": "garden",
+       "to": "match",
+       "kind": "hidden"
+      },
+      {
+       "id": "to_browse",
+       "from": "need",
+       "to": "browse",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n3",
+          "operator": "is",
+          "values": [
+           "balcony"
+          ]
+         }
+        ]
+       }
+      },
+      {
+       "id": "after_result",
+       "from": "match",
+       "to": "browse",
+       "kind": "default"
+      }
+     ]
+    }
+   },
+   "after": [],
+   "early": [],
+   "shared": [
+    "browse"
+   ]
+  },
+  {
+   "name": "no ending comes after the form",
+   "goal": "collect_enquiries",
+   "gate": "contact",
+   "tree": {
+    "v": 3,
+    "submissions": [
+     {
+      "id": "enquiry",
+      "required": true,
+      "fields": [
+       "n9"
+      ],
+      "consents": []
+     }
+    ],
+    "steps": [
+     {
+      "id": "service",
+      "name": "What do you need?",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n1",
+         "text": "Tell us what you need",
+         "role": "headline"
+        },
+        {
+         "type": "question",
+         "id": "n2",
+         "label": "What can we help with?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "design",
+           "label": "Design"
+          },
+          {
+           "value": "repair",
+           "label": "Repair"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n3",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        }
+       ]
+      }
+     },
+     {
+      "id": "repair",
+      "name": "Repair details",
+      "kind": "content",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n4",
+         "text": "A little about the repair",
+         "role": "headline"
+        },
+        {
+         "type": "text",
+         "id": "n5",
+         "text": "We can usually advise after hearing about the item.",
+         "role": "body"
+        },
+        {
+         "type": "button",
+         "id": "n6",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        },
+        {
+         "type": "button",
+         "id": "n7",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "when": {
+       "match": "all",
+       "clauses": [
+        {
+         "question": "n2",
+         "operator": "is",
+         "values": [
+          "repair"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "contact",
+      "name": "Contact details",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n8",
+         "text": "How can we reach you?",
+         "role": "headline"
+        },
+        {
+         "type": "field",
+         "id": "n9",
+         "name": "email",
+         "required": true,
+         "label": "Email address",
+         "tokens": {
+          "border": "#6b94b5"
+         }
+        },
+        {
+         "type": "button",
+         "id": "n10",
+         "label": "Send enquiry",
+         "action": "submit",
+         "submission": "enquiry",
+         "role": "cta_label"
+        },
+        {
+         "type": "button",
+         "id": "n11",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "id": "received",
+      "name": "Request received",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n12",
+         "text": "Request received",
+         "role": "success_headline"
+        },
+        {
+         "type": "text",
+         "id": "n13",
+         "text": "We will review your enquiry and reply using the details you supplied.",
+         "role": "success_body"
+        },
+        {
+         "type": "button",
+         "id": "n14",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "id": "not_fit",
+      "name": "Not a fit",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "text": "Thanks for looking"
+        }
+       ]
+      }
+     }
+    ],
+    "graph": {
+     "entry": "service",
+     "edges": [
+      {
+       "id": "next_service",
+       "from": "service",
+       "to": "repair",
+       "kind": "default"
+      },
+      {
+       "id": "next_repair",
+       "from": "repair",
+       "to": "not_fit",
+       "kind": "default"
+      },
+      {
+       "id": "hidden_repair",
+       "from": "repair",
+       "to": "not_fit",
+       "kind": "hidden"
+      },
+      {
+       "id": "next_contact",
+       "from": "contact",
+       "to": "received",
+       "kind": "default"
+      },
+      {
+       "id": "to_not_fit",
+       "from": "service",
+       "to": "not_fit",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n2",
+          "operator": "is",
+          "values": [
+           "design"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "after": [],
+   "early": [
+    "not_fit"
+   ],
+   "shared": [],
+   "issue": "routes"
+  },
+  {
+   "name": "no ending comes after the result",
+   "goal": "find_match",
+   "gate": "match",
+   "tree": {
+    "v": 3,
+    "submissions": [],
+    "steps": [
+     {
+      "id": "need",
+      "name": "What are you shopping for?",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n1",
+         "text": "Find the right products",
+         "role": "headline"
+        },
+        {
+         "type": "text",
+         "id": "n2",
+         "text": "Two quick questions help us recommend the right products.",
+         "role": "body"
+        },
+        {
+         "type": "question",
+         "id": "n3",
+         "label": "Where will you use it?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "garden",
+           "label": "Garden"
+          },
+          {
+           "value": "balcony",
+           "label": "Balcony"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n4",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        }
+       ]
+      }
+     },
+     {
+      "id": "garden",
+      "name": "Your garden",
+      "kind": "input",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "id": "n5",
+         "text": "Tell us about your garden",
+         "role": "headline"
+        },
+        {
+         "type": "question",
+         "id": "n6",
+         "label": "How much sun does it get?",
+         "answer_type": "single",
+         "required": true,
+         "options": [
+          {
+           "value": "sun",
+           "label": "Mostly sunny"
+          },
+          {
+           "value": "shade",
+           "label": "Mostly shady"
+          }
+         ]
+        },
+        {
+         "type": "button",
+         "id": "n7",
+         "label": "Continue",
+         "action": "next",
+         "role": "next_label"
+        },
+        {
+         "type": "button",
+         "id": "n8",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "when": {
+       "match": "all",
+       "clauses": [
+        {
+         "question": "n3",
+         "operator": "is",
+         "values": [
+          "garden"
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "id": "match",
+      "name": "Your result",
+      "kind": "result",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "button",
+         "id": "n9",
+         "label": "Back",
+         "action": "back",
+         "role": "back_label",
+         "tokens": {
+          "accent": "transparent",
+          "accent-fg": "fg"
+         }
+        }
+       ]
+      },
+      "results": [
+       {
+        "id": "garden_sun",
+        "heading": "Sunny garden picks",
+        "body": "Here are products for a sunny garden. If they are unavailable, browse the shop.",
+        "product_ids": [],
+        "when": {
+         "match": "all",
+         "clauses": [
+          {
+           "question": "n3",
+           "operator": "is",
+           "values": [
+            "garden"
+           ]
+          },
+          {
+           "question": "n6",
+           "operator": "is",
+           "values": [
+            "sun"
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "id": "balcony",
+        "heading": "Balcony picks",
+        "body": "These products work in compact spaces. If none are available, browse the shop.",
+        "product_ids": [],
+        "when": {
+         "match": "all",
+         "clauses": [
+          {
+           "question": "n3",
+           "operator": "is",
+           "values": [
+            "balcony"
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "id": "fallback",
+        "heading": "Explore the shop",
+        "body": "Browse the full range if your preferences did not match or products are unavailable.",
+        "product_ids": []
+       }
+      ],
+      "products_required": true
+     },
+     {
+      "id": "browse",
+      "name": "Not a fit",
+      "kind": "acknowledgement",
+      "content": {
+       "type": "stack",
+       "children": [
+        {
+         "type": "heading",
+         "text": "Thanks for looking"
+        }
+       ]
+      }
+     }
+    ],
+    "graph": {
+     "entry": "need",
+     "edges": [
+      {
+       "id": "next_need",
+       "from": "need",
+       "to": "garden",
+       "kind": "default"
+      },
+      {
+       "id": "next_garden",
+       "from": "garden",
+       "to": "browse",
+       "kind": "default"
+      },
+      {
+       "id": "hidden_garden",
+       "from": "garden",
+       "to": "browse",
+       "kind": "hidden"
+      },
+      {
+       "id": "to_browse",
+       "from": "need",
+       "to": "browse",
+       "kind": "answer",
+       "when": {
+        "match": "all",
+        "clauses": [
+         {
+          "question": "n3",
+          "operator": "is",
+          "values": [
+           "balcony"
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "after": [],
+   "early": [
+    "browse"
+   ],
+   "shared": [],
+   "issue": "routes"
+  }
+ ]
+}

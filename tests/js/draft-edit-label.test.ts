@@ -18,8 +18,8 @@ it('names the forward action for both Undo and Redo across a coalesced rename', 
 it('names graph rerouting even when the stored edge order also changes', () => {
   const next = snapshot({ ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges].reverse().map(edge => edge.id === 'start' ? { ...edge, to: 'contact' } : edge) } });
   // Only answer-edge order carries priority; default/hidden storage order is irrelevant.
-  expect(draftEditLabel(snapshot(), snapshot({ ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'start' ? { ...edge, to: 'contact' } : edge) } }))).toBe('Change paths from “Interests”');
-  expect(draftEditLabel(snapshot(), next)).toBe('Change paths from “Interests”');
+  expect(draftEditLabel(snapshot(), snapshot({ ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'start' ? { ...edge, to: 'contact' } : edge) } }))).toBe('Change lines from “Interests”');
+  expect(draftEditLabel(snapshot(), next)).toBe('Change lines from “Interests”');
 });
 it('names screen insertion and removal as one operation despite automatic edge changes', () => {
   const removed = snapshot({ ...tree, steps: tree.steps.filter(screen => screen.id !== 'balcony'), graph: { ...tree.graph!, edges: tree.graph!.edges.filter(edge => edge.from !== 'balcony').map(edge => edge.to === 'balcony' ? { ...edge, to: 'contact' } : edge) } });

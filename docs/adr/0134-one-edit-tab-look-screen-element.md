@@ -69,10 +69,12 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   "Where on the page: …" and links to Display rules, which owns placement.
 - **The screen panel is what only a screen can answer** (`ScreenPanel`). Its
   issues; **Then →** — read-only on Free and for a screen whose answers decide
-  ("Depends on the answer · Edit paths on the question"), a select on Pro that
+  ("Depends on the answer · Edit paths on the question"; *since [ADR 0142](0142-one-readable-flow-map.md)
+  the panel lists the question's lines instead, each opening its line, under
+  "First match wins, top to bottom · Edit lines"*), a select on Pro that
   rewrites the screen's default edge, upgrading a straight campaign to a graph
   the first time one screen chooses its own next (a one-screen campaign has no
-  Then, and a final result says the campaign ends there); **Show only if…** on
+  Then, and a final result says the campaign ends there); **Show only if…** (*"Only if…" since ADR 0142*) on
   any screen but the first; the **Form** section on a form screen — each field
   a link to its element with a Required box, "When submitted · Save the lead"
   and "Where leads go"; on the first screen, "When it opens", linking to
@@ -84,7 +86,7 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   path, per-choice "Goes to", "+ Follow-up question"). The journey editor owns
   the dialogs those open, so it provides that panel by context
   (`QuestionPanelContext`) and the element inspector draws it.
-- **Flow only where there is more than one way through** (D4).
+- ~~**Flow only where there is more than one way through** (D4).
   `hasManyWaysThrough` is true for an answer or hidden edge, a screen with a
   condition, or a v2 screen with more than one path. A v3 graph that is still a
   straight line is false: upgrading is not branching. **Results that depend on
@@ -94,7 +96,7 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
   quiz (project-stage-finder, gift-finder) has no Flow until a path or a
   follow-up is added. Only then does the strip above the canvas offer
   Canvas | Flow, and a Flow view falls back to Canvas the moment the last
-  branch goes.
+  branch goes.~~ *Amended by [ADR 0142](0142-one-readable-flow-map.md): Flow is always available. A straight campaign shows its one line and offers "Send some answers to a different screen".*
 - ~~**One Preview**, a menu of the one dialog's modes: As a visitor · This screen
   · Try answers (when there is a question), plus **Test a visit**, which moved
   out of Display rules.~~ *Amended by [ADR 0138](0138-one-preview-one-review-one-details.md): one Preview button with no

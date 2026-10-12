@@ -31,7 +31,7 @@ final class MailchimpDestinationType implements DestinationType
     {
         return new DestinationRequirements(
             [CanonicalFields::EMAIL],
-            ['audiences' => ['label' => __('Audience', 'wconvert'), 'type' => 'ids']],
+            ['audiences' => ['label' => __('Audience', 'wconvert'), 'type' => 'ids', 'max' => 1]],
             [CanonicalFields::EMAIL, CanonicalFields::NAME],
             [],
             ['email']
@@ -57,7 +57,7 @@ final class MailchimpDestinationType implements DestinationType
 
     public function settingsSchema(array $credentials): array
     {
-        if (empty($credentials['api_key'])) return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert')]];
+        if (empty($credentials['api_key'])) return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert'), 'max' => 1]];
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 100) {
             [$status, $body] = $this->request($credentials, 'GET', '/lists?count=100&offset=' . $offset . '&fields=lists.id,lists.name,total_items');
@@ -69,7 +69,7 @@ final class MailchimpDestinationType implements DestinationType
             if (count($lists) < 100 || (isset($body['total_items']) && $offset + count($lists) >= (int) $body['total_items'])) break;
             if ($offset + 100 >= 10000) throw new \RuntimeException('Mailchimp has too many audiences to display.');
         }
-        return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert'), 'options' => $options],
+        return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert'), 'max' => 1, 'options' => $options],
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
                 ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],
                 ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert')],
