@@ -267,7 +267,10 @@ final class TemplateLibrary
             return RejectionReason::NoConvertingAct;
         }
 
-        return CaptureJourney::issue($tree) === null ? null : RejectionReason::WrongStepCount;
+        $issue = ($tree['v'] ?? null) === 3
+            ? GraphCaptureContract::issue($tree, in_array('result', array_column($tree['steps'], 'kind'), true) ? 'find_match' : 'grow_email_list')
+            : CaptureJourney::issue($tree);
+        return $issue === null ? null : RejectionReason::WrongStepCount;
     }
 
     /**

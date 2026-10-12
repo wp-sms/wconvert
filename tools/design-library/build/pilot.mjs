@@ -1,3 +1,4 @@
+import { studioPage } from './studio-theme.mjs';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
@@ -41,7 +42,7 @@ const data = { maintenance, editorial, backlog, queue, entries, inventory, desig
 writeFileSync(resolve(out, 'coverage.json'), JSON.stringify(data.coverage, null, 2) + '\n');
 writeFileSync(resolve(out, 'inventory.json'), JSON.stringify(inventory, null, 2) + '\n');
 writeFileSync(resolve(out, 'pilot.json'), JSON.stringify(entries, null, 2) + '\n');
-writeFileSync(resolve(out, 'pilot.html'), readFileSync(resolve(here, '../pilot/review.html'), 'utf8')
+writeFileSync(resolve(out, 'pilot.html'), studioPage(readFileSync(resolve(here, '../pilot/review.html'), 'utf8'), 'pilot')
   .replace('/*__RENDERER__*/', () => renderer)
   .replace('/*__DATA__*/', () => JSON.stringify(data).replaceAll('<', '\\u003c')));
 console.log(`  pilot.html (${entries.length} actual campaign setups; ${inventory.length} indexed designs)`);

@@ -16,7 +16,8 @@ use WConvert\Template\TemplateSource;
 use WConvert\Template\TemplateVocabulary;
 
 define('ABSPATH', '/');
-define('WCONVERT_VERSION', '0.1.0');
+define('WCONVERT_URL', '');
+require dirname(__DIR__, 3) . '/src/constants.php';
 function __(string $text, string $domain = ''): string { return $text; }
 // A portable catalog has no installed modules or site-owned checkout page to resolve.
 function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return $value; }
@@ -53,7 +54,9 @@ $options = new class implements OptionStore {
     public function get(string $key, $default = null) { return $default; }
     public function set(string $key, $value): void { throw new RuntimeException('Read-only preview'); }
 };
-$prefill = new Prefill($playbooks, $templates, $vocabulary, new Degradation($rules, $supplied), new PrivacyGuidance($options));
+// Portable previews have no merchant site. Leave offer links for site-local prefill,
+// using its explicit injection seam rather than inventing a WordPress home URL.
+$prefill = new Prefill($playbooks, $templates, $vocabulary, new Degradation($rules, $supplied), new PrivacyGuidance($options), static fn (): array => ['href' => '', 'place' => 'home']);
 if (getenv('WCONVERT_EXPORT_USAGE')) {
     echo json_encode(array_map(static fn ($p) => ['id' => $p->id, 'name' => $p->name, 'template_id' => $p->templateId], array_values($playbooks->all())), JSON_THROW_ON_ERROR);
     exit;

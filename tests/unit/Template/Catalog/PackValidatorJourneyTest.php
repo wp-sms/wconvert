@@ -31,6 +31,61 @@ final class PackValidatorJourneyTest extends TestCase
         return new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), $tier);
     }
 
+    /** A downloaded flow keeps its routes through installation and later updates. */
+    public function testGraphPackInstallsUpdatesAndRemainsReadableOffline(): void
+    {
+        Journeys::on();
+        $pack = $this->pack();
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $pack['templates'][0]['tree'] = $tree;
+        $pack['requires']['tree'] = 3;
+        $pack['requires']['capabilities'][] = 'template-tree:3';
+        $directory = sys_get_temp_dir() . '/wc-graph-pack-' . bin2hex(random_bytes(6));
+        $validator = $this->validator(Tier::Basic);
+        $installed = new \WConvert\Template\Catalog\InstalledPacks($directory, $validator);
+        try {
+            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+            $original = $installed->entries()[0];
+            $pack['version'] = '1.1.0';
+            $pack['templates'][0]['tokens']['bg'] = '#ffffff';
+            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+            $offline = new \WConvert\Template\Catalog\InstalledPacks($directory, $validator);
+            $library = \WConvert\Template\TemplateLibrary::from(TemplateVocabulary::fromManifest(), $offline);
+            self::assertCount(2, $library->all());
+            self::assertSame($tree['graph'], $library->find($original['id'])['tree']['graph']);
+            self::assertSame($original['tokens'], $library->find($original['id'])['tokens']);
+            self::assertFalse($library->find($original['id'])['catalog_current']);
+        } finally {
+            foreach (glob($directory . '/*') ?: [] as $file) unlink($file);
+            if (is_dir($directory)) rmdir($directory);
+        }
+    }
+
+    public function testGraphPacksRejectMissingCapabilitiesUnsafeRoutesAndSiteData(): void
+    {
+        Journeys::on();
+        $base = $this->pack();
+        $base['templates'][0]['tree'] = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $base['requires']['tree'] = 3;
+        $base['requires']['capabilities'][] = 'template-tree:3';
+        foreach ([
+            static function (&$p) { array_pop($p['requires']['capabilities']); },
+            static function (&$p) { $p['requires']['tree'] = 2; },
+            static function (&$p) { $p['templates'][0]['tree']['graph']['edges'][0]['to'] = 'missing'; },
+            static function (&$p) { $p['templates'][0]['tree']['graph']['edges'][0]['execute'] = 'anything'; },
+            static function (&$p) { $p['templates'][0]['tree']['steps'][0]['content']['children'][1]['href'] = 'https://another-shop.example'; },
+        ] as $change) {
+            $pack = $base;
+            $change($pack);
+            try {
+                $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+                self::fail('Unsafe or undeclared graph pack was accepted');
+            } catch (RuntimeException $error) {
+                self::assertNotSame('', $error->getMessage());
+            }
+        }
+    }
+
     public function testPaidPackKeepsQuestionReferencesAndRequiresDeclaredCapability(): void
     {
         Journeys::on();

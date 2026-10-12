@@ -39,7 +39,7 @@
         {
           "setup_id": "homeware-care-notes",
           "stage": "after",
-          "setup_hash": "2740811423c8e26bcdaa89a443f7961067dfe4b5bfa6ff0bda67c7a09e375ec9",
+          "setup_hash": "2f66197329170ec6e5a8ec37325f4105ada2313aa9f9a4049d00f72a18bb40ae",
           "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
         }
       ]
@@ -125,7 +125,7 @@
         {
           "setup_id": "website-review-enquiry",
           "stage": "any",
-          "setup_hash": "b65733d43ef871496fff159f74bec634a3a8832a8b69aead79b0a253f6aa8fec",
+          "setup_hash": "2a38ab8876238dd5766a4bd55984299ec7a927618a35125a4329bd6a7fbd2398",
           "design_hash": "86ad14ff4c9b9321e42013f26d5dc80970b6a70029265a3ca4b0f7bbdd093297"
         }
       ]
@@ -205,7 +205,7 @@
         {
           "setup_id": "homeware-care-notes",
           "stage": "after",
-          "setup_hash": "2740811423c8e26bcdaa89a443f7961067dfe4b5bfa6ff0bda67c7a09e375ec9",
+          "setup_hash": "2f66197329170ec6e5a8ec37325f4105ada2313aa9f9a4049d00f72a18bb40ae",
           "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
         }
       ],
@@ -216,6 +216,55 @@
         "feature_start": "2026-10-16",
         "feature_end_exclusive": "2026-12-01"
       }
+    },
+    {
+      "id": "help-shoppers-choose",
+      "name": "Help shoppers choose",
+      "description": "Useful accessories, optional basket extras and a short product finder. Choose the help your shop needs.",
+      "cover": "launch",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 45,
+      "items": [
+        {
+          "setup_id": "recommend-accessory",
+          "stage": "any",
+          "setup_hash": "382238823d1c6f34af6f38cfb2deb7a3cea589deb6cc1ee33c80412ece631280",
+          "design_hash": "f2ace1cb29060239e6527538c5a02a7b94a2f0a53b4ee5d7d7fa6a0fb928ddbb"
+        },
+        {
+          "setup_id": "explore-compatible-extras",
+          "stage": "any",
+          "setup_hash": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
+          "design_hash": "1425822a2f42b22911053c91d548919d06d9313635b15494a8429017e44e8b8f"
+        },
+        {
+          "setup_id": "add-useful-extras",
+          "stage": "any",
+          "setup_hash": "b182091e91a1224c639f74cc2d8813c439b7ef0600febc230143f65b79fdc2f6",
+          "design_hash": "2b13a21a109df89b4cb12b2df796ad7830bed949c2ad863d9a5651eb68b2ea5d"
+        },
+        {
+          "setup_id": "basket-cross-sells",
+          "stage": "any",
+          "setup_hash": "20d274dd56881c686ab40b91f3258c2ea7278a061e8caacdd94f79bb47a485f4",
+          "design_hash": "5c7988631ae3f2bce61f64118f2e0aad0ec38e8c2175b6d717ecdc37d6008e68"
+        },
+        {
+          "setup_id": "coffee-taste-finder",
+          "stage": "any",
+          "setup_hash": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
+          "design_hash": "82e2944e7ad2c27319e51a11b301d813b33f962502cc915a47af71324e396945"
+        },
+        {
+          "setup_id": "shopping-guidance",
+          "stage": "any",
+          "setup_hash": "7b09af0ee424de83700161b7f73623a461069c1a59638b456d7d52397fab9e9d",
+          "design_hash": "509ba936a477c68eeb6b05f3047cb74d8104b5e4dd0e30d1ffba7079f6105d15"
+        }
+      ]
     }
   ]
 }

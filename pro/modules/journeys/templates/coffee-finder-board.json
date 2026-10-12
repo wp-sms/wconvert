@@ -1,0 +1,198 @@
+{
+  "id": "coffee-finder-board",
+  "name": "Coffee finder board",
+  "display_type": "inline",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#332c27",
+    "muted": "#65564a",
+    "accent": "#70452e",
+    "accent-fg": "#ffffff",
+    "border": "#907b69",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "1.25rem",
+    "width": "48rem",
+    "align": "start",
+    "shadow": "none",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [],
+    "steps": [
+      {
+        "id": "taste",
+        "name": "Choose your taste",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": "0.5",
+          "basis": "16rem",
+          "tokens": {
+            "gap": "2rem"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "Find your everyday coffee"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "A cup that\nsuits your taste."
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Choose the flavours you enjoy. See a starting point without sharing your email."
+                }
+              ],
+              "tokens": {
+                "bg": "#f3e9dc",
+                "gap": "1rem",
+                "pad": "1.5rem"
+              },
+              "narrow": {
+                "heading-size": "1.75rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "question",
+                  "id": "n4",
+                  "label": "Which flavours sound good?",
+                  "help": "Choose the closest match. You can change your answer.",
+                  "answer_type": "single",
+                  "required": true,
+                  "options": [
+                    {
+                      "value": "bright",
+                      "label": "Bright and fruity"
+                    },
+                    {
+                      "value": "smooth",
+                      "label": "Smooth and chocolatey"
+                    },
+                    {
+                      "value": "unsure",
+                      "label": "Help me explore"
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "next_label",
+                  "action": "next",
+                  "label": "See my starting point"
+                }
+              ],
+              "tokens": {
+                "gap": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "match",
+        "name": "Your coffee starting point",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "button",
+              "id": "n6",
+              "role": "back_label",
+              "action": "back",
+              "label": "Change my answer",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "#70452e"
+              }
+            }
+          ]
+        },
+        "products_required": true,
+        "results": [
+          {
+            "id": "bright",
+            "heading": "Start with bright and fruity",
+            "body": "Explore coffees with fruit-led tasting notes. Check each product for roast and brewing details.",
+            "product_ids": [],
+            "product_filter": {
+              "category_id": 0,
+              "attributes": [],
+              "order": "oldest"
+            },
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n4",
+                  "operator": "is",
+                  "values": [
+                    "bright"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "smooth",
+            "heading": "Start with smooth and chocolatey",
+            "body": "Explore coffees with chocolate or nutty tasting notes. Check each product for roast and brewing details.",
+            "product_ids": [],
+            "product_filter": {
+              "category_id": 0,
+              "attributes": [],
+              "order": "oldest"
+            },
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n4",
+                  "operator": "is",
+                  "values": [
+                    "smooth"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "explore",
+            "heading": "Explore a few different coffees",
+            "body": "Compare the tasting notes and choose what appeals to you. A sampler can be a useful place to start.",
+            "product_ids": [],
+            "product_filter": {
+              "category_id": 0,
+              "attributes": [],
+              "order": "oldest"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import { studioPage } from './studio-theme.mjs';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -19,7 +20,7 @@ validateDirections(plan, audit.references, designs);
 const data = { designs, entries, audit, plan, inventory: read('out/inventory.json'), maintenance: read('out/maintenance.json').maintenance,
   decisions: visualAuditReport(audit, designs, rendererRevision) };
 writeFileSync(resolve(base, 'out/roadmap.json'), JSON.stringify(data, null, 2) + '\n');
-writeFileSync(resolve(base, 'out/roadmap.html'), readFileSync(resolve(base, 'review/roadmap.html'), 'utf8')
+writeFileSync(resolve(base, 'out/roadmap.html'), studioPage(readFileSync(resolve(base, 'review/roadmap.html'), 'utf8'), 'roadmap')
   .replace('/*__RENDERER__*/', () => renderer)
   .replace('/*__DATA__*/', () => JSON.stringify(data).replaceAll('<', '\\u003c')));
 console.log(`  roadmap.html (${designs.length} designs; ${plan.entries.length} planned briefs, excluded from library counts)`);

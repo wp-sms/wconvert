@@ -96,3 +96,10 @@ A catalog row may supply `preview_url` on the catalog's own origin and `access: 
 Pack schema 2 adds capability `pack-images:1`, `assets`, and `image_bindings`. Example binding: `{ "template_id": "reading-slip", "node_id": "n99", "asset_id": "cover" }`. The asset descriptor contains `id`, `sha256`, `bytes`, `mime`, `width`, `height`, `access`. It never contains an arbitrary download URL. The client derives `/assets/free/<sha256>.<png|jpg|webp>` from the configured origin, verifies the complete required set, and substitutes stable local URLs only at read time. Stored JSON remains byte-identical to the inspected digest. Premium media downloads are refused until the licence adapter is connected. Existing schema-1 empty-asset packs remain compatible.
 
 Picker responses may contain `country_suggestion: {code, timezone}` or null. Preferences include `country_suggestion_dismissed`, the named timezone the user dismissed. A timezone is only a suggestion for countries served; it is not visitor geolocation. No IP lookup, automatic market write or fixed-offset guess is used.
+
+
+### Current compatibility rehearsal (2026-10-12)
+
+The local delivery plan now exports 22 setups, 19 designs and three complete editorial collections in five packs, including one private premium pack. The pack reader accepts declared `template-tree:3` routes and `paid-campaign-rules:1` for supported, tier-authorized targeting. Site-specific rule IDs and authored URLs remain forbidden. Existing immutable versions remain readable offline after an update.
+
+Public result previews show inert product samples where appropriate and hide absent optional destination links. Pack source JSON remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` is only an opt-in local verification transport; it is not part of the hosted contract, and cannot grant customers access. R2/Worker provisioning, the real licence adapter and staging authorization/rollback checks remain future work.

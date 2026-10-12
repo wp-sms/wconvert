@@ -384,7 +384,7 @@
       entry: seed,
       tokens: Object.assign({}, seed.tokens),
       container: seed.display_type || 'popup',
-      viewport: 768,
+      viewport: matchMedia('(max-width: 600px)').matches ? 320 : 768,
       step: 0,
       direction: 'ltr',
     };

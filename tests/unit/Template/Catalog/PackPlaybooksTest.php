@@ -27,6 +27,30 @@ final class PackPlaybooksTest extends TestCase
             'playbooks' => [require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php']];
     }
 
+    public function testPaidBasketConditionNeedsItsCapabilityAndEntitledInstall(): void
+    {
+        $pack = $this->pack();
+        $pack['playbooks'][0]['rules'] = [['type' => 'cart_has_items'], ['type' => 'page_load']];
+        $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
+        try {
+            $validator->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+            self::fail('Undeclared paid rule was accepted');
+        } catch (RuntimeException $error) {
+            self::assertStringContainsString('paid rule requirements', $error->getMessage());
+        }
+        $pack['requires']['capabilities'][] = 'paid-campaign-rules:1';
+        self::assertSame($pack['playbooks'][0]['rules'], $validator->decode(json_encode($pack, JSON_THROW_ON_ERROR))['playbooks'][0]['rules']);
+        foreach ([\WConvert\Support\Tier::Free, \WConvert\Support\Tier::Basic] as $tier) {
+            try {
+                (new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), $tier))->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+                self::fail('Insufficient tier accepted basket targeting');
+            } catch (RuntimeException $error) { self::assertStringContainsString('rules this install', $error->getMessage()); }
+        }
+        $pack['playbooks'][0]['rules'][0]['product_ids'] = [123];
+        $this->expectException(RuntimeException::class);
+        $validator->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
     public function testScopedScreenCopyIsValidatedAndPreserved(): void
     {
         $pack = $this->pack();

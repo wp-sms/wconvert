@@ -1,3 +1,4 @@
+import { studioPage } from './studio-theme.mjs';
 /**
  * `gallery.html` — the whole library on one page, drawn by the real renderer.
  *
@@ -27,7 +28,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
 const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
 
-const template = readFileSync(resolve(HERE, '../gallery/gallery.html'), 'utf8');
+const template = studioPage(readFileSync(resolve(HERE, '../gallery/gallery.html'), 'utf8'), 'gallery');
 const renderer = readFileSync(resolve(OUT, 'renderer.iife.js'), 'utf8');
 
 /** Free's one library, and every Pro module that keeps designs (ADR 0056). */

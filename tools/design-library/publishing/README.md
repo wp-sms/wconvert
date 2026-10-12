@@ -31,10 +31,7 @@ setup membership and selected editorial collections. Each collection member must
 exist in the release. An existing pack ID/version cannot acquire different bytes
 or change access scope; bump that pack's version when changing its contents.
 
-The current compatible release has **16 setups, 13 designs, 4 Free packs and 2
-collections**. Stores is version 1.1.0; publishers is 1.1.1 after the reviewed workbook
-layout correction; services remains 1.0.0.
-The new Homeware care pack (1.0.0) includes one original 1920 × 500 illustration.
+The current compatible release has **22 setups, 19 designs, 4 Free packs, 1 premium pack and 3 collections**. Stores is 1.1.1, publishers 1.1.2, services 1.0.1 and Homeware care 1.0.1. Patch versions preserve immutable older exports after plugin capability/note changes. Homeware care retains the original reviewed 1920 × 500 illustration. Shopping help 1.0.0 adds six commerce setups, with real merchant product/category configuration required.
 The sale bar's site-specific link and lighting's unconverted SVG remain explicitly
 deferred. They stay in the bundled library; incomplete collections are not exported.
 
@@ -83,7 +80,7 @@ actual plugin but uses in-memory catalog options, a local file transport and a
 temporary installed archive. It validates public packs, installation, exact
 preview agreement and offline reads. It never updates site options, creates
 campaigns or sends messages. It deliberately refuses private download fixtures;
-real premium authorization needs a separate hosted rehearsal.
+real premium authorization needs a separate hosted rehearsal. To include the local premium pack in a disposable **Pro + WooCommerce** rehearsal, explicitly set `WCONVERT_VERIFY_PREMIUM_FIXTURES=1`. This flag reads private local fixtures only and never authorizes a hosted download. Without it, private fixtures remain refused.
 
 ## Media and licence foundations
 

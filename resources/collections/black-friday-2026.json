@@ -30,7 +30,7 @@
     {
       "setup_id": "homeware-care-notes",
       "stage": "after",
-      "setup_hash": "2740811423c8e26bcdaa89a443f7961067dfe4b5bfa6ff0bda67c7a09e375ec9",
+      "setup_hash": "2f66197329170ec6e5a8ec37325f4105ada2313aa9f9a4049d00f72a18bb40ae",
       "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
     }
   ],
@@ -42,6 +42,6 @@
     "feature_end_exclusive": "2026-12-01"
   },
   "dependencies_current": true,
-  "revision": "d9ba9288b774e3c2748db08e57b0ef51e5a7113ef9b2b534e99a248294c7fc39",
+  "revision": "6593edb10aa27d9e6ccc13939bf4ae077e54ee2edcb426c4be1c7c93e177871d",
   "status": "published"
 }
