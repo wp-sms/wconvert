@@ -40,7 +40,7 @@ final class LicenseStateTest extends TestCase
         $payload = $this->payload(self::license());
 
         $this->assertSame('active', $payload['state']);
-        $this->assertSame(['slug' => '5-sites', 'label' => '5 sites', 'max' => 5], $payload['plan']);
+        $this->assertSame(['slug' => '5-sites', 'label' => '5 sites', 'max' => 5, 'used' => 2], $payload['plan']);
         $this->assertSame('2027-03-03T00:00:00+00:00', $payload['expires_at']);
         $this->assertSame('auto', $payload['renewal']['mode']);
         $this->assertSame(['masked' => '••••AB12', 'source' => 'manual'], $payload['key']);
@@ -55,7 +55,7 @@ final class LicenseStateTest extends TestCase
     {
         $payload = $this->payload(self::license(['tier_slug' => 'unlimited', 'plan_name' => 'Unlimited', 'max_activations' => 0]));
 
-        $this->assertSame(['slug' => 'unlimited', 'label' => 'Unlimited', 'max' => null], $payload['plan']);
+        $this->assertSame(['slug' => 'unlimited', 'label' => 'Unlimited', 'max' => null, 'used' => 2], $payload['plan']);
         $this->assertSame('active', $payload['state']);
     }
 

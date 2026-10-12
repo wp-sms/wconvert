@@ -96,6 +96,25 @@ export function formatDay(day: string): string {
     .format(new Date(`${day}T12:00:00Z`));
 }
 
+/**
+ * Any stored date or ISO instant as the site's calendar day, e.g.
+ * "Mar 3, 2027" — for a date that is a day, like an end date, rather than a
+ * moment.
+ */
+export function formatLongDay(value: string, timezone = adminSettings()?.timezone): string {
+  const wall = wallOf(value, timezone);
+  return wall === null ? '—' : formatDay(wall.day);
+}
+
+/** The same day, shorter: "Mar 3" in the site's current year, "Mar 3, 2027" otherwise. */
+export function formatShortDay(value: string, now = Date.now(), timezone = adminSettings()?.timezone): string {
+  const wall = wallOf(value, timezone);
+  if (wall === null) return '—';
+  const sameYear = wall.day.slice(0, 4) === siteDay(now, timezone).slice(0, 4);
+  return new Intl.DateTimeFormat(siteLocale(), { month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }), timeZone: 'UTC' })
+    .format(new Date(`${wall.day}T12:00:00Z`));
+}
+
 /** Two calendar days as one range, e.g. "Sep 9 – Oct 8, 2026". */
 export function formatRange(from: string, to: string): string {
   return new Intl.DateTimeFormat(siteLocale(), { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })

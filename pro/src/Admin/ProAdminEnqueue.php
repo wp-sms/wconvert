@@ -89,6 +89,24 @@ final class ProAdminEnqueue
     ) {
     }
 
+    /**
+     * Free's admin settings, plus whatever Pro's own parts add — today the
+     * licence's plan badge (ADR 0143).
+     *
+     * @return array<string, mixed>
+     */
+    public static function settings(): array
+    {
+        /**
+         * Filters the settings Pro's admin bundle starts with.
+         *
+         * @param array<string, mixed> $settings Free's `AdminMenu::settings()`.
+         */
+        $settings = apply_filters('wconvert_pro_admin_settings', AdminMenu::settings());
+
+        return is_array($settings) ? $settings : AdminMenu::settings();
+    }
+
     public function hooks(): void
     {
         add_action('admin_enqueue_scripts', [$this, 'replace'], self::PRIORITY);
@@ -157,9 +175,11 @@ final class ProAdminEnqueue
         // below. The SAME values are attached here rather than a second set
         // spelled out: free owns what the screen needs to know, and this is
         // Pro reaching into free, which is the one direction the split allows.
+        // Pro adds to them through one filter, so the licence's badge data
+        // reaches the header without licence code in this directory.
         wp_add_inline_script(
             self::HANDLE,
-            'window.wconvertAdmin = ' . wp_json_encode(AdminMenu::settings(), JSON_HEX_TAG | JSON_HEX_AMP) . ';',
+            'window.wconvertAdmin = ' . wp_json_encode(self::settings(), JSON_HEX_TAG | JSON_HEX_AMP) . ';',
             'before'
         );
 

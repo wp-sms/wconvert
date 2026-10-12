@@ -8,6 +8,7 @@ import './header.css';
 import { BrandMark, PlanBadge } from './Brand';
 import { HeaderTools } from './HeaderTools';
 import { Footer } from './Footer';
+import type { ExtraPage } from '../extraPages';
 
 /** Harbor shared frame: dark navigation, light page heading and service footer (ADR 0097). */
 export function Shell({
@@ -18,9 +19,12 @@ export function Shell({
   bareHeader = false,
   hidePageHeading = false,
   wide = false,
+  page,
   children,
 }: {
   section?: SectionId;
+  /** A registered page (`extraPages`): the frame with no tab current, and its own heading. */
+  page?: Pick<ExtraPage, 'id' | 'title' | 'description'>;
   actions?: ReactNode;
   pageTitle?: string;
   hideDescription?: boolean;
@@ -30,7 +34,8 @@ export function Shell({
   children: ReactNode;
 }) {
   const [target, setTarget] = useState<HTMLElement | null>(null);
-  const banded = !hidePageHeading && (section !== undefined || bareHeader);
+  const navigable = section !== undefined || page !== undefined;
+  const banded = !hidePageHeading && (navigable || bareHeader);
   const slot = useMemo(() => ({ present: banded, target }), [banded, target]);
   const tier = adminSettings()?.installedTier ?? 'free';
   return (
@@ -47,9 +52,9 @@ export function Shell({
               <BrandMark variant="inverse" />
               <span>{__('WConvert', 'wconvert')}</span>
             </a>
-            {section !== undefined && <HeaderTools />}
+            {navigable && <HeaderTools currentPage={page?.id} />}
           </div>
-          {section !== undefined && (
+          {navigable && (
             <div className="wconvert-measure wconvert-navigation-row mx-auto w-full">
               <nav className="wconvert-section-nav" aria-label={__('WConvert sections', 'wconvert')}>
                 <ul>{SECTIONS.map((entry) => (
@@ -60,22 +65,22 @@ export function Shell({
                   </li>
                 ))}</ul>
               </nav>
-              <span className="wconvert-brand-plan"><PlanBadge tier={tier} /></span>
+              <span className="wconvert-brand-plan"><PlanBadge tier={tier} currentPage={page?.id} /></span>
             </div>
           )}
         </header>
         {banded && (
           <div className="wconvert-panel-heading">
             <div className="wconvert-measure wconvert-page-heading mx-auto w-full">
-              {section === undefined ? (
+              {!navigable ? (
                 <div ref={setTarget} />
               ) : (
                 <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
                   <div className="wconvert-page-copy">
                     <h1 className="m-0 wconvert-page-title text-foreground">
-                      {pageTitle ?? SECTIONS.find((entry) => entry.id === section)?.label}
+                      {pageTitle ?? page?.title ?? SECTIONS.find((entry) => entry.id === section)?.label}
                     </h1>
-                    {!hideDescription && <Description className="wconvert-page-description">{descriptionFor(section)}</Description>}
+                    {!hideDescription && <Description className="wconvert-page-description">{page ? page.description : section && descriptionFor(section)}</Description>}
                   </div>
                   {actions}
                   <div ref={setTarget} className="contents" />
@@ -90,7 +95,7 @@ export function Shell({
           )}
           {children}
         </main>
-        {section !== undefined && !hidePageHeading && <Footer />}
+        {navigable && !hidePageHeading && <Footer />}
       </div>
     </PageActionSlotProvider>
   );

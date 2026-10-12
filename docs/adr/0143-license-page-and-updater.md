@@ -3,9 +3,13 @@
 Date: 2026-10-12. Status: accepted; lands in six slices, one pull request
 each, so a decision below may describe code a later slice brings.
 Amends [0015](0015-enforcement-is-by-non-registration.md) (no licence read
-anywhere; the SDK as a private repository; Nexus serving a tier-matched ZIP) and
+anywhere; the SDK as a private repository; Nexus serving a tier-matched ZIP),
 [0056](0056-the-tier-ladder-is-a-manifest.md) (no licence read; Nexus matching
-a licence to a tier).
+a licence to a tier), [0035](0035-the-admin-owns-its-page.md) (a submenu on the
+one page), [0082](0082-template-packs-install-as-validated-local-data.md) (the
+SDK authorizes no pack download), [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md)
+and [0097](0097-harbor-is-the-shared-admin-frame.md) (the plan badge as a live
+link with the licence's status).
 
 Pro customers need to activate, renew, manage their sites and receive updates
 through Nexus, which runs at **https://my.wconvert.io**. ADR 0015 reserved this
@@ -69,7 +73,13 @@ nothing, and asserts no file on the front-end read path touches it.
    with no licence. The bell is untouched: it belongs to notifications.
 8. **The page.** One status card — headline, one action, then Updates · Support
    · Renewal, with updates and *Check now* in its foot — then a Sites card and a
-   License key card.
+   License key card. The page's words are `describeLicense()` in TypeScript;
+   what the licence says outside the page — the badge's dot and reason, and the
+   Plugins row — is `LicenseNotice` in PHP, sent with the payload, so the badge
+   and the row cannot disagree and free never computes it. Over the limit is
+   the store's own seat count (`activation_count`), not the listed rows, which
+   come only to a site that holds a seat. The page is a registered page
+   (`registerPage()`), not an entry in `PRO_SCREENS`: every rung has it.
    The payload's `state` is one of `none`, `active`, `expiring`, `cancelled`,
    `manual`, `lifetime`, `trial`, `trial_ended`, `expired`, `payment_failed`,
    `disabled`, `over_limit`, `moved`, `copy`, `key_unreadable`,

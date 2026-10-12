@@ -2341,3 +2341,15 @@ if (!function_exists('delete_transient')) {
         return true;
     }
 }
+
+/** WordPress's submenu, recorded: the licence adds WConvert → License. */
+$GLOBALS['wconvertTestSubmenu'] = [];
+
+if (!function_exists('add_submenu_page')) {
+    function add_submenu_page(string $parent, string $pageTitle, string $menuTitle, string $capability, string $slug, ?callable $callback = null, ?int $position = null): string
+    {
+        $GLOBALS['wconvertTestSubmenu'][$parent][] = [$menuTitle, $capability, $slug];
+
+        return $parent . '_page_' . $slug;
+    }
+}

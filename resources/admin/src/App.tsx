@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { ArrowLeft, Plus, TriangleAlert } from 'lucide-react';
 import { GoalScreen, OptinBuilder } from './builder/lazy';
@@ -16,6 +16,8 @@ import { Shell } from './shell/Shell';
 import { createHref, editorHref, hashFor, leadsHref, reportHref, sendingIssuesHref } from './nav';
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
+import { RegionSkeleton } from './shell/RegionSkeleton';
+import { extraPageFor } from './extraPages';
 
 /**
  * The WConvert admin screen.
@@ -85,6 +87,20 @@ export function App() {
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </>;
+  }
+
+  // A page another bundle registered (`extraPages`): the frame, no tab
+  // current, and the page — reached by its hash, never by a tab.
+  const page = extraPageFor(navigation.hash);
+
+  if (page) {
+    return (
+      <Shell page={page}>
+        <Suspense fallback={<RegionSkeleton label={page.title} lines={5} />}>
+          <page.Component />
+        </Suspense>
+      </Shell>
+    );
   }
 
   return (

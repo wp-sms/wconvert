@@ -88,11 +88,19 @@ The shared coarse-pointer floor is 44px, applied in the same cascade layer as
 scope sizing so compact controls cannot override it.
 
 Installed tier comes from `WpProPresence`, independently of license state.
+*Amended by [ADR 0143](0143-license-page-and-updater.md): the tier still does —
+the badge names the installed plan whatever the licence says — but with Pro the
+badge also reflects the licence: it is a link to WConvert → License, reads
+"Activate Pro" with no licence, and carries an amber or red dot with its reason
+when the licence needs a look. The server supplies all of it; free draws it.*
 Free offers the named paid tier through the shared tier vocabulary. Notifications reads known suspended campaigns and
 configured destination issues on open; it is not an invented activity feed or
 an unread count. Help links to existing settings and the product website. The
 account link intentionally remains `#`, as the user requested, until a real
 account destination is supplied. It does not impersonate WordPress login.
+*Amended by [ADR 0143](0143-license-page-and-updater.md): with Pro the real
+account is reached from the License page (my.wconvert.io), not from this link,
+which stays `#` on a free install.*
 
 ## Verification
 
