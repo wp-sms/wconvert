@@ -52,8 +52,10 @@ nothing, and asserts no file on the front-end read path touches it.
    `unlimited`. No trial, no lifetime price. `installed_tier` is deliberately
    **not** configured, so the SDK's tier-mismatch offer stays inert. Releases
    post the elite ZIP once per plan slug, since Nexus keys a release by
-   `(catalog item, tier_slug, version)`. Plan slugs stay out of `tiers.json`,
-   which ships in free.
+   `(catalog item, tier_slug, version)`: `release-pro.yml` reads the slugs from
+   the `nexus` environment's `NEXUS_PLAN_SLUGS` and no longer posts the basic
+   and pro ZIPs, which are still built and checked. Plan slugs stay out of
+   `tiers.json`, which ships in free.
 4. **Storage is the SDK's own.** One non-autoloaded option,
    `wconvert_pro_license`, plus the SDK's transients and one 60-second check
    throttle. No table.
