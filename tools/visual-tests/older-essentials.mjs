@@ -50,9 +50,9 @@ try {
    r.querySelector('[data-action="submit"]').click();
   }, { id, width });
   const response = await captured;
+  if (response.status() >= 300) throw Error(id + ': capture ' + response.status() + ' ' + await response.text());
   const reply = await response.json();
   if (!reply.id) throw Error(id + ': capture response lacks a saved lead ID');
-  if (response.status() >= 300) throw Error(id + ': capture ' + response.status() + ' ' + await response.text());
   await page.waitForFunction(() => window.reviewRoots.some(r => r.host.isConnected && r.querySelector('.wc-root') && !r.querySelector('[name="email"]')));
   await checkAnnouncement();
   await page.screenshot({ path: `${evidence}/older-live-${id}-${width}-received.png`, fullPage: true });

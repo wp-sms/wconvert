@@ -44,7 +44,7 @@ The local release builder requires the previous release ID, preserves immutable 
 npm run seed --prefix tools/template-server -- /tmp/wconvert-template-staging CURRENT_RELEASE_ID
 ```
 
-The seed tool validates the public dependency closure, refuses premium source in public packs, checks file sizes/hashes, writes immutable objects conditionally, reads every object back, then conditionally replaces `manifest.json`. An interrupted write leaves the old manifest in place. Concurrent publishers cannot both replace the same version. An identical retry reuses the existing objects. Nothing deletes old files.
+The seed tool validates the public dependency closure of every retained release before writing anything, including the pages, packs, previews and images needed for rollback. It refuses premium source in public packs, checks file sizes/hashes, writes immutable objects conditionally, reads every object back, then conditionally replaces `manifest.json`. An interrupted write leaves the old manifest in place. Concurrent publishers cannot both replace the same version. An identical retry reuses the existing objects. Nothing deletes old files.
 
 For a local rollback, choose a retained release in the same validated output directory:
 

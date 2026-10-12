@@ -16,6 +16,9 @@ const runs = [
 
 async function login(page) {
   await page.goto('/wp-login.php');
+  // WordPress focuses/selects this field after 200ms; let that finish before
+  // typing so it cannot redirect password input back into the username.
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Log In', exact: true }).click();

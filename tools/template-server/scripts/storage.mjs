@@ -31,24 +31,36 @@ export function readPublicRelease(directory, retainedRelease) {
   if (retainedRelease !== undefined) check(/^[a-f0-9]{64}$/.test(retainedRelease), 'Invalid retained release');
   const manifest = objects.get(retainedRelease ? `releases/${retainedRelease}/manifest.json` : 'manifest.json'); check(manifest, 'No published manifest');
   const pointer = JSON.parse(manifest);
-  check(pointer.schema === 2 && new RegExp(`^${digest}$`).test(pointer.release), 'Invalid release identity');
   check(objects.get(`releases/${pointer.release}/manifest.json`)?.equals(manifest), 'Missing retained manifest');
-  // Check the selected release's entire public dependency closure before any write.
-  let origin;
-  const localKey = value => { const u = new URL(value); check(u.protocol === 'https:' && !u.username && !u.password && !u.search && !u.hash, 'Invalid published URL'); origin ??= u.origin; check(u.origin === origin, 'Mixed release origins'); return u.pathname.slice(1); };
-  const verified = (key, sha) => { const bytes = objects.get(key); check(bytes && hash(bytes) === sha, `Missing or changed dependency: ${key}`); return bytes; };
-  check(Array.isArray(pointer.pages) && pointer.pages.length > 0 && pointer.pages.length <= 16, 'Invalid pages');
-  for (const page of pointer.pages) {
-    const key = localKey(page.url); check(key.startsWith(`releases/${pointer.release}/page-`), 'Wrong release page');
-    const data = JSON.parse(verified(key, page.sha256)); check(data.release === pointer.release, 'Page identity mismatch');
-    for (const pack of data.packs) {
-      if (pack.preview_url) { const preview = localKey(pack.preview_url); verified(preview, preview.split('/').pop().split('.')[0]); }
-      const key = localKey(pack.url);
-      if (key.startsWith('downloads/')) { check(pack.access === 'premium', 'Invalid private pack'); continue; }
-      check(key === `packs/${pack.sha256}.json` && pack.access === 'free', 'Invalid Free pack');
-      const data = JSON.parse(verified(key, pack.sha256));
-      for (const asset of data.assets ?? []) verified(`assets/free/${asset.sha256}.${{ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[asset.mime]}`, asset.sha256);
+  // Every retained release is staged for rollback, so validate each dependency
+  // closure before allowing any writes, not just the selected catalogue.
+  function validateRelease(bytes, expectedId) {
+    const pointer = JSON.parse(bytes);
+    check(pointer.schema === 2 && new RegExp(`^${digest}$`).test(pointer.release) && pointer.release === expectedId, 'Invalid release identity');
+    let origin;
+    const localKey = value => { const u = new URL(value); check(u.protocol === 'https:' && !u.username && !u.password && !u.search && !u.hash, 'Invalid published URL'); origin ??= u.origin; check(u.origin === origin, 'Mixed release origins'); return u.pathname.slice(1); };
+    const verified = (key, sha) => { const bytes = objects.get(key); check(bytes && hash(bytes) === sha, `Missing or changed dependency: ${key}`); return bytes; };
+    check(Array.isArray(pointer.pages) && pointer.pages.length > 0 && pointer.pages.length <= 16, 'Invalid pages');
+    for (const page of pointer.pages) {
+      const key = localKey(page.url); check(key.startsWith(`releases/${pointer.release}/page-`), 'Wrong release page');
+      const data = JSON.parse(verified(key, page.sha256)); check(data.release === pointer.release, 'Page identity mismatch');
+      for (const pack of data.packs) {
+        if (pack.preview_url) { const preview = localKey(pack.preview_url); verified(preview, preview.split('/').pop().split('.')[0]); }
+        const key = localKey(pack.url);
+        if (key.startsWith('downloads/')) { check(pack.access === 'premium', 'Invalid private pack'); continue; }
+        check(key === `packs/${pack.sha256}.json` && pack.access === 'free', 'Invalid Free pack');
+        const data = JSON.parse(verified(key, pack.sha256));
+        for (const asset of data.assets ?? []) verified(`assets/free/${asset.sha256}.${{ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[asset.mime]}`, asset.sha256);
+      }
     }
+    return origin;
+  }
+  let origin;
+  for (const [key, bytes] of objects) {
+    const retained = key.match(new RegExp(`^releases/(${digest})/manifest\\.json$`));
+    if (!retained) continue;
+    const releaseOrigin = validateRelease(bytes, retained[1]);
+    if (retained[1] === pointer.release) origin = releaseOrigin;
   }
   objects.delete('manifest.json');
   return { id: pointer.release, manifest, objects, origin };
