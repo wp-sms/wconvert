@@ -1,6 +1,6 @@
 # Local template release rehearsal — 12 October 2026
 
-This completes the authorized studio compatibility refresh, local release rehearsal and small commerce batch. Work is isolated on `codex/template-library-refresh`; it has not been merged, pushed or deployed. The user's normal checkout was left untouched.
+This completes the authorized studio compatibility refresh, local release rehearsal and small commerce batch. Work is isolated on `codex/template-library-refresh`; it is prepared for a draft PR and has not been merged or deployed. The user's normal checkout was left untouched.
 
 ## Released locally
 
@@ -36,7 +36,7 @@ The actual goal-first creation screen also shows Find coffee by taste beside the
 
 ## Checks and remaining work
 
-PHP: 2,826 tests / 17,074 assertions. JavaScript: 4,297 existing tests plus the new inert-preview test. Studio/export: 38 tests. TypeScript, ESLint, build, template registration and source-contract checks pass. Scoped collection check: six approved collections; new batch gate: 6/6 current approvals. All 24 curated journeys were repeated after the final result-preview correction. Visual measurement: 672 passing cases.
+After rebasing onto the concurrent Flow work at `f0884086`: PHP passes with 2,825 tests / 17,075 assertions; PHPStan has no errors. The complete JavaScript suite passes with 4,305 tests across 235 files; the seven focused template suites also passed with 168 tests. Earlier concurrent runs hit editor timing failures; the final full run with two workers passed at the standard timeout after other checks finished. Studio/export: 38 tests. TypeScript, ESLint, production build, all 107 template registrations and source-contract checks pass. Scoped collection check: six approved collections; new batch gate: 6/6 current approvals. All 24 curated journeys were repeated after the final result-preview correction. Visual measurement: 672 passing cases.
 
 Graph pack install/update/offline tests use a real v3 fixture and preserve old route/style snapshots. Invalid graph references, missing vocabulary capabilities, unknown keys and site URLs are rejected. Paid-rule tests reject insufficient tiers, undeclared capability and undeclared product IDs. The local exporter test now exercises the real plan, including illustrated media preparation and premium basket rules, without WordPress.
 
