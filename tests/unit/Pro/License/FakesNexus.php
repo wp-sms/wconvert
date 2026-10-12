@@ -27,6 +27,14 @@ trait FakesNexus
 
     protected bool $nexusDown = false;
 
+    /** @var array{code: string, status: int}|null The store refuses licence calls with this. */
+    protected ?array $nexusRefusal = null;
+
+    /** @var list<array<string, mixed>> The signed-in account's licences, as Nexus formats them. */
+    protected array $nexusAccountLicenses = [];
+
+    protected bool $nexusAccountExpired = false;
+
     /** @var array<string, mixed> */
     private array $filtersBeforeNexus = [];
 
@@ -41,11 +49,12 @@ trait FakesNexus
         $this->filtersBeforeNexus = $GLOBALS['wconvertTestFilters'];
         $this->optionsBeforeNexus = $GLOBALS['wconvertTestOptionTable'];
         $this->siteTransientsBeforeNexus = $GLOBALS['wconvertTestSiteTransients'];
+        $GLOBALS['wconvertTestTransients'] = [];
 
         add_filter('pre_http_request', function ($preempt, array $args, string $url) {
             $path = (string) parse_url($url, PHP_URL_PATH);
 
-            if ($preempt !== false || !str_contains($path, '/api/v1/license/')) {
+            if ($preempt !== false || !str_contains($path, '/api/v1/')) {
                 return $preempt;
             }
 
@@ -56,20 +65,61 @@ trait FakesNexus
                 return new \WP_Error('http_request_failed', 'cURL error 28: Operation timed out');
             }
 
+            if (!str_contains($path, '/api/v1/license/')) {
+                return $this->answerAccount($path);
+            }
+
+            if ($this->nexusRefusal !== null) {
+                return self::reply($this->nexusRefusal['status'], ['success' => false, 'error_code' => $this->nexusRefusal['code'], 'message' => 'Refused.']);
+            }
+
             $license = array_merge([
                 'status' => 'active',
                 'tier_slug' => '5-sites',
                 'expires_at' => gmdate('Y-m-d H:i:s', time() + 200 * DAY_IN_SECONDS),
                 'max_activations' => 5,
                 'activation_count' => 1,
+                // A subscription with a card behind it, as most are.
+                'renewal' => ['state' => 'active', 'auto_renews' => true, 'is_trial' => false, 'subscription_status' => 'active', 'offer' => null],
             ], $this->nexusLicense);
 
-            return [
-                'headers' => [],
-                'body' => (string) json_encode(['success' => true, 'license' => $license]),
-                'response' => ['code' => 200, 'message' => 'OK'],
-            ];
+            return self::reply(200, ['success' => true, 'license' => $license]);
         }, 10, 3);
+    }
+
+    /** @return array<string, mixed> */
+    private function answerAccount(string $path): array
+    {
+        if ($this->nexusAccountExpired) {
+            return self::reply(401, ['success' => false, 'error_code' => 'token_expired', 'message' => 'Expired.']);
+        }
+
+        return match (true) {
+            str_ends_with($path, '/auth/exchange-code') => self::reply(200, ['access_token' => 'account-token', 'expires_in' => 86400, 'user' => ['email' => 'sara@example.com', 'name' => 'Sara']]),
+            str_ends_with($path, '/account/licenses') => self::reply(200, ['success' => true, 'data' => $this->nexusAccountLicenses]),
+            default => self::reply(200, ['success' => true]),
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
+     */
+    private static function reply(int $status, array $body): array
+    {
+        return [
+            'headers' => [],
+            'body' => (string) json_encode($body),
+            'response' => ['code' => $status, 'message' => ''],
+        ];
+    }
+
+    /** Sign in to the account through the SDK's own return handler. */
+    protected function signInToTheAccount(): void
+    {
+        $sdk = $this->freshSdk();
+        $state = $sdk->accountManager()->getAuthorizeUrl()['state'];
+        $sdk->accountManager()->handleOAuthCallback('code', $state, $sdk->licenseManager());
     }
 
     protected function stopFakingNexus(): void
@@ -78,10 +128,14 @@ trait FakesNexus
         $GLOBALS['wconvertTestOptionTable'] = $this->optionsBeforeNexus;
         $GLOBALS['wconvertTestSiteTransients'] = $this->siteTransientsBeforeNexus;
         $GLOBALS['wconvertTestSiteOptions'] = [];
+        $GLOBALS['wconvertTestTransients'] = null;
         $GLOBALS['wconvertTestBlogTables'] = [];
         $this->nexusCalls = [];
         $this->nexusLicense = [];
         $this->nexusDown = false;
+        $this->nexusRefusal = null;
+        $this->nexusAccountLicenses = [];
+        $this->nexusAccountExpired = false;
     }
 
     /** A fresh SDK for this site, as `pro/uninstall.php` builds one. */

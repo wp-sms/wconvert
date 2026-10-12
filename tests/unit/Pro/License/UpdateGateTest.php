@@ -157,9 +157,7 @@ final class UpdateGateTest extends TestCase
 
     private function gate(): UpdateGate
     {
-        $sdk = $this->freshSdk();
-
-        return new UpdateGate($sdk->licenseManager(), $sdk->pluginUpdater(), self::BASENAME);
+        return new UpdateGate($this->freshSdk(), self::BASENAME);
     }
 
     private function offer(): object

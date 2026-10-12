@@ -4,6 +4,7 @@ namespace WConvert\Pro\License;
 
 use WConvert\Container\ServiceContainer;
 use WConvert\Container\ServiceProvider;
+use WConvert\Storage\TransientStore;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 
 defined('ABSPATH') || exit;
@@ -26,6 +27,14 @@ final class LicenseServiceProvider implements ServiceProvider
 
     public function register(ServiceContainer $container): void
     {
+        $container->register(
+            LicenseController::class,
+            static fn (ServiceContainer $c): LicenseController => new LicenseController(
+                $c->resolve(PremiumServiceProvider::class),
+                $c->resolve(TransientStore::class)
+            )
+        );
+
         $container->register(
             PremiumServiceProvider::class,
             static fn (): PremiumServiceProvider => SdkConfig::sdk()
@@ -55,7 +64,13 @@ final class LicenseServiceProvider implements ServiceProvider
         }
 
         (new SignInGuard(array_values($sdk->config()->oauthCallbackParams())))->hooks();
-        (new UpdateGate($sdk->licenseManager(), $sdk->pluginUpdater(), plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
+        (new UpdateGate($sdk, plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
         (new RefreshCron($sdk->licenseManager(), $sdk->store()))->hooks();
+
+        // On `rest_api_init`, which fires on requests WordPress does not
+        // consider wp-admin — the same reason Pro's other routes register there.
+        add_action('rest_api_init', static function () use ($container): void {
+            $container->resolve(LicenseController::class)->registerRoutes();
+        });
     }
 }
