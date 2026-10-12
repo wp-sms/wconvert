@@ -14,14 +14,15 @@ return [
             'next_label' => __('Continue', 'wconvert'),
         ],
         'screen:repair' => [
-            'headline' => __('A little about the repair', 'wconvert'),
-            'body' => ['text' => __('We can usually advise after hearing about the item.', 'wconvert')],
-            'next_label' => __('Continue', 'wconvert'),
+            'headline' => __('What happens next', 'wconvert'),
+            'body' => ['text' => __('Leave your email on the next screen. We can then ask about the item, its condition and any useful photos. We agree the assessment and any costs before work begins.', 'wconvert')],
+            'next_label' => __('Continue to contact details', 'wconvert'),
             'back_label' => __('Back', 'wconvert'),
         ],
         'submission:email' => [
             'headline' => __('How can we reach you?', 'wconvert'),
             'email_label' => __('Email address', 'wconvert'),
+            'email_placeholder' => __('you@example.com', 'wconvert'),
             'cta_label' => __('Send enquiry', 'wconvert'),
             'back_label' => __('Back', 'wconvert'),
         ],

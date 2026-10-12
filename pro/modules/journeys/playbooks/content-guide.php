@@ -24,6 +24,7 @@ return [
                 'headline' => __('Want more guides?', 'wconvert'),
                 'body' => __('Your result is already available. Signup is optional.', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
+                'email_placeholder' => __('you@example.com', 'wconvert'),
                 'consent_text' => [
                     'text' => __('Send me email guides and updates. %s', 'wconvert'),
                     'link' => [

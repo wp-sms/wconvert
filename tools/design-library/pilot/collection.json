@@ -243,11 +243,13 @@
         "Start after 15 seconds; connect the actual checklist delivery."
       ],
       "measure": "Accepted resource requests; delivery must be tested separately.",
-      "batch": "benchmark",
+      "batch": "older-essentials",
       "comparison": {
-        "decision": "new_design",
-        "against": [],
-        "reason": "A numbered notebook cover makes a single planning resource tangible."
+        "decision": "reuse_design",
+        "against": [
+          "project-notebook"
+        ],
+        "reason": "Improve the existing shared composition and review its actual filled campaign; no additional design or setup is counted."
       }
     },
     {
@@ -1109,13 +1111,13 @@
         "Start after meaningful engagement; limit repeated interruption."
       ],
       "measure": "Accepted requests and completed follow-up, measured separately.",
-      "batch": "coverage",
+      "batch": "older-essentials",
       "comparison": {
         "decision": "reuse_design",
         "against": [
           "project-notebook"
         ],
-        "reason": "Reuse the established project-notebook composition. Place on project advice pages. Supply a checklist matching the service and configure resource email. This neither assesses project readiness automatically nor books a visit."
+        "reason": "Improve the existing shared composition and review its actual filled campaign; no additional design or setup is counted."
       }
     },
     {
@@ -2214,13 +2216,13 @@
         "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
       ],
       "measure": "Accepted requests with a useful follow-up, measured separately.",
-      "batch": "contextual-help",
+      "batch": "older-essentials",
       "comparison": {
         "decision": "reuse_design",
         "against": [
           "bar-email-capture"
         ],
-        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Hear when practical repair sessions are announced without reserving a place."
+        "reason": "Improve the existing shared composition and review its actual filled campaign; no additional design or setup is counted."
       }
     },
     {
@@ -2241,13 +2243,13 @@
         "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
       ],
       "measure": "Accepted requests with a useful follow-up, measured separately.",
-      "batch": "contextual-help",
+      "batch": "older-essentials",
       "comparison": {
         "decision": "reuse_design",
         "against": [
           "bar-email-capture"
         ],
-        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Follow new class announcements without making a booking."
+        "reason": "Improve the existing shared composition and review its actual filled campaign; no additional design or setup is counted."
       }
     },
     {
@@ -3582,6 +3584,10 @@
     {
       "id": "commerce-refresh",
       "name": "Useful shopping help: six practical setups"
+    },
+    {
+      "id": "older-essentials",
+      "name": "Older essentials: planning guides and local announcements"
     }
   ]
 }

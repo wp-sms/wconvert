@@ -48,7 +48,7 @@
       "tier": "basic",
       "preview_url": "https://wconvert.io/designs/announcement-bar/",
       "facets": {
-        "shape": "row",
+        "shape": "panel",
         "captures": [],
         "has_image": false
       }
@@ -60,7 +60,7 @@
       "tier": "basic",
       "preview_url": "https://wconvert.io/designs/bar-with-a-field/",
       "facets": {
-        "shape": "stack",
+        "shape": "panel",
         "captures": [
           "email"
         ],
@@ -74,7 +74,7 @@
       "tier": "basic",
       "preview_url": "https://wconvert.io/designs/deadline-bar/",
       "facets": {
-        "shape": "row",
+        "shape": "panel",
         "captures": [],
         "has_image": false
       }
@@ -127,7 +127,7 @@
       "tier": "basic",
       "preview_url": "https://wconvert.io/designs/bar-that-hands-over-a-code/",
       "facets": {
-        "shape": "stack",
+        "shape": "panel",
         "captures": [
           "email"
         ],
@@ -311,7 +311,7 @@
       "display_type": "floating_bar",
       "tier": "basic",
       "facets": {
-        "shape": "row",
+        "shape": "panel",
         "captures": [],
         "has_image": false
       }
@@ -358,7 +358,7 @@
       "display_type": "floating_bar",
       "tier": "basic",
       "facets": {
-        "shape": "row",
+        "shape": "panel",
         "captures": [],
         "has_image": false
       }

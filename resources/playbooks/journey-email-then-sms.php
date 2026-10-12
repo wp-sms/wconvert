@@ -14,6 +14,7 @@ return [
             'submission:email' => [
                 'headline' => __('First to know. Your choice how.', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
+                'email_placeholder' => __('you@example.com', 'wconvert'),
                 'consent_text' => __('Email me new-collection announcements.', 'wconvert'),
                 'cta_label' => __('Request launch emails', 'wconvert'),
             ],

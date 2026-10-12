@@ -179,98 +179,54 @@
         "name": "Received",
         "kind": "acknowledgement",
         "content": {
-          "type": "split",
-          "ratio": 0.5,
-          "start": [
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1.125rem",
+            "radius": "0",
+            "bg": "#173e43",
+            "fg": "#ffffff",
+            "muted": "#d5e5e4",
+            "accent": "#d5e5e4"
+          },
+          "narrow": {
+            "pad": "1.5rem 1.25rem"
+          },
+          "children": [
             {
-              "type": "panel",
-              "tokens": {
-                "bg": "accent",
-                "fg": "accent-fg",
-                "muted": "accent-fg",
-                "pad": "2.25rem",
-                "gap": "1.25rem",
-                "radius": "0"
-              },
-              "narrow": {
-                "pad": "1.5rem 1.25rem",
-                "heading-size": "1.75rem",
-                "gap": "0.875rem"
-              },
-              "children": [
-                {
-                  "type": "eyebrow",
-                  "id": "n12",
-                  "role": "eyebrow",
-                  "text": "A conversation, to begin",
-                  "tokens": {
-                    "text-size": "1.0834rem"
-                  }
-                },
-                {
-                  "type": "heading",
-                  "id": "n13",
-                  "role": "success_headline",
-                  "text": "Your request\nhas a place here."
-                },
-                {
-                  "type": "text",
-                  "id": "n14",
-                  "role": "success_body",
-                  "text": "Thank you for getting in touch about your project."
-                }
-              ]
-            }
-          ],
-          "end": [
+              "type": "icon",
+              "id": "n15",
+              "name": "check"
+            },
             {
-              "type": "panel",
+              "type": "heading",
+              "id": "n16",
+              "role": "success_headline",
+              "level": 2,
+              "size": "s",
+              "text": "Callback request received"
+            },
+            {
+              "type": "text",
+              "id": "n17",
+              "role": "success_body",
+              "text": "We have received your details and your request for a call. This is not an appointment confirmation."
+            },
+            {
+              "type": "divider",
+              "id": "n18"
+            },
+            {
+              "type": "text",
+              "id": "n19",
+              "role": "fine_print",
+              "size": "s",
+              "text": "Your number is for responding to this enquiry.",
               "tokens": {
-                "pad": "2rem",
-                "gap": "1.125rem",
-                "radius": "0"
-              },
-              "narrow": {
-                "pad": "1.5rem 1.25rem"
-              },
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "n15",
-                  "name": "check"
-                },
-                {
-                  "type": "heading",
-                  "id": "n16",
-                  "role": "success_headline",
-                  "level": 2,
-                  "size": "s",
-                  "text": "Callback request received"
-                },
-                {
-                  "type": "text",
-                  "id": "n17",
-                  "role": "success_body",
-                  "text": "We have received your details and your request for a call. This is not an appointment confirmation."
-                },
-                {
-                  "type": "divider",
-                  "id": "n18"
-                },
-                {
-                  "type": "text",
-                  "id": "n19",
-                  "role": "fine_print",
-                  "size": "s",
-                  "text": "Your number is for responding to this enquiry.",
-                  "tokens": {
-                    "text-size": "1.167rem"
-                  }
-                }
-              ]
+                "text-size": "1.167rem"
+              }
             }
-          ],
-          "basis": "16rem"
+          ]
         }
       }
     ],

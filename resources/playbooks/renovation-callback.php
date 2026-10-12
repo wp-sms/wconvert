@@ -10,10 +10,7 @@ return [
     'business_types' => ['services'],
     'notes' => __('Place below renovation services. Use the phone library and confirm country selection. Agree timing separately; this does not book a call.', 'wconvert'),
     'copy' => [
-        'eyebrow' => [
-            __('A project starts with a conversation', 'wconvert'),
-            __('Your next step', 'wconvert')
-        ],
+        'eyebrow' => __('A project starts with a conversation', 'wconvert'),
         'headline' => __('Talk through your renovation.', 'wconvert'),
         'body' => __('Leave your number to discuss the scope and next steps for your project.', 'wconvert'),
         'name_label' => __('Your name (optional)', 'wconvert'),
@@ -44,14 +41,8 @@ return [
             __('Your number is for responding to this enquiry.', 'wconvert')
         ],
         'cta_label' => __('Request a planning call', 'wconvert'),
-        'success_headline' => [
-            __('Thank you for getting in touch.', 'wconvert'),
-            __('Planning call requested', 'wconvert')
-        ],
-        'success_body' => [
-            __('We have received your renovation enquiry.', 'wconvert'),
-            __('Your request is saved. The team can contact you to agree a time.', 'wconvert')
-        ]
+        'success_headline' => __('Planning call requested', 'wconvert'),
+        'success_body' => __('Your request is saved. The team can contact you to agree a time.', 'wconvert')
     ],
     'rules' => [['type' => 'time_on_page', 'seconds' => 15]],
     'destination_hint' => ['types' => [], 'fields' => ['phone']],

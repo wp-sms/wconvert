@@ -14,6 +14,7 @@ return [
             'submission:email' => [
                 'headline' => __('Make sense of the week', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
+                'email_placeholder' => __('you@example.com', 'wconvert'),
                 'consent_text' => __('Email me the weekly headline briefing. I can unsubscribe anytime.', 'wconvert'),
                 'cta_label' => __('Request the weekly briefing', 'wconvert')
             ],

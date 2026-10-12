@@ -1,0 +1,38 @@
+[
+  {
+    "id": "project-planning-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "project-readiness-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "repair-workshop-news",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "local-class-news",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  }
+]

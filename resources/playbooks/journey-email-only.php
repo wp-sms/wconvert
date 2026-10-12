@@ -11,6 +11,7 @@ return [
     'copy' => [
         'headline' => __('Get our email updates', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
+        'email_placeholder' => __('you@example.com', 'wconvert'),
         'consent_text' => [
             'text' => __('Email me news and offers.', 'wconvert'),
         ],

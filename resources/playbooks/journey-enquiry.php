@@ -27,7 +27,9 @@ return [
             'submission:email-interest-name' => [
                 'headline' => __('How can we contact you?', 'wconvert'),
                 'name_label' => __('Your name', 'wconvert'),
+                'name_placeholder' => __('Your name', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
+                'email_placeholder' => __('you@example.com', 'wconvert'),
                 'fine_print' => [
                     'text' => __('We will use these details to respond to your request.', 'wconvert'),
                 ],

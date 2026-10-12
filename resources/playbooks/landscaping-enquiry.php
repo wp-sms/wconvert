@@ -35,7 +35,9 @@ return [
             'submission:email-interest-name' => [
                 'headline' => __('Let us discuss your garden', 'wconvert'),
                 'name_label' => __('Your name (optional)', 'wconvert'),
+                'name_placeholder' => __('Your name', 'wconvert'),
                 'email_label' => __('Email address', 'wconvert'),
+                'email_placeholder' => __('you@example.com', 'wconvert'),
                 'fine_print' => __('We use your details to discuss this enquiry. A site visit is not booked yet.', 'wconvert'),
                 'back_label' => __('Back', 'wconvert'),
                 'cta_label' => __('Send my garden enquiry', 'wconvert')

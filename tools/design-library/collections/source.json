@@ -16,13 +16,13 @@
           "setup_id": "edition-early-access",
           "stage": "before",
           "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
-          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+          "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
         },
         {
           "setup_id": "sale-deadline",
           "stage": "during",
           "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-          "design_hash": "3f6311cacaf1bb5d689c3636f799b07db0cff0709fd2f6696d7282cefb55f83a"
+          "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
         },
         {
           "setup_id": "first-order-receipt",
@@ -40,7 +40,7 @@
           "setup_id": "homeware-care-notes",
           "stage": "after",
           "setup_hash": "2f66197329170ec6e5a8ec37325f4105ada2313aa9f9a4049d00f72a18bb40ae",
-          "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
+          "design_hash": "ad724d08d5318b6829107279f619cdc2f604f12d8e3d4d050e4596181362a92c"
         }
       ]
     },
@@ -59,13 +59,13 @@
           "setup_id": "edition-early-access",
           "stage": "before",
           "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
-          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+          "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
         },
         {
           "setup_id": "restock-announcements",
           "stage": "during",
           "setup_hash": "366a7ed80b852a2097c87c1015b37551ae7c530b78b308a27030eea3499cfe97",
-          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+          "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
         },
         {
           "setup_id": "lighting-collection",
@@ -77,7 +77,7 @@
           "setup_id": "specification-sheet",
           "stage": "during",
           "setup_hash": "a32b83c41ef7a80468a00b793a89d12a2e66d84da19efb89bb3894a03139c434",
-          "design_hash": "8b73b1bb00708720b098b5e5304504ac9bf2da17e0ffbd3525ba2d56f897ec97"
+          "design_hash": "36b9d4aca8b29ac08b08bd0927b200cf9dfe851b26be68dd61390bf616421ced"
         }
       ]
     },
@@ -96,25 +96,25 @@
           "setup_id": "home-repair-quote",
           "stage": "any",
           "setup_hash": "af5ff16467219382e410c767125b521a08b7cd92c8ab1e09790ded2a2943bf68",
-          "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+          "design_hash": "eb3e85fd59052e59fa34fda24d64c71a921c9936da3fde2b65f92d6f1603bd95"
         },
         {
           "setup_id": "cleaning-quote",
           "stage": "any",
           "setup_hash": "ad845c89d067517fdb04cf2e140e5a05abca1857d0ab3ebb963afef698a869c8",
-          "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+          "design_hash": "eb3e85fd59052e59fa34fda24d64c71a921c9936da3fde2b65f92d6f1603bd95"
         },
         {
           "setup_id": "repair-assessment",
           "stage": "any",
-          "setup_hash": "17c1874973994026ab6b6673d07e9cf3b2db87d3ef57282cf05205f290ad35ba",
-          "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+          "setup_hash": "bae0cba445de43e7d72d37ee60b4307f8407162e2c9cd050c4a53181c3c94f27",
+          "design_hash": "eb3e85fd59052e59fa34fda24d64c71a921c9936da3fde2b65f92d6f1603bd95"
         },
         {
           "setup_id": "renovation-callback",
           "stage": "any",
-          "setup_hash": "1b4e5fb1ac93cec66b8065bb2dcb018b328b10fa1f383bc71e9b462638bfdef1",
-          "design_hash": "90a558d4a4dfb553347098d9e072fefb2e7f662a5273e51e00882bd11d3b797d"
+          "setup_hash": "05ad9224caa48ae7a9b4b88747698aa0c07cc17f20d2bf1ad4cc185489ec43ed",
+          "design_hash": "98dafe92ffac99192604c0f80fc9697884dcacd12f2c87238fff757784a2eb7e"
         },
         {
           "setup_id": "repair-advice-request",
@@ -145,13 +145,13 @@
           "setup_id": "sunday-reading",
           "stage": "any",
           "setup_hash": "1532c2b1bb396f043f63fd7ae876e2144e4322a083a1722108664dafa08f2855",
-          "design_hash": "599cfa2535bc85f5f269af84d778e51032a150f4ac6354404093d9bcf3371bd8"
+          "design_hash": "675af5ac86d8c65f13a6c111c16fbd4f2aef134bf1731ac0d06f3f9123f9f258"
         },
         {
           "setup_id": "editorial-weekly",
           "stage": "any",
           "setup_hash": "8ad0617495222d15b08247a3ba12c15a5bcce29ecdf13786eaad20260051da9c",
-          "design_hash": "a28e7cb7dedb503265de8ac7bfa5f272270fa909f9e948b62934cbdd96f7a0b4"
+          "design_hash": "79e41721c0024ae5d2cacde60493260c69aab7a4701c2670b4e81d79785827fa"
         },
         {
           "setup_id": "writing-checklist",
@@ -163,7 +163,7 @@
           "setup_id": "reading-notes-guide",
           "stage": "any",
           "setup_hash": "a5afa7d85a8923cd3647d7335ee069a0bb27c8cf1249c11f730f41a5764ace3c",
-          "design_hash": "87588e459b3fa61f355d30e355f8ad196790569f052634f6a5d2466368d8e83d"
+          "design_hash": "ee67e111c746ade2980b9c41d8ad65424306a2dc044537ba4e623a6023e3e019"
         },
         {
           "setup_id": "excerpt-window",
@@ -188,7 +188,7 @@
           "setup_id": "edition-early-access",
           "stage": "before",
           "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
-          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+          "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
         },
         {
           "setup_id": "first-order-receipt",
@@ -200,13 +200,13 @@
           "setup_id": "sale-deadline",
           "stage": "during",
           "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-          "design_hash": "3f6311cacaf1bb5d689c3636f799b07db0cff0709fd2f6696d7282cefb55f83a"
+          "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
         },
         {
           "setup_id": "homeware-care-notes",
           "stage": "after",
           "setup_hash": "2f66197329170ec6e5a8ec37325f4105ada2313aa9f9a4049d00f72a18bb40ae",
-          "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
+          "design_hash": "ad724d08d5318b6829107279f619cdc2f604f12d8e3d4d050e4596181362a92c"
         }
       ],
       "event": {
@@ -238,7 +238,7 @@
           "setup_id": "explore-compatible-extras",
           "stage": "any",
           "setup_hash": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
-          "design_hash": "1425822a2f42b22911053c91d548919d06d9313635b15494a8429017e44e8b8f"
+          "design_hash": "dbb85f5e6ffc63a6b650a801e871288f48e5f8b59a0b29c8dfa0785fd5b2a22d"
         },
         {
           "setup_id": "add-useful-extras",
@@ -256,7 +256,7 @@
           "setup_id": "coffee-taste-finder",
           "stage": "any",
           "setup_hash": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
-          "design_hash": "82e2944e7ad2c27319e51a11b301d813b33f962502cc915a47af71324e396945"
+          "design_hash": "005713171a32115d6bdfa052ea36b47fa65ba7db480d13f205f1e3dbad5a2a83"
         },
         {
           "setup_id": "shopping-guidance",

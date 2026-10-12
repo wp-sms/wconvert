@@ -149,7 +149,7 @@ it('starts at the graph entry and submits after an unordered branch and merge', 
   const journey = setup({ ...(service as Template), tree });
   expect(journey.root().textContent).toContain('What can we help with?');
   journey.choose('repair'); journey.act('next');
-  expect(journey.root().textContent).toContain('A little about the repair');
+  expect(journey.root().textContent).toContain('What happens next');
   journey.act('next');
   journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
   journey.act('submit');

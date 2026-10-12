@@ -118,6 +118,40 @@ around 14px. Short phones may need vertical scrolling; horizontal overflow or
 clipped words are defects. `build.sh renderer library-review` provides the full
 collection and repeatable browser measurements for this pass.
 
+**Review the transition, not only the endpoints.** Find where a row or split
+changes arrangement and inspect the actual output immediately before and after
+that width, with filled campaign copy and a longer CTA. A layout can fit without
+overflow and still be badly composed. Keep the message, field, action and consent
+in a clear reading order; reject a heading beside a field with the action stranded
+below it. For announcement bars, use three deliberate arrangements: one row when
+there is room, a heading above the field/action row at intermediate widths, then
+a stacked form on a phone. Keep the field and action the same height when inline.
+Do not reduce useful wording or text size to force the wide arrangement.
+
+**Include the display controls in the review.** Studio review surfaces mount the
+shipping close control; a bare renderer alone still omits container chrome. Also
+check the actual mounted bar/popup in WordPress:
+the dismiss control must not overlap headings, fields, consent or actions on any
+screen. Allow for the larger touch control and check RTL. Wait for opening motion
+to finish before saving evidence; a partially visible entering bar is not a
+usable review screenshot.
+
+**Library-wide changes need library-wide evidence.** A shared renderer or form
+style change must be reviewed against every registered design and every prefilled
+campaign, not only the current batch. Run `tools/visual-tests/library-polish.mjs`
+after rebuilding `renderer library-review pilot`: it exports the current inventory
+itself and checks every screen/result at eight widths in LTR and RTL. Run again
+with `WCONVERT_REVIEW_LONG_COPY=1`, then use `capture` to produce phone/desktop
+contact boards. Inspect every board; measurements do not approve visual quality.
+Keep a ledger of inspected screens and record any excluded behavior. Check filled
+campaigns after source edits: playbook wording overrides gallery examples.
+
+Then rehearse required input, failure/retry and completion with
+`template-studio-refresh.mjs all`, and check native WordPress display, scrolling,
+phone controls and local submission in the disposable fixture. Store evidence
+under `docs/reviews`, record design revisions, and refresh dependent source pins.
+Do not bulk-mark WordPress checks as passed for campaigns only seen in the studio.
+
 ### 1.7 A bar is not a narrow popup, and a slide-in is not a small one
 
 A `floating_bar` spans the whole inline axis at either block edge, over a page
@@ -183,8 +217,11 @@ Role has nowhere to carry those choices; review the actual Keep/Sample candidate
 
 Give every shipped leaf a stable `n1`…`n9999` id, unique in its tree, and keep
 the id when moving the leaf. Slot Roles may repeat; node ids may not. This is
-how translation follows content rather than a changing array position. Author
-tree `v: 2`, but never derived facets, and do not rely on PHP's new-node fallback
+how translation follows content rather than a changing array position. Use tree `v: 2` for the linear submissions described here. Use supported
+`v: 3` only when the journey needs the graph contract (stable screen IDs, validated
+transitions and result routing); validate it against the shipping capture contract
+and review every reachable path. Do not convert a simple linear setup merely to
+change its version. Never author derived facets, and do not rely on PHP's new-node fallback
 to renumber a library file on every edit.
 
 ---

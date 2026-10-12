@@ -1,0 +1,66 @@
+[
+  {
+    "id": "project-planning-guide",
+    "width": 1280,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "project-planning-guide",
+    "width": 320,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "project-readiness-guide",
+    "width": 1280,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "project-readiness-guide",
+    "width": 320,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "repair-workshop-news",
+    "width": 1280,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "repair-workshop-news",
+    "width": 320,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "local-class-news",
+    "width": 1280,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  },
+  {
+    "id": "local-class-news",
+    "width": 320,
+    "requiredEmail": true,
+    "nativeCaptureStatus": 201,
+    "acknowledgement": true,
+    "overflow": false
+  }
+]

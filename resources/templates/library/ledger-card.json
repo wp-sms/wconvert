@@ -19,7 +19,7 @@
     "text-size": "1rem",
     "leading": "1.5",
     "radius": "0",
-    "pad": "clamp(1.25rem, 5%, 2rem)",
+    "pad": "3.5rem clamp(1.25rem, 5%, 2rem) clamp(1.25rem, 5%, 2rem)",
     "gap": "1rem",
     "width": "30rem",
     "align": "start",

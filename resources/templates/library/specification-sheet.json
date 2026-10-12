@@ -14,7 +14,7 @@
     "heading-size": "1.875rem",
     "text-size": "1rem",
     "leading": "1.5",
-    "pad": "1.5rem",
+    "pad": "3.5rem 1.5rem 1.5rem",
     "gap": "1.25rem",
     "radius": "0.75rem",
     "width": "48rem",
@@ -58,13 +58,13 @@
                       "type": "text",
                       "id": "n2",
                       "role": "body",
-                      "text": "Small \u00b7 35 \u00d7 35 cm"
+                      "text": "Small · 35 × 35 cm"
                     },
                     {
                       "type": "text",
                       "id": "n3",
                       "role": "body",
-                      "text": "Wide \u00b7 50 \u00d7 40 cm"
+                      "text": "Wide · 50 × 40 cm"
                     }
                   ]
                 }
@@ -92,13 +92,13 @@
                       "type": "text",
                       "id": "n5",
                       "role": "body",
-                      "text": "Small \u00b7 an armchair"
+                      "text": "Small · an armchair"
                     },
                     {
                       "type": "text",
                       "id": "n6",
                       "role": "body",
-                      "text": "Wide \u00b7 a two-seat sofa"
+                      "text": "Wide · a two-seat sofa"
                     }
                   ]
                 }
@@ -126,13 +126,13 @@
                       "type": "text",
                       "id": "n8",
                       "role": "body",
-                      "text": "Small \u00b7 wipe clean"
+                      "text": "Small · wipe clean"
                     },
                     {
                       "type": "text",
                       "id": "n9",
                       "role": "body",
-                      "text": "Wide \u00b7 wipe clean"
+                      "text": "Wide · wipe clean"
                     }
                   ]
                 }

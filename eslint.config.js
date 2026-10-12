@@ -25,11 +25,19 @@ export default [
       // browser IIFE of the renderer, which this config would lint as Node and
       // fail on every `document` in. The generators themselves are linted below.
       'tools/*/out/',
+      'tools/template-server/node_modules/',
+      'tools/template-server/dist/',
+      'tools/template-server/.wrangler/',
+      'tools/template-server/worker-configuration.d.ts',
       '.superdesign/tmp/',
     ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    files: ['tools/template-server/src/**/*.ts'],
+    languageOptions: { globals: { ...globals.browser, Env: 'readonly', ExportedHandler: 'readonly' } },
+  },
   {
     // Build tooling: Node, not a browser. It never ships, and it is outside
     // free's tree for the source contract's purposes (ADR 0029).

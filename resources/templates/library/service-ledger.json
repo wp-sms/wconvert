@@ -103,7 +103,7 @@
                 }
               ],
               "basis": "16rem",
-              "ratio": "0.5"
+              "ratio": 0.5
             },
             {
               "type": "divider",
@@ -157,7 +157,7 @@
                 }
               ],
               "basis": "16rem",
-              "ratio": "0.5"
+              "ratio": 0.5
             },
             {
               "type": "row",

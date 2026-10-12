@@ -36,7 +36,7 @@ a usable Optin must not require rebuilding its layout.
    `pro/modules/display-types/templates/`; paid question designs go in
    `pro/modules/journeys/templates/`. The `id` must be unique across all modules.
    Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
-   preserve that id when reordering it. Author `tree.v: 2`; do not author derived facets.
+   preserve that id when reordering it. Author `tree.v: 2` for linear submissions. Use supported `v: 3` only for a journey that needs the graph contract; preserve stable screen IDs and validate every reachable route with the shipping capture contract. Do not author derived facets.
    PHP mints missing ids on newly added draft leaves; that fallback is not a
    reason to renumber shipped leaves and lose translation identity (ADR 0010).
 3. **`composer verify:templates`.** Not optional — see below.
@@ -49,7 +49,15 @@ a usable Optin must not require rebuilding its layout.
    alignment, button prominence and overall balance. Run the size/contrast checks
    as well. Zero automated findings is not visual approval. Record what was
    actually inspected and keep a screenshot of the final result; an earlier
-   screenshot does not verify a later edit.
+   screenshot does not verify a later edit. For wrapping rows and splits, also
+   inspect the widths immediately before and after each layout transition with
+   real filled copy and a longer CTA. Save those views with a short composition
+   judgement (reading order, grouping and alignment), not only a count of passing
+   checks. Inspect the mounted WordPress output with its dismiss control present
+   and opening motion settled, including touch widths and acknowledgement.
+   Announcement bars must not leave a heading beside a form whose button
+   has dropped below its field. Run `npm run templates:check-announcements` against
+   the rebuilt local studio when changing Bar with a field or its filled setups.
 6. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
    conversion heuristics. Walk all eleven.
 7. **Iterate**, then `composer test && npm test`.

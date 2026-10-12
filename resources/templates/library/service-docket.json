@@ -32,8 +32,8 @@
         "kind": "input",
         "content": {
           "type": "split",
-          "basis": "16rem",
-          "ratio": "0.5",
+          "basis": "20rem",
+          "ratio": 0.5,
           "tokens": {
             "gap": "0"
           },

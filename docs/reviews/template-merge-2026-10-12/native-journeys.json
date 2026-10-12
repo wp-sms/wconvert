@@ -1,0 +1,90 @@
+[
+  {
+    "id": "service-enquiry",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "phone": false
+      },
+      {
+        "step": 1,
+        "phone": false
+      },
+      {
+        "step": 2,
+        "phone": false
+      },
+      {
+        "step": 3,
+        "phone": false
+      }
+    ],
+    "localCaptures": 1,
+    "passed": true
+  },
+  {
+    "id": "service-enquiry",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "phone": false
+      },
+      {
+        "step": 1,
+        "phone": false
+      },
+      {
+        "step": 2,
+        "phone": false
+      },
+      {
+        "step": 3,
+        "phone": false
+      }
+    ],
+    "localCaptures": 1,
+    "passed": true
+  },
+  {
+    "id": "headlines-optional-sms",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "phone": false
+      },
+      {
+        "step": 1,
+        "phone": true
+      },
+      {
+        "step": 2,
+        "phone": false
+      }
+    ],
+    "localCaptures": 2,
+    "passed": true
+  },
+  {
+    "id": "headlines-optional-sms",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "phone": false
+      },
+      {
+        "step": 1,
+        "phone": true
+      },
+      {
+        "step": 2,
+        "phone": false
+      }
+    ],
+    "localCaptures": 2,
+    "passed": true
+  }
+]

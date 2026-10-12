@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "wconvert-template-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-12",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "r2_buckets": [
+    { "binding": "PUBLIC_TEMPLATES", "bucket_name": "wconvert-template-public-local" }
+  ],
+  "env": {
+    "staging": {
+      "name": "wconvert-template-staging",
+      "r2_buckets": [
+        { "binding": "PUBLIC_TEMPLATES", "bucket_name": "wconvert-template-public-staging" }
+      ]
+    }
+  }
+}

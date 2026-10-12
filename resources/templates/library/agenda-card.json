@@ -39,7 +39,7 @@
             {
               "type": "split",
               "basis": "16rem",
-              "ratio": "0.5",
+              "ratio": 0.5,
               "tokens": {
                 "gap": "0"
               },

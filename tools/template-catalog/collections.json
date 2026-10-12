@@ -27,7 +27,7 @@
   },
   {
     "id": "publisher-collection",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "name": "Publisher collection",
     "description": "Four layouts for newsletters, article-end signups, guides and reading recommendations. Add your publication details, destinations and resources before publishing.",
     "requires": {
@@ -41,8 +41,8 @@
       ]
     },
     "templates": {
-      "sunday-marginalia": "ef73bd73c19d6b69df7cac611f051169bf150630312fbb7f1aa1c42ce9e78251",
-      "inline-rule": "c886cc22c8810d3c845e50f88fc7c691a2dda5533cca173e0dbe66f2e809bc4d",
+      "sunday-marginalia": "636c936907d4331b5242e2e1a6b4b7597a32b1a5c68331214a42c2e394197492",
+      "inline-rule": "19a67715318f0cd768c6db721f34fafc36495b22a1bce0b0db5b165007526731",
       "useful-guide": "e444ff48261428a2b5c4cd130c574bc30ce04d06227f59805cc291461b18e4c7",
       "reading-slip": "8a1bb2268e59b975d2a0fb61885c681a059e5cd6b1275174d7fce59501b1971c"
     },
@@ -55,7 +55,7 @@
   },
   {
     "id": "service-collection",
-    "version": "1.4.1",
+    "version": "1.4.2",
     "name": "Service collection",
     "description": "Three layouts for callbacks, service enquiries and checklists. Add your topics, response process and resources before publishing.",
     "requires": {
@@ -70,12 +70,12 @@
       ]
     },
     "templates": {
-      "callback-notes": "90a558d4a4dfb553347098d9e072fefb2e7f662a5273e51e00882bd11d3b797d",
+      "callback-notes": "98dafe92ffac99192604c0f80fc9697884dcacd12f2c87238fff757784a2eb7e",
       "inline-choice": "7b00ed9d0773ba6ca5df9e08095bac14506d7a99ee9e438a7d1530b9cb12024f",
-      "launch-checklist": "bcb45108ff76fc5764259f5b332592f47273592468ecd95fe6aace9ff0fc7eec"
+      "launch-checklist": "a1342de416ac8332b7592edb4a535c0bdec2989f926eb154d52ecef297bde9f4"
     },
     "playbooks": {
-      "request-a-callback": "c975d28525e888e7b916312fd717fb46bf40786dcbfc70d0c30ac13adbd3f981",
+      "request-a-callback": "a6278cb48073448a64e42fdc5833cdfbd738c123e26e20b4122616c04d543776",
       "request-a-quote": "93c6e83b29029d48bb56a6dbdbe8db83950dd6933e27376d1784323e5d009323",
       "launch-checklist": "2eed6d03bdaef0a26d68a9a37d89273519e39edf0de313e45d8106db278029b0"
     }
