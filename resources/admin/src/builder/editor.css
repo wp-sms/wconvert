@@ -1026,7 +1026,8 @@ body .wconvert-add-elements { inline-size: 280px; max-inline-size: calc(100vw - 
 .wconvert-journey-settings :is(input,select,textarea,button):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-journey-settings__clause { display: grid; grid-template-columns: auto minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) auto; align-items: center; gap: 7px; }
 .wconvert-journey-settings__clause>span { color: var(--foreground); font-size: var(--text-note); font-weight: 600; }
-.wconvert-journey-settings__answers { display: grid; gap: 7px; min-inline-size: 0; max-block-size: 185px; overflow: auto; margin: 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); }
+/* Never its own scroll box: the panel or dialog around it already scrolls, and a short inner one hid the third answer. */
+.wconvert-journey-settings__answers { display: grid; gap: 7px; min-inline-size: 0; margin: 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); }
 .wconvert-journey-settings__answers legend { padding-inline: 3px; color: var(--muted-foreground); font-size: var(--text-label); }
 .wconvert-journey-settings__answers small { color: var(--destructive); }
 .wconvert-journey-settings__question,.wconvert-journey-settings__result { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); min-inline-size: 0; }
@@ -1598,7 +1599,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 
 /* Multi-answer rules need the inspector width; a half-width checklist obscures choices. */
 .wconvert-journey-pane .wconvert-journey-settings__clause:has(.wconvert-journey-settings__answers) { grid-template-columns: minmax(0, 1fr); }
-.wconvert-journey-pane .wconvert-journey-settings__answers { max-block-size: 220px; }
 .wconvert-journey-pane .wconvert-journey-visibility>.wconvert-journey-settings { margin-block-start: 12px; padding-block-start: 0; border: 0; }
 
 /* Editing starts with the rendered campaign; Flow is another view of this draft. */
@@ -2458,6 +2458,8 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-zoom button svg { inline-size: 16px; block-size: 16px; }
 .wconvert-flow-zoom button:hover { background: var(--surface); }
 .wconvert-flow-zoom output { min-inline-size: 44px; font-size: var(--text-note); font-variant-numeric: tabular-nums; text-align: center; }
+/* The map failed to load (FlowMapBoundary): the message sits where the map would. */
+.wconvert-flow-failed { padding: 24px; }
 .wconvert-flow-legend, .wconvert-flow-overview { position: absolute; inset-block-end: 16px; inset-inline-end: 16px; z-index: 3; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
 .wconvert-flow-legend { display: grid; gap: 4px; padding: 8px 10px; color: var(--muted-foreground); font-size: var(--text-micro); }
 .wconvert-flow-legend span { display: flex; align-items: center; gap: 8px; }

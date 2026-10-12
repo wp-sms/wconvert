@@ -1,5 +1,9 @@
 # Journey B completion checklist
 
+> The September Flow prototype these links name was retired by
+> [ADR 0142](../adr/0142-one-readable-flow-map.md); the links point at its last
+> copy in history.
+
 Updated September 26, 2026. PR #190 remains draft. The latest UI inventory and
 verification is the [consolidated audit](2026-09-26-journey-full-audit.md);
 the [production-gap review](2026-09-25-journey-b-production-gap.md) is a historical
@@ -7,7 +11,7 @@ record of findings and browser evidence. Later entries there close several
 gaps mentioned by earlier entries. Do not reopen a completed item solely because
 an older paragraph still describes it as unfinished.
 
-The behavior contract is the [prototype specification](../../tools/design-system/editor-prototype/flow-prototype/BEHAVIOR.md),
+The behavior contract is the [prototype specification](https://github.com/wp-sms/wconvert/blob/3d75fbc6b53e8ce08eb53edad136f295bb5b5b72/tools/design-system/editor-prototype/flow-prototype/BEHAVIOR.md),
 as amended for production by [ADR 0108](../adr/0108-explicit-journey-graph-and-legacy-migration.md).
 The target user is an occasional merchant. A correct graph that requires them
 to guess when answers are saved or which path wins does not meet the UX goal.

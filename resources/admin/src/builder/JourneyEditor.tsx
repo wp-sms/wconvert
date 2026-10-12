@@ -21,6 +21,7 @@ import { followupInsertionEdge, moveFollowup } from './structure/followupActions
 import { followupGroups, followupGroupSource } from './structure/followupGroups';
 import { JourneyScreenCard } from './JourneyScreenCard';
 import { JourneyArrivalSummary } from './JourneyArrivalSummary';
+import { FlowMapBoundary } from './FlowMapBoundary';
 import { QuestionSettings, type QuestionReviewContext, ResultSettings, RouteSettings, ScreenConditionSettings } from './JourneySettings';
 import { JourneyTest } from './JourneyTest';
 import { GraphRouteSettings } from './GraphRouteSettings';
@@ -612,7 +613,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</select></label></div>
           {view === 'edit' && <><EditTree tree={tree} step={step} editingScreen={editingScreen && !look?.open} issues={issues} onIssue={openIssue} onSelect={select}
             look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
-          {view === 'flow' && <Suspense fallback={<FlowLoading />}>
+          {view === 'flow' && <FlowMapBoundary><Suspense fallback={<FlowLoading />}>
             <JourneyMap issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && (panelSection === 'paths' || !!elementPanel) ? pathFocus : null}
               onSelect={select} onSelectPath={openLine} samplePath={samplePath} sampleEdges={sampleEdges}
               onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Cleared. Every screen and line is shown again.', 'wconvert')); }}
@@ -626,7 +627,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               } : undefined}
               branchLocked={!journeys}
               destinationSummary={destinationSummary} />
-          </Suspense>}
+          </Suspense></FlowMapBoundary>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>
             <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(__('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('All screens', 'wconvert')}>

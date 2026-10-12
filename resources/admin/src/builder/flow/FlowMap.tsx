@@ -109,6 +109,8 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
     const next = fitZoom({ width: view.width - PAD, height: view.height - PAD - TOOLBAR }, layout);
     if (next !== zoomRef.current) setZoom(next);
   }, [fitted, view, layout]);
+  // Fit has not reached its zoom yet: the first render is at 100%, before the map is measured.
+  const settling = fitted && (!view.width || fitZoom({ width: view.width - PAD, height: view.height - PAD - TOOLBAR }, layout) !== zoom);
   const zoomTo = useCallback((next: number, anchor?: { x: number; y: number }) => {
     const element = viewport.current;
     const target = clampZoom(next);
@@ -133,14 +135,17 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const reveal = useCallback((node: string | undefined, withNext: boolean) => {
     const element = viewport.current;
     const box = node ? layout.boxes.get(node) : undefined;
-    if (!element || !box) return;
-    const nextNode = withNext ? model.lines.find(line => line.from === node && line.style !== 'around' && line.style !== 'skipped')?.to : undefined;
+    if (!element || !box || settling) return;
+    // "The screen after it" is the first one in reading order, whatever order its lines are stored in.
+    const after = withNext ? model.lines.filter(line => line.from === node && line.style !== 'around' && line.style !== 'skipped').map(line => line.to) : [];
+    const nextNode = after.sort((a, b) => layout.order.indexOf(a) - layout.order.indexOf(b))[0];
     const offset = { x: Math.max(0, (element.clientWidth - layout.width * zoomRef.current) / 2), y: 0 };
     const target = revealScroll({ left: element.scrollLeft - offset.x, top: element.scrollTop, width: element.clientWidth, height: element.clientHeight }, zoomRef.current,
       [box, ...(nextNode && layout.boxes.get(nextNode) ? [layout.boxes.get(nextNode)!] : [])]);
     if (target) element.scrollTo?.({ left: target.left + offset.x, top: target.top, behavior: reduced ? 'auto' : 'smooth' });
-  }, [layout, model.lines, reduced]);
-  useEffect(() => { reveal(selectedNode, true); }, [selectedNode, zoom]); // eslint-disable-line react-hooks/exhaustive-deps -- follows the selection, not every re-layout
+  }, [layout, model.lines, reduced, settling]);
+  // A scroll worked out at 100% and started before Fit shrank the map opened wide maps past their first branch.
+  useEffect(() => { reveal(selectedNode, true); }, [selectedNode, zoom, settling]); // eslint-disable-line react-hooks/exhaustive-deps -- follows the selection, not every re-layout
 
   // One tab stop: the active card, then its buttons and its lines' pills.
   const [active, setActive] = useState<string | undefined>(selectedNode);

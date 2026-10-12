@@ -1,8 +1,12 @@
 # Journey workspace B: production gap and completion plan
 
+> The September Flow prototype these links name was retired by
+> [ADR 0142](../adr/0142-one-readable-flow-map.md); the links point at its last
+> copy in history.
+
 September 25, 2026. This is a source and interface audit of the current PR #190
-against the [B prototype behavior](../../tools/design-system/editor-prototype/flow-prototype/BEHAVIOR.md)
-and its [scenario checks](../../tools/design-system/editor-prototype/flow-prototype/SCENARIOS.md).
+against the [B prototype behavior](https://github.com/wp-sms/wconvert/blob/3d75fbc6b53e8ce08eb53edad136f295bb5b5b72/tools/design-system/editor-prototype/flow-prototype/BEHAVIOR.md)
+and its [scenario checks](https://github.com/wp-sms/wconvert/blob/3d75fbc6b53e8ce08eb53edad136f295bb5b5b72/tools/design-system/editor-prototype/flow-prototype/SCENARIOS.md).
 It is a plan, not a claim that prototype simulations work in WordPress. The user
 chose to hold PR #190 until the full journey behavior is implemented. Earlier
 seven-screen and ordered-flow plans describe the current implementation, not a
@@ -1113,7 +1117,7 @@ The code evidence is concentrated in `resources/loader/src/journey-rules.ts`,
 `src/Template/JourneyRules.php`, `src/Template/CaptureJourney.php`,
 `pro/modules/journeys/loader/journey.ts`, and `resources/admin/src/builder/`
 `JourneyEditor.tsx`, `JourneyMap.tsx`, `JourneySample.tsx`, `JourneyTest.tsx`,
-`JourneySettings.tsx`, and `ReadinessDialog.tsx`. The prototype's [evaluation](../../tools/design-system/editor-prototype/flow-prototype/EVALUATION.md)
+`JourneySettings.tsx`, and `ReadinessDialog.tsx`. The prototype's [evaluation](https://github.com/wp-sms/wconvert/blob/3d75fbc6b53e8ce08eb53edad136f295bb5b5b72/tools/design-system/editor-prototype/flow-prototype/EVALUATION.md)
 is engineering evidence, not a merchant study.
 
 ## Browser walkthrough, September 25
