@@ -35,7 +35,7 @@
             {
               "type": "split",
               "ratio": 0.35,
-              "basis": "12rem",
+              "basis": "16rem",
               "start": [
                 {
                   "type": "panel",

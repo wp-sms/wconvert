@@ -13,7 +13,7 @@
     "heading-size": "1.875rem",
     "text-size": "1rem",
     "radius": "0.75rem",
-    "pad": "1.5rem",
+    "pad": "3.5rem 1.5rem 1.5rem",
     "gap": "1rem",
     "width": "32rem",
     "align": "start"
@@ -73,7 +73,7 @@
       },
       {
         "id": "repair",
-        "name": "Repair details",
+        "name": "Before the assessment",
         "kind": "content",
         "content": {
           "type": "stack",
@@ -81,19 +81,19 @@
             {
               "type": "heading",
               "id": "n4",
-              "text": "A little about the repair",
+              "text": "What happens next",
               "role": "headline"
             },
             {
               "type": "text",
               "id": "n5",
-              "text": "We can usually advise after hearing about the item.",
+              "text": "Leave your email on the next screen. We can then ask about the item, its condition and any useful photos. We agree the assessment and any costs before work begins.",
               "role": "body"
             },
             {
               "type": "button",
               "id": "n6",
-              "label": "Continue",
+              "label": "Continue to contact details",
               "action": "next",
               "role": "next_label"
             },
@@ -144,7 +144,8 @@
               "label": "Email address",
               "tokens": {
                 "border": "#6b94b5"
-              }
+              },
+              "placeholder": "you@example.com"
             },
             {
               "type": "button",

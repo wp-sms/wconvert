@@ -56,7 +56,8 @@
     "test:visual:analytics": "playwright test -c tools/visual-tests/analytics.config.mjs",
     "build:commerce": "vite build -c vite.config.commerce.mjs",
     "test:visual:commerce": "playwright test -c tools/visual-tests/commerce.config.mjs",
-    "build:revenue": "vite build -c vite.config.revenue.mjs"
+    "build:revenue": "vite build -c vite.config.revenue.mjs",
+    "templates:audit:library": "bash tools/design-library/build.sh renderer library-review pilot && node tools/visual-tests/library-polish.mjs audit && WCONVERT_REVIEW_LONG_COPY=1 node tools/visual-tests/library-polish.mjs audit && node tools/visual-tests/template-studio-refresh.mjs all tools/design-library/out/library-journeys.json"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

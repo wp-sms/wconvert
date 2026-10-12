@@ -46,7 +46,7 @@
                 "bg": "#e8b757",
                 "fg": "#3a301e",
                 "muted": "#3a301e",
-                "pad": "1.5rem",
+                "pad": "3.5rem 1.5rem 1.5rem",
                 "gap": "0.75rem",
                 "radius": "0.5rem",
                 "border": "#8b6b30"
@@ -89,7 +89,7 @@
                 }
               ],
               "narrow": {
-                "pad": "1rem 1.25rem",
+                "pad": "3.5rem 1.25rem 1rem",
                 "gap": "0.5rem"
               }
             }
@@ -98,7 +98,7 @@
             {
               "type": "panel",
               "tokens": {
-                "pad": "1.75rem",
+                "pad": "3.5rem 1.75rem 1.75rem",
                 "gap": "1rem",
                 "bg": "#fffaf0",
                 "radius": "0.5rem"
@@ -162,7 +162,7 @@
                 }
               ],
               "narrow": {
-                "pad": "1.25rem"
+                "pad": "3.5rem 1.25rem 1.25rem"
               }
             }
           ]
@@ -175,7 +175,7 @@
         "content": {
           "type": "panel",
           "tokens": {
-            "pad": "2rem",
+            "pad": "3.5rem 2rem 2rem",
             "gap": "1rem",
             "border": "#8b7a60"
           },
@@ -211,7 +211,7 @@
             }
           ],
           "narrow": {
-            "pad": "1.25rem"
+            "pad": "3.5rem 1.25rem 1.25rem"
           }
         }
       }

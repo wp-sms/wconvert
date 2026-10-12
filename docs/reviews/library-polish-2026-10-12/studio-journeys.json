@@ -1,0 +1,1342 @@
+[
+  {
+    "id": "access-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "accessible-visit-note",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "accounting-consultation",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "add-useful-extras",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "agency-project-enquiry",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "announcement-bar",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "appointment-agenda",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "article-end-newsletter",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "assembly-guidance",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "basket-cross-sells",
+    "visited": [
+      "suggestions"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "basket-product-help",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "bulk-gift-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "callback-slip",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "care-clinic-request",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "cart-after-a-while",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cart-delivery-help",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cart-on-the-way-out",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cart-straight-away",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "category-promotion",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "checklist-download",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "cleaning-quote",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "visited": [
+      "taste",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "collection-discovery",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "collection-interest",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "consultation-corner",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "consultation-invitation",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "content-guide",
+    "visited": [
+      "interests",
+      "guide",
+      "signup",
+      "thanks"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "content-upgrade",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "contributor-guidelines",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "contributor-pitch-checklist",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "coupon-ticket",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "course-advice-request",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "delivery-announcement",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "dispatch-schedule",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "drop-alerts",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "edition-early-access",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "edition-sample-signup",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "editorial-weekly",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "equipment-hire-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "event-calendar",
+    "visited": [
+      "details"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "event-registration-link",
+    "visited": [
+      "details"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "excerpt-window",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "experience-kit-finder",
+    "visited": [
+      "experience",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "explore-compatible-extras",
+    "visited": [
+      "suggestions"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "first-order-receipt",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "fit-checklist",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "fitness-introduction",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "fullscreen-announcement",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "fullscreen-guide",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "fullscreen-newsletter",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "furniture-fit-guide",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "gift-finder",
+    "visited": [
+      "recipient",
+      "budget",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "gift-message-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "gift-planning-guide",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "gift-wrap-details",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "group-training-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "guide-download",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "headlines-optional-sms",
+    "visited": [
+      "email",
+      "sms",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "holiday-service-hours",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "home-repair-quote",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "homeware-care-notes",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "journey-email-only",
+    "visited": [
+      "email",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "journey-email-then-sms",
+    "visited": [
+      "email",
+      "sms",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "journey-enquiry",
+    "visited": [
+      "request",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "journey-offer-first",
+    "visited": [
+      "offer",
+      "email",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "landscaping-enquiry",
+    "visited": [
+      "request",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "language-support-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "launch-checklist",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "launch-index",
+    "visited": [
+      "details"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "launch-interest",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "lighting-collection",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "local-class-news",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "local-pickup-details",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "maintenance-letter",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "maker-notes",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "maker-session-invitation",
+    "visited": [
+      "offer",
+      "email",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "material-comparison",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "membership-details",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "new-arrivals-link",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "one-line-invite",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "opening-hours-signpost",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "packaging-details",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "personalisation-enquiry",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "photography-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "portfolio-feedback-request",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "pre-visit-checklist",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "product-advice-request",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "product-care-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "product-demo-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "product-detail-sheet",
+    "visited": [
+      "details"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "product-finder",
+    "visited": [
+      "need",
+      "garden",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "project-planning-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "project-readiness-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "project-stage-finder",
+    "visited": [
+      "stage",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "read-to-the-end",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "reader-format-choice",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "reader-panel-interest",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "reader-question",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "reading-notes-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "reading-path-finder",
+    "visited": [
+      "topic",
+      "depth",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "reading-recommendation",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "recommend-accessory",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "related-essay",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "remote-consultation-details",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "remote-walkthrough-request",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "renovation-callback",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "repair-advice-request",
+    "visited": [
+      "request",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "repair-assessment",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "repair-workshop-news",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "request-a-callback",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "request-a-quote",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "rereading-essay",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "restock-announcements",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "restyling-notes",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "return-policy-guide",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "returns-deadline-notice",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "sale-announcement",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "sale-deadline",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "sample-request",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "seasonal-service-link",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "series-start",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "service-area-check",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "service-enquiry",
+    "visited": [
+      "service",
+      "contact",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "service-finder",
+    "visited": [
+      "needs",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "service-fit-brief",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "service-open-day",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "service-options-guide",
+    "visited": [
+      "offer"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "service-process-strip",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "service-text-updates",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "shopping-guidance",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "showroom-information",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "sizing-guide",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "sms-message-preview",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "space-fit-finder",
+    "visited": [
+      "space",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "spare-parts-advice",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "specification-sheet",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "studio-welcome",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "sunday-reading",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "topic-reading-list",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "trade-account-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "translation-project-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "tutoring-introduction",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "upholstery-samples",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "venue-hire-checklist",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "venue-visit-request",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "vip-early-access",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "visiting-details",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "website-review-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "welcome-discount",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "wholesale-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "workspace-change-story",
+    "visited": [
+      "details"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "writing-checklist",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "writing-session-details",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  }
+]

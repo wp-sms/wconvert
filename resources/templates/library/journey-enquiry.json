@@ -88,7 +88,8 @@
               "required": false,
               "tokens": {
                 "border": "#8790a3"
-              }
+              },
+              "placeholder": "Your name"
             },
             {
               "type": "field",
@@ -98,7 +99,8 @@
               "required": true,
               "tokens": {
                 "border": "#8790a3"
-              }
+              },
+              "placeholder": "you@example.com"
             },
             {
               "type": "text",

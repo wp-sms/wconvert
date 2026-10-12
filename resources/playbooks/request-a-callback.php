@@ -11,10 +11,7 @@ return [
     'template_id' => 'callback-notes',
     'notes' => __('Place the WConvert block or shortcode on your service page. Only a phone number is required; edit the optional topics to match your business. Requests are kept in Leads. Arrange a process to review them and return calls, and connect a destination if your workflow needs one. This records a request, not a booked appointment.', 'wconvert'),
     'copy' => [
-        'eyebrow' => [
-            __('A conversation, to begin', 'wconvert'),
-            __('A conversation, to begin', 'wconvert'),
-        ],
+        'eyebrow' => __('A conversation, to begin', 'wconvert'),
         'headline' => __('Request a callback
 about your project.', 'wconvert'),
         'body' => __('Leave your number to discuss your project and how we can help.', 'wconvert'),
@@ -58,15 +55,8 @@ about your project.', 'wconvert'),
             __('Your number is only for this reply.', 'wconvert'),
         ],
         'cta_label' => __('Request my callback', 'wconvert'),
-        'success_headline' => [
-            __('Your request
-has a place here.', 'wconvert'),
-            __('Callback request received', 'wconvert'),
-        ],
-        'success_body' => [
-            __('Thank you for getting in touch about your project.', 'wconvert'),
-            __('We have received your details and your request for a call. This is not an appointment confirmation.', 'wconvert'),
-        ],
+        'success_headline' => __('Callback request received', 'wconvert'),
+        'success_body' => __('We have received your details and your request for a call. This is not an appointment confirmation.', 'wconvert'),
     ],
     'rules' => [
         [

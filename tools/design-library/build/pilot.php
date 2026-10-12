@@ -63,7 +63,10 @@ if (getenv('WCONVERT_EXPORT_USAGE')) {
 }
 $collection = json_decode(file_get_contents($root . '/tools/design-library/pilot/collection.json'), true, 512, JSON_THROW_ON_ERROR);
 $entries = [];
-foreach ($collection['entries'] as $brief) {
+$briefs = getenv('WCONVERT_EXPORT_ALL')
+    ? array_map(static fn ($playbook) => ['id' => $playbook->id], array_values($playbooks->all()))
+    : $collection['entries'];
+foreach ($briefs as $brief) {
     $playbook = $playbooks->find($brief['id']);
     $draft = $prefill->fromPlaybook($brief['id']);
     if ($playbook === null || $draft === null) throw new RuntimeException('Missing pilot: ' . $brief['id']);

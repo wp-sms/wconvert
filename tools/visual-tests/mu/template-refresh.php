@@ -25,6 +25,14 @@ add_action('template_redirect', static function (): void {
     $ids = ['add-useful-extras', 'recommend-accessory', 'shopping-guidance', 'explore-compatible-extras', 'basket-cross-sells', 'coffee-taste-finder'];
     if (!in_array($selection, $ids, true)) wp_die('Unknown review setup');
     $saved = get_option('wconvert_template_refresh', []);
+    foreach ($repository->summaries() as $row) {
+        if ($row['published_at'] !== null && $row['id'] !== ($saved[$selection] ?? null)) $repository->unpublish($row['id']);
+    }
+    if (isset($_GET['refresh']) && isset($saved[$selection])) {
+        $repository->delete($saved[$selection]);
+        unset($saved[$selection]);
+        update_option('wconvert_template_refresh', $saved);
+    }
     if (!isset($saved[$selection])) {
         $draft = $prefill->fromPlaybook($selection);
         if (!$draft) wp_die('Setup missing');

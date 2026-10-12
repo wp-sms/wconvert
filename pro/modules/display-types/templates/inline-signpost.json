@@ -17,7 +17,7 @@
     "text-size": "1rem",
     "leading": "1.5",
     "radius": "0",
-    "pad": "0.75rem 1.5rem",
+    "pad": "0",
     "gap": "1rem",
     "width": "70rem",
     "shadow": "0 4px 16px -12px rgba(20,40,30,.3)"
@@ -30,45 +30,57 @@
         "name": "Information",
         "kind": "content",
         "content": {
-          "type": "row",
-          "children": [
-            {
-              "type": "eyebrow",
-              "id": "n1",
-              "text": "Service update",
-              "role": "eyebrow"
-            },
-            {
-              "type": "heading",
-              "id": "n2",
-              "text": "Planning a visit?",
-              "role": "headline",
-              "tokens": {
-                "heading-size": "1.125rem",
-                "heading-weight": "600"
-              }
-            },
-            {
-              "type": "button",
-              "id": "n3",
-              "label": "Check current opening hours",
-              "role": "cta_label",
-              "action": "link",
-              "tokens": {
-                "accent": "transparent",
-                "accent-fg": "#244c42",
-                "text-size": "0.9375rem"
-              }
-            }
-          ],
+          "type": "panel",
           "tokens": {
-            "gap": "1.5rem",
-            "align": "center"
+            "pad": "1rem 3.75rem",
+            "gap": "0.875rem"
           },
           "narrow": {
-            "gap": "0.5rem",
-            "align": "start"
-          }
+            "pad": "3.5rem 1.25rem 1.25rem"
+          },
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "Service update",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "text": "Planning a visit?",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "1.125rem",
+                    "heading-weight": "600"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n3",
+                  "label": "Check current opening hours",
+                  "role": "cta_label",
+                  "action": "link",
+                  "tokens": {
+                    "accent": "transparent",
+                    "accent-fg": "#244c42",
+                    "text-size": "0.9375rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "1.5rem",
+                "align": "center"
+              },
+              "narrow": {
+                "gap": "0.5rem",
+                "align": "start"
+              }
+            }
+          ]
         }
       }
     ],

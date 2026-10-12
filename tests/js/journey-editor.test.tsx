@@ -482,7 +482,7 @@ it('keeps an inserted screen hidden when its source is skipped', async () => {
   render(<Editor initial={service.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
-  await user.click(screen.getByRole('button', { name: /Repair details Continue only/ }));
+  await user.click(screen.getByRole('button', { name: /Before the assessment Continue only/ }));
   await user.click(screen.getByRole('radio', { name: 'Paths' }));
   await user.click(screen.getByRole('button', { name: 'Insert on this path' }));
   await user.click(screen.getByRole('menuitem', { name: 'Show a message' }));

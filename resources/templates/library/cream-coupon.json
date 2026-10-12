@@ -38,7 +38,7 @@
             {
               "type": "panel",
               "tokens": {
-                "pad": "2.5rem 2rem 2rem",
+                "pad": "3.5rem 2rem 2rem",
                 "gap": "0.5rem"
               },
               "children": [
@@ -70,7 +70,7 @@
                 }
               ],
               "narrow": {
-                "pad": "1.25rem",
+                "pad": "3.5rem 1.25rem 1.25rem",
                 "gap": "0.875rem"
               }
             },
@@ -142,7 +142,7 @@
             {
               "type": "panel",
               "tokens": {
-                "pad": "2.5rem 2rem 1.5rem",
+                "pad": "3.5rem 2rem 1.5rem",
                 "gap": "0.5rem"
               },
               "children": [
@@ -164,7 +164,7 @@
                 }
               ],
               "narrow": {
-                "pad": "1.25rem",
+                "pad": "3.5rem 1.25rem 1.25rem",
                 "gap": "0.875rem"
               }
             },

@@ -34,7 +34,7 @@
           "edges": "block-start",
           "tokens": {
             "border": "#7c2d12",
-            "pad": "1.75rem 0 0",
+            "pad": "1.75rem 1.5rem 1.5rem",
             "gap": "0.75rem"
           },
           "children": [
@@ -111,7 +111,7 @@
           "edges": "block-start",
           "tokens": {
             "border": "#7c2d12",
-            "pad": "1.75rem 0 0",
+            "pad": "1.75rem 1.5rem 1.5rem",
             "gap": "0.5rem"
           },
           "children": [

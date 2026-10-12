@@ -305,11 +305,10 @@ export const SHADOW_CSS = [
    */
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
-  `.wc-answer-review{margin-block:.75rem;text-align:start;overflow-wrap:anywhere}.wc-answer-review h3{font-size:inherit}.wc-answer-review dl{margin:.5rem 0}.wc-answer-review dt{font-weight:600;margin-block-start:.5rem}.wc-answer-review dd{margin:0;white-space:pre-wrap}.wc-capture-note{font-size:.875em;white-space:pre-wrap}`,
-  // `.8125em` is small body text, not fine print — it sat close enough to the
-  // body copy that a design with both read as two paragraphs of equal weight.
-  // `.6875em` is the size this genre actually sets a consent line at.
-  `[data-role=fine_print]{font-size:.6875em;line-height:1.5;color:var(--wc-muted,#6b7280)}`,
+  `.wc-answer-review{margin-block:.75rem;text-align:start;overflow-wrap:anywhere}.wc-answer-review h3{font-size:inherit}.wc-answer-review dl{margin:.5rem 0}.wc-answer-review dt{font-weight:600;margin-block-start:.5rem}.wc-answer-review dd{margin:0;white-space:pre-wrap}.wc-capture-note{font-size:max(.875rem,.875em);white-space:pre-wrap}`,
+  // Secondary copy must remain readable, including when the design reduces
+  // its body scale. Keep larger authored sizes; never shrink essential copy below 14px.
+  `[data-role=fine_print]{font-size:max(.875rem,.6875em);line-height:1.5;color:var(--wc-muted,#6b7280)}`,
 
   /*
    * ==========================================================================
@@ -344,8 +343,8 @@ export const SHADOW_CSS = [
   `.wc-text.wc-3xl{font-size:calc(var(--wc-text-size,1rem)*2.5)}`,
   `.wc-text.wc-2xl{font-size:calc(var(--wc-text-size,1rem)*2)}`,
   `.wc-text.wc-xl{font-size:calc(var(--wc-text-size,1rem)*1.5)}`,
-  `.wc-text.wc-s{font-size:calc(var(--wc-text-size,1rem)*.75)}`,
-  `.wc-text.wc-xs{font-size:calc(var(--wc-text-size,1rem)*.625)}`,
+  `.wc-text.wc-s{font-size:max(.875rem,calc(var(--wc-text-size,1rem)*.75))}`,
+  `.wc-text.wc-xs{font-size:max(.875rem,calc(var(--wc-text-size,1rem)*.625))}`,
   /*
    * A display number is a number, and at 2.5× the base a heading's line box is
    * mostly air above and below it. `1.2` is right for a two-line headline and
@@ -366,7 +365,7 @@ export const SHADOW_CSS = [
    * tracking stops being an eyebrow.
    */
   `.wc-eyebrow{margin:0;font-size:.75em;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--wc-muted,#6b7280)}`,
-  `.wc-badge{align-self:start;font-size:calc(var(--wc-text-size,1rem)*.75);font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
+  `.wc-badge{align-self:start;font-size:max(.875rem,calc(var(--wc-text-size,1rem)*.75));font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
   /*
    * ==========================================================================
    * THE CORNER FLASH — THE ONE PLACEMENT NO TOKEN REACHES, AT ANY SCOPE.
@@ -427,7 +426,7 @@ export const SHADOW_CSS = [
   // An unfilled star inherits `--wc-border` from the row above it, so the two
   // states are one declaration apart and neither needs a colour of its own.
   `.wc-star{color:var(--wc-accent,#2563eb);fill:currentColor}`,
-  `.wc-rating-text{font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  `.wc-rating-text{font-size:max(.875rem,.8125em);color:var(--wc-muted,#6b7280)}`,
   // `em` throughout, so an icon beside body text is the size of body text and
   // one in a `grid` cell scales with whatever the design set.
   `.wc-icon{display:inline-flex;color:var(--wc-accent,#2563eb)}`,
@@ -543,7 +542,7 @@ export const SHADOW_CSS = [
    * button and a bar, which aligns `start`, is untouched.
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
-  `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
+  `.wc-label{font-size:max(.875rem,.8125em);font-weight:500;color:var(--wc-muted,#6b7280)}`,
   `select.wc-input{appearance:none;padding-inline-end:2rem}.wc-field:has(select):after{content:"▾"/"";position:absolute;inset-inline-end:1rem;bottom:.75rem;pointer-events:none}`,
   /*
    * ==========================================================================
@@ -625,7 +624,7 @@ export const SHADOW_CSS = [
   `@media (prefers-reduced-motion:reduce){.wc-button[aria-busy=true]::after{animation:none}}`,
 
   `.wc-consent{display:flex;flex-wrap:wrap;align-items:start;gap:.5rem;text-align:start}`,
-  `.wc-consent-text{flex:1;min-inline-size:0;font-size:.8125em;color:var(--wc-muted,#6b7280)}`,
+  `.wc-consent-text{flex:1;min-inline-size:0;font-size:max(.875rem,.8125em);color:var(--wc-muted,#6b7280)}`,
   `.wc-consent>.wc-error{flex-basis:100%}`,
   `.wc-checkbox{margin-block-start:.25em;accent-color:var(--wc-accent,#2563eb)}`,
 
@@ -633,7 +632,7 @@ export const SHADOW_CSS = [
   // the same reason the close button is: a template must not be able to omit
   // the way out, and it must not be able to make the reason its form was
   // refused invisible. So the colour is a literal and not a token.
-  `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:.875em;font-weight:600;text-align:start}`,
+  `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:max(.875rem,.875em);font-weight:600;text-align:start}`,
   // Form-wide refusals sit outside the template's stack and need their own gap.
   // Keep their focus visible without the template accent overlapping the CTA.
   `.wc-root>.wc-error{margin-block-start:.75rem;outline-color:currentColor;outline-offset:0}`,
@@ -643,7 +642,7 @@ export const SHADOW_CSS = [
   `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px #b91c1c}`,
 
   // Container chrome, not vocabulary: a template cannot omit the way out.
-  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;font:inherit;font-size:1.25rem;line-height:1;cursor:pointer;color:var(--wc-muted,#6b7280);background:transparent;border:0;border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;font:inherit;font-size:1.25rem;line-height:1;cursor:pointer;color:#1f2937;background:#ffffff;border:1px solid #64748b;border-radius:50%;display:grid;place-items:center;padding:0;z-index:1}`,
   /*
    * ==========================================================================
    * 24×24 IS THE FLOOR. IT IS NOT THE TARGET SIZE FOR A THUMB.

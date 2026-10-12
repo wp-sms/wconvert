@@ -15,7 +15,7 @@
     "heading-weight": "400",
     "text-size": "1rem",
     "leading": "1.5",
-    "pad": "1.25rem",
+    "pad": "3.5rem 1.25rem 1.25rem",
     "gap": "1rem",
     "radius": "0.75rem",
     "width": "46rem",

@@ -49,7 +49,7 @@
               "children": [
                 {
                   "type": "split",
-                  "ratio": "0.5",
+                  "ratio": 0.5,
                   "basis": "12rem",
                   "tokens": {
                     "gap": "2rem"

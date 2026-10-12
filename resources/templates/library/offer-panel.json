@@ -12,7 +12,7 @@
     "border": "#2b3b5c",
     "heading-size": "2.125rem",
     "radius": "1rem",
-    "pad": "clamp(1.25rem, 5%, 2rem)",
+    "pad": "3.5rem clamp(1.25rem, 5%, 2rem) clamp(1.25rem, 5%, 2rem)",
     "gap": "1rem",
     "width": "30rem",
     "align": "center",

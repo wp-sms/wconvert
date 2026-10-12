@@ -5,13 +5,16 @@ import fs from 'node:fs';
 const base = process.env.WCONVERT_STUDIO_URL || 'http://127.0.0.1:9452';
 if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw Error('Local studio required');
 const [batch, evidence = 'docs/reviews/commerce-refresh-2026-10-12-journeys.json'] = process.argv.slice(2);
-const ids = batch ? JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e => e.batch === batch).map(e => e.id) : [...new Set(JSON.parse(fs.readFileSync('tools/design-library/collections/source.json')).collections.flatMap(c => c.items.map(i => i.setup_id)))];
+const allEntries = batch === 'all' ? JSON.parse(fs.readFileSync('tools/design-library/out/all-campaigns.json')) : null;
+const ids = allEntries ? allEntries.map(e => e.id) : batch ? JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e => e.batch === batch).map(e => e.id) : [...new Set(JSON.parse(fs.readFileSync('tools/design-library/collections/source.json')).collections.flatMap(c => c.items.map(i => i.setup_id)))];
 if (!ids.length) throw Error('No setups in the selected batch');
 const browser = await chromium.launch();
 try {
  const page = await browser.newPage();
  await page.goto(base + '/pilot.html');
- const report = await page.evaluate(async ids => {
+ const report = await page.evaluate(async ({ ids, allEntries }) => {
+  if (allEntries) DATA.entries = allEntries.map(entry => ({ comparison: { decision: 'reuse', reason: 'Full-library rehearsal' }, suggested_setup: [], requirements: [], nearest: [], revision: 'rehearsal', ...DATA.entries.find(e => e.id === entry.id), ...entry }));
+  for (const entry of DATA.entries) if (!DATA.queue.some(q => q.id === entry.id)) DATA.queue.push({ id: entry.id, state: 'unreviewed', record: null });
   const report = [];
   const root = () => document.querySelector('#preview').firstElementChild.firstElementChild.shadowRoot.querySelector('.wc-root');
   for (const id of ids) {
@@ -22,7 +25,8 @@ try {
     visited.push(selected.tree.steps[step].id);
     const action = content.querySelector('[data-action="next"],[data-action="submit"]');
     if (!action) break;
-    if (content.querySelector('input[required]')) {
+    const requiredQuestion = node => node.type === 'question' && node.required === true || ['children', 'start', 'end'].some(key => (node[key] || []).some(requiredQuestion));
+    if (content.querySelector('input[required]') || requiredQuestion(selected.tree.steps[step].content)) {
      action.click();
      if (step !== previous) throw Error(id + ': required input bypassed');
     }
@@ -44,11 +48,12 @@ try {
     action.click();
     if (step === previous) throw Error(id + ': valid action did not advance: ' + content.textContent);
    }
+   if (['input'].includes(selected.tree.steps[step].kind)) throw Error(id + ': journey stopped on an unfinished form');
    report.push({ id, visited, finalKind: selected.tree.steps[step].kind, passed: true });
    dialog.close();
   }
   return report;
- }, ids);
+ }, { ids, allEntries });
  fs.writeFileSync(evidence, JSON.stringify(report, null, 2) + '\n');
  console.log('Passed ' + report.length + ' studio journeys (validation, simulated failure/retry and completion where applicable).');
 } finally { await browser.close(); }

@@ -59,14 +59,6 @@
               ]
             },
             {
-              "type": "button",
-              "id": "n5",
-              "role": "cta_label",
-              "label": "Request a callback",
-              "action": "submit",
-              "submission": "primary"
-            },
-            {
               "type": "consent",
               "id": "n6",
               "role": "consent_text",
@@ -78,6 +70,14 @@
               "tokens": {
                 "text-size": "1.125rem"
               }
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "role": "cta_label",
+              "label": "Request a callback",
+              "action": "submit",
+              "submission": "primary"
             },
             {
               "type": "text",

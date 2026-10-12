@@ -8,7 +8,7 @@
     "heading-weight": "600",
     "text-size": "1rem",
     "leading": "1.3",
-    "pad": "0.75rem 1.25rem",
+    "pad": "0",
     "gap": "0.75rem",
     "width": "100%",
     "align": "start",
@@ -31,57 +31,69 @@
         "name": "Details",
         "kind": "input",
         "content": {
-          "type": "stack",
+          "type": "panel",
+          "tokens": {
+            "pad": "1rem 3.75rem",
+            "gap": "0.875rem"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.25rem 1.25rem"
+          },
           "children": [
             {
-              "type": "row",
+              "type": "stack",
               "children": [
                 {
-                  "type": "icon",
-                  "id": "n1",
-                  "name": "gift"
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "level": 1,
+                      "text": "Ten percent off your first order"
+                    },
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "field",
+                          "id": "n3",
+                          "name": "email",
+                          "label": "Email address",
+                          "placeholder": "you@example.com",
+                          "required": true,
+                          "tokens": {
+                            "fg": "#1e1b4b",
+                            "muted": "#eef2ff"
+                          }
+                        },
+                        {
+                          "type": "button",
+                          "id": "n4",
+                          "role": "cta_label",
+                          "label": "Get my code",
+                          "action": "submit",
+                          "submission": "primary"
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
-                  "type": "heading",
-                  "id": "n2",
-                  "role": "headline",
-                  "level": 2,
-                  "text": "Ten percent off your first order"
-                },
-                {
-                  "type": "field",
-                  "id": "n3",
-                  "name": "email",
-                  "label": "Email address",
-                  "placeholder": "you@example.com",
-                  "required": true,
+                  "type": "consent",
+                  "id": "n5",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me offers and news. %s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
                   "tokens": {
-                    "fg": "#1e1b4b",
-                    "muted": "#eef2ff"
+                    "text-size": "1.125rem"
                   }
-                },
-                {
-                  "type": "button",
-                  "id": "n4",
-                  "role": "cta_label",
-                  "label": "Get my code",
-                  "action": "submit",
-                  "submission": "primary"
                 }
               ]
-            },
-            {
-              "type": "consent",
-              "id": "n5",
-              "role": "consent_text",
-              "hidden": true,
-              "text": "Email me offers and news. %s",
-              "link": {
-                "label": "Privacy Policy"
-              },
-              "tokens": {
-                "text-size": "1.125rem"
-              }
             }
           ]
         }
@@ -91,27 +103,39 @@
         "name": "Received",
         "kind": "acknowledgement",
         "content": {
-          "type": "row",
+          "type": "panel",
+          "tokens": {
+            "pad": "1rem 3.75rem",
+            "gap": "0.875rem"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.25rem 1.25rem"
+          },
           "children": [
             {
-              "type": "heading",
-              "id": "n6",
-              "role": "success_headline",
-              "level": 2,
-              "text": "Here is your code"
-            },
-            {
-              "type": "code",
-              "id": "n7",
-              "role": "code_value",
-              "text": "WELCOME10",
-              "copy": true
-            },
-            {
-              "type": "text",
-              "id": "n8",
-              "role": "success_body",
-              "text": "Use it at the checkout."
+              "type": "row",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n6",
+                  "role": "success_headline",
+                  "level": 1,
+                  "text": "Here is your code"
+                },
+                {
+                  "type": "code",
+                  "id": "n7",
+                  "role": "code_value",
+                  "text": "WELCOME10",
+                  "copy": true
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "success_body",
+                  "text": "Use it at the checkout."
+                }
+              ]
             }
           ]
         }

@@ -94,7 +94,7 @@
             }
           ],
           "basis": "16rem",
-          "ratio": "0.5"
+          "ratio": 0.5
         }
       },
       {
@@ -196,7 +196,7 @@
         "results": [
           {
             "id": "writing_beginner",
-            "heading": "Writing \u00b7 Start with the essentials",
+            "heading": "Writing · Start with the essentials",
             "body": "State your point, give each paragraph a job, then revise the ending.",
             "product_ids": [],
             "href": "",
@@ -223,7 +223,7 @@
           },
           {
             "id": "writing_deeper",
-            "heading": "Writing \u00b7 Strengthen the argument",
+            "heading": "Writing · Strengthen the argument",
             "body": "Test the structure, check the evidence, then edit for precision.",
             "product_ids": [],
             "href": "",
@@ -250,7 +250,7 @@
           },
           {
             "id": "growing_beginner",
-            "heading": "Growing \u00b7 Start with one plant",
+            "heading": "Growing · Start with one plant",
             "body": "Choose a suitable spot, learn when to water, then keep a short care note.",
             "product_ids": [],
             "href": "",
@@ -277,7 +277,7 @@
           },
           {
             "id": "growing_deeper",
-            "heading": "Growing \u00b7 Observe and adapt",
+            "heading": "Growing · Observe and adapt",
             "body": "Compare light through the day, notice seasonal changes, then refine your care routine.",
             "product_ids": [],
             "href": "",

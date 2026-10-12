@@ -17,7 +17,7 @@
     "text-size": "1rem",
     "tracking": "-0.035em",
     "leading": "1.5",
-    "pad": "1.75rem",
+    "pad": "3.5rem 1.75rem 1.75rem",
     "gap": "1rem",
     "radius": "0.75rem",
     "width": "29rem",
@@ -69,7 +69,8 @@
               "required": true,
               "tokens": {
                 "border": "#92856c"
-              }
+              },
+              "placeholder": "you@example.com"
             },
             {
               "type": "consent",

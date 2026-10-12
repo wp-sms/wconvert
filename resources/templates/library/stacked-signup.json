@@ -12,7 +12,7 @@
     "border": "#cfeaf7",
     "heading-size": "1.75rem",
     "radius": "0.875rem",
-    "pad": "2.25rem",
+    "pad": "3.5rem 2.25rem 2.25rem",
     "gap": "0.875rem",
     "width": "24rem",
     "align": "start",

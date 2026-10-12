@@ -53,7 +53,10 @@
                   "type": "heading",
                   "id": "n2",
                   "role": "headline",
-                  "text": "First look.\nYour inbox."
+                  "text": "First look.\nYour inbox.",
+                  "narrow": {
+                    "heading-size": "2rem"
+                  }
                 },
                 {
                   "type": "text",
@@ -149,7 +152,10 @@
               "type": "heading",
               "id": "n9",
               "role": "success_headline",
-              "text": "You’re on our request list."
+              "text": "You’re on our request list.",
+              "narrow": {
+                "heading-size": "2rem"
+              }
             },
             {
               "type": "text",

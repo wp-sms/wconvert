@@ -1,0 +1,3370 @@
+{
+  "designs-01.webp": [
+    {
+      "id": "agenda-card",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    },
+    {
+      "id": "appointment-agenda",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "appointment-agenda",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "appointment-note",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "designs-02.webp": [
+    {
+      "id": "appointment-note",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "benefit-grid",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "benefit-grid",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "bold-ask",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-03.webp": [
+    {
+      "id": "bold-ask",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "callback-notes",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "callback-notes",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "centred-card",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-04.webp": [
+    {
+      "id": "centred-card",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "code-reveal",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "code-reveal",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "collection-poster",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    }
+  ],
+  "designs-05.webp": [
+    {
+      "id": "cream-coupon",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "cream-coupon",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "deadline-panel",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "edition-pass",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "designs-06.webp": [
+    {
+      "id": "edition-pass",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "event-calendar",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "excerpt-window",
+      "step": 0,
+      "name": "Read a sample",
+      "result": null
+    },
+    {
+      "id": "excerpt-window",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-07.webp": [
+    {
+      "id": "fieldwork",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "fieldwork",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "flash-offer",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "ink-split",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-08.webp": [
+    {
+      "id": "ink-split",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-bar",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "inline-bar",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-benefits",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "designs-09.webp": [
+    {
+      "id": "inline-choice",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "inline-choice",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-cta",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "inline-phone",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-10.webp": [
+    {
+      "id": "inline-phone",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-quiet",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "inline-quiet",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-rule",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-11.webp": [
+    {
+      "id": "inline-rule",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-split",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "inline-split",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-tinted",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-12.webp": [
+    {
+      "id": "inline-tinted",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "journey-email-only",
+      "step": 0,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "journey-email-only",
+      "step": 1,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "journey-email-then-sms",
+      "step": 0,
+      "name": "Email signup",
+      "result": null
+    }
+  ],
+  "designs-13.webp": [
+    {
+      "id": "journey-email-then-sms",
+      "step": 1,
+      "name": "Optional SMS signup",
+      "result": null
+    },
+    {
+      "id": "journey-email-then-sms",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "journey-enquiry",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "journey-enquiry",
+      "step": 1,
+      "name": "Contact details",
+      "result": null
+    }
+  ],
+  "designs-14.webp": [
+    {
+      "id": "journey-enquiry",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "journey-offer-first",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    },
+    {
+      "id": "journey-offer-first",
+      "step": 1,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "journey-offer-first",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    }
+  ],
+  "designs-15.webp": [
+    {
+      "id": "launch-checklist",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "launch-checklist",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "ledger-card",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "ledger-card",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "designs-16.webp": [
+    {
+      "id": "makers-index",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "makers-index",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "material-pair",
+      "step": 0,
+      "name": "Material comparison",
+      "result": null
+    },
+    {
+      "id": "message-sample",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "designs-17.webp": [
+    {
+      "id": "message-sample",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "name-and-email",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "name-and-email",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "number-invitation",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-18.webp": [
+    {
+      "id": "number-invitation",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "offer-panel",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "offer-receipt",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "photo-offer",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "designs-19.webp": [
+    {
+      "id": "photo-wash",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "photo-wash",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "portrait-frame",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "portrait-frame",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-20.webp": [
+    {
+      "id": "preference-card",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "preference-card",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "product-detail-sheet",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "product-shelf",
+      "step": 0,
+      "name": "Email request",
+      "result": null
+    }
+  ],
+  "designs-21.webp": [
+    {
+      "id": "product-shelf",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "project-notebook",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "project-notebook",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "project-pair",
+      "step": 0,
+      "name": "Project story",
+      "result": null
+    }
+  ],
+  "designs-22.webp": [
+    {
+      "id": "punched-ticket",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "punched-ticket",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "quieter-frequency",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "quieter-frequency",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "designs-23.webp": [
+    {
+      "id": "reader-review",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "reader-review",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "reading-cover",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "reading-cover",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-24.webp": [
+    {
+      "id": "reading-desk",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "reading-desk",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "reading-slip",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "request-folio",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    }
+  ],
+  "designs-25.webp": [
+    {
+      "id": "request-folio",
+      "step": 1,
+      "name": "Reply address",
+      "result": null
+    },
+    {
+      "id": "request-folio",
+      "step": 2,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "resource-index",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "resource-index",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-26.webp": [
+    {
+      "id": "scope-sheet",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "scope-sheet",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "service-docket",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "service-docket",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-27.webp": [
+    {
+      "id": "service-ledger",
+      "step": 0,
+      "name": "Service options",
+      "result": null
+    },
+    {
+      "id": "service-process-strip",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "service-process-strip",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "service-summary",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "designs-28.webp": [
+    {
+      "id": "service-summary",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "specification-sheet",
+      "step": 0,
+      "name": "Compare",
+      "result": null
+    },
+    {
+      "id": "split-hero",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "split-hero",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "designs-29.webp": [
+    {
+      "id": "stacked-signup",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "stacked-signup",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "studio-window",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "studio-window",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-30.webp": [
+    {
+      "id": "summer-archive",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "sunday-marginalia",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "sunday-marginalia",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "useful-guide",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-31.webp": [
+    {
+      "id": "useful-guide",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "wide-banner",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "wide-banner",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "accessory-workbench",
+      "step": 0,
+      "name": "Useful accessories",
+      "result": null
+    }
+  ],
+  "designs-32.webp": [
+    {
+      "id": "basket-companion",
+      "step": 0,
+      "name": "Basket extras",
+      "result": null
+    },
+    {
+      "id": "cart-accessories",
+      "step": 0,
+      "name": "Suggestions",
+      "result": null
+    },
+    {
+      "id": "cart-additions",
+      "step": 0,
+      "name": "Suggestions",
+      "result": null
+    },
+    {
+      "id": "availability-note",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    }
+  ],
+  "designs-33.webp": [
+    {
+      "id": "bar-announcement",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "bar-code",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "bar-code",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "bar-countdown",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "designs-34.webp": [
+    {
+      "id": "bar-email-capture",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "bar-email-capture",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "callback-slip",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "callback-slip",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-35.webp": [
+    {
+      "id": "fullscreen-editorial",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "fullscreen-editorial",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "fullscreen-poster",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "fullscreen-split",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-36.webp": [
+    {
+      "id": "fullscreen-split",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "inline-cart-nudge",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "inline-code-strip",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "inline-code-strip",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "designs-37.webp": [
+    {
+      "id": "inline-signpost",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "launch-index",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "margin-note",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "popup-editorial",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-38.webp": [
+    {
+      "id": "popup-editorial",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "popup-flash",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "popup-two-column",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "popup-two-column",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "designs-39.webp": [
+    {
+      "id": "sample-envelope",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "sample-envelope",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "session-card",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    },
+    {
+      "id": "slide-in-benefits",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "designs-40.webp": [
+    {
+      "id": "slide-in-benefits",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "slide-in-code",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "slide-in-code",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "slide-in-nudge",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "designs-41.webp": [
+    {
+      "id": "slide-in-photo",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "slide-in-photo",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "slide-in-question",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "slide-in-question",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "designs-42.webp": [
+    {
+      "id": "split-notice",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "coffee-finder-board",
+      "step": 0,
+      "name": "Choose your taste",
+      "result": null
+    },
+    {
+      "id": "coffee-finder-board",
+      "step": 1,
+      "name": "Your coffee starting point",
+      "result": "bright"
+    },
+    {
+      "id": "coffee-finder-board",
+      "step": 1,
+      "name": "Your coffee starting point",
+      "result": "smooth"
+    }
+  ],
+  "designs-43.webp": [
+    {
+      "id": "coffee-finder-board",
+      "step": 1,
+      "name": "Your coffee starting point",
+      "result": "explore"
+    },
+    {
+      "id": "gift-edit",
+      "step": 0,
+      "name": "Their interests",
+      "result": null
+    },
+    {
+      "id": "gift-edit",
+      "step": 1,
+      "name": "Your budget",
+      "result": null
+    },
+    {
+      "id": "gift-edit",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "growing_small"
+    }
+  ],
+  "designs-44.webp": [
+    {
+      "id": "gift-edit",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "growing_set"
+    },
+    {
+      "id": "gift-edit",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "home_small"
+    },
+    {
+      "id": "gift-edit",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "home_set"
+    },
+    {
+      "id": "gift-edit",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "fallback"
+    }
+  ],
+  "designs-45.webp": [
+    {
+      "id": "journey-content-guide",
+      "step": 0,
+      "name": "Your interests",
+      "result": null
+    },
+    {
+      "id": "journey-content-guide",
+      "step": 1,
+      "name": "Your guide",
+      "result": "growing"
+    },
+    {
+      "id": "journey-content-guide",
+      "step": 1,
+      "name": "Your guide",
+      "result": "fallback"
+    },
+    {
+      "id": "journey-content-guide",
+      "step": 2,
+      "name": "Optional email updates",
+      "result": null
+    }
+  ],
+  "designs-46.webp": [
+    {
+      "id": "journey-content-guide",
+      "step": 3,
+      "name": "All set",
+      "result": null
+    },
+    {
+      "id": "journey-product-finder",
+      "step": 0,
+      "name": "What are you shopping for?",
+      "result": null
+    },
+    {
+      "id": "journey-product-finder",
+      "step": 1,
+      "name": "Your garden",
+      "result": null
+    },
+    {
+      "id": "journey-product-finder",
+      "step": 2,
+      "name": "Your result",
+      "result": "garden_sun"
+    }
+  ],
+  "designs-47.webp": [
+    {
+      "id": "journey-product-finder",
+      "step": 2,
+      "name": "Your result",
+      "result": "balcony"
+    },
+    {
+      "id": "journey-product-finder",
+      "step": 2,
+      "name": "Your result",
+      "result": "fallback"
+    },
+    {
+      "id": "journey-service-enquiry",
+      "step": 0,
+      "name": "What do you need?",
+      "result": null
+    },
+    {
+      "id": "journey-service-enquiry",
+      "step": 1,
+      "name": "Before the assessment",
+      "result": null
+    }
+  ],
+  "designs-48.webp": [
+    {
+      "id": "journey-service-enquiry",
+      "step": 2,
+      "name": "Contact details",
+      "result": null
+    },
+    {
+      "id": "journey-service-enquiry",
+      "step": 3,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "kit-workbench",
+      "step": 0,
+      "name": "Your experience",
+      "result": null
+    },
+    {
+      "id": "kit-workbench",
+      "step": 1,
+      "name": "Your next project",
+      "result": null
+    }
+  ],
+  "designs-49.webp": [
+    {
+      "id": "kit-workbench",
+      "step": 2,
+      "name": "Your kit",
+      "result": "starter"
+    },
+    {
+      "id": "kit-workbench",
+      "step": 2,
+      "name": "Your kit",
+      "result": "compact"
+    },
+    {
+      "id": "kit-workbench",
+      "step": 2,
+      "name": "Your kit",
+      "result": "collection"
+    },
+    {
+      "id": "kit-workbench",
+      "step": 2,
+      "name": "Your kit",
+      "result": "fallback"
+    }
+  ],
+  "designs-50.webp": [
+    {
+      "id": "project-route",
+      "step": 0,
+      "name": "Project stage",
+      "result": null
+    },
+    {
+      "id": "project-route",
+      "step": 1,
+      "name": "Your next step",
+      "result": "planning"
+    },
+    {
+      "id": "project-route",
+      "step": 1,
+      "name": "Your next step",
+      "result": "consulting"
+    },
+    {
+      "id": "project-route",
+      "step": 1,
+      "name": "Your next step",
+      "result": "estimating"
+    }
+  ],
+  "designs-51.webp": [
+    {
+      "id": "project-route",
+      "step": 1,
+      "name": "Your next step",
+      "result": "fallback"
+    },
+    {
+      "id": "reading-path",
+      "step": 0,
+      "name": "Choose a subject",
+      "result": null
+    },
+    {
+      "id": "reading-path",
+      "step": 1,
+      "name": "Your starting point",
+      "result": null
+    },
+    {
+      "id": "reading-path",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "writing_beginner"
+    }
+  ],
+  "designs-52.webp": [
+    {
+      "id": "reading-path",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "writing_deeper"
+    },
+    {
+      "id": "reading-path",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "growing_beginner"
+    },
+    {
+      "id": "reading-path",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "growing_deeper"
+    },
+    {
+      "id": "reading-path",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "fallback"
+    }
+  ],
+  "designs-53.webp": [
+    {
+      "id": "service-directory",
+      "step": 0,
+      "name": "Your project",
+      "result": null
+    },
+    {
+      "id": "service-directory",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "room_ideas"
+    },
+    {
+      "id": "service-directory",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "room_ready"
+    },
+    {
+      "id": "service-directory",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "garden_ideas"
+    }
+  ],
+  "designs-54.webp": [
+    {
+      "id": "service-directory",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "garden_ready"
+    },
+    {
+      "id": "service-directory",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "fallback"
+    },
+    {
+      "id": "space-planner",
+      "step": 0,
+      "name": "Space and purpose",
+      "result": null
+    },
+    {
+      "id": "space-planner",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "compact_plant"
+    }
+  ],
+  "designs-55.webp": [
+    {
+      "id": "space-planner",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "roomy_plant"
+    },
+    {
+      "id": "space-planner",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "compact_storage"
+    },
+    {
+      "id": "space-planner",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "roomy_storage"
+    },
+    {
+      "id": "space-planner",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "fallback"
+    }
+  ],
+  "campaigns-01.webp": [
+    {
+      "id": "access-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "access-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "accessible-visit-note",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "accounting-consultation",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-02.webp": [
+    {
+      "id": "accounting-consultation",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "add-useful-extras",
+      "step": 0,
+      "name": "Suggestions",
+      "result": null
+    },
+    {
+      "id": "agency-project-enquiry",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "agency-project-enquiry",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-03.webp": [
+    {
+      "id": "announcement-bar",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "appointment-agenda",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "appointment-agenda",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "article-end-newsletter",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-04.webp": [
+    {
+      "id": "article-end-newsletter",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "assembly-guidance",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "assembly-guidance",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "basket-cross-sells",
+      "step": 0,
+      "name": "Basket extras",
+      "result": null
+    }
+  ],
+  "campaigns-05.webp": [
+    {
+      "id": "basket-product-help",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "basket-product-help",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "bulk-gift-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "bulk-gift-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-06.webp": [
+    {
+      "id": "callback-slip",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "callback-slip",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "care-clinic-request",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "care-clinic-request",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-07.webp": [
+    {
+      "id": "cart-after-a-while",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "cart-delivery-help",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "cart-on-the-way-out",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "cart-straight-away",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-08.webp": [
+    {
+      "id": "category-promotion",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "checklist-download",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "checklist-download",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "cleaning-quote",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-09.webp": [
+    {
+      "id": "cleaning-quote",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 0,
+      "name": "Choose your taste",
+      "result": null
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 1,
+      "name": "Your coffee starting point",
+      "result": "bright"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 1,
+      "name": "Your coffee starting point",
+      "result": "smooth"
+    }
+  ],
+  "campaigns-10.webp": [
+    {
+      "id": "coffee-taste-finder",
+      "step": 1,
+      "name": "Your coffee starting point",
+      "result": "explore"
+    },
+    {
+      "id": "collection-discovery",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "collection-interest",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "collection-interest",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-11.webp": [
+    {
+      "id": "consultation-corner",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "consultation-corner",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "consultation-invitation",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "consultation-invitation",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-12.webp": [
+    {
+      "id": "content-guide",
+      "step": 0,
+      "name": "Your interests",
+      "result": null
+    },
+    {
+      "id": "content-guide",
+      "step": 1,
+      "name": "Your guide",
+      "result": "growing"
+    },
+    {
+      "id": "content-guide",
+      "step": 1,
+      "name": "Your guide",
+      "result": "fallback"
+    },
+    {
+      "id": "content-guide",
+      "step": 2,
+      "name": "Optional email updates",
+      "result": null
+    }
+  ],
+  "campaigns-13.webp": [
+    {
+      "id": "content-guide",
+      "step": 3,
+      "name": "All set",
+      "result": null
+    },
+    {
+      "id": "content-upgrade",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "content-upgrade",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "contributor-guidelines",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-14.webp": [
+    {
+      "id": "contributor-pitch-checklist",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "coupon-ticket",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "coupon-ticket",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-15.webp": [
+    {
+      "id": "course-advice-request",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "course-advice-request",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "delivery-announcement",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "dispatch-schedule",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-16.webp": [
+    {
+      "id": "drop-alerts",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "drop-alerts",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "edition-early-access",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "edition-early-access",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-17.webp": [
+    {
+      "id": "edition-sample-signup",
+      "step": 0,
+      "name": "Read a sample",
+      "result": null
+    },
+    {
+      "id": "edition-sample-signup",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "editorial-weekly",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "editorial-weekly",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-18.webp": [
+    {
+      "id": "equipment-hire-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "event-calendar",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "event-registration-link",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    }
+  ],
+  "campaigns-19.webp": [
+    {
+      "id": "excerpt-window",
+      "step": 0,
+      "name": "Read a sample",
+      "result": null
+    },
+    {
+      "id": "excerpt-window",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "experience-kit-finder",
+      "step": 0,
+      "name": "Your experience",
+      "result": null
+    },
+    {
+      "id": "experience-kit-finder",
+      "step": 1,
+      "name": "Your next project",
+      "result": null
+    }
+  ],
+  "campaigns-20.webp": [
+    {
+      "id": "experience-kit-finder",
+      "step": 2,
+      "name": "Your kit",
+      "result": "starter"
+    },
+    {
+      "id": "experience-kit-finder",
+      "step": 2,
+      "name": "Your kit",
+      "result": "compact"
+    },
+    {
+      "id": "experience-kit-finder",
+      "step": 2,
+      "name": "Your kit",
+      "result": "collection"
+    },
+    {
+      "id": "experience-kit-finder",
+      "step": 2,
+      "name": "Your kit",
+      "result": "fallback"
+    }
+  ],
+  "campaigns-21.webp": [
+    {
+      "id": "explore-compatible-extras",
+      "step": 0,
+      "name": "Useful accessories",
+      "result": null
+    },
+    {
+      "id": "first-order-receipt",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "fit-checklist",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "fit-checklist",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-22.webp": [
+    {
+      "id": "fitness-introduction",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "fitness-introduction",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "fullscreen-announcement",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "fullscreen-guide",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-23.webp": [
+    {
+      "id": "fullscreen-guide",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "fullscreen-newsletter",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "fullscreen-newsletter",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "furniture-fit-guide",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    }
+  ],
+  "campaigns-24.webp": [
+    {
+      "id": "gift-finder",
+      "step": 0,
+      "name": "Their interests",
+      "result": null
+    },
+    {
+      "id": "gift-finder",
+      "step": 1,
+      "name": "Your budget",
+      "result": null
+    },
+    {
+      "id": "gift-finder",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "growing_small"
+    },
+    {
+      "id": "gift-finder",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "growing_set"
+    }
+  ],
+  "campaigns-25.webp": [
+    {
+      "id": "gift-finder",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "home_small"
+    },
+    {
+      "id": "gift-finder",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "home_set"
+    },
+    {
+      "id": "gift-finder",
+      "step": 2,
+      "name": "Gift ideas",
+      "result": "fallback"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-26.webp": [
+    {
+      "id": "gift-message-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "gift-planning-guide",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "gift-planning-guide",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "gift-wrap-details",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-27.webp": [
+    {
+      "id": "group-training-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "group-training-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "guide-download",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "guide-download",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-28.webp": [
+    {
+      "id": "headlines-optional-sms",
+      "step": 0,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "headlines-optional-sms",
+      "step": 1,
+      "name": "Optional SMS signup",
+      "result": null
+    },
+    {
+      "id": "headlines-optional-sms",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "holiday-service-hours",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-29.webp": [
+    {
+      "id": "home-repair-quote",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "home-repair-quote",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "homeware-care-notes",
+      "step": 0,
+      "name": "Email request",
+      "result": null
+    },
+    {
+      "id": "homeware-care-notes",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-30.webp": [
+    {
+      "id": "journey-email-only",
+      "step": 0,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "journey-email-only",
+      "step": 1,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "journey-email-then-sms",
+      "step": 0,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "journey-email-then-sms",
+      "step": 1,
+      "name": "Optional SMS signup",
+      "result": null
+    }
+  ],
+  "campaigns-31.webp": [
+    {
+      "id": "journey-email-then-sms",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "journey-enquiry",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "journey-enquiry",
+      "step": 1,
+      "name": "Contact details",
+      "result": null
+    },
+    {
+      "id": "journey-enquiry",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    }
+  ],
+  "campaigns-32.webp": [
+    {
+      "id": "journey-offer-first",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    },
+    {
+      "id": "journey-offer-first",
+      "step": 1,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "journey-offer-first",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "landscaping-enquiry",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    }
+  ],
+  "campaigns-33.webp": [
+    {
+      "id": "landscaping-enquiry",
+      "step": 1,
+      "name": "Contact details",
+      "result": null
+    },
+    {
+      "id": "landscaping-enquiry",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    },
+    {
+      "id": "language-support-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "language-support-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-34.webp": [
+    {
+      "id": "launch-checklist",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "launch-checklist",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "launch-index",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "launch-interest",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-35.webp": [
+    {
+      "id": "launch-interest",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "lighting-collection",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "local-class-news",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "local-class-news",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-36.webp": [
+    {
+      "id": "local-pickup-details",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "maintenance-letter",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "maintenance-letter",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "maker-notes",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-37.webp": [
+    {
+      "id": "maker-notes",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "maker-session-invitation",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    },
+    {
+      "id": "maker-session-invitation",
+      "step": 1,
+      "name": "Email signup",
+      "result": null
+    },
+    {
+      "id": "maker-session-invitation",
+      "step": 2,
+      "name": "Acknowledgement",
+      "result": null
+    }
+  ],
+  "campaigns-38.webp": [
+    {
+      "id": "material-comparison",
+      "step": 0,
+      "name": "Material comparison",
+      "result": null
+    },
+    {
+      "id": "membership-details",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "new-arrivals-link",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "one-line-invite",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-39.webp": [
+    {
+      "id": "one-line-invite",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "opening-hours-signpost",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "packaging-details",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "personalisation-enquiry",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-40.webp": [
+    {
+      "id": "personalisation-enquiry",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "photography-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "photography-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-41.webp": [
+    {
+      "id": "portfolio-feedback-request",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "pre-visit-checklist",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "pre-visit-checklist",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "product-advice-request",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-42.webp": [
+    {
+      "id": "product-advice-request",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "product-care-guide",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "product-care-guide",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "product-demo-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-43.webp": [
+    {
+      "id": "product-demo-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "product-detail-sheet",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "product-finder",
+      "step": 0,
+      "name": "What are you shopping for?",
+      "result": null
+    },
+    {
+      "id": "product-finder",
+      "step": 1,
+      "name": "Your garden",
+      "result": null
+    }
+  ],
+  "campaigns-44.webp": [
+    {
+      "id": "product-finder",
+      "step": 2,
+      "name": "Your result",
+      "result": "garden_sun"
+    },
+    {
+      "id": "product-finder",
+      "step": 2,
+      "name": "Your result",
+      "result": "balcony"
+    },
+    {
+      "id": "product-finder",
+      "step": 2,
+      "name": "Your result",
+      "result": "fallback"
+    },
+    {
+      "id": "project-planning-guide",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-45.webp": [
+    {
+      "id": "project-planning-guide",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "project-readiness-guide",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "project-readiness-guide",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "project-stage-finder",
+      "step": 0,
+      "name": "Project stage",
+      "result": null
+    }
+  ],
+  "campaigns-46.webp": [
+    {
+      "id": "project-stage-finder",
+      "step": 1,
+      "name": "Your next step",
+      "result": "planning"
+    },
+    {
+      "id": "project-stage-finder",
+      "step": 1,
+      "name": "Your next step",
+      "result": "consulting"
+    },
+    {
+      "id": "project-stage-finder",
+      "step": 1,
+      "name": "Your next step",
+      "result": "estimating"
+    },
+    {
+      "id": "project-stage-finder",
+      "step": 1,
+      "name": "Your next step",
+      "result": "fallback"
+    }
+  ],
+  "campaigns-47.webp": [
+    {
+      "id": "read-to-the-end",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "read-to-the-end",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "reader-format-choice",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "reader-format-choice",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-48.webp": [
+    {
+      "id": "reader-panel-interest",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "reader-panel-interest",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "reader-question",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "reader-question",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-49.webp": [
+    {
+      "id": "reading-notes-guide",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "reading-notes-guide",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "reading-path-finder",
+      "step": 0,
+      "name": "Choose a subject",
+      "result": null
+    },
+    {
+      "id": "reading-path-finder",
+      "step": 1,
+      "name": "Your starting point",
+      "result": null
+    }
+  ],
+  "campaigns-50.webp": [
+    {
+      "id": "reading-path-finder",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "writing_beginner"
+    },
+    {
+      "id": "reading-path-finder",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "writing_deeper"
+    },
+    {
+      "id": "reading-path-finder",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "growing_beginner"
+    },
+    {
+      "id": "reading-path-finder",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "growing_deeper"
+    }
+  ],
+  "campaigns-51.webp": [
+    {
+      "id": "reading-path-finder",
+      "step": 2,
+      "name": "Your reading path",
+      "result": "fallback"
+    },
+    {
+      "id": "reading-recommendation",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "recommend-accessory",
+      "step": 0,
+      "name": "Suggestions",
+      "result": null
+    },
+    {
+      "id": "related-essay",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-52.webp": [
+    {
+      "id": "remote-consultation-details",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "renovation-callback",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-53.webp": [
+    {
+      "id": "renovation-callback",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "repair-advice-request",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "repair-advice-request",
+      "step": 1,
+      "name": "Reply address",
+      "result": null
+    },
+    {
+      "id": "repair-advice-request",
+      "step": 2,
+      "name": "Request received",
+      "result": null
+    }
+  ],
+  "campaigns-54.webp": [
+    {
+      "id": "repair-assessment",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "repair-assessment",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "repair-workshop-news",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "repair-workshop-news",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-55.webp": [
+    {
+      "id": "request-a-callback",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "request-a-callback",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "request-a-quote",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "request-a-quote",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-56.webp": [
+    {
+      "id": "rereading-essay",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "restock-announcements",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "restock-announcements",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "restyling-notes",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-57.webp": [
+    {
+      "id": "restyling-notes",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "return-policy-guide",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "returns-deadline-notice",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    },
+    {
+      "id": "sale-announcement",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-58.webp": [
+    {
+      "id": "sale-deadline",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "sample-request",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "sample-request",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "seasonal-service-link",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    }
+  ],
+  "campaigns-59.webp": [
+    {
+      "id": "series-start",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "service-area-check",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "service-enquiry",
+      "step": 0,
+      "name": "What do you need?",
+      "result": null
+    },
+    {
+      "id": "service-enquiry",
+      "step": 1,
+      "name": "Before the assessment",
+      "result": null
+    }
+  ],
+  "campaigns-60.webp": [
+    {
+      "id": "service-enquiry",
+      "step": 2,
+      "name": "Contact details",
+      "result": null
+    },
+    {
+      "id": "service-enquiry",
+      "step": 3,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "service-finder",
+      "step": 0,
+      "name": "Your project",
+      "result": null
+    },
+    {
+      "id": "service-finder",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "room_ideas"
+    }
+  ],
+  "campaigns-61.webp": [
+    {
+      "id": "service-finder",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "room_ready"
+    },
+    {
+      "id": "service-finder",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "garden_ideas"
+    },
+    {
+      "id": "service-finder",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "garden_ready"
+    },
+    {
+      "id": "service-finder",
+      "step": 1,
+      "name": "Suggested next step",
+      "result": "fallback"
+    }
+  ],
+  "campaigns-62.webp": [
+    {
+      "id": "service-fit-brief",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "service-fit-brief",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "service-open-day",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "service-options-guide",
+      "step": 0,
+      "name": "Service options",
+      "result": null
+    }
+  ],
+  "campaigns-63.webp": [
+    {
+      "id": "service-process-strip",
+      "step": 0,
+      "name": "Your request",
+      "result": null
+    },
+    {
+      "id": "service-process-strip",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "service-text-updates",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "service-text-updates",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-64.webp": [
+    {
+      "id": "shopping-guidance",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "showroom-information",
+      "step": 0,
+      "name": "Offer",
+      "result": null
+    },
+    {
+      "id": "sizing-guide",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "sizing-guide",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-65.webp": [
+    {
+      "id": "sms-message-preview",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "sms-message-preview",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "space-fit-finder",
+      "step": 0,
+      "name": "Space and purpose",
+      "result": null
+    },
+    {
+      "id": "space-fit-finder",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "compact_plant"
+    }
+  ],
+  "campaigns-66.webp": [
+    {
+      "id": "space-fit-finder",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "roomy_plant"
+    },
+    {
+      "id": "space-fit-finder",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "compact_storage"
+    },
+    {
+      "id": "space-fit-finder",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "roomy_storage"
+    },
+    {
+      "id": "space-fit-finder",
+      "step": 1,
+      "name": "Ideas for your space",
+      "result": "fallback"
+    }
+  ],
+  "campaigns-67.webp": [
+    {
+      "id": "spare-parts-advice",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "spare-parts-advice",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "specification-sheet",
+      "step": 0,
+      "name": "Compare",
+      "result": null
+    },
+    {
+      "id": "studio-welcome",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-68.webp": [
+    {
+      "id": "studio-welcome",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "sunday-reading",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "sunday-reading",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "topic-reading-list",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-69.webp": [
+    {
+      "id": "topic-reading-list",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "trade-account-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "trade-account-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "translation-project-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-70.webp": [
+    {
+      "id": "translation-project-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "tutoring-introduction",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "tutoring-introduction",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "upholstery-samples",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-71.webp": [
+    {
+      "id": "upholstery-samples",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "venue-hire-checklist",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "venue-hire-checklist",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "venue-visit-request",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    }
+  ],
+  "campaigns-72.webp": [
+    {
+      "id": "venue-visit-request",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "vip-early-access",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "vip-early-access",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "visiting-details",
+      "step": 0,
+      "name": "Information",
+      "result": null
+    }
+  ],
+  "campaigns-73.webp": [
+    {
+      "id": "website-review-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "website-review-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "welcome-discount",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    },
+    {
+      "id": "welcome-discount",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    }
+  ],
+  "campaigns-74.webp": [
+    {
+      "id": "wholesale-enquiry",
+      "step": 0,
+      "name": "Your details",
+      "result": null
+    },
+    {
+      "id": "wholesale-enquiry",
+      "step": 1,
+      "name": "Request received",
+      "result": null
+    },
+    {
+      "id": "workspace-change-story",
+      "step": 0,
+      "name": "Project story",
+      "result": null
+    },
+    {
+      "id": "writing-checklist",
+      "step": 0,
+      "name": "Details",
+      "result": null
+    }
+  ],
+  "campaigns-75.webp": [
+    {
+      "id": "writing-checklist",
+      "step": 1,
+      "name": "Received",
+      "result": null
+    },
+    {
+      "id": "writing-session-details",
+      "step": 0,
+      "name": "Invitation",
+      "result": null
+    }
+  ]
+}

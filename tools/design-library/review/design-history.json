@@ -10,6 +10,12 @@
           "date": "2026-09-28",
           "revision": "473a191cd5360559b9a25f884dd48e8af9432c7317e1a78aa4ec2da75eed3609",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "ef45a39720f12e9a9c3c3385eef52c0245eff2a4d1758437ae5e1584b17cd94b",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -28,6 +34,12 @@
           "date": "2026-09-29",
           "revision": "32c46973d6a8c819c84948ab11261fee1126c28db0b2a9ac3570d6de1980e50b",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "161266d521232a20455fd7acdee3298cb22469a50bcc2750de7001e718fffc35",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -46,6 +58,12 @@
           "date": "2026-09-29",
           "revision": "3a9f34d92b6f9af21deb68d30ee032336012941cba2e1179e5dc9c0468769552",
           "note": "Replace inconsistently wrapping benefit icons with a quiet text panel; align the form and improve field contrast."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "5b4c17d8594b3a832662a5931512f9be2cb9b8c289777fada55c3b9cdb372879",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -58,6 +76,12 @@
           "date": "2026-09-28",
           "revision": "6ed669149a40e2ca0d37ddee800a48eeed067e785338c12849318036d8c565a2",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "40d8ee6bd822cb7f0d91c8a189a1029212760bd131051b37735613d8adca36bf",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -76,6 +100,12 @@
           "date": "2026-09-29",
           "revision": "93a6e708a4ed963c3eb60150415da95ae350189ceffad039248e977b2f47423a",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "29e6496da8b64abc504fd9a5bfe130d6f309d86e6f6ae10a532851974901e682",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -100,6 +130,12 @@
           "date": "2026-10-12",
           "revision": "019f09b2a34cf0a713ac078d6852589ce21a4d1165bd4cdfc06192a8cb28d299",
           "note": "Record the upstream fresh-setup design revision; re-review dependent campaigns before publishing."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-12",
+          "revision": "4e7a7875a889930c4f63e4396b75db5dcef9ad8c3b19f5be6c59d29c1d4e8c14",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -118,6 +154,12 @@
           "date": "2026-09-29",
           "revision": "f1960b4932a42b513dc555265e0e311424ab007a6d9042b22e8688238dd7a4ec",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "556ed04eefcbe9897ab291688b8f19ba7324c0570c3975915c6310470d2a5852",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -130,6 +172,12 @@
           "date": "2026-09-28",
           "revision": "9c8b728cf55283008940dfa06cdf5fc69d4a33fa036a4df2a43dd6982ef55f16",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "607f4ce90bef7c5388f08a0f0237f47790c3dfccf00efc01c601cbdb1c5c92a0",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -160,6 +208,12 @@
           "date": "2026-09-29",
           "revision": "3df0979d792fe511e383caf894eb2ef06cf62d3b3cc9c83e700a53a8a529d8ca",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "55cdae55a547dfec0422e1f76388334ecadfaedf384e90c74ee422188af3544d",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -214,6 +268,12 @@
           "date": "2026-09-29",
           "revision": "11165f8e8947130ae08fc0fa9fb16245103e3ec7032070ce3bffbaab24ca1b67",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "3c4318060102ee87ce1c36c5949e8c6d09458957f7d351ecbd2fc28c48d1fe1b",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -292,6 +352,12 @@
           "date": "2026-09-29",
           "revision": "08899dd7fc54ed7e465eed4174d91b8eb2f702a7da905fcee4c53f320d1bc336",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "daf3f3c1ead808500360ad7d99a17834308b0c3663a36eabc0f16faec324ace3",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -322,6 +388,12 @@
           "date": "2026-09-28",
           "revision": "e9dca707f4650f27aaf25a262a7b2766e8904d4f44a766b1a59d34511fb28117",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "e627307778586ad96dfe41fe847ab75d140ca296ade4a147f0b5fc62dea4293d",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -376,6 +448,12 @@
           "date": "2026-09-29",
           "revision": "7e588b43063e2be75f2d8c99d03021dd9299d8b9b229ade04c11cb713666f009",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "1221cf4c1c2508de8ff1d654f4dc61f5e256113966dced25d1126b2076e619c7",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -394,6 +472,12 @@
           "date": "2026-09-29",
           "revision": "3481242ceeb697d4481d1088cbad00f4d0d20041e768f2847b777335e18b9be0",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "182592cf59628db554f9ba58483d0608151f8cf2d21732c7023381847363eb32",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -412,6 +496,12 @@
           "date": "2026-09-29",
           "revision": "166098f2f176d2986b120cd0c703a1d4ec1fecd8196508f0cae5151070c7c0c2",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "b2ce51b8a2ed3f614ee98ff04aa92e1e0e3be5e4d2348842eb6b5d7677cd856e",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -454,6 +544,12 @@
           "date": "2026-09-29",
           "revision": "b739e6bea292dbd482277858fc682177ad4e433de401916674b8945cebc7380c",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "52708ca102fdfad648f4e20eca6a0f445c064c21667866bb88123a1cb408fc8a",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -472,6 +568,12 @@
           "date": "2026-09-29",
           "revision": "1afea31894df500000041913de114677f35d5283755a0190c22ddd58e75c6ab1",
           "note": "Remove decorative benefit icons, use a consistent editorial list and labelled full-width form, and strengthen field contrast."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "0a9342b35337600e2e3e87c4811a387d74e01bf4cd373f887c695635169397ae",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -520,6 +622,12 @@
           "date": "2026-09-29",
           "revision": "abeabcd33d07ed2fb8bd08462f9eb00d2bdc8da05306da8c139596d86c4544a5",
           "note": "Use quieter warm colours, accessible field outlines, compact typography and request-specific copy with an optional name."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "047c12f36fb216c71c58e4ca2a83ffbaf5ae92ea85db60b3efe24efc7d948b9e",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -538,6 +646,12 @@
           "date": "2026-09-29",
           "revision": "498b3d22529a0ca81906df7d8c1a0e3fc2117d12fccbaafe992bf4f2ca40dd92",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "5cea06cef24b4986bf942e2b296302f05ae27c786c0cfc9aec72383043037cf0",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -550,6 +664,12 @@
           "date": "2026-09-28",
           "revision": "b1c4a4880a87d40e55c742316efcb8b6427801912d7d52a2be1efe6efe3772e4",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "8785547cb117feade6c22bd0a2b3a738c47d92a5143cb8f25e65ba837c747575",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -580,6 +700,12 @@
           "date": "2026-09-28",
           "revision": "3890bf23f10baaccf869241d94774528a0669c9754bedeeb3ff5633b1a3feaf5",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "9223c613506db53ed60b3ff0104056a5b215414694eb7e94f0177b32f7270f68",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -616,6 +742,12 @@
           "date": "2026-09-29",
           "revision": "4e5c5b19a44226d652ca987f50d285ea5ae9ec9a4d4de92836103c0151259a97",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "c51743f733f03f4cb8513285894d2521ecc1c3671491bac0133e7cbf83b03220",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -640,6 +772,12 @@
           "date": "2026-10-12",
           "revision": "b0571adb5cba3c676c4a26781799c8348f9acf9627944fa7ac633d44d6939a0d",
           "note": "Restore narrow cover proportions, compact mobile headings, readable fine print, stronger field contrast and a matching acknowledgement label."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-12",
+          "revision": "050bab52f1901a2a10739251dc9e84db0bab050327d5e9ba7feefb999cfed150",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -676,6 +814,12 @@
           "date": "2026-09-29",
           "revision": "f4fc57290e92b527b8605508203c057a1ccbf0df12843c5c6a6610bf74821f83",
           "note": "Improve supporting text contrast across the authored gradient."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "a799dc4577c228e513b234d310c1b672dc2745080fbce23e08eaa927c21373ef",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -712,6 +856,12 @@
           "date": "2026-09-29",
           "revision": "a3cbd57c993fa950c1144fbe2d4fae9ed5e3459c3ba17b5ffcdec87019e0717c",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "38b3eff44414c36f36c38122677cb9f03989635150e231d60658b29eaa5208be",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -760,6 +910,12 @@
           "date": "2026-09-29",
           "revision": "67eefb9e623ace74297170ae052ecd352eae4c387859af65dcf888e9548037c0",
           "note": "A concise introduction and compact mobile form preserve optional name and service selection."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "e492e1489c5238234cd632e3a74c729e2c0b529378a3330d7ee6748db2d75ce9",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -778,6 +934,12 @@
           "date": "2026-09-29",
           "revision": "aa2ee5d36fbdf8d7229df9e43211c0cb5a1f1122948a62c96fa66b3c8e44329a",
           "note": "Short service descriptions, tighter mobile spacing and a content-width action support comparison."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "c66b32f45081ba043956544660d177b5ca7869b982d71cf0d0f458ab0eaa332d",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -796,6 +958,12 @@
           "date": "2026-09-29",
           "revision": "dfc2d14320c6a12e2873db72c3fd72e9b2507f6835249ca46232aae4ea364ba7",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "0a883a545f5da107e032e5ed2509bad76827268568df6c763fdf8ba89658c710",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -814,6 +982,12 @@
           "date": "2026-09-29",
           "revision": "54933e0db55a1e582d5cd6c8e945d2a85535165ef8bbb09f6a1d7302f8d121c8",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "15c75405d69c0a85780bbb28e1c29c432c4c1e6aedfb1487e9d019118da0c70a",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -832,6 +1006,12 @@
           "date": "2026-09-29",
           "revision": "47d997b1306bdb4b4a0d83bce498564e60bbc36d21b09383c19c97b624890012",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "f76a7db71ac4659261ab259d77606f29e7c880419716de63aad6bdc2c1aecdfd",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -862,6 +1042,12 @@
           "date": "2026-09-29",
           "revision": "1a55602e77025084b146e5f02a8bd29e6c170751055b6d36bdd051d8c8045ba4",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "6a755fd8887f35494042dffdc66d3ccea0ec43d7d300fa300b9155c5c3c1728e",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -898,6 +1084,12 @@
           "date": "2026-09-29",
           "revision": "8729c61281b8bd94360f90a4db41e34c56bfd67d991c9fef487af056cdc70742",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "8efcb9057a6c4983e0fbea19d62e725557098e5bfc8953c142c88e7f0f3bef21",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -910,6 +1102,12 @@
           "date": "2026-09-28",
           "revision": "c8c701f224cf282a5d2ff09511cac31010b8ec087f762d0461efd0fe70ee2d33",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "4eabd0ec814ccf2fd5dfba33cffc0548d2ef6485cae5680c256da9d6b0f3d06c",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -922,6 +1120,12 @@
           "date": "2026-09-28",
           "revision": "3ec85b0ea3558abc4c8ad03d8db5d6fb74821432c7da08c7e0d30cdcfb646eb3",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "84b5a0107781186ab4389f0d73141078697bba5b4a1357ac063c5d80c1fc63ff",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -934,6 +1138,12 @@
           "date": "2026-09-28",
           "revision": "b44259fe7506c09203fa9782fb6dd26236de25611f46265360335015f5306109",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "216d97184b0f13d3d2a59f3b6e61c71a505f3c04e1b40fd737a33cb8d05c6f43",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1138,6 +1348,12 @@
           "date": "2026-09-29",
           "revision": "7ff2dcac7c434466e059b1e3ec6cc6d6d8ae13c7aa48e7f778d83b7450f6c143",
           "note": "Remove unrelated benefit icons, use a compact text panel and strengthen field outlines and secondary copy."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "c780e9b7daa7de91dbe4310c95496accd1e8fc8abee2c75eda3a86a491826ff9",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1156,6 +1372,12 @@
           "date": "2026-09-29",
           "revision": "d72d51b834506ec323dc64ba7f44bb52b3c89459e30089865468b67e672e8779",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "ab31bca5c3366b7bcd53fd795fe76e0cbfb78df5406f57b98953eb096a077fdb",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1174,6 +1396,12 @@
           "date": "2026-09-29",
           "revision": "169ec8b91bfbe1067bbb872fa24f7834588a3f0dca7ccfba2c5fda856795d2e1",
           "note": "Compact invitation with a single content-width action and no unrelated icon."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "2fd02379158c4596b83f5c2a8e07842d43b5cf47014cf53140cac2c17ff78ccb",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1204,6 +1432,12 @@
           "date": "2026-09-28",
           "revision": "b24c0bda86e51683d6907324b3a4fa7cc1a843d3ae5ea246e4c5f7cf63046dd1",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "0a46110518ee713f22733f09455fd43bc41a6468fa5c5f77761e00d8a88a7d23",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1222,6 +1456,12 @@
           "date": "2026-09-29",
           "revision": "4721e7afdfaaa272872cbb11eb3423dc57e7036fa3a32d996b26d2562d23882e",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "2c70764f087bd5bcdfc39958d9a46ec12199cb299dcefd3ba3a612e6e645393c",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1234,6 +1474,12 @@
           "date": "2026-09-28",
           "revision": "680ce8e3a27bc99bc44ade8b7bcf6f36f142826eb5733d6d47752c41da437607",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "4ef1b5895aa380a2c378febde42bac8b4e9328d5a821f6c7699961aa957ff6e1",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1252,6 +1498,12 @@
           "date": "2026-09-29",
           "revision": "3cfdf3a173283243a2f5493bd42bf9d0c35128bf9bc8a16dedfdba03c8b578c2",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "f1df2da2aacdb1b4eb93c90cc8d802a51c292b6cafc478bf5182ff2ed0ab1495",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1264,6 +1516,12 @@
           "date": "2026-09-28",
           "revision": "ca5fa092397b48742e54dc03249ba60d5c8ae7af2dce2565bf6c4a92bbb13fcd",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "227f56daedf8807679112675e618f32ed86a617e78827f21ee37eaf77cb48dc2",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1276,6 +1534,12 @@
           "date": "2026-09-28",
           "revision": "a5011cbe391a2a80bccabac4a48f7ace1ac19d7190abbde2eacb7771611d0824",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "592ee8bc7a4c567c67b82df1573e683a9ca5529ca7a261dc2cfff0fbb55b362a",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1288,6 +1552,12 @@
           "date": "2026-09-28",
           "revision": "aac7636fcb6d68dc3b520f0e5a9bda051b16773f6d2751759282cb03557e0a81",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "bc950a6e9af2962b17db06f685338bda137debaf1cfc28150bc489cf511a08b0",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1300,6 +1570,12 @@
           "date": "2026-09-28",
           "revision": "afcebdb0e12f955bdb97c0f6788bd4c9cf5af8ec9e41db8fb978b14059aa0d16",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "b09ab2ef5b59e43b4e4ce0b95c0ef1032b2d20c400cf920c5c031e171945dcf9",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1312,6 +1588,12 @@
           "date": "2026-09-28",
           "revision": "47e9b779611274afedb5013e9f120050e630847f603491eb03253f9e661b9ee3",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "94b4dd1e355fd63cb7f3271449f4fe1e8298a04e9f5093f6031d8f0258635de6",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1330,6 +1612,12 @@
           "date": "2026-09-29",
           "revision": "ac3e9dcf33e7f7aa89722f8d2851b3deb1138af72544751f45f1381b1147fd6c",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "bf94dcdf1321ae0865b9d07e8ad2655ab44cce201ef1e53dfff39e6c42f866e3",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1354,6 +1642,12 @@
           "date": "2026-09-29",
           "revision": "91506a2bc5ee9ad9e75f42b8b59df1ef089c77ba3b098408206f98fc4b9d59c3",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-12",
+          "revision": "fdcea4399f46eb0af06f02ece278b787545b0b5e4b8f95d8c33d7425a91bf3e8",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1408,6 +1702,12 @@
           "date": "2026-09-28",
           "revision": "ecd5740d2cc2bf119d0f91f47064e16e401a274509a6bd3d8fb6ba4772a8a0d6",
           "note": "Initial two-level utility message beside a compact link."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "18d8597b5fb4bf2e8e570199224d84bac8b261eceafbf632c469e1c170a90401",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1450,6 +1750,12 @@
           "date": "2026-09-29",
           "revision": "8519ffa6851464a5fbf891f0fcb9730dcb9886319153eb498ddfc0b59e7889bb",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 5,
+          "date": "2026-10-12",
+          "revision": "f543f15cac8a32f7affbe58eba73eb7023e5888f13d5338f5fc41cd630a63d55",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1552,6 +1858,12 @@
           "date": "2026-09-28",
           "revision": "5fcea252a090f9aa947008c35e4ce1ef950df64665ad5a17eeaa7599eec02442",
           "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "5fa2e5eb63c75e510b8a583bf3e326a466d50ff525188865603b37950c60bb92",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1570,6 +1882,12 @@
           "date": "2026-10-01",
           "revision": "19641025fa6181f5ec3453667ec8a97c20a8243be4e7ec6d54670dc0c0a8c0c2",
           "note": "Raise fine print to approximately 14 pixels after phone review."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "baa5f589f8e0776049a50421491e0ffbcee8ac0be47e7c1c4b0731601fa1f212",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1630,6 +1948,12 @@
           "date": "2026-10-02",
           "revision": "b3fb88b77e33582fe8cf24ff280a79a3c770c1862eb7d698e226bb01031681fa",
           "note": "Use the event title as the accessible modal name; treat the date tile as supporting text."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-12",
+          "revision": "2ec9981c1c922d8227d7f2cecf617a40cd9f326db7d9c5ac9356375d5aa34772",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1732,6 +2056,12 @@
           "date": "2026-10-12",
           "revision": "f4ebbc9516360116d747170b0d47ee453c8408e808d064126419ed5a953c1dfd",
           "note": "Record the upstream fresh-setup design revision before this template refresh. This history entry does not approve its dependent campaign."
+        },
+        {
+          "version": 5,
+          "date": "2026-10-12",
+          "revision": "3a470e44f0cf3d8ae7cde4a92cad287fc327aa2c7fe3fed5036e60e36a5d158f",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1810,6 +2140,12 @@
           "date": "2026-10-12",
           "revision": "db847da8debaed8bf7591dbbb5c094e17d4a0ada250882bc5fdde940843931df",
           "note": "New commerce composition with explicit setup requirements; visual and runtime review pending."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "ef1e554108fb6d5efda193e13b8154c2756be8521e34d7af5551e6ec303a0656",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     },
@@ -1840,6 +2176,12 @@
           "date": "2026-10-12",
           "revision": "bc39be9161dcb72017d544c3a1ca9a682d5522a9acd004a21ed9dc9c70a38968",
           "note": "New commerce composition with explicit setup requirements; visual and runtime review pending."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "1dcbc42dd3bad99af8ef1420c84d0694a29b0a4ed8b927d23b7ee3238401d638",
+          "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
         }
       ]
     }

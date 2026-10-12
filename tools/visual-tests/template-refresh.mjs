@@ -3,6 +3,7 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 const base=process.env.WCONVERT_TEMPLATE_REVIEW_URL||'http://127.0.0.1:9453';
 if(!['127.0.0.1','localhost'].includes(new URL(base).hostname)) throw Error('Disposable local site required');
+const evidence=process.env.WCONVERT_REVIEW_EVIDENCE||'docs/reviews';fs.mkdirSync(evidence,{recursive:true});
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1280,height:900}});
 await page.addInitScript(()=>{window.reviewRoots=[];const attach=Element.prototype.attachShadow;Element.prototype.attachShadow=function(o){const r=attach.call(this,o);window.reviewRoots.push(r);return r;};});
@@ -11,7 +12,7 @@ const visibleText=()=>page.evaluate(()=>window.reviewRoots.filter(r=>r.host.isCo
 const reports=[]; const errors=[]; page.on('pageerror',e=>errors.push(e.message));
 for(const id of ['add-useful-extras','recommend-accessory','shopping-guidance','explore-compatible-extras','basket-cross-sells','coffee-taste-finder']){
  console.log('Checking '+id);
- const response=await page.request.get(base+'/?wconvert_template_refresh='+id+'&json=1');
+ const response=await page.request.get(base+'/?wconvert_template_refresh='+id+'&json=1&refresh=1');
  const raw=await response.text();let entry;try{entry=JSON.parse(raw);}catch{throw Error(id+': '+raw.slice(-600));}
  await page.setViewportSize({width:1280,height:900});
  await page.goto(entry.url+'&basket=1');
@@ -21,7 +22,7 @@ for(const id of ['add-useful-extras','recommend-accessory','shopping-guidance','
    await page.evaluate(choice=>{const r=window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('input[value="'+choice+'"]'));const el=r.querySelector('input[value="'+choice+'"]');el.click();r.querySelector('[data-action="next"]').click();},choice);
    await page.waitForFunction(product=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-products')?.textContent.includes(product)),product);
    if(!(await visibleText()).includes(heading)) throw Error('Wrong result '+choice);
-   await page.screenshot({path:`docs/reviews/october-live-${id}-${choice}.png`,fullPage:true});
+   await page.screenshot({path:`${evidence}/october-live-${id}-${choice}.png`,fullPage:true});
    reports.push({id,choice,heading,product,passed:true});
    await page.evaluate(()=>window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('[data-action="back"]')).querySelector('[data-action="back"]').click());
   }
@@ -29,9 +30,9 @@ for(const id of ['add-useful-extras','recommend-accessory','shopping-guidance','
   await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.textContent.includes('Reusable coffee filters')));
   if((await visibleText()).includes('Unavailable accessory'))throw Error('Out of stock product shown');
  }
- await page.screenshot({path:`docs/reviews/october-live-${id}-desktop.png`,fullPage:true});
+ await page.screenshot({path:`${evidence}/october-live-${id}-desktop.png`,fullPage:true});
  await page.setViewportSize({width:320,height:740});
- await page.screenshot({path:`docs/reviews/october-live-${id}-phone.png`,fullPage:true});
+ await page.screenshot({path:`${evidence}/october-live-${id}-phone.png`,fullPage:true});
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
  if(overflow) throw Error(id+' overflows phone');
  if(['add-useful-extras','basket-cross-sells'].includes(id)) {
@@ -49,4 +50,4 @@ for(const id of ['add-useful-extras','recommend-accessory','shopping-guidance','
  reports.push({id,action:'published and rendered on desktop and 320px',passed:true});
 }
 await browser.close();if(errors.length)throw Error(errors.join('\n'));
-fs.writeFileSync('docs/reviews/commerce-refresh-2026-10-12-live.json',JSON.stringify(reports,null,2)+'\n');console.log(JSON.stringify(reports,null,2));
+fs.writeFileSync(`${evidence}/commerce-refresh-2026-10-12-live.json`,JSON.stringify(reports,null,2)+'\n');console.log(JSON.stringify(reports,null,2));
