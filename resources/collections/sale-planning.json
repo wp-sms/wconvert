@@ -13,13 +13,13 @@
       "setup_id": "edition-early-access",
       "stage": "before",
       "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
-      "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+      "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
     },
     {
       "setup_id": "sale-deadline",
       "stage": "during",
       "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-      "design_hash": "3f6311cacaf1bb5d689c3636f799b07db0cff0709fd2f6696d7282cefb55f83a"
+      "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
     },
     {
       "setup_id": "first-order-receipt",
@@ -37,10 +37,10 @@
       "setup_id": "homeware-care-notes",
       "stage": "after",
       "setup_hash": "2f66197329170ec6e5a8ec37325f4105ada2313aa9f9a4049d00f72a18bb40ae",
-      "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
+      "design_hash": "ad724d08d5318b6829107279f619cdc2f604f12d8e3d4d050e4596181362a92c"
     }
   ],
   "dependencies_current": true,
-  "revision": "5d3fd9c504869e5a16b0e868587a7b076be032096f7c25ce6802066d5eacd16b",
+  "revision": "0170f8f4dafc3eac3b4931afeeb01cc15b04129605137a93cd614943c13d8b80",
   "status": "published"
 }

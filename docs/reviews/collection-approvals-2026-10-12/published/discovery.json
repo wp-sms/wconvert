@@ -1,0 +1,80 @@
+{
+  "records": [
+    {
+      "title": "Prepare for Black Friday",
+      "facts": "published · 4 setups · 4 designs · preferred stage before",
+      "screens": 12
+    },
+    {
+      "title": "Introduce a collection",
+      "facts": "published · 4 setups · 3 designs · preferred stage before",
+      "screens": 12
+    },
+    {
+      "title": "Give readers a reason to return",
+      "facts": "published · 5 setups · 5 designs · preferred stage any",
+      "screens": 20
+    },
+    {
+      "title": "Plan a useful sale",
+      "facts": "published · 5 setups · 5 designs · preferred stage before",
+      "screens": 14
+    },
+    {
+      "title": "Make the next enquiry easier",
+      "facts": "published · 6 setups · 4 designs · preferred stage any",
+      "screens": 26
+    },
+    {
+      "title": "Help shoppers choose",
+      "facts": "published · 6 setups · 6 designs · preferred stage any",
+      "screens": 18
+    }
+  ],
+  "calendar": [
+    {
+      "day": "2026-10-15",
+      "placement": "featured",
+      "visible": false,
+      "passed": true
+    },
+    {
+      "day": "2026-10-15",
+      "placement": "browse",
+      "visible": true,
+      "passed": true
+    },
+    {
+      "day": "2026-10-16",
+      "placement": "featured",
+      "visible": true,
+      "passed": true
+    },
+    {
+      "day": "2026-11-27",
+      "placement": "featured",
+      "visible": true,
+      "passed": true
+    },
+    {
+      "day": "2026-12-01",
+      "placement": "browse",
+      "visible": false,
+      "passed": true
+    }
+  ],
+  "freeUsableCollections": 5,
+  "native": {
+    "status": 200,
+    "collections": [
+      "black-friday-2026",
+      "launch-a-collection",
+      "reader-relationships",
+      "sale-planning",
+      "service-enquiries",
+      "help-shoppers-choose"
+    ],
+    "campaignsUnchanged": true
+  },
+  "errors": []
+}

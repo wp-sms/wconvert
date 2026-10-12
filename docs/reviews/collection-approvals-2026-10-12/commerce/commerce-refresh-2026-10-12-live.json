@@ -1,0 +1,90 @@
+[
+  {
+    "id": "add-useful-extras",
+    "action": "confirmed WooCommerce basket addition",
+    "passed": true
+  },
+  {
+    "id": "add-useful-extras",
+    "action": "published and rendered on desktop and 320px",
+    "ctaLinkChecked": false,
+    "passed": true
+  },
+  {
+    "id": "recommend-accessory",
+    "action": "published and rendered on desktop and 320px",
+    "ctaLinkChecked": true,
+    "passed": true
+  },
+  {
+    "id": "shopping-guidance",
+    "action": "empty basket stays hidden",
+    "passed": true
+  },
+  {
+    "id": "shopping-guidance",
+    "action": "published and rendered on desktop and 320px",
+    "ctaLinkChecked": true,
+    "passed": true
+  },
+  {
+    "id": "explore-compatible-extras",
+    "action": "published and rendered on desktop and 320px",
+    "ctaLinkChecked": true,
+    "passed": true
+  },
+  {
+    "id": "basket-cross-sells",
+    "action": "confirmed WooCommerce basket addition",
+    "passed": true
+  },
+  {
+    "id": "basket-cross-sells",
+    "action": "empty basket stays hidden",
+    "passed": true
+  },
+  {
+    "id": "basket-cross-sells",
+    "action": "published and rendered on desktop and 320px",
+    "ctaLinkChecked": false,
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "choice": "bright",
+    "heading": "Start with bright and fruity",
+    "product": "Bright coffee",
+    "desktopAndPhone": true,
+    "productLinkChecked": true,
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "choice": "smooth",
+    "heading": "Start with smooth and chocolatey",
+    "product": "Smooth coffee",
+    "desktopAndPhone": true,
+    "productLinkChecked": true,
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "choice": "unsure",
+    "heading": "Explore a few different coffees",
+    "product": "Explore coffee",
+    "desktopAndPhone": true,
+    "productLinkChecked": true,
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "action": "simulated empty catalogue retains a working shop link",
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "action": "published and rendered on desktop and 320px",
+    "ctaLinkChecked": false,
+    "passed": true
+  }
+]

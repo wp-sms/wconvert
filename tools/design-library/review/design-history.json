@@ -574,6 +574,12 @@
           "date": "2026-10-12",
           "revision": "0a9342b35337600e2e3e87c4811a387d74e01bf4cd373f887c695635169397ae",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-12",
+          "revision": "c3066fa363724450a1727767ffadf21fae04a90b57ada173ec0e02c402c5772d",
+          "note": "Keep newsletter consent with its field, before the submit action."
         }
       ]
     },

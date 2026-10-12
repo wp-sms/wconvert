@@ -111,6 +111,19 @@
                   }
                 },
                 {
+                  "type": "consent",
+                  "id": "n12",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me offers and news. %s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
                   "type": "button",
                   "id": "n11",
                   "role": "cta_label",
@@ -122,19 +135,6 @@
                   }
                 }
               ]
-            },
-            {
-              "type": "consent",
-              "id": "n12",
-              "role": "consent_text",
-              "hidden": true,
-              "text": "Email me offers and news. %s",
-              "link": {
-                "label": "Privacy Policy"
-              },
-              "tokens": {
-                "text-size": "1.125rem"
-              }
             },
             {
               "type": "text",

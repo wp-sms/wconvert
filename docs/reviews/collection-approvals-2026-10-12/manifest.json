@@ -1,0 +1,483 @@
+{
+  "base_commit": "bdfb4368",
+  "renderer_sha256": "9306b508b2b93531954756f65f1722d42ed54d3cf86ae26676075c39d9f82973",
+  "setups": [
+    {
+      "id": "edition-early-access",
+      "revision": "6f4a6a5f9e4dd3bec924d0cc464dd59d3dcde6fdb87e3be0082414d54d6f2b33",
+      "template_id": "edition-pass",
+      "display_type": "popup",
+      "goal": "grow_email_list"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "719142d894fa3d6f789493ec7e443e013ec5b160d6ae850805a1f24d88a7a7a7",
+      "template_id": "service-docket",
+      "display_type": "inline",
+      "goal": "collect_enquiries"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "e6517ceb1fafeb51e6fbde3615caeb6e3cece7f507255625994eedb1badec4b7",
+      "template_id": "reading-desk",
+      "display_type": "inline",
+      "goal": "grow_email_list"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "087506b06059760fc2abe857901894e5be53b2650ce6825f7633a7bdc810c084",
+      "template_id": "bar-countdown",
+      "display_type": "floating_bar",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "055ff876402024205b402f7653deafde0741a2699fffd67a7aec0df73867f4d6",
+      "template_id": "edition-pass",
+      "display_type": "popup",
+      "goal": "grow_email_list"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "165dc543fdd2623986e5338f09a512efd06b0a5c83af2782017f29a55634571d",
+      "template_id": "service-docket",
+      "display_type": "inline",
+      "goal": "collect_enquiries"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "f8c2332ae5d756522f271518f75269d6a366c74f7e65c0c1b52a9a42ff737a6e",
+      "template_id": "callback-notes",
+      "display_type": "inline",
+      "goal": "collect_enquiries"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "8424de73265a1a8731257eb6a71a25111926ab9eca2b708f149e86ee0cb4e731",
+      "template_id": "ledger-card",
+      "display_type": "popup",
+      "goal": "grow_email_list"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "747552d3bc9aa97bb6b1150c9e8bf250f99fa71949998b0ce68d07976ea2440b",
+      "template_id": "useful-guide",
+      "display_type": "popup",
+      "goal": "deliver_lead_magnet"
+    },
+    {
+      "id": "repair-assessment",
+      "revision": "bca3e52e7017d53d5ed29201263fc83df24e171b75ef6dc1a2bae97d3654ae6d",
+      "template_id": "service-docket",
+      "display_type": "inline",
+      "goal": "collect_enquiries"
+    },
+    {
+      "id": "homeware-care-notes",
+      "revision": "a3be8cea7a8f89e010e1e5a86ea45e5245b4b958fbcb04a6396fe2c699062dbc",
+      "template_id": "product-shelf",
+      "display_type": "popup",
+      "goal": "grow_email_list"
+    },
+    {
+      "id": "repair-advice-request",
+      "revision": "5d56b1ee8921480f97498d9f6c3c0e047a84c9d0cae49bc7963f60dd322cfdf5",
+      "template_id": "request-folio",
+      "display_type": "popup",
+      "goal": "collect_enquiries"
+    },
+    {
+      "id": "first-order-receipt",
+      "revision": "d31335df711e004e07a1d59f42470e1b16b4843f6d41b74606bd121e7e01d5ae",
+      "template_id": "offer-receipt",
+      "display_type": "popup",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "reading-notes-guide",
+      "revision": "5d77840b54d3994a2d88559d01643c9d4ea8ddfeee6b89b4ac2df73bbb89e7bc",
+      "template_id": "reading-cover",
+      "display_type": "popup",
+      "goal": "deliver_lead_magnet"
+    },
+    {
+      "id": "website-review-enquiry",
+      "revision": "445d03b024a9932dadbd6fa488ebc1055f9d709a4758e8925a67e56e04f5c5c1",
+      "template_id": "service-summary",
+      "display_type": "popup",
+      "goal": "collect_enquiries"
+    },
+    {
+      "id": "lighting-collection",
+      "revision": "84353d61f5d8a4e159fb8ea63628cd76e82042e929e752ea575806681dcb7947",
+      "template_id": "collection-poster",
+      "display_type": "popup",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "specification-sheet",
+      "revision": "8d64f6184e6d44c2cd1e09d3871ff68c08d98c2d847da2ca9b52fa8a21561967",
+      "template_id": "specification-sheet",
+      "display_type": "popup",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "excerpt-window",
+      "revision": "c87470d7b7327b4be3129449730ef26a2b6c7fae73669795b44fee8d8a0855d1",
+      "template_id": "excerpt-window",
+      "display_type": "inline",
+      "goal": "deliver_lead_magnet"
+    },
+    {
+      "id": "add-useful-extras",
+      "revision": "53c16566809951a1148a8f7ebdbabbfe6d3bfe1fc284242ce4dda50dc5fb46d2",
+      "template_id": "cart-additions",
+      "display_type": "inline",
+      "goal": "increase_basket_value"
+    },
+    {
+      "id": "recommend-accessory",
+      "revision": "21049051a6d05a042da18b478daa476bfd1195f478970f0c9d648348fed95ff6",
+      "template_id": "cart-accessories",
+      "display_type": "inline",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "shopping-guidance",
+      "revision": "370c6a5ca695e025b8b081a909b4fe0f47ac2d7e73015ac291dfaf4bc4792c9d",
+      "template_id": "inline-cart-nudge",
+      "display_type": "inline",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "explore-compatible-extras",
+      "revision": "82c2675fdc48244b5152f358149488a6eb82d7e1ebe8b2889f8c456b4a737a6f",
+      "template_id": "accessory-workbench",
+      "display_type": "inline",
+      "goal": "promote_offer"
+    },
+    {
+      "id": "basket-cross-sells",
+      "revision": "2018e0b73e51709bc2a4066765edc8aa43f7b144787037eb187f9b53b20ade6a",
+      "template_id": "basket-companion",
+      "display_type": "inline",
+      "goal": "increase_basket_value"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "revision": "94a052348104102a6862a8dfc6ff1d96f580fcda5a646f72946cbc2577406a90",
+      "template_id": "coffee-finder-board",
+      "display_type": "inline",
+      "goal": "find_match"
+    }
+  ],
+  "screens": [
+    {
+      "id": "add-useful-extras",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-01.webp"
+    },
+    {
+      "id": "basket-cross-sells",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-01.webp"
+    },
+    {
+      "id": "cleaning-quote",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-01.webp"
+    },
+    {
+      "id": "cleaning-quote",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-01.webp"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-02.webp"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 1,
+      "result": {
+        "id": "bright",
+        "heading": "Start with bright and fruity",
+        "body": "Explore coffees with fruit-led tasting notes. Check each product for roast and brewing details.",
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "n4",
+              "operator": "is",
+              "values": [
+                "bright"
+              ]
+            }
+          ]
+        },
+        "product_ids": [],
+        "product_filter": {
+          "category_id": 0,
+          "attributes": [],
+          "order": "oldest"
+        }
+      },
+      "board": "campaigns-02.webp"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 1,
+      "result": {
+        "id": "smooth",
+        "heading": "Start with smooth and chocolatey",
+        "body": "Explore coffees with chocolate or nutty tasting notes. Check each product for roast and brewing details.",
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "n4",
+              "operator": "is",
+              "values": [
+                "smooth"
+              ]
+            }
+          ]
+        },
+        "product_ids": [],
+        "product_filter": {
+          "category_id": 0,
+          "attributes": [],
+          "order": "oldest"
+        }
+      },
+      "board": "campaigns-02.webp"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "step": 1,
+      "result": {
+        "id": "explore",
+        "heading": "Explore a few different coffees",
+        "body": "Compare the tasting notes and choose what appeals to you. A sampler can be a useful place to start.",
+        "product_ids": [],
+        "product_filter": {
+          "category_id": 0,
+          "attributes": [],
+          "order": "oldest"
+        }
+      },
+      "board": "campaigns-02.webp"
+    },
+    {
+      "id": "edition-early-access",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-03.webp"
+    },
+    {
+      "id": "edition-early-access",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-03.webp"
+    },
+    {
+      "id": "editorial-weekly",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-03.webp"
+    },
+    {
+      "id": "editorial-weekly",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-03.webp"
+    },
+    {
+      "id": "excerpt-window",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-04.webp"
+    },
+    {
+      "id": "excerpt-window",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-04.webp"
+    },
+    {
+      "id": "explore-compatible-extras",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-04.webp"
+    },
+    {
+      "id": "first-order-receipt",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-04.webp"
+    },
+    {
+      "id": "home-repair-quote",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-05.webp"
+    },
+    {
+      "id": "home-repair-quote",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-05.webp"
+    },
+    {
+      "id": "homeware-care-notes",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-05.webp"
+    },
+    {
+      "id": "homeware-care-notes",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-05.webp"
+    },
+    {
+      "id": "lighting-collection",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-06.webp"
+    },
+    {
+      "id": "reading-notes-guide",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-06.webp"
+    },
+    {
+      "id": "reading-notes-guide",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-06.webp"
+    },
+    {
+      "id": "recommend-accessory",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-06.webp"
+    },
+    {
+      "id": "renovation-callback",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-07.webp"
+    },
+    {
+      "id": "renovation-callback",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-07.webp"
+    },
+    {
+      "id": "repair-advice-request",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-07.webp"
+    },
+    {
+      "id": "repair-advice-request",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-07.webp"
+    },
+    {
+      "id": "repair-advice-request",
+      "step": 2,
+      "result": null,
+      "board": "campaigns-08.webp"
+    },
+    {
+      "id": "repair-assessment",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-08.webp"
+    },
+    {
+      "id": "repair-assessment",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-08.webp"
+    },
+    {
+      "id": "restock-announcements",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-08.webp"
+    },
+    {
+      "id": "restock-announcements",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-09.webp"
+    },
+    {
+      "id": "sale-deadline",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-09.webp"
+    },
+    {
+      "id": "shopping-guidance",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-09.webp"
+    },
+    {
+      "id": "specification-sheet",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-09.webp"
+    },
+    {
+      "id": "sunday-reading",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-10.webp"
+    },
+    {
+      "id": "sunday-reading",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-10.webp"
+    },
+    {
+      "id": "website-review-enquiry",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-10.webp"
+    },
+    {
+      "id": "website-review-enquiry",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-10.webp"
+    },
+    {
+      "id": "writing-checklist",
+      "step": 0,
+      "result": null,
+      "board": "campaigns-11.webp"
+    },
+    {
+      "id": "writing-checklist",
+      "step": 1,
+      "result": null,
+      "board": "campaigns-11.webp"
+    }
+  ],
+  "evidence_note": "Lossless WebP copies of actual browser screenshots. Native sale and coupon captures/results replaced with final configured checks."
+}

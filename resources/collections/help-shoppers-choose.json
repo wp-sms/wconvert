@@ -19,7 +19,7 @@
       "setup_id": "explore-compatible-extras",
       "stage": "any",
       "setup_hash": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
-      "design_hash": "1425822a2f42b22911053c91d548919d06d9313635b15494a8429017e44e8b8f"
+      "design_hash": "dbb85f5e6ffc63a6b650a801e871288f48e5f8b59a0b29c8dfa0785fd5b2a22d"
     },
     {
       "setup_id": "add-useful-extras",
@@ -37,7 +37,7 @@
       "setup_id": "coffee-taste-finder",
       "stage": "any",
       "setup_hash": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
-      "design_hash": "82e2944e7ad2c27319e51a11b301d813b33f962502cc915a47af71324e396945"
+      "design_hash": "005713171a32115d6bdfa052ea36b47fa65ba7db480d13f205f1e3dbad5a2a83"
     },
     {
       "setup_id": "shopping-guidance",
@@ -47,6 +47,6 @@
     }
   ],
   "dependencies_current": true,
-  "revision": "5df6ba9dc46c0447c8ac803b33fa8436ee5a65cc9c0e9dd389355b08c3985311",
+  "revision": "87d8487fb4617d61fa744d142ddd5d017645f38df130f417c3e55b25b9206615",
   "status": "published"
 }

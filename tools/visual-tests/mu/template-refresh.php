@@ -37,6 +37,16 @@ add_action('template_redirect', static function (): void {
         $draft = $prefill->fromPlaybook($selection);
         if (!$draft) wp_die('Setup missing');
         $config = $draft['config'];
+        if ($selection === 'shopping-guidance') {
+            $guide = get_page_by_path('collection-review-shopping-guide');
+            $guideId = wp_insert_post(['ID' => $guide?->ID ?? 0, 'post_type' => 'page', 'post_status' => 'publish', 'post_name' => 'collection-review-shopping-guide', 'post_title' => 'Choosing accessories', 'post_content' => '<p>Check the brewer model, filter size and material before adding accessories. These reusable filters suit the demonstration coffee brewer.</p>']);
+            $guideUrl = get_permalink($guideId);
+            $config['template'] = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $config['template']], static function (array $node) use ($guideUrl): array {
+                if (($node['type'] ?? '') === 'button' && ($node['action'] ?? '') === 'link') $node['href'] = $guideUrl;
+                return $node;
+            })['template'];
+        }
+
         $config['inline_placement'] = ['position' => 'manual'];
         $config['template']['tree'] = \WConvert\Template\TemplateTree::rewrittenIn(['template' => ['tree' => $config['template']['tree']]], static function (array $node) use ($fixture): array {
             if (($node['type'] ?? '') === 'products') {
