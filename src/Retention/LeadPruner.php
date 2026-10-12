@@ -55,11 +55,22 @@ final class LeadPruner
             $this->run();
         });
 
-        // Scheduled whether or not a period is configured. Registering it on
-        // the settings write instead would mean the first merchant to set a
-        // period waits for a job that has never existed — and would put the
-        // registration in the one place nobody looks when the prune turns out
-        // never to have run.
+        // On `init`, not here: hooks() runs on `plugins_loaded`, and
+        // wp_schedule_event() reads wp_get_schedules(), whose `cron_schedules`
+        // filter lets other plugins (WooCommerce) translate their schedule
+        // names before `init`, a _load_textdomain_just_in_time notice.
+        add_action('init', [$this, 'schedule']);
+    }
+
+    /**
+     * Scheduled whether or not a period is configured. Registering it on the
+     * settings write instead would mean the first merchant to set a period
+     * waits for a job that has never existed — and would put the registration
+     * in the one place nobody looks when the prune turns out never to have
+     * run.
+     */
+    public function schedule(): void
+    {
         if (wp_next_scheduled(self::HOOK) === false) {
             wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', self::HOOK);
         }

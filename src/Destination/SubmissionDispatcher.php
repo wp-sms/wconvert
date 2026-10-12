@@ -23,6 +23,15 @@ final class SubmissionDispatcher
     {
         add_action(JourneyCapture::ACCEPTED, [$this, 'dispatch'], 10, 2);
         add_action(self::RECOVER, [$this, 'recover']);
+        // On `init`, not here: hooks() runs on `plugins_loaded`, and
+        // wp_schedule_event() reads wp_get_schedules(), whose `cron_schedules`
+        // filter lets other plugins (WooCommerce) translate their schedule
+        // names before `init`, a _load_textdomain_just_in_time notice.
+        add_action('init', [$this, 'schedule']);
+    }
+
+    public function schedule(): void
+    {
         if (!wp_next_scheduled(self::RECOVER)) { wp_schedule_event(time() + 60, 'hourly', self::RECOVER); }
     }
 
