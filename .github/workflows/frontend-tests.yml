@@ -41,7 +41,7 @@ permissions:
 jobs:
   test:
     name: 'Vitest'
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
 
   typecheck:
     name: 'TypeScript'
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
 
   lint:
     name: 'ESLint'
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +80,7 @@ jobs:
 
   visual-build:
     name: 'Visual contracts: build'
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -114,7 +114,7 @@ jobs:
   visual:
     name: 'Visual contracts: ${{ matrix.suite }}'
     needs: visual-build
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       # Report every suite even if one fails. Any failed leg still fails the
