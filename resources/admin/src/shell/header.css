@@ -107,7 +107,7 @@
   #wconvert-admin .wconvert-brand-mark { inline-size:29px; block-size:29px; }
   #wconvert-admin .wconvert-header-tools { gap:3px; }
   #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-brand-plan { display:none; }
-  /* The badge is the door to the License page and carries its dot, so on a phone it moves to the tools row instead of vanishing. */
+  /* A badge that is a link and may carry a dot moves to the tools row on a phone instead of vanishing. */
   #wconvert-admin .wconvert-plan-mobile { display:inline-flex; margin-inline-end:4px; }
   #wconvert-admin .wconvert-section-nav ul { justify-content:space-between; gap:12px; }
   #wconvert-admin .wconvert-section-nav a { font-size:var(--text-micro); }

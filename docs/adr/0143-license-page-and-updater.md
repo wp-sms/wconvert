@@ -3,9 +3,13 @@
 Date: 2026-10-12. Status: accepted; lands in six slices, one pull request
 each, so a decision below may describe code a later slice brings.
 Amends [0015](0015-enforcement-is-by-non-registration.md) (no licence read
-anywhere; the SDK as a private repository; Nexus serving a tier-matched ZIP) and
+anywhere; the SDK as a private repository; Nexus serving a tier-matched ZIP),
 [0056](0056-the-tier-ladder-is-a-manifest.md) (no licence read; Nexus matching
-a licence to a tier).
+a licence to a tier), [0035](0035-the-admin-owns-its-page.md) (a submenu on the
+one page), [0082](0082-template-packs-install-as-validated-local-data.md) (the
+SDK authorizes no pack download), [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md)
+and [0097](0097-harbor-is-the-shared-admin-frame.md) (the plan badge as a live
+link with the licence's status).
 
 Pro customers need to activate, renew, manage their sites and receive updates
 through Nexus, which runs at **https://my.wconvert.io**. ADR 0015 reserved this

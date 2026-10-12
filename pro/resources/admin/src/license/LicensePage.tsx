@@ -7,7 +7,7 @@ import { RegionSkeleton } from '@/shell/RegionSkeleton';
 import { LOADING, messageOf, ready, type Loadable } from '@/shell/loadable';
 import { setPlanBadge } from '@/shell/planBadge';
 import {
-  activateKey, asLicenseError, checkUpdates, moveLicense, readLicense, removeLicense, removeSite, replaceKey,
+  activateKey, asLicenseError, checkUpdates, goSignIn, moveLicense, readLicense, removeLicense, removeSite, replaceKey,
   type Changed, type LicenseError,
 } from './api';
 import { type LicensePayload, type LicenseSite } from './describeLicense';
@@ -22,6 +22,8 @@ import './license.css';
 /** The focus refresh asks at most this often; the server holds the same line. */
 const FOCUS_CHECK_MS = 60_000;
 
+type KeyField = 'activate' | 'replace' | 'rekey';
+
 interface Result { tone: NoticeTone; title: string; body?: ReactNode; id: number }
 
 interface Confirmation { title: string; description: ReactNode; confirm: string; destructive?: boolean; run: () => void }
@@ -31,23 +33,28 @@ interface Confirmation { title: string; description: ReactNode; confirm: string;
  * key — or, with nothing activated, the way to activate.
  *
  * Every action answers with the whole licence, so the page and the header
- * badge redraw from that one answer. Results are inline, focused and
- * announced, never toasts. Coming back to the tab asks the store again, at
- * most once a minute, so a renewal made in another tab shows here at once.
+ * badge redraw from that one answer. Results are inline, focused on arrival
+ * and announced, never toasts. Coming back to the tab asks the store again,
+ * at most once a minute, so a renewal made in another tab shows here at once
+ * — and a check that fails keeps what the page already shows.
  */
 export function LicensePage() {
   const [license, setLicense] = useState<Loadable<LicensePayload>>(LOADING);
   const [busy, setBusy] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  const [updatesFailed, setUpdatesFailed] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
-  const [errors, setErrors] = useState<Partial<Record<'activate' | 'replace' | 'rekey', LicenseError>>>({});
+  const [errors, setErrors] = useState<Partial<Record<KeyField, LicenseError>>>({});
   const [confirm, setConfirm] = useState<Confirmation | null>(null);
   const [sitesResult, setSitesResult] = useState<ReactNode>(null);
-  const sitesHeading = useRef<HTMLHeadingElement>(null);
+  const sitesHeading = useRef<HTMLDivElement>(null);
   const lastCheck = useRef(0);
   const results = useRef(0);
+  const lastKey = useRef<Partial<Record<KeyField, string>>>({});
 
   useEffect(() => markLicenseCurrent(), []);
+
+  const say = useCallback((tone: NoticeTone, title: string, body?: ReactNode) => setResult({ tone, title, body, id: ++results.current }), []);
 
   const settle = useCallback((next: LicensePayload) => {
     setLicense(ready(next));
@@ -56,8 +63,13 @@ export function LicensePage() {
 
   const load = useCallback((check = false) => {
     if (check) lastCheck.current = Date.now();
-    return readLicense(check).then(settle, (cause) => setLicense({ status: 'failed', message: messageOf(cause) }));
-  }, [settle]);
+    return readLicense(check).then(settle, (cause) => {
+      // A page already showing the licence keeps showing it — with the key
+      // somebody was halfway through typing — and says the check failed.
+      setLicense((current) => (current.status === 'ready' ? current : { status: 'failed', message: messageOf(cause) }));
+      if (check) say('warning', __('Couldn’t check the license just now.', 'wconvert-pro'), messageOf(cause));
+    });
+  }, [settle, say]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -72,9 +84,15 @@ export function LicensePage() {
     return () => { window.removeEventListener('focus', onFocus); document.removeEventListener('visibilitychange', onFocus); };
   }, [load]);
 
-  const say = (tone: NoticeTone, title: string, body?: ReactNode) => setResult({ tone, title, body, id: ++results.current });
+  // A rate-limited key field opens again once the wait is over.
+  const activateError = errors.activate;
+  useEffect(() => {
+    if (activateError?.code !== 'rate_limited') return undefined;
+    const timer = window.setTimeout(() => setErrors((current) => ({ ...current, activate: undefined })), Math.max(5, activateError.data?.retry_after ?? 60) * 1000);
+    return () => window.clearTimeout(timer);
+  }, [activateError]);
 
-  const run = async (name: string, action: () => Promise<Changed>, done?: (answer: Changed) => void, field?: 'activate' | 'replace' | 'rekey') => {
+  const run = async (name: string, action: () => Promise<Changed>, done?: (answer: Changed) => void, field?: KeyField) => {
     setBusy(name);
     setResult(null);
     if (field) setErrors((current) => ({ ...current, [field]: undefined }));
@@ -93,13 +111,19 @@ export function LicensePage() {
 
   const checkNow = async () => {
     setChecking(true);
+    setUpdatesFailed(false);
     try {
       await load(true);
-      await checkUpdates().then(({ updates }) => setLicense((current) => current.status === 'ready' ? ready({ ...current.data, updates }) : current), () => undefined);
+      await checkUpdates().then(
+        ({ updates }) => setLicense((current) => (current.status === 'ready' ? ready({ ...current.data, updates }) : current)),
+        () => setUpdatesFailed(true),
+      );
     } finally {
       setChecking(false);
     }
   };
+
+  const startSignIn = () => goSignIn((error) => say('danger', errorCopy(error).text));
 
   if (license.status === 'loading') return <RegionSkeleton label={__('Loading license…', 'wconvert-pro')} lines={5} />;
 
@@ -108,10 +132,27 @@ export function LicensePage() {
   }
 
   const data = license.data;
-  const notice = result && <Notice tone={result.tone} title={result.title} focus key={result.id}>{result.body}</Notice>;
-  const errorFor = (field: 'replace' | 'rekey', retry: () => void) => {
+  const notice = result && <Notice key={result.id} tone={result.tone} title={result.title} focus>{result.body}</Notice>;
+
+  const activate = (key: string) => {
+    lastKey.current.activate = key;
+    void run('activate', () => activateKey(key), () => say('success', __('WConvert Pro is activated on this site', 'wconvert-pro')), 'activate');
+  };
+
+  const replace = (key: string, field: 'replace' | 'rekey') => {
+    lastKey.current[field] = key;
+    void run(field, () => replaceKey(key), (answer) => say(
+      answer.released?.removed_remotely === false ? 'warning' : 'success',
+      __('The new key is active', 'wconvert-pro'),
+      answer.released?.removed_remotely === false ? __('The old key’s site couldn’t be freed. Free it from your account.', 'wconvert-pro') : undefined,
+    ), field);
+  };
+
+  const errorFor = (field: 'replace' | 'rekey') => {
     const error = errors[field];
-    return error ? <><span role="alert">{errorCopy(error).text}</span><Ways ways={errorCopy(error).ways} license={data} retry={retry} signIn={() => undefined} /></> : undefined;
+    if (!error) return undefined;
+    const copy = errorCopy(error);
+    return <><span role="alert">{copy.text}</span><Ways ways={copy.ways} license={data} retry={() => replace(lastKey.current[field] ?? '', field)} signIn={startSignIn} /></>;
   };
 
   const dialog = confirm && (
@@ -126,7 +167,8 @@ export function LicensePage() {
       <div className="wconvert-license wconvert-license--narrow">
         {notice}
         <ActivateCard license={data} busy={busy} keyError={errors.activate ?? null}
-          onActivateKey={(key) => void run('activate', () => activateKey(key), () => say('success', __('WConvert Pro is activated on this site', 'wconvert-pro')), 'activate')}
+          onActivateKey={activate}
+          onKeyEdit={() => setErrors((current) => (current.activate ? { ...current, activate: undefined } : current))}
           onChanged={(answer) => { settle(answer); say('success', __('WConvert Pro is activated on this site', 'wconvert-pro')); }} />
       </div>
     );
@@ -165,7 +207,9 @@ export function LicensePage() {
     destructive: true,
     run: () => {
       setSitesResult(null);
-      void run(`site:${site.domain}`, () => removeSite(site.domain), () => setSitesResult(<Notice tone="success" focus>{sprintf(__('%s was removed. One more site is free.', 'wconvert-pro'), site.domain)}</Notice>));
+      void run(`site:${site.domain}`, () => removeSite(site.domain), () => setSitesResult(
+        <Notice key={site.domain} tone="success" focus>{sprintf(__('%s was removed. One more site is free.', 'wconvert-pro'), site.domain)}</Notice>,
+      ));
     },
   });
 
@@ -179,26 +223,20 @@ export function LicensePage() {
       : say('success', __('Removed from this site', 'wconvert-pro'), __('One site on your license is free.', 'wconvert-pro'))),
   });
 
-  const replace = (key: string, field: 'replace' | 'rekey') => void run(field, () => replaceKey(key), (answer) => say(
-    answer.released?.removed_remotely === false ? 'warning' : 'success',
-    __('The new key is active', 'wconvert-pro'),
-    answer.released?.removed_remotely === false ? __('The old key’s site couldn’t be freed. Free it from your account.', 'wconvert-pro') : undefined,
-  ), field);
-
   return (
     <div className="wconvert-license">
       {notice}
       <StatusCard license={data} actions={{
-        busy, checking, onCheck: () => void checkNow(), onMove: move,
+        busy, checking, updatesFailed, onCheck: () => void checkNow(), onMove: move,
         onSites: () => { sitesHeading.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }); sitesHeading.current?.focus({ preventScroll: true }); },
-        onRekey: (key) => replace(key, 'rekey'), rekeyError: errorFor('rekey', () => undefined),
+        onRekey: (key) => replace(key, 'rekey'), rekeyError: errorFor('rekey'),
       }} />
       {data.managed ? (
         <p className="wconvert-license-managed"><Info aria-hidden="true" />{__('To change or remove the license, edit WCONVERT_LICENSE_KEY in wp-config.php.', 'wconvert-pro')}</p>
       ) : (
         <div className="wconvert-license-grid">
           <SitesCard license={data} busy={busy} onRemove={removeOne} result={sitesResult} headingRef={sitesHeading} />
-          <KeyCard license={data} busy={busy} onReplace={(key) => replace(key, 'replace')} replaceError={errorFor('replace', () => undefined)} onRemove={removeHere} />
+          <KeyCard license={data} busy={busy} onReplace={(key) => replace(key, 'replace')} replaceError={errorFor('replace')} onRemove={removeHere} />
         </div>
       )}
       {dialog}

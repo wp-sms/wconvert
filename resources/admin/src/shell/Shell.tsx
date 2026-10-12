@@ -8,6 +8,7 @@ import './header.css';
 import { BrandMark, PlanBadge } from './Brand';
 import { HeaderTools } from './HeaderTools';
 import { Footer } from './Footer';
+import type { ExtraPage } from '../extraPages';
 
 /** Harbor shared frame: dark navigation, light page heading and service footer (ADR 0097). */
 export function Shell({
@@ -23,7 +24,7 @@ export function Shell({
 }: {
   section?: SectionId;
   /** A registered page (`extraPages`): the frame with no tab current, and its own heading. */
-  page?: { id: string; title: string; description: string };
+  page?: Pick<ExtraPage, 'id' | 'title' | 'description'>;
   actions?: ReactNode;
   pageTitle?: string;
   hideDescription?: boolean;

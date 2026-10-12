@@ -14,7 +14,15 @@ export type Way = 'sign_in' | 'find_key' | 'renew' | 'sites' | 'upgrade' | 'retr
 
 export interface ErrorCopy { text: string; ways: Way[] }
 
-export function errorCopy(error: LicenseError, host = 'my.wconvert.io'): ErrorCopy {
+/**
+ * @param fromConfig The key came from wp-config.php (P3): the refusal is about
+ *        that key, and the fix is in the file, not in a field on this page.
+ */
+export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromConfig = false }: { host?: string; fromConfig?: boolean } = {}): ErrorCopy {
+  if (fromConfig && ['invalid_key', 'not_found', 'wrong_product'].includes(error.code)) {
+    return { text: __('The key in wp-config.php wasn’t found. Check WCONVERT_LICENSE_KEY against your purchase email.', 'wconvert-pro'), ways: [] };
+  }
+
   switch (error.code) {
     case 'empty':
       return { text: __('Enter your license key.', 'wconvert-pro'), ways: [] };

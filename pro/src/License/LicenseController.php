@@ -209,7 +209,7 @@ final class LicenseController implements RestController
             return self::error(LicenseErrorCode::KEY_FROM_CONSTANT, 403);
         }
 
-        $authorize = $this->sdk->accountManager()->getAuthorizeUrl(admin_url('admin.php?page=wconvert#license'));
+        $authorize = $this->sdk->accountManager()->getAuthorizeUrl(admin_url(AdminSurfaces::HREF));
 
         return new WP_REST_Response(['url' => $authorize['authorize_url']]);
     }

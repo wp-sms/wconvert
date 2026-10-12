@@ -162,6 +162,8 @@ export interface PlanBadgeData {
   readonly prompt: boolean;
   readonly tone: 'amber' | 'red' | null;
   readonly reason: string | null;
+  /** Where the link goes, for a pointer and a screen reader, when there is no reason to show. */
+  readonly hint?: string;
 }
 
 declare global {

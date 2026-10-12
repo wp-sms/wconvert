@@ -3,8 +3,10 @@ import type { ComponentType } from 'react';
 /**
  * Pages another bundle adds to this screen, reached by their own hash.
  *
- * The same assign-in slot as `analyticsIntegration`: free draws whatever is
- * registered and names nothing it does not ship. A page here is not a section
+ * A slot like `analyticsIntegration`'s — the other bundle fills it, free
+ * draws whatever is there and names nothing it does not ship — with a
+ * `registerPage()` call rather than an assignment, because there can be
+ * several. A page here is not a section
  * — it has no tab, because a page a merchant opens a few times a year does not
  * earn a place beside the four they use every day — so it is reached by a
  * link, and the frame shows it with no tab current.

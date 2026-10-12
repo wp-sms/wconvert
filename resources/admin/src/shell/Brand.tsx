@@ -50,18 +50,20 @@ export function PlanBadge({ tier, currentPage, plain = false }: { tier: string; 
     return <span className="wconvert-plan-badge" data-paid={tier === 'free' ? undefined : ''}>{name}</span>;
   }
 
+  const said = badge.reason ?? badge.hint ?? null;
+
   return (
     <a
       className="wconvert-plan-badge"
       href={badge.href}
       data-paid={badge.prompt || tier === 'free' ? undefined : ''}
       data-prompt={badge.prompt ? '' : undefined}
-      title={badge.reason ?? undefined}
+      title={said ?? undefined}
       aria-current={currentPage !== undefined && badge.href === `#${currentPage}` ? 'page' : undefined}
     >
       {badge.tone && <span className="wconvert-plan-dot" data-tone={badge.tone} aria-hidden="true" />}
       {badge.label ?? name}
-      {badge.reason && <span className="sr-only">{`: ${badge.reason}`}</span>}
+      {said && <span className="sr-only">{`: ${said}`}</span>}
     </a>
   );
 }

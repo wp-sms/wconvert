@@ -98,6 +98,9 @@ configured destination issues on open; it is not an invented activity feed or
 an unread count. Help links to existing settings and the product website. The
 account link intentionally remains `#`, as the user requested, until a real
 account destination is supplied. It does not impersonate WordPress login.
+*Amended by [ADR 0143](0143-license-page-and-updater.md): with Pro the real
+account is reached from the License page (my.wconvert.io), not from this link,
+which stays `#` on a free install.*
 
 ## Verification
 

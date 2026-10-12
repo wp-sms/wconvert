@@ -72,6 +72,11 @@ export const chooseLicense = (licenseId: number) =>
 export const signOut = () =>
   apiFetch<{ signed_in: false }>({ path: `${PATH}/account`, method: 'DELETE' });
 
+/** Leaves for the store's sign-in; it brings the merchant back to `#license`. */
+export function goSignIn(onError: (error: LicenseError) => void): void {
+  signIn().then(({ url }) => { window.location.assign(url); }, (cause) => onError(asLicenseError(cause)));
+}
+
 export function asLicenseError(cause: unknown): LicenseError {
   if (typeof cause === 'object' && cause !== null && 'code' in cause && typeof cause.code === 'string') {
     return cause as LicenseError;

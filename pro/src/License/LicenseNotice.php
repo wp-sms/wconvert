@@ -56,7 +56,7 @@ final class LicenseNotice
 
             case 'moved':
                 /* translators: %s: the domain the licence is still on */
-                $title = sprintf(__('This site moved from %s', 'wconvert-pro'), $was);
+                $title = $was === '' ? __('This site moved', 'wconvert-pro') : sprintf(__('This site moved from %s', 'wconvert-pro'), $was);
 
                 return self::amber($title, sprintf(
                     /* translators: %s: "This site moved from example.com" */
@@ -66,7 +66,7 @@ final class LicenseNotice
 
             case 'copy':
                 /* translators: %s: the live site this one was copied from */
-                $title = sprintf(__('This is a copy of %s', 'wconvert-pro'), $was);
+                $title = $was === '' ? __('This is a copy of another site', 'wconvert-pro') : sprintf(__('This is a copy of %s', 'wconvert-pro'), $was);
 
                 return self::amber($title, sprintf(
                     /* translators: %s: "This is a copy of example.com" */
@@ -75,19 +75,21 @@ final class LicenseNotice
                 ));
 
             case 'payment_failed':
-                $by = $date((string) (($payload['renewal'] ?? [])['grace_ends_at'] ?? ''));
+                $grace = (string) (($payload['renewal'] ?? [])['grace_ends_at'] ?? '');
 
                 return self::amber(
                     __('Your payment didn’t go through', 'wconvert-pro'),
-                    /* translators: %s: the date the payment grace period ends */
-                    sprintf(__('Your payment didn’t go through. Update it by %s to keep updates.', 'wconvert-pro'), $by)
+                    $grace === ''
+                        ? __('Your payment didn’t go through. Update it to keep updates.', 'wconvert-pro')
+                        /* translators: %s: the date the payment grace period ends */
+                        : sprintf(__('Your payment didn’t go through. Update it by %s to keep updates.', 'wconvert-pro'), $date($grace))
                 );
 
             case 'over_limit':
                 $used = (int) (($payload['plan'] ?? [])['used'] ?? 0);
                 $max = (int) (($payload['plan'] ?? [])['max'] ?? 0);
                 /* translators: 1: sites in use, 2: sites the plan holds */
-                $title = sprintf(__('%1$d sites use a %2$d-site license', 'wconvert-pro'), $used, $max);
+                $title = sprintf(_n('%1$d site uses a %2$d-site license', '%1$d sites use a %2$d-site license', $used, 'wconvert-pro'), $used, $max);
 
                 return self::amber($title, $title . '.');
 

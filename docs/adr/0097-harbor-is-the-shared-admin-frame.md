@@ -65,7 +65,9 @@ Help carries Getting started, Guides, Contact support and What's new (with the
 plugin version), and the footer's Resources column Getting started, Guides and
 What's new, all from one `HELP_URLS` table, `#` until the owner supplies addresses; the footer no longer repeats a
 Settings shortcut. No sample version, account session or operational status is
-invented. Existing account integration remains outside this change.
+invented. *Amended by [ADR 0143](0143-license-page-and-updater.md): with Pro, the
+badge does show a status — the licence's, read from the store by the server,
+never invented in the browser.* Existing account integration remains outside this change.
 
 Creation omits the service footer. The editor keeps its own task-focused frame;
 shared palette and typography still apply. WordPress keeps its menu and toolbar.

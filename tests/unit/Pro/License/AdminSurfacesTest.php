@@ -48,7 +48,7 @@ final class AdminSurfacesTest extends TestCase
 
         $badge = (new AdminSurfaces($this->freshSdk()))->withPlanBadge(['exportUrl' => 'x'])['planBadge'];
 
-        $this->assertSame(['href' => '#license', 'label' => 'Activate Pro', 'prompt' => true, 'tone' => null, 'reason' => null], $badge);
+        $this->assertSame(['href' => '#license', 'label' => 'Activate Pro', 'prompt' => true, 'tone' => null, 'reason' => null, 'hint' => 'License'], $badge);
     }
 
     public function testM3AnExpiredLicenceGivesTheBadgeARedDotAndItsReason(): void

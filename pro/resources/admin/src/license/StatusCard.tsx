@@ -4,8 +4,8 @@ import { AlertTriangle, CalendarClock, CircleAlert, CircleCheck, Clock, Copy, Ch
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Disclosure } from '@/shell/Disclosure';
-import { formatWhen } from '@/lib/format';
-import { describeLicense, short, type Door, type Icon, type LicensePayload } from './describeLicense';
+import { formatShortDay, formatWhen } from '@/lib/format';
+import { describeLicense, type Door, type Icon, type LicensePayload } from './describeLicense';
 import { Ext, KeyField } from './parts';
 
 const ICONS: Record<Icon, typeof CircleCheck> = {
@@ -21,6 +21,8 @@ const ICONS: Record<Icon, typeof CircleCheck> = {
 export interface StatusActions {
   busy: string | null;
   checking: boolean;
+  /** WordPress's own update check failed: the foot says so and offers Try again. */
+  updatesFailed: boolean;
   onCheck: () => void;
   onSites: () => void;
   onMove: (keepOld?: boolean) => void;
@@ -65,8 +67,11 @@ export function StatusCard({ license, actions }: { license: LicensePayload; acti
           </div>
         ))}
       </dl>
-      <div className="wconvert-license-hero__foot">
-        <div className="wconvert-license-hero__updates"><UpdatesLine license={license} stopped={d.stopped} elsewhere={d.elsewhere} /></div>
+      {/* Announced, so Check now's answer is heard as well as seen. */}
+      <div className="wconvert-license-hero__foot" aria-live="polite">
+        <div className="wconvert-license-hero__updates">{actions.updatesFailed
+          ? <span className="wconvert-license-line"><CircleAlert className="wconvert-license-bad" aria-hidden="true" />{__('Couldn’t check for updates.', 'wconvert-pro')}<Button variant="link" size="sm" onClick={actions.onCheck}>{__('Try again', 'wconvert-pro')}</Button></span>
+          : <UpdatesLine license={license} stopped={d.stopped} elsewhere={d.elsewhere} />}</div>
         <div><CheckLine license={license} checking={actions.checking} onCheck={actions.onCheck} /></div>
       </div>
     </section>
@@ -104,12 +109,10 @@ function Coupon({ code, percent, until }: { code: string; percent: number | null
 
   return (
     <div className="wconvert-license-coupon">
-      <span>{percent !== null
-        ? <><b>{sprintf(__('%d%% off', 'wconvert-pro'), percent)}</b> {__('your renewal with', 'wconvert-pro')}</>
-        : __('Your renewal coupon', 'wconvert-pro')}</span>
+      <span>{percent !== null ? sprintf(__('%d%% off your renewal with', 'wconvert-pro'), percent) : __('Your renewal coupon', 'wconvert-pro')}</span>
       <code>{code}</code>
       <Button variant="outline" size="sm" onClick={copy}>{copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}{copied ? __('Copied', 'wconvert-pro') : __('Copy', 'wconvert-pro')}</Button>
-      {until && <span className="wconvert-license-muted">{sprintf(__('until %s', 'wconvert-pro'), short(until))}</span>}
+      {until && <span className="wconvert-license-muted">{sprintf(__('until %s', 'wconvert-pro'), formatShortDay(until))}</span>}
     </div>
   );
 }
@@ -152,7 +155,7 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
             <ol className="wconvert-license-steps">
               {license.managed
                 ? <li>{sprintf(__('Ask %1$s for WConvert Pro %2$s.', 'wconvert-pro'), license.managed.by ?? __('your site developer', 'wconvert-pro'), latest)}</li>
-                : <li><Ext href={license.urls.downloads ?? '#'}>{sprintf(__('Download WConvert Pro %s', 'wconvert-pro'), latest)}</Ext> {__('from your account.', 'wconvert-pro')}</li>}
+                : <li><Ext href={license.urls.downloads ?? '#'}>{sprintf(__('Download WConvert Pro %s from your account', 'wconvert-pro'), latest)}</Ext></li>}
               <li>{__('In Plugins → Add New Plugin → Upload Plugin, choose the ZIP.', 'wconvert-pro')}</li>
               <li>{__('Choose Replace current with uploaded.', 'wconvert-pro')}</li>
             </ol>
@@ -176,7 +179,8 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
 }
 
 function CheckLine({ license, checking, onCheck }: { license: LicensePayload; checking: boolean; onCheck: () => void }) {
-  const when = (at: number | null) => (at === null ? null : formatWhen(new Date(at * 1000).toISOString()));
+  // "detail" — "Oct 12, 2026, 9:14 AM" — reads the same mid-sentence in any language.
+  const when = (at: number | null) => (at === null ? null : formatWhen(new Date(at * 1000).toISOString(), 'detail'));
   const button = (
     <Button variant="link" size="sm" aria-disabled={checking || undefined} onClick={() => !checking && onCheck()}>
       {checking ? __('Checking…', 'wconvert-pro') : license.reach === 'unreachable' ? __('Try again', 'wconvert-pro') : __('Check now', 'wconvert-pro')}

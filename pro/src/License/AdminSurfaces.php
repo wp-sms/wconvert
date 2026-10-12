@@ -15,9 +15,9 @@ defined('ABSPATH') || exit;
  * page — a WordPress submenu, WConvert → License, and the plan badge in the
  * header, which carries the dot.
  *
- * Everything here is for somebody who may manage the licence (P4): an editor
- * with the WConvert screen but without `manage_options` sees no submenu entry,
- * and a badge that is a label rather than a link.
+ * Everything here is for somebody who may manage the licence (P4). The
+ * WConvert screen itself needs `manage_options` today, so the badge check
+ * repeats it on purpose: the filter must stay safe if that ever changes.
  *
  * @since 0.1.0
  */
@@ -79,7 +79,7 @@ final class AdminSurfaces
      * is a prompt, and its dot and the dot's reason.
      *
      * @param array<string, mixed> $license {@see LicenseState::current()}
-     * @return array{href: string, label: string|null, prompt: bool, tone: string|null, reason: string|null}
+     * @return array{href: string, label: string|null, prompt: bool, tone: string|null, reason: string|null, hint: string}
      */
     public static function badge(array $license): array
     {
@@ -94,6 +94,9 @@ final class AdminSurfaces
             'prompt' => $prompt,
             'tone' => $notice['dot'],
             'reason' => $notice['dot'] !== null ? $notice['title'] : null,
+            // Where the link goes, for a badge with nothing to report: a link
+            // named only "Pro" does not say it opens the licence.
+            'hint' => __('License', 'wconvert-pro'),
         ];
     }
 }

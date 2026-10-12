@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { siteLocale } from '@/lib/format';
+import { formatLongDay, formatShortDay } from '@/lib/format';
 
 /**
  * What the License page says about the licence.
@@ -52,7 +52,7 @@ export interface LicensePayload {
   urls: Partial<Record<'account' | 'renew' | 'payment' | 'sites' | 'upgrade' | 'checkout' | 'support' | 'downloads', string>>;
   managed: { by: string | null; email: string | null } | null;
   notice: { dot: 'amber' | 'red' | null; title: string | null; row: string | null };
-  badge: { href: string; label: string | null; prompt: boolean; tone: 'amber' | 'red' | null; reason: string | null };
+  badge: { href: string; label: string | null; prompt: boolean; tone: 'amber' | 'red' | null; reason: string | null; hint?: string };
 }
 
 export type Tone = 'success' | 'info' | 'warning' | 'danger';
@@ -125,7 +125,7 @@ export function describeLicense(license: LicensePayload, now = Date.now()): Lice
       break;
     case 'over_limit': {
       const used = license.plan?.used ?? license.sites.filter((site) => !site.dev).length;
-      card = hero('warning', 'warn', sprintf(__('%1$d sites use a %2$d-site license', 'wconvert-pro'), used, license.plan?.max ?? 0),
+      card = hero('warning', 'warn', sprintf(_n('%1$d site uses a %2$d-site license', '%1$d sites use a %2$d-site license', used, 'wconvert-pro'), used, license.plan?.max ?? 0),
         __('Remove the sites you no longer use, or upgrade for more.', 'wconvert-pro'), 'sites');
       break;
     }
@@ -235,19 +235,14 @@ function facts(license: LicensePayload, stopped: boolean, elsewhere: boolean, no
   return list;
 }
 
-/** "Mar 3, 2027", from the store's ISO date, on its own calendar day. */
-export function long(iso: string | null): string {
-  if (!iso) return '—';
-  return new Intl.DateTimeFormat(siteLocale(), { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
-    .format(new Date(`${iso.slice(0, 10)}T12:00:00Z`));
+/** "Mar 3, 2027": the store's date on the site's calendar (`lib/format`). */
+function long(iso: string | null): string {
+  return iso ? formatLongDay(iso) : '—';
 }
 
 /** "Mar 3" this year, "Mar 3, 2027" otherwise. */
-export function short(iso: string | null, now = Date.now()): string {
-  if (!iso) return '—';
-  const sameYear = iso.slice(0, 4) === new Date(now).toISOString().slice(0, 4);
-  return new Intl.DateTimeFormat(siteLocale(), { month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }), timeZone: 'UTC' })
-    .format(new Date(`${iso.slice(0, 10)}T12:00:00Z`));
+function short(iso: string | null, now = Date.now()): string {
+  return iso ? formatShortDay(iso, now) : '—';
 }
 
 /** "in 9 days", "in 5 months", "today", "3 days ago". */

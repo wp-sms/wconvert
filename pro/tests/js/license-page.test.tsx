@@ -95,3 +95,31 @@ it('P1: a managed licence shows whether updates work and who to call — no site
   expect(screen.queryByRole('region', { name: 'Sites' })).toBeNull();
   expect(screen.getByText(/WCONVERT_LICENSE_KEY/)).toBeInTheDocument();
 });
+
+it('a check that fails keeps the page and says so', async () => {
+  let checks = 0;
+  vi.mocked(apiFetch).mockImplementation(((options?: { path: string; method?: string }) => {
+    if (options?.path === '/wconvert/v1/license?check=1') { checks += 1; return Promise.reject({ code: 'network_error', message: 'No route' }); }
+    if (options?.path === '/wconvert/v1/license') return Promise.resolve(expired);
+    return Promise.resolve({ updates: expired.updates });
+  }) as never);
+  render(<LicensePage />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Check now' }));
+
+  expect(await screen.findByText('Couldn’t check the license just now.')).toBeInTheDocument();
+  expect(checks).toBe(1);
+  expect(screen.getByRole('heading', { name: 'Your license expired' })).toBeInTheDocument();
+});
+
+it('S10: a rate-limited key field opens again when the key is edited', async () => {
+  answer({ 'GET /wconvert/v1/license': none, 'POST /wconvert/v1/license/activate': { code: 'rate_limited', data: { retry_after: 720 } } });
+  render(<LicensePage />);
+  await userEvent.click(await screen.findByText('Enter a license key instead'));
+  await userEvent.type(screen.getByLabelText('License key'), 'WCV-RATE');
+  await userEvent.click(screen.getByRole('button', { name: 'Activate' }));
+
+  expect(await screen.findByText('Too many tries. Try again in 12 minutes.')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Activate' })).toHaveAttribute('aria-disabled', 'true');
+  await userEvent.type(screen.getByLabelText('License key'), '1');
+  expect(screen.getByRole('button', { name: 'Activate' })).not.toHaveAttribute('aria-disabled');
+});

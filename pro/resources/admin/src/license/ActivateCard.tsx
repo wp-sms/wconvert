@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { TryAgain } from '@/shell/Region';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { KeyRound, RefreshCw } from 'lucide-react';
+import { KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Disclosure } from '@/shell/Disclosure';
 import { formatWhen } from '@/lib/format';
-import { asLicenseError, chooseLicense, readAccount, signIn, signOut, type Account, type Changed, type LicenseError } from './api';
-import { short, type LicensePayload } from './describeLicense';
+import { asLicenseError, chooseLicense, goSignIn, readAccount, signOut, type Account, type Changed, type LicenseError } from './api';
+import { type LicensePayload } from './describeLicense';
+import { formatShortDay } from '@/lib/format';
 import { errorCopy, type Way } from './errorCopy';
 import { Ext, KeyField, Notice } from './parts';
 
@@ -18,21 +20,32 @@ import { Ext, KeyField, Notice } from './parts';
  * its reason. Freeing a site from here waits on the SDK (#31), so a full
  * licence points to the account's own site list.
  */
-export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError }: {
+export function ActivateCard({ license, onActivateKey, onKeyEdit, onChanged, busy, keyError }: {
   license: LicensePayload;
   onActivateKey: (key: string) => void;
+  /** The key was edited: a refusal about the last one no longer applies. */
+  onKeyEdit: () => void;
   onChanged: (license: Changed) => void;
   busy: string | null;
   keyError: LicenseError | null;
 }) {
   const [account, setAccount] = useState<Account | null>(null);
-  const [accountError, setAccountError] = useState<LicenseError | null>(null);
+  const [accountError, setAccountErrorState] = useState<{ error: LicenseError; id: number } | null>(null);
+  const setAccountError = (error: LicenseError | null) => setAccountErrorState((current) => (error === null ? null : { error, id: (current?.id ?? 0) + 1 }));
+  const [focusKey, setFocusKey] = useState(false);
   const [opening, setOpening] = useState(false);
   const [choosing, setChoosing] = useState<number | null>(null);
   const [chosen, setChosen] = useState<number | null>(null);
   const [keyOpen, setKeyOpen] = useState(keyError !== null);
   const [key, setKey] = useState('');
   const keyRef = useRef<HTMLInputElement>(null);
+
+  // "Use a key instead": the field is open by the time this runs.
+  useEffect(() => {
+    if (!focusKey) return;
+    keyRef.current?.focus();
+    setFocusKey(false);
+  }, [focusKey]);
 
   // Coming back from the store, or a sign-in already under way.
   useEffect(() => {
@@ -44,11 +57,22 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
   const startSignIn = () => {
     setOpening(true);
     setAccountError(null);
-    signIn().then(({ url }) => { window.location.assign(url); }, (cause) => { setOpening(false); setAccountError(asLicenseError(cause)); });
+    goSignIn((error) => { setOpening(false); setAccountError(error); });
   };
 
+  const signedOut: Account = { signed_in: false, email_masked: null, licenses: [], error_code: null, message: null };
+
   const leave = () => {
-    signOut().then(() => setAccount({ signed_in: false, email_masked: null, licenses: [], error_code: null, message: null }), (cause) => setAccountError(asLicenseError(cause)));
+    signOut().then(() => setAccount(signedOut), (cause) => setAccountError(asLicenseError(cause)));
+  };
+
+  // Out of the account and straight to the key: the field opens now, and the
+  // sign-out finishes on its own.
+  const useKey = () => {
+    setAccount(signedOut);
+    setKeyOpen(true);
+    setFocusKey(true);
+    void signOut().catch(() => undefined);
   };
 
   const choose = (id: number) => {
@@ -64,6 +88,7 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
   // A key from wp-config.php that did not activate: its source, why, and when the SDK tries again (P3).
   if (license.managed) {
     const error = license.error_code ? { code: license.error_code } : null;
+    const copy = error ? errorCopy(error, { fromConfig: true }) : null;
     return (
       <section className="wconvert-license-act-card" aria-labelledby="wconvert-license-activate">
         <div className="wconvert-license-act-card__main">
@@ -71,9 +96,9 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
           <div>
             <h2 id="wconvert-license-activate">{__('Activate WConvert Pro', 'wconvert-pro')}</h2>
             <p className="wconvert-license-hero__body">{__('Your license key is set in wp-config.php.', 'wconvert-pro')}</p>
-            {error && (
+            {error && copy && (
               <Notice tone="danger" title={__('It didn’t activate', 'wconvert-pro')}>
-                <p>{errorCopy(error).text}</p>
+                <p>{copy.text} <span className="wconvert-license-muted">({error.code})</span></p>
                 {license.retry_at && <p>{sprintf(__('WordPress tries again %s.', 'wconvert-pro'), formatWhen(new Date(license.retry_at * 1000).toISOString()))}</p>}
               </Notice>
             )}
@@ -94,7 +119,7 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
             actions={<>
               <Button variant="outline" size="sm" onClick={leave}>{__('Sign out and use another account', 'wconvert-pro')}</Button>
               <Ext href={license.urls.checkout ?? '#'}>{__('See plans', 'wconvert-pro')}</Ext>
-              <Button variant="link" size="sm" onClick={() => { leave(); setKeyOpen(true); window.setTimeout(() => keyRef.current?.focus(), 30); }}>{__('Use a key instead', 'wconvert-pro')}</Button>
+              <Button variant="link" size="sm" onClick={useKey}>{__('Use a key instead', 'wconvert-pro')}</Button>
             </>} />
         </div>
       </section>
@@ -109,7 +134,7 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
       <section className="wconvert-license-card" aria-labelledby="wconvert-license-choose">
         <div className="wconvert-license-card__head"><h2 id="wconvert-license-choose">{__('Choose a license for this site', 'wconvert-pro')}</h2></div>
         <div className="wconvert-license-card__body">
-          {accountError && <Notice tone="danger" focus>{errorCopy(accountError).text}{ways(accountError, () => selected !== null && choose(selected))}</Notice>}
+          {accountError && <Notice key={accountError.id} tone="danger" focus>{errorCopy(accountError.error).text}{ways(accountError.error, () => selected !== null && choose(selected))}</Notice>}
           {account.message && <Notice tone="warning">{account.message}</Notice>}
           <fieldset className="wconvert-license-choices">
             <legend className="sr-only">{__('Your licenses', 'wconvert-pro')}</legend>
@@ -122,7 +147,7 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
                   <b>{sprintf(__('Pro · %s', 'wconvert-pro'), planName(choice.max))}</b>
                   <span>{[
                     choice.key_masked,
-                    choice.ends_at ? sprintf(__('Ends %s', 'wconvert-pro'), short(choice.ends_at)) : null,
+                    choice.ends_at ? sprintf(__('Ends %s', 'wconvert-pro'), formatShortDay(choice.ends_at)) : null,
                     choice.max === null ? sprintf(_n('%d site', '%d sites', choice.used, 'wconvert-pro'), choice.used) : sprintf(__('%1$d of %2$d used', 'wconvert-pro'), choice.used, choice.max),
                   ].filter(Boolean).join(' · ')}</span>
                   {choice.full && <span className="wconvert-license-why" id={`wconvert-license-full-${choice.id}`}>{__('No free site', 'wconvert-pro')}</span>}
@@ -146,7 +171,7 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
     );
   }
 
-  const signError = accountError ?? (account?.error_code ? { code: account.error_code } : null);
+  const signError = accountError?.error ?? (account?.error_code ? { code: account.error_code } : null);
   const keyCopy = keyError ? errorCopy(keyError) : null;
 
   return (
@@ -167,7 +192,7 @@ export function ActivateCard({ license, onActivateKey, onChanged, busy, keyError
         </div>
       </div>
       <Disclosure className="wconvert-license-act-card__key" variant="inline" title={__('Enter a license key instead', 'wconvert-pro')} open={keyOpen} onToggle={setKeyOpen}>
-        <KeyField id="wconvert-license-key-input" label={__('License key', 'wconvert-pro')} value={key} inputRef={keyRef} onChange={setKey}
+        <KeyField id="wconvert-license-key-input" label={__('License key', 'wconvert-pro')} value={key} inputRef={keyRef} onChange={(value) => { setKey(value); onKeyEdit(); }}
           onSubmit={() => onActivateKey(key)} busy={busy === 'activate'} refused={keyError?.code === 'rate_limited'}
           error={keyCopy && <><span role="alert">{keyCopy.text}</span>{ways(keyError!, () => onActivateKey(key))}</>}
           hint={<>{__('It’s in your purchase email', 'wconvert-pro')} · <Ext href={license.urls.account ?? '#'}>{__('Find my key', 'wconvert-pro')}</Ext></>} />
@@ -191,7 +216,7 @@ export function Ways({ ways, license, retry, signIn: startSignIn }: { ways: Way[
     renew: <Ext key="renew" href={license.urls.renew ?? license.urls.account ?? '#'} variant="brand" size="sm">{__('Renew', 'wconvert-pro')}</Ext>,
     sites: <Ext key="sites" href={license.urls.sites ?? '#'}>{__('Manage sites', 'wconvert-pro')}</Ext>,
     upgrade: <Ext key="upgrade" href={license.urls.upgrade ?? '#'}>{__('Upgrade', 'wconvert-pro')}</Ext>,
-    retry: <Button key="retry" variant="outline" size="sm" onClick={retry}><RefreshCw aria-hidden="true" />{__('Try again', 'wconvert-pro')}</Button>,
+    retry: <TryAgain key="retry" onClick={retry} />,
     support: <Ext key="support" href={license.urls.support ?? '#'}>{__('Contact support', 'wconvert-pro')}</Ext>,
   };
 

@@ -34,6 +34,8 @@ const NOTICE_ICON = { success: CircleCheck, info: Info, warning: TriangleAlert, 
 /**
  * A result, inline where it happened — never a toast (ADR 0143): it is read,
  * focused and announced, and it stays until the next action replaces it.
+ * Focus moves to it when it ARRIVES, once; a new result is a new notice (give
+ * it a new `key`), so re-rendering the same one never pulls focus back.
  */
 export function Notice({ tone, title, children, actions, focus = false }: { tone: NoticeTone; title?: string; children?: ReactNode; actions?: ReactNode; focus?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -41,10 +43,12 @@ export function Notice({ tone, title, children, actions, focus = false }: { tone
 
   useEffect(() => {
     if (focus) ref.current?.focus();
-  }, [focus, title, children]);
+    // On arrival only: see above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div ref={ref} className="wconvert-license-notice" data-tone={tone} role={tone === 'danger' ? 'alert' : 'status'} aria-live="polite" tabIndex={-1}>
+    <div ref={ref} className="wconvert-license-notice" data-tone={tone} role={tone === 'danger' ? 'alert' : 'status'} tabIndex={-1}>
       <Icon aria-hidden="true" />
       <div>
         {title && <p className="wconvert-license-notice__title">{title}</p>}

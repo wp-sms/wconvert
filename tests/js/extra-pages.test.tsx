@@ -1,9 +1,11 @@
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { act, render, screen, within } from '@testing-library/react';
 import { Shell } from '../../resources/admin/src/shell/Shell';
 import { PlanBadge } from '../../resources/admin/src/shell/Brand';
 import { setPlanBadge } from '../../resources/admin/src/shell/planBadge';
 import { extraPageFor, registerPage } from '../../resources/admin/src/extraPages';
+
+vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn(() => Promise.resolve([])) }));
 
 /**
  * The two generic slots another bundle fills (ADR 0143): a page reached by its
@@ -58,4 +60,18 @@ it('carries a dot whose reason a pointer and a screen reader both get, and updat
   act(() => setPlanBadge({ href: '#elsewhere', label: null, prompt: false, tone: null, reason: null }));
   expect(link.querySelector('.wconvert-plan-dot')).toBeNull();
   expect(link).not.toHaveAttribute('title');
+});
+
+it('the app opens a registered page from its hash, and Campaigns when nothing registered it', async () => {
+  const { App } = await import('../../resources/admin/src/App');
+  registerPage({ id: 'elsewhere', title: 'Elsewhere', description: 'A page.', Component: () => <p>The page itself</p> });
+  window.location.hash = '#elsewhere';
+  const { unmount } = render(<App />);
+  expect(await screen.findByText('The page itself')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: 'Elsewhere' })).toBeInTheDocument();
+  unmount();
+  window.location.hash = '#nowhere';
+  render(<App />);
+  expect(await screen.findByRole('heading', { level: 1, name: 'Campaigns' })).toBeInTheDocument();
+  window.location.hash = '';
 });
