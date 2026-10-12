@@ -63,4 +63,17 @@ final class ContentDividerTest extends TestCase
         self::assertSame([$list, $image], $result[0]['innerBlocks']);
         self::assertSame(ContentRegion::BLOCK, $result[0]['blockName']);
     }
+
+    /** The marker prints nothing, whatever a saved post carries inside it (WordPress.org review, round 2). */
+    public function testTheMarkerBlockRendersNothing(): void
+    {
+        $GLOBALS['wconvertTestActions'] = [];
+        $GLOBALS['wconvertTestBlocks'] = [];
+        ContentDivider::hooks();
+        do_action('init');
+
+        $render = $GLOBALS['wconvertTestBlocks'][ContentDivider::BLOCK]['render_callback'];
+
+        self::assertSame('', $render(['optinId' => '01ARZ3NDEKTSV4RRFFQ69G5FAV'], '<script>alert(1)</script>'));
+    }
 }

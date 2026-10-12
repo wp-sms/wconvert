@@ -30,3 +30,12 @@ collection revisions, so the collection gate correctly rejected the old snapshot
 The earlier library-polish completion missed this release-finishing step. Keep the
 revision/evidence checks strict; use the new maintenance checklist to finish
 imports, regeneration, native discovery and packaging before calling work ready.
+
+## Pre-merge integration check
+
+Integrated main `7174c8df` before merging PR #264. The collection gate still
+passes with six current approvals. The affected PHP tests for submission recovery
+scheduling, content regions/dividers and retention pass: 16 tests, 51 assertions.
+The artifact hashes above remain those of the original reviewed build; they are
+not presented as newly rebuilt artifacts for this integration commit. CI remains
+skipped at the user's request.
