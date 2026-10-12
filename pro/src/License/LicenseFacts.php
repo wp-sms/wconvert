@@ -45,7 +45,7 @@ final class LicenseFacts
         public readonly bool $fileMods = true,
         public readonly string $updateUrl = '',
         public readonly ?int $updatesCheckedAt = null,
-        public readonly string $store = 'https://my.wconvert.io',
+        public readonly string $store = SdkConfig::DEFAULT_STORE,
         public readonly bool $managed = false,
         public readonly string $contact = '',
         public readonly ?array $autoActivation = null,

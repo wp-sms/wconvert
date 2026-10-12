@@ -14,17 +14,31 @@ defined('ABSPATH') || exit;
  */
 final class LicenseState
 {
-    /** The states in which this site gets no update (ADR 0143). */
-    private const NO_UPDATES = ['none', 'key_unreadable', 'moved', 'copy', 'disabled', 'expired', 'trial_ended'];
+    /** The states in which this site gets no update (ADR 0143); `UpdateGate` reads the same list. */
+    public const NO_UPDATES = ['none', 'key_unreadable', 'moved', 'copy', 'disabled', 'expired', 'trial_ended'];
 
     private const CHECKOUT = 'https://wconvert.io/pro/';
 
     private const SUPPORT = 'https://wconvert.io/support/';
 
-    private const STOPPED_STATUSES = ['disabled', 'suspended', 'revoked', 'blocked', 'cancelled'];
+    /**
+     * Every status the store or the SDK records for a licence that stopped for
+     * a reason other than its date. `invalid` is the SDK's own word for most
+     * refusals — a key the store no longer knows among them.
+     */
+    private const STOPPED_STATUSES = ['disabled', 'suspended', 'revoked', 'blocked', 'cancelled', 'invalid'];
 
     /** Amber from here: the renewal window, in whole days (the prototype's 14). */
     private const RENEWAL_WINDOW_DAYS = 14;
+
+    /**
+     * Whether this site is offered updates — the one answer `UpdateGate` and
+     * the License page share, read before any managed redaction.
+     */
+    public static function updatesAllowed(LicenseFacts $facts): bool
+    {
+        return !in_array(self::full($facts)['state'], self::NO_UPDATES, true);
+    }
 
     /** @return array<string, mixed> */
     public static function payload(LicenseFacts $facts): array
@@ -204,14 +218,18 @@ final class LicenseState
             return 'trial_ended';
         }
 
-        if ($status === 'expired' || $ended) {
-            return 'expired';
+        // The status stays `active` through Nexus's recovery grace — which
+        // runs PAST the renewal date — and only the renewal block says the
+        // charge failed (veronalabs/nexus RenewalOfferService). So it is read
+        // before the date, until the grace runs out or the store says expired.
+        $grace = strtotime((string) ($renewal['grace_ends_at'] ?? ''));
+
+        if ($status !== 'expired' && ($renewal['state'] ?? '') === 'payment_failed' && ($grace === false || $grace > $now)) {
+            return 'payment_failed';
         }
 
-        // The status stays `active` through Nexus's recovery grace; only the
-        // renewal block says the charge failed (veronalabs/nexus RenewalOfferService).
-        if (($renewal['state'] ?? '') === 'payment_failed') {
-            return 'payment_failed';
+        if ($status === 'expired' || $ended) {
+            return 'expired';
         }
 
         if (self::overLimit($license)) {
@@ -414,15 +432,14 @@ final class LicenseState
             preg_split('/\s+/u', trim($name), -1, PREG_SPLIT_NO_EMPTY) ?: []
         );
 
-        $at = strrpos($email, '@');
-
         return [
             'name' => implode(' ', $initials),
-            'email' => $at === false ? '' : mb_substr($email, 0, 1) . '***' . substr($email, $at),
+            'email' => self::maskEmail($email),
         ];
     }
 
-    private static function maskKey(?string $key): ?string
+    /** `••••AB12`: the last four, all a person needs to tell two keys apart. */
+    public static function maskKey(?string $key): ?string
     {
         if ($key === null) {
             return null;
@@ -431,6 +448,14 @@ final class LicenseState
         $last4 = substr((string) preg_replace('/[^A-Z0-9]/i', '', $key), -4);
 
         return '••••' . strtoupper($last4);
+    }
+
+    /** `s***@example.com`; an empty string for anything that is not an address. */
+    public static function maskEmail(string $email): string
+    {
+        $at = strrpos($email, '@');
+
+        return $at === false ? '' : mb_substr($email, 0, 1) . '***' . substr($email, $at);
     }
 
     private static function text(mixed $value): ?string

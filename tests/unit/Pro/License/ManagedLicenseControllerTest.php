@@ -53,6 +53,7 @@ final class ManagedLicenseControllerTest extends TestCase
             'move' => $controller->move($request),
             'signIn' => $controller->signIn(),
             'choose' => $controller->choose($request),
+            'signOut' => $controller->signOut(),
         ] as $route => $answer) {
             $this->assertInstanceOf(WP_Error::class, $answer, $route);
             $this->assertSame('key_from_constant', $answer->get_error_code(), $route);

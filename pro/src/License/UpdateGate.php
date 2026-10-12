@@ -2,8 +2,7 @@
 
 namespace WConvert\Pro\License;
 
-use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\LicenseManager;
-use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Update\PluginUpdater;
+use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 
 defined('ABSPATH') || exit;
 
@@ -17,7 +16,7 @@ defined('ABSPATH') || exit;
  *    never takes it back, so an offer made while the licence was valid
  *    survives its expiry in WordPress's own `update_plugins` transient. At
  *    priority 20, after the SDK's injector, Pro's entry moves to `no_update`
- *    unless the licence is valid and its key can still be read.
+ *    unless the License page would say updates are on.
  * 2. **The flush.** The licence option is rewritten on every check — a new
  *    timestamp, the key encrypted afresh — and almost none of those writes
  *    mean anything to the updater. The caches are dropped only when what the
@@ -33,8 +32,7 @@ defined('ABSPATH') || exit;
 final class UpdateGate
 {
     public function __construct(
-        private readonly LicenseManager $license,
-        private readonly PluginUpdater $updater,
+        private readonly PremiumServiceProvider $sdk,
         private readonly string $basename,
     ) {
     }
@@ -91,7 +89,7 @@ final class UpdateGate
     public function flush(): void
     {
         delete_site_transient('update_plugins');
-        $this->updater->flush();
+        $this->sdk->pluginUpdater()->flush();
     }
 
     /**
@@ -122,12 +120,13 @@ final class UpdateGate
     }
 
     /**
-     * Valid by the SDK's own test, and the key still decrypts. A site whose
-     * salts were rotated reads as active and cannot be updated
-     * (veronalabs/wp-premium-sdk#29), so it is not entitled.
+     * The License page's own answer ({@see LicenseState::updatesAllowed()}),
+     * so the Plugins screen never offers what the page says is off — a key
+     * that no longer decrypts (#29), a site the licence moved away from, a
+     * licence the store stopped.
      */
     private function entitled(): bool
     {
-        return $this->license->isValid() && $this->license->getLicenseKey() !== null;
+        return LicenseState::updatesAllowed(LicenseFacts::fromSite($this->sdk));
     }
 }

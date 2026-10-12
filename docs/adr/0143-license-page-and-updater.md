@@ -75,7 +75,14 @@ nothing, and asserts no file on the front-end read path touches it.
    in `LicenseState`, in the prototype's order (whatever stops updates first).
    A failed payment is read from Nexus's renewal block (`state:
    payment_failed`), because the licence's own status stays `active` through
-   the grace period. `GET ?check=1` asks the store at most once a minute.
+   the grace period, which runs past the renewal date. A key the store
+   refused (the SDK's `invalid`) stops updates like any other stopped
+   licence. `UpdateGate` asks the same model, so the Plugins screen and the
+   page never disagree about whether updates are on. `GET ?check=1` asks the
+   store at most once a minute. The account's sign-in belongs to the
+   administrator who started it; another gets `sign_in_other_user`. Moving
+   a licence without saying whether to keep the old site leaves that to the
+   SDK, which frees the old seat only when this domain holds one.
 9. **Agency (managed) mode.** `WCONVERT_LICENSE_KEY` in wp-config turns it on. The
    client sees only whether updates are on and who manages the licence
    (optional `WCONVERT_LICENSE_CONTACT`, `'Acme Studio <help@acme.studio>'`).

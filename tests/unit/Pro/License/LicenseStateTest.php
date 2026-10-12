@@ -229,6 +229,36 @@ final class LicenseStateTest extends TestCase
         $this->assertSame($code, $payload['error_code']);
     }
 
+    /** The SDK's word for most refusals — a key the store no longer knows — stops updates too. */
+    public function testM4AKeyTheStoreRefusedIsDisabled(): void
+    {
+        $payload = $this->payload(self::license(['status' => 'invalid', 'error_code' => 'invalid_key']));
+
+        $this->assertSame('disabled', $payload['state']);
+        $this->assertSame('invalid_key', $payload['error_code']);
+    }
+
+    /** The grace runs past the renewal date, and the licence keeps working through it. */
+    public function testM2AFailedPaymentPastTheRenewalDateIsStillInItsGrace(): void
+    {
+        $payload = $this->payload(self::license([
+            'expires_at' => '2026-10-10T12:00:00+00:00',
+            'renewal' => self::renewal(['state' => 'payment_failed', 'auto_renews' => false, 'grace_ends_at' => '2026-10-17T12:00:00+00:00']),
+        ]));
+
+        $this->assertSame('payment_failed', $payload['state']);
+    }
+
+    public function testM2AFailedPaymentWhoseGraceRanOutIsExpired(): void
+    {
+        $payload = $this->payload(self::license([
+            'expires_at' => '2026-10-01T12:00:00+00:00',
+            'renewal' => self::renewal(['state' => 'payment_failed', 'grace_ends_at' => '2026-10-08T12:00:00+00:00']),
+        ]));
+
+        $this->assertSame('expired', $payload['state']);
+    }
+
     public function testM5MoreCountedSitesThanThePlanAllowsIsOverLimit(): void
     {
         $payload = $this->payload(self::license(['activation_count' => 6]));

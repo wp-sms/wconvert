@@ -11,6 +11,7 @@ use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\ActivationVetoedException;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\LicenseActionException;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\LicenseErrorCode;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Support\Request;
+use WConvert\Rest\RestController;
 use WConvert\Rest\Routes;
 use WConvert\Storage\TransientStore;
 use WP_Error;
@@ -42,10 +43,13 @@ defined('ABSPATH') || exit;
  *
  * @since 0.1.0
  */
-final class LicenseController
+final class LicenseController implements RestController
 {
     /** The page's focus refresh asks at most this often (seconds). */
     public const CHECK_EVERY = 60;
+
+    /** How long Remove waits for the store to free the seat, as the SDK's uninstall does. */
+    private const RELEASE_TIMEOUT = 5;
 
     private const CHECK_THROTTLE = 'wconvert_pro_license_checked';
 
@@ -73,7 +77,7 @@ final class LicenseController
         $route('/replace', 'POST', [$this, 'replace'], ['key' => ['type' => 'string', 'required' => true]]);
         $route('', 'DELETE', [$this, 'remove']);
         $route('/sites/(?P<domain>[A-Za-z0-9.\-:]+)', 'DELETE', [$this, 'removeSite']);
-        $route('/move', 'POST', [$this, 'move'], ['keep_old' => ['type' => 'boolean', 'default' => false]]);
+        $route('/move', 'POST', [$this, 'move'], ['keep_old' => ['type' => 'boolean']]);
         $route('/updates/check', 'POST', [$this, 'checkUpdates']);
         $route('/account/sign-in', 'POST', [$this, 'signIn']);
         $route('/account', 'GET', [$this, 'account']);
@@ -103,7 +107,7 @@ final class LicenseController
     public function activate(WP_REST_Request $request)
     {
         return $this->changing(function () use ($request): array {
-            $this->sdk->licenseManager()->activate(self::cleanKey((string) $request->get_param('key')));
+            $this->sdk->licenseManager()->activate(self::requiredKey($request));
 
             return [];
         });
@@ -121,11 +125,16 @@ final class LicenseController
         return $this->changing(function () use ($request): array {
             $manager = $this->sdk->licenseManager();
             $old = $manager->getLicenseKey();
-            $new = self::cleanKey((string) $request->get_param('key'));
+            $readable = $old !== null || !$manager->isActivated();
+            $new = self::requiredKey($request);
 
             $manager->activate($new);
 
-            $released = ['removed_remotely' => true, 'error_code' => null];
+            // Nothing to free when there was no key; a key that no longer
+            // decrypts cannot be released, and that is said rather than hidden.
+            $released = $readable
+                ? ['removed_remotely' => true, 'error_code' => null]
+                : ['removed_remotely' => false, 'error_code' => 'key_unreadable'];
 
             if ($old !== null && $old !== $new) {
                 $released = $manager->releaseSeat($old, Request::currentDomain());
@@ -144,7 +153,7 @@ final class LicenseController
     public function remove()
     {
         return $this->changing(function (): array {
-            return ['released' => $this->sdk->licenseManager()->deactivate(PremiumServiceProvider::UNINSTALL_TIMEOUT)];
+            return ['released' => $this->sdk->licenseManager()->deactivate(self::RELEASE_TIMEOUT)];
         });
     }
 
@@ -154,15 +163,15 @@ final class LicenseController
         $domain = (string) $request->get_param('domain');
         $manager = $this->sdk->licenseManager();
 
-        if (!$manager->isActivated()) {
-            return self::error(LicenseErrorCode::NOT_ACTIVATED, 409);
-        }
-
-        if ($manager->isThisSite($domain)) {
-            return self::error('this_site', 409);
-        }
-
         return $this->changing(function () use ($manager, $domain): array {
+            if (!$manager->isActivated()) {
+                throw new LicenseActionException(LicenseErrorCode::NOT_ACTIVATED, __('No license is activated on this site.', 'wconvert-pro'));
+            }
+
+            if ($manager->isThisSite($domain)) {
+                throw new LicenseActionException('this_site', __('To remove this site, remove the license from it instead.', 'wconvert-pro'));
+            }
+
             $manager->removeSite($domain);
 
             return [];
@@ -171,14 +180,17 @@ final class LicenseController
 
     /**
      * This site moved domains (C1, C3): activate it here, and release the old
-     * domain's seat unless the merchant keeps both.
+     * domain's seat unless the merchant keeps both. Not saying either leaves
+     * it to the SDK, which releases the old seat only when this domain holds
+     * one — so activating a staging copy never frees the live site's.
      *
      * @return WP_REST_Response|WP_Error
      */
     public function move(WP_REST_Request $request)
     {
         return $this->changing(function () use ($request): array {
-            $result = $this->sdk->licenseManager()->moveLicense(!$request->get_param('keep_old'));
+            $keepOld = $request->get_param('keep_old');
+            $result = $this->sdk->licenseManager()->moveLicense($keepOld === null ? null : !$keepOld);
 
             return ['released' => $result['released']];
         });
@@ -201,6 +213,10 @@ final class LicenseController
             return self::error(LicenseErrorCode::KEY_FROM_CONSTANT, 403);
         }
 
+        if ($this->sdk->accountManager()->isSignInOfOtherUser()) {
+            return self::otherAdministrator();
+        }
+
         $authorize = $this->sdk->accountManager()->getAuthorizeUrl(admin_url('admin.php?page=wconvert#license'));
 
         return new WP_REST_Response(['url' => $authorize['authorize_url']]);
@@ -216,11 +232,18 @@ final class LicenseController
     public function account()
     {
         $account = $this->sdk->accountManager();
+
+        if ($account->isSignInOfOtherUser()) {
+            return self::otherAdministrator();
+        }
+
         $user = $account->getUser();
         $flash = $account->consumeFlashError();
 
         if ($user === null) {
-            return new WP_REST_Response(['signed_in' => false, 'email_masked' => null, 'licenses' => [], 'error_code' => null, 'message' => $flash]);
+            // A session past its 24 hours is dropped as it is read; the SDK
+            // remembers that it lapsed, and the page says so (S5).
+            return new WP_REST_Response(['signed_in' => false, 'email_masked' => null, 'licenses' => [], 'error_code' => $account->hasSession() ? LicenseErrorCode::ACCOUNT_EXPIRED : null, 'message' => $flash]);
         }
 
         try {
@@ -239,7 +262,7 @@ final class LicenseController
 
         return new WP_REST_Response([
             'signed_in' => true,
-            'email_masked' => self::maskEmail((string) $user['email']),
+            'email_masked' => LicenseState::maskEmail((string) $user['email']),
             'licenses' => array_values(array_map(static fn (array $license): array => self::accountLicense($license, $here), $licenses)),
             'error_code' => null,
             'message' => $flash,
@@ -251,22 +274,41 @@ final class LicenseController
     {
         $id = (int) $request->get_param('license_id');
 
+        if ($this->sdk->accountManager()->isSignInOfOtherUser()) {
+            return self::otherAdministrator();
+        }
+
         return $this->changing(function () use ($id): array {
             foreach ($this->accountLicenses() as $license) {
                 if ((int) ($license['id'] ?? 0) === $id && !empty($license['license_key'])) {
+                    // Activating ends the sign-in: the SDK wires that itself.
                     $this->sdk->licenseManager()->activate((string) $license['license_key']);
-                    $this->sdk->accountManager()->endSignIn();
 
                     return [];
                 }
             }
 
-            throw new LicenseActionException('license_not_on_account', 'That licence is not on this account.');
+            throw new LicenseActionException('license_not_on_account', __('That license is not on this account.', 'wconvert-pro'));
         });
     }
 
-    public function signOut(): WP_REST_Response
+    /**
+     * Sign out of the account. Only the administrator who signed in: the SDK
+     * keeps one sign-in per site, and another's token is not this one's to
+     * revoke.
+     *
+     * @return WP_REST_Response|WP_Error
+     */
+    public function signOut()
     {
+        if ($this->managed()) {
+            return self::error(LicenseErrorCode::KEY_FROM_CONSTANT, 403);
+        }
+
+        if ($this->sdk->accountManager()->isSignInOfOtherUser()) {
+            return self::otherAdministrator();
+        }
+
         $this->sdk->accountManager()->logout();
 
         return new WP_REST_Response(['signed_in' => false]);
@@ -317,7 +359,7 @@ final class LicenseController
         $token = $this->sdk->accountManager()->getAccessToken();
 
         if ($token === null) {
-            throw new LicenseActionException(LicenseErrorCode::ACCOUNT_EXPIRED, 'The sign-in has ended.');
+            throw new LicenseActionException(LicenseErrorCode::ACCOUNT_EXPIRED, __('Your sign-in timed out. Sign in again.', 'wconvert-pro'));
         }
 
         $config = $this->sdk->config();
@@ -345,8 +387,10 @@ final class LicenseController
             'id' => (int) ($license['id'] ?? 0),
             'plan' => (string) ($license['type'] ?? ''),
             'status' => (string) ($license['status'] ?? ''),
-            'key_masked' => '••••' . strtoupper(substr((string) preg_replace('/[^A-Z0-9]/i', '', (string) ($license['license_key'] ?? '')), -4)),
+            'key_masked' => LicenseState::maskKey((string) ($license['license_key'] ?? '')),
             'ends_at' => is_string($license['expires_at'] ?? null) ? $license['expires_at'] : null,
+            // Nexus's account list does not say yet; null rather than a guess.
+            'auto_renews' => isset($license['auto_renews']) ? (bool) $license['auto_renews'] : null,
             'used' => $used,
             'max' => $max > 0 ? $max : null,
             'here' => $hereAlready !== [],
@@ -368,11 +412,21 @@ final class LicenseController
         return trim($key, '-');
     }
 
-    private static function maskEmail(string $email): string
+    /** A key from the request, cleaned, or a refusal the page shows under the field. */
+    private static function requiredKey(WP_REST_Request $request): string
     {
-        $at = strrpos($email, '@');
+        $key = self::cleanKey((string) $request->get_param('key'));
 
-        return $at === false ? '' : mb_substr($email, 0, 1) . '***' . substr($email, $at);
+        if ($key === '') {
+            throw new LicenseActionException('empty', __('Enter your license key.', 'wconvert-pro'));
+        }
+
+        return $key;
+    }
+
+    private static function otherAdministrator(): WP_Error
+    {
+        return self::error(LicenseErrorCode::SIGN_IN_OTHER_USER, 409, [], __('Another administrator is signing in to the account.', 'wconvert-pro'));
     }
 
     private static function fromException(Throwable $e): WP_Error

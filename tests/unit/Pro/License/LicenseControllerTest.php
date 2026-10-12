@@ -76,6 +76,15 @@ final class LicenseControllerTest extends TestCase
         $this->assertSame(422, $error->get_error_data()['status']);
     }
 
+    public function testAnEmptyKeyIsRefusedBeforeTheStoreIsAsked(): void
+    {
+        $error = $this->controller()->activate($this->request(['key' => "  \n"]));
+
+        $this->assertInstanceOf(WP_Error::class, $error);
+        $this->assertSame('empty', $error->get_error_code());
+        $this->assertSame([], $this->nexusCalls);
+    }
+
     /** P6: a code from a future store is passed through as it is, never blanked. */
     public function testAnUnknownCodeIsPassedThrough(): void
     {
@@ -122,6 +131,52 @@ final class LicenseControllerTest extends TestCase
         $this->assertSame('WCV-OLD0-0000-0001', $this->nexusCallsTo('/api/v1/license/deactivate')[0]['license_key']);
         $this->assertTrue($data['released']['removed_remotely']);
         $this->assertSame('••••0002', $data['key']['masked']);
+    }
+
+    /** Rotated salts: the old seat cannot be released, and the answer says so rather than claiming it was. */
+    public function testReplacingAKeyThatNoLongerDecryptsSaysTheOldSeatWasNotFreed(): void
+    {
+        $this->activateLicenseHere();
+        $stored = get_option(SdkConfig::OPTION_KEY);
+        $stored['license']['license_key'] = base64_encode(str_repeat('x', 64));
+        $GLOBALS['wconvertTestOptionTable'][SdkConfig::OPTION_KEY] = $stored;
+
+        $data = $this->data($this->controller()->replace($this->request(['key' => 'WCV-NEW0-0000-0002'])));
+
+        $this->assertFalse($data['released']['removed_remotely']);
+        $this->assertSame('key_unreadable', $data['released']['error_code']);
+    }
+
+    /** C2: activating a staging copy, without saying, never frees the live site's seat. */
+    public function testMovingWithoutSayingLeavesTheChoiceToTheSdk(): void
+    {
+        $this->activateLicenseHere();
+        $GLOBALS['wconvertTestQuery']['home_url'] = 'https://staging2.example.test';
+        $this->nexusLicense = ['site' => ['active' => true, 'is_counted' => false]];
+
+        try {
+            $this->data($this->controller()->move($this->request()));
+        } finally {
+            unset($GLOBALS['wconvertTestQuery']['home_url']);
+        }
+
+        $this->assertSame([], $this->nexusCallsTo('/api/v1/license/deactivate'), 'a staging copy freed the live site\'s seat');
+    }
+
+    /** C4: http→https and www are one site to the store: no move, no banner. */
+    public function testC4WwwIsTheSameSite(): void
+    {
+        $this->activateLicenseHere();
+        $GLOBALS['wconvertTestQuery']['home_url'] = 'https://www.example.test';
+
+        try {
+            $data = $this->data($this->controller()->show($this->request()));
+        } finally {
+            unset($GLOBALS['wconvertTestQuery']['home_url']);
+        }
+
+        $this->assertSame('active', $data['state']);
+        $this->assertNull($data['domain_change']);
     }
 
     /** L3: removed from this site, with the store reachable or not. */
@@ -216,6 +271,62 @@ final class LicenseControllerTest extends TestCase
 
         $this->assertSame('active', $data['state']);
         $this->assertSame('WCV-CCCC-DDDD-2222', $this->nexusCallsTo('/api/v1/license/activate')[0]['license_key']);
+    }
+
+    /** S2: one licence on the account activates straight away. */
+    public function testS2ASignInWithOneLicenceActivatesIt(): void
+    {
+        $this->nexusAccountLicenses = [self::accountLicense(11, 'WCV-ONLY-0NE0-1111', 5, [])];
+
+        $this->signInToTheAccount();
+
+        $this->assertSame('active', $this->data($this->controller()->show($this->request()))['state']);
+        $this->assertSame('WCV-ONLY-0NE0-1111', $this->nexusCallsTo('/api/v1/license/activate')[0]['license_key']);
+    }
+
+    /** S4: an account with no WConvert licence — usually the wrong account. */
+    public function testS4AnAccountWithNoLicenceListsNone(): void
+    {
+        $this->signInToTheAccount();
+
+        $data = $this->data($this->controller()->account());
+
+        $this->assertTrue($data['signed_in']);
+        $this->assertSame([], $data['licenses']);
+    }
+
+    /** S5: a session past its 24 hours reads as timed out, not as never signed in. */
+    public function testS5ASessionPastItsTimeSaysItTimedOut(): void
+    {
+        $this->nexusAccountLicenses = [self::accountLicense(11, 'WCV-AAAA-BBBB-1111', 5, []), self::accountLicense(12, 'WCV-CCCC-DDDD-2222', 5, [])];
+        $this->signInToTheAccount();
+        $stored = get_option(SdkConfig::OPTION_KEY);
+        $stored['account']['expires_at'] = time() - 60;
+        $GLOBALS['wconvertTestOptionTable'][SdkConfig::OPTION_KEY] = $stored;
+
+        $data = $this->data($this->controller()->account());
+
+        $this->assertFalse($data['signed_in']);
+        $this->assertSame('account_expired', $data['error_code']);
+    }
+
+    /** One sign-in per site: another administrator's is not this one's to read or end. */
+    public function testAnotherAdministratorsSignInIsLeftAlone(): void
+    {
+        $this->nexusAccountLicenses = [self::accountLicense(11, 'WCV-AAAA-BBBB-1111', 5, []), self::accountLicense(12, 'WCV-CCCC-DDDD-2222', 5, [])];
+        $this->signInToTheAccount();
+        $GLOBALS['wconvertTestUserId'] = 2;
+
+        try {
+            $out = $this->controller()->signOut();
+            $list = $this->controller()->account();
+        } finally {
+            unset($GLOBALS['wconvertTestUserId']);
+        }
+
+        $this->assertInstanceOf(WP_Error::class, $out);
+        $this->assertSame('sign_in_other_user', $out->get_error_code());
+        $this->assertInstanceOf(WP_Error::class, $list);
     }
 
     /** S5: an expired sign-in signs out and says so. */

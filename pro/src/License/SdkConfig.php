@@ -36,7 +36,7 @@ final class SdkConfig
     /** Who manages a wp-config licence: 'Acme Studio <help@acme.studio>'. */
     public const CONTACT_CONSTANT = 'WCONVERT_LICENSE_CONTACT';
 
-    private const DEFAULT_STORE = 'https://my.wconvert.io';
+    public const DEFAULT_STORE = 'https://my.wconvert.io';
 
     /** The store's product slug; the catalog item is `wconvert-pro`. */
     public const PRODUCT_SLUG = 'wconvert';
