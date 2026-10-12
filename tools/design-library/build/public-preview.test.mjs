@@ -28,5 +28,6 @@ test('includes each result variant and labels countdowns as examples', () => {
   const headings = templates.flatMap(t => [...t.content.querySelectorAll('[data-result-heading]')].map(h => h.textContent));
   assert.deepEqual(headings, journey.tree.steps.flatMap(step => (step.results ?? []).map(result => result.heading)));
   assert.match(markup, /Example countdown, not a live deadline/);
+  for (const template of templates) for (const link of template.content.querySelectorAll('[data-result-link]')) assert.equal(link.hidden, true, 'An empty optional destination must not invent a button');
   dom.window.close();
 });

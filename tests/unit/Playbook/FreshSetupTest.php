@@ -49,6 +49,8 @@ final class FreshSetupTest extends TestCase
         'recommend-accessory' => ['commerce_products', 'Use a design whose button links to your offer or content before publishing.'],
         'add-useful-extras' => ['commerce_products'],
         'product-finder' => ['products'],
+        'coffee-taste-finder' => ['products'],
+        'explore-compatible-extras' => ['commerce_products', 'Use a design whose button links to your offer or content before publishing.'],
         'gift-finder' => ['products'],
         'experience-kit-finder' => ['products'],
         'space-fit-finder' => ['products'],

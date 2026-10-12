@@ -1,3 +1,4 @@
+import './challenge.css';
 export { verify } from './host';
 interface WidgetAPI { render(target: HTMLElement, options: Record<string, unknown>): string | number; }
 interface ProviderWindow extends Window { turnstile?: WidgetAPI; grecaptcha?: WidgetAPI; hcaptcha?: WidgetAPI; wconvertChallengeReady?: () => void; }

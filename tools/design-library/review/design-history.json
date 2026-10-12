@@ -94,6 +94,12 @@
           "date": "2026-09-29",
           "revision": "315638656d95fd124dc4968ff8f6c80caf8e5c2b6f297ed6f36c5f54bd1cd08a",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "019f09b2a34cf0a713ac078d6852589ce21a4d1165bd4cdfc06192a8cb28d299",
+          "note": "Record the upstream fresh-setup design revision; re-review dependent campaigns before publishing."
         }
       ]
     },
@@ -1702,6 +1708,12 @@
           "date": "2026-10-02",
           "revision": "ac6d643781ac49518683cfa4890d54b8073468ec27590c558a74d72d20633d10",
           "note": "Finalise responsive composition, compact actions and image-independent product facts."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-12",
+          "revision": "f4ebbc9516360116d747170b0d47ee453c8408e808d064126419ed5a953c1dfd",
+          "note": "Record the upstream fresh-setup design revision before this template refresh. This history entry does not approve its dependent campaign."
         }
       ]
     },
@@ -1768,6 +1780,48 @@
           "date": "2026-10-05",
           "revision": "590b4425be3f64b496649d8d9515737e5886e4cf6e6255335dd666809b97d1fe",
           "note": "Add a separate quantity-one recommendation starting point; reviewed local desktop and 320px campaign-container feedback."
+        }
+      ]
+    },
+    {
+      "id": "accessory-workbench",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-12",
+          "revision": "db847da8debaed8bf7591dbbb5c094e17d4a0ada250882bc5fdde940843931df",
+          "note": "New commerce composition with explicit setup requirements; visual and runtime review pending."
+        }
+      ]
+    },
+    {
+      "id": "basket-companion",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-12",
+          "revision": "87a3c09a4678190dd94a46f35c77e2765f981edf5bd55439ea931c8ee7a526dd",
+          "note": "New commerce composition with explicit setup requirements; visual and runtime review pending."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-12",
+          "revision": "5534828db6a70a3df14fa62bf68effe707fb76bae1ba6179e3f5143bc7c6a806",
+          "note": "Use basket context without a main-product placeholder; configured cross-sells follow the current basket."
+        }
+      ]
+    },
+    {
+      "id": "coffee-finder-board",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-12",
+          "revision": "bc39be9161dcb72017d544c3a1ca9a682d5522a9acd004a21ed9dc9c70a38968",
+          "note": "New commerce composition with explicit setup requirements; visual and runtime review pending."
         }
       ]
     }

@@ -51,6 +51,8 @@ should not meet a list of things the setup itself created.
    it. An address the merchant clears still blocks. Cart recovery is left
    alone; its way back to the cart is the renderer's (ADR 0025).
 
+   **2026-10-12 authoring clarification:** the standalone template studio has no merchant site. Its existing Prefill injection seam supplies an empty destination, preserving a portable source and an honest setup hint. It never calls WordPress URL helpers or substitutes an invented domain. This does not change real WordPress's shop/home defaults. Studio, proof and public result previews also hide an empty optional result link, matching decision 4.
+
 4. **A result's link is optional (D11).** A result with no address shows no
    button (both renderers already hid it); `ResultSettings` says so. An address
    with no words still blocks, and so does a product result whose products are

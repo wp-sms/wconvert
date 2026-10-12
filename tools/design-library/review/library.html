@@ -24,14 +24,14 @@ const all=()=>data[$('version').value].filter(e=>!requestedIds.size||requestedId
 if(data.title){document.title='WConvert · Starting points';document.querySelector('h1').textContent=data.title;document.querySelector('header p').textContent=data.intro;$('version').closest('label').hidden=true;}
 function walk(n,fn){fn(n);if(n.content)walk(n.content,fn);for(const k of ['steps','children','start','end'])for(const c of n[k]||[])walk(c,fn)}
 function prepared(e,stress){e=structuredClone(e);if(stress)walk(e.tree,n=>{if(n.type==='consent')n.hidden=false;if(['headline','success_headline'].includes(n.role))n.text+=' — a little more to explore together';if(['body','success_body'].includes(n.role))n.text+=' Take a moment to explore the details and choose what works for you.';if(n.type==='button')n.label+=' and explore the details'});if($('no-artwork').checked)walk(e.tree,n=>{if(n.type==='image')n.hidden=true});return e}
-function mount(e,step,width,stress,rtl){
+function mount(e,step,width,stress,rtl,variant=null){
  const frame=document.createElement('div');frame.className='sized';frame.dir=rtl?'rtl':'ltr';
  const type=e.display_type;const authored=e.tokens.width||'28rem';
  frame.style.width=type==='popup'?`min(${width-32}px, ${authored})`:type==='slide_in'?`min(${width-32}px, 26rem, ${authored})`:type==='inline'&&authored!=='100%'?`min(${width}px, ${authored})`:width+'px';
  const host=document.createElement('div');frame.append(host);const shadow=host.attachShadow({mode:'open'});
  const style=document.createElement('style');style.textContent=WConvertRenderer.SHADOW_CSS;shadow.append(style);
  e=prepared(e,stress);const tokens={...e.tokens,...(type==='popup'||type==='slide_in'?{width:'100%'}:{})};
- const root=WConvertRenderer.render(e.tree,tokens,step);root.querySelectorAll('.wc-count').forEach(n=>{n.textContent='2d 04:32:18';n.parentElement.setAttribute('aria-label','Sample countdown, not a configured deadline');});if(type==='fullscreen')WConvertRenderer.decorateFullscreen(root,e.tokens.width,'550px');shadow.append(root);WConvertRenderer.prepareControls(root,shadow);root.style.maxBlockSize='none';
+ const root=WConvertRenderer.render(e.tree,tokens,step);const result=variant||e.tree.steps[step].results?.at(-1);if(result){root.querySelector('[data-result-heading]').textContent=result.heading;root.querySelector('[data-result-body]').textContent=result.body;WConvertRenderer.previewResult(root,result,e.tree.steps[step].products_required);}root.querySelectorAll('.wc-count').forEach(n=>{n.textContent='2d 04:32:18';n.parentElement.setAttribute('aria-label','Sample countdown, not a configured deadline');});if(type==='fullscreen')WConvertRenderer.decorateFullscreen(root,e.tokens.width,'550px');shadow.append(root);WConvertRenderer.prepareControls(root,shadow);root.style.maxBlockSize='none';
  root.addEventListener('submit',event=>{event.preventDefault()});
  // Prevent sample links from leaving this local review.
  root.addEventListener('click',event=>{if(event.target.closest('a'))event.preventDefault()});
@@ -47,7 +47,7 @@ function textContrast(el,foreground){const style=getComputedStyle(el);const fg=c
 function fieldContrast(input){const boundary=input.closest('.lpi')||input,style=getComputedStyle(boundary),match=style.boxShadow.match(/rgba?\([^)]+\)/);const ring=style.boxShadow.includes('inset')&&match?colour(match[0]):parseFloat(style.borderTopWidth)>0?colour(style.borderTopColor):null,inside=background(boundary),outside=background(boundary.parentElement);if(!ring||!inside||!outside||(ring[3]??1)!==1)return null;return {field:input.name||input.id,inside,outside,ring,ratio:Math.max(ratio(inside,outside),Math.min(ratio(ring,inside),ratio(ring,outside))),minimum:3}}
 
 function measure(root,width){
- const leaves=[...root.querySelectorAll('.wc-heading,.wc-text,.wc-label,.wc-eyebrow,.wc-badge,.wc-consent-text,.wc-rating-text,.wc-code,input,select,textarea,button,a.wc-button,.wc-question-choice')].filter(e=>e.getBoundingClientRect().height>1);
+ const leaves=[...root.querySelectorAll('.wc-heading,.wc-text,strong,.wc-products div,.wc-products span,.wc-label,.wc-eyebrow,.wc-badge,.wc-consent-text,.wc-rating-text,.wc-code,input,select,textarea,button,a.wc-button,.wc-question-choice')].filter(e=>e.getBoundingClientRect().height>1);
  const controls=leaves.filter(e=>e.matches('input:not([type=checkbox]):not([type=radio]),select,textarea,button,a.wc-button,.wc-question-choice'));
  const overflow=[root,...root.querySelectorAll('*')].filter(e=>e.clientWidth>2&&e.scrollWidth>e.clientWidth+2&&!e.matches('input,select,textarea')).map(e=>e.className);
  const minControl=controls.length?Math.round(Math.min(...controls.map(e=>e.getBoundingClientRect().height))*10)/10:null;
@@ -73,8 +73,8 @@ function draw(){
 async function check(){
  $('run').disabled=true;$('checks').textContent='Checking every design at four widths, both directions, with normal and longer copy…';const results=[];
  for(const e of all()){
-  for(const width of [320,390,768,1440])for(const rtl of [false,true])for(const stress of [false,true])for(let step=0;step<e.tree.steps.length;step++){
-   const {frame,root}=mount(e,step,width,stress,rtl);$('workbench').append(frame);await settled(root);const m=measure(root,width);results.push({id:e.id,viewport:width,rtl,stress,step,...m});WConvertRenderer.disposePreview(frame);frame.remove();
+  for(const width of [320,390,768,1440])for(const rtl of [false,true])for(const stress of [false,true])for(let step=0;step<e.tree.steps.length;step++)for(const variant of e.tree.steps[step].results||[null]){
+   const {frame,root}=mount(e,step,width,stress,rtl,variant);$('workbench').append(frame);await settled(root);const m=measure(root,width);results.push({id:e.id,viewport:width,rtl,stress,step,result:variant?.id||null,...m});WConvertRenderer.disposePreview(frame);frame.remove();
   }
   await new Promise(resolve=>setTimeout(resolve,0));
  }

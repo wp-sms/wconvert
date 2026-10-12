@@ -30,10 +30,17 @@ test('variant groups reject cycles and incompatible types, and expire when the c
 });
 
 test('visual triage becomes stale after source or renderer changes; new designs are not silently approved', () => {
-  assert.equal(visualAuditReport(audit, designs, audit.renderer_revision).filter(r => r.current).length, audit.records.length);
+  // The repository is a live review queue: edited designs must remain stale.
+  // Establish a current fixture without re-approving the authored audit records.
+  const fixture = structuredClone(audit);
+  for (const record of fixture.records) {
+    record.source_revision = designRevision(designs.find(d => d.id === record.id));
+    if (record.variant_of) record.canonical_revision = designRevision(designs.find(d => d.id === record.variant_of));
+  }
+  assert.equal(visualAuditReport(fixture, designs, fixture.renderer_revision).filter(r => r.current).length, fixture.records.length);
   const changed = structuredClone(designs);
   changed[0].tokens.pad = '9rem';
-  assert.equal(visualAuditReport(audit, changed, audit.renderer_revision).find(r => r.id === changed[0].id).current, false);
+  assert.equal(visualAuditReport(fixture, changed, fixture.renderer_revision).find(r => r.id === changed[0].id).current, false);
   assert.ok(visualAuditReport(audit, designs, 'changed-renderer').every(r => !r.current));
   const added = { ...designs[0], id: 'not-reviewed-yet' };
   const result = visualAuditReport(audit, [...designs, added], audit.renderer_revision).at(-1);

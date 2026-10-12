@@ -23,7 +23,7 @@ final class PackValidator
 {
     public const MAX_BYTES = 262144;
     public const MAX_TEMPLATES = 12;
-    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1', 'result-product-filters:1', 'result-product-filters:2', 'quiz-product-actions:1'];
+    public const CAPABILITIES = ['template-tree:2', 'template-tree:3', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'paid-campaign-rules:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1', 'result-product-filters:1', 'result-product-filters:2', 'quiz-product-actions:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free, private readonly bool $portable = false)
@@ -48,7 +48,7 @@ final class PackValidator
             'tier' => $tier->value, 'tree' => $design['tree'] ?? [], 'tokens' => $design['tokens'] ?? []];
         $reader = new self($this->manifest, $this->vocabulary, $this->installedTier, true);
         $pack = $reader->decode(json_encode(['schema' => 1, 'id' => 'transfer', 'version' => '1.0.0', 'name' => 'Transfer', 'description' => '',
-            'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => TemplateTree::VERSION, 'capabilities' => self::CAPABILITIES],
+            'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => $design['tree']['v'] ?? TemplateTree::VERSION, 'capabilities' => self::CAPABILITIES],
             'assets' => [], 'templates' => [$entry]], JSON_THROW_ON_ERROR));
         return array_intersect_key($pack['templates'][0], array_flip(['name', 'display_type', 'tree', 'tokens']));
     }
@@ -78,7 +78,7 @@ final class PackValidator
         self::check(is_array($requires), __('This pack does not declare compatibility.', 'wconvert'));
         $this->keys($requires, ['plugin', 'tree', 'capabilities']);
         self::check(self::version($requires['plugin'] ?? null) && version_compare(WCONVERT_VERSION, $requires['plugin'], '>='), __('Update required: install a newer WConvert version for this pack.', 'wconvert'));
-        self::check(($requires['tree'] ?? null) === TemplateTree::VERSION, __('Update required: this pack uses a newer design vocabulary.', 'wconvert'));
+        self::check(in_array($requires['tree'] ?? null, [TemplateTree::VERSION, 3], true), __('Update required: this pack uses a newer design vocabulary.', 'wconvert'));
         $capabilities = $requires['capabilities'] ?? null;
         self::check(is_array($capabilities) && array_is_list($capabilities) && count($capabilities) <= 20, __('This pack has invalid requirements.', 'wconvert'));
         foreach ($capabilities as $capability) {
@@ -94,7 +94,7 @@ final class PackValidator
         $templates = $pack['templates'] ?? null;
         self::check(is_array($templates) && array_is_list($templates) && count($templates) > 0 && count($templates) <= self::MAX_TEMPLATES, __('This pack has an invalid design list.', 'wconvert'));
         $ids = [];
-        $requiredCapabilities = ['template-tree:2', 'capture-journey:1'];
+        $requiredCapabilities = ['capture-journey:1'];
         foreach ($templates as $position => $template) {
             self::check(is_array($template), __('This pack contains an invalid design.', 'wconvert'));
             $this->keys($template, ['id', 'name', 'display_type', 'tier', 'tree', 'tokens']);
@@ -103,7 +103,7 @@ final class PackValidator
             $this->words($template['name'] ?? null, 120);
             $tier = Tier::tryFrom((string) ($template['tier'] ?? ''));
             self::check($tier !== null && $this->installedTier->includes($tier)
-                && in_array($template['display_type'] ?? null, $tier === Tier::Free ? ['inline', 'popup'] : ['inline', 'popup', 'bar', 'slide_in', 'fullscreen'], true), __('This pack needs a display format or entitlement this installer does not support yet.', 'wconvert'));
+                && in_array($template['display_type'] ?? null, $tier === Tier::Free ? ['inline', 'popup'] : ['inline', 'popup', 'floating_bar', 'slide_in', 'fullscreen'], true), __('This pack needs a display format or entitlement this installer does not support yet.', 'wconvert'));
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
@@ -112,9 +112,11 @@ final class PackValidator
                 self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
             }
-            $this->keys($tree, $this->portable ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
-            self::check(($tree['v'] ?? null) === TemplateTree::VERSION || ($this->portable && ($tree['v'] ?? null) === 3), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
-            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']) && count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && ($tree['v'] ?? null) === 3 ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
+            $this->keys($tree, ($tree['v'] ?? null) === 3 ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
+            self::check(($tree['v'] ?? null) === TemplateTree::VERSION || (($tree['v'] ?? null) === 3), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
+            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']) && count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $tree['v'] === 3 ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
+            self::check($tree['v'] <= $requires['tree'], __('This pack understates its design vocabulary.', 'wconvert'));
+            $requiredCapabilities[] = 'template-tree:' . $tree['v'];
             $nodeIds = [];
             $count = 0;
             foreach ($tree['steps'] as $step) {
@@ -165,7 +167,7 @@ final class PackValidator
             }
             self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This design needs a usable email or phone capture form.', 'wconvert'));
             $acts = ConvertingAct::offeredIn($tree);
-            $graph = $this->portable && ($tree['v'] ?? null) === 3;
+            $graph = $tree['v'] === 3;
             if ($graph) {
                 self::check(is_array($tree['graph'] ?? null), __('This design has no lines between screens.', 'wconvert'));
                 $this->keys($tree['graph'], ['entry', 'edges']);
@@ -202,7 +204,7 @@ final class PackValidator
         }
         if (array_key_exists('playbooks', $pack)) {
             $requiredCapabilities[] = 'campaign-starts:1';
-            (new PackPlaybooks($this->vocabulary))->validate($pack);
+            (new PackPlaybooks($this->vocabulary, $this->installedTier))->validate($pack);
             // Copy must obey the same inert, placeholder-only import contract
             // as design content, including after Slot Role binding.
             foreach ($pack['playbooks'] as $playbook) {

@@ -225,3 +225,13 @@ It took three passes, all in one PR, each checked on a seeded Playground
 - **Brand button:** it reads citron with espresso text and edge at rest,
   espresso with citron text on hover, and shows a 2px `--ring` outline under
   keyboard focus.
+
+### Internal template studio (12 October 2026)
+
+The standalone internal template tools now consume the same shipping colour and
+type tokens through `tools/design-library/build/studio-theme.mjs`, with one
+shared chrome stylesheet. They use the licensed admin fonts, shared control
+heights and a neutral preview stage. This applies to the authoring/review
+interface only: renderer tokens, design palettes, exported packs and public
+preview files do not inherit studio chrome. See the internal-studio section of
+`tools/design-library/GUIDELINES.md` and its browser verification command.

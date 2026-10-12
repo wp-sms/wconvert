@@ -144,6 +144,7 @@ final class ArtifactContractTest extends TestCase
             'packages/autoload-classmap.php' => "<?php\nreturn [];\n",
             'public/loader/loader.js' => "console.log('loader');\n",
             'public/protection/protection.js' => "console.log('protection');\n",
+            'public/protection/protection.css' => "body { margin: 0; }\n",
             'public/phone/phone.js' => "console.log('phone');\n",
             // Pro replaces this one on the same hook it replaces the loader
             // (ADR 0048), so a ZIP missing it on EITHER tier is a real

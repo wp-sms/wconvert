@@ -38887,6 +38887,1370 @@
         }
       },
       "record_id": "4fc7993c95b782ad7bcd7964e54f03287b0dd16ad0ffeee0c94d5657a1225faf"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "ad99dd0395ac63a97a3d3726982556b08ae181f314ab3717460f53e028266d06",
+      "base_id": "6b1ac99468ec82ee8337502bc045e09ffc3ca311f0018fb1dda7582de7abcefc",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.556Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "a87c7bc6f26574ac96007b93cbd1249b83923b1f0487f78f92e90f2c19668eeb"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "5e6b40750133d0203edf5482e502030a53054bc237374e2e568ad51eb814c3e9",
+      "base_id": "c57f1fb44bf706b889a29055f13f57f2c02bbaa2a0e1722b91e73c4eab31d037",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "2d4cff43317fd2bf94b7b55da709a07656f849175ebbdd0970bffd0f08f7cfdb"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "a914e0bd0cd0a67c015f8c371a7a42b98b460a4236897968d9bb2f2d3853a1bb",
+      "base_id": "9b018e055d4442526e4b60b688da38c1d1d7ddb36d3c72911f087838cbd295d2",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "2fd9bc7601d8ff15a47699206dea4a5d9fd0f96ff9c90cceb71e41f74c8112cc"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "bf55b484427b3c1881e90b2e3d418f2d4620c80fdbaa43bb075a5bfe55581df8",
+      "base_id": "d2fa06616c0feabfee2144ae4afb09f58c53c9c4839b0e3c091ee6a9dac2e930",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "10354146b2f22de8b189a8591c25d5cfbfbbe285af07b710b8f436a11970c8d3"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "0395448c6aea00512567358fb4a213451e48e714e3067bb2d2b3fda65d59d737",
+      "base_id": "f433bc3666c1d223ccf6c4a6e8eccab7c3f14132a0abbe27624fad6e6aff9604",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "e7f6fd9fb38fe2e08ce4863a2eb793eb3e80d758bd610e65746636045e6ea410"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "1384c8daf06f0ae079c89779d507629157b42586ba844ecc8b97a1f2e713c0b1",
+      "base_id": "7802a74f379b9d1e30a100bdb3d43b1515c029b81e13d20c5271ecbe2d266a24",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "fbc4fae76b9875916180f48eeaefb5f9deaeb8744ccd2ec035c435ae700ba9c2"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "b03d7881047fbf879550480217c5bd644746ebc1db364371b6628bea3645a90d",
+      "base_id": "f0f40921eaf36b71ffd38958c784db13d489ce55e76c4437148f43c2e73e65cc",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "2a2d7c3eee17fd0fe55fbce706b467699b6856822a9e9f5eb697499770ab8af5"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "7eddd64da123927df8283c6656d61e05f7ad1263e1bc71dbce18702e70bc1a03",
+      "base_id": "3e4f9b4799a7f7bf563aec01e8047ea2fb601ac54a63e2b75bee4d5dc43825a5",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "69f8a65a82ab56c89cbd0b88132ca6eba38017f8d4ff6ae469a0ec9117cf6c5e"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "21b61f6b755d1ef1691ad7eb879e6525db6654ef23bca5925bb40fe2484a1ec5",
+      "base_id": "0924ab1115df7845a1d97c82bc3261b604d56eeba3022f40f092dac2c1856623",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "83ed6bf9775a450b8eac8f8cba53628c0ad488d289d58f1dcdb586addf9d0c69"
+    },
+    {
+      "id": "repair-assessment",
+      "revision": "e67babc0d72aa52381ca3794c66de60e985c8e69f0a500b0437a45e42c63e7cc",
+      "base_id": "6260451fb93d94d90fba3de6dfed35d50206e5a8a68464de3882beb42f2af6e0",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "4f5d94382958d40b61bb2ee83970384a3a44d4c900addad0e69bb33e33d6cf33"
+    },
+    {
+      "id": "homeware-care-notes",
+      "revision": "d15a750aac10492b93abf0040716fa470ec70a42a55c0a49961d30ff99727038",
+      "base_id": "82dd069eae52f1ed4a84c419b1eaf00979bc0ff0096f7842129d4aa57e92a911",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "d6123f5e63ea044e9ce9133b6e4f674b0c14b3eb669e6b253b19e44d465058a4"
+    },
+    {
+      "id": "repair-advice-request",
+      "revision": "d64e4457803a7f027ea7824e4b36e7dcc385437b114bc537d5a56abe6a91f73c",
+      "base_id": "a3b8f706893111243c333710f99f43a57be4fbcb6b36ad54c7684bf9d1000f8e",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "9f3433bfac8332c174ac8602b6fdf0cacbaf516c3db6357de0514ce3612f1ce8"
+    },
+    {
+      "id": "first-order-receipt",
+      "revision": "5cf79aaba066c61e457a3d91f575b763dc96ac53baf3fc618c796ce84bcc18f3",
+      "base_id": "ba98af2df4bf85bb8b666f2444183a2346b8c505b2e86193f1141626d3fc3141",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "7836a6cdb24e4b2b6bca72f0a2d49d08426014b7790ea7870ab9e99d15b4396c"
+    },
+    {
+      "id": "reading-notes-guide",
+      "revision": "c79a70bcdd6bc39e9045faaf5c61ae662c3988191eade5c1dddf163b180b99d5",
+      "base_id": "c5ac7161e9ae9690e8302335673b471969b1366d1d736e42a8b362b0bcb1469f",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "8b4d7b8bbe8c5d9cf2441d8d1d28abf13c0a80ce30c17dd28d366b372f287000"
+    },
+    {
+      "id": "website-review-enquiry",
+      "revision": "92ed997b45f5cf11038e5c170199a99a306ddd29b218b3315a63903bb95d87d9",
+      "base_id": "4a36a3364196b1d3cb26f57d8d014b32155a4cd11c320386c63094146bf63ac7",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "2035754b914afd132643f369a17dbd290fe1ad9bfb9219360c72dbd8e77f2b80"
+    },
+    {
+      "id": "lighting-collection",
+      "revision": "240e0e1aac04539a4af3593f50113776b697d21214fb2fe84b3a2f14faac8a7a",
+      "base_id": "f9f0496d2b0eb60202bd9de2be32a7d51e70a20d4b6ca3c01233ee976e063ac5",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "5be2f72c8fa419a3739c11dbaac1beafcf08ada03207c02ef94cd628310c91b4"
+    },
+    {
+      "id": "specification-sheet",
+      "revision": "088819a451d9817988249a39fc86a84e35316403df7db488b1ea7223cef1753c",
+      "base_id": "db21a57643aaeca58bad47b5ebaabdd29b2b1a20e62d15387be5c7dbf70fbd91",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "8eade6d980c130f608c8dca478ab350f6aa28adaa4bf26d85630b8d29f5baa8c"
+    },
+    {
+      "id": "excerpt-window",
+      "revision": "d05d0343eee27e93d3f059541dccb5fc08fb5cb3fc52a04deb553f0c1fb570fc",
+      "base_id": "4683be8ffa2eca28eec4d466090c0b6dbfe0cde1e95e4d043234d7bf4a624d9e",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "ce9ae2ed9038155b43a96113fa3851dd856a2a2e7510a8eea5ce4559e3820451"
+    },
+    {
+      "id": "add-useful-extras",
+      "revision": "9f27c4318fda93f9b472a5773b3b270805657b264d9b60bc90cf43cfdcd1b37d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "b31dddb3dbf653ebda36414cca9da4798a3dac165808095cda50551e470c62f9"
+    },
+    {
+      "id": "recommend-accessory",
+      "revision": "23754deebb81b589df50c3437b263983bc0e7835fd04007ed0e11ec3eec56416",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "5f67576b91f4fc1ac4d92fea183efc6801b149c9125562d1ef2eecaaf4f2fa4e"
+    },
+    {
+      "id": "shopping-guidance",
+      "revision": "479289fa1622ca31ec053fb0f3ee7353d31b92ca33f5a8e46c09f1753eea8142",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "99a82b0b6b03b0d172210f256de8f630bf6252effeee6bfa059c63b6792d50cf"
+    },
+    {
+      "id": "explore-compatible-extras",
+      "revision": "ce22dda8fcca7ea92703c28446fac6b798d7a16e60b025f82c62552144e63663",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "0d2fd00551ef06574a7c72dcb5ddc38b0d3f0c09e8e09d26ac3894113f9247ef"
+    },
+    {
+      "id": "basket-cross-sells",
+      "revision": "bd6573285330a6f0516d806f1ca76d99627abbbc9b32c2b5f956ba6556604a74",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "6c17c95e73f26f262bb7d8a860e4150e209842415694446ff3b028c12e521f04"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "revision": "7b4bb5c5edbe15099bb68b1746ef95ecc32bcb0c28db01becb26207bfb171cb0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+      "at": "2026-10-12T04:22:52.557Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "9e92ebe700666702b79f886f6266e21a5e2c8e7676999ad01d9c7adea77c210b"
+    },
+    {
+      "id": "collection-sale-planning",
+      "revision": "5d3fd9c504869e5a16b0e868587a7b076be032096f7c25ce6802066d5eacd16b",
+      "base_id": "f7aa3e7bd23d1597fd4acae8b8c7b1b6781f1b45080204b74eac920b9e561b22",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+      "at": "2026-10-12T04:24:11.126Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "9816f5737a4b37b15f9554303e09f28406a09f626c20b02249ab82b9c081b328"
+    },
+    {
+      "id": "collection-launch-a-collection",
+      "revision": "cb941e197ecdd02cf31cdaf7a061bb6d7066c312ed8e60912393e24748a8cd07",
+      "base_id": "1b40e5078db532c81ef9ff14ba198ae4ba79141f46ec9992cd640aca46aaba6c",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+      "at": "2026-10-12T04:24:11.127Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "28b35921780a81b05bab65ac3bc885ba3584a350bb4d0554657d546ddd9faf3b"
+    },
+    {
+      "id": "collection-service-enquiries",
+      "revision": "e808b3f4e30c8022fc36636ddeecf5e28671a03d66812252cfc185aae6ff5807",
+      "base_id": "c76f3381884f7fb91f32cba030fb77b5f48eb5e6e895e71794783a4d6df7bc63",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+      "at": "2026-10-12T04:24:11.127Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "b5eeab06776fffb7e430c04c937bbfc219f45cd4c11f80170a5202031cbee9fe"
+    },
+    {
+      "id": "collection-reader-relationships",
+      "revision": "1891803cf3441e926cdeb485c88bf08eecfa69a68a775074a8643a34aff00fdd",
+      "base_id": "8e900b8b3730256667e6b87861489081f4de315cc25c8d59c3e7b67936a87dd0",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+      "at": "2026-10-12T04:24:11.127Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "125941096ef5dcd00fe7aeccd0d2c8aa0aa5c86119074b133bb2ae78ad28de98"
+    },
+    {
+      "id": "collection-black-friday-2026",
+      "revision": "6593edb10aa27d9e6ccc13939bf4ae077e54ee2edcb426c4be1c7c93e177871d",
+      "base_id": "4fc7993c95b782ad7bcd7964e54f03287b0dd16ad0ffeee0c94d5657a1225faf",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+      "at": "2026-10-12T04:24:11.127Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "9d227810edc113d1c925a9019873ab1c95ac510a22fe79bc0edef7f8f733e161"
+    },
+    {
+      "id": "collection-help-shoppers-choose",
+      "revision": "0162936e39542445cf72601a7464e558b38248e855bd386a6be1dc19f69bc6f3",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+      "at": "2026-10-12T04:24:11.127Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+              "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+            }
+          ]
+        }
+      },
+      "record_id": "175b54de810a5db979a1b73e51f0b16e7b5e1fbf7b2fc022d98f0d8470c5df93"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "revision": "7b4bb5c5edbe15099bb68b1746ef95ecc32bcb0c28db01becb26207bfb171cb0",
+      "base_id": "9e92ebe700666702b79f886f6266e21a5e2c8e7676999ad01d9c7adea77c210b",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final optional-result-link parity review; all three product result alternatives checked again.",
+      "at": "2026-10-12T04:31:32.040Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+              "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+            },
+            {
+              "path": "docs/reviews/october-coffee-taste-finder-1-wide.png",
+              "sha256": "5a8a9605b097f64992630a2a1513f56cd3643f8e21036ed7cdef7787867e89ef"
+            },
+            {
+              "path": "docs/reviews/october-coffee-taste-finder-1-phone.png",
+              "sha256": "150c1409eed91da525feb5d00a2d1eda53fbe0e972212a3c0d8f4588181b18a2"
+            },
+            {
+              "path": "docs/reviews/october-coffee-taste-finder-2-wide.png",
+              "sha256": "5e7215245e6017975390025b792c8814d3587d17eeeff556369f30c191f02215"
+            },
+            {
+              "path": "docs/reviews/october-coffee-taste-finder-2-phone.png",
+              "sha256": "c9d63120f8b7953f86f910c23d75ea265b3a27957c2ceade73cce3437f6bb96d"
+            },
+            {
+              "path": "docs/reviews/october-coffee-taste-finder-3-wide.png",
+              "sha256": "c5442646148221dea8785fd2d05be213abd425f2ae30ffcb154a58c676be69a5"
+            },
+            {
+              "path": "docs/reviews/october-coffee-taste-finder-3-phone.png",
+              "sha256": "5ef59cb79d5f1b9f1af5bd884da707f9bdb91e8bbb4e7d7acad79cf5fb7e6513"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+              "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-live.json",
+              "sha256": "55b1eb2d0e3baf4f926ebceff552e3964340972574ea50aeca738c5034aea514"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-wordpress.json",
+              "sha256": "9e2307e726017c5ebd8fa7a80ad47f7673aeba6153b288f234d65e2710892f74"
+            }
+          ]
+        }
+      },
+      "record_id": "20c9aa0370b501f2b845df8e913a38504b399251e0736e962422389b6d58de6e"
+    },
+    {
+      "id": "collection-help-shoppers-choose",
+      "revision": "5df6ba9dc46c0447c8ac803b33fa8436ee5a65cc9c0e9dd389355b08c3985311",
+      "base_id": "175b54de810a5db979a1b73e51f0b16e7b5e1fbf7b2fc022d98f0d8470c5df93",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh the exact coffee setup dependency after final optional-link parity review; collection membership and filtering are unchanged.",
+      "at": "2026-10-12T04:31:33.094Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+              "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+              "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+              "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+            },
+            {
+              "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+              "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+            }
+          ]
+        }
+      },
+      "record_id": "1a72836f7a599a876b3d4e3e1e0c299da51c166c00b82350d4b8014af14b966b"
     }
   ]
 }

@@ -189,8 +189,7 @@ real delivery or merge is included.
 Five collections initially referenced 16 freshly re-reviewed setups; the 1 October round-2 review expands this to 18. Black Friday is a
 set of adaptable preparation ideas with a feature window beginning 16 October,
 not a claim that a complete branded seasonal pack or conversion study exists.
-The other 92 pilot setup approvals remain stale after prior renderer changes;
-the current 110-setup library is not collectively approved.
+At that review, 92 other pilot setup approvals remained stale. The 12 October refresh below supersedes these counts; the library is still not collectively approved.
 
 See [implementation and validation](../reviews/template-picker-implementation-2026-09-30.md).
 This amends ADRs 0082, 0083 and 0085. Existing Optin snapshots and metrics remain
@@ -244,7 +243,7 @@ Specification sheet and Excerpt window now have native WordPress campaign and
 all-screen desktop/phone/RTL evidence. They join the launch and reader collections.
 Homeware care retains its compact bundled SVG and adds an independently reviewed,
 hash-bound raster export. All five curated collections have current approvals.
-The local downloadable subset is now 16 setups / 13 designs / four Free packs /
+At that review the local downloadable subset was 16 setups / 13 designs / four Free packs /
 two complete collections, with one original raster image. Existing campaigns are
 unchanged. This supersedes the earlier 13/10/3 release counts, not the remaining
 hosted licence/API/website deployment work.
@@ -252,3 +251,12 @@ hosted licence/API/website deployment work.
 See [round-2 practical review](../reviews/template-practical-round2-2026-10-01.md),
 [approval identity evidence](../reviews/template-stable-approvals-2026-10-01.md)
 and [artwork export](../reviews/homeware-artwork-export-2026-10-01.md).
+
+
+## 2026-10-12 — resume after plugin changes
+
+The studio now prepares 128 setups using 75 designs; the full source inventory contains 107 designs and 153 registered setups. Three new commerce compositions and three new setups join three existing setups in Help shoppers choose. Every screen/result was reviewed, and six examples ran in a disposable WooCommerce site. The studio now previews product-result areas and follows v3 graph entry/routes using the shipping traversal helper.
+
+Six curated collections depend on 24 currently approved setup snapshots. The other 104 studio approvals remain stale, visible as such; refreshing compatibility does not rubber-stamp them. Changed upstream note references are renewed only after review. Runtime collection seeds are regenerated from exact approved revisions.
+
+The local release contains 22 setups / 19 designs / five packs (four Free, one premium) / three complete collections, plus the existing reviewed raster artwork. Changed pack bytes receive new versions. Premium source JSON stays private and its public preview is inert, using the same preview path as Free. Native installation/offline/update checks are rehearsals; no hosted service, default endpoint, licence connection, CI or external delivery is enabled. See the October commerce review and release evidence in `docs/reviews`.

@@ -3368,6 +3368,170 @@
         ],
         "reason": "A paired before/after visual narrative with captions and a short What changed note, followed by one case-study link. Existing product comparisons describe alternatives; this shows one project over time. No image slider or gallery feature is implied."
       }
+    },
+    {
+      "id": "add-useful-extras",
+      "audience": "stores",
+      "family": "Cart additions",
+      "visitor_need": "Add useful extras without leaving the page.",
+      "difference": "Existing commerce example: confirmed basket additions rather than product-link clicks.",
+      "requirements": [
+        "WooCommerce catalogue with eligible products",
+        "Matching Pro module and plan",
+        "Choose this site’s products, placement and links before publishing"
+      ],
+      "status": "review",
+      "source": "Original WConvert commerce refresh, October 2026; compared with the existing library.",
+      "suggested_setup": [
+        "Place beside the relevant product or basket, or on the coffee collection page for the finder.",
+        "Test an empty result, unavailable products and phone layout. Avoid showing both an automatic placement and an embedded duplicate."
+      ],
+      "measure": "Confirmed basket additions; orders are separate.",
+      "batch": "commerce-refresh",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "cart-accessories"
+        ],
+        "reason": "Existing commerce example: confirmed basket additions rather than product-link clicks."
+      }
+    },
+    {
+      "id": "recommend-accessory",
+      "audience": "stores",
+      "family": "Selected accessories",
+      "visitor_need": "Check suitable extras for a product.",
+      "difference": "Existing commerce example: inspect an accessory before buying; no automatic basket addition.",
+      "requirements": [
+        "WooCommerce catalogue with eligible products",
+        "Matching Pro module and plan",
+        "Choose this site’s products, placement and links before publishing"
+      ],
+      "status": "review",
+      "source": "Original WConvert commerce refresh, October 2026; compared with the existing library.",
+      "suggested_setup": [
+        "Place beside the relevant product or basket, or on the coffee collection page for the finder.",
+        "Test an empty result, unavailable products and phone layout. Avoid showing both an automatic placement and an embedded duplicate."
+      ],
+      "measure": "Visits to the linked product or guidance, not purchases.",
+      "batch": "commerce-refresh",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "cart-additions"
+        ],
+        "reason": "Existing commerce example: inspect an accessory before buying; no automatic basket addition."
+      }
+    },
+    {
+      "id": "shopping-guidance",
+      "audience": "stores",
+      "family": "Contextual shopping help",
+      "visitor_need": "Answer a sizing or compatibility question beside the basket.",
+      "difference": "Existing concise guidance link, selected for basket context rather than collecting contact details.",
+      "requirements": [
+        "Useful guide and basket context",
+        "Matching Pro module and plan",
+        "Choose this site’s products, placement and links before publishing"
+      ],
+      "status": "review",
+      "source": "Original WConvert commerce refresh, October 2026; compared with the existing library.",
+      "suggested_setup": [
+        "Place beside the relevant product or basket, or on the coffee collection page for the finder.",
+        "Test an empty result, unavailable products and phone layout. Avoid showing both an automatic placement and an embedded duplicate."
+      ],
+      "measure": "Visits to the linked product or guidance, not purchases.",
+      "batch": "commerce-refresh",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-signpost"
+        ],
+        "reason": "Existing concise guidance link, selected for basket context rather than collecting contact details."
+      }
+    },
+    {
+      "id": "explore-compatible-extras",
+      "audience": "stores",
+      "family": "Accessory workbench",
+      "visitor_need": "Understand why extras are worth a closer look.",
+      "difference": "A separate editorial pane explains the pairing beside product cards; stacks in reading order on phones.",
+      "requirements": [
+        "WooCommerce catalogue with eligible products",
+        "Matching Pro module and plan",
+        "Choose this site’s products, placement and links before publishing"
+      ],
+      "status": "review",
+      "source": "Original WConvert commerce refresh, October 2026; compared with the existing library.",
+      "suggested_setup": [
+        "Place beside the relevant product or basket, or on the coffee collection page for the finder.",
+        "Test an empty result, unavailable products and phone layout. Avoid showing both an automatic placement and an embedded duplicate."
+      ],
+      "measure": "Visits to the linked product or guidance, not purchases.",
+      "batch": "commerce-refresh",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cart-accessories",
+          "cart-additions"
+        ],
+        "reason": "A separate editorial pane explains the pairing beside product cards; stacks in reading order on phones."
+      }
+    },
+    {
+      "id": "basket-cross-sells",
+      "audience": "stores",
+      "family": "Basket companion",
+      "visitor_need": "Choose optional extras that relate to the current basket.",
+      "difference": "A compact two-surface basket module separates the invitation from live product choices; uses configured cross-sells.",
+      "requirements": [
+        "WooCommerce catalogue with eligible products",
+        "Matching Pro module and plan",
+        "Choose this site’s products, placement and links before publishing"
+      ],
+      "status": "review",
+      "source": "Original WConvert commerce refresh, October 2026; compared with the existing library.",
+      "suggested_setup": [
+        "Place beside the relevant product or basket, or on the coffee collection page for the finder.",
+        "Test an empty result, unavailable products and phone layout. Avoid showing both an automatic placement and an embedded duplicate."
+      ],
+      "measure": "Confirmed basket additions; orders are separate.",
+      "batch": "commerce-refresh",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cart-additions",
+          "cart-accessories"
+        ],
+        "reason": "A compact two-surface basket module separates the invitation from live product choices; uses configured cross-sells."
+      }
+    },
+    {
+      "id": "coffee-taste-finder",
+      "audience": "stores",
+      "family": "Coffee finder board",
+      "visitor_need": "Narrow a coffee range by taste without an email gate.",
+      "difference": "An inline editorial introduction and one taste choice, followed by three category-filtered result variants.",
+      "requirements": [
+        "WooCommerce catalogue with eligible products",
+        "Matching Pro module and plan",
+        "Choose this site’s products, placement and links before publishing"
+      ],
+      "status": "review",
+      "source": "Original WConvert commerce refresh, October 2026; compared with the existing library.",
+      "suggested_setup": [
+        "Place beside the relevant product or basket, or on the coffee collection page for the finder.",
+        "Test an empty result, unavailable products and phone layout. Avoid showing both an automatic placement and an embedded duplicate."
+      ],
+      "measure": "Completed quiz results; no lead is created.",
+      "batch": "commerce-refresh",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-product-finder"
+        ],
+        "reason": "An inline editorial introduction and one taste choice, followed by three category-filtered result variants."
+      }
     }
   ],
   "batches": [
@@ -3414,6 +3578,10 @@
     {
       "id": "trust-and-fit",
       "name": "Clear expectations and useful evidence"
+    },
+    {
+      "id": "commerce-refresh",
+      "name": "Useful shopping help: six practical setups"
     }
   ]
 }

@@ -61,8 +61,8 @@ final class CaptureController implements RestController
             [
                 'methods' => 'POST',
                 'callback' => [$this, 'capture'],
-                'permission_callback' => [Routes::class, 'canCapture'],
-                // Public and nonce-free on purpose — Routes::canCapture() says
+                'permission_callback' => '__return_true',
+                // Public and nonce-free on purpose — the note at the end of Routes says
                 // why. What protects this route is below and in capture():
                 // every value is re-checked against the server's own published
                 // copy of the form.

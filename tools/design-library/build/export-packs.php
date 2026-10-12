@@ -5,6 +5,12 @@ $root = dirname(__DIR__, 3);
 define('WCONVERT_URL', '');
 require $root . '/src/constants.php';
 function __(string $text, string $domain = ''): string { return $text; }
+// Trusted authoring simulates the capabilities whose source modules are loaded.
+// The shipping reader still checks the receiving site's actual registrations.
+function apply_filters(string $hook, mixed $value, mixed ...$args): mixed { return in_array($hook, ['wconvert_journeys', 'wconvert_commerce'], true) ? true : $value; }
+// WordPress filesystem adapters for the disposable, caller-owned validation archive.
+function wp_mkdir_p(string $path): bool { return is_dir($path) || mkdir($path, 0700, true); }
+function wp_delete_file(string $path): void { if (is_file($path)) unlink($path); }
 function wp_parse_url(string $url, int $component = -1): mixed { return parse_url($url, $component); }
 function wp_json_encode(mixed $value, int $flags = 0, int $depth = 512): string|false { return json_encode($value, $flags, $depth); }
 function _doing_it_wrong(string $function, string $message, string $version): void { throw new RuntimeException($function . ': ' . $message); }
@@ -37,6 +43,8 @@ if (($input['mode'] ?? '') === 'validate') {
     echo "Validated by the shipping catalog and pack reader.\n";
     exit;
 }
+$ruleManifest = \WConvert\Rules\RuleManifest::load();
+$ruleDefinitions = $ruleManifest['triggers'] + $ruleManifest['conditions'] + $ruleManifest['targeting'];
 $output = [];
 foreach ($input['packs'] as $definition) {
 $templates = []; $setups = []; $paid = false; $assets = []; $bindings = []; $media = [];
@@ -50,6 +58,9 @@ foreach ($definition['setups'] as $id) {
     $template = json_decode(file_get_contents($designs[0]), true, 48, JSON_THROW_ON_ERROR);
     $templates[$template['id']] = $template; $setups[] = $setup;
     $paid = $paid || $template['tier'] !== 'free' || \WConvert\Goal\Goal::from($setup['goal'])->tier() !== Tier::Free;
+    foreach (array_merge($setup['rules'], $setup['targeting']['include'] ?? [], $setup['targeting']['exclude'] ?? []) as $rule) {
+        $paid = $paid || ($ruleDefinitions[$rule['type']]['tier'] ?? 'free') !== 'free';
+    }
 }
     // The bundled source can remain a compact vector. An explicit, independently
     // reviewed derivative is bound to its exact source URI and raster bytes.
@@ -74,8 +85,10 @@ foreach ($definition['setups'] as $id) {
         unset($step);
     }
     unset($template);
+    $treeVersion = max(array_column(array_column(array_values($templates), 'tree'), 'v'));
+    $capabilities = array_values(array_diff(PackValidator::CAPABILITIES, array_merge($assets ? [] : ['pack-images:1'], $treeVersion === 3 ? [] : ['template-tree:3'])));
     $pack = ['schema' => $assets ? 2 : 1, 'id' => $definition['id'], 'version' => $definition['version'], 'name' => $definition['name'], 'description' => $definition['description'],
-        'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => 2, 'capabilities' => $assets ? PackValidator::CAPABILITIES : array_values(array_diff(PackValidator::CAPABILITIES, ['pack-images:1']))],
+        'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => $treeVersion, 'capabilities' => $capabilities],
         'assets' => array_values($assets), 'templates' => array_values($templates), 'playbooks' => $setups];
     if ($assets) $pack['image_bindings'] = $bindings;
     $json = json_encode($pack, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";

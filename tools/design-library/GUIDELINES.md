@@ -363,3 +363,24 @@ a *"See this design"* link and a dead link is worse than one fewer card. A free
 install is shown no such card (ADR 0116).
 
 `id` must be unique across **both** libraries.
+
+## Internal studio interface
+
+The review tools use the admin's interface palette and type scale, not a separate
+studio brand. `build/studio-theme.mjs` reads the current tokens from
+`resources/admin/src/index.css`; `studio/chrome.css` supplies the shared frame,
+controls and dialog layout. All eight internal entry points use it. Fonts are
+copied from the plugin with content-hashed names and their OFL licence.
+
+Use espresso for structure and primary actions, ink blue and ice for selection,
+citron for the active navigation marker, and neutral preview stages. Default
+fields are 36px, qualifying toolbar controls 32px, with a 44px coarse-pointer
+floor. Dialogs keep their header visible and scroll the body. Mobile opens a
+phone preview; fitting a selected viewport must not rewrite its design width.
+
+This chrome never enters the renderer bundle, exported packs or public preview
+files. Template palettes remain varied and editable. Verify the actual pages at
+1440, 768, 390 and 320px, including text and field-boundary contrast, viewport
+switching, scrolling, Escape/focus return, and computed template colours with the
+studio stylesheet enabled and disabled. Run `node tools/visual-tests/studio-chrome.mjs`
+against the local generated studio; screenshots still require visual inspection.

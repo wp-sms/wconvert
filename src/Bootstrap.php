@@ -105,36 +105,30 @@ final class Bootstrap
      * activation to boot a container.
      *
      * ========================================================================
-     * `$networkWide` IS ACCEPTED AND DELIBERATELY NOT ACTED ON.
+     * NETWORK ACTIVATION IS REFUSED.
      * ========================================================================
-     * **Multisite is out of scope for v1**, and this argument is where that
-     * decision has to be visible, because ignoring a parameter you never named
-     * is indistinguishable from not knowing it exists.
+     * **Multisite is out of scope for v1.** Network-activating would install
+     * tables for whichever site's `$wpdb->prefix` is current and for no other,
+     * so a site nobody had opened the admin of would serve campaigns with no
+     * tables under them. The WordPress.org review (October 2026) flagged that,
+     * so activation now stops with a message instead, before WordPress records
+     * the plugin as network-active. Activating on each site works as before.
      *
-     * Network-activating installs tables for whichever site's `$wpdb->prefix`
-     * is current and for no other. The rest are not left broken forever —
-     * {@see \WConvert\Storage\OptionStore} reads per-site options and
-     * `admin_init` fires per site, so a site whose `wconvert_db_version` is
-     * missing installs on its first dashboard visit. What that does not cover
-     * is a site **nobody has opened the admin of**, whose front end is live and
-     * has no tables under it, and there is no missing-table guard anywhere in
-     * the capture path.
-     *
-     * So the failure mode is not "it breaks", it is "it works on the sites you
-     * looked at" — which is worse than either honest alternative, and is
-     * addressed by saying so rather than by half-fixing it:
-     * {@see \WConvert\Admin\AdminNotices::warnAboutNetworkActivation()} tells
-     * a network administrator on the screen where they did it, and
-     * `readme.txt` says it before they install.
-     *
-     * The full job is ~20-30 lines — loop `get_sites()` here, and hook
-     * `wp_initialize_site` for sites created later (**not** `wpmu_new_blog`,
-     * deprecated since WP 5.1 and still the one most tutorials show) — and
-     * nothing in this decision makes it harder to do in 1.2, once there is
-     * evidence anyone wants it.
+     * Full support is ~20-30 lines when it is wanted: loop `get_sites()` here,
+     * hook `wp_initialize_site` for sites created later (**not**
+     * `wpmu_new_blog`, deprecated since WP 5.1), and teach `uninstall.php` the
+     * same loop.
      */
     public static function activate(bool $networkWide = false): void
     {
+        if ($networkWide && is_multisite()) {
+            wp_die(
+                esc_html__('WConvert cannot be activated for the whole network. Activate it on each site instead, from that site\'s Plugins screen.', 'wconvert'),
+                esc_html__('Plugin not activated', 'wconvert'),
+                ['back_link' => true]
+            );
+        }
+
         $options = new WpOptionStore();
 
         (new Installer($options, new OptinRepository(

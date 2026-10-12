@@ -172,6 +172,7 @@ require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
 require_file public/loader/loader.js "the shipped loader is built, never committed — run the build" || true
 if [ "$slug" = "wconvert" ]; then
     require_file public/protection/protection.js "protected forms need the isolated verification bundle" || true
+    require_file public/protection/protection.css "the verification page needs its stylesheet" || true
     require_file public/phone/phone.js "phone campaigns need the built optional input bundle" || true
 fi
 
