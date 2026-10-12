@@ -11,6 +11,8 @@ const output=process.env.WCONVERT_LIBRARY_EVIDENCE||('/tmp/library-polish'+(stre
 const mode=process.argv[2]||'audit';
 const datasets=[{kind:'designs',entries:readDesigns(process.cwd())},{kind:'campaigns',entries:JSON.parse(execFileSync('php',['tools/design-library/build/pilot.php'],{encoding:'utf8',maxBuffer:64*1024*1024,env:{...process.env,WCONVERT_EXPORT_ALL:'1'}}))}];
 for(const {kind,entries} of datasets)fs.writeFileSync(`tools/design-library/out/all-${kind}.json`,JSON.stringify(entries));
+const selectedIds=process.env.WCONVERT_REVIEW_IDS?.split(',');
+if(selectedIds)for(const dataset of datasets)dataset.entries=dataset.entries.filter(entry=>selectedIds.includes(entry.id));
 const browser=await chromium.launch();
 try{
  const page=await browser.newPage({viewport:{width:1500,height:1000},hasTouch:true});
@@ -47,18 +49,18 @@ try{
     const group=screens.slice(index,index+4);
     await page.evaluate(async group=>{
      let controls=document.getElementById('original-controls');if(!controls){controls=document.createElement('div');controls.id='original-controls';controls.hidden=true;controls.append(...document.body.childNodes);}WConvertRenderer.disposePreview(document.body);document.body.replaceChildren(controls);document.body.style.cssText='margin:0;padding:16px;background:#eeeef0;font:14px system-ui;color:#171717;width:1210px';
-     for(const {entry,step,variant}of group){
+     for(const {entry,step,variant,stress,rtl}of group){
       const row=document.createElement('section');row.style.cssText='margin-bottom:18px;background:white;padding:12px';
       const label=document.createElement('h2');label.textContent=`${entry.id} · ${entry.display_type} · ${entry.tree.steps[step].name}${variant?' · '+variant.id:''}`;label.style.cssText='font-size:16px;margin:0 0 12px';row.append(label);
       const pair=document.createElement('div');pair.style.cssText='display:flex;gap:20px;align-items:start';row.append(pair);document.body.append(row);
       for(const width of [320,1280]){
        const stage=document.createElement('div');stage.style.cssText=`width:${width===320?320:810}px;background:#e6e7e9;padding:8px;box-sizing:content-box;flex:none;overflow:hidden`;
-       pair.append(stage);const {root,frame}=mount(entry,step,width,false,false,variant);stage.append(frame);await settled(root);
+       pair.append(stage);const {root,frame}=mount(entry,step,width,stress,rtl,variant);stage.append(frame);await settled(root);
        
        const scale=Math.min(1,(width===320?320:810)/frame.getBoundingClientRect().width);frame.style.transformOrigin='top left';frame.style.transform=`scale(${scale})`;stage.style.height=Math.ceil(root.getBoundingClientRect().height)+'px';
       }
      }
-    },group);
+    },group.map(item=>({...item,stress,rtl:process.env.WCONVERT_REVIEW_RTL==='1'})));
     await page.screenshot({path:`${output}/${kind}-${String(index/4+1).padStart(2,'0')}.png`,fullPage:true});
    }
    console.log(kind,screens.length,'screens/results',Math.ceil(screens.length/4),'boards');

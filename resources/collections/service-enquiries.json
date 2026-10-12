@@ -13,25 +13,25 @@
       "setup_id": "home-repair-quote",
       "stage": "any",
       "setup_hash": "af5ff16467219382e410c767125b521a08b7cd92c8ab1e09790ded2a2943bf68",
-      "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+      "design_hash": "eb3e85fd59052e59fa34fda24d64c71a921c9936da3fde2b65f92d6f1603bd95"
     },
     {
       "setup_id": "cleaning-quote",
       "stage": "any",
       "setup_hash": "ad845c89d067517fdb04cf2e140e5a05abca1857d0ab3ebb963afef698a869c8",
-      "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+      "design_hash": "eb3e85fd59052e59fa34fda24d64c71a921c9936da3fde2b65f92d6f1603bd95"
     },
     {
       "setup_id": "repair-assessment",
       "stage": "any",
-      "setup_hash": "17c1874973994026ab6b6673d07e9cf3b2db87d3ef57282cf05205f290ad35ba",
-      "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+      "setup_hash": "bae0cba445de43e7d72d37ee60b4307f8407162e2c9cd050c4a53181c3c94f27",
+      "design_hash": "eb3e85fd59052e59fa34fda24d64c71a921c9936da3fde2b65f92d6f1603bd95"
     },
     {
       "setup_id": "renovation-callback",
       "stage": "any",
-      "setup_hash": "1b4e5fb1ac93cec66b8065bb2dcb018b328b10fa1f383bc71e9b462638bfdef1",
-      "design_hash": "90a558d4a4dfb553347098d9e072fefb2e7f662a5273e51e00882bd11d3b797d"
+      "setup_hash": "05ad9224caa48ae7a9b4b88747698aa0c07cc17f20d2bf1ad4cc185489ec43ed",
+      "design_hash": "98dafe92ffac99192604c0f80fc9697884dcacd12f2c87238fff757784a2eb7e"
     },
     {
       "setup_id": "repair-advice-request",
@@ -47,6 +47,6 @@
     }
   ],
   "dependencies_current": true,
-  "revision": "e808b3f4e30c8022fc36636ddeecf5e28671a03d66812252cfc185aae6ff5807",
+  "revision": "5b5625d3c73c13ea71690bc21a28f7182bb19cad5d570a417c86b1026cb8dc54",
   "status": "published"
 }

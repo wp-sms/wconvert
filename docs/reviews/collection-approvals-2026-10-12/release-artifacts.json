@@ -1,0 +1,30 @@
+[
+  {
+    "file": "wconvert-v1.0.0.zip",
+    "bytes": 1764926,
+    "sha256": "4671b60337f2254572131d429e98b4d4597d993b9b9f8889cf17a5d7b7439798",
+    "zip_integrity": "passed",
+    "internal_review_tools_excluded": true
+  },
+  {
+    "file": "wconvert-pro-basic-v0.1.0.zip",
+    "bytes": 1120777,
+    "sha256": "afbf47b0a79bdfd5c7a5986f73c82a8a7b02b32b2470bbf2368d6e4a271bd2c5",
+    "zip_integrity": "passed",
+    "internal_review_tools_excluded": true
+  },
+  {
+    "file": "wconvert-pro-pro-v0.1.0.zip",
+    "bytes": 1146066,
+    "sha256": "9b525f05d205dae1f2e9d0936ea7d60a714fd29a9bcd325c8ca4940839ee134b",
+    "zip_integrity": "passed",
+    "internal_review_tools_excluded": true
+  },
+  {
+    "file": "wconvert-pro-elite-v0.1.0.zip",
+    "bytes": 1212372,
+    "sha256": "0568708a3cd481b68c0d76b60e26f0a44766b5b10d022521ad990a2ddbac8cef",
+    "zip_integrity": "passed",
+    "internal_review_tools_excluded": true
+  }
+]

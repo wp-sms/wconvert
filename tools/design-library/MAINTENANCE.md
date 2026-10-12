@@ -82,8 +82,8 @@ must preview the change, preserve custom content, create a recoverable draft and
 require explicit application. That feature is not implemented here.
 
 Work in batches: identify a useful uncovered need, compare, author, inspect, test,
-record evidence, then expand. The working library currently contains 108 setups
-using 59 source designs; the full design inventory contains 91 designs. Do not count
+record evidence, then expand. The working library currently contains 128 setups
+using 75 source designs; the full design inventory contains 107 designs. Do not count
 planned briefs, colour variants or unreviewed candidates as additional designs.
 
 ## Browse designs without duplicate cards
@@ -120,3 +120,27 @@ fields and Slot Roles, check Keep my content/Sample copy transfer, and review
 Free/paid packaging. Saved merchant snapshots must stay untouched. A high
 structural similarity score is a comparison prompt, not an automatic deletion.
 The next-batch sketches are not working templates and never enter design counts.
+
+## Finish review before calling a release ready
+
+After a shared renderer or prepared-campaign change, rebuild the review queue.
+A renderer change can invalidate every setup approval, even when most designs
+look unchanged. A setup approval change also changes its dependent collection
+revision. Old visual evidence is not a substitute for inspecting the new output.
+
+For a release containing the bundled collections:
+
+1. Review the current members listed in `collections/source.json`: all screens,
+   phone/desktop, long copy/RTL, practical journeys and configured WordPress.
+   Fix defects or leave a revise decision; never change hashes to bypass review.
+2. Save fresh evidence, import setup decisions through `templates:review`, then
+   rebuild with `templates:collections`. Review and import collection decisions.
+3. Run `templates:collections:publish`, then `templates:collections:check`.
+   Check the actual WordPress picker reads the regenerated collections.
+4. Build current assets, run required tests and `bash bin/build.sh all`. Confirm
+   the Free and all three Pro ZIPs, and update the current approval counts.
+
+This is a local release checklist, not a CI requirement. State any out-of-scope
+stale reviews explicitly; passing the bundled-collection gate does not approve
+the entire library. Commit the evidence, imported records and generated runtime
+collections together in the review PR.

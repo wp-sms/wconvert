@@ -13,7 +13,7 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 110 campaigns
+## Internal creation and review studio: 128 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
@@ -21,8 +21,11 @@ screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **110 campaign setups using 61 designs**, drawn from a complete
-inventory of **93 designs**. The first twelve received user approval of the design
+The studio contains **128 campaign setups using 75 designs**, drawn from a complete
+inventory of **107 designs**. Current editorial status is **24 approved setups,
+104 stale setup reviews and six approved collections**. The 24 approved setups
+cover every bundled collection dependency. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-12/README.md).
+Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
 are new; cart return and standalone SMS already had useful registered starts.
@@ -36,7 +39,7 @@ The first four new directions add two popups, an illustrated slide-in and a comp
 The visual-variety batch adds eight further compositions: four popups, three slide-ins
 and one quiet announcement bar, including two short enquiries and a resource request.
 Shared designs now have one card with a use-case choice in both studio and customer creation.
-There are now 133 registered Playbooks across Free and Pro modules. All seven Goals,
+There are now 153 registered Playbooks across Free and Pro modules. All seven Goals,
 all five Display Types and three audiences are represented. These are editorial
 candidates, not measured conversion winners or automatically approved releases.
 
@@ -551,7 +554,7 @@ sharing the standalone files (system fonts remain the offline fallback).
 
 ### 12 October older essentials and staging service
 
-The first older-library refresh revises Project notebook and Bar with a field across four existing setups. See `out/pilot.html?batch=older-essentials`. Numeric column proportions, phone typography, fine-print/field contrast, grouped form actions and acknowledgement layouts were checked in 128 responsive cases and eight native WordPress captures. Source counts remain 107 designs / 153 setups; studio counts remain 75 designs / 128 setups. There are now **28 current setup approvals and 100 stale older approvals**. Updating examples does not rewrite installed campaigns. See [review evidence](../../docs/reviews/older-essentials-2026-10-12.md).
+The first older-library refresh revises Project notebook and Bar with a field across four existing setups. See `out/pilot.html?batch=older-essentials`. Numeric column proportions, phone typography, fine-print/field contrast, grouped form actions and acknowledgement layouts were checked in 128 responsive cases and eight native WordPress captures. Source counts remain 107 designs / 153 setups; studio counts remain 75 designs / 128 setups. At that checkpoint there were **28 current setup approvals and 100 stale older approvals**; the subsequent shared renderer change invalidated those approvals. See the current status above. Updating examples does not rewrite installed campaigns. See [review evidence](../../docs/reviews/older-essentials-2026-10-12.md).
 
 The separate [template staging service](../template-server/README.md) now serves the validated public release through a local Worker/R2 simulation on port 9454. It supports public Free/Pro previews, Free pack/image reads and tested conditional publication/rollback. The local catalogue remains 22 setups / 19 designs / five packs / three collections; six premium setups are advertised but downloading them stays disabled. Real R2/domain setup, authenticated remote publication and licence integration remain deferred. The plugin still requires HTTPS for actual remote discovery.
 

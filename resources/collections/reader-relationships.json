@@ -13,13 +13,13 @@
       "setup_id": "sunday-reading",
       "stage": "any",
       "setup_hash": "1532c2b1bb396f043f63fd7ae876e2144e4322a083a1722108664dafa08f2855",
-      "design_hash": "599cfa2535bc85f5f269af84d778e51032a150f4ac6354404093d9bcf3371bd8"
+      "design_hash": "675af5ac86d8c65f13a6c111c16fbd4f2aef134bf1731ac0d06f3f9123f9f258"
     },
     {
       "setup_id": "editorial-weekly",
       "stage": "any",
       "setup_hash": "8ad0617495222d15b08247a3ba12c15a5bcce29ecdf13786eaad20260051da9c",
-      "design_hash": "a28e7cb7dedb503265de8ac7bfa5f272270fa909f9e948b62934cbdd96f7a0b4"
+      "design_hash": "2886c2cb116ba8c053e621caa502de7430f9e57bc434254c81b04c4c70132e00"
     },
     {
       "setup_id": "writing-checklist",
@@ -31,7 +31,7 @@
       "setup_id": "reading-notes-guide",
       "stage": "any",
       "setup_hash": "a5afa7d85a8923cd3647d7335ee069a0bb27c8cf1249c11f730f41a5764ace3c",
-      "design_hash": "87588e459b3fa61f355d30e355f8ad196790569f052634f6a5d2466368d8e83d"
+      "design_hash": "ee67e111c746ade2980b9c41d8ad65424306a2dc044537ba4e623a6023e3e019"
     },
     {
       "setup_id": "excerpt-window",
@@ -41,6 +41,6 @@
     }
   ],
   "dependencies_current": true,
-  "revision": "1891803cf3441e926cdeb485c88bf08eecfa69a68a775074a8643a34aff00fdd",
+  "revision": "cd298949c320a7220781551c067c11114733c4863d8c7748efb76af9f544e17c",
   "status": "published"
 }

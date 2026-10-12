@@ -13,13 +13,13 @@
       "setup_id": "edition-early-access",
       "stage": "before",
       "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
-      "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+      "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
     },
     {
       "setup_id": "restock-announcements",
       "stage": "during",
       "setup_hash": "366a7ed80b852a2097c87c1015b37551ae7c530b78b308a27030eea3499cfe97",
-      "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+      "design_hash": "543081d87be36854baa62a54313503c876683b213faf1a9b829a0ca83b1bd156"
     },
     {
       "setup_id": "lighting-collection",
@@ -31,10 +31,10 @@
       "setup_id": "specification-sheet",
       "stage": "during",
       "setup_hash": "a32b83c41ef7a80468a00b793a89d12a2e66d84da19efb89bb3894a03139c434",
-      "design_hash": "8b73b1bb00708720b098b5e5304504ac9bf2da17e0ffbd3525ba2d56f897ec97"
+      "design_hash": "36b9d4aca8b29ac08b08bd0927b200cf9dfe851b26be68dd61390bf616421ced"
     }
   ],
   "dependencies_current": true,
-  "revision": "cb941e197ecdd02cf31cdaf7a061bb6d7066c312ed8e60912393e24748a8cd07",
+  "revision": "d8b5b5c296959b21aae4e995d3fe8b3fb40315807f9bbaf6bdb9869e441d7773",
   "status": "published"
 }

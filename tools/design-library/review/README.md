@@ -48,7 +48,7 @@ conversion improvement, physical-device verification or release approval.
 External email/SMS delivery is skipped at the user's request for this work.
 
 `pilot/next-batch.json` is empty after the contextual-help batch. The collection
-contains 110 actual setups, with separate campaign and design counts. Add planned
+contains 128 actual setups, with separate campaign and design counts. Add planned
 briefs only after choosing distinct visitor needs; the validator rejects IDs
 already in the collection.
 
