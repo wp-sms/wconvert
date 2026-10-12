@@ -1,3 +1,4 @@
+import { studioPage } from './studio-theme.mjs';
 /**
  * `bench.html` — the Design Bench, with everything it needs inlined.
  *
@@ -35,7 +36,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
 const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
 
-const template = readFileSync(resolve(HERE, '../bench/bench.html'), 'utf8');
+const template = studioPage(readFileSync(resolve(HERE, '../bench/bench.html'), 'utf8'), 'bench');
 const renderer = readFileSync(resolve(OUT, 'renderer.iife.js'), 'utf8');
 const manifest = JSON.parse(readFileSync(resolve(PLUGIN, 'resources/templates/manifest.json'), 'utf8'));
 

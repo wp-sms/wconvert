@@ -529,3 +529,18 @@ The standalone Prefill uses an explicit empty site destination; WordPress retain
 Six curated collections have current reviews for their 24 unique setups. **104 other studio approvals remain stale** and should be re-reviewed in focused batches. The current local release is 22 setups / 19 designs / five packs / three complete collections. The premium pack is a private local fixture, not a live premium download service. Hosting, licence authorization and real delivery remain deferred.
 
 Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.
+
+### Studio interface theme
+
+Internal review pages share `studio/chrome.css` through `build/studio-theme.mjs`.
+The build extracts the shipping admin tokens and copies the licensed DM Sans
+fonts with hashed filenames. Change the plugin palette once; rebuilding the
+studio picks it up. Design JSON, renderer CSS and public release previews are
+outside this interface theme.
+
+Rebuild with `bash tools/design-library/build.sh pilot library-review roadmap gallery bench review starting-points`
+and `node tools/design-library/build/collection-studio.mjs`. Serve `out/`, then
+run `WCONVERT_STUDIO_URL=http://127.0.0.1:9452 node tools/visual-tests/studio-chrome.mjs`.
+Evidence defaults to `/tmp/wconvert-studio-chrome`; set `WCONVERT_STUDIO_EVIDENCE`
+to use another directory. Keep `studio-assets/` beside generated pages when
+sharing the standalone files (system fonts remain the offline fallback).

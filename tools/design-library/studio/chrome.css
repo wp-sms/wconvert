@@ -1,0 +1,148 @@
+/* The shared admin tokens above are generated, not copied. Shadow-root designs
+   retain their own --wc-* tokens, font, control sizes and coloured surfaces. */
+:root:root {
+  color-scheme: light;
+  --ink: var(--foreground); --ink-2: var(--muted-foreground); --ink-3: var(--muted-foreground);
+  --paper: var(--background); --ground: var(--background); --panel: var(--card); --plate: var(--card);
+  --line: var(--border); --rule: var(--border); --stage-line: var(--border); --sunk: var(--surface);
+  --green: var(--action); --petrol: var(--action); --tint: var(--action); --warm: var(--warning);
+  --free: var(--success); --free-bg: var(--success-surface); --pro: var(--action); --pro-bg: var(--ice);
+  --ui: 'DM Sans', system-ui, sans-serif;
+}
+body { background: var(--background); color: var(--foreground); font: 14px/1.5 var(--ui); }
+a { color: var(--action); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { color: var(--foreground); }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.studio-nav { grid-column: 1 / -1; min-height: 78px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 36px; padding: 16px 48px; background: var(--primary); color: var(--primary-foreground); }
+.studio-nav a { color: inherit; text-decoration: none; }
+.studio-nav a:focus-visible { outline-color: var(--brand); }
+.studio-brand { font-size: 26px; font-weight: 600; letter-spacing: -.03em; display: flex; align-items: baseline; gap: 12px; }
+.studio-brand span, .studio-internal { font-size: 12px; font-weight: 400; letter-spacing: 0; }
+.studio-links { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.studio-links a { padding-block: 10px; border-block-end: 2px solid transparent; }
+.studio-links a[aria-current] { border-color: var(--brand); font-weight: 600; }
+.studio-internal { margin-inline-start: auto; }
+body > header { background: var(--background); border-color: var(--border); padding: 24px 48px; }
+body > main:not(.cards):not(.wrap) { max-width: 90rem; margin-inline: auto; padding: 32px 48px 48px; }
+h1 { font: 500 36px/1.15 var(--ui); letter-spacing: -.035em; max-width: 900px; }
+h1 em { color: var(--foreground); font-style: normal; }
+h2 { font: 600 20px/1.4 var(--ui); letter-spacing: -.02em; }
+h3 { font: 600 16px/1.4 var(--ui); letter-spacing: 0; }
+.intro p, p.intro { font-size: 14px; color: var(--muted-foreground); }
+.eyebrow, .meta, .type-label, .count, .status, small, .muted, .test-notice, .card-info p, .footer, .coverage, .review-summary p { color: var(--muted-foreground); }
+.eyebrow, .meta { letter-spacing: .04em; font-size: 12px; }
+.numbers strong, .stats strong { font: 600 36px/1.1 var(--ui); }
+.card-info h2, article > header h2 { font-size: 16px; }
+.brand { font: 600 16px/1.4 var(--ui); letter-spacing: 0; }
+.brand i { background: var(--primary); color: var(--primary-foreground); }
+.brand span { color: var(--muted-foreground); }
+button, select, input, textarea { box-sizing: border-box; font: inherit; color: var(--foreground); accent-color: var(--action); }
+button, select, input:where(:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color])), textarea {
+  min-width: 0; max-width: 100%; min-height: 36px; border: 1px solid var(--input); border-radius: var(--radius); background: var(--card); padding: 7px 12px;
+}
+button { font-weight: 500; cursor: pointer; }
+button:hover { color: var(--foreground); background: var(--accent); border-color: var(--input); }
+button[aria-pressed=true], button.active, button.on { color: var(--secondary-foreground); background: var(--secondary); border-color: var(--action); box-shadow: inset 0 -2px var(--action); }
+button.primary, .primary, #check, #export { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); box-shadow: none; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+input::placeholder, textarea::placeholder { color: var(--muted-foreground); opacity: 1; }
+input[type=checkbox], input[type=radio] { width: 16px; height: 16px; min-height: 0; padding: 0; flex-shrink: 0; }
+select { padding-inline-end: 30px; }
+input:where(:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color])), select { height: 36px; }
+.toolbar, .controls, .filters, .tabs, .steps { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+:is(.toolbar,.controls,.filters,.tabs,.steps) :is(button,select,input:not([type=checkbox]):not([type=radio])) { min-height: 32px; height: 32px; padding-block: 4px; font-size: 13px; }
+:is(.toolbar,.controls,.filters) label { min-width: 0; max-width: 100%; }
+.toolbar input { margin-inline-start: 0; flex: 1 1 200px; }
+.toolbar select { flex: 1 1 155px; width: 155px; }
+.toolbar { padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.controls { background: var(--card); }
+.card, article, .review-summary, .details, .notice { border-color: var(--border); border-radius: var(--radius); background: var(--card); }
+.stage, .frame, .preview-outer, .canvases { background: var(--stage); border-color: var(--border); }
+.badge { background: var(--surface); color: var(--foreground); border-radius: 4px; }
+.review-state { color: var(--muted-foreground); }
+.retire { color: var(--destructive); } .improve { color: var(--warning); }
+.notice { color: var(--foreground); }
+table { background: var(--card); } th,td { border-color: var(--border); } th { background: var(--surface); }
+dialog { width: min(80rem, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); overflow: hidden; }
+dialog[open] { display: flex; flex-direction: column; }
+dialog::backdrop { background: var(--overlay); backdrop-filter: none; }
+.dialog-head { flex: none; padding: 16px 24px; background: var(--card); border-color: var(--border); }
+.dialog-head h2 { font-size: 20px; }
+.dialog-head > div { min-width: 0; }
+.dialog-head h2 { overflow-wrap: anywhere; }
+.dialog-head button { flex-shrink: 0; min-height: 32px; padding-block: 4px; }
+.detail { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.canvas-area { overflow: visible; min-width: 0; }
+.details { border-color: var(--border); }
+.details h3 { font-size: 14px; text-transform: none; letter-spacing: 0; margin-block: 20px 8px; }
+.details input, .details select, .details textarea { font-size: 14px; min-height: 36px; }
+.details label { display: block; margin-block: 12px 6px; }
+.details p { overflow-wrap: anywhere; }
+.steps { margin-block: 16px; }
+.near { background: var(--card); color: var(--action); }
+/* Bench is a work area, not a reading-page shell. */
+body:has(#themes) { grid-template-rows: auto auto minmax(0,1fr); }
+body:has(#themes) > header { padding: 16px 24px; }
+/* Collection context is one labelled form with matched field heights. */
+.studio-context { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; padding: 20px; margin-top: 24px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+.studio-context label { margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.studio-context label:has([type=checkbox]) { flex-direction: row; align-items: center; grid-column: 1 / -1; }
+#collections article { display: flex; flex-direction: column; gap: 12px; }
+#collections article > * { margin: 0; }
+#collections article button { margin-top: auto; align-self: flex-start; }
+.pair { background: var(--stage); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+body > header:has(h1) p { color: var(--muted-foreground); margin-block: 12px 0; }
+@media (max-width: 900px) {
+  .studio-nav, body > header { padding-inline: 28px; }
+  body > main:not(.cards):not(.wrap) { padding-inline: 28px; }
+  .studio-brand { font-size: 22px; }
+  .studio-internal { display: none; }
+  .studio-context { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 600px) {
+  .studio-nav, body > header { padding-inline: 20px; }
+  .studio-nav { gap: 8px; }
+  .studio-links { width: 100%; justify-content: space-between; gap: 4px; }
+  body > main:not(.cards):not(.wrap) { padding: 24px 20px; }
+  h1 { font-size: 30px; }
+  .intro { display: block; }
+  .numbers { flex-wrap: wrap; gap: 20px; }
+  .toolbar { padding: 12px; }
+  .toolbar select, .toolbar input { flex-basis: 100%; width: 100%; }
+  .studio-context { grid-template-columns: minmax(0,1fr); padding: 16px; }
+  dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .dialog-head { padding: 16px; gap: 12px; }
+  .dialog-head h2 { font-size: 16px; }
+  .canvas-area, .details { padding: 16px; }
+  .controls > label { flex-wrap: wrap; }
+  :is(.details,.coverage) select { width: 100%; }
+}
+@media (pointer: coarse) {
+  button, select, input:not([type=checkbox]):not([type=radio]), :is(.toolbar,.controls,.filters,.tabs,.steps) :is(button,select,input:not([type=checkbox]):not([type=radio])), .dialog-head button { min-height: 44px; height: auto; }
+  input, select, textarea, .toolbar select, .details select, .details input, .details textarea { font-size: 16px; }
+  .studio-links a { min-height: 44px; }
+}
+@media (forced-colors: active) { button[aria-pressed=true], .studio-links a[aria-current] { outline: 2px solid Highlight; } }
+/* Shared geometry also covers the standalone collection and workbench pages. */
+* { box-sizing: border-box; }
+body > header { max-width: 90rem; width: 100%; margin-inline: auto; }
+body > header.top { padding-inline: 48px; }
+.group button[aria-pressed=true] { background: var(--secondary); color: var(--secondary-foreground); box-shadow: inset 0 -2px var(--action); }
+.group button { border: 1px solid transparent; }
+.act.primary { background: var(--primary); color: var(--primary-foreground); }
+.stage-wrap { background: var(--stage); }
+body:has(#themes) > aside { background: var(--card); border-color: var(--border); }
+body:has(#themes) > header h1 { font: 600 20px/1.4 var(--ui); text-transform: none; }
+@media(max-width: 900px) {
+  body > header.top { padding-inline: 28px; }
+  body:has(#themes) { display: block; height: auto; }
+  body:has(#themes) .stage-wrap { height: 520px; max-width: 100%; }
+  body:has(#themes) > aside { max-height: none; overflow: visible; border-block-start: 1px solid var(--border); }
+}
+@media(max-width: 600px) {
+  body > header.top { padding-inline: 20px; }
+  body:has(#themes) .stage-wrap { height: 440px; }
+}
+@media(max-width: 360px) { .studio-links { display: grid; grid-template-columns: 1fr 1fr; } }
+/* Old page-local field selectors must not restore decorative, low-contrast edges. */
+:root:root :is(input, select, textarea) { border-color: var(--input); }
