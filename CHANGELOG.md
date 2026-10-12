@@ -28,6 +28,18 @@ the full record for the team.
 
 ### Fixed
 
+- Changes asked for in the second WordPress.org plugin review (October 2026):
+  - The content lock block and shortcode escape their markup after the
+    `wconvert_content_region_html` filter as well, with the same rules as the
+    content inside, so whatever a filter returns is escaped before output.
+    The region's own `data-wconvert-*` attributes and Pro's attribute rename
+    still come through.
+  - The Pro "lock from here" divider block prints nothing instead of
+    returning its saved content unescaped.
+  - The hourly recovery sweep and the daily lead prune are scheduled on
+    `init` instead of `plugins_loaded`. Scheduling earlier made WooCommerce
+    load its translations too early, which WordPress logged as a
+    `_load_textdomain_just_in_time` notice on every dashboard load.
 - Changes asked for in the first WordPress.org plugin review (October 2026):
   - The spam-protection verification page loads its styles from a stylesheet
     printed by WordPress, not an inline `<style>` tag.

@@ -110,6 +110,7 @@ final class LeadPrunerTest extends TestCase
     public function testTheJobIsScheduledFromDayOneWithNoPeriodConfigured(): void
     {
         $this->pruner->hooks();
+        do_action('init');
 
         $this->assertNull($this->retention->days());
         $this->assertIsInt(wp_next_scheduled(LeadPruner::HOOK));
@@ -118,11 +119,26 @@ final class LeadPrunerTest extends TestCase
     public function testASecondBootDoesNotScheduleItTwice(): void
     {
         $this->pruner->hooks();
+        do_action('init');
         $first = wp_next_scheduled(LeadPruner::HOOK);
 
         $this->pruner->hooks();
+        do_action('init');
 
         $this->assertSame($first, wp_next_scheduled(LeadPruner::HOOK));
+    }
+
+    /**
+     * Not before `init`. hooks() runs on `plugins_loaded`, and
+     * wp_schedule_event() reads wp_get_schedules(), whose `cron_schedules`
+     * filter makes WooCommerce load its translations too early
+     * (WordPress.org review, round 2).
+     */
+    public function testBootingSchedulesNothingBeforeInit(): void
+    {
+        $this->pruner->hooks();
+
+        $this->assertFalse(wp_next_scheduled(LeadPruner::HOOK));
     }
 
     /**
