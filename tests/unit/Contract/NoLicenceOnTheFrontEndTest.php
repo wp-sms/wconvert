@@ -22,10 +22,10 @@ use WConvert\Tests\Unit\Support\PhpSource;
  *
  * 1. **One accessor, and one place the answer is looked up.** The interface is
  *    where the question is asked; exactly one file reads the constant.
- * 2. **No licence value is read on any front-end request.** Today the stronger
- *    statement holds — neither tree reads one anywhere — because Pro's updater
- *    and admin screens, the only things ADR 0015 permits to read it, do not
- *    exist yet.
+ * 2. **No licence value is read outside `pro/src/License/`, and none on any
+ *    front-end request.** ADR 0015 permits two readers — Pro's updater and
+ *    Pro's admin screens — and ADR 0143 put both, and nothing else, in that
+ *    one directory. Free reads none at all.
  * 3. **The front-end path asks no tier question at all.** Not "is Pro loaded",
  *    not a licence, not anything: an entitlement branch on the request path is
  *    the exact thing ADR 0004 spends the whole loader design avoiding.
@@ -50,6 +50,15 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
 
     /** Pro's bootstrap, the only place the answer is stated. */
     private const THE_DEFINITION = 'pro/src/Bootstrap.php';
+
+    /** The one directory licence code may live in (ADR 0143). */
+    private const THE_LICENCE = 'pro/src/License/';
+
+    /**
+     * And the one file outside it that may name it: Pro's bootstrap, which
+     * runs the licence's provider beside the capabilities' one.
+     */
+    private const THE_WIRING = 'pro/src/Bootstrap.php';
 
     /**
      * Every PHP file that SHIPS, in both plugins.
@@ -108,6 +117,18 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
     }
 
     /**
+     * @param list<string> $relativePaths
+     * @return list<string> Those whose CODE contains the needle in any case.
+     */
+    private static function containingIgnoringCase(array $relativePaths, string $needle): array
+    {
+        return array_values(array_filter(
+            $relativePaths,
+            static fn (string $path): bool => stripos(PhpSource::code(self::ROOT . '/' . $path), $needle) !== false
+        ));
+    }
+
+    /**
      * @param list<string> $absolutePaths
      * @return list<string> Those whose CODE contains the needle, tree-relative.
      */
@@ -156,28 +177,59 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
 
     /**
      * ========================================================================
-     * NO LICENCE VALUE IS READ ANYWHERE THAT SHIPS.
+     * NO LICENCE VALUE IS READ OUTSIDE `pro/src/License/`.
      * ========================================================================
      * ADR 0015 permits exactly two readers — Pro's updater and Pro's admin
-     * screens — and **neither exists yet**, so the assertion available today is
-     * the total one: the word does not appear in code in either tree. When the
-     * updater lands it will be the first hit, and whoever adds it will have to
-     * come here and narrow this to the paths ADR 0015 names. That is the point:
-     * a licence read is a decision, and this makes it one somebody takes on
-     * purpose rather than one that arrives inside a feature branch.
+     * screens — and ADR 0143 put both in one directory. Until it did, this was
+     * the total assertion: the word did not appear in code in either tree. It
+     * is narrowed to that directory and the bootstrap line that runs it, and no
+     * further, so a licence read anywhere else is still a decision somebody
+     * has to come here and take on purpose rather than one that arrives inside
+     * a feature branch.
      *
-     * Comments are stripped first. Both trees explain at length why they hold
-     * no licence check, and the explanation must not read as the violation.
+     * Case-insensitive, so `License\\` in a `use` line counts as a read: naming
+     * the class is how a capability would start asking it.
+     *
+     * Comments are stripped first. Both trees explain at length why the
+     * licence gates no feature, and the explanation must not read as the
+     * violation.
      */
-    public function testNoShippedFileReadsALicence(): void
+    public function testOnlyTheLicenceDirectoryReadsALicence(): void
     {
+        $outside = array_values(array_filter(
+            $this->shippedSources(),
+            static fn (string $path): bool => !str_starts_with($path, self::THE_LICENCE)
+        ));
+
+        $this->assertNotEmpty(
+            array_filter($this->shippedSources(), static fn (string $path): bool => str_starts_with($path, self::THE_LICENCE)),
+            sprintf('%s holds no PHP — the allowance below now excuses nothing, so narrow it back', self::THE_LICENCE)
+        );
+
         foreach (['licence', 'license', 'activation_key'] as $needle) {
             $this->assertSame(
-                [],
-                self::containing($this->shippedSources(), $needle),
-                sprintf('a licence value ("%s") read by code that ships', $needle)
+                $needle === 'license' ? [self::THE_WIRING] : [],
+                self::containingIgnoringCase($outside, $needle),
+                sprintf('a licence value ("%s") read by shipped code outside %s', $needle, self::THE_LICENCE)
             );
         }
+    }
+
+    /**
+     * And the wiring line names the provider, nothing more: the bootstrap
+     * runs the licence; it does not ask it anything.
+     */
+    public function testTheBootstrapOnlyRunsTheLicenceProvider(): void
+    {
+        $code = PhpSource::code(self::ROOT . '/' . self::THE_WIRING);
+
+        preg_match_all('/\\b\\w*licen[cs]e\\w*\\b/i', $code, $matches);
+
+        $this->assertSame(
+            ['License', 'LicenseServiceProvider', 'LicenseServiceProvider'],
+            $matches[0],
+            'Pro\'s bootstrap does more with the licence than run its provider'
+        );
     }
 
     /**
@@ -207,6 +259,17 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
                 [],
                 self::absoluteContaining($files, $needle),
                 sprintf('an entitlement branch ("%s") on the front-end request path', $needle)
+            );
+        }
+
+        // And nothing on the path so much as names the licence directory —
+        // the narrowing above lets `pro/src/License/` read one, and this is
+        // what keeps that allowance off every page view.
+        foreach (['licence', 'license'] as $needle) {
+            $this->assertSame(
+                [],
+                array_values(array_filter($files, static fn (string $path): bool => stripos(PhpSource::code($path), $needle) !== false)),
+                sprintf('the front-end request path touches the licence ("%s")', $needle)
             );
         }
     }

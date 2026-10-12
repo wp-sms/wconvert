@@ -855,7 +855,7 @@ exists from day one with nothing to do.
 ## Development
 
 ```bash
-composer install && npm install
+composer install && composer install -d pro && npm install
 
 npm run build          # build:free then build:pro — every bundle, both plugins
 npm run build:free     # free's bundles only; what the shipped package.json rebuilds
@@ -911,6 +911,17 @@ path from `wconvert.php`, and it is the only thing left in `vendor/` (Composer's
 own autoloader is stripped). `bin/autoload-template.php` is the fallback if
 wp-scoper ever writes nothing. The one production install command is
 `composer dist`.
+
+**Pro has its own `composer.json`, for one package: the licence SDK**
+([ADR 0143](docs/adr/0143-license-page-and-updater.md)).
+`veronalabs/wp-premium-sdk` is pinned to an exact beta and fetched over HTTPS
+from its public repository; wp-scoper copies it into `pro/packages/` under
+`WConvert\Pro\Deps`, and `pro/src/autoload.php` requires that classmap. So a
+checkout needs `composer install -d pro` before Pro boots or its tests run, and
+CI does the same. The build installs it in the stage like free's, strips
+`vendor/` whole (Composer reinstalls the unscoped original there), and the
+artifact contract's check (g) refuses a Pro ZIP without the scoped copy — and a
+free ZIP with any copy.
 
 **Translations are wp.org language packs.** There is no `Domain Path` and no
 `load_plugin_textdomain()` — WordPress loads the `wconvert` domain from
@@ -1078,7 +1089,9 @@ found at `wconvert/pro/`. Symlink it beside free:
 ln -s "$PWD/pro" ../wconvert-pro
 ```
 
-Or boot a throwaway WordPress with both mounted, needing no database:
+Pro needs its scoped licence SDK first (`composer install -d pro`), or it
+fatals on load. Then boot a throwaway WordPress with both mounted, needing no
+database:
 
 ```bash
 npx @wp-playground/cli server --workers=1 \

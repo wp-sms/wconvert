@@ -19,9 +19,15 @@ defined('ABSPATH') || exit;
 |    rather than a subdirectory, so free's vendor/ is not on a path Pro can
 |    rely on.
 |
-| Pro has no third-party PHP dependencies, so PSR-4 is the whole job. Both
-| Pro's plugin file and tests/bootstrap.php require THIS file, so there is one
-| definition of where Pro's classes live.
+| Pro has ONE third-party PHP dependency, the licence SDK
+| (veronalabs/wp-premium-sdk, ADR 0143), and it is not loaded through Composer
+| either: wp-scoper copies it under packages/ with its namespace prefixed to
+| WConvert\Pro\Deps, so another plugin's copy of the same SDK at another
+| version can never be the one that answers. packages/autoload.php is that
+| copy's classmap; it is required below, unconditionally — a Pro without it is
+| a broken build, and bin/verify-artifact-contract.sh refuses to zip one.
+| Everything else is PSR-4. Both Pro's plugin file and tests/bootstrap.php
+| require THIS file, so there is one definition of where Pro's classes live.
 |
 | THERE ARE TWO ROOTS, BECAUSE A MODULE IS A DIRECTORY (ADR 0056).
 |
@@ -75,3 +81,5 @@ spl_autoload_register(static function (string $class): void {
         require $file;
     }
 });
+
+require_once dirname(__DIR__) . '/packages/autoload.php';

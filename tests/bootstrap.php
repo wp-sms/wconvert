@@ -1890,3 +1890,141 @@ if (!function_exists('as_has_scheduled_action')) {
 if (!function_exists('rest_url')) {
     function rest_url(string $path = ''): string { return 'https://example.test/wp-json/' . ltrim($path, '/'); }
 }
+
+/*
+|--------------------------------------------------------------------------
+| The licence's WordPress surface (ADR 0143)
+|--------------------------------------------------------------------------
+| Pro's licence code is the one place in either plugin that talks to the
+| options table and the site transients directly rather than through
+| `OptionStore`: the SDK it wraps calls `get_option()` itself, and the updater
+| gate is a reaction to WordPress's own `update_option_{name}` events. So the
+| table is in memory here, and **writing an option fires the same three events
+| WordPress fires**, because what the gate is FOR is reacting to them.
+|
+| `plugin_basename()` is computed exactly the way WordPress computes it for a
+| plugin in its own directory: the last two path segments.
+|
+| @var array<string, mixed> $wconvertTestOptionTable
+| @var array<string, mixed> $wconvertTestSiteTransients
+*/
+$GLOBALS['wconvertTestOptionTable'] = [];
+$GLOBALS['wconvertTestSiteTransients'] = [];
+$GLOBALS['wconvertTestMultisite'] = false;
+
+if (!function_exists('plugin_basename')) {
+    function plugin_basename(string $file): string
+    {
+        return basename(dirname($file)) . '/' . basename($file);
+    }
+}
+
+if (!function_exists('remove_action')) {
+    function remove_action(string $hook, callable $callback, int $priority = 10): bool
+    {
+        $before = count($GLOBALS['wconvertTestActions'][$hook] ?? []);
+
+        $GLOBALS['wconvertTestActions'][$hook] = array_values(array_filter(
+            $GLOBALS['wconvertTestActions'][$hook] ?? [],
+            static fn (array $registered): bool => !($registered['priority'] === $priority && $registered['callback'] == $callback)
+        ));
+
+        return count($GLOBALS['wconvertTestActions'][$hook]) < $before;
+    }
+}
+
+if (!function_exists('get_option')) {
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    function get_option(string $name, $default = false)
+    {
+        return array_key_exists($name, $GLOBALS['wconvertTestOptionTable']) ? $GLOBALS['wconvertTestOptionTable'][$name] : $default;
+    }
+}
+
+if (!function_exists('add_option')) {
+    /** @param mixed $value */
+    function add_option(string $name, $value = '', string $deprecated = '', bool|string|null $autoload = null): bool
+    {
+        if (array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestOptionTable'][$name] = $value;
+        do_action('add_option_' . $name, $name, $value);
+
+        return true;
+    }
+}
+
+if (!function_exists('update_option')) {
+    /** @param mixed $value */
+    function update_option(string $name, $value, bool|string|null $autoload = null): bool
+    {
+        if (!array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+            return add_option($name, $value, '', $autoload);
+        }
+
+        $old = $GLOBALS['wconvertTestOptionTable'][$name];
+
+        if ($old === $value) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestOptionTable'][$name] = $value;
+        do_action('update_option_' . $name, $old, $value, $name);
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_option')) {
+    function delete_option(string $name): bool
+    {
+        if (!array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+            return false;
+        }
+
+        unset($GLOBALS['wconvertTestOptionTable'][$name]);
+        do_action('delete_option_' . $name, $name);
+
+        return true;
+    }
+}
+
+if (!function_exists('get_site_transient')) {
+    /** @return mixed */
+    function get_site_transient(string $name)
+    {
+        return $GLOBALS['wconvertTestSiteTransients'][$name] ?? false;
+    }
+}
+
+if (!function_exists('set_site_transient')) {
+    /** @param mixed $value */
+    function set_site_transient(string $name, $value, int $expiration = 0): bool
+    {
+        $GLOBALS['wconvertTestSiteTransients'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_site_transient')) {
+    function delete_site_transient(string $name): bool
+    {
+        $existed = array_key_exists($name, $GLOBALS['wconvertTestSiteTransients']);
+        unset($GLOBALS['wconvertTestSiteTransients'][$name]);
+
+        return $existed;
+    }
+}
+
+if (!function_exists('is_multisite')) {
+    function is_multisite(): bool
+    {
+        return (bool) $GLOBALS['wconvertTestMultisite'];
+    }
+}

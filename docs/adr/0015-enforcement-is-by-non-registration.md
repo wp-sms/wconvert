@@ -8,6 +8,11 @@ There is **no runtime licence check anywhere in WConvert.** The only question ev
 asked is "is [[Pro]] loaded", and it is answered by the registries themselves: a
 premium capability is *absent* from a free install rather than present and guarded.
 
+***Amended by [ADR 0143](0143-license-page-and-updater.md):** Pro now reads a
+licence — for its updater and its License page, in `pro/src/License/` and
+nowhere else. It is still never a **check**: nothing it reads switches a
+capability on or off, and no front-end request reads it.*
+
 ***Amended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md) on the second
 sentence only. The question is no longer "is Pro loaded" but "WHICH TIER is
 installed"** — `Tier` is a four-rung ladder (`free`, `basic`, `pro`, `elite`) and
@@ -180,6 +185,15 @@ and would put a branch on the request path 0004 exists to protect.
   source because `vendor/` is generated and no source file in this repository
   ever names the package. The narrowing this bullet asks for is still owed, by
   whoever lands the updater.*
+
+  ***Done, by [ADR 0143](0143-license-page-and-updater.md), and two of the
+  claims below no longer hold.** The SDK is public and fetched over HTTPS, so
+  there is no unreachable repository to wait for, and Pro's `composer.json`
+  scopes it directly rather than through a `premium` profile — Pro has nothing
+  else to scope, so a profile would be a switch with one position. And Nexus
+  does not serve a tier-matched ZIP: its tiers for WConvert are **plans** (how
+  many sites), and the elite ZIP is posted once per plan. The test is narrowed
+  to `pro/src/License/` and the bootstrap line that runs it.*
 
   ***What that work is, written down while it is fresh.** `veronalabs/wp-premium-sdk`
   is a private VCS repository, and the delivery decision is VeronaLabs' Nexus,

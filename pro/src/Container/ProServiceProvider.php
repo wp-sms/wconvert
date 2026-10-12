@@ -35,10 +35,10 @@ defined('ABSPATH') || exit;
  * is public. The dependency runs one way, as everywhere else in this split:
  * Pro reaches into free, free never reaches into Pro.
  *
- * It is Pro's FIRST provider, and it arrives with the first thing that needs
- * one. Nothing is written before its subject (ADR 0029), so there is still no
- * provider loop here — a second provider gets one, and until then a loop would
- * be scaffolding around a list of one.
+ * It holds every premium CAPABILITY. The licence has a provider of its own,
+ * {@see \WConvert\Pro\License\LicenseServiceProvider}, and nothing here asks
+ * it anything: a capability is here because it shipped (ADR 0015), and the
+ * licence buys updates and support (ADR 0143). `Bootstrap` runs the two.
  *
  * @since 0.1.0
  */
@@ -380,7 +380,8 @@ final class ProServiceProvider implements ServiceProvider
         // no SECOND condition here — no licence, no entitlement, no "is Pro
         // loaded". This code running IS the answer to that question (ADR 0015),
         // which is what "not one premium feature needs an `if`" means in
-        // practice.
+        // practice. The licence's own provider sits beside this one and is
+        // never consulted from it.
         if (is_admin()) {
             // The admin's own replacement is the mirror image, and it hooks on
             // THIS side of the guard: `admin_enqueue_scripts` never fires on a
