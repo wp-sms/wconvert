@@ -68,9 +68,9 @@ it('stages result creation without inventing an answer rule', () => {
   expect(within(modal).getByRole('button', { name: 'Add result' })).toHaveAttribute('aria-disabled', 'true');
   fireEvent.change(within(modal).getByLabelText('Result heading'), { target: { value: 'French press favourite' } });
   fireEvent.change(within(modal).getByLabelText('Question'), { target: { value: 'n1' } });
-  expect(within(modal).getByLabelText('Answer')).toHaveValue('');
+  expect(within(modal).getByRole('checkbox', { name: 'French press' })).not.toBeChecked();
   expect(change).not.toHaveBeenCalled();
-  fireEvent.change(within(modal).getByLabelText('Answer'), { target: { value: 'press' } });
+  fireEvent.click(within(modal).getByRole('checkbox', { name: 'French press' }));
   fireEvent.click(within(modal).getByRole('button', { name: 'Add result' }));
   expect(change).toHaveBeenCalledTimes(1);
   const result = change.mock.calls[0][0].steps.find((step: { kind: string }) => step.kind === 'result').results.at(-2);

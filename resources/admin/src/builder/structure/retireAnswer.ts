@@ -6,15 +6,24 @@ import { journeyReadinessIssues } from './journeyReadiness';
 import { journeyBoundaryIssues } from './journeyBoundaryReadiness';
 
 /** Stage a complete retirement. Mixed rules and shared/dependent content need explicit repair. */
-export function retireAnswerPlan(tree: TemplateTree, questionId: string, value: string): { next?: TemplateTree; removed: string[]; reason?: string } {
+export function retireAnswerPlan(original: TemplateTree, questionId: string, value: string): { next?: TemplateTree; removed: string[]; reason?: string } {
   const removed: string[] = [];
   const blocked = (reason: string) => ({ removed, reason });
-  const question = tree.steps.flatMap(screen => walkNodes(screen.content)).find(node => node.type === 'question' && 'id' in node && node.id === questionId);
-  if (!tree.graph || !question || question.type !== 'question' || !('options' in question)) return blocked(__('Edit the listed rules one at a time.', 'wconvert'));
+  const question = original.steps.flatMap(screen => walkNodes(screen.content)).find(node => node.type === 'question' && 'id' in node && node.id === questionId);
+  if (!original.graph || !question || question.type !== 'question' || !('options' in question)) return blocked(__('Edit the listed rules one at a time.', 'wconvert'));
   if ((question.options?.length ?? 0) <= 2) return blocked(__('Keep at least two choices. Add another choice before removing this one.', 'wconvert'));
   const uses = (when?: QuestionCondition) => when?.clauses.some(clause => clause.question === questionId && clause.values.includes(value));
   const only = (when?: QuestionCondition) => when?.clauses.length === 1 && when.clauses[0].question === questionId
     && ['is', 'includes_any'].includes(when.clauses[0].operator) && when.clauses[0].values.length === 1 && when.clauses[0].values[0] === value;
+  // A positive rule naming other answers too ("is any of") just loses this one:
+  // nobody can pick it any more, so no one else's line changes (ADR 0142).
+  const narrow = (when?: QuestionCondition): QuestionCondition | undefined => when?.clauses.length === 1 && when.clauses[0].question === questionId
+    && ['is', 'includes_any'].includes(when.clauses[0].operator) && when.clauses[0].values.length > 1 && when.clauses[0].values.includes(value)
+    ? { ...when, clauses: [{ ...when.clauses[0], values: when.clauses[0].values.filter(item => item !== value) }] } : when;
+  const tree: TemplateTree = { ...original, steps: original.steps.map(screen => ({ ...screen, ...(screen.when ? { when: narrow(screen.when) } : {}),
+    ...(screen.results ? { results: screen.results.map(result => result.when ? { ...result, when: narrow(result.when) } : result) } : {}) })),
+  graph: { ...original.graph, edges: original.graph.edges.map(edge => edge.when ? { ...edge, when: narrow(edge.when) } : edge) } };
+  if (!tree.graph) return blocked(__('Edit the listed rules one at a time.', 'wconvert'));
   const conditions = [...tree.steps.flatMap(screen => [screen.when, ...(screen.results?.map(result => result.when) ?? [])]), ...tree.graph.edges.map(edge => edge.when)];
   if (conditions.some(when => uses(when) && !only(when))) return blocked(__('Some rules combine this answer with other choices or comparisons. Edit those rules below first so other visitors keep the intended behavior.', 'wconvert'));
   let next: TemplateTree = { ...tree, steps: tree.steps.map(screen => ({ ...screen, ...(screen.results ? { results: screen.results.filter(result => {

@@ -21,9 +21,10 @@ it('refuses to discard choice conditions when switching to free text', () => {
   expect(questionTypeChange(tree, question.id, 'text')).toBeNull();
   expect(question.answer_type).toBe('single');
 });
-it('requires repair rather than dropping values from a multi-answer comparison', () => {
+it('carries several values over as “is any of” (ADR 0142)', () => {
   const base = structuredClone(enquiry) as unknown as TemplateTree;
   const id = base.steps.find(screen => screen.when)?.when?.clauses[0].question;
   const changed = { ...base, steps: base.steps.map(screen => screen.when ? { ...screen, when: { ...screen.when, clauses: screen.when.clauses.map(clause => ({ ...clause, values: ['garden', 'indoors'] })) } } : screen) };
-  expect(questionTypeChange(changed, id!, 'single')).toBeNull();
+  const single = questionTypeChange(changed, id!, 'single');
+  expect(single?.steps.find(screen => screen.when)?.when?.clauses[0]).toMatchObject({ operator: 'is', values: ['garden', 'indoors'] });
 });

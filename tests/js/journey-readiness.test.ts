@@ -64,7 +64,7 @@ it('blocks a required-save bypass and locates its hidden continuation', () => {
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.map(edge =>
     edge.id === 'balcony_hidden' ? { ...edge, to: 'received' } : edge) } };
   expect(journeyReadinessIssues(tree)).toContainEqual({ key: 'capture-path:enquiry:received',
-    said: 'A path reaches “Received” without the required save at “One enquiry”. Reconnect this path through the save screen.',
+    said: 'Some visitors reach “Received” after “One enquiry” and some without it. Send this line through the form, or give it an ending of its own.',
     repair: { screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' } });
   const optional: TemplateTree = { ...tree, submissions: tree.submissions.map(item => ({ ...item, required: false })) };
   expect(journeyReadinessIssues(optional).some(issue => issue.key.startsWith('capture-path:'))).toBe(false);

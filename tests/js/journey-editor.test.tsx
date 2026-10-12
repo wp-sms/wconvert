@@ -146,7 +146,7 @@ it('requires a chosen answer before inserting a relevant follow-up from the tool
   await user.click(screen.getByRole('button', { name: 'Change' }));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Where' }), 'edge:start');
   expect(screen.getByRole('button', { name: 'Add screen here' })).toHaveAttribute('aria-disabled', 'true');
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Includes this choice' }), 'balcony');
+  await user.click(screen.getByRole('checkbox', { name: 'Balcony' }));
   await user.click(screen.getByRole('button', { name: 'Add screen here' }));
   expect(draft().steps.at(-1)?.when?.clauses[0]).toEqual({ question: 'n1', operator: 'includes_any', values: ['balcony'] });
 });
@@ -179,7 +179,7 @@ it.each(['followup', 'branch'] as const)('starts a %s from Paths without confusi
   expect(screen.getByRole('radio', { name: intent === 'followup' ? 'Only if…' : 'Send some answers to a different screen' })).toBeChecked();
   expect(screen.getByRole('button', { name: 'Add screen here' })).toHaveAttribute('aria-disabled', 'true');
   await user.selectOptions(screen.getByRole('combobox', { name: intent === 'followup' ? 'Only if the answer to' : 'Send them when the answer to' }), 'n1');
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Includes this choice' }), 'garden');
+  await user.click(screen.getByRole('checkbox', { name: 'Garden' }));
   await user.click(screen.getByRole('radio', { name: /Show a message/ }));
   await user.click(screen.getByRole('button', { name: 'Add screen here' }));
   const next = draft(), added = next.steps.at(-1)!;
@@ -1106,7 +1106,8 @@ it('restores the pending answer review after editing a referenced branch', async
   await user.click(within(review).getByText('Stop offering this answer…'));
   await user.click(within(review).getByRole('button', { name: /Your taste Path 1/ }));
   expect(screen.getByRole('radio', { name: 'Paths' })).toBeChecked();
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Answer' }), 'press');
+  await user.click(screen.getByRole('checkbox', { name: 'French press' }));
+  await user.click(screen.getByRole('checkbox', { name: 'Filter or pour-over' }));
   const repaired = draft();
   expect(repaired).not.toEqual(initial);
   await user.click(screen.getByRole('button', { name: 'Back to How you brew' }));

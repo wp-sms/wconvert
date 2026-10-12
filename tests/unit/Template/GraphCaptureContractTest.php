@@ -135,6 +135,73 @@ final class GraphCaptureContractTest extends TestCase
         self::assertSame('capture_paths', GraphCaptureContract::issue($bypass, 'collect_enquiries'));
     }
 
+    /** An ending no route reaches through the required form is an early ending (ADR 0142). */
+    public function testAnEarlyEndingThatSkipsTheFormMayPublish(): void
+    {
+        $tree = self::withEnding(self::graphize('journey-service-enquiry'), 'not_fit', 'service', 'n2', 'design');
+        self::assertNull(GraphCaptureContract::issue($tree, 'collect_enquiries'));
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+    }
+
+    public function testAnEndingReachedBothWithAndWithoutTheFormIsRefused(): void
+    {
+        $tree = self::withEnding(self::graphize('journey-service-enquiry'), 'not_fit', 'service', 'n2', 'design');
+        $tree['graph']['edges'][] = ['id' => 'shared', 'from' => 'service', 'to' => 'received', 'kind' => 'answer', 'when' => [
+            'match' => 'all', 'clauses' => [['question' => 'n2', 'operator' => 'is', 'values' => ['repair']]],
+        ]];
+        self::assertSame('capture_paths', GraphCaptureContract::issue($tree, 'collect_enquiries'));
+    }
+
+    public function testAnEarlyEndingThatSkipsTheResultMayPublish(): void
+    {
+        $tree = self::withEnding(self::graphize('journey-product-finder'), 'browse', 'need', 'n3', 'balcony');
+        self::assertNull(GraphCaptureContract::issue($tree, 'find_match'));
+    }
+
+    public function testAnEndingReachedBothWithAndWithoutTheResultIsRefused(): void
+    {
+        $tree = self::withEnding(self::graphize('journey-product-finder'), 'browse', 'need', 'n3', 'balcony');
+        foreach ($tree['steps'] as &$screen) if ($screen['id'] === 'match') $screen['content']['children'][] = ['type' => 'button', 'action' => 'next', 'label' => 'Done'];
+        unset($screen);
+        $tree['graph']['edges'][] = ['id' => 'after_result', 'from' => 'match', 'to' => 'browse', 'kind' => 'default'];
+        self::assertSame('capture_paths', GraphCaptureContract::issue($tree, 'find_match'));
+    }
+
+    /** Every ending is early when the gate itself can be skipped by all of them. */
+    public function testNoEndingAfterTheGateIsRefused(): void
+    {
+        $tree = self::graphize('journey-service-enquiry');
+        $tree['graph']['edges'][] = ['id' => 'skip_all', 'from' => 'service', 'to' => 'received', 'kind' => 'answer', 'when' => [
+            'match' => 'all', 'clauses' => [['question' => 'n2', 'operator' => 'is', 'values' => ['design']]],
+        ]];
+        self::assertSame('capture_paths', GraphCaptureContract::issue($tree, 'collect_enquiries'));
+    }
+
+    /** The editor's `structure/gateEndings.ts` reads the same cases. */
+    public function testEarlyEndingParityFixture(): void
+    {
+        $fixture = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-early-endings.json'), true);
+        foreach ($fixture['cases'] as $case) {
+            $valid = $case['after'] !== [] && $case['shared'] === [];
+            self::assertSame($valid ? null : 'capture_paths', GraphCaptureContract::issue($case['tree'], $case['goal']), $case['name']);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $tree
+     * @return array<string, mixed>
+     */
+    private static function withEnding(array $tree, string $id, string $from, string $question, string $answer): array
+    {
+        $tree['steps'][] = ['id' => $id, 'name' => 'Not a fit', 'kind' => 'acknowledgement', 'content' => ['type' => 'stack', 'children' => [
+            ['type' => 'heading', 'text' => 'Thanks for looking'],
+        ]]];
+        $tree['graph']['edges'][] = ['id' => "to_$id", 'from' => $from, 'to' => $id, 'kind' => 'answer', 'when' => [
+            'match' => 'all', 'clauses' => [['question' => $question, 'operator' => 'is', 'values' => [$answer]]],
+        ]];
+        return $tree;
+    }
+
     public function testExistingSimpleSignupCanUpgradeWithoutChangingItsPublicationContract(): void
     {
         $tree = self::graphize('journey-email-only');

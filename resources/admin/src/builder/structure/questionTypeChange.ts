@@ -9,9 +9,9 @@ export function questionTypeChange(tree: TemplateTree, id: string, type: Questio
   const source = nodeAt(tree, block.path) as QuestionNode;
   const conditions = tree.steps.flatMap(screen => [screen.when, ...(screen.paths?.map(path => path.when) ?? []), ...(screen.results?.map(result => result.when) ?? [])]).concat(tree.graph?.edges.map(edge => edge.when) ?? []);
   const clauses = conditions.flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === id);
-  // A text answer cannot preserve a choice rule. Multi-value comparisons need
-  // explicit repair before converting to the single-value condition contract.
-  if (clauses.length && (type === 'text' || type === 'single' && clauses.some(clause => clause.values.length !== 1))) return null;
+  // A text answer cannot preserve a choice rule. Several values carry over:
+  // "includes any of" becomes "is any of" (ADR 0142).
+  if (clauses.length && type === 'text') return null;
   const condition = (value?: QuestionCondition): QuestionCondition | undefined => value && ({ ...value, clauses: value.clauses.map(clause => {
     if (clause.question !== id) return clause;
     const negative = clause.operator === 'is_not' || clause.operator === 'includes_none';

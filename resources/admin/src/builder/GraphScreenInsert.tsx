@@ -6,6 +6,8 @@ import { ArrowRight, CircleHelp, Flag, LayoutTemplate, Send } from 'lucide-react
 import { followupGroups, followupGroupSource } from './structure/followupGroups';
 import { conditionText } from './structure/conditionText';
 import { walkNodes } from './structure/journey';
+import { gatesOf } from './structure/gateEndings';
+import { graphReaches } from './structure/graph';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
@@ -36,7 +38,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
   const effectiveKind: GraphScreenKind = intent === 'followup' && kind === 'input' ? 'followup' : kind;
   const [locationId, setLocationId] = useState(preferred?.id ?? '');
   const [questionId, setQuestionId] = useState(initialAnswer?.question ?? '');
-  const [answer, setAnswer] = useState(initialAnswer?.value ?? '');
+  const [answers, setAnswers] = useState<readonly string[]>(initialAnswer ? [initialAnswer.value] : []);
   const [includeHidden, setIncludeHidden] = useState(initialKind === 'followup');
   const location = locations.find(item => item.id === (intent === 'branch' ? `edge:${fallback?.id}` : locationId));
   const locationEdge = tree.graph?.edges.find(edge => `edge:${edge.id}` === location?.id);
@@ -48,15 +50,18 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
   const question = questionId ? choices.find(item => item.id === questionId) : choices[0];
   const unavailable = location ? insertionUnavailable(location, effectiveKind) : __('Choose a location to continue.', 'wconvert');
   const needsCondition = intent !== 'continue';
-  const conditionReady = !needsCondition || !!question?.options?.some(option => option.value === answer);
+  const conditionReady = !needsCondition || answers.length > 0 && answers.every(value => question?.options?.some(option => option.value === value));
   const validTargets = tree.steps.filter(screen => intent === 'branch' ? canAddGraphConnection(tree, source, screen.id)
     : location?.source && screen.id !== location.target && canTargetGraphScreen(tree, location.source, screen.id));
   const canInsert = !capture && (!initialAnswer || existing || !!name.trim()) && conditionReady && (existing ? validTargets.some(screen => screen.id === target) : !unavailable);
   const when = (): QuestionCondition | undefined => needsCondition && question ? { match: 'all', clauses: [{ question: question.id,
-    operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [answer] }] } : undefined;
+    operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [...answers] }] } : undefined;
   const group = intent === 'followup' ? followupGroups(tree).find(item => item.screens.some(at => tree.steps[at].id === location?.source || tree.steps[at].id === location?.target)) : undefined;
   const groupSource = group ? followupGroupSource(tree, group) : undefined;
   const suggested = unavailable && intent === 'continue' && kind === 'input' ? locations.find(item => item.target === source && !insertionUnavailable(item, 'input')) ?? locations.find(item => !insertionUnavailable(item, 'input')) : undefined;
+  // An ending added where the required form hasn't been passed is an early ending (ADR 0142).
+  const form = gatesOf(tree).details;
+  const skipsForm = !!form && !!tree.graph && !!location?.source && location.source !== form && !graphReaches(tree.graph, form, location.source);
   const captures = tree.steps.filter(screen => (validTargets.includes(screen) || screen.id === location?.target) && walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
   // Why the primary is refused, said beside it (§9); `null` when it can run.
   const refusal = canInsert ? null
@@ -88,25 +93,28 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         ] as const).map(([value, label, detail]) => {
           const off = value === 'followup' && existing || value === 'branch' && (!fallback || !graphChoiceSources(tree, source).length);
           return <label key={value} className="wconvert-radio-card" htmlFor={`${id}-intent-${value}`}><input id={`${id}-intent-${value}`} aria-labelledby={`${id}-intent-${value}-name`} aria-describedby={`${id}-intent-${value}-hint`} type="radio" name={`${id}-intent`} checked={intent === value}
-            disabled={off} onChange={() => { setIntent(value); setCapture(false); if (value === 'followup' && kind === 'ending') setKind('input'); setQuestionId(''); setAnswer(''); setTarget(''); setIncludeHidden(value === 'followup'); }} /><span><strong id={`${id}-intent-${value}-name`}>{label}</strong><small id={`${id}-intent-${value}-hint`}>{value === 'branch' && off ? __('Needs a choice question before this screen.', 'wconvert') : value === 'followup' && off ? __('For an existing screen, set “Only if…” in its panel.', 'wconvert') : detail}</small></span></label>;
+            disabled={off} onChange={() => { setIntent(value); setCapture(false); if (value === 'followup' && kind === 'ending') setKind('input'); setQuestionId(''); setAnswers([]); setTarget(''); setIncludeHidden(value === 'followup'); }} /><span><strong id={`${id}-intent-${value}-name`}>{label}</strong><small id={`${id}-intent-${value}-hint`}>{value === 'branch' && off ? __('Needs a choice question before this screen.', 'wconvert') : value === 'followup' && off ? __('For an existing screen, set “Only if…” in its panel.', 'wconvert') : detail}</small></span></label>;
         })}
       </fieldset>}
       {intent !== 'branch' && (changeLocation || !location) ? <><label htmlFor={`${id}-location`}>{existing ? __('Line to change', 'wconvert') : __('Where', 'wconvert')}</label>
-        <select id={`${id}-location`} value={locationId} onChange={event => { setLocationId(event.target.value); setQuestionId(initialAnswer?.question ?? ''); setAnswer(initialAnswer?.value ?? ''); setTarget(''); }}>
+        <select id={`${id}-location`} value={locationId} onChange={event => { setLocationId(event.target.value); setQuestionId(initialAnswer?.question ?? ''); setAnswers(initialAnswer ? [initialAnswer.value] : []); setTarget(''); }}>
           <option value="" disabled>{__('Choose a location…', 'wconvert')}</option>
           {locations.map(item => <option key={item.id} value={item.id} disabled={existing ? item.id === 'entry' : !!insertionUnavailable(item, effectiveKind)}>{item.label}{!existing && insertionUnavailable(item, effectiveKind) ? ` — ${insertionUnavailable(item, effectiveKind)}` : ''}</option>)}
         </select></> : null}
       {initialAnswer && !location && <p>{__('This answer is on more than one line. Choose where this follow-up belongs.', 'wconvert')}</p>}
       {initialAnswer && location && !question && <p role="status">{__('This answer is not available here. Choose a location after its question, or change the condition.', 'wconvert')} <button type="button" onClick={() => setAdvanced(true)}>{__('Change condition', 'wconvert')}</button></p>}
-      {initialAnswer && question && !advanced && <div className="wconvert-insert-condition"><strong>{sprintf(/* translators: 1: a question. 2: “is” or “includes”. 3: an answer. */ __('Only if “%1$s” %2$s “%3$s”', 'wconvert'), question.label, question?.answer_type === 'multi' ? __('includes', 'wconvert') : __('is', 'wconvert'), question?.options?.find(option => option.value === answer)?.label ?? '')}</strong><button type="button" onClick={() => setAdvanced(true)}>{__('Change condition', 'wconvert')}</button></div>}
+      {initialAnswer && question && !advanced && <div className="wconvert-insert-condition"><strong>{sprintf(/* translators: 1: a question. 2: “is” or “includes”. 3: an answer. */ __('Only if “%1$s” %2$s “%3$s”', 'wconvert'), question.label, question?.answer_type === 'multi' ? __('includes', 'wconvert') : __('is', 'wconvert'), answers.map(value => question?.options?.find(option => option.value === value)?.label ?? value).join(` ${__('or', 'wconvert')} `))}</strong><button type="button" onClick={() => setAdvanced(true)}>{__('Change condition', 'wconvert')}</button></div>}
       {needsCondition && (!initialAnswer || advanced) && <>
         <label htmlFor={`${id}-question`}>{intent === 'branch' ? __('Send them when the answer to', 'wconvert') : __('Only if the answer to', 'wconvert')}</label>
-        <select id={`${id}-question`} value={question?.id ?? ''} disabled={!choices.length} onChange={event => { setQuestionId(event.target.value); setAnswer(''); }}>
+        <select id={`${id}-question`} value={question?.id ?? ''} disabled={!choices.length} onChange={event => { setQuestionId(event.target.value); setAnswers([]); }}>
           {!choices.length && <option value="">{__('Choose a location after a choice question', 'wconvert')}</option>}
           {choices.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
         </select>
-        <label htmlFor={`${id}-answer`}>{question?.answer_type === 'multi' ? __('Includes this choice', 'wconvert') : __('Is this choice', 'wconvert')}</label>
-        <select id={`${id}-answer`} value={answer} disabled={!question} onChange={event => setAnswer(event.target.value)}><option value="" disabled>{__('Choose an answer…', 'wconvert')}</option>{question?.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
+        {/* Several answers make one line: "My home or My flat" (ADR 0142). */}
+        <fieldset className="wconvert-journey-settings__answers" disabled={!question}><legend>{question?.answer_type === 'multi' ? __('Includes any of these', 'wconvert') : __('Is any of these', 'wconvert')}</legend>
+          {question?.options?.map(option => <CheckRow key={option.value} className="wconvert-check" label={option.label} checked={answers.includes(option.value)}
+            onChange={event => setAnswers(event.target.checked ? [...answers, option.value] : answers.filter(value => value !== option.value))} />)}
+        </fieldset>
       </>}
       {existing ? <><label htmlFor={`${id}-target`}>{__('Connect to', 'wconvert')}</label><select id={`${id}-target`} value={target} onChange={event => setTarget(event.target.value)}><option value="">{__('Choose a screen…', 'wconvert')}</option>{validTargets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}</select><p>{!validTargets.length ? __('No other screen can follow this line without making a loop. Add a new screen instead.', 'wconvert') : __('Screens that would make a loop aren’t listed. You’ll check any screens or forms this change skips before it applies.', 'wconvert')}</p></> : <>
         {(!initialAnswer || advanced) && <div className="wconvert-graph-insert__types wconvert-radio-cards" role="group" aria-label={__('Screen type', 'wconvert')}>
@@ -135,7 +143,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
         <label htmlFor={`${id}-name`}>{kind === 'input' ? __('Question', 'wconvert') : __('Screen name', 'wconvert')}</label><Input id={`${id}-name`} maxLength={120} value={name} placeholder={intent === 'followup' ? __('Relevant follow-up', 'wconvert') : kind === 'content' ? __('A helpful message', 'wconvert') : kind === 'ending' ? __('All done', 'wconvert') : __('A follow-up question', 'wconvert')} onChange={event => setName(event.target.value)} />
         {kind === 'input' && <label htmlFor={`${id}-answer-type`}>{__('Answer type', 'wconvert')}<select id={`${id}-answer-type`} value={answerType} onChange={event => setAnswerType(event.target.value as QuestionNode['answer_type'])}><option value="single">{__('Choose one', 'wconvert')}</option><option value="multi">{__('Choose several', 'wconvert')}</option><option value="text">{__('Short answer', 'wconvert')}</option></select></label>}
         {location?.sharedHidden && intent !== 'branch' && (!initialAnswer || advanced) && <CheckRow className="wconvert-check" checked={includeHidden} onChange={event => setIncludeHidden(event.target.checked)} label={sprintf(/* translators: %s: a screen's name. */ __('Also check this screen when “%s” is skipped', 'wconvert'), tree.steps.find(item => item.id === location.source)?.name ?? '')} />}
-        {kind === 'ending' && intent !== 'followup' && <p>{__('This is a closing screen. It does not save details. Any bypassed screens or required saves are shown for review.', 'wconvert')}</p>}
+        {kind === 'ending' && intent !== 'followup' && <p>{skipsForm ? __('Visitors who finish here don’t save their details. That’s fine for an early ending such as “Not a fit”: it reads “Ends without saving details”.', 'wconvert') : __('This is a closing screen. It doesn’t save details.', 'wconvert')}</p>}
         {unavailable && <div role="status"><p>{unavailable}</p>{suggested && <Button type="button" variant="outline" onClick={() => { setLocationId(suggested.id); setChangeLocation(false); }}>{sprintf(__('Add before %s', 'wconvert'), tree.steps.find(screen => screen.id === suggested.target)?.name ?? '')}</Button>}</div>}
         </>}
       </>}

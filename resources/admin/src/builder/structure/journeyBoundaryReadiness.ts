@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { graphReaches } from './graph';
+import { gateEndings } from './gateEndings';
 import { submissionScreen, walkNodes } from './journey';
 import type { JourneyReadinessIssue } from './journeyReadiness';
 
@@ -30,7 +31,9 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
   const name = (id: string) => tree.steps.find(screen => screen.id === id)?.name ?? id;
   const result = tree.steps.find(screen => screen.kind === 'result');
   if (action === 'match' && result) {
-    const endings = new Set(tree.steps.filter(screen => !tree.graph!.edges.some(edge => edge.from === screen.id)).map(screen => screen.id));
+    // An ending that skips the result on purpose is early and allowed (ADR 0142).
+    const sides = gateEndings(tree, result.id);
+    const endings = new Set(sides.shared.length ? sides.shared : sides.after.length ? [] : sides.early);
     for (const { target, edge } of bypasses(tree, result.id, endings)) issues.push({
       key: `result-bypass:${target}`,
       said: sprintf(__('A line reaches “%1$s” without showing “%2$s”. Send the line from “%3$s” through the result.', 'wconvert'), name(target), result.name, name(edge.from)),

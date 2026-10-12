@@ -29,8 +29,8 @@ export function followupInsertionEdge(tree: TemplateTree, source: string, questi
   const rank = (choice: string) => options.findIndex(option => option.value === choice);
   const ranks = group.screens.map(at => {
     const clauses = tree.steps[at].when?.clauses;
-    return clauses?.length === 1 && clauses[0].question === questionId && clauses[0].values.length === 1
-      && ['is', 'includes_any'].includes(clauses[0].operator) ? rank(clauses[0].values[0]) : -1;
+    return clauses?.length === 1 && clauses[0].question === questionId && clauses[0].values.length > 0
+      && ['is', 'includes_any'].includes(clauses[0].operator) ? Math.min(...clauses[0].values.map(rank)) : -1;
   });
   const ordered = ranks.every((at, i) => at >= 0 && (i === 0 || at >= ranks[i - 1]));
   const before = ordered ? ranks.findIndex(at => at > rank(value)) : -1;
