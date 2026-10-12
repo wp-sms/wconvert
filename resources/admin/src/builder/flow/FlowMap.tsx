@@ -6,7 +6,8 @@ import { issuesByScreen, type CampaignIssue } from '../readiness/campaignIssues'
 import { flowModel, lineIsOn, type FlowLine, type Priority } from '../structure/flowModel';
 import { flowLayout, layoutInput } from '../structure/flowLayout';
 import { clampZoom, fitZoom, revealScroll, stepZoom, zoomAt } from '../structure/flowViewport';
-import { walkNodes } from '../structure/journey';
+import { questionsIn, walkNodes } from '../structure/journey';
+import { useDirection } from '../../hooks/useDirection';
 import { tierProductName } from '../../goals/availability';
 import { FlowCard, FlowGroup } from './FlowCard';
 import { FlowLines, LinePill, type TraceState } from './FlowLines';
@@ -62,11 +63,11 @@ export interface FlowMapProps {
  */
 export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, samplePath = null, sampleEdges = null, onClearTrace, issues = noIssues, onIssue, destinationSummary, onAdd, onBranch, branchLocked = false }: FlowMapProps) {
   const id = useId();
-  const rtl = document.documentElement.dir === 'rtl';
+  const rtl = useDirection() === 'rtl';
   const coarse = useMedia('(pointer: coarse)');
   const reduced = useMedia('(prefers-reduced-motion: reduce)');
   const screen = selected === null ? undefined : tree.steps[selected];
-  const selectedQuestion = screen ? walkNodes(screen.content).flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : [])[0]
+  const selectedQuestion = screen ? questionsIn(screen.content)[0]?.id
     ?? screen.when?.clauses[0]?.question : undefined;
   const model = useMemo(() => flowModel(tree, { selectedQuestion }), [tree, selectedQuestion]);
   const [measured, setMeasured] = useState<Readonly<Record<string, number>>>({});
@@ -206,7 +207,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
     : near ? node === selectedNode ? undefined : near.nodes.has(node) ? 'on' : 'off' : undefined;
   const focusedLine = focusedPath !== null && selected !== null ? model.lines.find(line => line.select?.index === selected && line.select.priority === focusedPath)?.id : undefined;
   const byScreen = useMemo(() => issuesByScreen(issues), [issues]);
-  const label = (node: string) => model.cards.find(card => card.id === node)?.name ?? model.groups.find(group => group.id === node)?.title ?? '';
+  const label = model.nameOf;
   const edgeSource = (edge: string) => {
     const graphEdge = tree.graph?.edges.find(item => item.id === edge);
     return graphEdge ? tree.steps.findIndex(item => item.id === graphEdge.from) : -1;

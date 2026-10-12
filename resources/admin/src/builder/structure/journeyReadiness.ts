@@ -32,8 +32,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     if (!bypass.edge || !bypass.saving.length) continue;
     const ending = tree.steps.find(screen => screen.id === bypass.endingId)?.name ?? bypass.endingId;
     issues.push({ key: bypass.key,
-      said: sprintf(bypass.reason === 'result' ? __('A line reaches “%1$s” without saving at %2$s first. Send this line through the form.', 'wconvert')
-          : __('Every ending can be reached without saving at %2$s, including “%1$s”. Send this line through the form.', 'wconvert'),
+      said: sprintf(__('A line reaches “%1$s” without saving at %2$s first. Send this line through the form.', 'wconvert'),
         ending, bypass.saving.map(screen => `“${screen.name}”`).join(', ')),
       repair: { screenId: bypass.edge.from, section: 'paths', edgeId: bypass.edge.id,
         ...(bypass.edge.kind === 'hidden' ? { focus: 'hidden-route' as const } : {}) } });

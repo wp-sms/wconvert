@@ -773,7 +773,7 @@ final class TemplateLabels
         return [
             'submit' => __('Sends the form', 'wconvert'),
             'link' => __('Goes somewhere else', 'wconvert'),
-            'next' => __('Continues the journey', 'wconvert'),
+            'next' => __('Goes to the next screen', 'wconvert'),
             'back' => __('Returns to the previous screen', 'wconvert'),
             'skip' => __('Skips optional signup', 'wconvert'),
             'close' => __('Closes the popup', 'wconvert'),

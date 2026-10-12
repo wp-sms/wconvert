@@ -903,7 +903,7 @@ This contract is implemented under
 A Free journey is linear: the merchant can arrange its screens and submission
 points, including a screen that explains an offer before asking for details.
 Pro journeys are a **graph** (`tree.graph`, v3): an entry screen and edges between
-screens. Each [[Path]] is one edge — `answer` (taken when its condition on an
+screens. Each [[Line]] is one edge — `answer` (taken when its condition on an
 earlier choice matches), `default` (taken by [[All other answers]]) or an
 optional `hidden` override (where a skipped screen sends visitors instead of
 continuing along its default — [ADR 0135](docs/adr/0135-plain-style-controls-exact-values-under-advanced.md)). Paths
@@ -934,15 +934,17 @@ One step a visitor sees in a [[Capture journey]]: a message, a [[Form]], a
 question, a result or an ending. The left tree lists screens and opens each into
 its elements; the canvas shows one at a time.
 
-### Path
+### Line
 
-One way from a screen to the next screen (a graph edge). **Not** a
-[[Connection]] — that word stays the stored credentials for a remote account, and
-the journey sense was renamed to avoid the collision. "Branch" and "route" are
-retired synonyms. On the Flow map a path is drawn as a **line** ("Send some
-answers to a different screen", "+ on a line"); a line labelled with an answer
-is an answer line, and one answer line may match several answers ("My home or
-My flat", ADR 0142).
+One way from a screen to the next screen (a graph edge; version 2 stores them
+as `paths`, and the code keeps that name). **Not** a [[Connection]] — that word
+stays the stored credentials for a remote account, and the journey sense was
+renamed to avoid the collision. Merchant-facing copy says **line**, as the Flow
+map draws it ("Send some answers to a different screen", "+ on a line"); "path"
+was retired from copy by ADR 0142, a URL's path in display rules aside, and
+"branch" and "route" before it. A line labelled with an answer is an answer
+line, and one answer line may match several answers ("My home or My flat").
+One run through Preview or Try a visitor is a **visit**.
 
 ### Follow-up question
 
@@ -978,8 +980,8 @@ question with answer lines it depends on the answer. Replaces "Next screen" and
 "Check next". An ending that no route reaches through the required form (or,
 for find-a-match, the result) is an **early ending** and says "Ends without
 saving details"; one some visitors reach both ways says "Some visitors end
-here without saving details". Both are allowed while another ending comes
-after the form (ADR 0142).
+here without saving details". Both publish (ADR 0142); a change that makes
+one is checked once.
 
 ### Template
 
@@ -1572,7 +1574,7 @@ shown alongside Destination health, with no durable delivery ledger.
 
 ### Connection
 
-*Not the journey sense: a way between two screens is a [[Path]].*
+*Not the journey sense: a way between two screens is a [[Line]].*
 
 Stored credentials for one remote account — a Mailchimp API key, a Brevo key. One
 Connection backs one or more [[Destination]]s, so two Mailchimp audiences are two

@@ -1159,7 +1159,7 @@ it('offers a free install linear screens only, with no question, condition or pa
   expect(tree.steps).toHaveLength(3);
   expect(tree.graph).toBeUndefined();
   expect(tree.steps.some(item => item.paths || item.when || walkNodes(item.content).some(node => node.type === 'question'))).toBe(false);
-  expect(screen.queryByText('This site’s plan can’t show answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.')).not.toBeInTheDocument();
+  expect(screen.queryByText('This site’s plan can’t show questions, results, answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.')).not.toBeInTheDocument();
 });
 
 it('tells a free install it cannot display a journey draft, without naming Pro', async () => {
@@ -1167,7 +1167,7 @@ it('tells a free install it cannot display a journey draft, without naming Pro',
   const user = userEvent.setup();
   render(<Editor initial={finder.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  expect(screen.getByText('This site’s plan can’t show answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.')).toBeInTheDocument();
+  expect(screen.getByText('This site’s plan can’t show questions, results, answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.')).toBeInTheDocument();
   expect(screen.queryByText(/WConvert Pro|requires Pro|needs Pro/)).not.toBeInTheDocument();
   // An imported journey is not edited further on a free install.
   expect(screen.queryByRole('heading', { name: 'Results' })).not.toBeInTheDocument();

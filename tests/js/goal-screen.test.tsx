@@ -269,7 +269,7 @@ describe('a goal then a draft', () => {
     await waitFor(() => expect(created).toHaveBeenCalledWith('01JQZK8N3M4P5Q6R7S8T9V0W1X'));
     expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
     expect(optins.createOptin).toHaveBeenCalledExactlyOnceWith(DRAFT.name, DRAFT.goal, DRAFT.config);
-    expect(screen.queryByRole('button', { name: 'Create this Campaign' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create this campaign' })).not.toBeInTheDocument();
     expect(screen.queryByText('Step 3 of 3')).not.toBeInTheDocument();
   });
 

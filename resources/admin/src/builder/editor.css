@@ -2359,18 +2359,14 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-line[data-selected] { stroke-width: 3.5; }
 .wconvert-flow-line[data-state='on'] { stroke-width: 3.5; }
 .wconvert-flow-arrow { fill: var(--flow-ink); }
-.wconvert-flow-line[data-color='1'], .wconvert-flow-arrow[data-marker='answer-1'] { --flow-ink: var(--answer-1); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='1'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='1'] { --flow-answer: var(--answer-1); --flow-answer-surface: var(--answer-1-surface); }
-.wconvert-flow-line[data-color='2'], .wconvert-flow-arrow[data-marker='answer-2'] { --flow-ink: var(--answer-2); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='2'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='2'] { --flow-answer: var(--answer-2); --flow-answer-surface: var(--answer-2-surface); }
-.wconvert-flow-line[data-color='3'], .wconvert-flow-arrow[data-marker='answer-3'] { --flow-ink: var(--answer-3); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='3'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='3'] { --flow-answer: var(--answer-3); --flow-answer-surface: var(--answer-3-surface); }
-.wconvert-flow-line[data-color='4'], .wconvert-flow-arrow[data-marker='answer-4'] { --flow-ink: var(--answer-4); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='4'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='4'] { --flow-answer: var(--answer-4); --flow-answer-surface: var(--answer-4-surface); }
-.wconvert-flow-line[data-color='5'], .wconvert-flow-arrow[data-marker='answer-5'] { --flow-ink: var(--answer-5); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='5'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='5'] { --flow-answer: var(--answer-5); --flow-answer-surface: var(--answer-5-surface); }
-.wconvert-flow-line[data-color='6'], .wconvert-flow-arrow[data-marker='answer-6'] { --flow-ink: var(--answer-6); }
-:is(.wconvert-flow-card, .wconvert-flow-group)[data-color='6'], :is(.wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill)[data-color='6'] { --flow-answer: var(--answer-6); --flow-answer-surface: var(--answer-6-surface); }
+/* One answer, one color (ADR 0142): each slot is named once; lines, arrows, cards, chips, dots, pills and the overview read --flow-answer. */
+:is(.wconvert-flow-line, .wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill, .wconvert-flow-overview rect)[data-color='1'], .wconvert-flow-arrow[data-marker='answer-1'] { --flow-answer: var(--answer-1); --flow-answer-surface: var(--answer-1-surface); }
+:is(.wconvert-flow-line, .wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill, .wconvert-flow-overview rect)[data-color='2'], .wconvert-flow-arrow[data-marker='answer-2'] { --flow-answer: var(--answer-2); --flow-answer-surface: var(--answer-2-surface); }
+:is(.wconvert-flow-line, .wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill, .wconvert-flow-overview rect)[data-color='3'], .wconvert-flow-arrow[data-marker='answer-3'] { --flow-answer: var(--answer-3); --flow-answer-surface: var(--answer-3-surface); }
+:is(.wconvert-flow-line, .wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill, .wconvert-flow-overview rect)[data-color='4'], .wconvert-flow-arrow[data-marker='answer-4'] { --flow-answer: var(--answer-4); --flow-answer-surface: var(--answer-4-surface); }
+:is(.wconvert-flow-line, .wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill, .wconvert-flow-overview rect)[data-color='5'], .wconvert-flow-arrow[data-marker='answer-5'] { --flow-answer: var(--answer-5); --flow-answer-surface: var(--answer-5-surface); }
+:is(.wconvert-flow-line, .wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-chip, .wconvert-flow-dot, .wconvert-flow-pill, .wconvert-flow-overview rect)[data-color='6'], .wconvert-flow-arrow[data-marker='answer-6'] { --flow-answer: var(--answer-6); --flow-answer-surface: var(--answer-6-surface); }
+.wconvert-flow-line[data-color], .wconvert-flow-arrow[data-marker^='answer-'] { --flow-ink: var(--flow-answer); }
 /* A trace and a problem outrank an answer's color. */
 .wconvert-flow-line[data-problem] { --flow-ink: var(--destructive); }
 /* Around a selection a grey line turns dark; teal is only a visitor's path, so it never reads as an answer. */
@@ -2472,13 +2468,8 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-overview { padding: 4px; cursor: pointer; }
 .wconvert-flow-overview svg { display: block; max-inline-size: 142px; max-block-size: 160px; }
 .wconvert-flow-overview rect { fill: var(--border); }
-.wconvert-flow-overview rect[data-color='1'] { fill: var(--answer-1); }
-.wconvert-flow-overview rect[data-color='2'] { fill: var(--answer-2); }
-.wconvert-flow-overview rect[data-color='3'] { fill: var(--answer-3); }
-.wconvert-flow-overview rect[data-color='4'] { fill: var(--answer-4); }
-.wconvert-flow-overview rect[data-color='5'] { fill: var(--answer-5); }
-.wconvert-flow-overview rect[data-color='6'] { fill: var(--answer-6); }
-.wconvert-flow-overview .wconvert-flow-overview__view { fill: rgb(31 90 107 / 0.12); stroke: var(--action); stroke-width: 1; }
+.wconvert-flow-overview rect[data-color] { fill: var(--flow-answer); }
+.wconvert-flow-overview .wconvert-flow-overview__view { fill: color-mix(in srgb, var(--action) 12%, transparent); stroke: var(--action); stroke-width: 1; }
 .wconvert-flow-issue { display: flex; align-items: center; gap: 6px; min-block-size: 32px; margin: 6px 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--destructive); font-size: var(--text-micro); cursor: pointer; }
 .wconvert-flow-issue svg { inline-size: 14px; block-size: 14px; }
 .wconvert-flow-issue__list { inline-size: min(320px, calc(100vw - 32px)); padding: 6px; }

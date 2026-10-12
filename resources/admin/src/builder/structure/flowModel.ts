@@ -4,7 +4,7 @@ import { conditionText } from './conditionText';
 import { followupGroups, followupGroupSource } from './followupGroups';
 import { earlyEnding, type SkippedGate } from './gateEndings';
 import { graphDisplayOrder } from './graph';
-import { unreachableScreenIds, walkNodes } from './journey';
+import { questionsIn, unreachableScreenIds, walkNodes } from './journey';
 
 /**
  * What the Flow map draws (ADR 0142), worked out once from the tree and never
@@ -106,6 +106,8 @@ export interface FlowModel {
   readonly focusQuestion?: string;
   /** The card or box a screen is drawn in. */
   readonly nodeOf: (screenId: string) => string;
+  /** A card's screen name, or a follow-up box's title. */
+  readonly nameOf: (node: string) => string;
 }
 
 export function routesFor(tree: TemplateTree, index: number) {
@@ -217,10 +219,8 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
   const answersOf = (id: string) => out(id).filter(edge => edge.kind === 'answer');
   const defaultOf = (id: string) => out(id).find(edge => edge.kind === 'default');
   const hiddenOf = (id: string) => out(id).find(edge => edge.kind === 'hidden');
-  const questions = new Map(tree.steps.flatMap(screen => walkNodes(screen.content))
-    .filter((node): node is QuestionNode & { id: string } => node.type === 'question' && 'id' in node && typeof node.id === 'string').map(node => [node.id, node]));
-  const own = (id: string) => new Set(walkNodes(byId.get(id)?.screen.content ?? { type: 'stack' } as never)
-    .flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : []));
+  const questions = new Map(tree.steps.flatMap(screen => questionsIn(screen.content)).map(node => [node.id, node]));
+  const own = (id: string) => { const screen = byId.get(id)?.screen; return new Set(screen ? questionsIn(screen.content).map(node => node.id) : []); };
   const { colors, focusQuestion } = answerColors(tree, selectedQuestion);
   const colorOf = (when?: QuestionCondition) => answerColorOf(colors, when);
   const answerWords = (question: string, values: readonly string[]) => values.map(value => questions.get(question)?.options?.find(option => option.value === value)?.label ?? value)
@@ -410,5 +410,6 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
       next: nodeOf(group.next), nextName: targetName(nodeOf(group.next)), color: nodeColor.get(group.id),
       unreachable: unreachable.has(tree.steps[group.screens[0]].id) };
   });
-  return { cards, groups: boxes, lines, straight: !lines.some(line => line.label) && !cards.some(card => card.onlyIf), focusQuestion, nodeOf };
+  const nameOf = (node: string) => cards.find(card => card.id === node)?.name ?? boxes.find(group => group.id === node)?.title ?? '';
+  return { cards, groups: boxes, lines, straight: !lines.some(line => line.label) && !cards.some(card => card.onlyIf), focusQuestion, nodeOf, nameOf };
 }

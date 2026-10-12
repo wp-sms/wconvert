@@ -29,7 +29,7 @@ import type { Template } from '@renderer/types';
  * ONLY THE BOUND ROUTES ARE DRAWN.
  * ============================================================================
  * This listed every site route as a checkbox, so a site with twelve showed
- * twelve and the two this Campaign used had to be found among them — with the
+ * twelve and the two this campaign used had to be found among them — with the
  * warnings of the other ten beside them. Now each bound route is a card with
  * the Settings screen's own health badge, and **Add destination** opens a
  * picker over the rest. A route created from here is selected in the same

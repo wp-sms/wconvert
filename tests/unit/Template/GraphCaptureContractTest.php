@@ -173,8 +173,7 @@ final class GraphCaptureContractTest extends TestCase
     {
         $fixture = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-early-endings.json'), true);
         foreach ($fixture['cases'] as $case) {
-            $valid = $case['after'] !== [] || $case['shared'] !== [];
-            self::assertSame($valid ? null : 'capture_paths', GraphCaptureContract::issue($case['tree'], $case['goal']), $case['name']);
+            self::assertSame($case['issue'] ?? null, GraphCaptureContract::issue($case['tree'], $case['goal']), $case['name']);
         }
     }
 

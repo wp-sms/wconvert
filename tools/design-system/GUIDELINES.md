@@ -407,6 +407,7 @@ not jump.
 | a gallery of rendered designs | `GallerySkeleton` |
 | a `StatRow` | `StatRowSkeleton` |
 | a list of choices with a control at the leading edge | `RowsSkeleton` |
+| the builder's Flow map, while its code loads | `FlowSkeleton` |
 | anything else — a form, a run of sentences | `RegionSkeleton` |
 
 Picking one by what is on screen rather than by what is coming is the failure
@@ -708,11 +709,11 @@ Not gaps. Each was decided:
   "identifier". **Send** and **send again**, never push or re-push. **Shown**
   is the one name for impressions. **Keep in WConvert only** is the one name
   for local mode. Editor tabs are **Screens · Design · Display rules ·
-  Destinations** (one **Edit** tab replaces the first two, ADR 0134), and a
-  journey's link to another screen is a **path** to the **next screen**, never
-  a destination or a connection. The rest of the editor's words are
-  `CONTEXT.md`'s list: Look, Screen, Path, Follow-up question, Show only if…,
-  Form, All other answers, Then. Domain nouns (campaign, goal, lead,
+  Destinations** (one **Edit** tab replaces the first two, ADR 0134), and the
+  way from one screen to another is a **line**, never a path, destination or
+  connection (ADR 0142). The rest of the editor's words are `CONTEXT.md`'s
+  list: Look, Screen, Line, Follow-up question, Only if…, Form, All other
+  answers, Then. `tests/js/flow-words.test.ts` refuses the retired ones. Domain nouns (campaign, goal, lead,
   destination) are lowercase mid-sentence; capitals start a title, a button
   or a sentence. US spelling.
 - **More than two row actions go in a ⋯ menu**, with icons and labels. A
@@ -755,7 +756,7 @@ must not imply that mutually exclusive paths are sequential visitor steps.
   Tailwind utilities deliberately, and document that boundary.
 - Control lists explicitly reset markers, margin and padding. Preserve list
   semantics where WebKit suppresses them with `list-style: none`. Prose lists keep
-  their bullets. Show priority once; a fallback is “Everyone else”, not another
+  their bullets. Show priority once; the last way is “All other answers”, not another
   numbered decision. Never globally strip list markers to fix one component.
 
 ### Card anatomy and text

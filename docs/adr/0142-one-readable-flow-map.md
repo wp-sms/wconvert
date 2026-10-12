@@ -54,9 +54,13 @@ scenarios), reviewed at claude.ai/artifact/2Hk19gwMXdFXvtpSeN2Q5u.
    required form, or for find-a-match the result. An ending no route to it
    passes through the gate is *early* and says "Ends without saving details"
    (or "without a result"); one some visitors reach both ways says "Some
-   visitors end here without saving details". Both publish while at least one
-   ending comes after the gate. A change that newly lets some visitors skip
-   the form is reviewed once ("Check this change"), as the prototype did.
+   visitors end here without saving details". Both publish. ~~Both publish
+   while at least one ending comes after the gate.~~ *Corrected after review:
+   once every screen is connected, an ending always comes after the gate (a
+   gate no line reaches is refused as disconnected first), so there is no
+   separate check.* A change that newly lets some visitors skip the form, to
+   an early ending or a shared one, is reviewed once ("Check this change"),
+   as the prototype did.
    The server (`GraphCaptureContract`) and the editor
    (`structure/gateEndings.ts`) share one fixture.
 9. **React Flow is replaced by a plain map**: dagre for a top-to-bottom layout,
@@ -79,9 +83,12 @@ scenarios), reviewed at claude.ai/artifact/2Hk19gwMXdFXvtpSeN2Q5u.
     result reached is named. Preview's "Show this path on the map" feeds the
     same state; any edit clears it.
 
-And a **truthful Free banner**: a draft using answer lines "can't be published;
-a live copy is paused; your draft keeps saving" — what `OptinController` and
-`Degradation` actually do.
+And a **truthful Free banner**: a draft using questions, results, answer lines
+or "Only if…" (all that `CaptureJourney::requiresPremium` counts) "can't be
+published; a live copy is paused; your draft keeps saving" — what
+`OptinController` and `Degradation` actually do. *The first wording named only
+answer lines and "Only if…", so a draft with one plain question was told to
+remove something it did not have; corrected after review.*
 
 ## Consequences
 

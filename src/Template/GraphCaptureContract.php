@@ -87,7 +87,8 @@ final class GraphCaptureContract
         if (self::maximumQuestions($graph, $questionWeights) > CaptureJourney::MAX_QUESTIONS) { return 'question_path_limit'; }
         if ($terminal === []) { return 'routes'; }
         if ($goal === 'find_match') {
-            if ($result === null || count($submissions) > 1 || !self::gateHolds($graph, $result, $terminal)) { return 'capture_paths'; }
+            // An ending may skip the result (ADR 0142); once every screen is connected one always comes after it.
+            if ($result === null || count($submissions) > 1) { return 'capture_paths'; }
             if ($questionCount === 0 || !array_filter(array_keys($questionScreens),
                 static fn (string $screenId): bool => !self::bypasses($graph, $entry, $screenId, [$result]))) { return 'questions'; }
         } elseif (!in_array($goal, ['grow_email_list', 'grow_sms_list', 'collect_enquiries', 'deliver_lead_magnet'], true)
@@ -126,11 +127,8 @@ final class GraphCaptureContract
             }
             if (!$identifier) { return 'identifier'; }
             if (count($submission['consents']) > 1) { return 'consent'; }
-            if ($submission['required'] && ($goal === 'find_match'
-                ? self::bypasses($graph, $entry, $submitScreen, [$result])
-                : !self::gateHolds($graph, $submitScreen, $terminal))) {
-                return 'capture_paths';
-            }
+            // An ending may skip the required form (ADR 0142); a result may not.
+            if ($submission['required'] && $goal === 'find_match' && self::bypasses($graph, $entry, $submitScreen, [$result])) { return 'capture_paths'; }
             if ($goal === 'find_match' && $submission['required'] && !JourneyGraph::reaches($graph, $submitScreen, $result)) { return 'capture_paths'; }
         }
         foreach ($nodes as $id => $source) {
@@ -148,21 +146,6 @@ final class GraphCaptureContract
         return null;
     }
 
-    /**
-     * Endings and a gate (the required form, or the result): an ending may be
-     * reached without the gate — an early ending like "Not a fit", or one some
-     * visitors reach both ways — and the map says so (ADR 0142). The gate holds
-     * while at least one ending comes after it.
-     * @param array<string, mixed> $graph
-     * @param list<string> $endings
-     */
-    private static function gateHolds(array $graph, string $gate, array $endings): bool
-    {
-        foreach ($endings as $ending) {
-            if ($ending === $gate || JourneyGraph::reaches($graph, $gate, $ending)) { return true; }
-        }
-        return false;
-    }
 
     /** True when some route reaches a target without showing the required screen.
      * @param array<string, mixed> $graph
