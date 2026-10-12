@@ -67,6 +67,10 @@ final class LicenseServiceProvider implements ServiceProvider
         (new UpdateGate($sdk, plugin_basename(WCONVERT_PRO_MAIN_FILE)))->hooks();
         (new RefreshCron($sdk->licenseManager(), $sdk->store()))->hooks();
 
+        if (is_admin()) {
+            (new AdminSurfaces($sdk))->hooks();
+        }
+
         // On `rest_api_init`, which fires on requests WordPress does not
         // consider wp-admin — the same reason Pro's other routes register there.
         add_action('rest_api_init', static function () use ($container): void {

@@ -1,0 +1,141 @@
+/*
+ * The License page (ADR 0143), ported from the approved prototype v3
+ * (claude.ai/artifact/EovSgYnM27kRV686LKGgWP) onto the admin's own tokens.
+ *
+ * Plain CSS rather than utility classes on purpose: Tailwind scans free's
+ * `resources/admin/src` for the classes it emits, and a class used only under
+ * `pro/` would be a class nothing emits. Everything here is scoped under
+ * `#wconvert-admin .wconvert-license`, so it reaches nothing else.
+ */
+#wconvert-admin .wconvert-license { display:grid; gap:20px; max-inline-size:72rem; }
+#wconvert-admin .wconvert-license--narrow { max-inline-size:44rem; }
+#wconvert-admin .wconvert-license :is(h2,p) { margin:0; }
+
+/* The status card and the activate card. */
+#wconvert-admin .wconvert-license :is(.wconvert-license-hero,.wconvert-license-act-card) { min-inline-size:0; border:1px solid var(--border); border-radius:8px; background:var(--card); overflow:hidden; }
+#wconvert-admin .wconvert-license-hero[data-tone=warning] { border-color:color-mix(in srgb, var(--warning) 45%, transparent); }
+#wconvert-admin .wconvert-license-hero[data-tone=danger] { border-color:color-mix(in srgb, var(--destructive) 45%, transparent); }
+#wconvert-admin :is(.wconvert-license-hero__top,.wconvert-license-act-card__main) { display:grid; grid-template-columns:auto minmax(0,1fr); gap:18px; padding:24px 24px 22px; }
+#wconvert-admin .wconvert-license-well { display:grid; place-items:center; inline-size:48px; block-size:48px; border-radius:50%; background:var(--surface); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-well[data-tone=success] { background:var(--success-surface); color:var(--success); }
+#wconvert-admin .wconvert-license-well[data-tone=warning] { background:var(--warning-surface); color:var(--warning); }
+#wconvert-admin .wconvert-license-well[data-tone=danger] { background:var(--destructive-surface); color:var(--destructive); }
+#wconvert-admin .wconvert-license-well[data-tone=info] { background:var(--ice); color:var(--action); }
+#wconvert-admin .wconvert-license-hero__chip { margin-block-end:8px; }
+#wconvert-admin .wconvert-license-hero__chip > * { border-color:transparent; background:var(--ice); color:var(--action); }
+#wconvert-admin .wconvert-license :is(.wconvert-license-hero,.wconvert-license-act-card) h2 { font-size:var(--text-title, 1.375rem); font-weight:500; line-height:1.3; letter-spacing:-.02em; text-wrap:balance; }
+#wconvert-admin .wconvert-license h2:focus { outline:none; }
+#wconvert-admin .wconvert-license-hero__body { margin-block-start:6px !important; font-size:var(--text-body); max-inline-size:62ch; }
+#wconvert-admin .wconvert-license-hero__field { margin-block-start:14px; max-inline-size:36rem; }
+#wconvert-admin .wconvert-license-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px 18px; margin-block-start:16px; }
+#wconvert-admin .wconvert-license-notice .wconvert-license-actions, #wconvert-admin .wconvert-license-error .wconvert-license-actions { margin-block-start:6px; gap:6px 14px; }
+
+/* Updates · Support · Renewal. */
+#wconvert-admin .wconvert-license-strip { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); margin:0; border-block-start:1px solid var(--border); }
+#wconvert-admin .wconvert-license-strip > div { min-inline-size:0; padding:14px 24px; border-inline-start:1px solid var(--border); }
+#wconvert-admin .wconvert-license-strip > div:first-child { border-inline-start:0; }
+#wconvert-admin .wconvert-license-strip dt { font-size:var(--text-label, .75rem); font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-strip dd { display:grid; gap:1px; margin:4px 0 0; font-size:var(--text-body); font-weight:500; overflow-wrap:anywhere; }
+#wconvert-admin .wconvert-license-strip dd small { font-size:var(--text-note); font-weight:400; color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-strip > div[data-tone=danger] dd { color:var(--destructive); }
+#wconvert-admin .wconvert-license-strip > div[data-tone=warning] dd { color:var(--warning); }
+
+/* The foot: the updates line, and Check now. */
+#wconvert-admin .wconvert-license-hero__foot { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 24px; padding:12px 24px; border-block-start:1px solid var(--border); background:var(--surface); font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-hero__updates { flex:1 1 22rem; min-inline-size:0; }
+#wconvert-admin .wconvert-license-line { display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px 10px; }
+#wconvert-admin .wconvert-license-line svg { inline-size:16px; block-size:16px; flex:none; }
+#wconvert-admin .wconvert-license-stack { display:grid; gap:6px; min-inline-size:0; }
+#wconvert-admin .wconvert-license-steps { margin:0; padding-inline-start:20px; display:grid; gap:4px; }
+#wconvert-admin .wconvert-license-act { color:var(--action); }
+#wconvert-admin .wconvert-license-ok { color:var(--success); }
+#wconvert-admin .wconvert-license-warn { color:var(--warning); }
+#wconvert-admin .wconvert-license-muted { color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-muted[data-over] { color:var(--warning); font-weight:600; }
+#wconvert-admin .wconvert-license-hint { margin:0; font-size:var(--text-note); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-act-card__main .wconvert-license-hint, #wconvert-admin .wconvert-license-act-card__main .wconvert-license-error { margin-block-start:10px; }
+#wconvert-admin .wconvert-license-coupon b { font-weight:600; }
+
+/* The renewal coupon. */
+#wconvert-admin .wconvert-license-coupon { display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-block-start:12px; padding:10px 12px; border-radius:var(--radius); background:var(--surface); font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-coupon code { font-family:var(--font-mono); font-weight:600; padding:2px 8px; border:1px dashed var(--input); border-radius:4px; background:var(--card); letter-spacing:.04em; }
+#wconvert-admin .wconvert-license-contact { display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+
+/* The activate card's key. */
+#wconvert-admin .wconvert-license-act-card__key { border-block-start:1px solid var(--border); background:var(--surface); padding:4px 24px 12px; }
+#wconvert-admin .wconvert-license-keyfield { display:grid; gap:6px; }
+#wconvert-admin .wconvert-license-keyrow { display:flex; gap:8px; align-items:center; }
+#wconvert-admin .wconvert-license-mono { font-family:var(--font-mono); letter-spacing:.04em; }
+#wconvert-admin .wconvert-license-error { display:grid; gap:6px; margin:0; font-size:var(--text-note); color:var(--destructive); }
+#wconvert-admin .wconvert-license-ext { color:var(--link); text-decoration:underline; text-decoration-color:color-mix(in srgb, var(--link) 40%, transparent); text-underline-offset:4px; }
+
+/* Inline results: read, focused and announced — never a toast. */
+#wconvert-admin .wconvert-license-notice { display:grid; grid-template-columns:auto minmax(0,1fr); gap:10px; padding:12px 16px; border:1px solid var(--border); border-radius:var(--radius); background:var(--card); font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-notice:focus { outline:2px solid var(--ring); outline-offset:2px; }
+#wconvert-admin .wconvert-license-notice > svg { inline-size:18px; block-size:18px; margin-block-start:1px; }
+#wconvert-admin .wconvert-license-notice[data-tone=success] { border-color:color-mix(in srgb, var(--success) 30%, transparent); background:var(--success-surface); }
+#wconvert-admin .wconvert-license-notice[data-tone=success] > svg { color:var(--success); }
+#wconvert-admin .wconvert-license-notice[data-tone=warning] { border-color:color-mix(in srgb, var(--warning) 30%, transparent); background:var(--warning-surface); }
+#wconvert-admin .wconvert-license-notice[data-tone=warning] > svg { color:var(--warning); }
+#wconvert-admin .wconvert-license-notice[data-tone=danger] { border-color:color-mix(in srgb, var(--destructive) 30%, transparent); background:var(--destructive-surface); }
+#wconvert-admin .wconvert-license-notice[data-tone=danger] > svg { color:var(--destructive); }
+#wconvert-admin .wconvert-license-notice[data-tone=info] > svg { color:var(--action); }
+#wconvert-admin .wconvert-license-notice__title { font-weight:600; font-size:var(--text-body); }
+#wconvert-admin .wconvert-license-notice__body { display:grid; gap:4px; }
+
+/* Sites and License key. */
+#wconvert-admin .wconvert-license-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:20px; align-items:start; }
+#wconvert-admin .wconvert-license-card { min-inline-size:0; border:1px solid var(--border); border-radius:var(--radius); background:var(--card); overflow:hidden; }
+#wconvert-admin .wconvert-license-card__head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:4px 16px; padding:10px 16px; border-block-end:1px solid var(--border); font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-card__head h2 { font-size:var(--text-heading, 1rem); font-weight:600; line-height:1.25; letter-spacing:-.01em; }
+#wconvert-admin .wconvert-license-card__body { padding:16px; display:grid; gap:14px; min-inline-size:0; }
+#wconvert-admin .wconvert-license-card__result { padding:12px 16px 0; }
+#wconvert-admin .wconvert-license-card__foot { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; padding:10px 16px; border-block-start:1px solid var(--border); font-size:var(--text-note); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-meter-wrap { display:grid; gap:6px; padding:14px 16px 4px; }
+#wconvert-admin .wconvert-license-meter { display:flex; gap:4px; }
+#wconvert-admin .wconvert-license-meter i { flex:1; block-size:6px; border-radius:3px; background:var(--border); }
+#wconvert-admin .wconvert-license-meter i[data-on] { background:var(--action); }
+#wconvert-admin .wconvert-license-meter i[data-over] { background:var(--warning); }
+#wconvert-admin .wconvert-license-search { position:relative; padding:12px 16px 0; }
+#wconvert-admin .wconvert-license-search svg { position:absolute; inset-inline-start:26px; inset-block-start:calc(50% + 6px); translate:0 -50%; inline-size:16px; block-size:16px; color:var(--muted-foreground); }
+#wconvert-admin .wconvert-license-search input { padding-inline-start:34px; }
+#wconvert-admin .wconvert-license-sites { inline-size:100%; border-collapse:collapse; margin-block-start:8px; font-size:var(--text-body); }
+#wconvert-admin .wconvert-license-sites th { padding:8px 16px; background:var(--surface); color:var(--muted-foreground); font-size:var(--text-label, .75rem); font-weight:600; letter-spacing:.04em; text-transform:uppercase; text-align:start; }
+#wconvert-admin .wconvert-license-sites td { padding:10px 16px; border-block-start:1px solid var(--border); vertical-align:middle; }
+#wconvert-admin .wconvert-license-site { display:inline-flex; flex-wrap:wrap; align-items:center; gap:4px 8px; min-inline-size:0; }
+#wconvert-admin .wconvert-license-domain { overflow-wrap:anywhere; font-weight:500; }
+#wconvert-admin .wconvert-license-warn-text { color:var(--warning); font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-num { white-space:nowrap; color:var(--muted-foreground); font-variant-numeric:tabular-nums; font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-act-cell { inline-size:1%; white-space:nowrap; text-align:end; }
+#wconvert-admin .wconvert-license-danger { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 16px; padding-block-start:14px; border-block-start:1px solid var(--border); }
+#wconvert-admin .wconvert-license-danger b { font-weight:500; }
+#wconvert-admin .wconvert-license-managed { display:flex; align-items:center; gap:8px; color:var(--muted-foreground); font-size:var(--text-note); }
+#wconvert-admin .wconvert-license-managed svg { inline-size:16px; block-size:16px; flex:none; }
+
+/* The account's licences, refused before the click when full. */
+#wconvert-admin .wconvert-license-choices { display:grid; gap:8px; margin:0; padding:0; border:0; min-inline-size:0; }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card { display:flex; align-items:flex-start; gap:8px; padding:12px; border:1px solid var(--input); border-radius:var(--radius); background:var(--card); line-height:1.5; cursor:pointer; }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card:has(> input:checked) { border-color:var(--action); box-shadow:inset 0 0 0 1px var(--action); }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card[data-refused] { opacity:.65; cursor:not-allowed; }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card > span { display:grid; gap:2px; min-inline-size:0; }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card > span > span { font-size:var(--text-note); color:var(--muted-foreground); overflow-wrap:anywhere; }
+#wconvert-admin .wconvert-license-choices .wconvert-radio-card input { margin:3px 0 0; accent-color:var(--action); }
+#wconvert-admin .wconvert-license-why { color:var(--warning) !important; font-weight:500; }
+
+@media (max-width:900px) {
+  #wconvert-admin .wconvert-license-grid { grid-template-columns:minmax(0,1fr); }
+}
+@media (max-width:600px) {
+  #wconvert-admin :is(.wconvert-license-hero__top,.wconvert-license-act-card__main) { grid-template-columns:minmax(0,1fr); padding:18px; gap:12px; }
+  #wconvert-admin .wconvert-license-strip { grid-auto-flow:row; }
+  #wconvert-admin .wconvert-license-strip > div { border-inline-start:0; border-block-start:1px solid var(--border); padding:12px 18px; }
+  #wconvert-admin .wconvert-license-strip > div:first-child { border-block-start:0; }
+  #wconvert-admin .wconvert-license-hero__foot { padding:12px 18px; }
+  #wconvert-admin .wconvert-license-keyrow { flex-wrap:wrap; }
+  #wconvert-admin .wconvert-license-sites thead { display:none; }
+  #wconvert-admin .wconvert-license-sites :is(tbody,tr,td) { display:block; inline-size:auto; }
+  #wconvert-admin .wconvert-license-sites tr { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 12px; padding:10px 16px; border-block-start:1px solid var(--border); }
+  #wconvert-admin .wconvert-license-sites td { padding:0; border:0; }
+  #wconvert-admin .wconvert-license-num::before { content:attr(data-label) " "; }
+  #wconvert-admin .wconvert-license-act-cell { grid-column:2; grid-row:1 / 3; align-self:center; }
+}

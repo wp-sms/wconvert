@@ -17,7 +17,7 @@ export function Footer() {
   return <footer className="wconvert-service-footer">
     <div className="wconvert-measure wconvert-service-inner mx-auto w-full">
       <div className="wconvert-service-identity">
-        <div className="wconvert-service-brand"><BrandMark variant="inverse" /><span>{__('WConvert', 'wconvert')}</span><PlanBadge tier={tier} /></div>
+        <div className="wconvert-service-brand"><BrandMark variant="inverse" /><span>{__('WConvert', 'wconvert')}</span><PlanBadge tier={tier} plain /></div>
       </div>
       {/* Resources, not a fourth copy of a Settings shortcut (ADR 0132, amending 0097). */}
       <nav className="wconvert-service-resource" aria-label={__('Resources', 'wconvert')}>

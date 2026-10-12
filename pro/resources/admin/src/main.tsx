@@ -12,6 +12,17 @@ import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
 import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
+import { registerPage } from '@/extraPages';
+import { __ } from '@wordpress/i18n';
+
+// The License page (ADR 0143): every rung's, so it is a registered page in the
+// one shared bundle rather than an entry in PRO_SCREENS, which stays empty.
+registerPage({
+  id: 'license',
+  title: __('License', 'wconvert-pro'),
+  description: __('Updates and support for WConvert Pro.', 'wconvert-pro'),
+  Component: lazy(() => import('./license/LicensePage').then((module) => ({ default: module.LicensePage }))),
+});
 
 registerPremiumJourneyRenderer();
 registerProviderMarks();

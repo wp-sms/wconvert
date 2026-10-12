@@ -69,7 +69,13 @@ nothing, and asserts no file on the front-end read path touches it.
    with no licence. The bell is untouched: it belongs to notifications.
 8. **The page.** One status card — headline, one action, then Updates · Support
    · Renewal, with updates and *Check now* in its foot — then a Sites card and a
-   License key card.
+   License key card. The page's words are `describeLicense()` in TypeScript;
+   what the licence says outside the page — the badge's dot and reason, and the
+   Plugins row — is `LicenseNotice` in PHP, sent with the payload, so the badge
+   and the row cannot disagree and free never computes it. Over the limit is
+   the store's own seat count (`activation_count`), not the listed rows, which
+   come only to a site that holds a seat. The page is a registered page
+   (`registerPage()`), not an entry in `PRO_SCREENS`: every rung has it.
    The payload's `state` is one of `none`, `active`, `expiring`, `cancelled`,
    `manual`, `lifetime`, `trial`, `trial_ended`, `expired`, `payment_failed`,
    `disabled`, `over_limit`, `moved`, `copy`, `key_unreadable`,

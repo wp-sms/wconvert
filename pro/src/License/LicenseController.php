@@ -325,7 +325,11 @@ final class LicenseController implements RestController
     /** @return array<string, mixed> */
     private function state(): array
     {
-        return LicenseState::payload(LicenseFacts::fromSite($this->sdk));
+        $license = LicenseState::current($this->sdk);
+
+        // The header badge, so the page can redraw it after a change without
+        // a second reading of the same rules.
+        return $license + ['badge' => AdminSurfaces::badge($license)];
     }
 
     private function managed(): bool

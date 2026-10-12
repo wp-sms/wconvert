@@ -2,6 +2,7 @@
 
 namespace WConvert\Pro\License;
 
+use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\License\KeySource;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Support\Request;
 
@@ -38,6 +39,20 @@ final class LicenseState
     public static function updatesAllowed(LicenseFacts $facts): bool
     {
         return !in_array(self::full($facts)['state'], self::NO_UPDATES, true);
+    }
+
+    /**
+     * This site's licence as every surface reads it — the payload, and what
+     * it says outside the License page ({@see LicenseNotice}). Reads what is
+     * stored; asks the store nothing.
+     *
+     * @return array<string, mixed>
+     */
+    public static function current(PremiumServiceProvider $sdk): array
+    {
+        $payload = self::payload(LicenseFacts::fromSite($sdk));
+
+        return $payload + ['notice' => LicenseNotice::for($payload)];
     }
 
     /** @return array<string, mixed> */
@@ -379,7 +394,7 @@ final class LicenseState
 
     /**
      * @param array<string, mixed> $license
-     * @return array{slug: string, label: string, max: int|null}
+     * @return array{slug: string, label: string, max: int|null, used: int}
      */
     private static function plan(array $license): array
     {
@@ -390,6 +405,10 @@ final class LicenseState
             'label' => (string) ($license['plan_name'] ?? ''),
             // Nexus counts an unlimited plan's seats as zero.
             'max' => $max > 0 ? $max : null,
+            // The store's own count of seats in use: the site list may be
+            // partial (it comes only to a site that holds a seat), the count
+            // never is, and it is what decides over the limit.
+            'used' => (int) ($license['activation_count'] ?? 0),
         ];
     }
 

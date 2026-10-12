@@ -50,7 +50,11 @@ The footer repeats the shared WConvert mark (the wconvert.io SVG since
 [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)) and wordmark with a compact plan
 badge. It omits the site title/address and credits VeronaLabs with its official
 logo, bundled locally, linked to https://veronalabs.com/. The same plan badge is
-used in navigation. The publisher credit sits centered in a separate bottom row with a muted
+used in navigation. *Amended by [ADR 0143](0143-license-page-and-updater.md): in
+navigation the badge is now a live link when another bundle supplies one
+(`planBadge`) — to the License page, with a dot and its reason, redrawn when the
+page changes the licence, and kept visible below 600px in the tools row. The
+footer's stays a plain label.* The publisher credit sits centered in a separate bottom row with a muted
 monochrome logo. “A product by” is outside the link; logo hover never underlines
 the credit, and keyboard focus remains visible.
 The header has no redundant link to the site's front end. The
