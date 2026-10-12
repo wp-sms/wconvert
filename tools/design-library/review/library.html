@@ -46,7 +46,16 @@ function background(el){for(let at=el;at;at=at.parentElement){const style=getCom
 function textContrast(el,foreground){const style=getComputedStyle(el);const fg=colour(foreground||style.color),bg=background(el);if(!fg||!bg||(fg[3]??1)!==1)return null;const large=parseFloat(style.fontSize)>=24||parseFloat(style.fontSize)>=18.66&&parseFloat(style.fontWeight)>=700;return {text:el.textContent.trim().slice(0,60),ratio:ratio(fg,bg),minimum:large?3:4.5}}
 function fieldContrast(input){const boundary=input.closest('.lpi')||input,style=getComputedStyle(boundary),match=style.boxShadow.match(/rgba?\([^)]+\)/);const ring=style.boxShadow.includes('inset')&&match?colour(match[0]):parseFloat(style.borderTopWidth)>0?colour(style.borderTopColor):null,inside=background(boundary),outside=background(boundary.parentElement);if(!ring||!inside||!outside||(ring[3]??1)!==1)return null;return {field:input.name||input.id,inside,outside,ring,ratio:Math.max(ratio(inside,outside),Math.min(ratio(ring,inside),ratio(ring,outside))),minimum:3}}
 
-function measure(root,width){
+function measure(root,width,displayType){
+ const composition=[];
+ if(displayType==='floating_bar'){
+  const heading=root.querySelector('.wc-heading'),field=root.querySelector('input[type=email],input[type=tel]'),button=root.querySelector('[data-action="submit"]');
+  if(heading&&field&&button){
+   const h=heading.getBoundingClientRect(),f=field.getBoundingClientRect(),b=button.getBoundingClientRect();
+   const beside=(h.right<=f.left+1||h.left>=f.right-1)&&h.bottom>f.top&&h.top<b.bottom;
+   if(beside&&b.top>=f.bottom-1)composition.push('Announcement beside a form whose button has wrapped below its field');
+  }
+ }
  const leaves=[...root.querySelectorAll('.wc-heading,.wc-text,strong,.wc-products div,.wc-products span,.wc-label,.wc-eyebrow,.wc-badge,.wc-consent-text,.wc-rating-text,.wc-code,input,select,textarea,button,a.wc-button,.wc-question-choice')].filter(e=>e.getBoundingClientRect().height>1);
  const controls=leaves.filter(e=>e.matches('input:not([type=checkbox]):not([type=radio]),select,textarea,button,a.wc-button,.wc-question-choice'));
  const overflow=[root,...root.querySelectorAll('*')].filter(e=>e.clientWidth>2&&e.scrollWidth>e.clientWidth+2&&!e.matches('input,select,textarea')).map(e=>e.className);
@@ -58,7 +67,7 @@ function measure(root,width){
  const height=Math.ceil(root.scrollHeight);const viewportHeight={320:568,390:844,768:1024,1440:900}[width];
  const textRatios=text.map(el=>textContrast(el)).filter(Boolean);for(const input of inputs){for(const [kind,color] of [['Input text',getComputedStyle(input).color],['Field placeholder',getComputedStyle(input,'::placeholder').color]]){const item=textContrast(input,color);if(item)textRatios.push({...item,text:kind+': '+(input.placeholder||input.name)})}}
  const fieldRatios=inputs.map(fieldContrast).filter(Boolean),lowContrast=textRatios.filter(c=>c.ratio<c.minimum),lowFieldContrast=fieldRatios.filter(c=>c.ratio<c.minimum);
- return {lowContrast,lowFieldContrast,textRatios,fieldRatios,width:Math.round(root.getBoundingClientRect().width),height,overflow:[...new Set(overflow)],minControl,inputSize,minText,scroll:height>viewportHeight*.85};
+ return {composition,lowContrast,lowFieldContrast,textRatios,fieldRatios,width:Math.round(root.getBoundingClientRect().width),height,overflow:[...new Set(overflow)],minControl,inputSize,minText,scroll:height>viewportHeight*.85};
 }
 function options(){const entries=all();$('page').replaceChildren(...Array.from({length:Math.ceil(entries.length/6)},(_,i)=>new Option(`${i+1} / ${Math.ceil(entries.length/6)}`,i)));$('design').replaceChildren(new Option('All designs',''),...entries.map(e=>new Option(e.name,e.id)))}
 function draw(){
@@ -66,7 +75,7 @@ function draw(){
  $('summary').textContent=`${entries.length} designs · ${$('width').value}px viewport · All screens shown together. ${data.before.length?'The Before view shows the supplied source baseline.':''}`;
  for(const e of shown){const article=document.createElement('article');article.dataset.design=e.id;const header=document.createElement('header');const h=document.createElement('h2');h.textContent=e.name;const note=document.createElement('small');const d=data.decisions[e.id];note.textContent=`${e.display_type} · ${e.tier} · ${d?.decision||'Reviewing'}${d?' — '+d.reason:''}`;note.className=d?.decision||'';header.append(h,note);if(e.notes){const setup=document.createElement('details');const label=document.createElement('summary');label.textContent=(e.recommendation||'Practical guidance')+' · Setup notes';const copy=document.createElement('p');copy.textContent=e.notes;setup.append(label,copy);header.append(setup);}article.append(header);const canvases=document.createElement('div');canvases.className='canvases';article.append(canvases);$('cards').append(article);
   e.tree.steps.forEach((screenData,step)=>{const p=document.createElement('div');p.className='preview';const label=document.createElement('small');label.textContent=`${step+1}. ${screenData.name}`;const screen=document.createElement('div');screen.className='screen';screen.append(label,p);canvases.append(screen);const {frame,root}=mount(e,step,Number($('width').value),$('stress').checked,$('rtl').checked);p.append(frame);
-  settled(root).then(()=>{const m=measure(root,Number($('width').value));const scale=Math.min(1,p.clientWidth/frame.getBoundingClientRect().width);frame.style.transform=`scale(${scale})`;p.style.height=(root.scrollHeight*scale+3)+'px';const output=document.createElement('output');output.className='metric';output.textContent=`${m.width} × ${m.height}px · ${m.overflow.length?'Overflow: '+m.overflow.join(', '):'Fits horizontally'}${m.minControl?' · Controls ≥ '+m.minControl+'px':''}${m.scroll?' · Scrolls on this viewport':''}`;screen.append(output)});
+  settled(root).then(()=>{const m=measure(root,Number($('width').value),e.display_type);const scale=Math.min(1,p.clientWidth/frame.getBoundingClientRect().width);frame.style.transform=`scale(${scale})`;p.style.height=(root.scrollHeight*scale+3)+'px';const output=document.createElement('output');output.className='metric';output.textContent=`${m.width} × ${m.height}px · ${m.overflow.length?'Overflow: '+m.overflow.join(', '):'Fits horizontally'}${m.minControl?' · Controls ≥ '+m.minControl+'px':''}${m.scroll?' · Scrolls on this viewport':''}`;screen.append(output)});
   });
  }
 }
@@ -74,12 +83,12 @@ async function check(){
  $('run').disabled=true;$('checks').textContent='Checking every design at four widths, both directions, with normal and longer copy…';const results=[];
  for(const e of all()){
   for(const width of [320,390,768,1440])for(const rtl of [false,true])for(const stress of [false,true])for(let step=0;step<e.tree.steps.length;step++)for(const variant of e.tree.steps[step].results||[null]){
-   const {frame,root}=mount(e,step,width,stress,rtl,variant);$('workbench').append(frame);await settled(root);const m=measure(root,width);results.push({id:e.id,viewport:width,rtl,stress,step,result:variant?.id||null,...m});WConvertRenderer.disposePreview(frame);frame.remove();
+   const {frame,root}=mount(e,step,width,stress,rtl,variant);$('workbench').append(frame);await settled(root);const m=measure(root,width,e.display_type);results.push({id:e.id,viewport:width,rtl,stress,step,result:variant?.id||null,...m});WConvertRenderer.disposePreview(frame);frame.remove();
   }
   await new Promise(resolve=>setTimeout(resolve,0));
  }
- const bad=results.filter(m=>m.lowContrast.length||m.lowFieldContrast.length||m.overflow.length||m.minControl!==null&&m.minControl<44||m.inputSize!==null&&m.inputSize<16);
- $('checks').replaceChildren();const p=document.createElement('p');p.id='check-summary';p.textContent=`${results.length} rendered cases across ${all().length} designs. ${bad.length} cases need attention (horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).`; $('checks').append(p);
+ const bad=results.filter(m=>m.composition.length||m.lowContrast.length||m.lowFieldContrast.length||m.overflow.length||m.minControl!==null&&m.minControl<44||m.inputSize!==null&&m.inputSize<16);
+ $('checks').replaceChildren();const p=document.createElement('p');p.id='check-summary';p.textContent=`${results.length} rendered cases across ${all().length} designs. ${bad.length} cases need attention (detached announcement forms, horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).`; $('checks').append(p);
  const table=document.createElement('table');table.innerHTML='<thead><tr><th>Design</th><th>Cases</th><th>Overflow</th><th>Smallest control</th><th>Input text</th><th>Smallest text</th></tr></thead>';const body=document.createElement('tbody');for(const e of all()){const rows=results.filter(m=>m.id===e.id);const tr=document.createElement('tr');for(const v of [e.name,rows.length,rows.filter(m=>m.overflow.length).length,Math.min(...rows.filter(m=>m.minControl!==null).map(m=>m.minControl)),Math.min(...rows.filter(m=>m.inputSize!==null).map(m=>m.inputSize)),Math.min(...rows.map(m=>m.minText))]){const td=document.createElement('td');td.textContent=Number.isFinite(v)||typeof v==='string'?v:'—';tr.append(td)}body.append(tr)}table.append(body);$('checks').append(table);$('results').textContent=JSON.stringify({summary:p.textContent,failures:bad,cases:results},null,2);$('run').disabled=false;
 }
 options();draw();for(const id of ['width','page','design','rtl','stress','no-artwork'])$(id).addEventListener('change',draw);$('version').addEventListener('change',()=>{$('checks').replaceChildren();$('results').textContent='';options();draw()});$('next').addEventListener('click',()=>{$('design').value='';$('page').selectedIndex=($('page').selectedIndex+1)%$('page').options.length;draw()});$('run').addEventListener('click',check);

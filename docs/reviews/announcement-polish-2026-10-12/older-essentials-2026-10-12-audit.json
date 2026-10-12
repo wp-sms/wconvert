@@ -1,0 +1,7518 @@
+{
+  "summary": "128 rendered cases across 4 designs. 0 cases need attention (detached announcement forms, horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).",
+  "failures": [],
+  "cases": [
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 605,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 235,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 883,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 428,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 605,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 235,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 883,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 428,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 581,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 235,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 802,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 363,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 581,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 235,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 802,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 363,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 436,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 603,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 436,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 603,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 436,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 603,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 436,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "The project notebook",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "07 — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Decisions beforeyou renovate. Take a moment to explore the d",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "A practical planning checklist",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Start witha clearer plan. — a little more to explore togethe",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Request a seven-point checklist for planning a home renovati",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the renovation checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource request. No automatic marketing signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 603,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-planning-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Thank you",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Checklist request received. — a little more to explore toget",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you for requesting the seven-point renovation checklis",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 650,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 235,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 984,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 363,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 650,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 235,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 984,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 363,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 584,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 170,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 805,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 299,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 584,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 170,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 805,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 299,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 391,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 604,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 391,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 604,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 391,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 604,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit.",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation.",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 391,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 194,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before the conversation",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Before the visit. — a little more to explore together",
+          "ratio": 6.9951422503908995,
+          "minimum": 3
+        },
+        {
+          "text": "Request a checklist for photos, measurements and questions t",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Prepare for a useful conversation. — a little more to explor",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Bring your priorities and a few questions. The checklist hel",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Send me the contractor visit checklist I requested.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request the visit checklist and explore the details",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "One resource email. No newsletter signup.",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 12.951477908464156,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            250,
+            240
+          ],
+          "ring": [
+            139,
+            122,
+            96
+          ],
+          "ratio": 3.996524439702952,
+          "minimum": 3
+        }
+      ],
+      "width": 704,
+      "height": 604,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "project-readiness-guide",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 6.9951422503908995,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 12.448526977889061,
+          "minimum": 3
+        },
+        {
+          "text": "Thank you. We have received your request. Take a moment to e",
+          "ratio": 12.448526977889061,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 704,
+      "height": 259,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 334,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 137,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 377,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 198,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 334,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 137,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 377,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 198,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 271,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 313,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 158,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 271,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 313,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 158,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Hear about hands-on repair sessions. — a little more to expl",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request workshop news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me repair workshop announcements. I can unsubscribe an",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "repair-workshop-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 292,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 137,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 335,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 198,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 292,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 137,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 320,
+      "height": 335,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 13,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 198,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 229,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 271,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 158,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 229,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 390,
+      "height": 271,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 158,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 768,
+      "height": 151,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 97,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready.",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "A new class, when it is ready. — a little more to explore to",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Request class news and explore the details",
+          "ratio": 5.168555560022562,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email me new-class announcements. I can unsubscribe anytime.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            255,
+            255,
+            255
+          ],
+          "ring": [
+            118,
+            129,
+            149
+          ],
+          "ratio": 3.9293478067024736,
+          "minimum": 3
+        }
+      ],
+      "width": 1440,
+      "height": 114,
+      "overflow": [],
+      "minControl": 48,
+      "inputSize": 16,
+      "minText": 14.6,
+      "scroll": false
+    },
+    {
+      "id": "local-class-news",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 17.73971700407407,
+          "minimum": 4.5
+        },
+        {
+          "text": "Thank you. Your request for announcements has been received.",
+          "ratio": 7.557378129674007,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1440,
+      "height": 76,
+      "overflow": [],
+      "minControl": null,
+      "inputSize": null,
+      "minText": 14,
+      "scroll": false
+    }
+  ]
+}

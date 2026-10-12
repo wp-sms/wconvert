@@ -46,6 +46,7 @@
     "test:template-studio": "node --test tools/design-library/build/*.test.mjs",
     "templates:review": "npm run templates:pilot && node tools/design-library/build/import-review.mjs",
     "templates:gate": "npm run templates:pilot && node tools/design-library/build/review-gate.mjs",
+    "templates:check-announcements": "node tools/visual-tests/announcement-composition.mjs",
     "templates:record": "node tools/design-library/build/record-design.mjs",
     "templates:collections": "npm run templates:pilot && node tools/design-library/build/collections.mjs && node tools/design-library/build/collection-studio.mjs && node tools/design-library/build/collection-audit.mjs",
     "templates:collections:publish": "node tools/design-library/build/collections.mjs --publish",

@@ -115,6 +115,10 @@ See [the review report](../../docs/reviews/template-visual-audit-2026-09-29.md).
    accessibility or good composition. Rebuild after the final edit and inspect
    the final output again. Record typography, spacing, balance and line-break
    review for all screens, including acknowledgements and result variants.
+   For rows/splits, save views immediately before/after their wrap widths with
+   filled and longer copy. The shared audit flags detached announcement forms;
+   `npm run templates:check-announcements` sweeps Bar with a field through its
+   intermediate widths in both directions. Neither check certifies visual quality.
    Then verify creation in WordPress and the actual configured destination journey.
 6. Record the reviewer, decision, notes and three evidence stages, then export the
    review JSON. Import with `npm run templates:review -- /path/to/export.json`;
@@ -550,3 +554,18 @@ sharing the standalone files (system fonts remain the offline fallback).
 The first older-library refresh revises Project notebook and Bar with a field across four existing setups. See `out/pilot.html?batch=older-essentials`. Numeric column proportions, phone typography, fine-print/field contrast, grouped form actions and acknowledgement layouts were checked in 128 responsive cases and eight native WordPress captures. Source counts remain 107 designs / 153 setups; studio counts remain 75 designs / 128 setups. There are now **28 current setup approvals and 100 stale older approvals**. Updating examples does not rewrite installed campaigns. See [review evidence](../../docs/reviews/older-essentials-2026-10-12.md).
 
 The separate [template staging service](../template-server/README.md) now serves the validated public release through a local Worker/R2 simulation on port 9454. It supports public Free/Pro previews, Free pack/image reads and tested conditional publication/rollback. The local catalogue remains 22 setups / 19 designs / five packs / three collections; six premium setups are advertised but downloading them stays disabled. Real R2/domain setup, authenticated remote publication and licence integration remain deferred. The plugin still requires HTTPS for actual remote discovery.
+
+### Announcement composition follow-up — 12 October 2026
+
+The first older-essentials review approved an awkward intermediate bar layout.
+Its passing size/contrast results were insufficient; the visual judgement was
+wrong. The follow-up stacks the announcement before the form runs out of room,
+including longer CTA wording. The shared library audit now flags this specific
+composition defect, and the dedicated sweep measures intermediate widths and
+saves actual-size screenshots. See [corrective review](../../docs/reviews/announcement-polish-2026-10-12.md).
+
+`npm run templates:check-announcements` uses the rebuilt studio on port 9452
+(`WCONVERT_STUDIO_URL` overrides it). `WCONVERT_COMPOSITION_EVIDENCE` selects its
+output directory. For the older-essentials visual/native runners,
+`WCONVERT_REVIEW_EVIDENCE` selects a new evidence directory so follow-up reviews
+do not overwrite earlier approval evidence.

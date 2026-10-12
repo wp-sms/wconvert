@@ -118,6 +118,23 @@ around 14px. Short phones may need vertical scrolling; horizontal overflow or
 clipped words are defects. `build.sh renderer library-review` provides the full
 collection and repeatable browser measurements for this pass.
 
+**Review the transition, not only the endpoints.** Find where a row or split
+changes arrangement and inspect the actual output immediately before and after
+that width, with filled campaign copy and a longer CTA. A layout can fit without
+overflow and still be badly composed. Keep the message, field, action and consent
+in a clear reading order; reject a heading beside a field with the action stranded
+below it. For announcement bars, use three deliberate arrangements: one row when
+there is room, a heading above the field/action row at intermediate widths, then
+a stacked form on a phone. Keep the field and action the same height when inline.
+Do not reduce useful wording or text size to force the wide arrangement.
+
+**Include the display controls in the review.** The bare renderer preview omits
+its container's close button. Check the actual mounted bar/popup in WordPress:
+the dismiss control must not overlap headings, fields, consent or actions on any
+screen. Allow for the larger touch control and check RTL. Wait for opening motion
+to finish before saving evidence; a partially visible entering bar is not a
+usable review screenshot.
+
 ### 1.7 A bar is not a narrow popup, and a slide-in is not a small one
 
 A `floating_bar` spans the whole inline axis at either block edge, over a page

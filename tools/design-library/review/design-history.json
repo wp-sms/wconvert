@@ -970,6 +970,12 @@
           "date": "2026-10-12",
           "revision": "9e86127fde21eab6477353176b48a362dfa79f52c612fcba13fea957f26f081b",
           "note": "Keep email and action together beside the message, improve consent hierarchy and contrast, and group acknowledgement text consistently."
+        },
+        {
+          "version": 6,
+          "date": "2026-10-12",
+          "revision": "3d8454d126b303656a2630c4eddf7fb9c121267cb56a5c49b7f132dd8d7c9986",
+          "note": "Stack the announcement before its form wraps; reserve dismissal space on both screens and on phones. Review actual/longer copy at transition widths with close controls present."
         }
       ]
     },

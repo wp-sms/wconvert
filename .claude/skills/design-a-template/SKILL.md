@@ -49,7 +49,15 @@ a usable Optin must not require rebuilding its layout.
    alignment, button prominence and overall balance. Run the size/contrast checks
    as well. Zero automated findings is not visual approval. Record what was
    actually inspected and keep a screenshot of the final result; an earlier
-   screenshot does not verify a later edit.
+   screenshot does not verify a later edit. For wrapping rows and splits, also
+   inspect the widths immediately before and after each layout transition with
+   real filled copy and a longer CTA. Save those views with a short composition
+   judgement (reading order, grouping and alignment), not only a count of passing
+   checks. Inspect the mounted WordPress output with its dismiss control present
+   and opening motion settled, including touch widths and acknowledgement.
+   Announcement bars must not leave a heading beside a form whose button
+   has dropped below its field. Run `npm run templates:check-announcements` against
+   the rebuilt local studio when changing Bar with a field or its filled setups.
 6. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
    conversion heuristics. Walk all eleven.
 7. **Iterate**, then `composer test && npm test`.

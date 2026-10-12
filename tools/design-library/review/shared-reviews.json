@@ -40471,6 +40471,164 @@
         }
       },
       "record_id": "db89071c1fa466c24e295a463d61c5df18ae8b315a72ff01e7afd77db84e284d"
+    },
+    {
+      "id": "repair-workshop-news",
+      "revision": "8e5cb3c782908d3a240c327d2fb017445bf3855a22dc4c844b2408be671c2486",
+      "base_id": "c6787e56afd2db237e60fe76f29f750d56b3b6640c80b9628bca5fbff3275ead",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Corrective review after an earlier composition judgement failed. Inspected filled/long-copy transition views and native input/acknowledgement with settled motion and clear dismissal space. See the corrective report; automated measurements alone are not visual approval.",
+      "at": "2026-10-12T05:56:06.378Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12.md",
+              "sha256": "bf77f1d5d0e328f36e20e0948af853664437f86b820a39bd10358c9e36f73f77"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/report.json",
+              "sha256": "5a97e0f9b68c050191b092e1ed682a4072e442691b90fa20ee6e2dfd528476bb"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-essentials-2026-10-12-audit.json",
+              "sha256": "7aefa84b42dc17044d2a070a313e506313ad98f803eae0b61fd43c63e17097cb"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/repair-workshop-news-808.png",
+              "sha256": "47c2923580a54d5ba30ab1f50f073c1fa2fadf8043f6fce526e014f5ce0c698b"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/repair-workshop-news-320.png",
+              "sha256": "4c47840708d1d6f875a9cbb1fe0a9ab63682e745ae1dc1c46e8afc2ed0dde8b6"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/repair-workshop-news-1344-long.png",
+              "sha256": "518b2f081d735445fe37f672dd6ae39669ab0919d456307bc0c58f6498f531c3"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-essentials-repair-workshop-news.png",
+              "sha256": "9ffc91c702bae521fa8496ba102d35e7729a448babd800353f91d82bc877ff26"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/journeys.json",
+              "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-essentials-2026-10-12-live.json",
+              "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-repair-workshop-news-320-details.png",
+              "sha256": "e23b50e44274f5884cf28d43eda187d62aed738dae138efffd653473206f9b14"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-repair-workshop-news-320-received.png",
+              "sha256": "1454c8c903002f850b243504e5f6ea5457e9f936f9444adccd8b5db6a1eff34c"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-repair-workshop-news-1280-details.png",
+              "sha256": "f5722304580e52d7a1637a2951cc7ba6bd675962fa341b148ccd699bc95c0081"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-repair-workshop-news-1280-received.png",
+              "sha256": "96659233ea9342481225ac2889794c46d9c694d7af0ad5fb27a1853c92d5e61f"
+            }
+          ]
+        }
+      },
+      "record_id": "e2c881afce07a5c3c15e2662cdc02da3b82af2ae4dcee741ed6cdf1f894dc563"
+    },
+    {
+      "id": "local-class-news",
+      "revision": "b7e78e0eaf4c0972c3003b4686b8e575c568596ad56ebe6d7d1d28a27e5253e9",
+      "base_id": "db89071c1fa466c24e295a463d61c5df18ae8b315a72ff01e7afd77db84e284d",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Corrective review after an earlier composition judgement failed. Inspected filled/long-copy transition views and native input/acknowledgement with settled motion and clear dismissal space. See the corrective report; automated measurements alone are not visual approval.",
+      "at": "2026-10-12T05:56:06.379Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12.md",
+              "sha256": "bf77f1d5d0e328f36e20e0948af853664437f86b820a39bd10358c9e36f73f77"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/report.json",
+              "sha256": "5a97e0f9b68c050191b092e1ed682a4072e442691b90fa20ee6e2dfd528476bb"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-essentials-2026-10-12-audit.json",
+              "sha256": "7aefa84b42dc17044d2a070a313e506313ad98f803eae0b61fd43c63e17097cb"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/local-class-news-808.png",
+              "sha256": "7fc3ba239ae2f71d3b9a8ba1132cc34cf9bd152a0838052ead752e6d6e8e2361"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/local-class-news-320.png",
+              "sha256": "309969493cc7f2ce87facc933b2b1540077c14e99289b10b2c84a77a20da7fb4"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/local-class-news-1344-long.png",
+              "sha256": "8c43d5f72ca2eabe622a5f3e485528e17043649aab8d071cdc6fc753d1e71eb2"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-essentials-local-class-news.png",
+              "sha256": "d1238c88e3cd17d57c3b9d3f12279d965b69ff69e20251a22cfcfeb493fcf578"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/journeys.json",
+              "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-essentials-2026-10-12-live.json",
+              "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-local-class-news-320-details.png",
+              "sha256": "e8ddfe56a277af19dcc07a33ef8b7e8e2bd929205f5bde7c06fb22c401706507"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-local-class-news-320-received.png",
+              "sha256": "1454c8c903002f850b243504e5f6ea5457e9f936f9444adccd8b5db6a1eff34c"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-local-class-news-1280-details.png",
+              "sha256": "bbb0a7409b705de39288950a2d9d653a6ba833641aa7c13528d5a561e21352d1"
+            },
+            {
+              "path": "docs/reviews/announcement-polish-2026-10-12/older-live-local-class-news-1280-received.png",
+              "sha256": "96659233ea9342481225ac2889794c46d9c694d7af0ad5fb27a1853c92d5e61f"
+            }
+          ]
+        }
+      },
+      "record_id": "c562a201f934c1ae3dc6f02264ecf6b947d44dd62c08d820ef382826157cf181"
     }
   ]
 }
