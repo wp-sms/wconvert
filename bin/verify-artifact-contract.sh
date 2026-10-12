@@ -26,7 +26,9 @@
 #       Under possession-gating that is not a weaker gate, it is no gate.
 #   (g) The free artifact carries NO LICENSING SDK. A licence gates updates
 #       and support and never a feature (ADR 0015), so the code that reads one
-#       is Pro's alone — and free's ZIP is the one a review team reads.
+#       is Pro's alone — and free's ZIP is the one a review team reads. And
+#       every PRO artifact DOES carry it, scoped: without it the updater is
+#       gone and a customer's licence buys nothing (ADR 0143).
 #
 # Exit 0 = clean. Exit 1 = a violation, OR the check could not look.
 #
@@ -742,19 +744,27 @@ fi
 
 verdict
 
-# --- [7] (g) NO LICENSING SDK IN THE FREE ZIP --------------------------------
+# --- [7] (g) THE LICENSING SDK: NOT IN FREE, AND SCOPED IN EVERY PRO --------
 #
-# FREE ONLY, and it is the artifact-level half of ADR 0015's line: "the licence
-# option is read by Pro's updater and admin screens only, and never on a
-# front-end request". The SDK is vendored into PRO builds through a Composer
-# scoper profile, so free carrying it means the profile did not apply — and the
-# free ZIP is the one a wp.org review team reads.
+# The artifact-level half of ADR 0015's line: "the licence option is read by
+# Pro's updater and admin screens only, and never on a front-end request".
 #
-# It is checked at the ARTIFACT rather than at the source because `vendor/` is
-# GENERATED: no source file in this repository ever names the package, so
-# bin/verify-source-contract.sh cannot see it however hard it looks. That is the
-# same argument check (c) makes about the Composer autoload map, in the same
-# place, for the same reason.
+# FREE must not carry the SDK. Free carrying it means a Composer manifest named
+# it on the wrong side of the split — and the free ZIP is the one a wp.org
+# review team reads.
+#
+# PRO must carry it, and only the SCOPED copy (ADR 0143). wp-scoper writes it
+# to packages/ under WConvert\Pro\Deps on the dev install, and `composer dist`
+# then reinstalls the unscoped original into vendor/ — which .distignore strips.
+# So two failures are possible and both are silent at runtime until the day
+# they matter: no SDK at all (the updater never hooks, a customer's licence
+# buys nothing, and every test passed), or an unprefixed one, which a second
+# plugin's copy of the same SDK at another version could answer for.
+#
+# It is checked at the ARTIFACT rather than at the source because the SDK is
+# GENERATED into the stage by Composer: bin/verify-source-contract.sh cannot see
+# it however hard it looks. That is the same argument check (c) makes about the
+# Composer autoload map, in the same place, for the same reason.
 section
 
 if [ "$tier" = "free" ]; then
@@ -770,7 +780,27 @@ if [ "$tier" = "free" ]; then
         pass "no licensing SDK in the free artifact"
     fi
 else
-    echo "  ! (g) asserted nothing: the licensing SDK is Pro's, so a Pro artifact is where it belongs."
+    sdk_provider="$TREE/packages/veronalabs/wp-premium-sdk/src/Container/PremiumServiceProvider.php"
+
+    if [ ! -f "$TREE/packages/autoload.php" ]; then
+        fail "the Pro artifact has no packages/autoload.php — src/autoload.php requires it, so the plugin fatals on load"
+    fi
+
+    if [ ! -f "$sdk_provider" ]; then
+        fail "the Pro artifact carries no licensing SDK — the updater and the License page are gone"
+    elif ! grep -q '^namespace WConvert\\Pro\\Deps\\VeronaLabs\\WpPremiumSdk\\' "$sdk_provider"; then
+        fail "the Pro artifact's licensing SDK is not scoped under WConvert\\Pro\\Deps — another plugin's copy could answer for it"
+    elif ! grep -q "veronalabs/wp-premium-sdk/src/Container/PremiumServiceProvider.php" "$TREE/packages/autoload-classmap.php" 2>/dev/null; then
+        fail "the Pro artifact's packages/autoload-classmap.php does not map the SDK — it is on disk and unreachable"
+    fi
+
+    if [ -e "$TREE/vendor" ]; then
+        fail "the Pro artifact carries vendor/ — the unscoped SDK Composer reinstalls there must be stripped by pro/.distignore"
+    fi
+
+    if section_clean; then
+        pass "the scoped licensing SDK is in the Pro artifact, and no unscoped copy"
+    fi
 fi
 
 # --- [h] NOTHING AT THE FREE ROOT THAT IS NOT ON THE LIST --------------------

@@ -12,6 +12,20 @@ the full record for the team.
 
 ## [Unreleased]
 
+### Changed
+
+- Pro: the licence SDK (`veronalabs/wp-premium-sdk`) moves from 1.0.0-beta.8
+  to 1.0.0-beta.9, which needs Nexus v2.3.1 or later (the update check sends
+  the key in a header, not in the URL).
+  - The account sign-in belongs to the site, so every administrator sees and
+    can end the same sign-in; nobody is refused as "another administrator".
+  - A copy the store has no activation for on this address
+    (`not_activated_here`) gets no updates until it is activated here.
+  - Replacing the key with the same key in other letter case no longer frees
+    the seat it just took.
+  - A sign-in error, such as an account with no licences (`no_licenses`),
+    comes back to the License page with its code.
+
 ### Fixed
 
 - Changes asked for in the second WordPress.org plugin review (October 2026):
@@ -50,6 +64,18 @@ the full record for the team.
 
 ### Added
 
+- Pro: a License page (WConvert → License, and the header's plan badge) to
+  activate by signing in to your account or with a key, see your sites and free
+  one, swap or remove the key, and see whether updates and support are on. A
+  licence never changes what Pro does: every problem state says Pro features keep
+  working. Updates are offered only while the licence covers this site, and
+  deleting Pro frees its site. A key in `WCONVERT_LICENSE_KEY` (optionally with
+  `WCONVERT_LICENSE_CONTACT`) shows the site's owner only whether updates are on
+  and who manages the licence. Pro refuses network activation, as free does.
+- Pro: the Plugins screen shows a License link and one line when the licence
+  needs something; Site Health gains a WConvert Pro license section.
+- Free: "Already bought Pro?" links to the account's downloads, beside Explore Pro
+  and under More with Pro.
 - First public release: popups and inline forms created goal-first, a library
   of 68 designs, design import and export, a lead log with consent records and
   CSV export, analytics by goal with monthly targets, and MailPoet and WP SMS

@@ -21,6 +21,8 @@
 #wconvert-admin .wconvert-brand-plan { align-self:stretch; display:flex; align-items:center; color:var(--frame-muted); }
 #wconvert-admin .wconvert-header-tools { margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
 #wconvert-admin .wconvert-header-tools .wconvert-explore-pro { color:var(--ice); font-size:var(--text-note); font-weight:500; text-decoration:none; white-space:nowrap; }
+#wconvert-admin .wconvert-already-bought { color:var(--frame-muted); font-size:var(--text-note); white-space:nowrap; }
+#wconvert-admin .wconvert-already-bought a { color:var(--frame-text); }
 #wconvert-admin .wconvert-notifications-trigger { position:relative; }
 /* A count, not a dot: what needs attention is readable without opening the bell. */
 #wconvert-admin .wconvert-notification-count { position:absolute; inset-block-start:-2px; inset-inline-end:-4px; min-inline-size:18px; block-size:18px; padding-inline:5px; border-radius:999px; background:var(--frame-signal); color:var(--frame-ink); font-size:var(--text-label); font-weight:700; line-height:18px; text-align:center; font-variant-numeric:tabular-nums; }
@@ -37,6 +39,15 @@
 #wconvert-admin .wconvert-service-brand { display:flex; align-items:center; flex-wrap:wrap; gap:10px; font-size:var(--text-title); font-weight:500; letter-spacing:-.03em; }
 #wconvert-admin .wconvert-plan-badge { display:inline-flex; align-items:center; min-block-size:24px; padding:3px 9px; border:1px solid var(--frame-line); border-radius:6px; background:var(--frame-tint); color:var(--frame-text); font-size:var(--text-micro); font-weight:600; line-height:1.2; letter-spacing:.04em; }
 #wconvert-admin .wconvert-plan-badge[data-paid] { border-color:var(--ice); background:var(--ice); color:var(--frame-ink); }
+/* As a link (ADR 0143): the same badge, a dot when something needs a look, and a prompt style when it asks for something. */
+#wconvert-admin a.wconvert-plan-badge { gap:6px; text-decoration:none; white-space:nowrap; }
+#wconvert-admin a.wconvert-plan-badge[data-prompt] { border-color:var(--frame-signal); background:transparent; color:var(--frame-signal); }
+#wconvert-admin a.wconvert-plan-badge[data-prompt]:hover { background:var(--frame-signal); color:var(--frame-ink); }
+#wconvert-admin a.wconvert-plan-badge[aria-current] { outline:2px solid var(--frame-signal); outline-offset:3px; }
+#wconvert-admin .wconvert-plan-dot { display:inline-block; inline-size:8px; block-size:8px; border-radius:50%; flex:none; }
+#wconvert-admin .wconvert-plan-dot[data-tone=amber] { background:var(--warning); box-shadow:0 0 0 1.5px var(--frame-ink); }
+#wconvert-admin .wconvert-plan-dot[data-tone=red] { background:var(--destructive); box-shadow:0 0 0 1.5px var(--frame-ink); }
+#wconvert-admin .wconvert-plan-mobile { display:none; }
 #wconvert-admin .wconvert-publisher-row { padding-inline:var(--frame-gutter); }
 #wconvert-admin .wconvert-publisher-credit { display:flex; justify-content:center; align-items:center; gap:12px; padding-block:17px 19px; border-block-start:1px solid var(--frame-edge); color:var(--frame-muted); font-size:var(--text-micro); }
 #wconvert-admin .wconvert-publisher { display:inline-flex; align-items:center; min-block-size:28px; border-radius:3px; }
@@ -58,6 +69,11 @@
   #wconvert-admin .wconvert-service-footer .wconvert-publisher:is(:link,:visited,:hover,:focus,:active) { text-decoration:none !important; }
   /* The wordmark is a home link; wp-admin's link colours must not repaint it. */
   #wconvert-admin a.wconvert-brand:is(:link,:visited,:hover,:focus,:active) { color:var(--frame-text) !important; text-decoration:none !important; box-shadow:none !important; }
+  /* wp-admin's link colours must not repaint the badge either. */
+  #wconvert-admin a.wconvert-plan-badge:is(:link,:visited,:focus,:active) { color:var(--frame-text) !important; text-decoration:none !important; box-shadow:none !important; }
+  #wconvert-admin a.wconvert-plan-badge[data-paid]:is(:link,:visited,:hover,:focus,:active) { color:var(--frame-ink) !important; }
+  #wconvert-admin a.wconvert-plan-badge[data-prompt]:is(:link,:visited,:focus,:active) { color:var(--frame-signal) !important; }
+  #wconvert-admin a.wconvert-plan-badge[data-prompt]:hover { color:var(--frame-ink) !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button] { color:var(--frame-text) !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button]:hover { background:var(--frame-tint) !important; }
   #wconvert-admin .wconvert-panel-heading .wconvert-page-actions :is([data-slot=button][data-size=default],[data-slot=select-trigger],select,.wconvert-date-picker__trigger) {
@@ -92,7 +108,9 @@
   #wconvert-admin .wconvert-brand { gap:8px; }
   #wconvert-admin .wconvert-brand-mark { inline-size:29px; block-size:29px; }
   #wconvert-admin .wconvert-header-tools { gap:3px; }
-  #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-brand-plan { display:none; }
+  #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-already-bought, #wconvert-admin .wconvert-brand-plan { display:none; }
+  /* A badge that is a link and may carry a dot moves to the tools row on a phone instead of vanishing. */
+  #wconvert-admin .wconvert-plan-mobile { display:inline-flex; margin-inline-end:4px; }
   #wconvert-admin .wconvert-section-nav ul { justify-content:space-between; gap:12px; }
   #wconvert-admin .wconvert-section-nav a { font-size:var(--text-micro); }
   #wconvert-admin .wconvert-page-heading { padding-block:22px 18px; }

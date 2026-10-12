@@ -148,6 +148,22 @@ export interface AdminSettings {
     readonly availability: 'ready' | 'locked' | 'unavailable';
     readonly tier: string | null;
   };
+  /**
+   * The header's plan badge as a link, when another bundle supplies one: where
+   * it goes, words other than the plan's name, whether it is a prompt, and a
+   * dot with its reason. Absent, the badge is a plain label.
+   */
+  readonly planBadge?: PlanBadgeData;
+}
+
+export interface PlanBadgeData {
+  readonly href: string;
+  readonly label: string | null;
+  readonly prompt: boolean;
+  readonly tone: 'amber' | 'red' | null;
+  readonly reason: string | null;
+  /** Where the link goes, for a pointer and a screen reader, when there is no reason to show. */
+  readonly hint?: string;
 }
 
 declare global {

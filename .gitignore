@@ -11,3 +11,5 @@
 
 /pro/modules/analytics/public/
 /packages/
+/pro/vendor/
+/pro/packages/

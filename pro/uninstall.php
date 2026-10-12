@@ -1,6 +1,13 @@
 <?php
-/** Remove optional tracking configuration; historical order provenance belongs to WooCommerce. */
+/** Release the licence seat, then remove optional tracking configuration; historical order provenance belongs to WooCommerce. */
 defined('WP_UNINSTALL_PLUGIN') || exit;
+
+// The seat first, while the key that releases it is still stored. The plugin
+// is not loaded here, so Pro's constants and autoloader are (ADR 0143).
+require_once __DIR__ . '/src/constants.php';
+require_once __DIR__ . '/src/autoload.php';
+WConvert\Pro\License\Uninstall::run();
+
 delete_option('wconvert_revenue');
 wp_unschedule_hook('wconvert_claims_sweep');
 delete_option('wconvert_claims_mark');

@@ -1931,3 +1931,489 @@ if (!function_exists('wp_kses')) {
         );
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| The licence's WordPress surface (ADR 0143)
+|--------------------------------------------------------------------------
+| Pro's licence code is the one place in either plugin that talks to the
+| options table and the site transients directly rather than through
+| `OptionStore`: the SDK it wraps calls `get_option()` itself. So the table is
+| in memory here, and **writing an option fires the same three events
+| WordPress fires** (`add_option_`, `update_option_`, `delete_option_`), so code
+| that reacts to a licence changing can be tested against the real sequence.
+|
+| `plugin_basename()` is computed exactly the way WordPress computes it for a
+| plugin in its own directory: the last two path segments.
+|
+| @var array<string, mixed> $wconvertTestOptionTable
+| @var array<string, mixed> $wconvertTestSiteTransients
+*/
+$GLOBALS['wconvertTestOptionTable'] = [];
+$GLOBALS['wconvertTestSiteTransients'] = [];
+
+// Pro's version, which the licence reports beside what the store offers.
+defined('WCONVERT_PRO_VERSION') || define('WCONVERT_PRO_VERSION', '1.4.2');
+$GLOBALS['wconvertTestMultisite'] = false;
+
+if (!function_exists('plugin_basename')) {
+    function plugin_basename(string $file): string
+    {
+        return basename(dirname($file)) . '/' . basename($file);
+    }
+}
+
+if (!function_exists('remove_action')) {
+    function remove_action(string $hook, callable $callback, int $priority = 10): bool
+    {
+        $before = count($GLOBALS['wconvertTestActions'][$hook] ?? []);
+
+        $GLOBALS['wconvertTestActions'][$hook] = array_values(array_filter(
+            $GLOBALS['wconvertTestActions'][$hook] ?? [],
+            static fn (array $registered): bool => !($registered['priority'] === $priority && $registered['callback'] == $callback)
+        ));
+
+        return count($GLOBALS['wconvertTestActions'][$hook]) < $before;
+    }
+}
+
+if (!function_exists('get_option')) {
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    function get_option(string $name, $default = false)
+    {
+        return array_key_exists($name, $GLOBALS['wconvertTestOptionTable']) ? $GLOBALS['wconvertTestOptionTable'][$name] : $default;
+    }
+}
+
+if (!function_exists('add_option')) {
+    /** @param mixed $value */
+    function add_option(string $name, $value = '', string $deprecated = '', bool|string|null $autoload = null): bool
+    {
+        if (array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestOptionTable'][$name] = $value;
+        do_action('add_option_' . $name, $name, $value);
+
+        return true;
+    }
+}
+
+if (!function_exists('update_option')) {
+    /** @param mixed $value */
+    function update_option(string $name, $value, bool|string|null $autoload = null): bool
+    {
+        if (!array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+            return add_option($name, $value, '', $autoload);
+        }
+
+        $old = $GLOBALS['wconvertTestOptionTable'][$name];
+
+        if ($old === $value) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestOptionTable'][$name] = $value;
+        do_action('update_option_' . $name, $old, $value, $name);
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_option')) {
+    function delete_option(string $name): bool
+    {
+        if (!array_key_exists($name, $GLOBALS['wconvertTestOptionTable'])) {
+            return false;
+        }
+
+        unset($GLOBALS['wconvertTestOptionTable'][$name]);
+        do_action('delete_option_' . $name, $name);
+
+        return true;
+    }
+}
+
+if (!function_exists('get_site_transient')) {
+    /** @return mixed */
+    function get_site_transient(string $name)
+    {
+        return $GLOBALS['wconvertTestSiteTransients'][$name] ?? false;
+    }
+}
+
+if (!function_exists('set_site_transient')) {
+    /** @param mixed $value */
+    function set_site_transient(string $name, $value, int $expiration = 0): bool
+    {
+        $GLOBALS['wconvertTestSiteTransients'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_site_transient')) {
+    function delete_site_transient(string $name): bool
+    {
+        $existed = array_key_exists($name, $GLOBALS['wconvertTestSiteTransients']);
+        unset($GLOBALS['wconvertTestSiteTransients'][$name]);
+
+        return $existed;
+    }
+}
+
+if (!function_exists('is_multisite')) {
+    function is_multisite(): bool
+    {
+        return (bool) $GLOBALS['wconvertTestMultisite'];
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| The HTTP API, answered in-process
+|--------------------------------------------------------------------------
+| No unit test reaches the network. A request goes through `pre_http_request`
+| first, exactly as WordPress offers it, so a test (or `FakesNexus`) answers by
+| hooking the filter; failing that, `$GLOBALS['wconvertHttpReply']` answers;
+| failing both, it is the transport error WordPress returns when the network
+| is down. Responses are WordPress's own shape, so the code under test reads
+| them through the same `wp_remote_retrieve_*` calls it makes in production.
+*/
+if (!function_exists('wp_remote_request')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error
+     */
+    function wp_remote_request(string $url, array $args = [])
+    {
+        $preempt = apply_filters('pre_http_request', false, $args, $url);
+
+        if ($preempt !== false) {
+            return $preempt;
+        }
+
+        if (isset($GLOBALS['wconvertHttpReply'])) {
+            return ($GLOBALS['wconvertHttpReply'])($url, $args);
+        }
+
+        return new WP_Error('http_request_failed', 'No network in unit tests: ' . $url);
+    }
+}
+
+if (!function_exists('wp_remote_get')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error
+     */
+    function wp_remote_get(string $url, array $args = [])
+    {
+        return wp_remote_request($url, ['method' => 'GET'] + $args);
+    }
+}
+
+if (!function_exists('wp_remote_post')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error
+     */
+    function wp_remote_post(string $url, array $args = [])
+    {
+        return wp_remote_request($url, ['method' => 'POST'] + $args);
+    }
+}
+
+if (!function_exists('is_wp_error')) {
+    function is_wp_error(mixed $thing): bool
+    {
+        return $thing instanceof WP_Error;
+    }
+}
+
+if (!function_exists('wp_remote_retrieve_response_code')) {
+    /** @param array<string, mixed>|WP_Error $response */
+    function wp_remote_retrieve_response_code($response): int|string
+    {
+        return is_array($response) ? ($response['response']['code'] ?? '') : '';
+    }
+}
+
+if (!function_exists('wp_remote_retrieve_body')) {
+    /** @param array<string, mixed>|WP_Error $response */
+    function wp_remote_retrieve_body($response): string
+    {
+        return is_array($response) ? (string) ($response['body'] ?? '') : '';
+    }
+}
+
+if (!function_exists('wp_remote_retrieve_header')) {
+    /**
+     * @param array<string, mixed>|WP_Error $response
+     * @return string|array<string>
+     */
+    function wp_remote_retrieve_header($response, string $header)
+    {
+        if (!is_array($response)) {
+            return '';
+        }
+
+        $headers = array_change_key_case((array) ($response['headers'] ?? []));
+
+        return $headers[strtolower($header)] ?? '';
+    }
+}
+
+/**
+ * `wp_die()` ends the request in WordPress. Here it throws, so a test can
+ * assert both that it was reached and what it said.
+ */
+final class WConvertTestDied extends RuntimeException
+{
+}
+
+if (!function_exists('wp_die')) {
+    /**
+     * @param string|WP_Error $message
+     * @param array<string, mixed> $args
+     */
+    function wp_die($message = '', string $title = '', array $args = []): never
+    {
+        throw new WConvertTestDied(is_string($message) ? $message : $message->get_error_message());
+    }
+}
+
+/*
+ * A network, as thinly as Pro's uninstaller walks one: each site has its own
+ * option table, and switching swaps it in.
+ *
+ * @var array<int, array<string, mixed>> $wconvertTestBlogTables
+ */
+$GLOBALS['wconvertTestBlogId'] = 1;
+$GLOBALS['wconvertTestBlogTables'] = [];
+$GLOBALS['wconvertTestBlogStack'] = [];
+
+if (!function_exists('get_current_blog_id')) {
+    function get_current_blog_id(): int
+    {
+        return (int) $GLOBALS['wconvertTestBlogId'];
+    }
+}
+
+if (!function_exists('get_sites')) {
+    /**
+     * @param array<string, mixed> $args
+     * @return list<int>
+     */
+    function get_sites(array $args = []): array
+    {
+        $ids = array_values(array_unique(array_map('intval', [...array_keys($GLOBALS['wconvertTestBlogTables']), $GLOBALS['wconvertTestBlogId']])));
+        sort($ids);
+
+        return $ids;
+    }
+}
+
+if (!function_exists('switch_to_blog')) {
+    function switch_to_blog(int $blogId): bool
+    {
+        $GLOBALS['wconvertTestBlogStack'][] = (int) $GLOBALS['wconvertTestBlogId'];
+        $GLOBALS['wconvertTestBlogTables'][(int) $GLOBALS['wconvertTestBlogId']] = $GLOBALS['wconvertTestOptionTable'];
+        $GLOBALS['wconvertTestBlogId'] = $blogId;
+        $GLOBALS['wconvertTestOptionTable'] = $GLOBALS['wconvertTestBlogTables'][$blogId] ?? [];
+
+        return true;
+    }
+}
+
+if (!function_exists('restore_current_blog')) {
+    function restore_current_blog(): bool
+    {
+        $previous = array_pop($GLOBALS['wconvertTestBlogStack']);
+
+        if ($previous === null) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestBlogTables'][(int) $GLOBALS['wconvertTestBlogId']] = $GLOBALS['wconvertTestOptionTable'];
+        $GLOBALS['wconvertTestBlogId'] = $previous;
+        $GLOBALS['wconvertTestOptionTable'] = $GLOBALS['wconvertTestBlogTables'][$previous] ?? [];
+
+        return true;
+    }
+}
+
+/** Network-wide options, which the SDK reads on a network for a network key. */
+$GLOBALS['wconvertTestSiteOptions'] = [];
+
+if (!function_exists('get_site_option')) {
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    function get_site_option(string $name, $default = false)
+    {
+        return $GLOBALS['wconvertTestSiteOptions'][$name] ?? $default;
+    }
+}
+
+if (!function_exists('update_site_option')) {
+    /** @param mixed $value */
+    function update_site_option(string $name, $value): bool
+    {
+        $GLOBALS['wconvertTestSiteOptions'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_site_option')) {
+    function delete_site_option(string $name): bool
+    {
+        $existed = array_key_exists($name, $GLOBALS['wconvertTestSiteOptions']);
+        unset($GLOBALS['wconvertTestSiteOptions'][$name]);
+
+        return $existed;
+    }
+}
+
+if (!function_exists('is_plugin_active_for_network')) {
+    function is_plugin_active_for_network(string $plugin): bool
+    {
+        return false;
+    }
+}
+
+if (!function_exists('get_main_site_id')) {
+    function get_main_site_id(): int
+    {
+        return 1;
+    }
+}
+
+/** The SDK records which administrator started an account sign-in. */
+if (!function_exists('get_current_user_id')) {
+    function get_current_user_id(): int
+    {
+        return (int) ($GLOBALS['wconvertTestUserId'] ?? 1);
+    }
+}
+
+/** WordPress's update screen, as far as the License page links into it. */
+if (!function_exists('self_admin_url')) {
+    function self_admin_url(string $path = ''): string
+    {
+        return admin_url($path);
+    }
+}
+
+if (!function_exists('wp_nonce_url')) {
+    function wp_nonce_url(string $url, string $action = '-1', string $name = '_wpnonce'): string
+    {
+        return $url . (str_contains($url, '?') ? '&' : '?') . $name . '=' . wp_create_nonce($action);
+    }
+}
+
+$GLOBALS['wconvertTestFileMods'] = true;
+
+if (!function_exists('wp_is_file_mod_allowed')) {
+    function wp_is_file_mod_allowed(string $context): bool
+    {
+        return (bool) $GLOBALS['wconvertTestFileMods'];
+    }
+}
+
+if (!function_exists('wp_update_plugins')) {
+    /** @param array<string, mixed> $extra */
+    function wp_update_plugins(array $extra = []): void
+    {
+        $GLOBALS['wconvertTestPluginUpdateChecks'] = ($GLOBALS['wconvertTestPluginUpdateChecks'] ?? 0) + 1;
+    }
+}
+
+/*
+ * Transients, OFF unless a test turns them on.
+ *
+ * WordPress never promises a transient survives — an object cache may drop it
+ * at once — and free's tests are written against that: `MappingFields` caches
+ * a provider's fields only where `get_transient()` exists, and the suite runs
+ * as the site whose cache kept nothing. The licence SDK keeps its sign-in
+ * state in one, so `FakesNexus` switches the table on (an array) and back off
+ * (null) around each test that signs in.
+ *
+ * @var array<string, mixed>|null $wconvertTestTransients
+ */
+$GLOBALS['wconvertTestTransients'] = null;
+
+if (!function_exists('get_transient')) {
+    /** @return mixed */
+    function get_transient(string $name)
+    {
+        return is_array($GLOBALS['wconvertTestTransients']) ? ($GLOBALS['wconvertTestTransients'][$name] ?? false) : false;
+    }
+}
+
+if (!function_exists('set_transient')) {
+    /** @param mixed $value */
+    function set_transient(string $name, $value, int $expiration = 0): bool
+    {
+        if (!is_array($GLOBALS['wconvertTestTransients'])) {
+            return false;
+        }
+
+        $GLOBALS['wconvertTestTransients'][$name] = $value;
+
+        return true;
+    }
+}
+
+if (!function_exists('delete_transient')) {
+    function delete_transient(string $name): bool
+    {
+        if (!is_array($GLOBALS['wconvertTestTransients']) || !array_key_exists($name, $GLOBALS['wconvertTestTransients'])) {
+            return false;
+        }
+
+        unset($GLOBALS['wconvertTestTransients'][$name]);
+
+        return true;
+    }
+}
+
+/** WordPress's submenu, recorded: the licence adds WConvert → License. */
+$GLOBALS['wconvertTestSubmenu'] = [];
+
+if (!function_exists('add_submenu_page')) {
+    function add_submenu_page(string $parent, string $pageTitle, string $menuTitle, string $capability, string $slug, ?callable $callback = null, ?int $position = null): string
+    {
+        $GLOBALS['wconvertTestSubmenu'][$parent][] = [$menuTitle, $capability, $slug];
+
+        return $parent . '_page_' . $slug;
+    }
+}
+
+if (!function_exists('wp_date')) {
+    function wp_date(string $format, ?int $timestamp = null, mixed $timezone = null): string
+    {
+        return gmdate($format, $timestamp ?? time());
+    }
+}
+
+$GLOBALS['wconvertTestNetworkAdmin'] = false;
+
+if (!function_exists('is_network_admin')) {
+    function is_network_admin(): bool
+    {
+        return (bool) $GLOBALS['wconvertTestNetworkAdmin'];
+    }
+}
+
+if (!function_exists('is_rtl')) {
+    function is_rtl(): bool
+    {
+        return (bool) ($GLOBALS['wconvertTestRtl'] ?? false);
+    }
+}

@@ -15,9 +15,17 @@ import { TryAgain } from './Region';
 import { RowsSkeleton } from './RowsSkeleton';
 import { messageOf } from './loadable';
 import { adminSettings } from '../settings';
+import { PlanBadge } from './Brand';
 
 /** Where every "Explore Pro" link on a free install goes. */
 export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
+
+/**
+ * Where a customer who already paid downloads the paid plugin. A plain link
+ * with no remote call: a free install learns nothing about whether its owner
+ * bought anything, and asks nobody.
+ */
+export const PORTAL_DOWNLOADS_URL = 'https://my.wconvert.io/account/downloads';
 
 /**
  * **Help's destinations, in one place.** The owner supplies the real addresses
@@ -31,7 +39,7 @@ export const HELP_URLS = {
   changes: '#',
 } as const;
 
-export function HeaderTools() {
+export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
   const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number; formsPaused: boolean; protectionChecked: boolean } | null>(
     null,
@@ -88,6 +96,17 @@ export function HeaderTools() {
           {sprintf(__('Explore %s', 'wconvert'), tierName('pro'))}
         </a>
       )}
+      {tier === 'free' && (
+        <span className="wconvert-already-bought">
+          {__('Already bought?', 'wconvert')}{' '}
+          <a href={PORTAL_DOWNLOADS_URL} target="_blank" rel="noreferrer">
+            {__('Download it', 'wconvert')}<span aria-hidden="true"> ↗</span>
+            <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
+          </a>
+        </span>
+      )}
+      {/* The plan badge's phone copy: the navigation row hides its own below 600px. */}
+      <span className="wconvert-plan-mobile"><PlanBadge tier={tier} currentPage={currentPage} /></span>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="ghost" size="icon-sm" aria-label={__('Help', 'wconvert')}>

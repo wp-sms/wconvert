@@ -1,0 +1,50 @@
+{
+  "name": "veronalabs/wconvert-pro",
+  "description": "WConvert Pro — the premium capabilities, installed beside the free plugin.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "VeronaLabs",
+      "email": "dev@veronalabs.com",
+      "homepage": "https://veronalabs.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "veronalabs/wp-premium-sdk": "1.0.0-beta.9"
+  },
+  "require-dev": {
+    "veronalabs/wp-scoper": "^1.4"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/veronalabs/wp-premium-sdk.git"
+    }
+  ],
+  "extra": {
+    "wp-scoper": {
+      "namespace_prefix": "WConvert\\Pro\\Deps",
+      "packages": ["veronalabs/wp-premium-sdk"],
+      "target_directory": "packages",
+      "delete_vendor_packages": true,
+      "php_compat": true
+    }
+  },
+  "scripts": {
+    "dist": "composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction",
+    "post-install-cmd": "@php bin/reconcile-scoped-installed.php",
+    "post-update-cmd": "@php bin/reconcile-scoped-installed.php"
+  },
+  "config": {
+    "platform": {
+      "php": "8.1"
+    },
+    "platform-check": false,
+    "allow-plugins": {
+      "veronalabs/wp-scoper": true
+    },
+    "sort-packages": true
+  }
+}

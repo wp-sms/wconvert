@@ -141,8 +141,10 @@ Being in Pro's ZIP *is* the entitlement
 ([ADR 0015](docs/adr/0015-enforcement-is-by-non-registration.md)), so not one
 premium feature needs an `if` —
 [`tests/unit/Contract/NoLicenceOnTheFrontEndTest.php`](tests/unit/Contract/NoLicenceOnTheFrontEndTest.php)
-fails if a second file answers "is Pro loaded", if anything that ships reads a
-licence value, or if the front-end path grows a tier branch at all.
+fails if a second file answers "is Pro loaded", if anything outside
+`pro/src/License/` reads a licence value (the updater and the License page,
+[ADR 0143](docs/adr/0143-license-page-and-updater.md)), or if the front-end
+path grows a tier branch or touches the licence at all.
 
 ### It is checked, not trusted
 
@@ -855,7 +857,7 @@ exists from day one with nothing to do.
 ## Development
 
 ```bash
-composer install && npm install
+composer install && composer install -d pro && npm install
 
 npm run build          # build:free then build:pro — every bundle, both plugins
 npm run build:free     # free's bundles only; what the shipped package.json rebuilds
@@ -912,6 +914,17 @@ own autoloader is stripped). `bin/autoload-template.php` is the fallback if
 wp-scoper ever writes nothing. The one production install command is
 `composer dist`.
 
+**Pro has its own `composer.json`, for one package: the licence SDK**
+([ADR 0143](docs/adr/0143-license-page-and-updater.md)).
+`veronalabs/wp-premium-sdk` is pinned to an exact beta and fetched over HTTPS
+from its public repository; wp-scoper copies it into `pro/packages/` under
+`WConvert\Pro\Deps`, and `pro/src/autoload.php` requires that classmap. So a
+checkout needs `composer install -d pro` before Pro boots or its tests run, and
+CI does the same. The build installs it in the stage like free's, strips
+`vendor/` whole (Composer reinstalls the unscoped original there), and the
+artifact contract's check (g) refuses a Pro ZIP without the scoped copy — and a
+free ZIP with any copy.
+
 **Translations are wp.org language packs.** There is no `Domain Path` and no
 `load_plugin_textdomain()` — WordPress loads the `wconvert` domain from
 `wp-content/languages/plugins/` just in time.
@@ -930,6 +943,14 @@ dist/wconvert-pro-elite-v0.1.0.zip     + cart-recovery
 **All three are built on every release run and one is sold.** Machinery that is
 not exercised rots, and the release that first needs a per-tier build is the
 release nobody can wait for. Three ZIPs cost seconds.
+
+**The one sold is posted once per plan** ([ADR 0143](docs/adr/0143-license-page-and-updater.md)).
+The store (Nexus, my.wconvert.io) sells WConvert Pro as **plans** — `single-site`,
+`5-sites`, `unlimited` — which it calls tiers, and keeps one release per
+`(catalog item, tier_slug, version)`. So `release-pro.yml` posts the elite ZIP
+once for each slug in the `nexus` environment's `NEXUS_PLAN_SLUGS`, with
+`tier_slug` set to the plan. Plan slugs are not rungs and never appear in
+`tiers.json`, which ships in free.
 
 A **module is a directory** under `pro/modules/`, holding its own `module.json`.
 A rung's ZIP is the full Pro tree with the directories that rung does not ship
@@ -964,7 +985,9 @@ The third of ADR 0029's three programs, and the one whose subject is a build:
 * the free artifact carries **no licensing SDK**. A licence gates updates and
   support and never a feature ([ADR 0015](docs/adr/0015-enforcement-is-by-non-registration.md)),
   so the code that reads one is Pro's alone — and like the autoload map, this is
-  checked at the artifact because `vendor/` is generated.
+  checked at the artifact because `vendor/` is generated. Every **Pro** artifact
+  carries it, scoped under `WConvert\Pro\Deps` in `packages/`, with no `vendor/`
+  ([ADR 0143](docs/adr/0143-license-page-and-updater.md)).
 
 It takes a staged tree and **no flags**, and it is not told which plugin it is
 looking at: the tree holds exactly one plugin main file and that is the answer
@@ -1078,7 +1101,9 @@ found at `wconvert/pro/`. Symlink it beside free:
 ln -s "$PWD/pro" ../wconvert-pro
 ```
 
-Or boot a throwaway WordPress with both mounted, needing no database:
+Pro needs its scoped licence SDK first (`composer install -d pro`), or it
+fatals on load. Then boot a throwaway WordPress with both mounted, needing no
+database:
 
 ```bash
 npx @wp-playground/cli server --workers=1 \

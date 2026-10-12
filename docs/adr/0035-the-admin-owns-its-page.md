@@ -103,6 +103,13 @@ with `.button` and none of which arrive with a `<button>` we style ourselves.
 form-element appearance across the document — including on the parts of the page
 WordPress still owns: the admin menu, the toolbar and the footer.
 
+*Amended by [ADR 0143](0143-license-page-and-updater.md): with Pro, the menu gains
+a submenu — WConvert → Campaigns and WConvert → License. Both are this one page:
+Campaigns repeats the top level's slug (how WordPress renames its automatic first
+item) and License's slug is `admin.php?page=wconvert#license`. Because both are one
+page, the browser decides which is `current` from the hash. Free alone still has no
+submenu.*
+
 WSMS runs exactly this configuration in production, which is the strongest
 evidence available that it holds. It is still the single thing most likely to go
 wrong here, and it fails *outward* — a broken admin menu is a broken WordPress,

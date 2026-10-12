@@ -93,6 +93,10 @@ jobs:
           php-version: '8.1'
           coverage: none
       - run: composer dist --no-progress
+      # Pro's scoped licence SDK (ADR 0143): Pro's autoloader requires it, so a
+      # Playground that mounts pro/ fatals without it. A dev install, because
+      # wp-scoper is a dev dependency and is what writes pro/packages/.
+      - run: composer install --working-dir=pro --no-progress
       - run: npm ci
       # The one script that builds everything, so no leg's build list can drift
       # from the suites that need it.
@@ -103,6 +107,7 @@ jobs:
           path: |
             public/
             pro/public/
+            pro/packages/
             vendor/
           retention-days: 1
 

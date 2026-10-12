@@ -14,6 +14,7 @@ use WConvert\Database\Connection;
 use WConvert\Frontend\InlineOptinBlock;
 use WConvert\Frontend\InlineOptinShortcode;
 use WConvert\Pro\Container\ProServiceProvider;
+use WConvert\Pro\License\LicenseServiceProvider;
 use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
 use WConvert\Rest\CaptureController;
@@ -541,6 +542,9 @@ final class NothingTranslatesAtBootTest extends TestCase
             PrivacyServiceProvider::class,
             AdminServiceProvider::class,
             ProServiceProvider::class,
+            // The licence's provider, which builds the SDK and lets it hook in.
+            // Building it must read nothing and translate nothing either.
+            LicenseServiceProvider::class,
         ];
 
         foreach ($registrations as $class) {

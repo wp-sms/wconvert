@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink } from 'lucide-react';
 import { tierName } from '../goals/availability';
-import { EXPLORE_PRO_URL } from '../shell/HeaderTools';
+import { EXPLORE_PRO_URL, PORTAL_DOWNLOADS_URL } from '../shell/HeaderTools';
 
 /**
  * Free's one list of what Pro adds — static, bundled copy with no remote
@@ -26,6 +26,13 @@ export function MoreWithPro() {
         {sprintf(/* translators: %s: the paid edition's name, e.g. “Pro”. */ __('Explore %s', 'wconvert'), tierName('pro'))}<ExternalLink aria-hidden="true" className="size-3 rtl:-scale-x-100" />
         <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
       </a>
+      <p className="m-0 mt-2">
+        {sprintf(/* translators: %s: the paid edition's name, e.g. “Pro”. */ __('Already bought %s?', 'wconvert'), tierName('pro'))}{' '}
+        <a className="inline-flex items-center gap-1 underline" href={PORTAL_DOWNLOADS_URL} target="_blank" rel="noreferrer">
+          {__('Download it from your account', 'wconvert')}<ExternalLink aria-hidden="true" className="size-3 rtl:-scale-x-100" />
+          <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
+        </a>
+      </p>
     </aside>
   );
 }
