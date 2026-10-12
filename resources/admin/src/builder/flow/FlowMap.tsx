@@ -11,6 +11,8 @@ import { tierProductName } from '../../goals/availability';
 import { FlowCard, FlowGroup } from './FlowCard';
 import { FlowLines, LinePill, type TraceState } from './FlowLines';
 import { FlowLegend, FlowOverview, FlowViewport } from './FlowViewport';
+import { FlowVisitor, visitorTrace } from './FlowVisitor';
+import type { Answers } from '../../../../loader/src/journey-rules';
 
 const noIssues: readonly CampaignIssue[] = [];
 const PAD = 16;
@@ -147,7 +149,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   const go = (node: string | undefined) => { if (!node) return; setActive(node); keys.current.get(node)?.focus(); };
   const onKeyDown = (event: KeyboardEvent) => {
     const from = (event.target as HTMLElement).closest<HTMLElement>('[data-flow-key]')?.dataset.flowKey;
-    if (event.key === 'Escape' && samplePath) { event.preventDefault(); onClearTrace?.(); return; }
+    if (event.key === 'Escape' && (visitor || samplePath)) { event.preventDefault(); clearTrace(); return; }
     if (!from || (event.target as HTMLElement).dataset.flowKey !== from) return;
     const at = layout.order.indexOf(from);
     const row = layout.order.filter(node => layout.row.get(node) === layout.row.get(from));
@@ -175,8 +177,15 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
     return () => element?.removeEventListener('keydown', listener);
   }, []);
 
+  // Try a visitor: answers in, the loader's own trace out. Any edit starts again.
+  const [visitor, setVisitor] = useState<Answers | null>(null);
+  useEffect(() => { setVisitor(null); }, [tree]);
+  const tried = useMemo(() => visitor ? visitorTrace(tree, visitor) : null, [tree, visitor]);
+  const path = tried?.screens ?? samplePath;
+  const pathEdges = tried?.edges ?? sampleEdges;
+  const clearTrace = () => { if (visitor) setVisitor(null); else onClearTrace?.(); };
   // A trace marks the screens shown and the lines taken; everything else is drawn quietly.
-  const trace = useMemo(() => samplePath ? { screens: new Set(samplePath.map(index => tree.steps[index]?.id).filter((item): item is string => !!item)), edges: new Set(sampleEdges ?? []) } : null, [samplePath, sampleEdges, tree.steps]);
+  const trace = useMemo(() => path ? { screens: new Set(path.map(index => tree.steps[index]?.id).filter((item): item is string => !!item)), edges: new Set(pathEdges ?? []) } : null, [path, pathEdges, tree.steps]);
   const lineStates = useMemo(() => new Map(model.lines.map(line => [line.id, trace ? lineIsOn(line, trace) ? 'on' as const : 'off' as const : undefined])), [model.lines, trace]);
   const nodeState = (screens: readonly string[]): TraceState => trace ? screens.some(item => trace.screens.has(item)) ? 'on' : 'off' : undefined;
   const related = useMemo(() => new Set(trace || !selectedNode ? [] : model.lines.filter(line => line.from === selectedNode || line.to === selectedNode).map(line => line.id)), [trace, selectedNode, model.lines]);
@@ -204,10 +213,12 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
           : onBranch && firstQuestion ? <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>
             : onBranch ? <span>{__('Add a question to send answers to different screens.', 'wconvert')}</span> : null}
       </div>}
-      {trace && <div className="wconvert-flow-nudge" role="status">
-        <span>{__('Showing one visitor’s path. Lines they didn’t take are faint.', 'wconvert')}</span>
-        {onClearTrace && <button type="button" className="wconvert-panel-link" onClick={onClearTrace}>{__('Stop showing the path', 'wconvert')}</button>}
-      </div>}
+      {tried && visitor ? <FlowVisitor tree={tree} answers={visitor} trace={tried} onAnswers={setVisitor} onStop={() => setVisitor(null)} />
+        : trace ? <div className="wconvert-flow-nudge" role="status">
+          <span>{__('Showing one visitor’s path. Lines they didn’t take are faint.', 'wconvert')}</span>
+          {onClearTrace && <button type="button" className="wconvert-panel-link" onClick={onClearTrace}>{__('Stop showing the path', 'wconvert')}</button>}
+        </div>
+        : <button type="button" className="wconvert-flow-try" onClick={() => setVisitor({})}>{__('Try a visitor', 'wconvert')}</button>}
       <p id={`${id}-keys`} className="sr-only">{__('Arrow keys move between screens in reading order. Tab reaches a screen’s buttons and its lines. Plus and minus zoom; 0 fits.', 'wconvert')}</p>
       <FlowViewport viewport={viewport} surface={region} width={layout.width} height={layout.height} zoom={zoom} onZoom={zoomTo} onScroll={onScroll}>
         <FlowLines id={id} layout={layout} lines={model.lines} states={lineStates} related={related} focused={focusedLine} />
@@ -218,7 +229,8 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
           const common = { box, rtl, active: node === current, onIssue, onSelect, onSelectPath, onFocusNode: () => { setActive(node); reveal(node, false); },
             focusRef: focusRef(node), measureRef: measureRef(node) };
           return <Fragment key={node}>
-            {card && <FlowCard {...common} card={card} selected={card.index === selected} state={nodeState([card.id])} issues={byScreen.get(card.id) ?? noIssues} destinationSummary={destinationSummary} />}
+            {card && <FlowCard {...common} card={card} selected={card.index === selected} state={nodeState([card.id])} issues={byScreen.get(card.id) ?? noIssues} destinationSummary={destinationSummary}
+              shownResult={tried?.result?.screen === card.id ? tried.result.id : undefined} />}
             {group && <FlowGroup {...common} group={group} selected={selected} state={nodeState(group.members.map(member => member.id))} visited={trace?.screens}
               issues={group.members.flatMap(member => byScreen.get(member.id) ?? [])}
               nextPriority={model.lines.find(line => line.from === group.id)?.select?.priority as number | undefined} />}

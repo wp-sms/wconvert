@@ -8,6 +8,7 @@ import { journeyTraceEdges } from '../../resources/admin/src/builder/structure/j
 import type { CampaignIssue } from '../../resources/admin/src/builder/readiness/campaignIssues';
 import enquiry from '../fixtures/journey-graph-enquiry.json';
 import splitCapture from '../fixtures/journey-graph-split-capture.json';
+import coffee from '../fixtures/journey-graph-coffee.json';
 
 afterEach(() => { cleanup(); document.documentElement.dir = ''; });
 const tree = enquiry as unknown as TemplateTree;
@@ -30,6 +31,8 @@ describe('the Flow map (ADR 0142)', () => {
     render(<FlowMap {...props()} />);
     expect(mains().filter(element => element.tabIndex === 0).map(element => element.dataset.flowKey)).toEqual(['interests']);
     await user.tab();
+    expect(document.activeElement).toHaveAccessibleName('Try a visitor');
+    await user.tab();
     expect(document.activeElement).toBe(screen.getByRole('button', { name: /^Question: Interests/ }));
     await user.keyboard('{ArrowDown}');
     expect(document.activeElement?.getAttribute('data-flow-key')).toBe('followups:garden');
@@ -42,6 +45,7 @@ describe('the Flow map (ADR 0142)', () => {
   it('tabs from a card to its own buttons, then its lines, in that order', async () => {
     const user = userEvent.setup();
     render(<FlowMap {...props()} onAdd={vi.fn()} />);
+    await user.tab();
     await user.tab();
     await user.tab();
     expect(document.activeElement).toHaveTextContent('2 lines · Any of these, None of these');
@@ -147,5 +151,33 @@ describe('the Flow map (ADR 0142)', () => {
     expect(within(zoom).getByRole('button', { name: 'Fit' })).toHaveAttribute('aria-pressed', 'false');
     await user.click(within(zoom).getByRole('button', { name: 'Fit' }));
     expect(within(zoom).getByRole('button', { name: 'Fit' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('tries a visitor in the map: the loader’s own route, marked, and the result it reaches', async () => {
+    const user = userEvent.setup();
+    const quiz = ((coffee as { template?: { tree: unknown } }).template?.tree ?? coffee) as TemplateTree;
+    render(<FlowMap {...props()} tree={quiz} />);
+    await user.click(screen.getByRole('button', { name: 'Try a visitor' }));
+    const strip = screen.getByRole('group', { name: 'Answer as a visitor' });
+    // Only the questions this visitor reaches are asked.
+    expect(within(strip).queryByRole('combobox', { name: 'Do you grind your own beans?' })).toBeNull();
+    await user.selectOptions(within(strip).getByRole('combobox', { name: 'How do you make your coffee?' }), 'filter');
+    expect(within(strip).getByRole('combobox', { name: 'Do you grind your own beans?' })).toBeInTheDocument();
+    expect(within(strip).getByRole('status')).toHaveTextContent(/result: /);
+    expect(document.querySelector('[data-flow-node="grind"]')).toHaveAttribute('data-trace', 'on');
+    expect(document.querySelector('.wconvert-flow-card__sub[data-shown]')).not.toBeNull();
+    await user.click(within(strip).getByRole('button', { name: 'Stop' }));
+    expect(screen.queryByRole('group', { name: 'Answer as a visitor' })).toBeNull();
+    expect(document.querySelector('[data-trace]')).toBeNull();
+  });
+
+  it('says how many follow-ups a visitor is asked, and starts again after an edit', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<FlowMap {...props()} />);
+    await user.click(screen.getByRole('button', { name: 'Try a visitor' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Garden' }));
+    expect(screen.getByText('This visitor is asked 1 of 3.')).toBeInTheDocument();
+    rerender(<FlowMap {...props()} tree={{ ...tree }} />);
+    expect(screen.queryByRole('group', { name: 'Answer as a visitor' })).toBeNull();
   });
 });

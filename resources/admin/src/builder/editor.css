@@ -2434,6 +2434,17 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-flow-pill__add:hover { border-color: var(--action); background: var(--action); color: #fff; }
 @media (pointer: coarse) { .wconvert-flow-pill__add { inline-size: 44px; block-size: 44px; } .wconvert-flow-pill__label { min-block-size: 44px; } }
 .wconvert-flow :is(button, [tabindex]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-flow-try { align-self: flex-end; margin: 10px 16px 0; padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
+.wconvert-flow-try:hover { border-color: var(--input); }
+.wconvert-flow-visitor { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 16px; margin: 12px 16px 0; padding: 10px 12px; border: 1px solid var(--action); border-radius: var(--radius); background: var(--card); font-size: var(--text-note); }
+.wconvert-flow-visitor>strong { flex-basis: 100%; }
+.wconvert-flow-visitor__questions { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.wconvert-flow-visitor__field { display: grid; gap: 3px; }
+.wconvert-flow-visitor fieldset { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0; border: 0; }
+.wconvert-flow-visitor fieldset legend { flex-basis: 100%; padding: 0; margin-block-end: 3px; }
+.wconvert-flow-visitor fieldset label { display: inline-flex; align-items: center; gap: 4px; }
+.wconvert-flow-visitor select { min-block-size: 30px; border: 1px solid var(--input); border-radius: var(--radius); }
+.wconvert-flow-visitor p { flex-basis: 100%; margin: 0; padding: 6px 10px; border-radius: var(--radius); background: var(--surface); }
 .wconvert-flow-zoom { position: absolute; inset-block-end: 16px; inset-inline-start: 16px; z-index: 3; display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
 .wconvert-flow-zoom button { display: grid; place-items: center; min-inline-size: 32px; min-block-size: 32px; padding: 4px 9px; border: 0; border-radius: 4px; background: none; color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
 .wconvert-flow-zoom button svg { inline-size: 16px; block-size: 16px; }
