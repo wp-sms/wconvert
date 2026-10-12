@@ -4,12 +4,12 @@ import { submissionScreen } from './journey';
 
 /**
  * Endings either side of a gate — the required form, or the result — the
- * editor's copy of `GraphCaptureContract::gateEndings()` (ADR 0142). An
- * ending no route reaches through the gate is *early* ("Ends without saving
- * details") and allowed while at least one ending comes after the gate and
- * none is reachable both with and without it. Nothing is stored: it is read
- * off the lines each time. `tests/fixtures/journey-graph-early-endings.json`
- * keeps the two in step.
+ * editor's copy of `GraphCaptureContract::gateHolds()` (ADR 0142). An ending
+ * may be reached without the gate: always (an *early* ending, "Ends without
+ * saving details") or by some visitors (*shared*, "Some visitors end here
+ * without saving details"). Both are allowed while at least one ending comes
+ * after the gate. Nothing is stored: it is read off the lines each time.
+ * `tests/fixtures/journey-graph-early-endings.json` keeps the two in step.
  */
 export interface GateSides {
   readonly after: readonly string[];
@@ -56,7 +56,7 @@ export function gateEndings(tree: TemplateTree, gate: string): GateSides {
     const skipping = without.has(ending);
     (withGate && skipping ? shared : withGate ? after : early).push(ending);
   }
-  return { after, early, shared, holds: after.length > 0 && shared.length === 0, without };
+  return { after, early, shared, holds: after.length + shared.length > 0, without };
 }
 
 /** The required form's screen and the result screen, where each exists. */
@@ -69,21 +69,22 @@ export function gatesOf(tree: TemplateTree): { details?: string; result?: string
 /** A gate an ending can skip on purpose: the required form's details, or the result. */
 export type Gate = 'details' | 'result';
 
-/** Every gate an ending skips on purpose; empty when it comes after them all (or a gate is broken). */
-export function earlyEnding(tree: TemplateTree, id: string): readonly Gate[] {
+/** A gate an ending can be reached without, and whether every visitor who ends there skips it. */
+export interface SkippedGate { readonly gate: Gate; readonly always: boolean }
+
+/** Every gate visitors can skip on their way to this ending; empty when they all pass them (or a gate is broken). */
+export function earlyEnding(tree: TemplateTree, id: string): readonly SkippedGate[] {
   const gates = gatesOf(tree);
-  return (['details', 'result'] as const).filter(kind => {
+  return (['details', 'result'] as const).flatMap((kind): SkippedGate[] => {
     const gate = gates[kind];
-    if (!gate) return false;
+    if (!gate) return [];
     const sides = gateEndings(tree, gate);
-    return sides.after.length > 0 && sides.early.includes(id);
+    if (!sides.holds) return [];
+    return sides.early.includes(id) ? [{ gate: kind, always: true }] : sides.shared.includes(id) ? [{ gate: kind, always: false }] : [];
   });
 }
 
-/**
- * The endings that keep a gate from holding: those reached both with and
- * without it, else — when none comes after it — every early one.
- */
-export function gateFaults(sides: GateSides): { readonly ids: readonly string[]; readonly reason: 'shared' | 'none-after' } {
-  return sides.shared.length ? { ids: sides.shared, reason: 'shared' } : { ids: sides.after.length ? [] : sides.early, reason: 'none-after' };
+/** The endings that keep a gate from holding: every one of them, when none comes after it. */
+export function gateFaults(sides: GateSides): readonly string[] {
+  return sides.holds ? [] : sides.early;
 }

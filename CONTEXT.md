@@ -977,7 +977,9 @@ opens the control setting it. On a straight campaign there is one answer; on a
 question with answer lines it depends on the answer. Replaces "Next screen" and
 "Check next". An ending that no route reaches through the required form (or,
 for find-a-match, the result) is an **early ending** and says "Ends without
-saving details" — allowed while another ending comes after it (ADR 0142).
+saving details"; one some visitors reach both ways says "Some visitors end
+here without saving details". Both are allowed while another ending comes
+after the form (ADR 0142).
 
 ### Template
 

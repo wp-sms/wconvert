@@ -128,11 +128,12 @@ final class GraphCaptureContractTest extends TestCase
         self::assertNull(GraphCaptureContract::issue($tree, 'collect_enquiries'));
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
 
+        // Some visitors may reach the ending without the form (ADR 0142): it is said on the map, not refused.
         $bypass = $tree;
         $bypass['graph']['edges'][] = ['id' => 'skip_capture', 'from' => 'service', 'to' => 'received', 'kind' => 'answer', 'when' => [
             'match' => 'all', 'clauses' => [['question' => 'n2', 'operator' => 'is', 'values' => ['design']]],
         ]];
-        self::assertSame('capture_paths', GraphCaptureContract::issue($bypass, 'collect_enquiries'));
+        self::assertNull(GraphCaptureContract::issue($bypass, 'collect_enquiries'));
     }
 
     /** An ending no route reaches through the required form is an early ending (ADR 0142). */
@@ -143,13 +144,13 @@ final class GraphCaptureContractTest extends TestCase
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
     }
 
-    public function testAnEndingReachedBothWithAndWithoutTheFormIsRefused(): void
+    public function testAnEndingSomeVisitorsReachWithoutTheFormMayPublish(): void
     {
         $tree = self::withEnding(self::graphize('journey-service-enquiry'), 'not_fit', 'service', 'n2', 'design');
         $tree['graph']['edges'][] = ['id' => 'shared', 'from' => 'service', 'to' => 'received', 'kind' => 'answer', 'when' => [
             'match' => 'all', 'clauses' => [['question' => 'n2', 'operator' => 'is', 'values' => ['repair']]],
         ]];
-        self::assertSame('capture_paths', GraphCaptureContract::issue($tree, 'collect_enquiries'));
+        self::assertNull(GraphCaptureContract::issue($tree, 'collect_enquiries'));
     }
 
     public function testAnEarlyEndingThatSkipsTheResultMayPublish(): void
@@ -158,23 +159,13 @@ final class GraphCaptureContractTest extends TestCase
         self::assertNull(GraphCaptureContract::issue($tree, 'find_match'));
     }
 
-    public function testAnEndingReachedBothWithAndWithoutTheResultIsRefused(): void
+    public function testAnEndingSomeVisitorsReachWithoutTheResultMayPublish(): void
     {
         $tree = self::withEnding(self::graphize('journey-product-finder'), 'browse', 'need', 'n3', 'balcony');
         foreach ($tree['steps'] as &$screen) if ($screen['id'] === 'match') $screen['content']['children'][] = ['type' => 'button', 'action' => 'next', 'label' => 'Done'];
         unset($screen);
         $tree['graph']['edges'][] = ['id' => 'after_result', 'from' => 'match', 'to' => 'browse', 'kind' => 'default'];
-        self::assertSame('capture_paths', GraphCaptureContract::issue($tree, 'find_match'));
-    }
-
-    /** Every ending is early when the gate itself can be skipped by all of them. */
-    public function testNoEndingAfterTheGateIsRefused(): void
-    {
-        $tree = self::graphize('journey-service-enquiry');
-        $tree['graph']['edges'][] = ['id' => 'skip_all', 'from' => 'service', 'to' => 'received', 'kind' => 'answer', 'when' => [
-            'match' => 'all', 'clauses' => [['question' => 'n2', 'operator' => 'is', 'values' => ['design']]],
-        ]];
-        self::assertSame('capture_paths', GraphCaptureContract::issue($tree, 'collect_enquiries'));
+        self::assertNull(GraphCaptureContract::issue($tree, 'find_match'));
     }
 
     /** The editor's `structure/gateEndings.ts` reads the same cases. */
@@ -182,7 +173,7 @@ final class GraphCaptureContractTest extends TestCase
     {
         $fixture = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-early-endings.json'), true);
         foreach ($fixture['cases'] as $case) {
-            $valid = $case['after'] !== [] && $case['shared'] === [];
+            $valid = $case['after'] !== [] || $case['shared'] !== [];
             self::assertSame($valid ? null : 'capture_paths', GraphCaptureContract::issue($case['tree'], $case['goal']), $case['name']);
         }
     }

@@ -50,13 +50,15 @@ scenarios), reviewed at claude.ai/artifact/2Hk19gwMXdFXvtpSeN2Q5u.
    question's answers keep colour. A line keeps its colour until a card with
    more than one line in. Red stays for problems; the chart palette is never
    used.
-8. **Early endings are allowed, computed, not stored.** An ending is *early*
-   when no route to it passes the gate: the required form, or for find-a-match
-   the result. A campaign is valid while at least one ending comes after the
-   gate and no ending is reachable both with and without it. An early ending
-   says "Ends without saving details" (or "without a result"). The server
-   (`GraphCaptureContract`) and the editor (`structure/gateEndings.ts`) share
-   one fixture.
+8. **Endings may skip the gate, computed, not stored.** The gate is the
+   required form, or for find-a-match the result. An ending no route to it
+   passes through the gate is *early* and says "Ends without saving details"
+   (or "without a result"); one some visitors reach both ways says "Some
+   visitors end here without saving details". Both publish while at least one
+   ending comes after the gate. A change that newly lets some visitors skip
+   the form is reviewed once ("Check this change"), as the prototype did.
+   The server (`GraphCaptureContract`) and the editor
+   (`structure/gateEndings.ts`) share one fixture.
 9. **React Flow is replaced by a plain map**: dagre for a top-to-bottom layout,
    HTML cards and buttons, one SVG for the lines, a scroll container with a CSS
    scale. `@xyflow/react`, `@tisoap/react-flow-smart-edge` and `elkjs` are
@@ -103,7 +105,7 @@ a live copy is paused; your draft keeps saving" — what `OptinController` and
   answers" last, with their screens on one row (dagre is fed the lines last
   to first, and answer lines weigh 8). Several follow-up messages on one
   question are one box on the map, as follow-up questions are.
-- Where the prototype and decision 8 disagree, decision 8 holds: the
-  prototype let an ending reached both with and without the gate pass as
-  "early"; the server and the editor refuse it, because some visitors would
-  finish there without the form.
+- An ending some visitors reach without the gate was first refused here,
+  where the prototype allowed it. Asked on 2026-10-12, the decision went to the
+  prototype: it publishes, with the note on its card. A visitor who skips the
+  form on the way there leaves no lead; the merchant sees that on the map.

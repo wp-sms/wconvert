@@ -33,7 +33,7 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
   if (action === 'match' && result) {
     // An ending that skips the result on purpose is early and allowed (ADR 0142).
     const sides = gateEndings(tree, result.id);
-    const endings = new Set(gateFaults(sides).ids);
+    const endings = new Set(gateFaults(sides));
     for (const { target, edge } of bypasses(tree, result.id, endings)) issues.push({
       key: `result-bypass:${target}`,
       said: sprintf(__('A line reaches “%1$s” without showing “%2$s”. Send the line from “%3$s” through the result.', 'wconvert'), name(target), result.name, name(edge.from)),

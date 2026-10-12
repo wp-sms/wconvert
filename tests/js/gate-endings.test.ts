@@ -17,18 +17,19 @@ describe('endings either side of a gate (ADR 0142)', () => {
 
   it('names an early ending by what it skips', () => {
     const form = cases[0], result = cases[2];
-    expect(earlyEnding(form.tree, 'not_fit')).toEqual(['details']);
+    expect(earlyEnding(form.tree, 'not_fit')).toEqual([{ gate: 'details', always: true }]);
     expect(earlyEnding(form.tree, 'received')).toEqual([]);
-    expect(earlyEnding(result.tree, 'browse')).toEqual(['result']);
+    expect(earlyEnding(result.tree, 'browse')).toEqual([{ gate: 'result', always: true }]);
+    expect(earlyEnding(cases[1].tree, 'received')).toEqual([{ gate: 'details', always: false }]);
     expect(earlyEnding(enquiry as unknown as TemplateTree, 'received')).toEqual([]);
   });
 
-  it('lets an early ending through readiness, and keeps refusing a shared one', () => {
+  it('lets early and shared endings through readiness, and reviews a shared one on change', () => {
     const [early, shared, earlyResult, sharedResult] = cases;
-    expect(requiredSaveBypasses(early.tree)).toEqual([]);
-    expect(journeyReadinessIssues(early.tree).filter(issue => issue.key.startsWith('capture-path'))).toEqual([]);
-    expect(requiredSaveBypasses(shared.tree).map(item => item.endingId)).toEqual(['received']);
+    for (const item of [early, shared]) expect(journeyReadinessIssues(item.tree).filter(issue => issue.key.startsWith('capture-path'))).toEqual([]);
+    expect(requiredSaveBypasses(early.tree, { shared: true })).toEqual([]);
+    expect(requiredSaveBypasses(shared.tree, { shared: true }).map(item => item.endingId)).toEqual(['received']);
     expect(journeyBoundaryIssues(earlyResult.tree, 'match')).toEqual([]);
-    expect(journeyBoundaryIssues(sharedResult.tree, 'match').map(issue => issue.key)).toEqual(['result-bypass:browse']);
+    expect(journeyBoundaryIssues(sharedResult.tree, 'match')).toEqual([]);
   });
 });

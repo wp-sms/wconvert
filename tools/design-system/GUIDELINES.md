@@ -812,7 +812,9 @@ review gate: claude.ai/artifact/PcrNs8xzRCGvrvcKt4u3C9.
   Message, Form, Result, Ending), the name in `<bdi>`, an "Only if …" chip, and
   "Then → X" or "If skipped → X" as buttons that open the control which sets
   them. A form says what it saves; a result lists its results with answer dots;
-  an early ending says "Ends without saving details". Screen numbers never
+  an early ending says "Ends without saving details", and an ending some
+  visitors reach without the form says "Some visitors end here without saving
+  details". Screen numbers never
   appear on the map.
 - **"Only if" splits the line.** A screen with one plain line in draws the
   labelled line through it and a dashed line around it ("Includes X" /

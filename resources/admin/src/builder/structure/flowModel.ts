@@ -2,7 +2,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { conditionText } from './conditionText';
 import { followupGroups, followupGroupSource } from './followupGroups';
-import { earlyEnding, type Gate } from './gateEndings';
+import { earlyEnding, type SkippedGate } from './gateEndings';
 import { graphDisplayOrder } from './graph';
 import { unreachableScreenIds, walkNodes } from './journey';
 
@@ -72,7 +72,8 @@ export interface FlowCard {
   /** Where "All other answers" sits among its lines: what "Choose where visitors go" opens. */
   readonly fallbackPriority: number;
   /** An ending reached only without the required form or the result. */
-  readonly endsWithout?: readonly Gate[];
+  /** The gates some or all visitors who end here skip. */
+  readonly endsWithout?: readonly SkippedGate[];
   readonly results?: readonly FlowResult[];
   readonly unreachable: boolean;
   /** Nowhere to go next, where something has to follow. */
@@ -143,9 +144,19 @@ export function edgesOf(tree: TemplateTree): FlowEdge[] {
 export const kindWord = (kind: CardKind): string => ({ question: __('Question', 'wconvert'), message: __('Message', 'wconvert'), form: __('Form', 'wconvert'),
   result: __('Result', 'wconvert'), ending: __('Ending', 'wconvert') })[kind];
 
-/** How an ending says it finishes: after everything, or early, without what it skips. */
-export function endingWords(skipped: readonly Gate[] | undefined, lead = true): string {
-  const both = skipped?.length === 2, details = skipped?.includes('details'), result = skipped?.includes('result');
+/**
+ * How an ending says it finishes: after everything; early, without what it
+ * skips; or, where only some visitors skip it, that some do (ADR 0142).
+ */
+export function endingWords(skipped: readonly SkippedGate[] | undefined, lead = true): string {
+  const both = skipped?.length === 2, details = skipped?.some(item => item.gate === 'details'), result = skipped?.some(item => item.gate === 'result');
+  const some = skipped?.some(item => !item.always);
+  if (some) {
+    if (lead) return both ? __('Some visitors end here without saving details or a result', 'wconvert') : details ? __('Some visitors end here without saving details', 'wconvert')
+      : __('Some visitors end here without a result', 'wconvert');
+    return both ? __('some visitors end here without saving details or a result', 'wconvert') : details ? __('some visitors end here without saving details', 'wconvert')
+      : __('some visitors end here without a result', 'wconvert');
+  }
   if (lead) return both ? __('Ends without saving details or a result', 'wconvert') : details ? __('Ends without saving details', 'wconvert')
     : result ? __('Ends without a result', 'wconvert') : __('Ends the campaign', 'wconvert');
   return both ? __('ends without saving details or a result', 'wconvert') : details ? __('ends without saving details', 'wconvert')

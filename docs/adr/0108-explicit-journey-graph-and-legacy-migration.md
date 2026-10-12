@@ -71,7 +71,7 @@ campaign Goal: an enquiry route must reach its one combined submission; a
 quiz or content route may finish anonymously unless its Goal requires capture.
 Publishing must reject cycles, dangling or duplicate edges, missing defaults
 ~~or hidden exits~~ (*a hidden exit is optional since [ADR 0135](0135-plain-style-controls-exact-values-under-advanced.md)*), unreachable screens, impossible rule sources, invalid capture
-ownership and any path that bypasses required capture. *Amended by [ADR 0142](0142-one-readable-flow-map.md): an ending that no route reaches through the gate is an early ending and is allowed, while at least one ending comes after the gate and none is reachable both with and without it.*
+ownership and any path that bypasses required capture. *Amended by [ADR 0142](0142-one-readable-flow-map.md): an ending reached without the gate — always (an early ending) or by some visitors — is allowed while at least one ending comes after the gate; the map says which.*
 
 Version 2 journeys remain on their existing ordered evaluator until explicitly
 upgraded in a draft. Migration creates explicit default and answer edges from
