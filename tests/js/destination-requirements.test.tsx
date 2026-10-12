@@ -133,7 +133,7 @@ describe('provider-declared destination requirements', () => {
     const oneList = { ...route, requirements: { ...route.requirements!, settings: { lists: { label: 'List', type: 'ids', max: 1 } } } };
     const email = [{ name: 'email', required: true }];
     expect(compatibilityProblems({ ...oneList, settings: { lists: ['3', '4'] } }, email))
-      .toContain('Newsletter: Choose one “List”. This service adds a contact to one list.');
+      .toContain('Newsletter: Choose only one “List” before this destination can send.');
     expect(missingSettings(oneList.requirements, { lists: ['3', '4'] })).toEqual(['lists']);
     expect(compatibilityProblems({ ...oneList, settings: { lists: [] } }, email).join(' ')).toContain('Choose “List” before this destination can send.');
     for (const lists of [['4'], ['4', ' 4 ']]) expect(missingSettings(oneList.requirements, { lists })).toEqual([]);

@@ -590,7 +590,7 @@ describe('the destinations screen', () => {
       render(<Destinations />);
 
       expect(await screen.findByText('Needs setup')).toBeInTheDocument();
-      const reason = 'Choose one “List”. This service adds a contact to one list.';
+      const reason = 'Choose only one “List” before this destination can send.';
       expect(screen.getByText(reason)).toBeVisible();
 
       await userEvent.click(screen.getByRole('button', { name: 'Finish setup' }));

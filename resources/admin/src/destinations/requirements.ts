@@ -54,7 +54,7 @@ export function settingsProblems(requirements: DestinationRequirements | null | 
     .map(([key, field]) => field.type !== 'ids'
       ? sprintf(__('Complete “%s” before this destination can send.', 'wconvert'), field.label)
       : tooMany(settings[key], field)
-        ? sprintf(/* translators: 1: how many it takes, 2: the field, e.g. “List”. */ _n('Choose one “%2$s”. This service adds a contact to one list.', 'Choose no more than %1$d “%2$s”.', field.max ?? 1, 'wconvert'), field.max, field.label)
+        ? sprintf(/* translators: 1: how many it takes, 2: the field, e.g. “List”. */ _n('Choose only one “%2$s” before this destination can send.', 'Choose no more than %1$d “%2$s” before this destination can send.', field.max ?? 1, 'wconvert'), field.max, field.label)
         : sprintf(__('Choose “%s” before this destination can send.', 'wconvert'), field.label));
   for (const field of Object.values(requirements?.mapped_fields ?? {})) {
     const value = settings[field.setting];
