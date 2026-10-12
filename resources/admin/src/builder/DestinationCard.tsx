@@ -22,11 +22,11 @@ import type { Template } from '@renderer/types';
 import { ExtraAnswerMapping, hasExtraAnswers, UnsupportedAnswerMapping } from './ExtraAnswerMapping';
 
 /**
- * One [[Destination]] this campaign sends a save point to, and whether that is
+ * One [[Destination]] this Campaign sends a save point to, and whether that is
  * working.
  *
  * **Only bound routes are cards**, so every warning on one is a warning about
- * this campaign. The status badge is the Settings screen's own
+ * this Campaign. The status badge is the Settings screen's own
  * ({@see destinationStatus}); the inset under it says why, once, with the one
  * action that fixes it. Health outranks form fit: a route that cannot send at
  * all makes "the phone field is optional" a later problem.

@@ -167,7 +167,7 @@ describe('the cards this campaign sends to', () => {
 describe('health, on the card that has it', () => {
   /**
    * The editor used to print every route's warnings, bound or not. A problem
-   * on a route this campaign does not use is not this campaign's problem.
+   * on a route this Campaign does not use is not this Campaign's problem.
    */
   it('shows problems only for the routes this campaign uses', () => {
     editor(ready([
@@ -367,7 +367,7 @@ describe('adding a route', () => {
 
   /**
    * **A route created here is selected for this campaign**, in the same draft
-   * edit — the merchant set it up from this campaign to use it here. It used
+   * edit — the merchant set it up from this Campaign to use it here. It used
    * to arrive unticked with a notice asking for a second click.
    */
   it('selects a route created from the picker', async () => {
