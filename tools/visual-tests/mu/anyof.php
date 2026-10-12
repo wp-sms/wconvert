@@ -36,6 +36,11 @@ add_action('init', static function (): void {
         if ($edge['id'] === 'home_entry') $edge['when']['clauses'][0]['values'] = ['home', 'flat'];
     }
     unset($edge);
+    // A fixture that moved would leave these edits silently undone; fail here, not as a missing answer.
+    $encoded = wp_json_encode($tree);
+    if (!str_contains($encoded, '{"value":"flat","label":"My flat"}') || !str_contains($encoded, '"values":["home","flat"]')) {
+        wp_die('The branch-groups fixture changed; update the any-of seed.');
+    }
     $goal = \WConvert\Goal\Goal::CollectEnquiries;
     $config = $container->get(\WConvert\Playbook\Prefill::class)->fromScratch($goal)['config'];
     $base = json_decode(file_get_contents(WCONVERT_PRO_DIR . 'modules/journeys/templates/journey-service-enquiry.json'), true, 512, JSON_THROW_ON_ERROR);

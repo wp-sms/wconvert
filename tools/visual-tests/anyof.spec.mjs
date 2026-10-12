@@ -25,7 +25,7 @@ async function visit(browser, answer) {
   return { context, page };
 }
 // The home and business lines open on the same question; their options differ.
-const screen = page => page.evaluate(() => {
+const questionOptions = page => page.evaluate(() => {
   const root = window.testShadows.find(root => root.querySelector('[data-question-id]'));
   return [...root.querySelectorAll('[data-question-id]')].map(input => input.value);
 });
@@ -37,7 +37,7 @@ for (const [answer, line, options] of [
 ]) {
   test(`${answer} reaches ${line}`, async ({ browser }) => {
     const { context, page } = await visit(browser, answer);
-    await expect.poll(() => screen(page)).toEqual(options);
+    await expect.poll(() => questionOptions(page)).toEqual(options);
     await context.close();
   });
 }
