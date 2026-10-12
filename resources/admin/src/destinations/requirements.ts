@@ -1,4 +1,4 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { siteLocale } from '../lib/format';
 import type { Destination, DestinationRequirements, SettingsField } from './api';
 import type { Template, TemplateNode } from '@renderer/types';
@@ -35,20 +35,27 @@ const names: Readonly<Record<string, string>> = {
   email: __('email address', 'wconvert'), phone: __('phone number', 'wconvert'), name: __('name', 'wconvert'), interest: __('interest answer', 'wconvert'),
 };
 const named = (field: string) => names[field] ?? field;
+/** The distinct non-empty ids, as the server's `DestinationRequirements::ids()` counts them. */
+const ids = (value: unknown) => new Set(Array.isArray(value) ? value.filter((each): each is string => typeof each === 'string').map((each) => each.trim()).filter(Boolean) : []);
+const tooMany = (value: unknown, field: { max?: number }) => field.max !== undefined && ids(value).size > field.max;
 const present = (value: unknown, type: string) => type === 'ids'
-  ? Array.isArray(value) && value.some((each) => typeof each === 'string' && each.trim() !== '')
+  ? ids(value).size > 0
   : typeof value === 'string' && value.trim() !== '';
+// More ids than the service takes is as unready as none: every push would refuse it (#223).
+const ready = (value: unknown, field: { type: string; max?: number }) => present(value, field.type) && !(field.type === 'ids' && tooMany(value, field));
 
-/** The keys of required settings that are still empty, in schema order. */
+/** The keys of required settings that are still empty, or hold more ids than allowed, in schema order. */
 export function missingSettings(requirements: DestinationRequirements | null | undefined, settings: Readonly<Record<string, unknown>>): string[] {
-  return Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !present(settings[key], field.type)).map(([key]) => key);
+  return Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !ready(settings[key], field)).map(([key]) => key);
 }
 
 export function settingsProblems(requirements: DestinationRequirements | null | undefined, settings: Readonly<Record<string, unknown>>, schema?: Readonly<Record<string, SettingsField>>): string[] {
-  const problems: string[] = Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !present(settings[key], field.type))
-    .map(([, field]) => field.type === 'ids'
-      ? sprintf(__('Choose “%s” before this destination can send.', 'wconvert'), field.label)
-      : sprintf(__('Complete “%s” before this destination can send.', 'wconvert'), field.label));
+  const problems: string[] = Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !ready(settings[key], field))
+    .map(([key, field]) => field.type !== 'ids'
+      ? sprintf(__('Complete “%s” before this destination can send.', 'wconvert'), field.label)
+      : tooMany(settings[key], field)
+        ? sprintf(/* translators: 1: how many it takes, 2: the field, e.g. “List”. */ _n('Choose only one “%2$s” before this destination can send.', 'Choose no more than %1$d “%2$s” before this destination can send.', field.max ?? 1, 'wconvert'), field.max, field.label)
+        : sprintf(__('Choose “%s” before this destination can send.', 'wconvert'), field.label));
   for (const field of Object.values(requirements?.mapped_fields ?? {})) {
     const value = settings[field.setting];
     const options = schema?.[field.setting]?.options;

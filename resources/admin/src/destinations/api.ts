@@ -41,13 +41,15 @@ export interface SettingsField {
   label: string;
   description?: string;
   default?: string;
+  /** An `ids` field the service caps: `1` draws radios, and more ids than this is not ready (#223). */
+  max?: number;
   options?: { value: string; label: string }[];
 }
 
 export interface DestinationRequirements {
   audience_channels?: readonly string[];
   capture_any_of: readonly string[];
-  settings: Readonly<Record<string, { label: string; type: string }>>;
+  settings: Readonly<Record<string, { label: string; type: string; max?: number }>>;
   fields: readonly string[];
   mapped_fields: Readonly<Record<string, { setting: string; label: string; scope: string }>>;
 }

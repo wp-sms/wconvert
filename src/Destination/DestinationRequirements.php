@@ -9,7 +9,7 @@ final class DestinationRequirements
 {
     /**
      * @param list<string> $captureAnyOf At least one of these canonical identifiers.
-     * @param array<string, array{label: string, type: string}> $settings Required saved values.
+     * @param array<string, array{label: string, type: string, max?: int}> $settings Required saved values; an `ids` field may cap how many it takes.
      * @param list<string> $fields Canonical values used by this adapter, not a promise to overwrite Contacts.
      * @param array<string, array{setting: string, label: string, scope: string}> $mappedFields
      * @param list<string> $audienceChannels Channels whose audience this service can receive into, not proof of subscription.
@@ -39,7 +39,9 @@ final class DestinationRequirements
     {
         $missing = [];
         foreach ($this->settings as $key => $field) {
-            if ($field['type'] === 'ids' ? self::ids($settings[$key] ?? null) === [] : self::text($settings[$key] ?? null) === '') {
+            $ids = $field['type'] === 'ids' ? self::ids($settings[$key] ?? null) : null;
+            // More ids than the service takes is as unready as none: every push would refuse it.
+            if ($ids === null ? self::text($settings[$key] ?? null) === '' : $ids === [] || count($ids) > ($field['max'] ?? PHP_INT_MAX)) {
                 $missing[] = $key;
             }
         }
