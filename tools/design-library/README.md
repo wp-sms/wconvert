@@ -544,3 +544,9 @@ run `WCONVERT_STUDIO_URL=http://127.0.0.1:9452 node tools/visual-tests/studio-ch
 Evidence defaults to `/tmp/wconvert-studio-chrome`; set `WCONVERT_STUDIO_EVIDENCE`
 to use another directory. Keep `studio-assets/` beside generated pages when
 sharing the standalone files (system fonts remain the offline fallback).
+
+### 12 October older essentials and staging service
+
+The first older-library refresh revises Project notebook and Bar with a field across four existing setups. See `out/pilot.html?batch=older-essentials`. Numeric column proportions, phone typography, fine-print/field contrast, grouped form actions and acknowledgement layouts were checked in 128 responsive cases and eight native WordPress captures. Source counts remain 107 designs / 153 setups; studio counts remain 75 designs / 128 setups. There are now **28 current setup approvals and 100 stale older approvals**. Updating examples does not rewrite installed campaigns. See [review evidence](../../docs/reviews/older-essentials-2026-10-12.md).
+
+The separate [template staging service](../template-server/README.md) now serves the validated public release through a local Worker/R2 simulation on port 9454. It supports public Free/Pro previews, Free pack/image reads and tested conditional publication/rollback. The local catalogue remains 22 setups / 19 designs / five packs / three collections; six premium setups are advertised but downloading them stays disabled. Real R2/domain setup, authenticated remote publication and licence integration remain deferred. The plugin still requires HTTPS for actual remote discovery.

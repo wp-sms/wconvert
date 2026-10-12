@@ -4,7 +4,9 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 const base = process.env.WCONVERT_STUDIO_URL || 'http://127.0.0.1:9452';
 if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw Error('Local studio required');
-const ids = [...new Set(JSON.parse(fs.readFileSync('tools/design-library/collections/source.json')).collections.flatMap(c => c.items.map(i => i.setup_id)))];
+const [batch, evidence = 'docs/reviews/commerce-refresh-2026-10-12-journeys.json'] = process.argv.slice(2);
+const ids = batch ? JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json')).filter(e => e.batch === batch).map(e => e.id) : [...new Set(JSON.parse(fs.readFileSync('tools/design-library/collections/source.json')).collections.flatMap(c => c.items.map(i => i.setup_id)))];
+if (!ids.length) throw Error('No setups in the selected batch');
 const browser = await chromium.launch();
 try {
  const page = await browser.newPage();
@@ -47,6 +49,6 @@ try {
   }
   return report;
  }, ids);
- fs.writeFileSync('docs/reviews/commerce-refresh-2026-10-12-journeys.json', JSON.stringify(report, null, 2) + '\n');
+ fs.writeFileSync(evidence, JSON.stringify(report, null, 2) + '\n');
  console.log('Passed ' + report.length + ' studio journeys (validation, simulated failure/retry and completion where applicable).');
 } finally { await browser.close(); }

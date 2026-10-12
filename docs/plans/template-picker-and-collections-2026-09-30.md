@@ -215,12 +215,12 @@ invalidates dependent preview evidence and may require regeneration across desig
 
 | Component | Responsibility | Current state |
 | --- | --- | --- |
-| Existing plugin repository | Design/setup/collection sources, asset references and rights records, review evidence, publisher code and Git history | Exists; local publisher works, media pack wiring pending |
+| Existing plugin repository | Design/setup/collection sources, asset references and rights records, review evidence, publisher code and Git history | Exists; local publisher and verified raster-media packs work |
 | Local asset workspace | Originals and generated media for development, backed up independently when outside Git | Can be used before cloud setup; not a production delivery service |
 | Public object storage, preferably R2 | Public catalog releases, Free downloads and appropriately sized preview/demo assets | Not provisioned |
 | Private object storage, preferably R2 | Premium downloadable packs/assets and separately controlled original artwork | Not provisioned; originals are never customer download targets |
 | Existing licence manager | Licence validity, included products/plans, site activation and staging/multisite rules | Integration contract must be inspected; do not invent a second licence database |
-| Download API | Enforce licence decisions and deliver only permitted immutable files | Use existing backend if suitable; otherwise a small Worker with private R2 access |
+| Download API | Deliver permitted immutable files | Public Worker implemented and rehearsed locally; premium routes fail closed. Licence adapter and cloud deployment remain deferred |
 
 A Worker runs authorization/delivery logic; R2 stores JSON and media. Public and
 private storage have separate access boundaries, not merely obscure folder names.
@@ -423,7 +423,7 @@ Rollback restores the prior plugin discovery UI or catalog release pointer witho
 
 Decisions needed before remote deployment, with recommended defaults:
 
-- **Storage and API:** R2 is recommended but not provisioned. Inspect the existing licence-manager API before choosing an additional Worker. Confirm domain, private/public storage, credentials and staging access before deployment. Local publisher/importer work needs none of these cloud resources.
+- **Storage and API:** R2 is recommended but not provisioned. A public Worker can now be rehearsed locally without R2 provisioning. Inspect the existing licence-manager API before adding premium authorization/private bindings. Confirm domain, private/public storage, credentials and staging access before deployment. Local publisher/importer work needs none of these cloud resources.
 - **Refresh policy:** explicit connect/refresh first. Add opt-in automatic metadata refresh only with a separate network/privacy decision and failure policy.
 - **Markets:** merchant-selected participation/market preferences, no IP inference. Begin with shared approved events; expand only with reviewed regional coverage.
 - **Paid downloads and artwork:** use the existing licence manager, public Free/Pro preview parity, private premium downloads and verified local media installation as detailed above. Confirm exact licence/activation and asset redistribution contracts before live rollout.
@@ -438,3 +438,9 @@ Implemented named-WordPress-timezone country suggestions with explicit confirmat
 Round-2 follow-through approved the two new designs after native WordPress and all-screen visual checks. The local release rehearsal now uses 16 approved setups / 13 designs / 4 Free packs / 2 collections, including the illustrated Homeware care pack. Verified update/offline checks retain the old pack and reuse unchanged artwork. Bundled SVG stays compact; the publication plan binds its reviewed raster derivative to exact source, image and evidence hashes. Wider library review, further distinct batches, artwork-rights/source conversion for the deferred selections, actual R2/Worker deployment, website integration and the existing licence-manager adapter remain outstanding. The user explicitly deferred licence integration, CI and real message delivery. None is claimed complete by the local publishing rehearsal.
 
 Evidence: `docs/reviews/template-local-progress-2026-10-01.md` and the final validation report. Campaign approvals now exclude derived similarity-neighbour metadata. Existing current approvals were renewed only after exact content/renderer/evidence equivalence checks; 92 unrelated stale reviews remain stale. See template-stable-approvals-2026-10-01.md and template-practical-round2-2026-10-01.md.
+
+### 12 October local staging and older essentials follow-through
+
+PR #250 merged the compatibility/shopping/studio work directly into main, excluding the unfinished Flow branch. The next branch refreshes two existing designs used by four older setups (planning guides and local announcement signup bars); these are revisions, not new library counts. Its review covers every filled screen, device sizes, RTL, longer copy and native local captures.
+
+`tools/template-server` now supplies a local Worker/R2 rehearsal, strict public read routes, Free downloads/images, public Free/Pro previews, conditional manifest promotion/retry/rollback and explicit premium refusal. It uses the existing 22-setup release; it does not publish the entire older library or enable remote installation. Real R2/domain provisioning, operator-authenticated remote upload, live HTTPS WordPress acceptance and the licence-manager adapter are later stages. Continue older-template review in small complete batches; do not promote stale approvals. CI and external delivery remain intentionally skipped.

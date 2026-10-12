@@ -155,9 +155,11 @@ now specifies the following future boundaries. These do not describe shipped
 media or licensing support and do not relax the current reader/pack validators.
 
 - Keep source, collection membership, provenance and review history in the
-  repository. R2 is the recommended JSON/media store, but no R2 bucket or Worker
-  exists yet. Reuse the existing licence-manager backend if it can authorize
-  downloads; add a Worker only if a separate API layer is useful. The licence
+  repository. R2 is the recommended JSON/media store. As of 12 October, an isolated
+  Worker read service exists under `tools/template-server` and runs against
+  locally simulated R2; no cloud bucket or Worker deployment exists. The
+  service exposes public catalogue/Free files and refuses premium downloads.
+  Real licence-manager integration remains deferred. The licence
   manager remains authoritative, with no duplicate licence database.
 - Give public Free and Pro previews equal quality on the website and in the
   plugin. Generate previews from the same approved revisions, with all-screen
@@ -260,3 +262,7 @@ The studio now prepares 128 setups using 75 designs; the full source inventory c
 Six curated collections depend on 24 currently approved setup snapshots. The other 104 studio approvals remain stale, visible as such; refreshing compatibility does not rubber-stamp them. Changed upstream note references are renewed only after review. Runtime collection seeds are regenerated from exact approved revisions.
 
 The local release contains 22 setups / 19 designs / five packs (four Free, one premium) / three complete collections, plus the existing reviewed raster artwork. Changed pack bytes receive new versions. Premium source JSON stays private and its public preview is inert, using the same preview path as Free. Native installation/offline/update checks are rehearsals; no hosted service, default endpoint, licence connection, CI or external delivery is enabled. See the October commerce review and release evidence in `docs/reviews`.
+
+### Local staging preparation — 12 October 2026
+
+The public Worker has no private bucket binding or permissive licence adapter. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. Cloud provisioning, authenticated remote publishing, live HTTPS plugin acceptance, rate limits/backup operations and real premium entitlement remain outstanding. See [staging operations](../../tools/template-server/README.md).

@@ -40251,6 +40251,226 @@
         }
       },
       "record_id": "1a72836f7a599a876b3d4e3e1e0c299da51c166c00b82350d4b8014af14b966b"
+    },
+    {
+      "id": "project-planning-guide",
+      "revision": "dd9a8be5b234dd5ca0eccc3d424c03c9fbb86a3ce374dc6c41b555f32a55e1c0",
+      "base_id": "e6b48443d5972a959e76a10c8a52389747afe404d98890c20bdfa01847e3568e",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed final input and acknowledgement screens, four-width RTL/long-copy audit, failure/retry and real local WordPress captures. Revisions of existing designs; no external delivery.",
+      "at": "2026-10-12T05:33:42.863Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12.md",
+              "sha256": "25fdadc2392fad84c1917f5b06cca4dd5d99199d1546eb98a5dd11ff72b23121"
+            },
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-audit.json",
+              "sha256": "24740294718c88090c8f715657de2c1ea92619aa5c575c48295f2e2689b4ceec"
+            },
+            {
+              "path": "docs/reviews/older-essentials-project-planning-guide.png",
+              "sha256": "2f3c7e8a12022542d4f6b8d2b977ab8d4def5aad0633b79c820256fa0eb0944d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-journeys.json",
+              "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-live.json",
+              "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+            },
+            {
+              "path": "docs/reviews/older-live-project-planning-guide-320-details.png",
+              "sha256": "2a1cb5065518ae0d678c66b7be795ba4f321421c80220016c9b6ddfa49e8352f"
+            },
+            {
+              "path": "docs/reviews/older-live-project-planning-guide-320-received.png",
+              "sha256": "eefca3723a2d4d7494d8b682d861886b69f03665cffeeb5b2e44033b6b9c940c"
+            }
+          ]
+        }
+      },
+      "record_id": "5e68dd02ca3dc973436bd42c659ac0500b40cf391f56be3c81fef41f7704761c"
+    },
+    {
+      "id": "project-readiness-guide",
+      "revision": "5ba2c0ed5fccada40b3eea6ba6bf8125201b0aecc2d1fa728be6b67f222d4ab6",
+      "base_id": "ef9fd2fae46c772d4794a2b5f476a4f86fa2e416971e3d438f93a28e19550ccc",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed final input and acknowledgement screens, four-width RTL/long-copy audit, failure/retry and real local WordPress captures. Revisions of existing designs; no external delivery.",
+      "at": "2026-10-12T05:33:42.864Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12.md",
+              "sha256": "25fdadc2392fad84c1917f5b06cca4dd5d99199d1546eb98a5dd11ff72b23121"
+            },
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-audit.json",
+              "sha256": "24740294718c88090c8f715657de2c1ea92619aa5c575c48295f2e2689b4ceec"
+            },
+            {
+              "path": "docs/reviews/older-essentials-project-readiness-guide.png",
+              "sha256": "b2ff7a8d7c4302ca8bd9e77d2ead909dab22b6143ab72c3796f0dda3b8cf9d4a"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-journeys.json",
+              "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-live.json",
+              "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+            },
+            {
+              "path": "docs/reviews/older-live-project-readiness-guide-320-details.png",
+              "sha256": "a1c8307d255b902cc35e72e463cda3c77e34493cb6f17baa03d6bd48dc2bee84"
+            },
+            {
+              "path": "docs/reviews/older-live-project-readiness-guide-320-received.png",
+              "sha256": "ab413cd16339c848d69e1e4a1903d8586a426f83e33ad98e7fe4a756d5f4736d"
+            }
+          ]
+        }
+      },
+      "record_id": "7ee0f310e3565b8a69ba50ab36cebbe1ce624e2610b78baff83a9c3b0e8fa4ad"
+    },
+    {
+      "id": "repair-workshop-news",
+      "revision": "8a07332bbd0362bf8eecc486356d022ed0e00bb00cb7d3be34b423b3ed443584",
+      "base_id": "1e80512b48fc944ff322a6caeb2c022517df8fd1ef1e09663ecb732832bf9bc6",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed final input and acknowledgement screens, four-width RTL/long-copy audit, failure/retry and real local WordPress captures. Revisions of existing designs; no external delivery.",
+      "at": "2026-10-12T05:33:42.864Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12.md",
+              "sha256": "25fdadc2392fad84c1917f5b06cca4dd5d99199d1546eb98a5dd11ff72b23121"
+            },
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-audit.json",
+              "sha256": "24740294718c88090c8f715657de2c1ea92619aa5c575c48295f2e2689b4ceec"
+            },
+            {
+              "path": "docs/reviews/older-essentials-repair-workshop-news.png",
+              "sha256": "bc44d9e42342f5b9f208c9ea6e32c69d3a1140e6856a2770a5884637bdccdf81"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-journeys.json",
+              "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-live.json",
+              "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+            },
+            {
+              "path": "docs/reviews/older-live-repair-workshop-news-320-details.png",
+              "sha256": "30ae1edb7bea1f1ead5390a6db29f09a372d0ffecd394bee27c4fea53c429168"
+            },
+            {
+              "path": "docs/reviews/older-live-repair-workshop-news-320-received.png",
+              "sha256": "d7d483e172928db420170410db65de83eb3a1b74d1072445cb606dda454c4526"
+            }
+          ]
+        }
+      },
+      "record_id": "c6787e56afd2db237e60fe76f29f750d56b3b6640c80b9628bca5fbff3275ead"
+    },
+    {
+      "id": "local-class-news",
+      "revision": "c9a98e4f374d0ed794567b203b96a7fb8e713873c3043829ba68e1419810dcdc",
+      "base_id": "ae20db4f38f27320fe9543e7f5b583f62e7c72b032e9a217bf99bd44a766183e",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed final input and acknowledgement screens, four-width RTL/long-copy audit, failure/retry and real local WordPress captures. Revisions of existing designs; no external delivery.",
+      "at": "2026-10-12T05:33:42.864Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12.md",
+              "sha256": "25fdadc2392fad84c1917f5b06cca4dd5d99199d1546eb98a5dd11ff72b23121"
+            },
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-audit.json",
+              "sha256": "24740294718c88090c8f715657de2c1ea92619aa5c575c48295f2e2689b4ceec"
+            },
+            {
+              "path": "docs/reviews/older-essentials-local-class-news.png",
+              "sha256": "d40fb42119be9d216e3eae494901031d1283def66c1142ee35339ecb44617951"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-journeys.json",
+              "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/older-essentials-2026-10-12-live.json",
+              "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+            },
+            {
+              "path": "docs/reviews/older-live-local-class-news-320-details.png",
+              "sha256": "3e46a39c526b4917063f7b9b15ca0072f19503db523088ceded4b2b8b4219a1a"
+            },
+            {
+              "path": "docs/reviews/older-live-local-class-news-320-received.png",
+              "sha256": "d7d483e172928db420170410db65de83eb3a1b74d1072445cb606dda454c4526"
+            }
+          ]
+        }
+      },
+      "record_id": "db89071c1fa466c24e295a463d61c5df18ae8b315a72ff01e7afd77db84e284d"
     }
   ]
 }

@@ -634,6 +634,12 @@
           "date": "2026-09-29",
           "revision": "62399527e40af44de0a14f89b6296ca4456a7024664e4b1502e37bfa780292f2",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-12",
+          "revision": "b0571adb5cba3c676c4a26781799c8348f9acf9627944fa7ac633d44d6939a0d",
+          "note": "Restore narrow cover proportions, compact mobile headings, readable fine print, stronger field contrast and a matching acknowledgement label."
         }
       ]
     },
@@ -958,6 +964,12 @@
           "date": "2026-09-29",
           "revision": "746cfb4abee80a9f59e343a8b175005bbc3d9dd816e966d03d4d1005944eaa71",
           "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        },
+        {
+          "version": 5,
+          "date": "2026-10-12",
+          "revision": "9e86127fde21eab6477353176b48a362dfa79f52c612fcba13fea957f26f081b",
+          "note": "Keep email and action together beside the message, improve consent hierarchy and contrast, and group acknowledgement text consistently."
         }
       ]
     },

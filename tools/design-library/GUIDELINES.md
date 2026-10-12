@@ -183,8 +183,11 @@ Role has nowhere to carry those choices; review the actual Keep/Sample candidate
 
 Give every shipped leaf a stable `n1`…`n9999` id, unique in its tree, and keep
 the id when moving the leaf. Slot Roles may repeat; node ids may not. This is
-how translation follows content rather than a changing array position. Author
-tree `v: 2`, but never derived facets, and do not rely on PHP's new-node fallback
+how translation follows content rather than a changing array position. Use tree `v: 2` for the linear submissions described here. Use supported
+`v: 3` only when the journey needs the graph contract (stable screen IDs, validated
+transitions and result routing); validate it against the shipping capture contract
+and review every reachable path. Do not convert a simple linear setup merely to
+change its version. Never author derived facets, and do not rely on PHP's new-node fallback
 to renumber a library file on every edit.
 
 ---

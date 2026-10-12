@@ -36,7 +36,7 @@ a usable Optin must not require rebuilding its layout.
    `pro/modules/display-types/templates/`; paid question designs go in
    `pro/modules/journeys/templates/`. The `id` must be unique across all modules.
    Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
-   preserve that id when reordering it. Author `tree.v: 2`; do not author derived facets.
+   preserve that id when reordering it. Author `tree.v: 2` for linear submissions. Use supported `v: 3` only for a journey that needs the graph contract; preserve stable screen IDs and validate every reachable route with the shipping capture contract. Do not author derived facets.
    PHP mints missing ids on newly added draft leaves; that fallback is not a
    reason to renumber shipped leaves and lose translation identity (ADR 0010).
 3. **`composer verify:templates`.** Not optional — see below.
