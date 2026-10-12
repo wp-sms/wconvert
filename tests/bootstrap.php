@@ -1877,3 +1877,44 @@ if (!function_exists('as_has_scheduled_action')) {
 if (!function_exists('rest_url')) {
     function rest_url(string $path = ''): string { return 'https://example.test/wp-json/' . ltrim($path, '/'); }
 }
+
+if (!function_exists('do_shortcode')) {
+    function do_shortcode(string $content, bool $ignoreHtml = false): string
+    {
+        return $content;
+    }
+}
+
+if (!function_exists('wp_kses_allowed_html')) {
+    /**
+     * A small 'post' set: the tags the content-region tests write. Real
+     * attribute rules (data-* as a global attribute) are proven on a real
+     * WordPress by bin/verify-content-region.php, not by this stub.
+     *
+     * @return array<string, array<string, bool>>
+     */
+    function wp_kses_allowed_html(string $context = ''): array
+    {
+        $global = ['class' => true, 'id' => true, 'style' => true, 'data-*' => true];
+        return ['div' => $global, 'p' => $global, 'strong' => $global, 'a' => $global + ['href' => true]];
+    }
+}
+
+if (!function_exists('wp_kses')) {
+    /**
+     * Drops every tag the allowed set does not name, and the body of
+     * `<script>` and `<style>`. Attributes pass through untouched; see
+     * wp_kses_allowed_html() above for where they are checked for real.
+     *
+     * @param array<string, array<string, bool>> $allowed
+     */
+    function wp_kses(string $content, array $allowed): string
+    {
+        $content = (string) preg_replace('~<(script|style)\b[^>]*>.*?</\1\s*>~is', '', $content);
+        return (string) preg_replace_callback(
+            '~</?([a-zA-Z][a-zA-Z0-9-]*)\b[^>]*>~',
+            static fn (array $tag): string => isset($allowed[strtolower($tag[1])]) ? $tag[0] : '',
+            $content
+        );
+    }
+}

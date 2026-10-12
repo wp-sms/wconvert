@@ -40,7 +40,11 @@ final class ContentRegion
         if ($anchor === '') return $content;
         $markup = '<div data-wconvert-region="' . esc_attr($id) . '">' . $anchor
             . '<div class="wconvert-content-region" data-wconvert-locked-content>' . $content . '</div></div>';
-        return (string) apply_filters('wconvert_content_region_html', $markup);
+        // Escaped AFTER the filter: whatever a filter hands back is what the
+        // page prints, so it passes the same rules as the content inside it.
+        // The region's own data-* attributes are global kses attributes and
+        // survive (WordPress.org review, round 2).
+        return self::escape((string) apply_filters('wconvert_content_region_html', $markup));
     }
 
     /**

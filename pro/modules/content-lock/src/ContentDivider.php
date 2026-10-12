@@ -26,8 +26,9 @@ final class ContentDivider
                 'supports' => ['html' => false, 'multiple' => false, 'reusable' => false],
                 'editor_script' => 'wconvert-content-lock-editor',
                 'editor_style' => 'wconvert-content-lock-editor',
-                // The marker itself never outputs HTML; following blocks own their content.
-                'render_callback' => static fn (array $attributes, string $content): string => $content,
+                // The marker itself never outputs HTML (its editor save() is
+                // null); following blocks own their content.
+                'render_callback' => static fn (): string => '',
             ]);
         });
         add_filter('the_content', [self::class, 'content'], 8);
