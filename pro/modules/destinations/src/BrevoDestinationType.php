@@ -26,7 +26,7 @@ final class BrevoDestinationType implements DestinationType
 
     public function requirements(): DestinationRequirements
     {
-        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert'), 'type' => 'ids']], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
+        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert'), 'type' => 'ids', 'max' => 1]], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
     }
 
     public function testConnection(array $credentials): void
@@ -48,7 +48,7 @@ final class BrevoDestinationType implements DestinationType
 
     public function settingsSchema(array $credentials): array
     {
-        if (empty($credentials['api_key'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert')]];
+        if (empty($credentials['api_key'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1]];
         $options = [];
         for ($offset = 0; $offset < 10000; $offset += 50) {
             [$status, $body] = $this->request($credentials, 'GET', '/contacts/lists?limit=50&offset=' . $offset);
@@ -60,7 +60,7 @@ final class BrevoDestinationType implements DestinationType
             if (count($lists) < 50 || (isset($body['count']) && $offset + count($lists) >= (int) $body['count'])) break;
             if ($offset + 50 >= 10000) throw new \RuntimeException('Brevo has too many lists to display.');
         }
-        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'options' => $options],
+        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1, 'options' => $options],
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
                 ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],
                 ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert')],

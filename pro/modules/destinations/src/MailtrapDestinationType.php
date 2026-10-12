@@ -27,7 +27,7 @@ final class MailtrapDestinationType implements DestinationType
 
     public function requirements(): DestinationRequirements
     {
-        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert'), 'type' => 'ids']], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
+        return new DestinationRequirements([CanonicalFields::EMAIL], ['lists' => ['label' => __('List', 'wconvert'), 'type' => 'ids', 'max' => 1]], [CanonicalFields::EMAIL, CanonicalFields::NAME], [], ['email']);
     }
 
     /** Mailtrap does not document which token permission the Contacts API needs, so reading the lists is the proof. */
@@ -53,7 +53,7 @@ final class MailtrapDestinationType implements DestinationType
     /** Mailtrap has no name field, so the Destination says where it goes (ADR 0110). Lists are unpaged: at most 50. */
     public function settingsSchema(array $credentials): array
     {
-        if (empty($credentials['api_token'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert')]];
+        if (empty($credentials['api_token'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1]];
         [$status, $lists] = $this->request($credentials, 'GET', '/contacts/lists');
         if ($status !== 200) throw new \RuntimeException('Mailtrap lists could not be read.');
         $options = [];
@@ -63,7 +63,7 @@ final class MailtrapDestinationType implements DestinationType
         $textFields = $this->fields($credentials);
         $nameSetting = ['type' => 'select', 'label' => __('Name goes to', 'wconvert'), 'options' => $textFields];
         if (in_array('first_name', array_column($textFields, 'value'), true)) $nameSetting['default'] = 'first_name';
-        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'options' => $options],
+        return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'max' => 1, 'options' => $options],
             'name_field' => $nameSetting,
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
                 ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],

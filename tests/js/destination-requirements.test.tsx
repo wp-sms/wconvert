@@ -2,7 +2,7 @@ import { treeFixture } from './support/journey';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { capturedFields, compatibilityProblems } from '../../resources/admin/src/destinations/requirements';
+import { capturedFields, compatibilityProblems, missingSettings } from '../../resources/admin/src/destinations/requirements';
 import { destinationsSaid } from '../../resources/admin/src/builder/destinations';
 import { DestinationSettingsForm } from '../../resources/admin/src/destinations/DestinationSettingsForm';
 import { SendTestDialog } from '../../resources/admin/src/destinations/SendTestDialog';
@@ -129,6 +129,17 @@ describe('provider-declared destination requirements', () => {
     expect(compatibilityProblems(magnet, [{ name: 'phone', required: true }]).join(' ')).toContain('Complete “File URL”');
     expect(compatibilityProblems(magnet, [{ name: 'phone', required: true }]).join(' ')).toContain('needs email address');
   });
+  it('says why more lists than the service takes cannot send, and counts a repeated id once', () => {
+    const oneList = { ...route, requirements: { ...route.requirements!, settings: { lists: { label: 'List', type: 'ids', max: 1 } } } };
+    const email = [{ name: 'email', required: true }];
+    expect(compatibilityProblems({ ...oneList, settings: { lists: ['3', '4'] } }, email))
+      .toContain('Newsletter: Choose one “List”. This service adds a contact to one list.');
+    expect(missingSettings(oneList.requirements, { lists: ['3', '4'] })).toEqual(['lists']);
+    expect(compatibilityProblems({ ...oneList, settings: { lists: [] } }, email).join(' ')).toContain('Choose “List” before this destination can send.');
+    for (const lists of [['4'], ['4', ' 4 ']]) expect(missingSettings(oneList.requirements, { lists })).toEqual([]);
+    expect(missingSettings(route.requirements, { lists: ['3', '4'] })).toEqual([]);
+  });
+
   it('does not claim an interest answer is sent until mapped, and states the new-subscriber limit', () => {
     const captures = [{ name: 'email', required: true }, { name: 'interest', required: false }];
     expect(compatibilityProblems(route, captures).join(' ')).toContain('saved in WConvert but is not sent');

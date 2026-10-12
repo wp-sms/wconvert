@@ -8,6 +8,7 @@ use WConvert\Destination\BulkRePush;
 use WConvert\Destination\ConnectionStore;
 use WConvert\Destination\DeliveryFailures;
 use WConvert\Destination\DestinationRegistry;
+use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\HealthStore;
 use WConvert\Destination\PushDispatcher;
@@ -127,6 +128,21 @@ final class DestinationRoutesTest extends TestCase
         self::assertSame(['email', 'phone'], $expected['capture_any_of']);
         self::assertSame($expected, $payload['types'][0]['requirements']);
         self::assertSame($expected, $payload['destinations'][0]['requirements']);
+    }
+
+    /** The admin draws one-list fields as radios and says why two is not ready, from these (#223). */
+    public function testAOneIdCapTravelsWithRequirementsAndSchema(): void
+    {
+        $type = new FakeDestinationType('fake');
+        $type->declaredRequirements = new DestinationRequirements([], ['lists' => ['label' => 'List', 'type' => 'ids', 'max' => 1]]);
+        $type->settingsSchema = ['lists' => ['type' => 'ids', 'label' => 'List', 'max' => 1, 'options' => [['value' => '3', 'label' => 'Newsletter']]]];
+        (new DestinationStore($this->options))->save(null, 'fake', 'Newsletter', null, ['lists' => ['3', '4']]);
+
+        $payload = $this->controllerFor($type)->index()->get_data();
+
+        self::assertSame(1, $payload['types'][0]['requirements']['settings']['lists']['max']);
+        self::assertSame(1, $payload['types'][0]['settings_schema']['lists']['max']);
+        self::assertSame(1, $payload['destinations'][0]['requirements']['settings']['lists']['max']);
     }
 
     public function testCredentialsAreReturnedMaskedAndNeverAsValues(): void

@@ -557,6 +557,67 @@ describe('the destinations screen', () => {
   });
 
   /**
+   * **A service that adds a Contact to one list draws radios** (#223).
+   * Mailchimp, Brevo and Mailtrap take exactly one; checkboxes let a merchant
+   * save two, which read as ready and then failed every push.
+   */
+  describe('a field that takes one list', () => {
+    const requirements = { capture_any_of: ['email'], settings: { lists: { label: 'List', type: 'ids', max: 1 } }, fields: ['email'], mapped_fields: {} };
+    const ONE_LIST = { ...MAILPOET_READY, id: 'brevo', label: 'Brevo', requirements,
+      settings_schema: { lists: { ...MAILPOET_READY.settings_schema.lists, label: 'List', max: 1 } } };
+    const bound = (lists: string[]) => ({ ...MAILPOET_BOUND, type: 'brevo', label: 'Brevo', requirements, settings: { lists } });
+
+    it('draws radios, and picking one replaces the list', async () => {
+      api.readDestinations.mockResolvedValue({ types: [ONE_LIST], destinations: [bound(['3'])], connections: [], failures: [] });
+      render(<Destinations />);
+      const dialog = within(await edit('Brevo'));
+
+      expect(await dialog.findByRole('radiogroup', { name: 'List (required to send)' })).toBeVisible();
+      expect(dialog.getByRole('radio', { name: 'Newsletter' })).toBeChecked();
+      expect(dialog.queryByRole('checkbox', { name: 'Offers' })).not.toBeInTheDocument();
+
+      await userEvent.click(dialog.getByRole('radio', { name: 'Offers' }));
+      expect(dialog.getByRole('radio', { name: 'Newsletter' })).not.toBeChecked();
+      await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
+
+      await waitFor(() => {
+        expect(api.saveDestination).toHaveBeenCalledWith(expect.objectContaining({ settings: { lists: ['4'] } }));
+      });
+    });
+
+    it('marks two stored lists as needing setup, checks neither, and refuses the save until one is picked', async () => {
+      api.readDestinations.mockResolvedValue({ types: [ONE_LIST], destinations: [bound(['3', '4'])], connections: [], failures: [] });
+      render(<Destinations />);
+
+      expect(await screen.findByText('Needs setup')).toBeInTheDocument();
+      const reason = 'Choose one “List”. This service adds a contact to one list.';
+      expect(screen.getByText(reason)).toBeVisible();
+
+      await userEvent.click(screen.getByRole('button', { name: 'Finish setup' }));
+      const dialog = within(await screen.findByRole('dialog', { name: 'Brevo' }));
+      await waitFor(() => expect(dialog.getByRole('radio', { name: 'Newsletter' })).toHaveFocus());
+      expect(dialog.getByRole('radio', { name: 'Newsletter' })).not.toBeChecked();
+      expect(dialog.getByRole('radio', { name: 'Offers' })).not.toBeChecked();
+      expect(dialog.getByText(reason)).toBeVisible();
+      expect(dialog.getByRole('button', { name: 'Save destination' })).toHaveAttribute('aria-disabled', 'true');
+
+      await userEvent.click(dialog.getByRole('radio', { name: 'Offers' }));
+      expect(dialog.queryByText(reason)).not.toBeInTheDocument();
+      expect(dialog.getByRole('button', { name: 'Save destination' })).not.toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('leaves a field without a cap as checkboxes', async () => {
+      api.readDestinations.mockResolvedValue({ types: [MAILPOET_READY], destinations: [{ ...MAILPOET_BOUND, settings: { lists: ['3', '4'] } }], connections: [], failures: [] });
+      render(<Destinations />);
+      const dialog = within(await edit('MailPoet'));
+
+      expect(dialog.getByRole('checkbox', { name: 'Newsletter' })).toBeChecked();
+      expect(dialog.getByRole('checkbox', { name: 'Offers' })).toBeChecked();
+      expect(dialog.queryByRole('radio')).not.toBeInTheDocument();
+    });
+  });
+
+  /**
    * **A configured list the server did not offer survives a save.**
    *
    * A merchant binned a MailPoet list, or deleted one outright: its id is

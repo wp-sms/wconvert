@@ -16,6 +16,13 @@ pushes; REST exposes it for admin guidance. List identifiers must be nonempty
 trimmed strings, so a numeric or whitespace-only list cannot pass the admin
 check while failing the push.
 
+> **Amended for #223:** a required `ids` field may say `max`. More distinct
+> ids than that is not ready, server and admin alike, with its own reason
+> ("Choose one “List”…"), and a field with `max: 1` draws as radios rather
+> than checkboxes. Mailchimp, Brevo and Mailtrap declare `max: 1` on their
+> list; MailPoet's lists and WSMS tags declare none and still take several.
+> Each adapter's own one-list check in `push()` stays as the last guard.
+
 The three shipped adapters declare these facts:
 
 | Destination | Capture prerequisite | Required settings | Values used |

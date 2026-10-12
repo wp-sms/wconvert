@@ -78,10 +78,14 @@ export function SettingsControl({
      * and this draws them (#87). A provider that could not be reached sends no
      * options and lands back on the text input, which is a degraded control
      * rather than an invisible one.
+     *
+     * A field with `max: 1` is radios: Mailchimp, Brevo and Mailtrap add a
+     * Contact to one list, and checkboxes let a merchant save two that every
+     * push then refused (#223).
      */
     case 'ids':
       return isGroup(field) ? (
-        <ChoiceList id={id} options={field.options} value={value} onChange={onChange} />
+        <ChoiceList id={id} options={field.options} one={field.max === 1} value={value} onChange={onChange} />
       ) : (
         <Input id={id} type="text" value={value} onChange={(e) => onChange(e.target.value)} />
       );
@@ -134,11 +138,14 @@ export function isGroup(
 function ChoiceList({
   id,
   options,
+  one = false,
   value,
   onChange,
 }: {
   id: string;
   options: NonNullable<SettingsField['options']>;
+  /** Radios: picking one replaces the value, and a stored pair checks none, so it reads as unchosen. */
+  one?: boolean;
   value: string;
   onChange: (value: string) => void;
 }) {
@@ -181,14 +188,15 @@ function ChoiceList({
   };
 
   return (
-    <div id={id} className="flex flex-col gap-1" role="group" aria-labelledby={`${id}-label`}>
+    <div id={id} className="flex flex-col gap-1" role={one ? 'radiogroup' : 'group'} aria-labelledby={`${id}-label`}>
       {options.map((option) => (
         <CheckRow
           key={option.value}
           id={`${id}-${option.value}`}
           label={<bdi>{option.label}</bdi>}
-          checked={chosen.has(option.value)}
-          onChange={(event) => toggle(option.value, event.target.checked)}
+          {...(one ? { type: 'radio', name: id } : {})}
+          checked={one ? chosen.size === 1 && chosen.has(option.value) : chosen.has(option.value)}
+          onChange={(event) => (one ? onChange(option.value) : toggle(option.value, event.target.checked))}
         />
       ))}
     </div>
