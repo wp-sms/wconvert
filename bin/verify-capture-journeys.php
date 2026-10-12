@@ -2,7 +2,7 @@
 /** Real WordPress/MySQL journey verification. Use an isolated WordPress database.
  * WCONVERT_VERIFY_BOOTSTRAP=/absolute/path/to/test-wp-bootstrap.php php bin/verify-capture-journeys.php
  * The bootstrap must define WCONVERT_VERIFY_JOURNEYS=true and load WConvert.
- * No external providers are contacted. Composer's development fixtures are required.
+ * No external providers are contacted. Uses tests/unit/Support/FakeDestinationType.php from the source tree.
  */
 declare(strict_types=1);
 
@@ -29,6 +29,10 @@ if (!defined('ABSPATH') && is_string($bootstrap) && is_file($bootstrap)) { requi
 if (!defined('WCONVERT_VERIFY_JOURNEYS') || WCONVERT_VERIFY_JOURNEYS !== true) {
     fwrite(STDERR, "This check requires an explicitly isolated WordPress bootstrap.\n"); exit(2);
 }
+// The plugin boots from wp-scoper's packages/autoload.php when it exists, and
+// that autoloader carries no autoload-dev namespace. Load the one test fixture
+// this check uses by path rather than relying on Composer's dev autoloader.
+require_once dirname(__DIR__) . '/tests/unit/Support/FakeDestinationType.php';
 
 /** @param array<string, mixed> $body
  * @return array<string, mixed>
