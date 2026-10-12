@@ -296,8 +296,11 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         </div>
       </RegionFooter>}
     </Region>
-    {/* One outage is one door: while the log has failed, its Try again re-reads this too. */}
-    {log.status !== 'failed' && <RetentionSummary refreshKey={retry} />}
+    {/* One outage is one door: the policy is read once the log has loaded, so
+        a failure while the log is still loading cannot draw a second Try again
+        that re-reads only the policy; while the log has failed, its Try again
+        re-reads this too. */}
+    {log.status === 'ready' && <RetentionSummary refreshKey={retry} />}
     <AdminDialog open={opened !== null} onOpenChange={(isOpen) => { if (!isOpen) setOpened(null); }}>
       <AdminDialogContent size="md" onCloseAutoFocus={(event) => {
         // "See all from" re-renders the table, so the row that opened the

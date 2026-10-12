@@ -220,13 +220,20 @@ describe('capture history', () => {
   });
 
   it('draws one error and one Try again when the log fails, and the retry brings the policy back', async () => {
-    log.readLog.mockRejectedValueOnce(new Error('Submissions unavailable.'));
-    log.readRetention.mockRejectedValueOnce(new Error('Retention unavailable.'));
+    // The policy is read only once the log has loaded: read beside a log still
+    // loading, its failure could arrive first and draw a Try again of its own
+    // that re-reads only the policy, leaving the log to fail behind it.
+    let failLog: (cause: Error) => void = () => {};
+    log.readLog.mockImplementationOnce(() => new Promise((_resolve, reject) => { failLog = reject; }));
     render(<LeadLog />);
+    await waitFor(() => expect(log.readLog).toHaveBeenCalledTimes(1));
+    expect(log.readRetention).not.toHaveBeenCalled();
+    await act(async () => { failLog(new Error('Submissions unavailable.')); });
     await screen.findByText('Submissions unavailable.');
-    expect(screen.queryByText(/Retention unavailable\./)).not.toBeInTheDocument();
+    expect(log.readRetention).not.toHaveBeenCalled();
     expect(screen.getAllByRole('button', { name: 'Try again' })).toHaveLength(1);
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
     expect(await screen.findByText('Submissions are kept until you delete them.')).toBeVisible();
     expect(log.saveRetention).not.toHaveBeenCalled();
   });
