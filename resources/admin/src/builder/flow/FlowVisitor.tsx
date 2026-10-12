@@ -38,7 +38,7 @@ export function FlowVisitor({ tree, answers, trace, onAnswers, onStop }: {
   const id = useId();
   const name = (screen: string) => tree.steps.find(item => item.id === screen)?.name ?? '';
   return <div className="wconvert-flow-visitor" role="group" aria-labelledby={`${id}-title`}>
-    <strong id={`${id}-title`}>{__('Answer as a visitor', 'wconvert')}</strong>
+    <strong id={`${id}-title`}>{__('Try a visitor', 'wconvert')}</strong>
     <div className="wconvert-flow-visitor__questions">
       {trace.questions.map(question => question.answer_type === 'multi'
         ? <fieldset key={question.id}><legend><bdi>{question.label}</bdi> · {__('choose several', 'wconvert')}</legend>

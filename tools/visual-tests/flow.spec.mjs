@@ -43,7 +43,11 @@ for (const run of runs) {
     await openFlow(page, run.name);
 
     const zoom = () => page.getByLabel('Zoom level').textContent().then(text => Number.parseInt(text ?? '0', 10));
-    expect(await zoom(), 'Fit stays readable').toBeGreaterThanOrEqual(70);
+    // Fit shows the whole map, unless that would go below 70%: then it stops at 70% and scrolls.
+    const fit = await zoom();
+    const whole = await page.locator('.wconvert-flow-viewport').evaluate(element => element.scrollWidth <= element.clientWidth + 1 && element.scrollHeight <= element.clientHeight + 1);
+    expect(fit === 70 || whole, `Fit at ${fit}% hides part of a map that would fit`).toBe(true);
+    expect(fit).toBeGreaterThanOrEqual(70);
 
     const geometry = await page.evaluate(() => {
       const boxes = [...document.querySelectorAll('.wconvert-flow-card, .wconvert-flow-group, .wconvert-flow-pill')]
@@ -54,10 +58,16 @@ for (const run of runs) {
         if (x.left < y.right - 0.5 && y.left < x.right - 0.5 && x.top < y.bottom - 0.5 && y.top < x.bottom - 0.5) overlaps.push(`${boxes[a].name} × ${boxes[b].name}`);
       }
       return { overlaps, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        order: [...document.querySelectorAll('[data-flow-key]')].map(element => element.getAttribute('data-flow-key')) };
+        order: [...document.querySelectorAll('[data-flow-key]')].map(element => element.getAttribute('data-flow-key')),
+        // Where each card sits on screen, in DOM (Tab) order: rows top to bottom, then the reading direction.
+        seats: [...document.querySelectorAll('[data-flow-node]')].map(element => { const rect = element.getBoundingClientRect(); return { middle: rect.top + rect.height / 2, start: document.documentElement.dir === 'rtl' ? -rect.right : rect.left }; }) };
     });
     expect(geometry.overlaps).toEqual([]);
     expect(geometry.overflow, 'no sideways page scroll').toBeLessThanOrEqual(1);
+    for (let at = 1; at < geometry.seats.length; at++) {
+      const [before, after] = [geometry.seats[at - 1], geometry.seats[at]];
+      expect(before.middle < after.middle - 1 || (Math.abs(before.middle - after.middle) <= 1 && before.start <= after.start), `card ${at} is out of reading order`).toBe(true);
+    }
 
     // Tab reaches the map once; ↓ walks the cards in DOM (reading) order.
     await page.locator('[data-flow-key]').first().focus();

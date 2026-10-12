@@ -141,7 +141,7 @@ describe('early endings (ADR 0142)', () => {
   it('says an early ending ends without saving details', () => {
     const tree = early.cases[0].tree as unknown as TemplateTree;
     const ending = flowModel(tree).cards.find(card => card.id === 'not_fit')!;
-    expect(ending.endsWithout).toBe('details');
+    expect(ending.endsWithout).toEqual(['details']);
     expect(ending.label).toContain('ends without saving details');
     expect(flowModel(tree).cards.find(card => card.id === 'received')?.endsWithout).toBeUndefined();
   });

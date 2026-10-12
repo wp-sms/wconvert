@@ -81,7 +81,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
           </select>
           <select aria-label={__('Comparison', 'wconvert')} value={clause.operator} disabled={!source} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
             {!operators.includes(clause.operator) && <option value={clause.operator} disabled>{__('Choose comparison…', 'wconvert')}</option>}
-            {source?.answer_type === 'multi' ? <><option value="includes_any">{__('includes', 'wconvert')}</option><option value="includes_none">{__('does not include', 'wconvert')}</option></> : <><option value="is">{__('is', 'wconvert')}</option><option value="is_not">{__('is not', 'wconvert')}</option></>}
+            {source?.answer_type === 'multi' ? <><option value="includes_any">{__('includes', 'wconvert')}</option><option value="includes_none">{__('without', 'wconvert')}</option></> : <><option value="is">{__('is', 'wconvert')}</option><option value="is_not">{__('is not', 'wconvert')}</option></>}
           </select>
           {/* Every choice question takes several answers: "is any of" on choose-one too (ADR 0142). */}
           {source ? <fieldset className="wconvert-journey-settings__answers">
@@ -93,7 +93,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
             {unavailable.length > 0 && <div role="status"><small>{__('This rule contains an answer that is no longer available.', 'wconvert')}</small>
               <button type="button" data-destructive="true" onClick={() => patch(index, { ...clause, values: clause.values.filter(answer => !unavailable.includes(answer)) })}>{__('Remove unavailable answers', 'wconvert')}</button></div>}
             {!clause.values.some(value => value !== '') && <small>{__('Choose at least one answer.', 'wconvert')}</small>}
-          </fieldset> : <select aria-label={__('Answer', 'wconvert')} disabled value={clause.values[0] ?? ''} onChange={() => {}}>
+          </fieldset> : <select aria-label={__('Answer', 'wconvert')} disabled defaultValue={clause.values[0] ?? ''}>
             <option value={clause.values[0] ?? ''}>{clause.values[0] ? __('Answer unavailable — choose another', 'wconvert') : __('Choose answer…', 'wconvert')}</option>
           </select>}
           <button type="button" data-destructive="true" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length || required ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert')}</button>

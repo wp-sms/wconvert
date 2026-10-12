@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { __ } from '@wordpress/i18n';
+import type { Rect } from '../structure/flowLayout';
 
 /**
  * The Flow map's scroll box (ADR 0142). Plain wheel scrolls, as everywhere
@@ -83,8 +84,8 @@ export function FlowViewport({ viewport, surface, width, height, zoom, onZoom, o
 
 /** Where the view is on a map larger than it, and a click to go elsewhere. Decorative: the cards are all in the tab order already. */
 export function FlowOverview({ width, height, boxes, view, onJump }: {
-  width: number; height: number; boxes: readonly { id: string; x: number; y: number; width: number; height: number; colour?: number }[];
-  view: { x: number; y: number; width: number; height: number }; onJump(x: number, y: number): void;
+  width: number; height: number; boxes: readonly (Rect & { id: string; colour?: number })[];
+  view: Rect; onJump(x: number, y: number): void;
 }) {
   // At most 142 × 160: a tall map gets a narrow overview, not a tall one.
   const scale = Math.min(142 / Math.max(1, width), 160 / Math.max(1, height));

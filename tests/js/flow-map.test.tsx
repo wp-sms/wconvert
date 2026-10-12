@@ -137,7 +137,8 @@ describe('the Flow map (ADR 0142)', () => {
     const contact = document.querySelector('[data-flow-node="contact"]')!;
     expect(contact).toHaveAttribute('dir', 'rtl');
     expect(contact.querySelector('bdi')).toHaveTextContent('One enquiry');
-    expect(within(contact as HTMLElement).getByRole('button', { name: 'Then Received' })).toHaveTextContent('Then ← Received');
+    // The arrow is mirrored by the page's direction rather than swapped for another glyph (GUIDELINES §15).
+    expect(within(contact as HTMLElement).getByRole('button', { name: 'Then Received' }).querySelector('.rtl\\:-scale-x-100')).toHaveTextContent('→');
     expect(document.querySelector('.wconvert-flow-viewport')).toHaveAttribute('dir', 'ltr');
   });
 
@@ -158,7 +159,7 @@ describe('the Flow map (ADR 0142)', () => {
     const quiz = ((coffee as { template?: { tree: unknown } }).template?.tree ?? coffee) as TemplateTree;
     render(<FlowMap {...props()} tree={quiz} />);
     await user.click(screen.getByRole('button', { name: 'Try a visitor' }));
-    const strip = screen.getByRole('group', { name: 'Answer as a visitor' });
+    const strip = screen.getByRole('group', { name: 'Try a visitor' });
     // Only the questions this visitor reaches are asked.
     expect(within(strip).queryByRole('combobox', { name: 'Do you grind your own beans?' })).toBeNull();
     await user.selectOptions(within(strip).getByRole('combobox', { name: 'How do you make your coffee?' }), 'filter');
@@ -167,7 +168,7 @@ describe('the Flow map (ADR 0142)', () => {
     expect(document.querySelector('[data-flow-node="grind"]')).toHaveAttribute('data-trace', 'on');
     expect(document.querySelector('.wconvert-flow-card__sub[data-shown]')).not.toBeNull();
     await user.click(within(strip).getByRole('button', { name: 'Stop' }));
-    expect(screen.queryByRole('group', { name: 'Answer as a visitor' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Try a visitor' })).toBeNull();
     expect(document.querySelector('[data-trace]')).toBeNull();
   });
 
@@ -178,6 +179,6 @@ describe('the Flow map (ADR 0142)', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Garden' }));
     expect(screen.getByText('This visitor is asked 1 of 3.')).toBeInTheDocument();
     rerender(<FlowMap {...props()} tree={{ ...tree }} />);
-    expect(screen.queryByRole('group', { name: 'Answer as a visitor' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Try a visitor' })).toBeNull();
   });
 });

@@ -17,10 +17,10 @@ describe('endings either side of a gate (ADR 0142)', () => {
 
   it('names an early ending by what it skips', () => {
     const form = cases[0], result = cases[2];
-    expect(earlyEnding(form.tree, 'not_fit')).toBe('details');
-    expect(earlyEnding(form.tree, 'received')).toBeNull();
-    expect(earlyEnding(result.tree, 'browse')).toBe('result');
-    expect(earlyEnding(enquiry as unknown as TemplateTree, 'received')).toBeNull();
+    expect(earlyEnding(form.tree, 'not_fit')).toEqual(['details']);
+    expect(earlyEnding(form.tree, 'received')).toEqual([]);
+    expect(earlyEnding(result.tree, 'browse')).toEqual(['result']);
+    expect(earlyEnding(enquiry as unknown as TemplateTree, 'received')).toEqual([]);
   });
 
   it('lets an early ending through readiness, and keeps refusing a shared one', () => {

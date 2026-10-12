@@ -66,14 +66,24 @@ export function gatesOf(tree: TemplateTree): { details?: string; result?: string
   return { details: at >= 0 ? tree.steps[at].id : undefined, result: tree.steps.find(screen => screen.kind === 'result')?.id };
 }
 
-/** What an ending skips on purpose, or `null` when it comes after every gate (or the gate is broken). */
-export function earlyEnding(tree: TemplateTree, id: string): 'details' | 'result' | null {
+/** A gate an ending can skip on purpose: the required form's details, or the result. */
+export type Gate = 'details' | 'result';
+
+/** Every gate an ending skips on purpose; empty when it comes after them all (or a gate is broken). */
+export function earlyEnding(tree: TemplateTree, id: string): readonly Gate[] {
   const gates = gatesOf(tree);
-  for (const kind of ['details', 'result'] as const) {
+  return (['details', 'result'] as const).filter(kind => {
     const gate = gates[kind];
-    if (!gate) continue;
+    if (!gate) return false;
     const sides = gateEndings(tree, gate);
-    if (sides.after.length > 0 && sides.early.includes(id)) return kind;
-  }
-  return null;
+    return sides.after.length > 0 && sides.early.includes(id);
+  });
+}
+
+/**
+ * The endings that keep a gate from holding: those reached both with and
+ * without it, else — when none comes after it — every early one.
+ */
+export function gateFaults(sides: GateSides): { readonly ids: readonly string[]; readonly reason: 'shared' | 'none-after' } {
+  return sides.shared.length ? { ids: sides.shared, reason: 'shared' } : { ids: sides.after.length ? [] : sides.early, reason: 'none-after' };
 }

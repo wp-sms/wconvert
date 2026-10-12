@@ -20,10 +20,9 @@ export function retireAnswerPlan(original: TemplateTree, questionId: string, val
   const narrow = (when?: QuestionCondition): QuestionCondition | undefined => when?.clauses.length === 1 && when.clauses[0].question === questionId
     && ['is', 'includes_any'].includes(when.clauses[0].operator) && when.clauses[0].values.length > 1 && when.clauses[0].values.includes(value)
     ? { ...when, clauses: [{ ...when.clauses[0], values: when.clauses[0].values.filter(item => item !== value) }] } : when;
-  const tree: TemplateTree = { ...original, steps: original.steps.map(screen => ({ ...screen, ...(screen.when ? { when: narrow(screen.when) } : {}),
-    ...(screen.results ? { results: screen.results.map(result => result.when ? { ...result, when: narrow(result.when) } : result) } : {}) })),
-  graph: { ...original.graph, edges: original.graph.edges.map(edge => edge.when ? { ...edge, when: narrow(edge.when) } : edge) } };
-  if (!tree.graph) return blocked(__('Edit the listed rules one at a time.', 'wconvert'));
+  const graph = { ...original.graph, edges: original.graph.edges.map(edge => edge.when ? { ...edge, when: narrow(edge.when) } : edge) };
+  const tree = { ...original, steps: original.steps.map(screen => ({ ...screen, ...(screen.when ? { when: narrow(screen.when) } : {}),
+    ...(screen.results ? { results: screen.results.map(result => result.when ? { ...result, when: narrow(result.when) } : result) } : {}) })), graph };
   const conditions = [...tree.steps.flatMap(screen => [screen.when, ...(screen.results?.map(result => result.when) ?? [])]), ...tree.graph.edges.map(edge => edge.when)];
   if (conditions.some(when => uses(when) && !only(when))) return blocked(__('Some rules combine this answer with other choices or comparisons. Edit those rules below first so other visitors keep the intended behavior.', 'wconvert'));
   let next: TemplateTree = { ...tree, steps: tree.steps.map(screen => ({ ...screen, ...(screen.results ? { results: screen.results.filter(result => {

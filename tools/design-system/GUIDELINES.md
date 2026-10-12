@@ -143,7 +143,9 @@ colour.
   on the Flow map: its line, its "Only if" chip and the result that uses it
   (ADR 0142). They are never decoration, never the chart palette, and never red,
   which stays for problems. Lines hold 3:1 on the card and the canvas; text in
-  a pill holds 4.5:1 (`tests/js/answer-palette.test.ts` measures both).
+  a pill holds 4.5:1 (`tests/js/answer-palette.test.ts` measures both). The
+  map's kind tiles (`--kind-*`) are the one other hue set: a quiet tile beside
+  the kind's word, its icon at 3:1 on its surface.
 
 ## 6. Quiet surfaces
 
@@ -589,6 +591,11 @@ The exceptions, and they are the only ones:
 - **`box-shadow`, which has no logical form.** The selected-block rail is the
   one physical direction in `index.css`, and it states a `:dir(rtl)` override
   beside itself.
+- **Coordinates of a laid-out picture.** The Flow map's cards, pills and lines
+  sit at the `left`/`top` its layout computed, already mirrored for RTL, inside
+  a scroll box that is itself `dir="ltr"` (ADR 0142). A logical property would
+  mirror them a second time. The words on each card still take the page's
+  direction.
 
 **A directional glyph is mirrored.** A Back arrow, a submenu chevron, a
 disclosure twist, the corner arrow marking an A/B arm — `rtl:-scale-x-100` in a

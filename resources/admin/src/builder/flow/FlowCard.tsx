@@ -3,13 +3,14 @@ import { Check, CircleHelp, FileText, Flag, Send } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import { JourneyIssueMarker } from '../JourneyIssueMarker';
 import type { CampaignIssue } from '../readiness/campaignIssues';
-import type { CardKind, FlowCard as Card, FlowGroupBox, Priority } from '../structure/flowModel';
+import { endingWords, kindWord, type CardKind, type FlowCard as Card, type FlowGroupBox, type Priority } from '../structure/flowModel';
 import type { Rect } from '../structure/flowLayout';
 import type { TraceState } from './FlowLines';
 
 export const kindIcon = { question: CircleHelp, message: FileText, form: Send, result: Flag, ending: Check } satisfies Record<CardKind, unknown>;
-export const kindWord = (kind: CardKind) => ({ question: __('Question', 'wconvert'), message: __('Message', 'wconvert'), form: __('Form', 'wconvert'),
-  result: __('Result', 'wconvert'), ending: __('Ending', 'wconvert') })[kind];
+
+/** "Then → X": a directional glyph, so it is mirrored in RTL (GUIDELINES §15). */
+const Arrow = () => <span aria-hidden="true" className="inline-block rtl:-scale-x-100">→</span>;
 
 export interface NodeProps {
   box: Rect; rtl: boolean; state: TraceState; active: boolean; issues: readonly CampaignIssue[];
@@ -23,7 +24,6 @@ export function FlowCard({ card, selected, destinationSummary, shownResult, box,
 }) {
   const Icon = kindIcon[card.kind];
   const tab = active ? 0 : -1;
-  const arrow = rtl ? '←' : '→';
   const shown = card.results?.slice(0, 3) ?? [];
   return <div ref={measureRef} className="wconvert-flow-card" data-flow-node={card.id} data-kind={card.kind} data-colour={card.colour} data-trace={state}
     data-unreachable={card.unreachable || undefined} data-selected={selected || undefined} dir={rtl ? 'rtl' : 'ltr'}
@@ -44,14 +44,13 @@ export function FlowCard({ card, selected, destinationSummary, shownResult, box,
       {(card.results?.length ?? 0) > 3 && <span className="wconvert-flow-card__sub">{sprintf(/* translators: %d: how many more results. */ __('+%d more · first match wins', 'wconvert'), card.results!.length - 3)}</span>}
     </button>
     {card.kind === 'ending' || card.kind === 'result' && !card.then && !card.linesText
-      ? <span className="wconvert-flow-card__foot" data-early={card.endsWithout}>{card.endsWithout === 'details' ? __('Ends without saving details', 'wconvert')
-        : card.endsWithout === 'result' ? __('Ends without a result', 'wconvert') : __('Ends the campaign', 'wconvert')}</span>
-      : card.missingThen ? <button type="button" className="wconvert-flow-card__foot" data-problem="true" tabIndex={tab} onClick={() => onSelectPath(card.index, 0)}>{__('Choose where visitors go', 'wconvert')}</button>
+      ? <span className="wconvert-flow-card__foot" data-early={card.endsWithout ? 'true' : undefined}>{endingWords(card.endsWithout)}</span>
+      : card.missingThen ? <button type="button" className="wconvert-flow-card__foot" data-problem="true" tabIndex={tab} onClick={() => onSelectPath(card.index, card.fallbackPriority)}>{__('Choose where visitors go', 'wconvert')}</button>
         : card.linesText ? <button type="button" className="wconvert-flow-card__foot" tabIndex={tab} onClick={() => onSelectPath(card.index, card.linePriority ?? 0)}>{card.linesText}</button>
           : card.then && <button type="button" className="wconvert-flow-card__foot" tabIndex={tab} onClick={() => onSelectPath(card.index, card.then!.priority)}>
-            {__('Then', 'wconvert')} <span aria-hidden="true">{arrow}</span> <b><bdi>{card.then.name}</bdi></b></button>}
+            {__('Then', 'wconvert')} <Arrow /> <b><bdi>{card.then.name}</bdi></b></button>}
     {card.skip && <button type="button" className="wconvert-flow-card__foot" data-skip="true" tabIndex={tab} onClick={() => onSelectPath(card.index, 'hidden')}>
-      {__('If skipped', 'wconvert')} <span aria-hidden="true">{arrow}</span> <b><bdi>{card.skip.name}</bdi></b></button>}
+      {__('If skipped', 'wconvert')} <Arrow /> <b><bdi>{card.skip.name}</bdi></b></button>}
     <JourneyIssueMarker issues={issues} onIssue={onIssue} tabIndex={tab} />
   </div>;
 }
@@ -80,7 +79,7 @@ export function FlowGroup({ group, selected, visited, box, rtl, state, active, i
       {issues.some(issue => issue.screenId === member.id) && <span className="wconvert-flow-group__issue" aria-hidden="true">{issues.filter(issue => issue.screenId === member.id).length}</span>}
     </button>)}
     {nextPriority !== undefined && <button type="button" className="wconvert-flow-card__foot" tabIndex={tab} onClick={() => onSelectPath(last.index, nextPriority)}>
-      {__('Then', 'wconvert')} <span aria-hidden="true">{rtl ? '←' : '→'}</span> <b><bdi>{group.nextName}</bdi></b></button>}
+      {__('Then', 'wconvert')} <Arrow /> <b><bdi>{group.nextName}</bdi></b></button>}
     <JourneyIssueMarker issues={issues} onIssue={onIssue} tabIndex={tab} />
   </div>;
 }

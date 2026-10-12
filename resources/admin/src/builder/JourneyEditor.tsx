@@ -522,18 +522,17 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     </OptionMenuContent>
   </DropdownMenu>;
   // Canvas | Flow is always there (ADR 0142).
-  const showHeader = true;
   const workspace = <>
-        {showHeader && <div className="wconvert-journey-dialog__header">
+        <div className="wconvert-journey-dialog__header">
           <div>{embedded ? <h2 className={editorCanvas ? 'sr-only' : undefined}>{__('Screens', 'wconvert')}</h2> : <DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>}
             {embedded ? <p className="wconvert-journey-description sr-only">{__('Select a screen to edit its content and paths.', 'wconvert')}</p>
               : <DialogDescription>{__('Select a screen to edit its content and paths.', 'wconvert')}</DialogDescription>}</div>
         <div className="wconvert-journey-view">
-          {<OptionStrip label={__('Edit view', 'wconvert')} value={view} options={[
+          <OptionStrip label={__('Edit view', 'wconvert')} value={view} options={[
             ...(editorCanvas ? [{ value: 'edit', label: __('Canvas', 'wconvert') }] : []),
             { value: 'flow', label: __('Flow', 'wconvert') },
             ...(!editorCanvas ? [{ value: 'screens', label: __('Screens', 'wconvert') }] : []),
-          ]} onChange={value => { setView(value as typeof view); if (value !== 'flow') setInspecting(true); setMobilePane('map'); }} />}
+          ]} onChange={value => { setView(value as typeof view); if (value !== 'flow') setInspecting(true); setMobilePane('map'); }} />
           {/* Edit has its own screen list; finding by name is a Flow-view tool. */}
           {view !== 'edit' && <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input ref={findInput} type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
             {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
@@ -578,8 +577,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             </DropdownMenu>}
             {!embedded && <DialogClose asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('Close screen manager', 'wconvert')}><X aria-hidden="true" /></Button></DialogClose>}
           </div>
-        </div>}
-        {samplePath && <div className="wconvert-journey-context"><span>{__('Showing the path visited in your test', 'wconvert')}</span><button type="button" onClick={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Test path cleared. All screens and paths are shown.', 'wconvert')); }}>{__('Clear test path', 'wconvert')}</button></div>}
+        </div>
         {(panelOpen || onCanvas) && <OptionStrip className="wconvert-journey-mobile-tabs" label={__('Phone view', 'wconvert')} value={mobilePane}
           options={[
             // Narrow, the Edit tab is three panes taken one at a time (ADR 0134).
@@ -606,7 +604,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                   if (pane && !pane.querySelector('.wconvert-journey-routes')) pane.querySelector<HTMLElement>('[data-then]')?.focus();
                 });
               }} samplePath={samplePath} sampleEdges={sampleEdges}
-              onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Path cleared. All screens and lines are shown.', 'wconvert')); }}
+              onClearTrace={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Cleared. Every screen and line is shown again.', 'wconvert')); }}
               onAdd={journeys && tree.graph ? (index, edgeId) => {
                 contextAddTrigger.current = document.activeElement as HTMLElement;
                 select(index); setFollowupAnswer(undefined); setInsertLocation(`edge:${edgeId}`); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');

@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
-import { gateEndings } from './gateEndings';
+import { gateEndings, gateFaults } from './gateEndings';
 import { unreachableScreenIds, walkNodes } from './journey';
 
 /**
@@ -19,10 +19,10 @@ export function requiredSaveBypasses(tree: TemplateTree) {
     if (!tree.graph || saving.length !== 1) return [];
     const sides = gateEndings(tree, saving[0].id);
     const result = tree.steps.find(screen => screen.kind === 'result');
+    const faults = gateFaults(sides);
     const flagged: { id: string; reason: 'result' | 'shared' | 'none-after' }[] = result
       ? sides.without.has(result.id) ? [{ id: result.id, reason: 'result' }] : []
-      : sides.shared.length ? sides.shared.map(id => ({ id, reason: 'shared' as const }))
-        : sides.after.length ? [] : sides.early.map(id => ({ id, reason: 'none-after' as const }));
+      : faults.ids.map(id => ({ id, reason: faults.reason }));
     return flagged.map(({ id, reason }) => ({
       key: `capture-path:${submission.id}:${id}`, endingId: id, edge: sides.without.get(id), saving, reason,
     }));

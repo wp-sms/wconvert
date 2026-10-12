@@ -92,3 +92,10 @@ a live copy is paused; your draft keeps saving" — what `OptinController` and
   version 2) is unchanged, so `journeyTraceEdges` maps a trace onto the new
   lines one to one.
 - Manually arranged layouts are gone with dragging. No stored layout existed.
+- The map's scroll box is `dir="ltr"`: the layout has already mirrored RTL,
+  and a scroll box in RTL would count its scroll backwards. Card text keeps
+  the page's direction. GUIDELINES §15 lists this as its fourth exception.
+- A follow-up box does not expand into separate cards; each member is a
+  button that opens its screen, as in the prototype.
+- The first card no longer repeats the display rules, and the form card says
+  where leads go without a link: both are one click away in the panel.

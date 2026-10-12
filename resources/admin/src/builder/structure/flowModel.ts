@@ -2,7 +2,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { conditionText } from './conditionText';
 import { followupGroups, followupGroupSource } from './followupGroups';
-import { earlyEnding } from './gateEndings';
+import { earlyEnding, type Gate } from './gateEndings';
 import { graphDisplayOrder } from './graph';
 import { unreachableScreenIds, walkNodes } from './journey';
 
@@ -42,7 +42,7 @@ export interface FlowLine {
   readonly style: LineStyle;
   readonly label?: string;
   /** Answer colour slot, 1–6. */
-  readonly colour?: number;
+  readonly colour?: AnswerColour;
   readonly edgeIds: readonly string[];
   /** The graph edge "+" inserts a screen on; absent where the line is drawn only. */
   readonly insertEdgeId?: string;
@@ -53,7 +53,7 @@ export interface FlowLine {
   readonly trace: readonly TraceRule[];
 }
 
-export interface FlowResult { readonly id: string; readonly heading: string; readonly colour?: number; readonly fallback: boolean; readonly needsCondition: boolean }
+export interface FlowResult { readonly id: string; readonly heading: string; readonly colour?: AnswerColour; readonly fallback: boolean; readonly needsCondition: boolean }
 
 export interface FlowCard {
   readonly id: string;
@@ -63,25 +63,27 @@ export interface FlowCard {
   readonly first: boolean;
   readonly multi: boolean;
   readonly optional: boolean;
-  readonly onlyIf?: { readonly text: string; readonly colour?: number };
+  readonly onlyIf?: { readonly text: string; readonly colour?: AnswerColour };
   readonly then?: { readonly target: string; readonly name: string; readonly priority: number };
   readonly skip?: { readonly target: string; readonly name: string };
   /** "3 lines · first match wins", when more than one line leaves the card. */
   readonly linesText?: string;
   readonly linePriority?: number;
+  /** Where "All other answers" sits among its lines: what "Choose where visitors go" opens. */
+  readonly fallbackPriority: number;
   /** An ending reached only without the required form or the result. */
-  readonly endsWithout?: 'details' | 'result';
+  readonly endsWithout?: readonly Gate[];
   readonly results?: readonly FlowResult[];
   readonly unreachable: boolean;
   /** Nowhere to go next, where something has to follow. */
   readonly missingThen: boolean;
   /** The colour of the one answer every line into this card carries. */
-  readonly colour?: number;
+  readonly colour?: AnswerColour;
   /** Its whole sentence, for a screen reader. */
   readonly label: string;
 }
 
-export interface FlowMember { readonly id: string; readonly index: number; readonly name: string; readonly answer: string; readonly colour?: number }
+export interface FlowMember { readonly id: string; readonly index: number; readonly name: string; readonly answer: string; readonly colour?: AnswerColour }
 export interface FlowGroupBox {
   readonly id: string;
   readonly screens: readonly number[];
@@ -89,7 +91,7 @@ export interface FlowGroupBox {
   readonly title: string;
   readonly next: string;
   readonly nextName: string;
-  readonly colour?: number;
+  readonly colour?: AnswerColour;
   readonly unreachable: boolean;
 }
 
@@ -136,6 +138,22 @@ export function edgesOf(tree: TemplateTree): FlowEdge[] {
     return out;
   });
 }
+
+/** The one word for each kind of screen (ADR 0142). */
+export const kindWord = (kind: CardKind): string => ({ question: __('Question', 'wconvert'), message: __('Message', 'wconvert'), form: __('Form', 'wconvert'),
+  result: __('Result', 'wconvert'), ending: __('Ending', 'wconvert') })[kind];
+
+/** How an ending says it finishes: after everything, or early, without what it skips. */
+export function endingWords(skipped: readonly Gate[] | undefined, lead = true): string {
+  const both = skipped?.length === 2, details = skipped?.includes('details'), result = skipped?.includes('result');
+  if (lead) return both ? __('Ends without saving details or a result', 'wconvert') : details ? __('Ends without saving details', 'wconvert')
+    : result ? __('Ends without a result', 'wconvert') : __('Ends the campaign', 'wconvert');
+  return both ? __('ends without saving details or a result', 'wconvert') : details ? __('ends without saving details', 'wconvert')
+    : result ? __('ends without a result', 'wconvert') : __('ends the campaign', 'wconvert');
+}
+
+/** Which colour slot, 1–6, an answer has on the map. */
+export type AnswerColour = number;
 
 const pair = (question: string, value: string) => `${question}\u0000${value}`;
 
@@ -325,8 +343,6 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     // A form is its fields as much as its submit button: split capture asks on one screen and saves on the next.
     return nodes.some(node => node.type === 'field' || node.type === 'consent' || node.type === 'button' && 'action' in node && node.action === 'submit') ? 'form' : 'message';
   };
-  const kindWord: Record<CardKind, string> = { question: __('Question', 'wconvert'), message: __('Message', 'wconvert'), form: __('Form', 'wconvert'),
-    result: __('Result', 'wconvert'), ending: __('Ending', 'wconvert') };
   const targetName = (node: string) => groupOf.has(node) || groups.some(group => group.id === node) ? __('the follow-ups', 'wconvert') : name(node);
   const cards: FlowCard[] = order.filter(index => !groupOf.has(tree.steps[index].id)).map(index => {
     const screen = tree.steps[index];
@@ -341,14 +357,15 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
     const linesText = leaving.length > 1 ? sprintf(/* translators: 1: how many lines leave a screen. 2: “first match wins”, or their answers. */ _n('%1$d line · %2$s', '%1$d lines · %2$s', leaving.length, 'wconvert'),
       leaving.length, answers.length ? __('first match wins', 'wconvert') : leaving.map(line => line.label).filter(Boolean).join(', ')) : undefined;
     const then = fallback ? { target: fallback.to, name: targetName(nodeOf(fallback.to)), priority: Number(fallback.priority) } : undefined;
-    const endsWithout = kind === 'ending' ? earlyEnding(tree, screen.id) ?? undefined : undefined;
+    const skipped = kind === 'ending' ? earlyEnding(tree, screen.id) : [];
+    const endsWithout = skipped.length ? skipped : undefined;
     const results = screen.results?.map((result, at, all) => ({ id: result.id, heading: result.heading, colour: colourOf(result.when),
       fallback: !result.when && at === all.length - 1, needsCondition: !result.when && at < all.length - 1 }));
     const missingThen = !fallback && !['ending', 'result'].includes(kind) && (!!tree.graph || index < tree.steps.length - 1);
-    const sentence = [sprintf(/* translators: 1: a screen's kind. 2: its name. */ __('%1$s: %2$s', 'wconvert'), kindWord[kind], screen.name),
+    const sentence = [sprintf(/* translators: 1: a screen's kind. 2: its name. */ __('%1$s: %2$s', 'wconvert'), kindWord(kind), screen.name),
       ...(onlyIf ? [sprintf(/* translators: %s: a rule. */ __('only if %s', 'wconvert'), onlyIf.text)] : []),
       ...(linesText ? [linesText] : then ? [sprintf(/* translators: %s: a screen's name. */ __('then %s', 'wconvert'), then.name)] : []),
-      ...(endsWithout ? [endsWithout === 'details' ? __('ends without saving details', 'wconvert') : __('ends without a result', 'wconvert')] : []),
+      ...(endsWithout ? [endingWords(endsWithout, false)] : []),
       ...(unreachable.has(screen.id) ? [__('no line reaches it', 'wconvert')] : [])];
     return { id: screen.id, index, kind, name: screen.name, first: screen.id === entry,
       multi: walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type === 'multi'), optional,
@@ -356,7 +373,7 @@ export function flowModel(tree: TemplateTree, { selectedQuestion }: { selectedQu
       ...(skip && skip !== fallback?.to ? { skip: { target: skip, name: targetName(nodeOf(skip)) } } : {}),
       ...(linesText ? { linesText, linePriority: Number(answers[0]?.priority ?? fallback?.priority ?? 0) } : {}),
       ...(endsWithout ? { endsWithout } : {}), ...(results ? { results } : {}),
-      unreachable: unreachable.has(screen.id), missingThen, colour: nodeColour.get(screen.id), label: sentence.join(', ') };
+      fallbackPriority: answers.length, unreachable: unreachable.has(screen.id), missingThen, colour: nodeColour.get(screen.id), label: sentence.join(', ') };
   });
   const boxes: FlowGroupBox[] = groups.map(group => {
     const source = followupGroupSource(tree, group);

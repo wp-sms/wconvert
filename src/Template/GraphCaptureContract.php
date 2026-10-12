@@ -87,7 +87,7 @@ final class GraphCaptureContract
         if (self::maximumQuestions($graph, $questionWeights) > CaptureJourney::MAX_QUESTIONS) { return 'question_path_limit'; }
         if ($terminal === []) { return 'routes'; }
         if ($goal === 'find_match') {
-            if ($result === null || count($submissions) > 1 || !self::gateEndings($graph, $entry, $result, $terminal)) { return 'capture_paths'; }
+            if ($result === null || count($submissions) > 1 || !self::gateHolds($graph, $entry, $result, $terminal)) { return 'capture_paths'; }
             if ($questionCount === 0 || !array_filter(array_keys($questionScreens),
                 static fn (string $screenId): bool => !self::bypasses($graph, $entry, $screenId, [$result]))) { return 'questions'; }
         } elseif (!in_array($goal, ['grow_email_list', 'grow_sms_list', 'collect_enquiries', 'deliver_lead_magnet'], true)
@@ -128,7 +128,7 @@ final class GraphCaptureContract
             if (count($submission['consents']) > 1) { return 'consent'; }
             if ($submission['required'] && ($goal === 'find_match'
                 ? self::bypasses($graph, $entry, $submitScreen, [$result])
-                : !self::gateEndings($graph, $entry, $submitScreen, $terminal))) {
+                : !self::gateHolds($graph, $entry, $submitScreen, $terminal))) {
                 return 'capture_paths';
             }
             if ($goal === 'find_match' && $submission['required'] && !JourneyGraph::reaches($graph, $submitScreen, $result)) { return 'capture_paths'; }
@@ -156,14 +156,14 @@ final class GraphCaptureContract
      * @param array<string, mixed> $graph
      * @param list<string> $endings
      */
-    private static function gateEndings(array $graph, string $entry, string $gate, array $endings): bool
+    private static function gateHolds(array $graph, string $entry, string $gate, array $endings): bool
     {
         $after = 0;
         foreach ($endings as $ending) {
             $with = $ending === $gate || JourneyGraph::reaches($graph, $gate, $ending);
             $without = self::bypasses($graph, $entry, $gate, [$ending]);
             if ($with && $without) { return false; }
-            if ($with) $after++;
+            if ($with) { $after++; }
         }
         return $after > 0;
     }

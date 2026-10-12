@@ -35,6 +35,10 @@ describe('the answer palette', () => {
     expect(contrast(token('foreground'), surface)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it.each(['question', 'message', 'form', 'result', 'ending'])('the %s tile’s icon reads on its surface', kind => {
+    expect(contrast(token(`kind-${kind}`), token(`kind-${kind}-surface`))).toBeGreaterThanOrEqual(3);
+  });
+
   it('is six distinct colours, none of them the chart ramp or the problem red', () => {
     const lines = answers.map(answer => answer.line.toLowerCase());
     expect(new Set(lines).size).toBe(6);

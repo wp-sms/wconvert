@@ -180,9 +180,9 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
   // Try a visitor: answers in, the loader's own trace out. Any edit starts again.
   const [visitor, setVisitor] = useState<Answers | null>(null);
   useEffect(() => { setVisitor(null); }, [tree]);
-  const tried = useMemo(() => visitor ? visitorTrace(tree, visitor) : null, [tree, visitor]);
-  const path = tried?.screens ?? samplePath;
-  const pathEdges = tried?.edges ?? sampleEdges;
+  const visitorRoute = useMemo(() => visitor ? visitorTrace(tree, visitor) : null, [tree, visitor]);
+  const path = visitorRoute?.screens ?? samplePath;
+  const pathEdges = visitorRoute?.edges ?? sampleEdges;
   const clearTrace = () => { if (visitor) setVisitor(null); else onClearTrace?.(); };
   // A trace marks the screens shown and the lines taken; everything else is drawn quietly.
   const trace = useMemo(() => path ? { screens: new Set(path.map(index => tree.steps[index]?.id).filter((item): item is string => !!item)), edges: new Set(pathEdges ?? []) } : null, [path, pathEdges, tree.steps]);
@@ -203,20 +203,20 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
     onLabel={line.select ? () => onSelectPath(line.select!.index, line.select!.priority) : undefined}
     onAdd={onAdd && line.insertEdgeId && edgeSource(line.insertEdgeId) >= 0 ? () => onAdd(edgeSource(line.insertEdgeId!), line.insertEdgeId!) : undefined} />;
 
-  const big = layout.width * zoom > view.width + 4 || layout.height * zoom > view.height + 4;
-  const firstQuestion = tree.steps.some(item => walkNodes(item.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
+  const overflows = layout.width * zoom > view.width + 4 || layout.height * zoom > view.height + 4;
+  const hasChoiceQuestion = tree.steps.some(item => walkNodes(item.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
   return <div className="wconvert-journey-map wconvert-flow" data-trace={trace ? 'on' : undefined}>
     <section className="wconvert-flow-region" aria-label={__('Flow map', 'wconvert')} aria-describedby={`${id}-keys`} ref={region}>
       {model.straight && <div className="wconvert-flow-nudge">
         <span>{__('Every visitor sees these screens in order.', 'wconvert')}</span>
         {branchLocked ? <span className="wconvert-flow-nudge__locked"><Lock aria-hidden="true" />{sprintf(/* translators: %s: the product that adds answer lines, e.g. “WConvert Pro”. */ __('Sending answers to different screens comes with %s.', 'wconvert'), tierProductName('basic'))}</span>
-          : onBranch && firstQuestion ? <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>
+          : onBranch && hasChoiceQuestion ? <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>
             : onBranch ? <span>{__('Add a question to send answers to different screens.', 'wconvert')}</span> : null}
       </div>}
-      {tried && visitor ? <FlowVisitor tree={tree} answers={visitor} trace={tried} onAnswers={setVisitor} onStop={() => setVisitor(null)} />
+      {visitorRoute && visitor ? <FlowVisitor tree={tree} answers={visitor} trace={visitorRoute} onAnswers={setVisitor} onStop={() => setVisitor(null)} />
         : trace ? <div className="wconvert-flow-nudge" role="status">
-          <span>{__('Showing one visitor’s path. Lines they didn’t take are faint.', 'wconvert')}</span>
-          {onClearTrace && <button type="button" className="wconvert-panel-link" onClick={onClearTrace}>{__('Stop showing the path', 'wconvert')}</button>}
+          <span>{__('Showing where one visitor goes. Lines they don’t take are faint.', 'wconvert')}</span>
+          {onClearTrace && <button type="button" className="wconvert-panel-link" onClick={onClearTrace}>{__('Stop showing it', 'wconvert')}</button>}
         </div>
         : <button type="button" className="wconvert-flow-try" onClick={() => setVisitor({})}>{__('Try a visitor', 'wconvert')}</button>}
       <p id={`${id}-keys`} className="sr-only">{__('Arrow keys move between screens in reading order. Tab reaches a screen’s buttons and its lines. Plus and minus zoom; 0 fits.', 'wconvert')}</p>
@@ -230,7 +230,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
             focusRef: focusRef(node), measureRef: measureRef(node) };
           return <Fragment key={node}>
             {card && <FlowCard {...common} card={card} selected={card.index === selected} state={nodeState([card.id])} issues={byScreen.get(card.id) ?? noIssues} destinationSummary={destinationSummary}
-              shownResult={tried?.result?.screen === card.id ? tried.result.id : undefined} />}
+              shownResult={visitorRoute?.result?.screen === card.id ? visitorRoute.result.id : undefined} />}
             {group && <FlowGroup {...common} group={group} selected={selected} state={nodeState(group.members.map(member => member.id))} visited={trace?.screens}
               issues={group.members.flatMap(member => byScreen.get(member.id) ?? [])}
               nextPriority={model.lines.find(line => line.from === group.id)?.select?.priority as number | undefined} />}
@@ -244,7 +244,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
         <button type="button" aria-label={__('Zoom in', 'wconvert')} title={__('Zoom in', 'wconvert')} onClick={() => zoomTo(stepZoom(zoom, 1))}><Plus aria-hidden="true" /></button>
         <button type="button" aria-pressed={fitted} onClick={() => setFitted(true)}>{__('Fit', 'wconvert')}</button>
       </div>
-      {big ? <FlowOverview width={layout.width} height={layout.height}
+      {overflows ? <FlowOverview width={layout.width} height={layout.height}
         boxes={layout.order.map(node => ({ id: node, ...layout.boxes.get(node)!, colour: model.cards.find(card => card.id === node)?.colour }))}
         view={{ x: scroll.left / zoom, y: scroll.top / zoom, width: view.width / zoom, height: view.height / zoom }}
         onJump={(x, y) => viewport.current?.scrollTo?.({ left: x * zoom - view.width / 2, top: y * zoom - view.height / 2, behavior: reduced ? 'auto' : 'smooth' })} />

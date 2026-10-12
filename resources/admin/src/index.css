@@ -479,6 +479,22 @@
   --answer-6-surface: #eef2fb;
 
   /*
+   * The Flow map's kind tiles (ADR 0142): Question teal, Message sand, Form
+   * green, Result violet, Ending stone. A tile names a kind beside its word;
+   * the icon holds 3:1 on its surface (tests/js/answer-palette.test.ts).
+   */
+  --kind-question: #1f5a6b;
+  --kind-question-surface: #e0eff3;
+  --kind-message: #7a5b2e;
+  --kind-message-surface: #f3ead9;
+  --kind-form: #17703f;
+  --kind-form-surface: #e6f2e9;
+  --kind-result: #6a3d8f;
+  --kind-result-surface: #efe6f6;
+  --kind-ending: #5f574f;
+  --kind-ending-surface: #ebe8e1;
+
+  /*
    * Named because the shadcn contract spells them and a component vendored
    * against it may reference one. WConvert's admin is four tabs and has no
    * sidebar (ADR 0036) — these exist so a drop-in never resolves to nothing.
