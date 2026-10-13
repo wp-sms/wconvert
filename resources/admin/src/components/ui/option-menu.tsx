@@ -342,6 +342,8 @@ export interface OptionItemProps {
   readonly trail?: React.ReactNode
   /** Menu mode: the item is this link. */
   readonly href?: string
+  /** The link opens in a new tab, and says so to a screen reader. */
+  readonly newTab?: boolean
   /** Without one (and without chips) the item is a line of text, e.g. a locked rule. */
   readonly onSelect?: () => void
   /**
@@ -366,6 +368,7 @@ function OptionItem({
   destructive,
   trail,
   href,
+  newTab,
   onSelect,
   disabled,
   className,
@@ -436,7 +439,8 @@ function OptionItem({
         {...look}
       >
         {href !== undefined && !refused ? (
-          <a href={href}>{leading}{text}{trailing}{spoken}</a>
+          <a href={href} {...(newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{leading}{text}{trailing}{spoken}
+            {newTab ? <span className="sr-only">{__("(opens in a new tab)", "wconvert")}</span> : null}</a>
         ) : (
           <>{leading}{text}{trailing}{spoken}</>
         )}

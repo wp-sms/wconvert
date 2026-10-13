@@ -9,7 +9,7 @@ import { issueCount } from '../destinations/issueCount';
 import { campaignName, listOptins, type OptinSummary } from '../optins/api';
 import { StatusBadge } from '../optins/StatusBadge';
 import { editorHref, sendingIssuesHref, settingsHref } from '../nav';
-import { tierName } from '../goals/availability';
+import { tierName, tierProductName } from '../goals/availability';
 import { formatCount } from '../lib/format';
 import { TryAgain } from './Region';
 import { RowsSkeleton } from './RowsSkeleton';
@@ -20,6 +20,17 @@ import { DOCS_URL, GUIDES, docsUrl } from './docs';
 
 /** Where every "Explore Pro" link on a free install goes. */
 export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
+
+/** Which free surface a Pro link came from, as its `utm_medium` (ADR 0147). */
+export type ProMedium = 'header' | 'settings-list' | 'format-picker' | 'rule-menu' | 'flow-map' | 'destinations' | 'campaign-menu';
+
+/**
+ * A Pro link, tagged with where it was. Fixed values only: never the site, the
+ * version, the user or a count — nothing about this install leaves (G7).
+ */
+export function proUrl(medium: ProMedium): string {
+  return `${EXPLORE_PRO_URL}?utm_source=wconvert-free&utm_medium=${medium}&utm_campaign=explore-pro`;
+}
 
 /**
  * Where a customer who already paid downloads the paid plugin. A plain link
@@ -46,6 +57,7 @@ export const HELP_PAGE_ID = 'help';
 
 export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
+  const proInactive = adminSettings()?.proInstalledInactive === true;
   const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number; formsPaused: boolean; protectionChecked: boolean } | null>(
     null,
   );
@@ -91,17 +103,23 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const count = notices ? notices.campaigns.length + notices.sending + Number(notices.formsPaused) : 0;
   return (
     <div className="wconvert-header-tools">
-      {tier === 'free' && (
+      {tier === 'free' && proInactive && (
+        // Pro is on disk and not running: what to do is on Plugins, not on the sales page (ADR 0147).
+        <a className="wconvert-explore-pro" href="plugins.php">
+          {sprintf(/* translators: %s: the product, e.g. “WConvert Pro”. */ __('%s is installed. Activate it', 'wconvert'), tierProductName('pro'))}
+        </a>
+      )}
+      {tier === 'free' && !proInactive && (
         <a
           className="wconvert-explore-pro"
-          href={EXPLORE_PRO_URL}
+          href={proUrl('header')}
           target="_blank"
           rel="noreferrer"
         >
           {sprintf(__('Explore %s', 'wconvert'), tierName('pro'))}
         </a>
       )}
-      {tier === 'free' && (
+      {tier === 'free' && !proInactive && (
         <span className="wconvert-already-bought">
           {__('Already bought?', 'wconvert')}{' '}
           <a href={PORTAL_DOWNLOADS_URL} target="_blank" rel="noreferrer">

@@ -249,6 +249,9 @@ final class AdminMenu
             // it back into a download.
             'exportUrl' => LeadExport::url(),
             'installedTier' => (new \WConvert\Support\WpProPresence())->installedTier()->value,
+            // The contextual Pro hints, and whether they say "Activate it" (ADR 0147).
+            'proHints' => ProHints::shown(new WpProPresence()),
+            'proInstalledInactive' => ProHints::proInstalledInactive(new WpProPresence()),
             // Registered by Pro's journeys module, never inferred from a tier:
             // the builder offers questions, results and paths only where the
             // code that draws them is on disk (ADR 0116).

@@ -6927,6 +6927,21 @@ body .wconvert-option-menu__empty b { color: var(--foreground); font-weight: 600
 body .wconvert-option-menu__empty button { margin: 0; padding: 0; border: 0; background: none; color: var(--link); font-size: var(--text-note); text-decoration-line: underline; text-underline-offset: 3px; cursor: pointer; }
 body .wconvert-option-menu__empty button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 body .wconvert-option-menu__tip { max-inline-size: 260px; }
+/*
+ * A Pro hint (ADR 0147; GUIDELINES §14, "Pro hint, free only"): one muted
+ * note-role line with a standard ink link. No badge, no lock, no citron, no
+ * ice, no amber — it names a feature this install lacks and blocks nothing.
+ */
+body .wconvert-pro-hint { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; line-height: 1.45; text-align: start; }
+body .wconvert-pro-hint a { color: var(--link); font-weight: 500; text-decoration-line: underline; text-underline-offset: 3px; white-space: nowrap; }
+body .wconvert-pro-hint a:focus-visible { border-radius: 2px; outline: 2px solid var(--ring); outline-offset: 2px; }
+body .wconvert-pro-hint__arrow { display: inline; inline-size: 12px; block-size: 12px; margin-inline-start: 2px; vertical-align: -1px; }
+/* In a list-mode menu it is the footer, under a rule like any footer. */
+body .wconvert-option-menu__hint-line { padding-block: 10px 12px; padding-inline: 14px; border-block-start: 1px solid var(--border); }
+/* In a ⋯ menu it is the last row: indented to the names, muted, so it cannot pass for the action it names. */
+body .wconvert-option-menu__item.wconvert-pro-hint-item { padding-inline-start: 34px; }
+body .wconvert-pro-hint-item .wconvert-option-menu__name { color: var(--muted-foreground); font-size: var(--text-note); font-weight: 400; }
+body .wconvert-pro-hint-item .wconvert-option-menu__trail > svg { color: var(--link); }
 /* A value pill's control, under its presets or alone (ADR 0139). */
 body .wconvert-option-menu__control { display: grid; gap: 8px; padding-block: 8px 10px; padding-inline: 10px; }
 body .wconvert-option-menu__list + .wconvert-option-menu__control { border-block-start: 1px solid var(--border); }

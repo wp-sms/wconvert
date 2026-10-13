@@ -96,8 +96,9 @@ export function renderingFor(availability: Availability, surface: Surface): Rend
   //
   // **On a free install a locked member is hidden on every surface** (ADR
   // 0116). wp.org's Guideline 5 reads a free plugin full of padlocks as
-  // trialware, so free's whole upsell is the header's "Explore Pro" link and
-  // one static "More with Pro" list. With one paid tier (ADR 0146) a Pro
+  // trialware, so a locked member is never drawn: free names Pro only in the
+  // header's "Explore Pro" link, one static "More with Pro" list, and the
+  // contextual hints of ADR 0147 — text, never an item. With one paid tier (ADR 0146) a Pro
   // install supplies every member, so in practice `locked` only reaches free,
   // where it is hidden; `upsell` is what any other install would draw for one.
   //

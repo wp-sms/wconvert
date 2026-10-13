@@ -43,6 +43,11 @@ const FREE_DISPLAY_TYPES: readonly string[] = ['popup', 'inline'];
  * `current` keeps a saved value selectable after Pro was removed, so a select
  * never silently shows a format the draft does not have.
  */
+/** The formats a free install can't show, by name: what the format picker's Pro hint lists (ADR 0147). */
+export function proDisplayTypeLabels(): readonly string[] {
+  return DISPLAY_TYPES.filter((value) => !FREE_DISPLAY_TYPES.includes(value)).map(displayTypeLabel);
+}
+
 export function displayTypeOptions(current?: string): readonly { value: string; label: string }[] {
   return DISPLAY_TYPES
     .filter((value) => !isFreeInstall() || FREE_DISPLAY_TYPES.includes(value) || value === current)
