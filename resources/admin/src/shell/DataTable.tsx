@@ -11,9 +11,9 @@ import { cn } from '../lib/utils';
  * viewport, and no JavaScript measures anything.
  *
  * **A row can name itself.** One cell marked `heading` — the lead, the
- * destination — becomes the card's first line, full width and unlabelled, with
- * the row's actions beside it rather than under a rule of their own. A row
- * without one keeps the plain label-and-value card.
+ * destination — becomes the card's first line, unlabelled, with the row's
+ * actions beside it rather than under a rule of their own. A row without one
+ * keeps the plain label-and-value card.
  *
  * **900px is the table's own number.** ADR 0038 owns the adaptive editor
  * and 360 (a floor, not a breakpoint), and a table reusing either would make one
@@ -96,10 +96,9 @@ export function DataTableColumn({
  * screen with a column it cannot name.
  *
  * `heading` marks the cell that names the row. Below 900px it drops its label
- * and takes the card's first line: "SUBMITTED BY" over a name and an avatar is
- * a label for something that is already its own heading, and the 8rem label
- * column it took left the email a third of the card to break across. One per
- * row, and only on a column that says which row this is.
+ * and takes the card's first line, because a value that says which row this is
+ * already reads as the card's heading and needs no label over it. One per row,
+ * and only on such a column.
  */
 export function DataTableCell({
   label,

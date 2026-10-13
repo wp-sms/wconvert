@@ -359,7 +359,9 @@ one page, but omit Previous/Next until there is another page to visit.
 `shell/DataTable` is what list screens render — semantic roles, a `data-label`
 on every cell, `micro` uppercase headers, tabular end-aligned numbers. Below
 **900px and below** the whole table restacks into cards and those labels are what each
-value is read against. (The builder has no floor of its own any more: it adapts
+value is read against — except the one cell marked `heading`, which names the row,
+takes the card's first line unlabelled and has the row's actions beside it
+(ADR 0039, amended by #269). (The builder has no floor of its own any more: it adapts
 down to phone width — ADR 0038, amended — and 900px is a table's number alone.)
 
 Row actions are ghost `icon-sm` buttons in a `1%` column. Past two, use a

@@ -260,9 +260,9 @@ move one would move the other by accident. So the table gets its own: **below
 label-and-value pairs inside.
 
 *Amended by [#269](https://github.com/wp-sms/wconvert/pull/269): **a row that names itself is headed by that cell.** A cell
-marked `heading` (`DataTableCell heading`) takes the card's first line, full
-width and without its label, and the row's actions sit beside it rather than
-under a rule of their own; the other cells are still label-and-value pairs
+marked `heading` (`DataTableCell heading`) takes the card's first line without
+its label — the whole width, less the row's actions, which sit beside it rather
+than under a rule of their own; the other cells are still label-and-value pairs
 underneath. The Leads log's "Submitted by" spent an 8rem label column on a
 phone, broke every email mid-word in the third that was left, and gave one Open
 button its own ruled line. A row without a heading cell keeps the plain card.*
