@@ -36,7 +36,7 @@ export function DeliveryAttention() {
       <div className="wconvert-toolbar"><Button variant="outline" asChild><a href={sendingIssuesHref()}>{__('Review sending issues', 'wconvert')}</a></Button></div>
     </RegionBody>
     <ReportDisclosure title={__('Affected destinations', 'wconvert')}>
-      <DataTable label={__('Destinations needing review', 'wconvert')}><DataTableHead><DataTableColumn>{__('Destination', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last recorded issue', 'wconvert')}</DataTableColumn></DataTableHead><DataTableBody>{affected.map(d => <DataTableRow key={d.id}><DataTableCell label={__('Destination', 'wconvert')}><bdi>{d.label || __('Unnamed destination', 'wconvert')}</bdi></DataTableCell><DataTableCell label={__('Last recorded issue', 'wconvert')}>{lastIssue(d.id) ?? __('Setup needs review', 'wconvert')}</DataTableCell></DataTableRow>)}</DataTableBody></DataTable>
+      <DataTable label={__('Destinations needing review', 'wconvert')}><DataTableHead><DataTableColumn>{__('Destination', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last recorded issue', 'wconvert')}</DataTableColumn></DataTableHead><DataTableBody>{affected.map(d => <DataTableRow key={d.id}><DataTableCell label={__('Destination', 'wconvert')} heading><bdi>{d.label || __('Unnamed destination', 'wconvert')}</bdi></DataTableCell><DataTableCell label={__('Last recorded issue', 'wconvert')}>{lastIssue(d.id) ?? __('Setup needs review', 'wconvert')}</DataTableCell></DataTableRow>)}</DataTableBody></DataTable>
     </ReportDisclosure>
   </Region>;
 }

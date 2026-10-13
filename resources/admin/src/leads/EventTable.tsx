@@ -77,7 +77,7 @@ export function EventTable({
           return (
             <DataTableRow key={lead.id}>
               {showPerson && (
-                <DataTableCell label={__('Submitted by', 'wconvert')}>
+                <DataTableCell label={__('Submitted by', 'wconvert')} heading>
                   <LeadIdentity lead={lead} />
                 </DataTableCell>
               )}

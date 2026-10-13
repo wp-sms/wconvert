@@ -1121,7 +1121,8 @@ body:has(#wconvert-admin) #wpbody-content {
    * Label and value, not label above value: a lead log is scanned down its
    * values, and a two-column pair keeps them on one axis. The label column is
    * capped so a long translated column name cannot push the value off the
-   * card.
+   * card. The one cell that names the row is the exception — see the heading
+   * rules at the end of this block.
    */
   :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td {
     display: grid;
@@ -1161,6 +1162,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * The Actions cell has no label worth repeating — the controls say what they
    * are — so it takes the whole card width and sits under a rule, which is
    * where a card's actions read as the card's rather than as one more field.
+   * A row with a heading cell moves them up beside it instead (below).
    *
    * **`inline-size` and `white-space` are taken BACK here, and forgetting them
    * is what shipped a 3px cell.** Both are set above for the table, where they
@@ -1190,6 +1192,49 @@ body:has(#wconvert-admin) #wpbody-content {
     inline-size: auto;
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  /*
+   * **A row with a heading cell is headed by it** (`DataTableCell heading`).
+   * The heading takes the card's first line without a label, the actions sit
+   * beside it, and every other pair flows full width underneath. The heading
+   * is the whole width in a row without actions; with them, it gives up their
+   * width and nothing else (ADR 0039, amended by #269).
+   *
+   * Scoped by `:has()` so a row without a heading keeps the card above
+   * untouched. Every selector carries the same `:has()`, which is what lets
+   * the two placed cells outrank the full-width rule they would otherwise share.
+   */
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0;
+    align-items: start;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td {
+    grid-column: 1 / -1;
+  }
+
+  /* `:not(:empty)` keeps the `td:empty` rule above winning over this display. */
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td[data-card="heading"]:not(:empty) {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td[data-card="heading"]::before {
+    content: none;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td.wconvert-table__actions {
+    grid-column: 2;
+    grid-row: 1;
+    /* The gap is the actions' own, so a row without them leaves the heading the whole width. */
+    margin-inline-start: 0.75rem;
+    margin-block-start: 0;
+    padding-block-start: 0.3125rem;
+    border-block-start: 0;
   }
 }
 
@@ -6476,6 +6521,17 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   position: absolute; appearance: none; inline-size: 1px; block-size: 1px; min-block-size: 0; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%);
 }
 :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-option-strip > label, .wconvert-compare-choice) > input::before { content: none; }
+/*
+ * A one-of-N strip that scrolls INSIDE itself on a phone rather than wrapping
+ * (GUIDELINES §16, amended). Leads' purpose strip left "Enquiries" a line of
+ * its own; one line keeps it a row, and its cut edge is the cue to scroll. The
+ * page never scrolls sideways. The 4px inset is the focus ring's room, which an
+ * overflow container would otherwise clip; the negative margin gives it back.
+ */
+@media (max-width: 639px) {
+  .wconvert-option-strip--scroll { flex-wrap: nowrap; overflow-x: auto; margin: -0.25rem; padding: 0.25rem; }
+  .wconvert-option-strip--scroll > label { flex: none; }
+}
 .wconvert-preview-controls, .wconvert-setup-preview__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; min-inline-size: 0; }
 :is(.wconvert-setup-preview__tools, .wconvert-design-detail__controls) > .wconvert-preview-controls { flex: 1 1 auto; }
 .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: .75rem; border-inline-start: 1px solid var(--border); }
