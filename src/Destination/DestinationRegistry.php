@@ -70,10 +70,8 @@ final class DestinationRegistry
      * only on a free install, and `unavailable` on any paid one: a broken Pro
      * plugin on a valid licence is not something to sell a licence for.
      *
-     * **Asked as "is this install free" rather than "is Pro loaded"**, now that
-     * the answer is a ladder rather than a boolean. The two read identically
-     * today and will not always: a Basic install that failed to register an
-     * Elite type is in the same position as a broken Pro, not in a free one's.
+     * Asked as "is this install free", the one question {@see ProPresence}
+     * answers.
      */
     public function availabilityOf(string $typeId): Availability
     {

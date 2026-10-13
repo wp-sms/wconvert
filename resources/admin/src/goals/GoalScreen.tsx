@@ -224,7 +224,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
 
   const selectedOccasion = picker.data?.occasions.items.find(item => item.id === occasion);
   // A setup this install could only buy is not a setup on a free install
-  // (ADR 0116); a paid one still sees the next rung's, explained.
+  // (ADR 0116).
   // Nor is one whose design is missing: creation hides what it cannot start (ADR 0026).
   const allEntries = playbooks.status === 'ready' ? playbooks.data.filter((entry) => renderingFor(entry.availability ?? 'ready', 'creation_flow') !== 'hide') : [];
   const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));

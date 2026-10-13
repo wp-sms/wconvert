@@ -144,7 +144,7 @@ it('Free can explicitly return a previously automatic campaign to manual placeme
 
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
   // A paid install; a free one falls back to manual placement (ADR 0116).
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
   render(<PlacementGuidance optinId="example" displayType="inline" inlinePlacement={{ position: 'after_paragraph', paragraph: 3 }} published />);
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();

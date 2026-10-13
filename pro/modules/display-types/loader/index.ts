@@ -22,7 +22,7 @@ export { proPresenter } from './present';
  * booting free's presenter would decide and count a floating bar and then draw
  * nothing, because free's `mount()` has no container for the type.
  *
- * That is why `display-types` sits at the BOTTOM rung and every higher tier
- * carries it (`tiers.json`): a build without it is a Pro that draws no bar.
+ * That is why Pro always carries `display-types` (`tiers.json`): a build
+ * without it is a Pro that draws no bar.
  */
 export const DISPLAY_TYPE_MODULES: readonly LoaderModule[] = [];

@@ -1,5 +1,12 @@
 # The tier ladder is a manifest, and a module is a directory
 
+**Status: superseded by [ADR 0146](0146-pro-is-one-tier.md).** Pro is one tier, `pro`, beside `free`. There
+are no `basic` or `elite` rungs, no per-tier builds, no `public/tiers/`, no
+inference of the installed tier from module directories, and one Pro ZIP posted
+once per Nexus plan. What survives from this ADR: `tiers.json` carries the
+display name and the module list, a module is a directory, and the list names
+every module rather than `"*"`. Read the rest as history.
+
 [[Pro]] is **one plugin at three tiers** — `basic`, `pro`, `elite` — declared in
 `tiers.json` at the root of free's tree. A **module** is a directory under
 `pro/modules/` holding its own `module.json`; a tier's build is the full Pro tree

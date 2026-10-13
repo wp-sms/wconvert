@@ -2,7 +2,7 @@
   "id": "coffee-finder-board",
   "name": "Coffee finder board",
   "display_type": "inline",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#332c27",

@@ -74,7 +74,7 @@ final class ProLibraryTest extends TestCase
         $this->assertSame([], array_keys($this->library()->locked()));
     }
 
-    public function testFullscreenSetupsRegisterWithTheirProDesignsAndBasicEntitlement(): void
+    public function testFullscreenSetupsRegisterWithTheirProDesignsAndProEntitlement(): void
     {
         $templates = $this->library();
         $library = \WConvert\Playbook\PlaybookLibrary::fromDirectory(
@@ -89,7 +89,7 @@ final class ProLibraryTest extends TestCase
             $playbook = $library->find($id);
             self::assertNotNull($playbook);
             self::assertSame('fullscreen', $playbook->displayType);
-            self::assertSame('basic', $templates->find($playbook->templateId)['tier']);
+            self::assertSame('pro', $templates->find($playbook->templateId)['tier']);
             self::assertNotContains('page_load', array_column($playbook->rules, 'type'));
         }
     }
@@ -108,7 +108,7 @@ final class ProLibraryTest extends TestCase
         foreach (['product-finder', 'service-enquiry', 'content-guide'] as $id) {
             $playbook = $library->find($id);
             self::assertNotNull($playbook);
-            self::assertSame('basic', $templates->find($playbook->templateId)['tier']);
+            self::assertSame('pro', $templates->find($playbook->templateId)['tier']);
             $vocabulary = TemplateVocabulary::fromManifest(self::FREE_DIR);
             $tree = \WConvert\Template\SlotRoles::bind(
                 $vocabulary->withoutCopy($templates->find($playbook->templateId)['tree']),

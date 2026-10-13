@@ -33,7 +33,7 @@ test('actual Worker/R2 runtime: public routing, private refusal, caches and atom
  });
  await t.test('premium remains unavailable even with a tier claim', async () => {
   for (const path of [`/downloads/${digest}.json`, `/assets/premium/${digest}.png`]) {
-   const response = await fetch(path, { headers: { Authorization: 'Bearer pretend', 'X-Plan': 'elite' } });
+   const response = await fetch(path, { headers: { Authorization: 'Bearer pretend', 'X-Plan': 'pro' } });
    assert.equal(response.status, 503); assert.equal(response.headers.get('cache-control'), 'no-store');
   }
  });
@@ -67,7 +67,7 @@ test('local input rejects changed bytes and premium source in public storage', (
   writeFileSync(join(root, 'public/packs', digest + '.json'), 'corrupt');
   assert.throws(() => readPublicRelease(root), /Digest mismatch/);
   rmSync(join(root, 'public/packs', digest + '.json'));
-  const premium = Buffer.from(JSON.stringify({ templates: [{ tier: 'elite' }] }));
+  const premium = Buffer.from(JSON.stringify({ templates: [{ tier: 'pro' }] }));
   writeFileSync(join(root, 'public/packs', hash(premium) + '.json'), premium);
   assert.throws(() => readPublicRelease(root), /Premium source/);
  } finally { rmSync(root, { recursive: true }); }

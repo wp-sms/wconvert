@@ -47,17 +47,15 @@ final class ProTemplates implements TemplateSource
      * Pro's designs, wherever an installed MODULE keeps them.
      *
      * ========================================================================
-     * A GLOB ACROSS MODULES, AND THAT IS THE PER-TIER GATE (ADR 0056).
+     * A GLOB ACROSS MODULES.
      * ========================================================================
-     * This read `resources/templates/library`, one directory, back when Pro was
-     * one build. It is a glob across `modules/` now, and the wildcard is doing the
-     * work: a per-tier build ships a module by leaving its directory in the ZIP
-     * and withholds one by deleting it, so what a tier offers is what its own
-     * file system answers here — never a tier compared against a declaration.
+     * This read `resources/templates/library`, one directory. Designs live in
+     * the module that owns them now (ADR 0056), so this is a glob across
+     * `modules/`: what Pro offers is what its own file system answers here —
+     * never a tier compared against a declaration.
      *
-     * The eight bar and slide-in designs are `display-types`', which every paid
-     * rung carries. A rung that did not would find no designs and show the same
-     * locked cards free shows, which is the failure
+     * A Pro ZIP missing a module would find none of its designs and show the
+     * same locked cards free shows, which is the failure
      * `bin/verify-artifact-contract.sh` refuses to write a ZIP for.
      *
      * Spelled here rather than read off `BundledTemplates::PATH`: free keeps

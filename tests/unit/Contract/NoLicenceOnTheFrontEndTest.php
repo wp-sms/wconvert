@@ -139,12 +139,11 @@ final class NoLicenceOnTheFrontEndTest extends TestCase
     /**
      * ONE ACCESSOR, FROM DAY ONE.
      *
-     * It exists as headroom for a future tier ladder, not as a gate. The fact
+     * It exists to name the installed tier, not as a gate. The fact
      * it reports is a `define()`, and a constant cannot be undefined again — so
      * the question is asked through an interface, and this is the assertion
      * that the interface has exactly one thing behind it. Two places reading
-     * the constant is two places that can disagree about what "has Pro" means
-     * the day a tier ladder arrives.
+     * the constant is two places that can disagree about what "has Pro" means.
      */
     public function testExactlyOneFileLooksUpWhetherProIsLoaded(): void
     {

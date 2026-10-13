@@ -45,7 +45,7 @@ final class QuizProductActionTest extends TestCase
         $path = tempnam(sys_get_temp_dir(), 'wc-quiz-');
         if ($path === false) throw new \RuntimeException('Cannot create test package');
         try {
-            $validator = new \WConvert\Template\Catalog\PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
+            $validator = new \WConvert\Template\Catalog\PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Pro);
             $package = new \WConvert\Template\Transfer\DesignPackage($validator);
             $package->write($path, $this->design('add_to_cart') + ['name' => 'Quiz', 'display_type' => 'inline'], static fn (string $url) => null);
             $read = $package->read($path);

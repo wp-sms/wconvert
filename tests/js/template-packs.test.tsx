@@ -210,7 +210,7 @@ it('keeps pack search and availability on return from a design preview',async()=
 
 it('offers the same public preview entry for a premium pack on a paid install without downloading or installing it', async () => {
   // A paid install; a free one is shown no premium pack (ADR 0116).
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
   api.catalogStatus.mockResolvedValue({ ...listed, packs: [{ ...listed.packs[0], access: 'premium', preview_url: 'https://catalog.example/previews/revision.html' }] });
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);

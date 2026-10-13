@@ -2,7 +2,7 @@
   "id": "project-route",
   "name": "Project route",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#fff8dc",
     "fg": "#332e28",

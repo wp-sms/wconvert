@@ -2,7 +2,7 @@
   "id": "split-notice",
   "name": "Useful detail bar",
   "display_type": "floating_bar",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f8f2e5",
     "fg": "#39342b",

@@ -2,7 +2,7 @@
   "id": "journey-product-finder",
   "name": "Product finder",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#edf1df",
     "fg": "#293e29",

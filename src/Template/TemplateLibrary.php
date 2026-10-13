@@ -461,16 +461,12 @@ final class TemplateLibrary
             'name' => is_string($decoded['name'] ?? null) ? $decoded['name'] : $id,
             'display_type' => is_string($decoded['display_type'] ?? null) ? $decoded['display_type'] : 'popup',
             // A stub exists BECAUSE it is premium, so the default is premium.
-            // **The TOP rung, now that there is a ladder** (ADR 0056). The
-            // stub's own availability does not depend on this — a stub is
+            // The stub's own availability does not depend on this — a stub is
             // `locked` by construction, because it has no tree
             // ({@see \WConvert\Rest\TemplateController}) — so what the tier
-            // decides is which tier the upsell card NAMES. Defaulting to the
-            // bottom rung would sell a merchant a tier that does not carry the
-            // design; defaulting to the top oversells one card rather than
-            // failing to deliver it, and a card nobody priced is a bug in
-            // `locked.json` either way. Every stub free ships declares its own.
-            'tier' => self::tierOf($decoded, Tier::Elite),
+            // decides is which tier the upsell card NAMES. Every stub free
+            // ships declares its own.
+            'tier' => self::tierOf($decoded, Tier::Pro),
             'facets' => TemplateFacets::authored($decoded['facets'] ?? null, $vocabulary->facets()),
             'preview_url' => is_string($url) && $url !== '' ? $url : null,
         ];
@@ -482,7 +478,7 @@ final class TemplateLibrary
      * `Tier` is shared rather than spelled per registry, so the rule manifest,
      * the [[Goal]] registry and the library cannot disagree about what "pro" is
      * spelled like (ADR 0015). An unrecognised word takes the default rather
-     * than inventing a third tier.
+     * than inventing a tier.
      *
      * @param array<string, mixed> $decoded
      */

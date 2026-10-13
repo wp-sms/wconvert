@@ -15,7 +15,6 @@ use WConvert\Pro\Module\CartRecovery\CartCookie;
 use WConvert\Pro\Template\ProTemplates;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Rules\SuppliedRules;
-use WConvert\Support\ProPresence;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\SitePresence;
 use WConvert\Support\Tier;
@@ -96,8 +95,8 @@ final class ProServiceProvider implements ServiceProvider
         }
 
         // And A/B testing's two routes, on the same terms and for the same
-        // reason: `ab-testing` is the `pro` rung's module, so on a Basic build
-        // this class is not on disk and Pro's autoloader finds nothing for it.
+        // reason: `ab-testing` is a module, so a build without its directory
+        // has no class here and Pro's autoloader finds nothing for it.
         // The routes are then ABSENT rather than present and refusing, which
         // is the whole of the entitlement (ADR 0015).
         //
@@ -185,7 +184,7 @@ final class ProServiceProvider implements ServiceProvider
         // Question journeys exist on this install because the module that runs
         // them shipped in this ZIP, and that registration is the whole of the
         // entitlement (ADR 0116). Its manifest on disk is the possession test —
-        // the same one `WpProPresence` reads a rung from. First, and above every
+        // the same one the artifact contract checks. First, and above every
         // guard: the publish route, the capture route, the payload and the
         // builder all ask it. The module's PHP is the product side of a quiz
         // result — the category route, its payload attribute and the merchant's
@@ -310,37 +309,11 @@ final class ProServiceProvider implements ServiceProvider
         }
 
         /*
-         * ====================================================================
-         * ONE PASS PER RUNG THIS BUILD SUPPLIES, AND THE RUNG IS READ OFF DISK.
-         * ====================================================================
-         * This asked for `Tier::Pro` and nothing else, which was right while
-         * "Pro" was the only paid tier. With three (ADR 0056) a Basic build
-         * registering `exit_intent` would put a rule in `SuppliedRules` that
-         * its own loader bundle cannot evaluate — the Optin would leave the
-         * payload unsuspended, reach the page, and never fire, with nothing in
-         * any log. That is exactly the silent total loss of function ADR 0012
-         * names as this category's defining support ticket.
-         *
-         * So the ladder is walked, and it stops where this build stops.
-         * `installedTier()` is INFERRED from the module directories the build
-         * shipped ({@see \WConvert\Support\WpProPresence}), so the question
-         * asked here is still "what did this ZIP contain" and never "what does
-         * a licence say" — the same possession gate, read one rung finer.
-         *
-         * Pro names no rule type, at any rung: it asks the ONE manifest both
-         * plugins read for the types filed under each tier, exactly as free
-         * does for hers. The premium split still adds zero new lists
-         * (ADR 0015).
+         * Pro names no rule type: it asks the ONE manifest both plugins read
+         * for the types filed under its tier, exactly as free does for hers.
+         * The premium split still adds zero new lists (ADR 0015).
          */
-        $installed = $container->resolve(ProPresence::class)->installedTier();
-
-        foreach (Tier::paid() as $tier) {
-            if (!$installed->includes($tier)) {
-                continue;
-            }
-
-            $container->resolve(SuppliedRules::class)->add(...$vocabulary->typesAt($tier, $site));
-        }
+        $container->resolve(SuppliedRules::class)->add(...$vocabulary->typesAt(Tier::Pro, $site));
 
         /*
          * THE CART COOKIE, HOOKED ABOVE THE `is_admin()` GUARD AND ONLY WHERE
@@ -358,10 +331,10 @@ final class ProServiceProvider implements ServiceProvider
          * so the ABSENCE is stated once, beside the registration it belongs
          * to, rather than being a fact about a hook name nobody reads.
          */
-        // AND ONLY WHERE THE MODULE SHIPPED. `cart-recovery` is the top rung's
-        // (ADR 0056), so on a Basic or Pro build this class is not on disk at
-        // all and Pro's autoloader finds nothing for it. `class_exists()` is
-        // therefore the file-system question, not a tier test: it is the same
+        // AND ONLY WHERE THE MODULE SHIPPED. `cart-recovery` is a module, so
+        // a build without its directory has no class here and Pro's
+        // autoloader finds nothing for it. `class_exists()` is therefore the
+        // file-system question, not a tier test: it is the same
         // sentence `ProLoaderEnqueue` writes as `is_file($dist)`, and the same
         // one ADR 0015 writes as "a premium capability is absent rather than
         // present and guarded".

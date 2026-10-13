@@ -31,7 +31,7 @@ final class PackPlaybooksTest extends TestCase
     {
         $pack = $this->pack();
         $pack['playbooks'][0]['rules'] = [['type' => 'cart_has_items'], ['type' => 'page_load']];
-        $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
+        $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Pro);
         try {
             $validator->decode(json_encode($pack, JSON_THROW_ON_ERROR));
             self::fail('Undeclared paid rule was accepted');
@@ -40,7 +40,7 @@ final class PackPlaybooksTest extends TestCase
         }
         $pack['requires']['capabilities'][] = 'paid-campaign-rules:1';
         self::assertSame($pack['playbooks'][0]['rules'], $validator->decode(json_encode($pack, JSON_THROW_ON_ERROR))['playbooks'][0]['rules']);
-        foreach ([\WConvert\Support\Tier::Free, \WConvert\Support\Tier::Basic] as $tier) {
+        foreach ([\WConvert\Support\Tier::Free] as $tier) {
             try {
                 (new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), $tier))->decode(json_encode($pack, JSON_THROW_ON_ERROR));
                 self::fail('Insufficient tier accepted basket targeting');

@@ -73,7 +73,7 @@ test('every pilot is a registered, complete snapshot with the intended privacy b
     // Authoring previews stay portable; actual site links are filled only in WordPress.
     assert.ok(all.filter(node => node.type === 'button' && node.action === 'link').every(node => !node.href), entry.id);
     if (entry.goal === 'recover_cart') {
-      assert.equal(entry.tier, 'elite');
+      assert.equal(entry.tier, 'pro');
       assert.equal(entry.tree.submissions.length, 0);
     }
   }

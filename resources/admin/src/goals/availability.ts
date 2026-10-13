@@ -97,14 +97,13 @@ export function renderingFor(availability: Availability, surface: Surface): Rend
   // **On a free install a locked member is hidden on every surface** (ADR
   // 0116). wp.org's Guideline 5 reads a free plugin full of padlocks as
   // trialware, so free's whole upsell is the header's "Explore Pro" link and
-  // one static "More with Pro" list. A Basic site still sees Elite's members
-  // as upsells: it has already bought into the ladder, and the next rung is
-  // information it can act on.
+  // one static "More with Pro" list. With one paid tier (ADR 0146) a Pro
+  // install supplies every member, so in practice `locked` only reaches free,
+  // where it is hidden; `upsell` is what any other install would draw for one.
   //
   // **WHICH tier to name is a separate question**, answered by `tierName()`
   // below rather than folded in here: this function answers "what does this
-  // surface DO", and there is exactly one `upsell` however many rungs the
-  // ladder has (ADR 0056).
+  // surface DO".
   if (availability === 'locked') {
     return isFreeInstall() ? 'hide' : 'upsell';
   }
@@ -125,23 +124,17 @@ export function isShown(availability: Availability): boolean {
  * ============================================================================
  * WHAT TO CALL THE TIER A LOCKED MEMBER NEEDS.
  * ============================================================================
- * Every registry member declares the rung that supplies it — `basic`, `pro`,
- * `elite` — and the words for those rungs are `tiers.json`'s, delivered to the
- * screen in `window.wconvertAdmin.tiers` (ADR 0056). They were the literal
- * `__('Pro')`, written out in five components.
- *
- * **At launch every rung answers "Pro", so nothing on screen changes.** What
- * changes is what a second tier costs: a manifest edit rather than five strings
- * and a release, and no migration of the `tier` values already saved on live
- * Optins.
+ * Every registry member declares the tier that supplies it — `free` or `pro` —
+ * and the words for the paid tier are `tiers.json`'s, delivered to the screen
+ * in `window.wconvertAdmin.tiers`. They were the literal `__('Pro')`, written
+ * out in five components.
  *
  * **Falls back to the word the product has always used**, and the fallback is
  * load-bearing rather than defensive: `adminSettings()` is legitimately absent
  * — a test rendering a component on its own, or a screen that changed and left
  * the localised object behind — and a badge rendering an empty string is worse
  * than one naming the tier nobody has renamed yet. It is also what a member
- * declaring a rung this build has never heard of gets, which is the state a
- * saved Optin reaches when an install is moved BACKWARDS onto an older free.
+ * declaring a tier this build has never heard of gets.
  */
 const A_TIER_WE_CANNOT_NAME = 'Pro';
 

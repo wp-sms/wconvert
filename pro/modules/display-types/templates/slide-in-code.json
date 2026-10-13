@@ -2,7 +2,7 @@
   "id": "slide-in-code",
   "name": "Corner card with a code",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "width": "24rem",
     "align": "start",

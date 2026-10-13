@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 /**
  * The one accessor for **which tier is installed** (ADR 0015).
  *
- * It exists as the tier ladder rather than as a gate. Nothing in WConvert asks
+ * It exists to name the tier rather than as a gate. Nothing in WConvert asks
  * it in order to REFUSE a premium capability: a premium capability is absent
  * from an install that did not buy it rather than present and guarded, so
  * there is nothing to guard. What this answers is the question a surface
@@ -15,14 +15,14 @@ defined('ABSPATH') || exit;
  * ({@see Availability}) and, when it is locked, which tier to name.
  *
  * =============================================================================
- * IT WAS `isLoaded(): bool`, AND A BOOLEAN HAD NOWHERE TO PUT A THIRD TIER.
+ * IT ANSWERS A {@see Tier}, NOT `isLoaded(): bool`.
  * =============================================================================
- * ADR 0015 always described this as "headroom for a future tier ladder"; it was
- * a boolean, so the headroom was rhetorical. {@see Availability::of()} takes a
- * three-valued question and could only be handed a two-valued answer, and every
- * `tier:` declaration in the product could only mean "not free".
+ * Every `tier:` declaration in the product is a {@see Tier} slug, and
+ * {@see Tier::isSuppliedBy()} is the one sentence they are all answered
+ * through. With one paid tier (ADR 0146) the two spellings carry the same
+ * information, so the type is kept for the call sites rather than the rungs.
  *
- * The answer is now a {@see Tier}, and a free install answers {@see Tier::Free}
+ * A free install answers {@see Tier::Free}
  * rather than `false` — which is the same sentence CONTEXT.md already made
  * about the product: a free install is not a crippled Pro install, it is the
  * whole product minus features it never carried.
@@ -44,8 +44,8 @@ interface ProPresence
 {
     /**
      * The tier this install is running at — {@see Tier::Free} where [[Pro]] is
-     * absent, refused its min-core guard, or shipped nothing this build can
-     * recognise.
+     * absent or refused its min-core guard, {@see Tier::Pro} where it is
+     * loaded.
      */
     public function installedTier(): Tier;
 }

@@ -1,6 +1,8 @@
 # Pro replaces the loader rather than augmenting it
 
-**Current loader byte limits — [ADR 0139](0139-one-option-menu-and-sentence-rows.md), amended 2026-10-12:** Free / Basic / Pro / Elite cap at 14,720 / 25,472 / 27,040 / 27,712 bytes gzip-9, measured on Node 22. The ADR 0111 and ADR 0109 loader figures below are historical.
+**Current loader byte limits — [ADR 0146](0146-pro-is-one-tier.md):** Pro is one tier. Free caps at 14,720 B and Pro at 27,712 B gzip-9 (the old Elite figure), measured on Node 22. The per-rung figures below are historical.
+
+**Loader byte limits — [ADR 0139](0139-one-option-menu-and-sentence-rows.md), amended 2026-10-12:** Free / Basic / Pro / Elite cap at 14,720 / 25,472 / 27,040 / 27,712 bytes gzip-9, measured on Node 22. The ADR 0111 and ADR 0109 loader figures below are historical.
 
 *Byte limits amended by [ADR 0111](0111-spam-protection-precedes-capture.md): Free / Basic / Pro / Elite now cap at 14,592 / 25,088 / 26,624 / 26,880 bytes gzip-9 after pre-capture verification and campaign events. Other asset limits are unchanged.*
 
@@ -99,7 +101,8 @@ ever sees that queue's output.*
   with no build flag anywhere. The separate-directory property is unchanged and
   is what the per-tier outputs rest on: `public/tiers/<rung>/` exists only in the
   repository, and a staged tree that still carries one fails the artifact
-  contract.*
+  contract.* *Amended by [ADR 0146](0146-pro-is-one-tier.md): Pro's loader and inspector are built once
+  each, to `pro/public/{loader,inspector}`, and `public/tiers/` is gone.*
   *Amended by [ADR 0028](0028-the-free-loader-source-carries-no-premium-code.md): this
   originally read "one loader source, tree-shaken on a mode flag". It is **separate
   module trees** instead — premium rule modules live under Pro's, and Pro's entry

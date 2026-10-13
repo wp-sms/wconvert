@@ -416,8 +416,8 @@ if ($roots === []) {
      * FREE'S ONE LIBRARY, AND EVERY PRO MODULE THAT KEEPS DESIGNS.
      *
      * Pro's designs moved out of one fixed directory and into the module that
-     * owns them (ADR 0056) — a module is a directory, so a per-tier build
-     * withholds one by deleting it. Left pointing at the old path this printed
+     * owns them (ADR 0056) — a module is a directory, and its designs live
+     * inside it. Left pointing at the old path this printed
      * *"no library here, so nothing was inspected"* and exited 0, which is the
      * fail-open this program exists not to be: eight premium designs went
      * uninspected and the run still read as clean.

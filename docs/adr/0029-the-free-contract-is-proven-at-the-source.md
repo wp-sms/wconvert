@@ -1,6 +1,8 @@
 # The free contract is proven at the source, not at the artifact
 
-**Current loader byte limits — [ADR 0139](0139-one-option-menu-and-sentence-rows.md), amended 2026-10-12:** Free / Basic / Pro / Elite cap at 14,720 / 25,472 / 27,040 / 27,712 bytes gzip-9, measured on Node 22. The ADR 0111 and ADR 0109 loader figures below are historical.
+**Current loader byte limits — [ADR 0146](0146-pro-is-one-tier.md):** Pro is one tier. Free caps at 14,720 B and Pro at 27,712 B gzip-9 (the old Elite figure), measured on Node 22. The per-rung figures below are historical.
+
+**Loader byte limits — [ADR 0139](0139-one-option-menu-and-sentence-rows.md), amended 2026-10-12:** Free / Basic / Pro / Elite cap at 14,720 / 25,472 / 27,040 / 27,712 bytes gzip-9, measured on Node 22. The ADR 0111 and ADR 0109 loader figures below are historical.
 
 *Byte limits amended by [ADR 0111](0111-spam-protection-precedes-capture.md): Free / Basic / Pro / Elite now cap at 14,592 / 25,088 / 26,624 / 26,880 bytes gzip-9 after pre-capture verification and campaign events. Other asset limits are unchanged.*
 
@@ -74,7 +76,9 @@ from the same place; a module that declares none is reported as unscanned
 rather than ticked, which is this ADR's own rule about a check that asserts
 nothing. Recorded inline in
 [ADR 0056](0056-the-tier-ladder-is-a-manifest.md), where the per-rung half of
-it lives.*
+it lives.* *The per-rung half is gone with the rungs ([ADR 0146](0146-pro-is-one-tier.md)); the free half
+— free's loader carries no premium identifier and no module marker — is
+unchanged.*
 
 *Completed by [#22](https://github.com/navidkashani/wconvert/issues/22): the check
 is only meaningful because **free's loader does not import the manifest**. If it

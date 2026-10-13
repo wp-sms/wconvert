@@ -24,15 +24,11 @@ import { scrollUp } from './scroll-up';
  * and `scroll-up.ts` is where that is argued.
  *
  * =============================================================================
- * THE MODULE IS THE DIRECTORY, AND THAT IS WHAT THE TIER LADDER CUTS ON.
+ * THE MODULE IS THE DIRECTORY.
  * =============================================================================
  * Everything under `pro/modules/premium-triggers/` is this module and nothing
- * outside it is, so a Basic build ships none of it by DELETING the directory —
- * not by a build flag, and not by a list of paths somebody maintains
- * (ADR 0056). `pro/modules/premium-triggers/module.json` is what a running
- * install reads back to infer that it is at least a Pro one
- * (`WConvert\Support\WpProPresence`), and `tiers.json` is the only place the
- * slug is related to a tier.
+ * outside it is (ADR 0056), and `tiers.json` is the only place the slug is
+ * related to a tier.
  *
  * Which tier ships it is therefore stated twice and asserted once: here on
  * disk, and as `tier: "pro"` on each of these five types in

@@ -376,7 +376,7 @@
     },
     "cart_has_items": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {},
       "presets": {},
@@ -387,7 +387,7 @@
     },
     "cart_value_min": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {
         "amount": {
@@ -403,7 +403,7 @@
     },
     "cart_products": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {
         "ids": {
@@ -427,7 +427,7 @@
     },
     "cart_categories": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {
         "ids": {
@@ -454,7 +454,7 @@
     },
     "cart_quantity": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {
         "range": {
@@ -470,7 +470,7 @@
     },
     "cart_amount": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {
         "range": {
@@ -488,7 +488,7 @@
   "requirements": {
     "products_ready": {
       "kind": "condition",
-      "tier": "elite",
+      "tier": "pro",
       "requires": "woocommerce",
       "params": {},
       "presets": {},

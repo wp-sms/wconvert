@@ -282,8 +282,8 @@ describe('the destinations screen', () => {
   });
 
   it('explains an unavailable type rather than offering to sell it', async () => {
-    // A paid install meeting a higher rung's type (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    // A paid install meeting a type it does not have (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     api.readDestinations.mockResolvedValue({
       types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
@@ -306,7 +306,7 @@ describe('the destinations screen', () => {
     //
     // The product is named by the tier manifest rather than by a literal —
     // this was the last hardcoded "Pro" on the screen, and `tiers.json` is
-    // what makes a second rung a manifest edit (ADR 0056). With no localised
+    // what makes renaming it a manifest edit. With no localised
     // settings object here it falls back to the word the product has always
     // used, which is `tierProductName`'s documented last resort.
     expect(screen.getByText('Included with WConvert Pro.')).toBeInTheDocument();

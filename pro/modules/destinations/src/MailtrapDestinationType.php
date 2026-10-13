@@ -18,7 +18,7 @@ final class MailtrapDestinationType implements DestinationType
     public function id(): string { return 'mailtrap'; }
     public function label(): string { return __('Mailtrap', 'wconvert'); }
     public function icon(): string { return 'mail'; }
-    public function tier(): Tier { return Tier::Elite; }
+    public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
     /** A push makes one lookup and at most one write; Mailtrap allows 200 Contacts API requests per minute. */
     public function throughput(): int { return 60; }

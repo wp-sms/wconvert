@@ -43151,6 +43151,776 @@
         }
       },
       "record_id": "897f9c58cae0f69af285d54db051e965f463edbfbe7b61cc0925b6c6ba2988b7"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "94bd74251bdc070b4d15d383ed5f3bc1163ec9a1b6ba5b9e8bdf819199743454",
+      "base_id": "02ee6d6275dd7abbb7945573503529415898cc4af802535d9c7178b2b864464d",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-09.webp",
+              "sha256": "ccc417a9e0f7a3f4e309122847279d16d187bd2e50dae1d99883dfcee4bfe62a"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-09.webp",
+              "sha256": "c8af5a407688bf361ceb3604133f518f1beb196287ea08936f887ca0a30487ab"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+              "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/native/sale-deadline-1280-0.webp",
+              "sha256": "e39d84c2613ed2572f8047548235e2dd6d7541025d11a23a22af9c100a4b0eb7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/native/sale-deadline-320-0.webp",
+              "sha256": "0dc2b1abb0213e62eea1484482b7efbeb47ad93a4a045eb0636180d26433e4db"
+            }
+          ]
+        }
+      },
+      "record_id": "bb077690f9f9f1395bdc107c5b65f03598d62cbb9c71a4f9fcefc0a17edbb2bd"
+    },
+    {
+      "id": "add-useful-extras",
+      "revision": "3e2c4870957a1066885ff5446a341e2172a92c94e3f33d5565386ee59d87b357",
+      "base_id": "ff8fffb70b8b33531581848daac1c050d1c82cf5028f3a2e79bc7e379761f52a",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-01.webp",
+              "sha256": "11919eb74b26ab7c1a8e6b03e52ab111645f8536bed9c5b7488fe8411f4cd4a5"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-01.webp",
+              "sha256": "6fcacf56653f789bbee60f5f74afc5e072b9d6b73c265866987d07dc3ad885a1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-add-useful-extras-desktop.webp",
+              "sha256": "2ab4e61a7f4dc7cf61248a6610028fc64e90d58c95f6dd5fc732c9b93a35adfc"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-add-useful-extras-phone.webp",
+              "sha256": "84ab668546fa194f68e823bce6db82bf641d54cec3a8d7e4f818ae2c3a578adc"
+            }
+          ]
+        }
+      },
+      "record_id": "b0e71e93c113d716af9730c37513309ed7904a04419edea8dc92077b7069423a"
+    },
+    {
+      "id": "recommend-accessory",
+      "revision": "215205b4622ec82cd5e1ce0a62ddff6a431a22f1509a069f8075fd7135ede657",
+      "base_id": "14ca3cf22f55aae064785e18998be4ba6e454cbba74d66cdc7fdfc374a8a348f",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-06.webp",
+              "sha256": "53eb987b4aa9791ba45375d2ec959637b4a349d3dfc8c41495742047bd96ad5a"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-06.webp",
+              "sha256": "a3da93fe2681333f9a6eccb5f15aa6a32d81ebe0dacf3744fd19ce5a6fa470e8"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-recommend-accessory-desktop.webp",
+              "sha256": "673a529d2e8ede650edab8d3ecc023cb5b5edfe4203e608144bae9e6fa8a8281"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-recommend-accessory-phone.webp",
+              "sha256": "6694e8f6e303dc4ece81f4eff3755776bc4437f4bb16b306edc290575fc1bc71"
+            }
+          ]
+        }
+      },
+      "record_id": "bec16a830d6b01a0d2a69ff3b49b3369ffbf98f57115dabebb547fa3388fec47"
+    },
+    {
+      "id": "shopping-guidance",
+      "revision": "7ada92df8c2f1b4b9d5999324fd58b2c51738c3389588c252fb0724559fedd1f",
+      "base_id": "a87c06485af22f80f9f3e1c93aac448f5210cb8dde2ce951f7d213fa7cec6155",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-09.webp",
+              "sha256": "ccc417a9e0f7a3f4e309122847279d16d187bd2e50dae1d99883dfcee4bfe62a"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-09.webp",
+              "sha256": "c8af5a407688bf361ceb3604133f518f1beb196287ea08936f887ca0a30487ab"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-shopping-guidance-desktop.webp",
+              "sha256": "f90a336b7b169d394cdf4e7f8dd5dc3c5031023e4299b0fe27262f8828bb42ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-shopping-guidance-phone.webp",
+              "sha256": "d27e276cb4e40cfd624a4507e50493abb59f88d37e0164ea8aae1cd49a95486f"
+            }
+          ]
+        }
+      },
+      "record_id": "50c2a5499f259b19ab2c78871f782b8dfdd12ac0e8679e4abef2200d33016f23"
+    },
+    {
+      "id": "explore-compatible-extras",
+      "revision": "63ccf468710fb2241854c2add7bbeb6f1fa90ccce58782b474086d985fe47f88",
+      "base_id": "3a9a5ff3b645d2d73ff400aaa2213885097b942f658667012f173601581060ae",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-04.webp",
+              "sha256": "5bf91c857d2eb3ba4abf655732cff5247773adc8ea0d162f4c3bff74efbd9472"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-04.webp",
+              "sha256": "1e5701223800fa2a09b60444e2f10dcf94738b01eb31179f354a2ac528a2748c"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-explore-compatible-extras-desktop.webp",
+              "sha256": "2a6ed271a6b7512e17565a78c07e3cb63a955ad9d53192b40d18b0034b7dbc02"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-explore-compatible-extras-phone.webp",
+              "sha256": "bc703c0e2a744107a43cba241256f9851423e656ae115b541b41c0268578bf82"
+            }
+          ]
+        }
+      },
+      "record_id": "2bd6cf0db60050fd0d52d887e1d52c1ec81fac1b646640dc14d41a66a10cc029"
+    },
+    {
+      "id": "basket-cross-sells",
+      "revision": "7c7587819c6306dab57a6ef25664c3cd55b058fe864f6f128adbce32136d612d",
+      "base_id": "244f14e0f2c1b08b3ffc017a088b7fc968e5b10ae801e8dac0342b2d6489d50f",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-01.webp",
+              "sha256": "11919eb74b26ab7c1a8e6b03e52ab111645f8536bed9c5b7488fe8411f4cd4a5"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-01.webp",
+              "sha256": "6fcacf56653f789bbee60f5f74afc5e072b9d6b73c265866987d07dc3ad885a1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-basket-cross-sells-desktop.webp",
+              "sha256": "f5ed4367d0857dddafac4911c3d38d5d09846c3a71cd0f2847e7182d2d938d17"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-basket-cross-sells-phone.webp",
+              "sha256": "878a6d95323bf86e1701d5be3e7d4b868c88866136239e5f32a5c388deaed5cd"
+            }
+          ]
+        }
+      },
+      "record_id": "72e971ac5dd21cd38af3611bf5c12bd67989815c659fe0d4185a45917382d581"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "revision": "90ddd3f3b6a2bb3fb66adfa9c7cdd1542f58a069e56c18b83ee3a40d9aed249c",
+      "base_id": "6e4b914807d190c9ccd34a585a798e3208e8acd6c8a2f276dfa8b5b5901eac74",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-02.webp",
+              "sha256": "5d019e0372634e25c05856e28f54c3326a456474dea5c73e8218e8f7c33f688b"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-02.webp",
+              "sha256": "e573c5a3ff448b97133d596e1849f2c7b85bd6e24386cfbab5f18e3b7b0102dd"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-bright-phone.webp",
+              "sha256": "6b546d3c8940a6de4dd716dedaabe404d86586591400df7f58f460c0e7b43969"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-bright.webp",
+              "sha256": "ba92d679427d97ec73d753dd8bfa8ffe01f27a417f7da9db99d586f33f42bf51"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-desktop.webp",
+              "sha256": "0eb0b96cbfd4e1d952b3b5df3407a586f2759065655a1fb417afeea4e7dc6e08"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-empty-desktop.webp",
+              "sha256": "e37ec3b6942f1aff30608d07668cd9244a318aede92ad2b855771071d4d31e0c"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-empty-phone.webp",
+              "sha256": "f17e871e0deffeefe0d1dc2acf31d495b0bd17f5d6407794cfe948011ed4dc6d"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-phone.webp",
+              "sha256": "b71a8b8a43b1a0e1be12c0077c133730ff2477f1bcc8ca9e61c06f26806fc94b"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-smooth-phone.webp",
+              "sha256": "49f019db996367cdb6fa180865adc689003c82c3680f2e926f6492f429f6e888"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-smooth.webp",
+              "sha256": "134dd4236ab73c6e4c81c70cec26bfe5c29c2001a1916a437cf14e983db915ae"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-unsure-phone.webp",
+              "sha256": "b5b75371e8d8b472e9c8b5a3d40ee2e7af655ff914e380f69352d855ad21a7a7"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-unsure.webp",
+              "sha256": "3a680ebde7a4e723029fe4fea22c0d29608f9705cc5d9caa5dae3ac09042a166"
+            }
+          ]
+        }
+      },
+      "record_id": "26958ab6faaa99174f0a43220fb478736572345b1590b7643cc024dd85d80862"
+    },
+    {
+      "id": "collection-sale-planning",
+      "revision": "caddb922275d93366d525ec175ad021334e7d1395bf546f6ec23790422d73a35",
+      "base_id": "e21f68a9ea19c5ebf959145ad7aa711820d734ce797112f9bb5477c312165b66",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/discovery/collection-4.webp",
+              "sha256": "a77bf4202c765cc6bf1f784ca52d27f1b37deaffd53d9fdd40da7ae92464833c"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/discovery/discovery.json",
+              "sha256": "7c4533fb036156f8813104694c59ab602fc121ae470e92f48067cf54eb96764b"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+              "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            }
+          ]
+        }
+      },
+      "record_id": "71424bfbe692a99a098b1a0d50a0af6d335f47eceb4b8bb20a6fdab9e12b9ee7"
+    },
+    {
+      "id": "collection-black-friday-2026",
+      "revision": "396112cee41ff69f66dc0b1dc8087e4655cff340470e7f861fc266a9164ff8b3",
+      "base_id": "030f8f9368808e691aae7990adeb231d2e203f124afb6968e4babcc5ee92030e",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/discovery/collection-1.webp",
+              "sha256": "2a5e43898cc3f328d7de082d2555d171179c0ef13241aa318abb3e52496d4081"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/discovery/discovery.json",
+              "sha256": "7c4533fb036156f8813104694c59ab602fc121ae470e92f48067cf54eb96764b"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+              "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            }
+          ]
+        }
+      },
+      "record_id": "4d7c7d89ca6c79264a1876cb0c0f51729e48f5a26a8d1dabb918b64756dbf5f7"
+    },
+    {
+      "id": "collection-help-shoppers-choose",
+      "revision": "801903d3a848a98c2fe39ce1c736e621aad0f25229d1f6f6bbe26336dc1f4a85",
+      "base_id": "897f9c58cae0f69af285d54db051e965f463edbfbe7b61cc0925b6c6ba2988b7",
+      "decision": "approved",
+      "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+      "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+      "at": "2026-10-13T09:30:00.000Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+              "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/discovery/collection-6.webp",
+              "sha256": "a83156a80f6d9fa3b8e3a90dce519d402e526121fa1f2266f3b23c94025a7070"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+              "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+              "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/discovery/discovery.json",
+              "sha256": "7c4533fb036156f8813104694c59ab602fc121ae470e92f48067cf54eb96764b"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+              "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+              "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+              "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+              "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+            }
+          ]
+        }
+      },
+      "record_id": "a7213bec56080691abde0e8d3a44b85e6a227379567119839cac9e8221e227f5"
     }
   ]
 }

@@ -275,4 +275,5 @@ the building ticket's.*
   `pro/modules/ab-testing/`, so a Basic build does not have it — no route, no
   narrowing, no admin action — and the enforcement is the absence
   ([ADR 0015](0015-enforcement-is-by-non-registration.md)) rather than a
-  guard.*
+  guard.* *Superseded by [ADR 0146](0146-pro-is-one-tier.md): Pro is one tier and every Pro ZIP ships
+  the module. A free install still has none of it, by the same absence.*

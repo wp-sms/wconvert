@@ -9,13 +9,11 @@ use WConvert\Support\Tier;
  * Which tier is installed, decided by the test.
  *
  * `WCONVERT_PRO_LOADED` is a constant and a constant cannot be undefined again,
- * and the tier below it is inferred from another plugin's directory — so a
- * suite that arranged either for real would decide the answer for every test
- * that ran after it, and the `locked` state would be unreachable from both
- * sides.
+ * so a suite that arranged it for real would decide the answer for every test
+ * that ran after it, and the `locked` state would be unreachable from one side.
  *
  * The default is {@see Tier::Free}, which is the install most tests mean when
- * they say nothing. `new FakeProPresence(Tier::Elite)` is the top rung.
+ * they say nothing. `new FakeProPresence(Tier::Pro)` is a Pro install.
  */
 final class FakeProPresence implements ProPresence
 {

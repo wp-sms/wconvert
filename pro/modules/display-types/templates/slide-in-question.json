@@ -2,7 +2,7 @@
   "id": "slide-in-question",
   "name": "A question in the corner",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f8fafc",
     "fg": "#193548",

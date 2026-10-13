@@ -49,7 +49,7 @@ Google reCAPTCHA v2 checkbox, or hCaptcha with merchant-owned keys in Free.
 Baseline hidden-field checks and request limits work without a provider.
 Every queued resource email also uses a ten-minute recipient/resource guard;
 this can suppress recent bulk re-pushes while preserving separate Leads.
-Pro adds exact email/domain blocklists and email exceptions on every paid rung.
+Pro adds exact email/domain blocklists and email exceptions.
 
 No external verification service is enabled by default. Saving keys is not a
 connection test: use **Test saved setup** on the configured hostname before
@@ -175,7 +175,7 @@ reaches for first.
 
 `npm run check:loader` is the **one build a pull request pays for**, and it
 earns it: both of its assertions are about build output. Free's and Pro's
-loader, gzip -9 on Node 22, hard-fail at 14,720 / 25,472 / 27,040 / 27,712 bytes for Free / Basic / Pro / Elite (ADR 0139, amended); and free's loader is scanned for
+loader, gzip -9 on Node 22, hard-fail at 14,720 / 27,712 bytes for Free / Pro (ADR 0139, amended; ADR 0146); and free's loader is scanned for
 every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
@@ -862,7 +862,7 @@ composer install && composer install -d pro && npm install
 npm run build          # build:free then build:pro — every bundle, both plugins
 npm run build:free     # free's bundles only; what the shipped package.json rebuilds
 npm run check:loader   # the loader byte budget + the premium-identifier scan
-composer verify:artifact dist/stage/wconvert   # the artifact contract, on a staged tree
+composer verify:artifact dist/stage/plain/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit
 composer phpstan       # PHPStan, level 7
 composer verify:source # the source contract
@@ -882,7 +882,7 @@ on its own does nothing.
 ```bash
 npm run build          # public/ and pro/public/ are gitignored — nothing is stale
 bin/build.sh free      # → dist/wconvert-v1.0.0.zip
-bin/build.sh pro       # → one ZIP per tier (below)
+bin/build.sh pro       # → dist/wconvert-pro-v1.0.0.zip (below)
 bin/build.sh all
 ```
 
@@ -929,40 +929,23 @@ free ZIP with any copy.
 `load_plugin_textdomain()` — WordPress loads the `wconvert` domain from
 `wp-content/languages/plugins/` just in time.
 
-### Pro is one plugin at three tiers
+### Pro is one ZIP, posted once per plan
 
-`bin/build.sh pro` loops the ladder in [`tiers.json`](tiers.json) and writes one
-ZIP per rung — [ADR 0056](docs/adr/0056-the-tier-ladder-is-a-manifest.md):
+Pro is **one tier with every module** ([ADR 0146](docs/adr/0146-pro-is-one-tier.md)).
+`bin/build.sh pro` writes one ZIP, `dist/wconvert-pro-v{VERSION}.zip` — the same
+shape as free's, with no tier in the name.
 
-```
-dist/wconvert-pro-basic-v0.1.0.zip     display-types
-dist/wconvert-pro-pro-v0.1.0.zip       + premium-triggers
-dist/wconvert-pro-elite-v0.1.0.zip     + cart-recovery
-```
-
-**All three are built on every release run and one is sold.** Machinery that is
-not exercised rots, and the release that first needs a per-tier build is the
-release nobody can wait for. Three ZIPs cost seconds.
-
-**The one sold is posted once per plan** ([ADR 0143](docs/adr/0143-license-page-and-updater.md)).
 The store (Nexus, my.wconvert.io) sells WConvert Pro as **plans** — `single-site`,
 `5-sites`, `unlimited` — which it calls tiers, and keeps one release per
-`(catalog item, tier_slug, version)`. So `release-pro.yml` posts the elite ZIP
-once for each slug in the `nexus` environment's `NEXUS_PLAN_SLUGS`, with
-`tier_slug` set to the plan. Plan slugs are not rungs and never appear in
+`(catalog item, tier_slug, version)` ([ADR 0143](docs/adr/0143-license-page-and-updater.md)).
+So `release-pro.yml` posts the one Pro ZIP once for each slug in the `nexus`
+environment's `NEXUS_PLAN_SLUGS`, with `tier_slug` set to the plan. Nexus keys
+the release on that field, never on the file name. Plan slugs never appear in
 `tiers.json`, which ships in free.
 
 A **module is a directory** under `pro/modules/`, holding its own `module.json`.
-A rung's ZIP is the full Pro tree with the directories that rung does not ship
-deleted — a `rm -rf` rather than cut-out markers and a build-time denylist. That
-is also what makes the installed tier a fact rather than a stored label: a
-running install reads the module directories back and infers its own rung
-(`WConvert\Support\WpProPresence`), and so does the artifact contract, which is
-why no `--basic` flag exists to be passed to the wrong tree.
-
-The **top-level directory inside every Pro ZIP is `wconvert-pro`**, at every
-rung. They are one plugin at three tiers, so moving up replaces an install
-rather than adding a second beside it; only the ZIP's own name carries the tier.
+[`tiers.json`](tiers.json) names every one of them, and the artifact contract
+checks the Pro ZIP carries exactly those directories.
 
 ### The artifact contract
 
@@ -977,11 +960,9 @@ The third of ADR 0029's three programs, and the one whose subject is a build:
   which may name a `pro/` path — which is what makes `readme.txt`'s source and
   build claims true by construction, plus its `license.txt`;
 * no premium design ships in the free ZIP — the trialware gate, issue #7;
-* **no artifact carries a higher tier's module**, in PHP *and* in the built
-  JavaScript. WP Statistics proves this and WSMS does not: all three of its
-  premium tiers ship a byte-identical `main.js`, so a Basic customer holds the
-  Elite React UI behind a client-readable flag. Under possession-gating that is
-  not a weaker gate, it is no gate;
+* the Pro artifact carries **every module `tiers.json` names, and no other** —
+  a Pro ZIP missing one installs, replaces the loader, and shows the same
+  locked cards free shows;
 * the free artifact carries **no licensing SDK**. A licence gates updates and
   support and never a feature ([ADR 0015](docs/adr/0015-enforcement-is-by-non-registration.md)),
   so the code that reads one is Pro's alone — and like the autoload map, this is

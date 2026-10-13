@@ -20,7 +20,7 @@ final class GoalRegistryTest extends TestCase
     private function registry(bool $pro = false, bool $store = false): GoalRegistry
     {
         return new GoalRegistry(
-            new FakeProPresence($pro ? Tier::Elite : Tier::Free),
+            new FakeProPresence($pro ? Tier::Pro : Tier::Free),
             new FakeSitePresence($store ? [SiteDependency::WooCommerce] : [])
         );
     }

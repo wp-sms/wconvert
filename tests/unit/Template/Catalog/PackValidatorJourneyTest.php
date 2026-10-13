@@ -41,7 +41,7 @@ final class PackValidatorJourneyTest extends TestCase
         $pack['requires']['tree'] = 3;
         $pack['requires']['capabilities'][] = 'template-tree:3';
         $directory = sys_get_temp_dir() . '/wc-graph-pack-' . bin2hex(random_bytes(6));
-        $validator = $this->validator(Tier::Basic);
+        $validator = $this->validator(Tier::Pro);
         $installed = new \WConvert\Template\Catalog\InstalledPacks($directory, $validator);
         try {
             $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
@@ -78,7 +78,7 @@ final class PackValidatorJourneyTest extends TestCase
             $pack = $base;
             $change($pack);
             try {
-                $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+                $this->validator(Tier::Pro)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
                 self::fail('Unsafe or undeclared graph pack was accepted');
             } catch (RuntimeException $error) {
                 self::assertNotSame('', $error->getMessage());
@@ -90,12 +90,12 @@ final class PackValidatorJourneyTest extends TestCase
     {
         Journeys::on();
         $pack = $this->pack();
-        $decoded = $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $decoded = $this->validator(Tier::Pro)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
         self::assertSame('n3', $decoded['templates'][0]['tree']['steps'][1]['when']['clauses'][0]['question']);
         self::assertSame('Where will you use it?', $decoded['templates'][0]['tree']['steps'][0]['content']['children'][2]['label']);
         unset($pack['requires']['capabilities'][2]);
         $this->expectException(RuntimeException::class);
-        $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $this->validator(Tier::Pro)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }
 
     public function testCategoryOrderingRequiresTheNewCapability(): void
@@ -107,12 +107,12 @@ final class PackValidatorJourneyTest extends TestCase
         }
         unset($step);
         $pack['requires']['capabilities'][] = 'result-product-filters:2';
-        $decoded = $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $decoded = $this->validator(Tier::Pro)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
         $results = array_values(array_filter($decoded['templates'][0]['tree']['steps'], static fn (array $step): bool => $step['kind'] === 'result'));
         self::assertSame('price_high', $results[0]['results'][0]['product_filter']['order']);
         $pack['requires']['capabilities'][3] = 'result-product-filters:1';
         $this->expectExceptionMessage('This pack does not declare every capability its designs need.');
-        $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $this->validator(Tier::Pro)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }
 
     public function testPortablePacksCannotCarryProductExclusionsAcrossStores(): void
@@ -125,7 +125,7 @@ final class PackValidatorJourneyTest extends TestCase
         }
         unset($step);
         $this->expectExceptionMessage('Choose category, attributes and product choices on this site.');
-        $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $this->validator(Tier::Pro)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }
 
     /** A product design imported on a free install names no product (ADR 0116 §3, 0127). */
@@ -150,13 +150,13 @@ final class PackValidatorJourneyTest extends TestCase
     }
 
     /**
-     * A paid rung is not the question — the registration is (ADR 0116). A
-     * Basic install whose journeys module did not register refuses the pack,
+     * The paid tier is not the question — the registration is (ADR 0116). A
+     * Pro install whose journeys module did not register refuses the pack,
      * and says so without naming a product.
      */
     public function testAPaidInstallWithoutTheJourneysModuleRejectsAQuizPack(): void
     {
         $this->expectExceptionMessage('This design uses elements this site can’t display.');
-        $this->validator(Tier::Basic)->decode(json_encode($this->pack(), JSON_THROW_ON_ERROR));
+        $this->validator(Tier::Pro)->decode(json_encode($this->pack(), JSON_THROW_ON_ERROR));
     }
 }

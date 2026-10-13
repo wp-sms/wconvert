@@ -2,7 +2,7 @@
   "id": "journey-service-enquiry",
   "name": "Relevant service enquiry",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#17324a",

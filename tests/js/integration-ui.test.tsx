@@ -212,7 +212,7 @@ describe('integration setup controls', () => {
     api.deleteConnection.mockResolvedValue({ deleted: true });
     const user = userEvent.setup();
     const account = { id: 'account-1', type: 'mailchimp', label: 'Newsletter key', credentials: { api_key: true } } as Connection;
-    const type: DestinationType = { id: 'mailchimp', label: 'Mailchimp', icon: 'mail', tier: 'elite', requires: null,
+    const type: DestinationType = { id: 'mailchimp', label: 'Mailchimp', icon: 'mail', tier: 'pro', requires: null,
       requires_label: null, availability: 'ready', needs_connection: true, settings_schema: {},
       connection_schema: { api_key: { type: 'password', label: 'API key' } } };
     // Free ships no provider artwork; Pro's admin entry fills the slot.

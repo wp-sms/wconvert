@@ -2,7 +2,7 @@
   "id": "slide-in-benefits",
   "name": "Corner card with reasons",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "width": "24rem",
     "align": "start",

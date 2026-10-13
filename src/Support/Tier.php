@@ -5,7 +5,7 @@ namespace WConvert\Support;
 defined('ABSPATH') || exit;
 
 /**
- * Which install supplies a registry member — free, or one of [[Pro]]'s three.
+ * Which install supplies a registry member — free, or [[Pro]].
  *
  * **A type, not a list.** ADR 0015 refuses a cross-cutting vocabulary of
  * premium capabilities: "each registry declares `tier` locally on members it
@@ -19,28 +19,21 @@ defined('ABSPATH') || exit;
  * do either for a tier it can name (ADR 0005).
  *
  * =============================================================================
- * IT IS A SCALE RATHER THAN A BOOLEAN, FROM DAY ONE, AND ONE TIER IS SOLD.
+ * TWO CASES, BECAUSE THE PRODUCT HAS TWO.
  * =============================================================================
- * This was two cases and a `bool`, which had nowhere to put a third tier and
- * nowhere to get a three-valued answer from. The cases and the rank below are
- * the whole of the change, and they are here BEFORE the product needs them
- * because after free 0.1.0 is on wp.org the same change is every screen, every
- * upsell card and every saved record (ADR 0056).
+ * This was a four-rung ladder — free, basic, pro, elite — built ahead of a
+ * split the product never made (ADR 0056). One Pro is sold, it carries every
+ * feature, and the Nexus plans differ only in how many sites they cover, so a
+ * plan is not a tier and the rungs between free and Pro are gone (ADR 0146).
  *
- * All three paid tiers display as **"Pro"** at launch — the display name is
- * `tiers.json`'s, never this enum's — so splitting the range later is an edit
- * to that file rather than a code change and a data migration.
+ * It is still an enum rather than a `bool`, because every registry member
+ * already declares a tier slug and {@see self::includes()} is the one sentence
+ * they all answer through. The display name is `tiers.json`'s, never this
+ * enum's.
  *
- * ## The rank is here, and the display names and module sets are in the file
- *
- * A deliberate split, and the reason is ADR 0015's own cautionary case: WSMS's
- * shipped elite ZIP is missing the `tiers.json` its `TierGate` reads, benign
- * only because every lookup fails open — "and a ladder that fails open is not
- * a ladder". {@see self::includes()} is total and reads no file, so the
- * ordering cannot fail open however badly a build goes wrong. What the file
- * carries is what only a file can: the words a merchant reads, and which
- * modules a tier ships. {@see \WConvert\Tests\Unit\Support\TierManifestTest}
- * is what stops the two spellings of the ladder drifting.
+ * {@see self::includes()} is total and reads no file, so it cannot fail open
+ * however badly a build goes wrong — ADR 0015's complaint about WSMS's
+ * `TierGate`, whose every lookup does.
  *
  * @since 0.1.0
  */
@@ -48,28 +41,21 @@ enum Tier: string
 {
     case Free = 'free';
 
-    case Basic = 'basic';
-
     case Pro = 'pro';
 
-    case Elite = 'elite';
-
     /**
-     * The ladder, ascending. Higher supplies everything lower does.
-     *
-     * Spelled once, here, and read by {@see self::rank()} and by the manifest
-     * parity test — so `tiers.json` listing its tiers in another order is a
-     * red build rather than a silently different ladder.
+     * Free, then Pro. Read by {@see self::rank()} and by the manifest parity
+     * test.
      *
      * @return list<self>
      */
     public static function ladder(): array
     {
-        return [self::Free, self::Basic, self::Pro, self::Elite];
+        return [self::Free, self::Pro];
     }
 
     /**
-     * Every paid tier, ascending — the ones a build can actually be.
+     * Every paid tier — the ones a Pro build can be. There is one.
      *
      * Free is not one: a free install is not the bottom rung of Pro, it is the
      * whole product minus features it never carried (CONTEXT.md, Pro).
@@ -78,7 +64,7 @@ enum Tier: string
      */
     public static function paid(): array
     {
-        return [self::Basic, self::Pro, self::Elite];
+        return [self::Pro];
     }
 
     /** Where this tier sits on the ladder. Higher is more. */
@@ -90,13 +76,7 @@ enum Tier: string
     /**
      * Whether an install AT this tier supplies a member declared at `$other`.
      *
-     * The one piece of arithmetic the ladder adds, and the reason `Tier` stops
-     * being a boolean: with two cases "does this install have it" was the same
-     * question as "is Pro loaded", and with four it is a comparison. A Pro
-     * install supplies everything Basic does; a Basic install supplies nothing
-     * Elite declares.
-     *
-     * **Free is included by every tier**, which is what makes a paid install
+     * **Free is included by every tier**, which is what makes a Pro install
      * the whole product rather than a different one.
      */
     public function includes(self $other): bool
@@ -107,10 +87,8 @@ enum Tier: string
     /**
      * Whether this install supplies the tier this member is declared at.
      *
-     * Reads the INSTALLED tier rather than a boolean — {@see ProPresence} is
-     * "which tier is on disk", inferred from the modules that shipped, and a
-     * free install answers {@see self::Free}. Free is always supplied, so a
-     * member free declares needs nothing looked up at all.
+     * Free is always supplied, so a member free declares needs nothing looked
+     * up at all.
      */
     public function isSuppliedBy(ProPresence $pro): bool
     {

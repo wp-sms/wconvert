@@ -210,7 +210,7 @@ describe('health, on the card that has it', () => {
 
   /** `locked` and `unavailable` are two sentences, not one (ADR 0026). */
   it('names the tier for a locked route and the plugin for an unavailable one', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     listed(
       [
@@ -447,7 +447,7 @@ describe('adding a route', () => {
   });
 
   it('explains unavailable providers without offering to create a route through them', async () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     editor(ready([]), [], [type({ id: 'paid', tier: 'pro', label: 'Paid service', availability: 'locked' }),
       type({ id: 'wsms', label: 'WP SMS', availability: 'unavailable', requires_label: 'WP SMS' })]);

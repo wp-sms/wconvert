@@ -389,7 +389,7 @@ sample content** (ADR 0075), so it teaches the house style and must be truthful.
 | | Free | Pro |
 |---|---|---|
 | Path | `resources/templates/library/*.json` | `pro/modules/display-types/templates/*.json` |
-| `tier` | `free` | `basic`, `pro` or `elite` |
+| `tier` | `free` | `pro` |
 | Display Types | `popup`, `inline` | any, and the only home of `floating_bar` and `slide_in` |
 
 **A Pro design costs two things a free one does not.** A metadata-only stub in

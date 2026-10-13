@@ -42,8 +42,8 @@ final class PackValidator
     public function portable(array $design): array
     {
         self::check(is_array($design['tree'] ?? null) && is_array($design['tokens'] ?? null), __('This design has an invalid tree or styles.', 'wconvert'));
-        $tier = CaptureJourney::requiresPremium($design['tree'] ?? []) || !in_array($design['display_type'] ?? '', ['popup', 'inline'], true) ? Tier::Basic : Tier::Free;
-        if (\WConvert\Template\CommerceSupport::used($design['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($design['tree'])) $tier = Tier::Elite;
+        $tier = CaptureJourney::requiresPremium($design['tree'] ?? []) || !in_array($design['display_type'] ?? '', ['popup', 'inline'], true)
+            || \WConvert\Template\CommerceSupport::used($design['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($design['tree']) ? Tier::Pro : Tier::Free;
         $entry = ['id' => 'imported', 'name' => $design['name'] ?? '', 'display_type' => $design['display_type'] ?? '',
             'tier' => $tier->value, 'tree' => $design['tree'] ?? [], 'tokens' => $design['tokens'] ?? []];
         $reader = new self($this->manifest, $this->vocabulary, $this->installedTier, true);
@@ -107,7 +107,7 @@ final class PackValidator
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
-            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Elite && \WConvert\Template\CommerceSupport::active(), $this->installedTier === Tier::Free ? __('This design uses elements this site can’t display.', 'wconvert') : __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
+            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Pro && \WConvert\Template\CommerceSupport::active(), $this->installedTier === Tier::Free ? __('This design uses elements this site can’t display.', 'wconvert') : __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
             if (CaptureJourney::requiresPremium($tree)) {
                 self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';

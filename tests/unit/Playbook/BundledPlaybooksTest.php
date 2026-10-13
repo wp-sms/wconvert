@@ -250,8 +250,8 @@ final class BundledPlaybooksTest extends TestCase
                 $ruleTier = Tier::tryFrom(is_string($entry['tier'] ?? null) ? $entry['tier'] : '') ?? Tier::Free;
 
                 if ($ruleTier !== Tier::Free) {
-                    // **The Goal's rung must reach the rule's**, which is the
-                    // ladder's version of the sentence this test always made:
+                    // **The Goal's tier must reach the rule's**, which is the
+                    // sentence this test always made:
                     // an install that can choose the Goal must be able to
                     // evaluate the rule the Playbook prefills under it. Written
                     // as `includes()` rather than as equality, so a premium

@@ -79,7 +79,7 @@ final class ResultProductSourceTest extends TestCase
         add_filter('wconvert_journeys', static fn (): bool => true);
         $path = tempnam(sys_get_temp_dir(), 'wc-result-');
         try {
-            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Basic);
+            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Pro);
             $package = new DesignPackage($validator);
             $package->write($path, $normal, static fn (string $url) => null);
             $read = $package->read($path);

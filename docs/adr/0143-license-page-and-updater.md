@@ -56,6 +56,9 @@ nothing, and asserts no file on the front-end read path touches it.
    the `nexus` environment's `NEXUS_PLAN_SLUGS` and no longer posts the basic
    and pro ZIPs, which are still built and checked. Plan slugs stay out of
    `tiers.json`, which ships in free.
+   *Amended by [ADR 0146](0146-pro-is-one-tier.md): there is one Pro ZIP, `wconvert-pro-v{VERSION}.zip`,
+   and it is what is posted once per plan slug. The basic and pro ZIPs are no
+   longer built.*
 4. **Storage is the SDK's own.** One non-autoloaded option,
    `wconvert_pro_license`, plus the SDK's transients and one 60-second check
    throttle. No table.
@@ -85,7 +88,8 @@ nothing, and asserts no file on the front-end read path touches it.
    and the row cannot disagree and free never computes it. Over the limit is
    the store's own seat count (`activation_count`), not the listed rows, which
    come only to a site that holds a seat. The page is a registered page
-   (`registerPage()`), not an entry in `PRO_SCREENS`: every rung has it.
+   (`registerPage()`), not an entry in `PRO_SCREENS`: every rung has it (*one
+   tier since [ADR 0146](0146-pro-is-one-tier.md)*).
    The payload's `state` is one of `none`, `active`, `expiring`, `cancelled`,
    `manual`, `lifetime`, `trial`, `trial_ended`, `expired`, `payment_failed`,
    `disabled`, `over_limit`, `moved`, `copy`, `key_unreadable`,

@@ -15,7 +15,7 @@
 
 export interface AdminSettings {
   readonly phoneDefaultCountry?: string;
-  readonly installedTier?: 'free' | 'basic' | 'pro' | 'elite';
+  readonly installedTier?: 'free' | 'pro';
   /**
    * Whether Pro registered question journeys on this install — its provider
    * does so when the `journeys` module shipped — `JourneySupport::active()`, read on the server (ADR 0116).
@@ -96,7 +96,7 @@ export interface AdminSettings {
    */
   readonly designBudget?: number;
   /**
-   * What to call each paid tier, keyed by slug — `basic`, `pro`, `elite`.
+   * What to call the paid tier, keyed by slug — `pro`.
    *
    * ==========================================================================
    * THE WORD ON AN UPSELL IS DATA, NOT A LITERAL IN FIVE COMPONENTS.
@@ -105,10 +105,8 @@ export interface AdminSettings {
    * not have, and the word on that badge used to be `__('Pro')` written out in
    * the goal screen, the gallery, two rule surfaces and the starting points.
    *
-   * At launch every rung answers `"Pro"`, so nothing on screen changes. What
-   * changes is what it costs to sell a second tier: an edit to `tiers.json`
-   * rather than five strings and a release, and no migration of the `tier`
-   * values already saved on live Optins (ADR 0056).
+   * It is read from `tiers.json` instead, so renaming the product is an edit
+   * to that file rather than five strings and a release.
    *
    * `name` is the badge — short, sits in a chip. `product_name` is the thing on
    * the invoice, and it is what a sentence names: *"Available with %s."*
@@ -120,7 +118,7 @@ export interface AdminSettings {
    */
   readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string }>>;
   /**
-   * Whether this install can run an A/B test, and which rung supplies it.
+   * Whether this install can run an A/B test, and which tier supplies it.
    *
    * ==========================================================================
    * ONE FACT ABOUT THE INSTALL, RESOLVED ON THE SERVER.
@@ -141,7 +139,7 @@ export interface AdminSettings {
    * obligation ADR 0042 names.
    *
    * `tier` is the slug to name in the upsell — read through `tierName()`, so
-   * that a second rung is a `tiers.json` edit rather than a string in a
+   * that renaming the tier is a `tiers.json` edit rather than a string in a
    * component.
    */
   readonly variants?: {

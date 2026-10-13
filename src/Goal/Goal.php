@@ -94,7 +94,7 @@ enum Goal: string
 
     public function tier(): Tier
     {
-        return match ($this) { self::RecoverCart, self::IncreaseBasketValue => Tier::Elite, self::FindMatch => Tier::Basic, default => Tier::Free };
+        return match ($this) { self::RecoverCart, self::IncreaseBasketValue, self::FindMatch => Tier::Pro, default => Tier::Free };
     }
 
     public function requires(): ?SiteDependency

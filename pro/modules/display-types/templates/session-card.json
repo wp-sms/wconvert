@@ -2,7 +2,7 @@
   "id": "session-card",
   "name": "Studio invitation",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#fffefa",
     "fg": "#26324a",

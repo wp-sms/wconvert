@@ -2,7 +2,7 @@
   "id": "launch-index",
   "name": "Launch index bar",
   "display_type": "floating_bar",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#29392f",
     "fg": "#ffffff",

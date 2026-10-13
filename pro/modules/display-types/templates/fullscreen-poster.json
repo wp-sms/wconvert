@@ -2,7 +2,7 @@
   "id": "fullscreen-poster",
   "name": "Fullscreen poster",
   "display_type": "fullscreen",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#1f3540",
     "fg": "#fff1ce",

@@ -138,7 +138,7 @@ final class TemplateCatalogTest extends TestCase
             ['templates.0.tree.steps.0.children.0.text', '<script>alert(1)</script>'],
             ['templates.0.tree.steps.0.children.5.href', 'javascript:alert(1)'],
             ['templates.0.tree.steps.0.children.5.action', 'execute'],
-            ['templates.0.tree.steps.0.children.1.id', 'n1'], ['templates.0.tier', 'basic'],
+            ['templates.0.tree.steps.0.children.1.id', 'n1'], ['templates.0.tier', 'pro'],
         ];
         foreach ($changes as [$path, $value]) {
             $pack = $this->pack(); $target =& $pack; $keys = explode('.', $path); $last = array_pop($keys);

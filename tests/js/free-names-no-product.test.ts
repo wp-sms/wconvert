@@ -9,7 +9,7 @@ const CANT_DISPLAY = 'This design uses elements this site can’t display.';
 
 it('a free install names no product when it explains an absence (ADR 0116 §3)', () => {
   expect(unlessFree('Cart testing requires WConvert Pro and WooCommerce.')).toBe(CANT_DISPLAY);
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   expect(unlessFree('Cart testing requires WConvert Pro and WooCommerce.')).toBe('Cart testing requires WConvert Pro and WooCommerce.');
 });
 

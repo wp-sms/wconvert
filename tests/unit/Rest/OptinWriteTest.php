@@ -283,7 +283,7 @@ final class OptinWriteTest extends TestCase
 
         // A Pro install with a store, so the cart [[Goal]] is settable and the
         // refusals below are about the DESIGN rather than about availability.
-        $pro = new FakeProPresence(Tier::Elite);
+        $pro = new FakeProPresence(Tier::Pro);
         $site = new FakeSitePresence([SiteDependency::WooCommerce, SiteDependency::MailPoet, SiteDependency::Wsms]);
 
         $this->milestones = new FakeOptionStore();

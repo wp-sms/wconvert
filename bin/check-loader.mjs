@@ -12,9 +12,9 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 14720 B; Basic 25472 B;
-//      Pro 27040 B; Elite 27712 B (ADR 0139, amended), per build. It blocks rather than warns, and there is no
-//      second warn band nobody would read.
+//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 14720 B; Pro 27712 B
+//      (ADR 0139, amended; ADR 0146), per build. It blocks rather than warns,
+//      and there is no second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
 //      set at 2x the prototype's 3.9KB, against a vocabulary of six leaves and
@@ -34,9 +34,10 @@
 //      number moved with an argument attached is not an opt-out; the moment
 //      this check has one, the opt-out is what runs on the day it matters.
 //
-//   2. THE PREMIUM-IDENTIFIER SCAN, SCOPED TO THE LOADER BUNDLE ONLY. Its
+//   2. THE PREMIUM-IDENTIFIER SCAN, SCOPED TO FREE'S LOADER BUNDLE ONLY. Its
 //      identifier list is read from the rule manifest, so it cannot drift from
-//      what the manifest calls premium.
+//      what the manifest calls premium — and beside it, every module's
+//      declared `bundle_marker`, for the modules that ship no rule type.
 //
 //      DO NOT SCAN THE ADMIN BUNDLE. Free's admin bundle contains premium
 //      identifiers ON PURPOSE — the data-only catalogue of premium Destination
@@ -91,81 +92,27 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
 // ADR 0124: Node 22 gzip normalization, +32 B; Free asset is byte-identical.
 // ADR 0139 amendment (2026-10-12, approved by Mostafa): +96 B, measured on Node 22.
 const FREE_BYTE_BUDGET = 14720;
-// ADR 0103: shared journeys plus paid recovery/content access.
-// ADR 0104: user-approved 1 KiB increase for grouped display policies.
-// ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
-// ADR 0124: +160 B Basic/Pro and +448 B Elite; measured on Node 22.
-// ADR 0139 amendment (2026-10-12, approved by Mostafa): +96 B, measured on Node 22.
-const PAID_BYTE_BUDGET = 25472;
-// ADR 0105: the complete shared phone-field seam has measured per-rung caps.
-// ADR 0121: server-counted conversion notification adds a bounded renderer seam.
-// ADR 0139: user-approved +32 B for the one shared "is not" helper (leafAnswer).
-// ADR 0139 amendment (2026-10-12, approved by Mostafa): +64 B, measured on Node 22.
-const PRO_BYTE_BUDGET = 27040;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
 // ADR 0139: user-approved +32 B for "is not" and the cart bridge's known().
 // ADR 0139 amendment (2026-10-12, approved by Mostafa): +64 B, measured on Node 22.
-const ELITE_BYTE_BUDGET = 27712;
+// ADR 0146: Pro is one tier, so this is the old top rung's budget, unchanged.
+const PRO_BYTE_BUDGET = 27712;
 
 const MANIFEST = 'resources/rules/manifest.json';
-
-const TIER_MANIFEST = 'tiers.json';
 
 /** Where a module declares itself — its slug, and the token its bundle carries. */
 const MODULES = 'pro/modules';
 
 /**
- * The paid rungs, ascending, read from the file that declares them.
+ * Every bundle this program is responsible for.
  *
- * The ORDER is what every scan below is relative to — "no identifier from a
- * HIGHER rung" is a statement about this list. `WConvert\Support\Tier` spells
- * the same ladder in PHP and `tests/unit/Support/TierManifestTest.php` asserts
- * the two agree, so this reads the data rather than carrying a fourth copy.
- *
- * Throws rather than defaulting: a ladder this cannot read is a set of scans
- * that would each assert nothing and print a tick (ADR 0029, ADR 0056).
- */
-function paidTiers() {
-  const declared = JSON.parse(readFileSync(resolve(ROOT, TIER_MANIFEST), 'utf8'))?.premium?.tiers;
-
-  if (!Array.isArray(declared) || declared.length === 0) {
-    throw new Error(`${TIER_MANIFEST} declares no premium tiers`);
-  }
-
-  return declared.map((tier) => {
-    if (typeof tier?.slug !== 'string' || tier.slug === '') {
-      throw new Error(`${TIER_MANIFEST} declares a tier with no slug`);
-    }
-
-    return tier.slug;
-  });
-}
-
-/**
- * Every bundle this program is responsible for, and what each must not contain.
- *
- * ============================================================================
- * ONE PER TIER, BECAUSE OTHERWISE THE TIER SPLIT IS NOT A GATE (ADR 0056).
- * ============================================================================
- * This listed two bundles while Pro was one build. It lists four, and the three
- * Pro rows are the JavaScript half of the per-tier artifact contract: **a Basic
- * bundle must carry no identifier from a higher rung**, proven in the built
- * bytes rather than in the source that produced them.
- *
- * That assertion is the whole difference between this and WSMS, where all three
- * premium tiers ship a byte-identical `main.js` — so a Basic customer holds the
- * Elite UI behind a client-readable flag. Under possession-gating that is not a
- * weaker gate, it is no gate.
- *
- * `above` is a tier slug: the scan looks for every identifier the manifest
- * files ABOVE that rung. Free's is `null`, meaning above free — which is every
- * paid identifier there is, and the assertion this program has always made.
+ * `scan` is whether the premium scans run against it. Only free's do: Pro's
+ * loader IS the premium code (ADR 0146), so scanning it for premium code would
+ * assert nothing.
  */
 const BUNDLES = [
-  { label: 'free loader', path: 'public/loader/loader.js', above: null },
-  { label: 'pro basic loader', path: 'pro/public/tiers/basic/loader/loader.js', above: 'basic' },
-  { label: 'pro pro loader', path: 'pro/public/tiers/pro/loader/loader.js', above: 'pro' },
-  { label: 'pro elite loader', path: 'pro/public/loader/loader.js', above: 'elite' },
+  { label: 'free loader', path: 'public/loader/loader.js', budget: FREE_BYTE_BUDGET, scan: true },
+  { label: 'pro loader', path: 'pro/public/loader/loader.js', budget: PRO_BYTE_BUDGET, scan: false },
 ];
 
 console.log(`==> check-loader: ${ROOT}`);
@@ -201,111 +148,70 @@ function readBundle({ label, path }) {
 }
 
 /**
- * Every rule type the manifest files at each paid rung, across every axis.
+ * Every rule type the manifest files at a paid tier, across every axis.
  *
  * Read from the manifest rather than listed here, so the scan cannot drift from
- * what the manifest says. Throws rather than returning an empty map when the
- * manifest is unreadable: an empty map scans for nothing and passes.
+ * what the manifest says. Throws rather than returning an empty list when the
+ * manifest is unreadable: an empty list scans for nothing and passes.
  *
- * **Keyed by rung rather than filtered to one word**, and that was a live hole
- * rather than a tidy-up: this read `entry.tier === 'pro'`, so the moment the
- * two cart Conditions moved to `elite` (ADR 0056) free's loader stopped being
- * scanned for them at all — the check would have gone on printing a tick while
- * asserting less than it said.
+ * **Anything not `free`, rather than the word "pro"**, so renaming the tier
+ * cannot quietly stop free's loader being scanned at all.
  *
- * An entry declaring a rung `tiers.json` does not is a failure here rather than
- * an identifier quietly dropped from every scan.
- *
- * @returns {Map<string, string[]>} tier slug => the identifiers filed at it.
+ * @returns {string[]}
  */
-function identifiersByTier(tiers) {
-  const absolute = resolve(ROOT, MANIFEST);
-  const manifest = JSON.parse(readFileSync(absolute, 'utf8'));
-
+function premiumIdentifiers() {
+  const manifest = JSON.parse(readFileSync(resolve(ROOT, MANIFEST), 'utf8'));
   const axes = Object.values(manifest).filter((axis) => axis && typeof axis === 'object');
 
   if (axes.length === 0) {
     throw new Error(`${MANIFEST} declares no rule axes`);
   }
 
-  const byTier = new Map(tiers.map((tier) => [tier, []]));
-
-  for (const axis of axes) {
-    for (const [type, entry] of Object.entries(axis)) {
-      const tier = entry?.tier ?? 'free';
-
-      if (tier === 'free') {
-        continue;
-      }
-
-      if (!byTier.has(tier)) {
-        throw new Error(`${MANIFEST}: ${type} is filed at "${tier}", which ${TIER_MANIFEST} does not declare`);
-      }
-
-      byTier.get(tier).push(type);
-    }
-  }
-
-  return byTier;
+  return axes.flatMap((axis) => Object.entries(axis).filter(([, entry]) => (entry?.tier ?? 'free') !== 'free').map(([type]) => type));
 }
 
 /**
- * Every module MARKER filed at each paid rung.
+ * Every module MARKER Pro's modules declare.
  *
  * =============================================================================
  * THE SCAN ABOVE CAN ONLY SEE A MODULE WHOSE CONTRIBUTION IS A RULE.
  * =============================================================================
- * `identifiersByTier` reads its list out of the rule manifest, which is right
- * and is also the whole of its reach. `ab-testing` is the first module that
- * ships loader code and declares no rule type at all — its contribution is a
- * payload narrowing — so a Basic bundle carrying its entire arm-drawing routine
- * would have passed every check there is, which is precisely the
- * byte-identical-JavaScript failure ADR 0056 measures WSMS by, arriving through
- * a gap in the scan instead of through a flag.
+ * `premiumIdentifiers` reads its list out of the rule manifest, which is right
+ * and is also the whole of its reach. `ab-testing` ships loader code and
+ * declares no rule type at all — its contribution is a payload narrowing — so
+ * free's bundle carrying its entire arm-drawing routine would pass that scan.
  *
  * So a module may declare a `bundle_marker` in its own `module.json` — a token
- * that appears in its built JavaScript and in no lower rung's. It sits beside
- * the slug that already names the module, so the premium split still adds zero
- * new lists (ADR 0015), and a module that declares none is reported as
- * unscanned rather than ticked.
+ * that appears in its built JavaScript and in free's never. It sits beside the
+ * slug that already names the module, so the premium split still adds zero new
+ * lists (ADR 0015), and a module that declares none is reported as unscanned
+ * rather than ticked.
  *
- * @returns {{byTier: Map<string, string[]>, unscanned: Map<string, string[]>}}
- *   tier slug => the markers of modules it first ships, and the slugs of the
- *   modules it first ships that declare none.
+ * @returns {{markers: string[], unscanned: string[]}}
  */
-function markersByTier(tiers) {
-  const byTier = new Map(tiers.map((tier) => [tier, []]));
-  const unscanned = new Map(tiers.map((tier) => [tier, []]));
-  const ladder = JSON.parse(readFileSync(resolve(ROOT, TIER_MANIFEST), 'utf8'))?.premium?.tiers ?? [];
+function moduleMarkers() {
+  const markers = [];
+  const unscanned = [];
 
   for (const file of readdirSync(resolve(ROOT, MODULES), { withFileTypes: true })) {
     if (!file.isDirectory()) {
       continue;
     }
 
-    const manifest = resolve(ROOT, MODULES, file.name, 'module.json');
-    const declared = JSON.parse(readFileSync(manifest, 'utf8'));
+    const declared = JSON.parse(readFileSync(resolve(ROOT, MODULES, file.name, 'module.json'), 'utf8'));
     const marker = declared?.bundle_marker;
-
-    // The LOWEST rung that ships it, which is the direction the whole ladder
-    // is read in: a module on disk is evidence of at least that rung.
-    const at = ladder.find((tier) => (tier?.modules ?? []).includes(declared.slug))?.slug;
-
-    if (!byTier.has(at)) {
-      throw new Error(`${declared.slug} is shipped by no tier ${TIER_MANIFEST} declares`);
-    }
 
     // **A module that declares none is NAMED rather than passed over.** A tick
     // printed beside a scan that skipped three modules reports "clean" while
-    // asserting less than it says, which is the failure ADR 0029 is about —
-    // and it is the failure that would hide the next module to ship loader
-    // code and no rule type, exactly as `ab-testing` did.
-    (typeof marker === 'string' && marker !== '' ? byTier : unscanned).get(at).push(
-      typeof marker === 'string' && marker !== '' ? marker : declared.slug,
-    );
+    // asserting less than it says, which is the failure ADR 0029 is about.
+    if (typeof marker === 'string' && marker !== '') {
+      markers.push(marker);
+    } else {
+      unscanned.push(declared.slug);
+    }
   }
 
-  return { byTier, unscanned };
+  return { markers, unscanned };
 }
 
 // Each bundle is read ONCE. Reading again for the premium scan would report a
@@ -321,124 +227,84 @@ for (const bundle of BUNDLES) {
     continue;
   }
 
-  const BYTE_BUDGET = bundle.above === 'elite' ? ELITE_BYTE_BUDGET : bundle.above === 'pro' ? PRO_BYTE_BUDGET : bundle.path.startsWith('pro/') ? PAID_BYTE_BUDGET : FREE_BYTE_BUDGET;
   const gzipped = gzipSync(source, { level: 9 }).length;
-  const verdict = gzipped > BYTE_BUDGET ? '✗' : '✓';
+  const verdict = gzipped > bundle.budget ? '✗' : '✓';
 
-  console.log(`  ${verdict} ${bundle.label}: ${gzipped} B gzipped (budget ${BYTE_BUDGET} B)`);
+  console.log(`  ${verdict} ${bundle.label}: ${gzipped} B gzipped (budget ${bundle.budget} B)`);
 
-  if (gzipped > BYTE_BUDGET) {
-    fail(`${bundle.label}: ${gzipped} B gzipped exceeds the ${BYTE_BUDGET} B budget by ${gzipped - BYTE_BUDGET} B`);
+  if (gzipped > bundle.budget) {
+    fail(`${bundle.label}: ${gzipped} B gzipped exceeds the ${bundle.budget} B budget by ${gzipped - bundle.budget} B`);
   }
 }
 
-// --- 2. The identifier scan: NO BUNDLE CARRIES A HIGHER RUNG'S RULES ---------
+// --- 2. The identifier scan: FREE'S LOADER CARRIES NO PREMIUM RULE ----------
 //
-// Free's is the assertion this program was written for — free's built loader
-// contains neither premium identifier, which is what makes ADR 0015's "the
-// absence that matters is the CODE's" an assertion rather than a sentence. The
-// three Pro rows are the same assertion one rung finer, and they are what stop
-// a per-tier build being theatre (ADR 0056).
+// The assertion this program was written for — free's built loader contains no
+// premium identifier, which is what makes ADR 0015's "the absence that matters
+// is the CODE's" an assertion rather than a sentence.
 
-let byTier = null;
-let markers = null;
-let tiers = null;
+let identifiers = null;
 
 try {
-  tiers = paidTiers();
-  byTier = identifiersByTier(tiers);
+  identifiers = premiumIdentifiers();
 } catch (error) {
-  fail(`cannot read the tier ladder or the rule manifest (${error.message}) — the identifier scan inspected nothing`);
+  fail(`cannot read the rule manifest (${error.message}) — the identifier scan inspected nothing`);
 }
 
-let unscanned = null;
+let modules = null;
 
 try {
-  const read = tiers === null ? null : markersByTier(tiers);
-
-  markers = read === null ? null : read.byTier;
-  unscanned = read === null ? null : read.unscanned;
+  modules = moduleMarkers();
 } catch (error) {
   fail(`cannot read the module manifests (${error.message}) — the marker scan inspected nothing`);
 }
 
-if (byTier !== null) {
-  for (const bundle of BUNDLES) {
-    const source = sources.get(bundle.path);
+for (const bundle of BUNDLES.filter(({ scan }) => scan)) {
+  const source = sources.get(bundle.path);
 
-    if (source === null) {
-      continue;
-    }
+  if (source === null) {
+    continue;
+  }
 
-    // Everything filed ABOVE this bundle's rung. For free that is every paid
-    // identifier; for elite it is nothing, because there is nothing above it.
-    const from = bundle.above === null ? 0 : tiers.indexOf(bundle.above) + 1;
-    const forbidden = tiers.slice(from).flatMap((tier) => byTier.get(tier));
+  const text = source.toString('utf8');
 
-    if (forbidden.length === 0) {
-      // NOT a failure, and NOT a tick either. The manifest is readable and
-      // says, truthfully, that there is nothing above this rung to look for —
-      // which is the top rung's permanent state, and which was the whole
-      // vocabulary's state while it carried only server-evaluated Targeting
-      // entries. An empty list scans for nothing, so printing a tick here
-      // would report "clean" while asserting nothing, which is the failure
-      // ADR 0029 is about. It says so instead.
-      console.log(`  ! ${bundle.label}: nothing is filed above its rung, so this scan asserted nothing`);
-      continue;
-    }
+  if (identifiers !== null) {
+    if (identifiers.length === 0) {
+      // NOT a failure, and NOT a tick either: an empty list scans for nothing,
+      // so printing a tick here would report "clean" while asserting nothing,
+      // which is the failure ADR 0029 is about. It says so instead.
+      console.log(`  ! ${bundle.label}: nothing is filed as premium, so this scan asserted nothing`);
+    } else {
+      const found = identifiers.filter((identifier) => text.includes(identifier));
 
-    const text = source.toString('utf8');
-    const found = forbidden.filter((identifier) => text.includes(identifier));
+      console.log(`  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${identifiers.length} premium identifier(s)`);
 
-    console.log(
-      `  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${forbidden.length} identifier(s) from a higher rung`,
-    );
-
-    for (const identifier of found) {
-      fail(`${bundle.label}: contains "${identifier}", which is filed above the rung this bundle ships`);
+      for (const identifier of found) {
+        fail(`${bundle.label}: contains "${identifier}", which is filed as premium`);
+      }
     }
   }
-}
 
-// --- 3. The marker scan: NO BUNDLE CARRIES A HIGHER RUNG'S MODULE -----------
-//
-// The same assertion for a module that ships no rule type, and therefore has
-// nothing in the rule manifest for the scan above to look for. See
-// `markersByTier` for why that gap is worth closing rather than noting.
-
-if (markers !== null) {
-  for (const bundle of BUNDLES) {
-    const source = sources.get(bundle.path);
-
-    if (source === null) {
-      continue;
-    }
-
-    const from = bundle.above === null ? 0 : tiers.indexOf(bundle.above) + 1;
-    const above = tiers.slice(from);
-    const forbidden = above.flatMap((tier) => markers.get(tier));
-    const silent = above.flatMap((tier) => unscanned.get(tier));
-
-    if (forbidden.length === 0) {
-      console.log(`  ! ${bundle.label}: no module above its rung declares a marker, so this scan asserted nothing`);
+  // --- 3. The marker scan: FREE'S LOADER CARRIES NO PRO MODULE --------------
+  //
+  // The same assertion for a module that ships no rule type, and therefore has
+  // nothing in the rule manifest for the scan above to look for.
+  if (modules !== null) {
+    if (modules.markers.length === 0) {
+      console.log(`  ! ${bundle.label}: no module declares a marker, so this scan asserted nothing`);
     } else {
-      const text = source.toString('utf8');
-      const found = forbidden.filter((marker) => text.includes(marker));
+      const found = modules.markers.filter((marker) => text.includes(marker));
 
-      console.log(
-        `  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${forbidden.length} module marker(s) from a higher rung`,
-      );
+      console.log(`  ${found.length === 0 ? '✓' : '✗'} ${bundle.label}: scanned for ${modules.markers.length} module marker(s)`);
 
       for (const marker of found) {
-        fail(`${bundle.label}: contains "${marker}", a module filed above the rung this bundle ships`);
+        fail(`${bundle.label}: contains "${marker}", a Pro module's marker`);
       }
     }
 
-    // Said out loud beside the tick, never folded into it: a module above this
-    // rung that declares no marker is one this scan did not look for, and a
-    // reader has to be able to tell that from a rung with nothing above it.
-    if (silent.length > 0) {
-      console.log(`  ! ${bundle.label}: ${silent.join(', ')} declare no marker and were not scanned for`);
+    // Said out loud beside the tick, never folded into it.
+    if (modules.unscanned.length > 0) {
+      console.log(`  ! ${bundle.label}: ${modules.unscanned.join(', ')} declare no marker and were not scanned for`);
     }
   }
 }

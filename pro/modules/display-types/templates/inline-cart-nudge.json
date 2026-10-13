@@ -2,7 +2,7 @@
   "id": "inline-cart-nudge",
   "name": "Cart nudge",
   "display_type": "inline",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f4f3ef",
     "fg": "#1c1917",

@@ -47,13 +47,13 @@ final class SiteHealthInfoTest extends TestCase
             'd' => ['id' => 'd', 'parent_id' => null, 'published_at' => '2026-10-01 00:00:00', 'deleted_at' => '2026-10-02 00:00:00'],
         ];
 
-        $section = $this->info($connection, Tier::Elite)->addSection(['wp-core' => []]);
+        $section = $this->info($connection, Tier::Pro)->addSection(['wp-core' => []]);
 
         $this->assertArrayHasKey('wp-core', $section, 'WordPress\'s own sections are kept');
         $fields = $section[SiteHealthInfo::SECTION]['fields'];
         $this->assertSame(WCONVERT_VERSION, $fields['version']['value']);
-        $this->assertSame('elite', $fields['plan']['debug']);
-        $this->assertNotSame('elite', $fields['plan']['value'], 'the plan is named, not slugged');
+        $this->assertSame('pro', $fields['plan']['debug']);
+        $this->assertNotSame('pro', $fields['plan']['value'], 'the plan is named, not slugged');
         $this->assertSame('1 published, 2 drafts', $fields['campaigns']['value'], 'a deleted campaign is not counted');
     }
 

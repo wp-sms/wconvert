@@ -24,12 +24,13 @@ interface Declared {
 }
 
 /**
- * @param availability How this install resolves each RUNG of the ladder, keyed
- *   by tier slug — `free`, `basic`, `pro`, `elite` (ADR 0056). `locked` is what
- *   a free install makes of a paid entry, and it is the case the rules panel
- *   has to render as an upsell rather than as a control (ADR 0026).
+ * @param availability How this install resolves each tier, keyed by tier slug —
+ *   `free` or `pro` — or by a rule type's own id, which wins over its tier.
+ *   `locked` is what a free install makes of a paid entry, and it is the case
+ *   the rules panel has to render as an upsell rather than as a control
+ *   (ADR 0026).
  *
- *   **A rung left out reads as `ready`**, so a caller names only the rungs its
+ *   **Anything left out reads as `ready`**, so a caller names only what its
  *   assertion is about. That default is deliberately generous rather than
  *   fail-closed: this is a fixture, and a test that silently rendered every
  *   unnamed rule as an upsell would assert upsells nobody wrote.
@@ -44,7 +45,7 @@ export function ruleTypes(
       label: type,
       phrase: phraseFor(type, Object.keys(entry.params)),
       tier: entry.tier,
-      availability: availability[entry.tier] ?? 'ready',
+      availability: availability[type] ?? availability[entry.tier] ?? 'ready',
       requires_label: entry.requires === null || entry.requires === undefined ? null : 'WooCommerce',
       // Stand-in words for "is not", like the key-as-label above (ADR 0139).
       negatable: entry.negatable === true,

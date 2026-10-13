@@ -2,7 +2,7 @@
   "id": "callback-slip",
   "name": "Callback slip",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#20332f",

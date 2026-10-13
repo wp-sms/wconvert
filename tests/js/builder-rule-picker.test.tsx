@@ -46,10 +46,10 @@ describe('searchable rule picker', () => {
   });
 
   it('keeps missing dependencies and paid rules searchable as noninteractive explanations', async () => {
-    // A paid install meeting a higher rung's rules (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    // A paid install meeting rules it does not have (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
-    const types = ruleTypes({ elite: 'unavailable', pro: 'locked' });
+    const types = ruleTypes({ pro: 'locked', cart_has_items: 'unavailable' });
     render(<AddRule axis={[...types.triggers, ...types.conditions]} label="Add" onAdd={vi.fn()} />);
     await userEvent.click(screen.getByRole('button', { name: 'Add' }));
     await userEvent.type(screen.getByRole('searchbox'), 'WooCommerce');
@@ -66,7 +66,7 @@ describe('searchable rule picker', () => {
 
   /** A free install is offered no paid rule, not even as an explanation (ADR 0116). */
   it('lists no paid rule on a free install, and still explains a missing plugin', async () => {
-    const types = ruleTypes({ elite: 'unavailable', pro: 'locked' });
+    const types = ruleTypes({ pro: 'locked', cart_has_items: 'unavailable' });
     render(<AddRule axis={[...types.triggers, ...types.conditions]} label="Add" onAdd={vi.fn()} />);
     await userEvent.click(screen.getByRole('button', { name: 'Add' }));
     expect(screen.queryByRole('group', { name: 'With WConvert Pro' })).not.toBeInTheDocument();

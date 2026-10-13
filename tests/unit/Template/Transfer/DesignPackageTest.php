@@ -27,7 +27,7 @@ final class DesignPackageTest extends TestCase
             $design['tree']['steps'][0]['content']['children'][3]['product_ids'] = [123, 456];
             $design['tree']['steps'][0]['content']['children'][3]['main_product_id'] = 789;
             $design['tree']['steps'][0]['content']['children'][3]['context'] = 'product';
-            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
+            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Pro);
             $package = new DesignPackage($validator);
             $package->write($path, $design, fn (string $url) => null);
             $read = $package->read($path);
@@ -54,7 +54,7 @@ final class DesignPackageTest extends TestCase
             self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'promote_offer', ''));
             self::assertNull(\WConvert\Goal\Goal::PromoteOffer->outcome()->designIssue($config));
             $design['tree']['steps'][0]['content']['children'][3]['product_ids'] = [123];
-            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
+            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Pro);
             $package = new DesignPackage($validator);
             $package->write($path, $design, fn (string $url) => null);
             $read = $package->read($path);

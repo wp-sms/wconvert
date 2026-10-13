@@ -152,7 +152,7 @@ final class SuspendedOnTheListTest extends TestCase
     private function controllerOn(bool $proLoaded, bool $hasStore): OptinController
     {
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
-        $pro = new FakeProPresence($proLoaded ? Tier::Elite : Tier::Free);
+        $pro = new FakeProPresence($proLoaded ? Tier::Pro : Tier::Free);
         $site = new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
 

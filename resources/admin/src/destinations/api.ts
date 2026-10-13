@@ -66,7 +66,7 @@ export interface DestinationType {
   id: string;
   label: string;
   icon: string;
-  tier: 'free' | 'basic' | 'pro' | 'elite';
+  tier: 'free' | 'pro';
   /** The slug — never copy. Use `requires_label`. */
   requires: string | null;
   /** What the site is missing, in words the merchant can act on. */

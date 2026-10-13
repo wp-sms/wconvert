@@ -2,7 +2,7 @@
   "id": "cart-additions",
   "name": "Add useful extras",
   "display_type": "inline",
-  "tier": "elite",
+  "tier": "pro",
   "tokens": {
     "bg": "#f5f4f0",
     "fg": "#242820",

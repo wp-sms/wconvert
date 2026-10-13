@@ -376,7 +376,7 @@ describe('gallery inspection actions', () => {
 
   it('preserves the external link for a locked design', () => {
     // A paid install; a free one is shown no locked design (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     render(<Gallery entries={[{ ...ENTRY, availability: 'locked', tier: 'pro', preview_url: 'https://wconvert.io/designs/example/' }]}
       trees={new Map()} labels={LABELS} chosen={undefined} fit={FIT} busy={false}

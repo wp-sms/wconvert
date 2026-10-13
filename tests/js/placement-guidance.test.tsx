@@ -204,7 +204,7 @@ describe('automatic placement saved on an install without Pro', () => {
   });
 
   it('keeps the automatic explanation on a paid install', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
     expect(screen.getByText(/After publishing, it is placed in matching/)).toBeInTheDocument();
   });

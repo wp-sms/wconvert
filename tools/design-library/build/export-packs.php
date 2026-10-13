@@ -20,7 +20,7 @@ use WConvert\Template\TemplateManifest;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Template\Catalog\PackValidator;
 
-$validator = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Elite);
+$validator = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Pro);
 $input = json_decode(stream_get_contents(STDIN), true, 64, JSON_THROW_ON_ERROR);
 if (($input['mode'] ?? '') === 'validate') {
     foreach ($input['packs'] as $pack) $validator->decode($pack['json']);

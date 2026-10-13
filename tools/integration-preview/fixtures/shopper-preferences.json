@@ -1,7 +1,7 @@
 {
   "name": "Shopper preferences",
   "display_type": "inline",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#fcfdff",
     "fg": "#243650",

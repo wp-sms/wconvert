@@ -204,7 +204,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
       */}
       {/*
         A free install names no product (ADR 0116). These notes stay sales
-        copy only where Pro is installed and a rung is what is missing.
+        copy only where Pro is installed.
       */}
       {substitutedFor !== null && (
         <p className="wconvert-rule__note text-note">

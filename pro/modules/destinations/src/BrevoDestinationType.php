@@ -18,7 +18,7 @@ final class BrevoDestinationType implements DestinationType
     public function id(): string { return 'brevo'; }
     public function label(): string { return __('Brevo', 'wconvert'); }
     public function icon(): string { return 'mail'; }
-    public function tier(): Tier { return Tier::Elite; }
+    public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
     public function throughput(): int { return 60; }
     /** @return array<string, mixed> */
