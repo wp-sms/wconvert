@@ -13,6 +13,7 @@ import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
 import { registerJourneyAuthoring } from '../../../modules/journeys/admin/register';
 import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
+import { connectionSetup } from '@/destinations/connectionSetup';
 import { registerPage } from '@/extraPages';
 import { __ } from '@wordpress/i18n';
 
@@ -28,6 +29,7 @@ registerPage({
 registerPremiumJourneyRenderer();
 registerJourneyAuthoring();
 registerProviderMarks();
+connectionSetup.connectionForms.webhook = lazy(() => import('../../../modules/destinations/admin/WebhookConnectionForm'));
 registerProductPreview();
 reportExtensions.commerce = lazy(() => import('../../../modules/analytics/admin/Revenue'));
 analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));

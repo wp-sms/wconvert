@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { CircleAlert, CircleCheck, Info, Lock, type LucideIcon } from 'lucide-react';
-import { Alert, AlertTitle } from '../components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { isFreeInstall, tierName, tierProductName } from '../goals/availability';
-import { formatCount } from '../lib/format';
+import { formatCount, siteLocale } from '../lib/format';
 import { cn } from '../lib/utils';
 import { settingsProblems } from './requirements';
 import type { Connection, Destination, DestinationType, TestReport } from './api';
@@ -153,6 +153,13 @@ export function TestReportAlert({ report, className }: { report: TestReport; cla
     <Alert role={report.outcome === 'failed' ? 'alert' : 'status'} className={cn(tone, '[overflow-wrap:anywhere]', className)}>
       <Icon />
       <AlertTitle className="line-clamp-none">{report.message}</AlertTitle>
+      {/* What the receiver answered, under the sentence and never instead of it (ADR 0042). */}
+      {report.status !== undefined && report.ms !== undefined && <AlertDescription className="text-note text-current">
+        {sprintf(/* translators: 1: an HTTP status code, e.g. 200. 2: seconds, e.g. “0.4”. */ __('Answered %1$d in %2$s s.', 'wconvert'), report.status, seconds(report.ms))}
+      </AlertDescription>}
     </Alert>
   );
 }
+
+/** Milliseconds as tenths of a second; anything quicker than a tenth reads as one. */
+const seconds = (ms: number) => new Intl.NumberFormat(siteLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.max(ms, 100) / 1000);

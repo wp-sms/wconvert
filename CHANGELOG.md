@@ -12,6 +12,18 @@ the full record for the team.
 
 ## [Unreleased]
 
+### Added
+
+- Pro: the signed webhook destination (ADR 0148). Each accepted submission is
+  posted as one documented JSON shape, signed by Standard Webhooks, to Zapier,
+  Make, n8n or your own code. Setup asks which tool first, then only what that
+  tool needs; the signing secret is shown once, with Copy; an account shows
+  its tool's logo; a test says what the receiver answered and how long it
+  took, and a campaign's test carries its own questions. Retries run for about
+  a day. The page a lead came from, and its UTM tags, are recorded on the lead.
+- Free names Pro's destinations as "more integrations, like Mailchimp, Brevo
+  and webhooks" rather than every service (ADR 0147, amended).
+
 ### Changed
 
 - Pro is one tier with every feature (ADR 0146). The `basic` and `elite` tiers

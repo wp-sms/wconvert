@@ -10,8 +10,9 @@ defined('ABSPATH') || exit;
  *
  * **One Connection backs one or more [[Destination]]s**, so two Mailchimp
  * audiences are two Destinations over one Connection and the merchant pastes
- * the key once. Not every Destination has one: a webhook's URL is its whole
- * configuration, and the WSMS push authenticates against nothing
+ * the key once. A webhook's URL, signing secret and headers are a Connection
+ * too, because a Zapier URL is itself a secret (ADR 0148). Not every
+ * Destination has one: the WSMS push authenticates against nothing
  * (CONTEXT.md, Connection).
  *
  * **The credentials sit in the clear**, and that is the honest answer rather
@@ -79,17 +80,21 @@ final class Connection
      * the whole of the protection described in the class docblock, and it is
      * here rather than in the controller so a second caller cannot forget it.
      *
-     * @return array{id: string, type: string, label: string, credentials: array<string, bool>}
+     * @return array{id: string, type: string, label: string, credentials: array<string, bool|list<string>>, account_identity: ?string, checked_at: ?string, check_outcome: ?string}
      */
     public function masked(): array
     {
         $configured = [];
 
         foreach ($this->credentials as $field => $value) {
-            $configured[(string) $field] = $value !== null && $value !== '';
+            // A list of headers reports its names, which the merchant needs to edit it; never its values.
+            $configured[(string) $field] = is_array($value)
+                ? array_values(array_filter(array_map(static fn ($pair) => is_array($pair) ? ($pair['name'] ?? null) : null, $value), 'is_string'))
+                : $value !== null && $value !== '';
         }
 
+        // The identity is what a merchant recognises — a webhook's host, never its URL — and the admin picks a logo by it.
         return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $configured,
-            'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
+            'account_identity' => $this->accountIdentity, 'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
     }
 }

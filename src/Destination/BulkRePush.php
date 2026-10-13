@@ -19,6 +19,10 @@ defined('ABSPATH') || exit;
  * vendor's identifier-keyed upsert underneath, every recovery would double the
  * merchant's list.
  *
+ * > Amended by ADR 0148: a webhook has no upsert, so a replay posts the Leads
+ * > that landed again, each with the `id` it had the first time. The receiver
+ * > dedupes on it, and the merchant is warned that each one runs their Zap.
+ *
  * **Merchant-driven, never automatic.** Retries are the queue's business; this
  * is somebody deciding that three days went missing.
  *

@@ -22,6 +22,8 @@ The first remote adapters are Mailchimp and Brevo in Pro. Core keeps the shared
 setup, mapping, test, queue, health and recovery implementation; local WSMS,
 MailPoet and lead-magnet email remain Free. No separate paid mapping or diagnostics
 feature is introduced. Outbound webhook is the next separately scoped candidate.
+*Delivered by [ADR 0148](0148-the-webhook-signs-by-standard-webhooks.md), a signed
+Standard Webhooks POST in Pro.*
 
 ## Extra answers belong to the campaign that captures them
 

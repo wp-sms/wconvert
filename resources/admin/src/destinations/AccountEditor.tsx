@@ -22,9 +22,11 @@ import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import { messageOf } from '../shell/loadable';
 import { formatCount, formatWhen } from '../lib/format';
+import { interpolate } from '../lib/interpolate';
 import { checkConnection, deleteConnection, type Connection, type DestinationType, type TestReport } from './api';
 import { ConnectionForm } from './ConnectionForm';
 import { ProviderMark } from './ProviderMark';
+import { RevealedSecret } from './RevealedSecret';
 import { TestReportAlert } from './status';
 
 /**
@@ -61,9 +63,10 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
   /**
    * The account a CONNECT just saved, which turns the dialog into its result:
    * what happened and the next step. An edit of an existing account has no
-   * next step, so it closes as it always did.
+   * next step, so it closes as it always did. `revealed` is a generated
+   * secret, shown here once (ADR 0148).
    */
-  const [connected, setConnected] = useState<Connection | null>(null);
+  const [connected, setConnected] = useState<{ account: Connection; revealed?: Record<string, string> } | null>(null);
   const connectMenu = useRef<HTMLButtonElement>(null);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState<Readonly<Record<string, 'checking' | 'removing'>>>({});
@@ -117,17 +120,29 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
       : <ul className="m-0 list-none divide-y divide-border p-0">{connections.map((account) => {
         const type = types.find((candidate) => candidate.id === account.type);
         const usedBy = usage[account.id] ?? [];
+        const said = metaOf(type, account);
         const state = busy[account.id];
         const blocked = `${id}-${account.id}-blocked`;
         return <li key={account.id} className="flex flex-wrap items-start justify-between gap-3 py-4">
           <div className="flex min-w-0 flex-1 items-start gap-2 [overflow-wrap:anywhere]">
-            <ProviderMark type={type} className="mt-0.5 size-5 shrink-0" />
+            <ProviderMark type={type} connection={account} className="mt-0.5 size-5 shrink-0" />
             <div className="flex min-w-0 flex-col gap-1">
               <strong><bdi>{account.label}</bdi></strong>
-              {type !== undefined && <span className="text-note text-muted-foreground">{type.label}</span>}
-              {account.checked_at && <p className="m-0 flex flex-wrap items-center gap-2 text-note text-muted-foreground">
-                <Badge variant={account.check_outcome === 'success' ? 'success' : 'warning'}>{account.check_outcome === 'success' ? __('Check passed', 'wconvert') : __('Check failed', 'wconvert')}</Badge>
-                {formatWhen(account.checked_at, 'list')}
+              {said !== '' && <span className="text-note text-muted-foreground">{said}</span>}
+              {(account.checked_at || account.site_changed) && <p className="m-0 flex flex-wrap items-center gap-2 text-note text-muted-foreground">
+                {account.checked_at && <Badge variant={account.check_outcome === 'success' ? 'success' : 'warning'}>{account.check_outcome === 'success' ? __('Check passed', 'wconvert') : __('Check failed', 'wconvert')}</Badge>}
+                {account.site_changed && <Badge variant="warning">{__('On a copy of the site', 'wconvert')}</Badge>}
+                {account.checked_at && formatWhen(account.checked_at, 'list')}
+              </p>}
+              {/* A badge and one line on the row, not a banner (§14): it still sends, and says so. */}
+              {account.site_changed && <p className="m-0 text-note text-muted-foreground">
+                {account.set_up_on
+                  ? interpolate(/* translators: 1: a site's host, e.g. “shop.example”. 2: the word “staging”, emphasised. */
+                    __('Set up on %1$s. Signups on this site still reach it, marked %2$s. To stop that, turn this destination off in the campaigns here.', 'wconvert'),
+                    [<bdi key="site">{account.set_up_on}</bdi>, <em key="staging">{__('staging', 'wconvert')}</em>])
+                  : interpolate(/* translators: %s: the word “staging”, emphasised. */
+                    __('Set up on another site. Signups on this site still reach it, marked %s. To stop that, turn this destination off in the campaigns here.', 'wconvert'),
+                    [<em key="staging">{__('staging', 'wconvert')}</em>])}
               </p>}
               {usedBy.length > 0 && <p className="m-0 text-note text-muted-foreground">
                 {sprintf(
@@ -202,18 +217,28 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
           {/*
             **A connection ends on the next step, not on nothing.** The account
             alone sends nowhere; the destination over it is what a campaign
-            picks, so that is the one primary action here.
+            picks, so that is the one primary action here. A generated secret
+            is shown above it, once, and never blocks Done.
           */}
-          <AdminDialogHeader title={<bdi>{connected.label}</bdi>} meta={editing.type.label} />
-          <AdminDialogBody>
+          <AdminDialogHeader
+            title={<span className="flex min-w-0 items-center gap-2">
+              <ProviderMark type={editing.type} connection={connected.account} className="size-5 shrink-0" />
+              <bdi className="truncate">{connected.account.label}</bdi>
+            </span>}
+            meta={metaOf(editing.type, connected.account)} />
+          <AdminDialogBody className="flex flex-col gap-4">
             <p role="status" className="m-0 flex items-start gap-2">
               <CircleCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success" />
-              {sprintf(
-                /* translators: %s: a service, e.g. “Mailchimp”. */
-                __('Connected. Add a destination to choose where in %s new leads go.', 'wconvert'),
-                editing.type.label,
-              )}
+              {/* A forwarding type has no "where in" it: the whole submission goes to one URL. */}
+              {editing.type.forwards_submission
+                ? __('Connected. Add a destination, then turn it on in a campaign and send a test there.', 'wconvert')
+                : sprintf(
+                  /* translators: %s: a service, e.g. “Mailchimp”. */
+                  __('Connected. Add a destination to choose where in %s new leads go.', 'wconvert'),
+                  editing.type.label,
+                )}
             </p>
+            {connected.revealed && <RevealedSecret type={editing.type} revealed={connected.revealed} />}
           </AdminDialogBody>
           <AdminDialogFooter back={<AdminDialogClose asChild><Button type="button" variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>}>
             {onAddDestination && <Button type="button" onClick={() => {
@@ -221,23 +246,19 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
               const returnTo = trigger.current;
               trigger.current = null;
               setEditing(null);
-              onAddDestination(type, connected, returnTo);
+              onAddDestination(type, connected.account, returnTo);
             }}>
               {sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Add a %s destination', 'wconvert'), editing.type.label)}
             </Button>}
           </AdminDialogFooter>
-        </> : editing && <>
-          <AdminDialogHeader
-            title={editing.account ? editing.account.label : sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect %s', 'wconvert'), editing.type.label)}
-            meta={editing.account ? editing.type.label : __('One account can serve several destinations.', 'wconvert')}
-          />
-          <ConnectionForm key={editing.account?.id ?? editing.type.id} type={editing.type} account={editing.account}
-            onDirtyChange={setDirty}
-            onCancel={() => setEditing(null)} onSaved={async (account) => {
-              await onChange();
-              if (editing.account === undefined) setConnected(account); else setEditing(null);
-            }} />
-        </>}
+        </> : editing && <ConnectionForm key={editing.account?.id ?? editing.type.id} type={editing.type} account={editing.account}
+          title={editing.account ? editing.account.label : sprintf(/* translators: %s: a service, e.g. “Mailchimp”. */ __('Connect %s', 'wconvert'), editing.type.label)}
+          meta={editing.account ? metaOf(editing.type, editing.account) : __('One account can serve several destinations.', 'wconvert')}
+          onDirtyChange={setDirty}
+          onCancel={() => setEditing(null)} onSaved={async (account, revealed) => {
+            await onChange();
+            if (editing.account === undefined) setConnected({ account, revealed }); else setEditing(null);
+          }} />}
       </AdminDialogContent>
     </AdminDialog>
     <ConfirmDialog open={removing !== null} onOpenChange={(next) => { if (!next) setRemoving(null); }}
@@ -258,4 +279,15 @@ export function AccountEditor({ types, connections, usage, onChange, onAddDestin
         }).finally(() => hold(account.id, null));
       }} />
   </Region>;
+}
+
+/**
+ * The muted line under an account's name: its service, and for a type that
+ * forwards submissions to a URL, the host it posts to — `Webhook ·
+ * hooks.zapier.com`. An email service's identity is an opaque account id, so
+ * it is not said.
+ */
+function metaOf(type: DestinationType | undefined, account: Connection): string {
+  const host = type?.forwards_submission && account.account_identity ? account.account_identity : null;
+  return [type?.label, host].filter((part): part is string => typeof part === 'string' && part !== '').join(' · ');
 }

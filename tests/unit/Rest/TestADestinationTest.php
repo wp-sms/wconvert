@@ -74,7 +74,8 @@ final class TestADestinationTest extends TestCase
 
         $this->options = new FakeOptionStore();
         $this->queue = new FakeQueue();
-        $this->type = new FakeDestinationType('fake', requires: SiteDependency::Wsms);
+        // A type that forwards submissions whole, so a campaign's draft test carries its questions.
+        $this->type = new class ('fake', requires: SiteDependency::Wsms) extends FakeDestinationType implements \WConvert\Destination\ForwardsWholeSubmission {};
 
         $this->db = new FakeConnection();
         $db = $this->db;
@@ -120,7 +121,7 @@ final class TestADestinationTest extends TestCase
     }
 
     /**
-     * @return array{outcome: string, message: string}
+     * @return array{outcome: string, message: string, status?: int, ms?: int}
      */
     private function send(string $id): array
     {
@@ -129,7 +130,7 @@ final class TestADestinationTest extends TestCase
         /** @var \WP_REST_Response $response */
         $response = $this->controller->testSend($request);
 
-        /** @var array{outcome: string, message: string} $body */
+        /** @var array{outcome: string, message: string, status?: int, ms?: int} $body */
         $body = $response->get_data();
 
         return $body;
@@ -356,7 +357,7 @@ final class TestADestinationTest extends TestCase
     {
         /** @var \WP_REST_Response $response */
         $response = $this->controller->testConnection($this->request($this->destination->id));
-        /** @var array{outcome: string, message: string} $body */
+        /** @var array{outcome: string, message: string, status?: int, ms?: int} $body */
         $body = $response->get_data();
 
         self::assertSame('skipped', $body['outcome']);
@@ -372,7 +373,7 @@ final class TestADestinationTest extends TestCase
 
         /** @var \WP_REST_Response $response */
         $response = $this->controller->testConnection($this->request($this->destination->id));
-        /** @var array{outcome: string, message: string} $body */
+        /** @var array{outcome: string, message: string, status?: int, ms?: int} $body */
         $body = $response->get_data();
 
         self::assertSame('failed', $body['outcome']);
@@ -499,7 +500,7 @@ final class TestADestinationTest extends TestCase
 
         /** @var \WP_REST_Response $response */
         $response = $controller->testSend($this->request($this->destination->id));
-        /** @var array{outcome: string, message: string} $body */
+        /** @var array{outcome: string, message: string, status?: int, ms?: int} $body */
         $body = $response->get_data();
 
         self::assertSame('skipped', $body['outcome']);
@@ -572,4 +573,55 @@ final class TestADestinationTest extends TestCase
         self::assertSame(0, $this->type->schemaReads);
     }
 
+
+    /**
+     * A campaign editor's test of a type with nothing to map carries that
+     * campaign's own questions, so a receiver learns their fields from it.
+     */
+    public function testACampaignsDraftTestCarriesItsOwnQuestions(): void
+    {
+        $this->type->answers = [PushResult::success()];
+        $request = $this->request($this->destination->id);
+        $request->set_param('email', 'merchant@example.com');
+        $request->set_param('answers', [
+            ['id' => 'service', 'question' => 'Which service?', 'answer' => 'Repairs'],
+            ['id' => 'topics', 'question' => 'Topics?', 'answer' => ['Garden', 'Home']],
+        ]);
+        $response = $this->controller->draftTest($request);
+        self::assertInstanceOf(\WP_REST_Response::class, $response);
+        self::assertSame(['service' => ['question' => 'Which service?', 'answer' => 'Repairs'], 'topics' => ['question' => 'Topics?', 'answer' => ['Garden', 'Home']]],
+            $this->type->pushed[0]->details['answers']);
+        self::assertTrue($this->type->pushed[0]->isTest);
+        self::assertSame([], $this->queue->jobs);
+    }
+
+    public function testADraftTestRefusesAnswersItCannotSend(): void
+    {
+        foreach ([[['id' => 'bad id', 'question' => 'Q', 'answer' => 'A']], [['id' => 'q', 'question' => 'Q', 'answer' => 7]], 'nope',
+            array_fill(0, 33, ['id' => 'q', 'question' => 'Q', 'answer' => 'A'])] as $answers) {
+            $request = $this->request($this->destination->id);
+            $request->set_param('email', 'merchant@example.com');
+            $request->set_param('answers', $answers);
+            self::assertInstanceOf(\WP_Error::class, $this->controller->draftTest($request));
+        }
+        self::assertSame([], $this->type->pushed);
+    }
+
+    /** A receiver's status and time travel beside the sentence; a report with none stays as it was. */
+    public function testATestReportCarriesTheReceiversStatusAndTimeOnlyWhereThereIsOne(): void
+    {
+        $this->type->answers = [PushResult::success()->withTransport(200, 412)];
+        $sent = $this->send($this->destination->id);
+        self::assertSame([200, 412], [$sent['status'] ?? null, $sent['ms'] ?? null]);
+        self::assertStringContainsString('Newsletter push', $sent['message'], 'The sentence stays the headline.');
+
+        $this->type->answers = [PushResult::success()];
+        self::assertSame(['outcome', 'message'], array_keys($this->send($this->destination->id)));
+    }
+
+    /** A type that forwards the whole submission says so, so the admin can word its rows for it. */
+    public function testTheReadSaysWhichTypesForwardTheWholeSubmission(): void
+    {
+        self::assertTrue($this->controller->index()->get_data()['types'][0]['forwards_submission']);
+    }
 }

@@ -43,6 +43,14 @@ is *harmless*, exact per-Lead delivery state buys efficiency, not correctness.
 > not about the recipient's inbox. The consequence is stated where a merchant
 > can meet it: bulk re-push on this one Destination genuinely re-sends, and
 > `README.md` says so.
+>
+> **Amended by [ADR 0148](0148-the-webhook-signs-by-standard-webhooks.md): the
+> webhook is the second exception, and the larger one.** A POST cannot be
+> upserted from this side, so a re-push or a retry after a slow reply posts
+> again. Dedupe moves to the receiver: every attempt for one submission and one
+> route carries the same `webhook-id`, in the header and as `id` in the body.
+> The table decision still stands: the receiver owns its state, and bulk
+> re-push warns that each lead runs the merchant's Zap again.
 
 So we store what is actually needed to recover, at the coarsest grain that
 supports it: **per-Destination health** — `last_success_at`, `last_error`,

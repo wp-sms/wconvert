@@ -44,7 +44,8 @@ final class JourneyCaptureTest extends TestCase
         $snapshots = QuestionCapture::validate($tree, $firstAnswers, 'email-signup');
         self::assertIsArray($snapshots);
         $first = $capture->accept('optin_test', 'contract_test', $grant, $tree, 'email-signup',
-            new Submission('visitor@example.com', null, ['consent_text' => 'Email consent'], $snapshots),
+            new Submission('visitor@example.com', null, ['consent_text' => 'Email consent'], $snapshots,
+                ['page_url' => '/pricing?utm_source=fb', 'utm' => ['source' => 'fb', 'medium' => null, 'campaign' => null, 'term' => null, 'content' => null]]),
             ['purpose' => 'email_marketing', 'destination_ids' => []]);
         $db->rows[$key] = ['option_value' => (string) wp_json_encode(['expires' => $grant['expires'], 'lead' => $first['id']])];
         return [$capture, $db, $tree, $grant, $first['id']];
@@ -60,8 +61,17 @@ final class JourneyCaptureTest extends TestCase
         $snapshots = QuestionCapture::validate($tree, $answers, 'sms-signup');
         self::assertIsArray($snapshots);
         return $capture->accept('optin_test', 'contract_test', $grant, $tree, 'sms-signup',
-            new Submission(null, '+12025550123', ['consent_text' => 'SMS consent'], $snapshots),
+            new Submission(null, '+12025550123', ['consent_text' => 'SMS consent'], $snapshots, ['page_url' => '/thanks', 'utm' => []]),
             ['purpose' => 'sms_marketing', 'destination_ids' => []]);
+    }
+
+    public function testTheLeadKeepsThePageItSignedUpOnAndALaterStepDoesNotMoveIt(): void
+    {
+        [$capture, $db, $tree, $grant, $leadId] = self::firstCapture([]);
+        self::secondCapture($capture, $tree, $grant, []);
+        $lead = \WConvert\Lead\Lead::fromRow($db->rows[$leadId]);
+        self::assertSame('/pricing?utm_source=fb', $lead->capture['source']['page_url']);
+        self::assertSame('/pricing?utm_source=fb', $lead->submission('sms-signup')?->capture['source']['page_url']);
     }
 
     public function testAcceptedOptionalBlankCannotBeFilledAtTheNextSave(): void

@@ -88,6 +88,8 @@ final class JourneyCapture
                 $data['answers'][$prefix . '_accepted_at'] = $now;
                 $data['answers'][$prefix . '_consent_text'] = $submitted->fields['consent_text'] ?? '';
             }
+            // The page the Lead started on. A later step of the journey does not move it.
+            if ($stored === null && $submitted->source !== null) $data['capture']['source'] = $submitted->source;
             $email = $stored['email'] ?? $submitted->email;
             $phone = $stored['phone'] ?? $submitted->phone;
             if ($stored === null) {

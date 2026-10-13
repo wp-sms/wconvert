@@ -24,7 +24,7 @@
         "description": "Everything: fullscreen campaigns, floating bars, slide-ins, automatic inline placement, journeys, the premium Triggers and Conditions, A/B testing, cart recovery and the outbound Destinations.",
         "modules": ["display-types", "inline-placement", "content-lock", "journeys", "spam-filters", "premium-triggers", "ab-testing", "cart-recovery", "destinations", "analytics"],
         "_destinations_note": "The services Pro's destinations module connects to, by brand name. Free cannot ask the registry — Pro's types are not registered without Pro — so its Destinations hint reads them here (ADR 0147). TierManifestTest keeps this in step with the label() of every DestinationType in pro/modules/destinations/src.",
-        "destinations": ["Mailchimp", "Brevo", "Mailtrap"]
+        "destinations": ["Mailchimp", "Brevo", "Mailtrap", "Webhook"]
       }
     ]
   }

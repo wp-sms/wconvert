@@ -15,6 +15,7 @@ import { DestinationUsageNotice } from './DestinationUsageNotice';
 import { settingsProblems } from './requirements';
 import { ConnectionForm } from './ConnectionForm';
 import { ProviderMark } from './ProviderMark';
+import { RevealedSecret } from './RevealedSecret';
 
 /**
  * The three questions, and the state behind them.
@@ -92,6 +93,8 @@ export function DestinationSettingsForm({
    */
   const [connection, setConnection] = useState<string | null>(destination?.connection ?? initialConnection ?? (connections.length === 1 ? connections[0].id : null));
   const [newAccount, setNewAccount] = useState<Connection | null>(null);
+  /** A secret the account just connected in place generated — shown above the settings, once, until this route is saved. */
+  const [revealed, setRevealed] = useState<Record<string, string> | null>(null);
   const [connecting, setConnecting] = useState(false);
   const [touched, setTouched] = useState(false);
   const accounts = newAccount && !connections.some((account) => account.id === newAccount.id)
@@ -162,8 +165,9 @@ export function DestinationSettingsForm({
         back={<Button type="button" variant="outline" onClick={() => setConnecting(false)}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}
         </Button>}
-        onSaved={(account) => {
+        onSaved={(account, secrets) => {
           setNewAccount(account);
+          setRevealed(secrets ?? null);
           setConnection(account.id);
           setConnecting(false);
           onConnectionSaved?.(account);
@@ -193,6 +197,7 @@ export function DestinationSettingsForm({
     <>
       <AdminDialogBody>
         <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
+          {revealed !== null && <RevealedSecret type={type} revealed={revealed} />}
           {destination && <div id={id('usage')}><DestinationUsageNotice usage={destination.usage} /></div>}
 
           <Field label={__('Name', 'wconvert')} htmlFor={id('label')} hintId={id('label-hint')}

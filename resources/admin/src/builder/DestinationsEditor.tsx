@@ -13,6 +13,7 @@ import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
 import { SendTestDialog } from '../destinations/SendTestDialog';
 import { capturedFields, contactFieldNames } from '../destinations/requirements';
+import { sampleQuestions } from './answerSources';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
@@ -92,14 +93,19 @@ export interface DestinationsEditorProps {
   readonly testEmail?: string | null;
   /** Answers a "connect a service or keep them here" blocker in place. */
   readonly onKeepLocal?: () => void;
+  /** This campaign's id, which a webhook test names. Sent only once it is a saved one. */
+  readonly optinId?: string;
 }
+
+/** A saved campaign's id: a ULID, never a draft's placeholder. */
+const SAVED_ID = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 type Setup = { destination?: Destination; type?: string; focusField?: string } | null;
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
   bound, available, types, suggested = [], connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome,
-  mappings = {}, onMappingChange, submissionId, channel = null, refreshError = null, title, description, emptyText, primary = true, local = false, testEmail = null, onKeepLocal,
+  mappings = {}, onMappingChange, submissionId, channel = null, refreshError = null, title, description, emptyText, primary = true, local = false, testEmail = null, onKeepLocal, optinId,
 }: DestinationsEditorProps) {
   const [picking, setPicking] = useState(false);
   const [setup, setSetup] = useState<Setup>(null);
@@ -226,6 +232,7 @@ export function DestinationsEditor({
         }} />}
 
       {testing !== null && <SendTestDialog destination={testing} type={typeOf(testing)} initialEmail={testEmail} settingsDirty={false}
+        campaign={template ? { optinId: optinId !== undefined && SAVED_ID.test(optinId) ? optinId : undefined, questions: sampleQuestions(template, submission) } : undefined}
         returnFocusTo={returnFocus} onClose={() => setTesting(null)} onSent={() => undefined} />}
     </>
   );

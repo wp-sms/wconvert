@@ -44,6 +44,8 @@ final class TestReport
     private function __construct(
         public readonly PushOutcome $outcome,
         public readonly string $message,
+        public readonly ?int $status = null,
+        public readonly ?int $ms = null,
     ) {
     }
 
@@ -57,6 +59,16 @@ final class TestReport
      * wiser about which one they just proved.
      */
     public static function of(PushResult $result, string $destination, string $target = ''): self
+    {
+        $report = self::sentence($result, $destination, $target);
+
+        // What the receiver answered, under the sentence and never instead of
+        // it: a type that made one request says so, and every other report is
+        // the same two keys it always was.
+        return new self($report->outcome, $report->message, $result->httpStatus, $result->durationMs);
+    }
+
+    private static function sentence(PushResult $result, string $destination, string $target): self
     {
         if ($result->outcome === PushOutcome::Skipped) {
             // A skip carries its own reason and it is already a sentence — the
@@ -138,10 +150,15 @@ final class TestReport
     }
 
     /**
-     * @return array{outcome: string, message: string}
+     * `status` and `ms` only where a request was timed, so a report from a
+     * type that makes none is byte-identical to what it always was.
+     *
+     * @return array{outcome: string, message: string, status?: int, ms?: int}
      */
     public function toArray(): array
     {
-        return ['outcome' => $this->outcome->value, 'message' => $this->message];
+        return ['outcome' => $this->outcome->value, 'message' => $this->message]
+            + ($this->status === null ? [] : ['status' => $this->status])
+            + ($this->ms === null ? [] : ['ms' => $this->ms]);
     }
 }

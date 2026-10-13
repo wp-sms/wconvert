@@ -179,7 +179,8 @@ final class CaptureController implements RestController
         if ($result instanceof Refusal) { return self::refuse($result); }
         $questionAnswers = \WConvert\Lead\QuestionCapture::validate($template['tree'], $body['question_answers'] ?? [], $id);
         if ($questionAnswers instanceof Refusal) { return self::refuse($questionAnswers); }
-        $result = new \WConvert\Lead\Submission($result->email, $result->phone, $result->fields, $questionAnswers);
+        $result = new \WConvert\Lead\Submission($result->email, $result->phone, $result->fields, $questionAnswers,
+            \WConvert\Lead\CaptureSource::fromPageUrl($body['page_url'] ?? null));
         $refusal = $this->protection?->submission($result, $optin->id);
         if ($refusal !== null) { return $refusal; }
         try {

@@ -75,7 +75,10 @@ export function DestinationCard({
             {destination.health.last_success_at !== null && destination.health.consecutive_failures === 0 &&
               <span>{sprintf(/* translators: %s: when, e.g. “Today, 2:22 PM” or “Oct 3”. */ __('Last sent %s', 'wconvert'), formatWhen(destination.health.last_success_at, 'list'))}</span>}
           </p>
-          {automatic.length > 0 && status.state !== 'needs_setup' &&
+          {/* A type that forwards the whole submission has nothing to map: it says so instead of naming fields. */}
+          {type?.forwards_submission ? status.state !== 'needs_setup' &&
+            <Description className="mt-1">{__('Sends every field and answer.', 'wconvert')}</Description>
+            : automatic.length > 0 && status.state !== 'needs_setup' &&
             <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(/* translators: %s: contact fields, e.g. “email and name”. */ __('Sends %s automatically.', 'wconvert'), listWithAnd(automatic))}</Description>}
         </div>
         <div className="wconvert-destination-card__side">
@@ -141,7 +144,7 @@ export function DestinationCard({
         {template && onMappingChange && type?.supports_mapping &&
           <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={submissionId} template={template}
             value={mapping} onChange={onMappingChange} onSettings={(trigger) => onEdit(trigger)} />}
-        {template && type && !type.supports_mapping && hasExtraAnswers(template, submissionId) && <UnsupportedAnswerMapping />}
+        {template && type && !type.supports_mapping && !type.forwards_submission && hasExtraAnswers(template, submissionId) && <UnsupportedAnswerMapping />}
       </div>
     </article>
   );

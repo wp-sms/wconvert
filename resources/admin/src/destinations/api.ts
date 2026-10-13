@@ -41,9 +41,17 @@ export interface SettingsField {
   label: string;
   description?: string;
   default?: string;
-  /** An `ids` field the service caps: `1` draws radios, and more ids than this is not ready (#223). */
+  /** An `ids` field the service caps: `1` draws radios, and more ids than this is not ready (#223). A `headers` field's most pairs. */
   max?: number;
   options?: { value: string; label: string }[];
+  /** A generated `secret`'s fixed start, e.g. `whsec_`. */
+  prefix?: string;
+  /** A connection field the account saves without. */
+  optional?: boolean;
+  /** Header names a `headers` field refuses — the signature's, and the request's own framing. */
+  reserved?: string[];
+  /** A guide for this field, such as how to check a `secret`. */
+  guide?: string;
 }
 
 export interface DestinationRequirements {
@@ -74,6 +82,8 @@ export interface DestinationType {
   availability: Availability;
   needs_connection: boolean;
   supports_mapping?: boolean;
+  /** Sends every field and answer as it is — a webhook — so there is nothing to map. */
+  forwards_submission?: boolean;
   connection_schema?: Record<string, SettingsField> | null;
   settings_schema: Record<string, SettingsField>;
   requirements?: DestinationRequirements;
@@ -146,12 +156,21 @@ export interface Destination {
   mapping_issues?: readonly string[];
 }
 
-/** Reads carry configured flags only, never secret values or saveable masks. */
+/**
+ * Reads carry configured flags only, never secret values or saveable masks. A
+ * `headers` field reads as its names, which the merchant needs to edit it.
+ */
 export interface Connection {
   id: string;
   type: string;
   label: string;
-  credentials: Record<string, boolean>;
+  credentials: Record<string, boolean | string[]>;
+  /** What the account is, in words a merchant recognises — a webhook's host, never its URL. */
+  account_identity?: string | null;
+  /** Made on another site — a staging or cloned copy of this one. */
+  site_changed?: boolean;
+  /** That other site's host, where it is known. */
+  set_up_on?: string;
   checked_at?: string | null;
   check_outcome?: 'success' | 'failed' | null;
 }
@@ -175,6 +194,8 @@ export interface DestinationsPayload {
   failures: DeliveryFailure[];
   /** Suggested visible sample only. Sending always requires an explicit address. */
   test_sample?: { email: string | null; fields: readonly ['email'] };
+  /** `wp_get_environment_type()`: a staging copy still sends, and says so. */
+  environment?: string;
 }
 
 export interface RePushReport {
@@ -192,8 +213,21 @@ export const readDestinations = () => apiFetch<DestinationsPayload>({ path: path
 export const readSelectedSchema = (type: string, connection: string, refresh = false) =>
   apiFetch<{ settings_schema: Record<string, SettingsField> }>({ path: `${path('/schema')}?type=${encodeURIComponent(type)}&connection=${encodeURIComponent(connection)}${refresh ? '&refresh=1' : ''}` });
 
-export const saveConnection = (data: { id?: string; type: string; label: string; credentials: Record<string, string> }) =>
-  apiFetch<{ connection: Connection }>({ path: '/wconvert/v1/connections', method: 'POST', data });
+/** One custom header. An empty value on an edit keeps the stored one, which the browser never sees. */
+export interface HeaderPair { name: string; value: string }
+
+/**
+ * What a saved account answers. `revealed` holds a generated secret — shown
+ * this once, on the save that made it, and masked ever after (ADR 0148).
+ */
+export interface SavedConnection { connection: Connection; revealed?: Record<string, string> }
+
+export const saveConnection = (data: { id?: string; type: string; label: string; credentials: Record<string, string | HeaderPair[]> }) =>
+  apiFetch<SavedConnection>({ path: '/wconvert/v1/connections', method: 'POST', data });
+
+/** Replace an account's generated secrets at once; the new ones come back once, in `revealed`. */
+export const regenerateConnection = (id: string) =>
+  apiFetch<Required<SavedConnection>>({ path: `/wconvert/v1/connections/${id}/regenerate`, method: 'POST' });
 
 export const deleteConnection = (id: string) =>
   apiFetch<{ deleted: boolean }>({ path: `/wconvert/v1/connections/${id}`, method: 'DELETE' });
@@ -229,6 +263,26 @@ export const previewMapping = (id: string, data: MappingSample) =>
   apiFetch<{ email: string; mapped: Record<string, string | true> }>({ path: path(`/${id}/draft-preview`), method: 'POST', data });
 
 export const testMapping = (id: string, data: MappingSample) =>
+  apiFetch<TestReport>({ path: path(`/${id}/draft-test`), method: 'POST', data });
+
+/** One question a campaign's save point asks, for a test's sample answers. */
+export interface SampleQuestion {
+  id: string;
+  label: string;
+  answer_type: 'single' | 'multi' | 'text';
+  /** Its choices' labels, which is what a receiver is sent. */
+  options: string[];
+}
+
+/** A campaign's question with the merchant's sample answer. */
+export interface SampleAnswer { id: string; question: string; answer: string | string[] }
+
+/**
+ * A test of a type that forwards the whole submission, from a campaign: its
+ * own questions with sample answers, so a receiver that learns its fields from
+ * a sample can map them before the first real Lead (ADR 0148).
+ */
+export const draftSend = (id: string, data: { email: string; answers: SampleAnswer[]; optin?: string }) =>
   apiFetch<TestReport>({ path: path(`/${id}/draft-test`), method: 'POST', data });
 
 export const saveDestination = (destination: {
@@ -267,6 +321,10 @@ export const rePush = (id: string) =>
 export interface TestReport {
   outcome: 'success' | 'skipped' | 'failed';
   message: string;
+  /** What a receiver answered, where the type made one request. Under the sentence, never instead of it. */
+  status?: number;
+  /** How long that request took, in milliseconds. */
+  ms?: number;
 }
 
 /**

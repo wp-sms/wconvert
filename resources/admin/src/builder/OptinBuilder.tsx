@@ -808,6 +808,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}
               testEmail={read(destinations)?.test_sample?.email ?? null}
+              optinId={id}
               channel={captureOutcome?.audience_channel ? { channel: captureOutcome.audience_channel, strict: false } : null}
               suggested={[...(hint?.types ?? []), ...(captureOutcome?.destination_type ? [captureOutcome.destination_type] : [])]}
               onConnectionSaved={connectionSaved}
@@ -832,7 +833,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             />
             <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onConnectionSaved={connectionSaved}
               onSaved={destinationsSaved} onRefresh={refreshDestinations} refreshError={destinationsStale} testEmail={read(destinations)?.test_sample?.email ?? null}
-              template={template} primaryChannel={captureOutcome?.audience_channel} config={config}
+              optinId={id} template={template} primaryChannel={captureOutcome?.audience_channel} config={config}
               available={routes} onChange={edit} />
   </>;
 

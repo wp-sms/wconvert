@@ -76,7 +76,8 @@ final class LeadCsv
             $captured[] = 'interest_label';
         }
 
-        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN, 'email_consent_text', 'email_accepted_at', 'sms_consent_text', 'sms_accepted_at', 'question_answers']);
+        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN, 'email_consent_text', 'email_accepted_at', 'sms_consent_text', 'sms_accepted_at', 'question_answers',
+            'page_url', ...array_map(static fn (string $tag): string => 'utm_' . $tag, CaptureSource::UTM)]);
     }
 
     /**
@@ -118,12 +119,19 @@ final class LeadCsv
             'phone' => $lead->phone ?? '',
         ];
 
+        // Where the Lead signed up (CaptureSource). A Lead captured before it was recorded has none.
+        $recorded = is_array($lead->capture['source'] ?? null) ? $lead->capture['source'] : [];
+        $source = ['page_url' => is_string($recorded['page_url'] ?? null) ? $recorded['page_url'] : ''];
+        foreach (CaptureSource::UTM as $tag) {
+            $source['utm_' . $tag] = is_string($recorded['utm'][$tag] ?? null) ? $recorded['utm'][$tag] : '';
+        }
+
         $row = [];
 
         // In column order, so the row lines up with the header by construction
         // rather than by two lists agreeing.
         foreach ($this->columns() as $column) {
-            $value = $column === 'question_answers' ? self::answerSummary($lead->questionAnswers) : ($leading[$column] ?? $lead->fields[$column] ?? '');
+            $value = $column === 'question_answers' ? self::answerSummary($lead->questionAnswers) : ($leading[$column] ?? $source[$column] ?? $lead->fields[$column] ?? '');
             $row[] = self::neutralise($value);
         }
 

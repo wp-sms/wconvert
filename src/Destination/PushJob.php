@@ -56,7 +56,8 @@ final class PushJob
     public const HOOK = 'wconvert_push_lead';
 
     /**
-     * Five, then it is terminal.
+     * Five, then it is terminal — unless the type declares its own schedule
+     * ({@see DeclaresRetrySchedule}).
      *
      * The number is a judgement rather than a calculation: enough to ride out
      * a vendor's bad afternoon, few enough that a genuinely broken
@@ -100,9 +101,10 @@ final class PushJob
         return ['lead' => $this->leadId, 'destination' => $this->destinationId, 'attempt' => $this->attempt, 'submission' => $this->submissionId];
     }
 
-    public function hasAttemptsLeft(): bool
+    /** @param list<int>|null $delays A type's own schedule; null for the default. */
+    public function hasAttemptsLeft(?array $delays = null): bool
     {
-        return $this->attempt < self::MAX_ATTEMPTS;
+        return $this->attempt < ($delays === null ? self::MAX_ATTEMPTS : count($delays) + 1);
     }
 
     public function next(): self
@@ -111,11 +113,13 @@ final class PushJob
     }
 
     /**
-     * How long before the next attempt — exponential, from the attempt just
-     * made.
+     * How long before the next attempt — the type's own delay for the attempt
+     * just made, or exponential where it declares none.
+     *
+     * @param list<int>|null $delays
      */
-    public function backoffSeconds(): int
+    public function backoffSeconds(?array $delays = null): int
     {
-        return self::BACKOFF_SECONDS * (2 ** ($this->attempt - 1));
+        return $delays[$this->attempt - 1] ?? self::BACKOFF_SECONDS * (2 ** ($this->attempt - 1));
     }
 }

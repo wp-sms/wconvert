@@ -27,6 +27,11 @@ defined('ABSPATH') || exit;
  * to be one, so it travels for logging and for the job that just ran, and is
  * not stored (ADR 0008).
  *
+ * `httpStatus` and `durationMs` are what a transport answered, for the test
+ * screen's second line ("Answered 200 in 0.4 s"). Set only by a type that
+ * makes one request per push, through {@see self::withTransport()}, and never
+ * read to decide anything — `retryable` above is still the only verdict.
+ *
  * @since 0.1.0
  */
 final class PushResult
@@ -37,7 +42,15 @@ final class PushResult
         public readonly ?string $reason,
         public readonly bool $retryable,
         public readonly bool $needsAttention = false,
+        public readonly ?int $httpStatus = null,
+        public readonly ?int $durationMs = null,
     ) {
+    }
+
+    /** This result, with what the request answered and how long it took. A transport error has no status. */
+    public function withTransport(?int $status, int $ms): self
+    {
+        return new self($this->outcome, $this->providerRef, $this->reason, $this->retryable, $this->needsAttention, $status, $ms);
     }
 
     /**
@@ -59,7 +72,9 @@ final class PushResult
 
     /**
      * The vendor is having a bad time: a timeout, a 500, a revoked key.
-     * Retrying the whole of `push()` is safe, because `push()` is idempotent.
+     * Retrying the whole of `push()` is safe, because `push()` is idempotent
+     * — for a webhook, because every attempt carries one `deliveryId` for the
+     * receiver to dedupe on (ADR 0148).
      */
     public static function retryable(string $error): self
     {

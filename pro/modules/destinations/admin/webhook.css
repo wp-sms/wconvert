@@ -1,0 +1,27 @@
+/* The webhook's account setup (ADR 0148): the step-1 tool cards and the
+ * step-2 form. Pro's own sheet, because free's Tailwind build scans only
+ * free's source. Unscoped, like free's dialog classes: a dialog portals to
+ * <body>, outside #wconvert-admin. Logical properties only, so RTL needs
+ * nothing of its own. */
+.wconvert-webhook-tools { gap: 10px; }
+.wconvert-webhook-tools__legend { padding: 0; margin-block-end: 10px; font-weight: 500; }
+.wconvert-radio-card.wconvert-webhook-tool { align-items: center; gap: 12px; padding: 12px 14px; }
+.wconvert-webhook-tool > input { flex: none; inline-size: 18px; block-size: 18px; margin: 0; accent-color: var(--action); }
+.wconvert-webhook-mark { flex: none; inline-size: 32px; block-size: 32px; object-fit: contain; border-radius: 6px; }
+.wconvert-radio-card > .wconvert-webhook-mark--code,
+.wconvert-webhook-heading > .wconvert-webhook-mark--code,
+.wconvert-webhook-form__step > .wconvert-webhook-mark--code { display: flex; align-items: center; justify-content: center; background: var(--secondary); color: var(--action); }
+.wconvert-webhook-mark--code svg { inline-size: 18px; block-size: 18px; }
+.wconvert-webhook-heading { display: flex; align-items: center; gap: 10px; min-inline-size: 0; }
+.wconvert-webhook-heading > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-webhook-form { display: flex; flex-direction: column; gap: 18px; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+.wconvert-webhook-form__step { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-webhook-form__step .wconvert-webhook-mark { inline-size: 20px; block-size: 20px; border-radius: 4px; }
+.wconvert-webhook-optional { font-weight: 400; color: var(--muted-foreground); }
+.wconvert-webhook-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 12px; }
+.wconvert-webhook-problem { grid-column: 1 / -1; margin: 0; color: var(--destructive); font-size: var(--text-note); }
+.wconvert-webhook-warning { display: flex; align-items: flex-start; gap: 8px; margin: -10px 0 0; padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent); border-radius: var(--radius-md); background: var(--warning-surface); color: var(--warning); font-size: var(--text-note); }
+.wconvert-webhook-warning svg { flex: none; inline-size: 16px; block-size: 16px; margin-block-start: 1px; }
+.wconvert-webhook-secret { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.wconvert-webhook-secret__label { font-weight: 500; }
+.wconvert-webhook-secret__state { color: var(--muted-foreground); font-size: var(--text-note); }

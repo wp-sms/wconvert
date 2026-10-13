@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { Badge } from '../components/ui/badge';
 import { isShown, renderingFor, tierProductName } from '../goals/availability';
 import { ProviderMark } from './ProviderMark';
@@ -57,6 +57,39 @@ export function proDestinationNames(types: readonly DestinationType[]): readonly
   return [...new Set([...locked, ...(adminSettings()?.tiers?.pro?.destinations ?? [])])].filter((name) => !here.has(name));
 }
 
+/** The label Pro's webhook type registers under, as `tiers.json` names it. */
+const WEBHOOK = 'Webhook';
+
+/**
+ * Pro's services as one phrase — "more integrations, like Mailchimp, Brevo
+ * and webhooks" — rather than every label, which grew past a line (ADR 0147,
+ * amended by ADR 0148). The first two named services are the examples, and
+ * "webhooks" closes the list where Pro has the webhook. Null where there is
+ * nothing to name.
+ */
+export function proDestinationSummary(names: readonly string[]): string | null {
+  const examples = [...names.filter((name) => name !== WEBHOOK).slice(0, 2), ...(names.includes(WEBHOOK) ? [__('webhooks', 'wconvert')] : [])];
+  if (examples.length === 0) return null;
+  /* translators: %s: a few services, e.g. “Mailchimp, Brevo and webhooks”. */
+  return sprintf(__('more integrations, like %s', 'wconvert'), joinedWithAnd(examples));
+}
+
+/**
+ * A plain list with "and", in the msgids `builder/rules/sentence.ts` already
+ * has translated — spelled here rather than imported, because the Settings
+ * bundle may not reach into the editor (`admin-split.test.ts`).
+ */
+function joinedWithAnd(items: readonly string[]): string {
+  if (items.length < 2) return items.join('');
+  return sprintf(
+    /* translators: 1: every item but the last, already joined. 2: the conjunction, “or” or “and”. 3: the last item. */
+    _x('%1$s %2$s %3$s', 'joins the last item of a list', 'wconvert'),
+    items.slice(0, -1).join(_x(', ', 'separates all but the last item of a list', 'wconvert')),
+    _x('and', 'joins the last item of a plain list', 'wconvert'),
+    items[items.length - 1],
+  );
+}
+
 /**
  * The providers a merchant can set a new route up over, as tiles.
  *
@@ -95,6 +128,6 @@ export function ProviderTiles({ types, rule, suggested, onChoose }: {
       })}
     </ul>
     {/* The providers this install lacks are not drawn as tiles; they are named once, below (ADR 0147). */}
-    <ProHint medium="destinations" features={proDestinationNames(types)} />
+    <ProHint medium="destinations" features={[proDestinationSummary(proDestinationNames(types))].filter((summary): summary is string => summary !== null)} />
   </>);
 }

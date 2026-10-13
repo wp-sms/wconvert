@@ -87,6 +87,13 @@ nothing to read.
   > exponential backoff): AS marks a failed action failed and does not retry
   > it, which is the same thing WSMS's `JobProcessor` works around.
   >
+  > > **Amended by [ADR 0148](0148-the-webhook-signs-by-standard-webhooks.md):
+  > > the schedule is per type.** `MAX_ATTEMPTS` and the doubling backoff are
+  > > the default. A type implementing `DeclaresRetrySchedule` sets its own
+  > > delays: the webhook retries at +1m, +5m, +30m, +2h, +6h and +24h, seven
+  > > attempts over about a day, because a merchant's receiver is down for
+  > > hours rather than minutes. Still Action Scheduler, and still ids only.
+  >
   > > **Corrected by [#31](https://github.com/navidkashani/wconvert/issues/31):
   > > AS *can* be queried by argument content**, and has been able to since
   > > 4.1 — `ActionScheduler_DBStore::hash_args()` writes a queryable hash, and

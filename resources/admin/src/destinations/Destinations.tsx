@@ -570,7 +570,10 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
               /* translators: %s: a destination's name. */
               __('Every stored submission for “%s” is queued again, from campaigns whose published version uses it. Some may arrive twice, including emails.', 'wconvert'),
               replaying.label,
-            )}{' '}<GuideLink href={docsUrl(GUIDES.resend, 'understand-the-scope')}>{__('Before you send again', 'wconvert')}</GuideLink></>}
+            )}{' '}{data?.types.find((type) => type.id === replaying.type)?.forwards_submission
+            // A receiver runs on every post: say what that costs, and what the stable id lets it skip (ADR 0148).
+            && <>{__('Each one is posted to the receiver again, which may run your automation and use its tasks. Those that already arrived keep their id, so a receiver that checks it can skip them.', 'wconvert')}{' '}</>}
+            <GuideLink href={docsUrl(GUIDES.resend, 'understand-the-scope')}>{__('Before you send again', 'wconvert')}</GuideLink></>}
         confirmLabel={__('Send again', 'wconvert')}
         returnFocusTo={returnFocus}
         onConfirm={() => { if (replaying !== null) replay(replaying); setReplaying(null); }}

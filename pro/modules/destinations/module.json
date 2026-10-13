@@ -1,5 +1,13 @@
 {
   "slug": "destinations",
   "name": "Remote destinations",
-  "description": "Mailchimp, Brevo and Mailtrap account connections and outbound contact delivery."
+  "description": "Mailchimp, Brevo and Mailtrap account connections, the signed webhook, and outbound contact delivery.",
+  "admin_markers": [
+    "Where should signups go?",
+    "Paste a Catch Hook URL.",
+    "Creates a signing secret",
+    "Regenerate now?",
+    "x-make-apikey"
+  ],
+  "_admin_markers_note": "Strings only this module's admin code carries: the webhook's tool picker and tailored forms (ADR 0148). bin/check-admin.mjs fails if free's built admin or inspector holds any; pro/tests/js/admin-markers.test.ts fails if one no longer occurs in this module's admin source."
 }

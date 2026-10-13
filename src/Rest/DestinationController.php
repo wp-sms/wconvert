@@ -73,6 +73,9 @@ final class DestinationController implements RestController
         register_rest_route(Routes::NAMESPACE, '/connections/' . self::ID_PATTERN, [
             ['methods' => 'DELETE', 'callback' => [$this, 'deleteConnection'], 'permission_callback' => [Routes::class, 'canManage']],
         ]);
+        register_rest_route(Routes::NAMESPACE, '/connections/' . self::ID_PATTERN . '/regenerate', [
+            ['methods' => 'POST', 'callback' => [$this, 'regenerateConnection'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
         register_rest_route(Routes::NAMESPACE, '/connections/' . self::ID_PATTERN . '/check', [
             ['methods' => 'POST', 'callback' => [$this, 'checkConnection'], 'permission_callback' => [Routes::class, 'canManage']],
         ]);
@@ -186,6 +189,8 @@ final class DestinationController implements RestController
                     'availability' => $this->registry->availabilityOf($type->id())->value,
                     'needs_connection' => $type->connectionSchema() !== null,
                     'supports_mapping' => method_exists($type, 'mappingFields'),
+                    // Sends every field and answer as it is, so there is nothing to map and its rows say so.
+                    'forwards_submission' => $type instanceof \WConvert\Destination\ForwardsWholeSubmission,
                     'connection_schema' => $type->connectionSchema(),
                     'requirements' => $type->requirements()->toArray(),
                     // What a merchant is missing, in words. The enum's value
@@ -203,9 +208,11 @@ final class DestinationController implements RestController
             )),
             'destinations' => $this->configured(),
             'connections' => array_values(array_map(
-                static fn (\WConvert\Destination\Connection $connection): array => $connection->masked(),
+                fn (\WConvert\Destination\Connection $connection): array => $connection->masked() + $this->setUpOn($connection),
                 $this->connections->all()
             )),
+            // A staging copy still sends to the live receiver. Said, never blocked (ADR 0148).
+            'environment' => wp_get_environment_type(),
             // The ring, which is the only place a Lead-specific terminal
             // failure is visible at all — health cannot see one, because a
             // malformed address is not an outage (ADR 0008).
@@ -227,7 +234,21 @@ final class DestinationController implements RestController
         }
     }
 
-    /** Candidate credentials are checked before replacing a working key. */
+    /**
+     * Candidate credentials are checked before replacing a working key.
+     *
+     * A schema field is a string the merchant types unless its `type` says
+     * otherwise, and three kinds say otherwise:
+     *
+     * - `secret` — **generated here, never accepted from the browser**, and
+     *   handed back once in `revealed`, on the save that made it. After that it
+     *   is masked like any credential (ADR 0148).
+     * - `site_url` — the site the Connection was made on, recorded once, so a
+     *   staging copy can tell it is one.
+     * - `headers` — a short list of name/value pairs. A pair sent with an
+     *   empty value keeps the value it already had, because the browser only
+     *   ever sees names.
+     */
     public function saveConnection(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         $id = self::optionalString($request->get_param('id'));
@@ -240,13 +261,30 @@ final class DestinationController implements RestController
         $incoming = $request->get_param('credentials');
         if (!is_array($incoming)) $incoming = [];
         $credentials = $existing === null ? [] : $existing->credentials;
+        $revealed = [];
         foreach ($type->connectionSchema() as $key => $field) {
+            $kind = is_array($field) ? ($field['type'] ?? '') : '';
+            if ($kind === 'secret') {
+                if (!isset($credentials[$key]) || $credentials[$key] === '') $credentials[$key] = $revealed[$key] = self::secret($field);
+                continue;
+            }
+            if ($kind === 'site_url') {
+                $credentials[$key] ??= home_url();
+                continue;
+            }
             if (!array_key_exists($key, $incoming)) continue;
+            if ($kind === 'headers') {
+                $headers = self::headers($incoming[$key], $field, is_array($credentials[$key] ?? null) ? $credentials[$key] : []);
+                if ($headers === null) return $this->badConnection();
+                $credentials[$key] = $headers;
+                continue;
+            }
             $value = $incoming[$key];
             if (!is_string($value) || trim($value) === '' || str_contains($value, '•')) return $this->badConnection();
             $credentials[$key] = trim($value);
         }
-        foreach (array_keys($type->connectionSchema()) as $key) {
+        foreach ($type->connectionSchema() as $key => $field) {
+            if (is_array($field) && ($field['optional'] ?? false) === true) continue;
             if (!isset($credentials[$key]) || $credentials[$key] === '') return $this->badConnection();
         }
         try {
@@ -257,12 +295,85 @@ final class DestinationController implements RestController
                     return new WP_Error('wconvert_account_changed', __('This key belongs to a different or unverified account. Connect it as a new account instead.', 'wconvert'), ['status' => 409]);
                 }
             }
+        } catch (\WConvert\Destination\ConnectionRefused $refused) {
+            // A type's own sentence, written for the merchant ({@see ConnectionRefused}).
+            return new WP_Error('wconvert_connection_check_failed', DiagnosticSanitizer::message($refused->getMessage(), [], $credentials), ['status' => 400]);
         } catch (\Throwable $failure) {
             return new WP_Error('wconvert_connection_check_failed', __('The account check failed. Your saved credentials have not changed.', 'wconvert'), ['status' => 400]);
         }
         $label = self::named($request->get_param('label')) ?? ($existing === null ? $type->label() : $existing->label);
         $saved = $this->connections->save($id, $typeId, $label, $credentials, is_string($identity) ? $identity : null);
-        return new WP_REST_Response(['connection' => $saved->masked()]);
+        return new WP_REST_Response(['connection' => $saved->masked()] + ($revealed === [] ? [] : ['revealed' => $revealed]));
+    }
+
+    /**
+     * Replace every generated secret on one Connection, **switching at once.**
+     *
+     * There is no overlap window: the next attempt signs with the new secret,
+     * so a receiver still holding the old one refuses it and the Destination
+     * needs attention until the merchant pastes the new one in (ADR 0148).
+     */
+    public function regenerateConnection(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $connection = $this->connections->find((string) $request->get_param('id'));
+        if ($connection === null) return $this->badConnection();
+        $type = $this->registry->find($connection->type);
+        if ($type === null || !$this->registry->isDispatchable($connection->type)) return $this->badConnection();
+        $credentials = $connection->credentials;
+        $revealed = [];
+        foreach ($type->connectionSchema() ?? [] as $key => $field) {
+            if (is_array($field) && ($field['type'] ?? '') === 'secret') $credentials[$key] = $revealed[$key] = self::secret($field);
+        }
+        if ($revealed === []) return $this->badConnection();
+        $saved = $this->connections->save($connection->id, $connection->type, $connection->label, $credentials, $connection->accountIdentity);
+        return new WP_REST_Response(['connection' => $saved->masked(), 'revealed' => $revealed]);
+    }
+
+    /** 32 random bytes, base64, after the field's own prefix — the Standard Webhooks shape.
+     * @param array<string, mixed> $field
+     */
+    private static function secret(array $field): string
+    {
+        return (is_string($field['prefix'] ?? null) ? $field['prefix'] : '') . base64_encode(random_bytes(32));
+    }
+
+    /**
+     * A headers field as sent, checked, or null where any pair is refused.
+     *
+     * A name is an HTTP token and a value has no line break, so no header can
+     * smuggle in another. The field's `reserved` names — a signature, the
+     * request's own framing — are refused rather than silently dropped, so the
+     * merchant learns their header will not be sent.
+     *
+     * @param array<string, mixed> $field
+     * @param array<mixed> $current The stored pairs, read back unchecked.
+     * @return list<array{name: string, value: string}>|null
+     */
+    private static function headers(mixed $incoming, array $field, array $current): ?array
+    {
+        $max = is_int($field['max'] ?? null) ? $field['max'] : 5;
+        if (!is_array($incoming) || !array_is_list($incoming) || count($incoming) > $max) return null;
+        $reserved = array_map('strtolower', is_array($field['reserved'] ?? null) ? $field['reserved'] : []);
+        $known = [];
+        foreach ($current as $pair) {
+            if (is_array($pair) && is_string($pair['name'] ?? null)) $known[strtolower($pair['name'])] = (string) ($pair['value'] ?? '');
+        }
+        $headers = [];
+        $seen = [];
+        foreach ($incoming as $pair) {
+            $name = is_array($pair) && is_string($pair['name'] ?? null) ? trim($pair['name']) : '';
+            $value = is_array($pair) && is_string($pair['value'] ?? null) ? trim($pair['value']) : null;
+            $lower = strtolower($name);
+            if (preg_match('/^[A-Za-z0-9!#$%&\'*+.^_`|~-]{1,64}$/D', $name) !== 1 || in_array($lower, $reserved, true) || isset($seen[$lower])) return null;
+            if ($value === null || preg_match('/[\x00-\x1F\x7F]/', $value) === 1 || strlen($value) > 1024 || str_contains($value, '•')) return null;
+            if ($value === '') {
+                if (!isset($known[$lower])) return null;
+                $value = $known[$lower];
+            }
+            $seen[$lower] = true;
+            $headers[] = ['name' => $name, 'value' => $value];
+        }
+        return $headers;
     }
 
     public function checkConnection(WP_REST_Request $request): WP_REST_Response|WP_Error
@@ -415,9 +526,26 @@ final class DestinationController implements RestController
         return new WP_REST_Response(['email' => Identifier::email((string) $request->get_param('email')), 'mapped' => $mapped]);
     }
 
-    /** Explicit sample send through the same adapter, with no Lead or queue job. */
+    /**
+     * Explicit sample send through the same adapter, with no Lead or queue job.
+     *
+     * A type that forwards the submission whole — a webhook — has nothing to
+     * map, and takes the campaign's questions instead, with the merchant's sample
+     * answers, so a receiver that learns its fields from a sample can map this
+     * campaign's before its first real Lead (ADR 0148).
+     */
     public function draftTest(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
+        $destination = $this->destinations->find((string) $request->get_param('id'));
+        $type = $destination === null ? null : $this->registry->find($destination->type);
+        if ($type instanceof \WConvert\Destination\ForwardsWholeSubmission && $destination !== null) {
+            $email = Identifier::email((string) $request->get_param('email'));
+            $answers = self::draftAnswers($request->get_param('answers'));
+            if ($email === null || $answers === null) return new WP_Error('wconvert_invalid_sample', __('Check the sample answers and test email address.', 'wconvert'), ['status' => 400]);
+            $optin = $request->get_param('optin');
+            $result = $this->dispatcher->test($destination->id, ['email' => $email], [], $answers, is_string($optin) && Ulid::isOne($optin) ? $optin : null);
+            return $this->reported(TestReport::of($result, $destination->label, ''), ['email' => $email], $this->connections->credentialsFor($destination));
+        }
         $mapped = $this->draftMapped($request);
         if ($mapped instanceof WP_Error) return $mapped;
         $destination = $this->destinations->find((string) $request->get_param('id'));
@@ -428,6 +556,28 @@ final class DestinationController implements RestController
         return $this->reported(TestReport::of($result, $destination->label,
             $result->outcome === PushOutcome::Success ? ($this->targetOf($destination) ?? '') : ''),
             ['email' => $email, ...$mapped], $this->connections->credentialsFor($destination));
+    }
+
+    /**
+     * A campaign's questions with sample answers, or null where any is not one.
+     *
+     * @return array<string, array{question: string, answer: string|list<string>}>|null
+     */
+    private static function draftAnswers(mixed $answers): ?array
+    {
+        if (!is_array($answers) || !array_is_list($answers) || count($answers) > 32) return null;
+        $text = static fn (mixed $value, int $max): bool => is_string($value) && mb_strlen($value) <= $max;
+        $kept = [];
+        foreach ($answers as $answer) {
+            $id = is_array($answer) ? ($answer['id'] ?? null) : null;
+            $value = is_array($answer) ? ($answer['answer'] ?? null) : null;
+            if (!is_string($id) || preg_match('/^[A-Za-z0-9_-]{1,64}$/D', $id) !== 1 || !$text($answer['question'] ?? null, 200)) return null;
+            $listed = is_array($value) && array_is_list($value) && count($value) <= 20 && array_filter($value, static fn ($part) => !$text($part, 500)) === [];
+            if (!$listed && !$text($value, 500)) return null;
+            $kept[$id] = ['question' => sanitize_text_field($answer['question']),
+                'answer' => is_array($value) ? array_values(array_map('sanitize_text_field', $value)) : sanitize_text_field($value)];
+        }
+        return $kept;
     }
 
     /** @return array<string, string|true>|WP_Error */
@@ -763,6 +913,27 @@ final class DestinationController implements RestController
             }
         }
         return $issues;
+    }
+
+    /**
+     * Whether this Connection was made on a site other than this one — a
+     * staging or cloned copy — and, where it was, that site's host for the
+     * row's note. Read through its type's `site_url` field, so free names no
+     * type's own keys.
+     *
+     * @return array{site_changed: bool, set_up_on?: string}
+     */
+    private function setUpOn(\WConvert\Destination\Connection $connection): array
+    {
+        foreach ($this->registry->find($connection->type)?->connectionSchema() ?? [] as $key => $field) {
+            if (!is_array($field) || ($field['type'] ?? '') !== 'site_url') continue;
+            $setup = $connection->credentials[$key] ?? null;
+            if (is_string($setup) && $setup !== '' && rtrim($setup, '/') !== rtrim(home_url(), '/')) {
+                $host = wp_parse_url($setup, PHP_URL_HOST);
+                return ['site_changed' => true] + (is_string($host) && $host !== '' ? ['set_up_on' => $host] : []);
+            }
+        }
+        return ['site_changed' => false];
     }
 
     /**

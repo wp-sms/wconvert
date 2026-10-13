@@ -173,6 +173,11 @@ an update path.
 - **`connectionSchema()` is null and no [[Connection]] is ever created.** There
   is no key to paste; it is the same site and the same database. It joins the
   webhook and the lead-magnet email in the set CONTEXT.md already names.
+
+  > **Corrected by [ADR 0148](0148-the-webhook-signs-by-standard-webhooks.md):
+  > the webhook left that set.** Its URL is a secret, so it is a Connection
+  > credential, beside a signing secret and custom headers. The lead-magnet
+  > email and the MailPoet push remain.
 - **`settingsSchema()` reads the provider at admin time**, which is the read
   ADR 0007 permits and expects — a list of names reveals nothing about any
   person. It is the first WConvert schema whose options come off a provider, so

@@ -50,11 +50,30 @@ final class PushSubject
         public readonly array $mapped = [],
         /** The accepted submission purpose; an email address alone is not marketing consent. */
         public readonly string $purpose = 'request',
+        /**
+         * One delivery of one submission to one Destination: the same on every
+         * retry, different for each submission and each route. A receiver that
+         * cannot be upserted into dedupes on it (ADR 0148).
+         */
+        public readonly string $deliveryId = '',
+        /**
+         * The submission as a whole, for a type that forwards it rather than
+         * mapping it — {@see PushDetails}. Every other type ignores it.
+         *
+         * @var array<string, mixed>
+         */
+        public readonly array $details = [],
     ) {
     }
 
-    /** One captured [[Lead]], as the thing a Destination receives. */
-    public static function of(Lead $lead, string $destinationId = ''): self
+    /**
+     * One captured [[Lead]], as the thing a Destination receives.
+     *
+     * `$lead` is the frozen snapshot of one submission. `$whole` is the Lead it
+     * belongs to, which is what lets the details of a journey's second step
+     * carry its first.
+     */
+    public static function of(Lead $lead, string $destinationId = '', string $submissionId = 'primary', ?Lead $whole = null): self
     {
         $mapping = $lead->capture['field_mappings'][$destinationId] ?? [];
         $mapped = [];
@@ -85,7 +104,9 @@ final class PushSubject
             }
         }
         return new self(CanonicalFields::of($lead), false, $mapped,
-            is_string($lead->capture['purpose'] ?? null) ? $lead->capture['purpose'] : 'request');
+            is_string($lead->capture['purpose'] ?? null) ? $lead->capture['purpose'] : 'request',
+            'msg_' . substr(hash('sha256', $lead->id . '|' . $submissionId . '|' . $destinationId), 0, 32),
+            PushDetails::of($whole ?? $lead, $submissionId));
     }
 
     /**
@@ -96,11 +117,17 @@ final class PushSubject
      * does not have — which is the one way a test send could otherwise exercise
      * a path a capture never takes.
      *
+     * Its details are a full sample — every key filled — so a receiver that
+     * learns its fields from the first payload it sees (Zapier, Make) sees all
+     * of them. A campaign editor passes that campaign's own questions.
+     *
      * @param array<string, mixed> $values
      * @param array<string, string|true> $mapped
+     * @param array<string, array{question: string, answer: string|list<string>}>|null $answers
      */
-    public static function test(array $values, array $mapped = [], string $purpose = 'email_marketing'): self
+    public static function test(array $values, array $mapped = [], string $purpose = 'email_marketing', ?array $answers = null): self
     {
-        return new self(CanonicalFields::present($values), true, $mapped, $purpose);
+        $values = CanonicalFields::present($values);
+        return new self($values, true, $mapped, $purpose, 'msg_' . bin2hex(random_bytes(16)), PushDetails::sample($values, $purpose, $answers));
     }
 }
