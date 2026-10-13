@@ -4,7 +4,11 @@ namespace WConvert\Tests\Unit\Pro\License;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Admin\AdminMenu;
+use WConvert\Admin\AdminNotices;
+use WConvert\Optin\PublishedSet;
 use WConvert\Pro\License\AdminSurfaces;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The two doors to the License page: a WordPress submenu, and the header's
@@ -31,13 +35,15 @@ final class AdminSurfacesTest extends TestCase
         $this->stopFakingNexus();
     }
 
-    /** The automatic first item is renamed Campaigns; License links to the same page at #license. */
-    public function testTheSubmenuIsCampaignsThenLicense(): void
+    /** Free's Campaigns and Help come first; License links to the same page at #license, last. */
+    public function testTheSubmenuEndsWithLicenseAfterFreesEntries(): void
     {
+        (new AdminMenu(new AdminNotices(new PublishedSet(new FakeOptionStore()))))->registerSubmenu();
         (new AdminSurfaces($this->freshSdk()))->registerSubmenu();
 
         $this->assertSame([
             ['Campaigns', 'manage_options', 'wconvert'],
+            ['Help', 'manage_options', 'admin.php?page=wconvert#help'],
             ['License', 'manage_options', 'admin.php?page=wconvert#license'],
         ], $GLOBALS['wconvertTestSubmenu']['wconvert']);
     }

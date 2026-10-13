@@ -1,0 +1,98 @@
+/*
+ * The Help page (ADR 0144), from the approved prototype v5
+ * (claude.ai/artifact/EnhKuiKMx37rYDJDLcffgE) on the admin's own tokens.
+ * Everything is scoped under `#wconvert-admin .wconvert-help`, so it reaches
+ * nothing else. Borders and surface contrast for depth, no shadows (ADR 0097);
+ * citron once, on the first-campaign tile.
+ */
+#wconvert-admin .wconvert-help { display:grid; gap:24px; }
+#wconvert-admin .wconvert-help :is(h2,p) { margin:0; }
+#wconvert-admin .wconvert-help svg { flex:none; }
+
+/* Search: a field with its button inside, and a row of popular searches. */
+#wconvert-admin .wconvert-help-search { max-inline-size:46rem; margin-block-end:16px; }
+#wconvert-admin .wconvert-help-search__field { position:relative; display:flex; align-items:center; }
+#wconvert-admin .wconvert-help-search__field > svg { position:absolute; inset-inline-start:18px; inline-size:20px; block-size:20px; color:var(--foreground); pointer-events:none; }
+#wconvert-admin .wconvert-help-search__field input { inline-size:100%; min-block-size:3.5rem; margin:0; padding-block:0; padding-inline:52px 120px; border:1px solid var(--input); border-radius:8px; background:var(--card); color:var(--foreground); font-size:var(--text-heading); line-height:1.4; box-shadow:none; }
+#wconvert-admin .wconvert-help-search__field input::-webkit-search-cancel-button { display:none; }
+#wconvert-admin .wconvert-help-search__field input::placeholder { color:var(--muted-foreground); }
+#wconvert-admin .wconvert-help-search__field input:focus { border-color:var(--ring); outline:2px solid var(--ring); outline-offset:1px; box-shadow:none; }
+#wconvert-admin .wconvert-help-search__field [data-slot=button] { position:absolute; inset-inline-end:8px; }
+#wconvert-admin .wconvert-help-search__popular { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-block-start:14px !important; font-size:var(--text-note); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-help-search__popular a { padding:4px 12px; border:1px solid var(--border); border-radius:999px; color:var(--foreground); text-decoration:none; }
+#wconvert-admin .wconvert-help-search__popular a:hover { border-color:var(--input); background:var(--card); }
+
+/* The first-campaign guide, one row. */
+#wconvert-admin .wconvert-help-start { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:16px 18px; padding:18px 22px; border:1px solid var(--border); border-radius:8px; background:var(--card); color:var(--foreground); text-decoration:none; }
+#wconvert-admin .wconvert-help-start:hover { border-color:var(--input); }
+#wconvert-admin .wconvert-help-start:hover [data-slot=button] { background:var(--accent); }
+#wconvert-admin .wconvert-help-start__tile { display:grid; place-items:center; inline-size:44px; block-size:44px; border-radius:8px; background:var(--brand); color:var(--primary); }
+#wconvert-admin .wconvert-help-start__tile svg { inline-size:22px; block-size:22px; }
+#wconvert-admin .wconvert-help-start__copy { display:grid; gap:1px; min-inline-size:0; }
+#wconvert-admin .wconvert-help-eyebrow { font-size:var(--text-micro); font-weight:600; letter-spacing:.04em; color:var(--muted-foreground); }
+#wconvert-admin .wconvert-help-start__copy strong { font-size:var(--text-item); font-weight:600; }
+#wconvert-admin .wconvert-help-start__copy > span:last-child { font-size:var(--text-note); color:var(--muted-foreground); }
+
+/* Topics beside quick fixes. */
+#wconvert-admin .wconvert-help-pair { display:grid; grid-template-columns:minmax(0,1.75fr) minmax(0,1fr); gap:24px; align-items:stretch; }
+#wconvert-admin .wconvert-help-card { display:flex; flex-direction:column; min-inline-size:0; border:1px solid var(--border); border-radius:8px; background:var(--card); overflow:hidden; }
+#wconvert-admin .wconvert-help-card__head { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:18px 22px 10px; }
+#wconvert-admin .wconvert-help-card__head h2 { font-size:var(--text-heading); font-weight:600; letter-spacing:-.01em; }
+#wconvert-admin .wconvert-help-card__head a,
+#wconvert-admin .wconvert-help-version a,
+#wconvert-admin .wconvert-help-support__tip a { color:var(--link); font-size:var(--text-note); text-decoration-line:underline; text-decoration-color:color-mix(in srgb, var(--link) 40%, transparent); text-underline-offset:4px; }
+#wconvert-admin :is(.wconvert-help-card__head,.wconvert-help-version,.wconvert-help-support__tip) a:hover { text-decoration-color:currentColor; }
+#wconvert-admin .wconvert-help :is(.wconvert-help-topics,.wconvert-help-fixes) { margin:0; padding:0 8px 10px; list-style:none; }
+#wconvert-admin .wconvert-help :is(.wconvert-help-topics,.wconvert-help-fixes) li { margin:0; }
+#wconvert-admin .wconvert-help-topics { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:2px 8px; }
+#wconvert-admin .wconvert-help-topics a { display:grid; grid-template-columns:auto minmax(0,1fr); gap:1px 12px; padding:10px 14px; border-radius:6px; color:var(--foreground); text-decoration:none; }
+#wconvert-admin .wconvert-help-topics a:hover { background:var(--background); }
+#wconvert-admin .wconvert-help-topics__icon { grid-row:1 / span 2; display:grid; place-items:center; inline-size:34px; block-size:34px; border-radius:6px; background:var(--ice); color:var(--action); }
+#wconvert-admin .wconvert-help-topics__icon svg { inline-size:17px; block-size:17px; }
+#wconvert-admin .wconvert-help-topics strong { align-self:end; font-size:var(--text-body); font-weight:600; }
+#wconvert-admin .wconvert-help-topics a > span:not([class]) { font-size:var(--text-note); line-height:1.4; color:var(--muted-foreground); }
+#wconvert-admin .wconvert-help-fixes a { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:6px; color:var(--foreground); font-size:var(--text-body); text-decoration:none; }
+#wconvert-admin .wconvert-help-fixes a:hover { background:var(--background); }
+#wconvert-admin .wconvert-help-fixes a > span:first-child { flex:1; min-inline-size:0; }
+#wconvert-admin .wconvert-help-fixes svg { inline-size:16px; block-size:16px; color:var(--muted-foreground); opacity:.5; }
+#wconvert-admin .wconvert-help-fixes a:hover svg { opacity:1; }
+
+/* Still stuck: one tinted band. */
+#wconvert-admin .wconvert-help-support { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:20px 24px; padding:24px 26px; border-radius:8px; background:var(--ice); color:var(--secondary-foreground); }
+#wconvert-admin .wconvert-help-support__icon { display:grid; place-items:center; inline-size:48px; block-size:48px; border-radius:50%; background:var(--card); color:var(--action); }
+#wconvert-admin .wconvert-help-support__icon svg { inline-size:24px; block-size:24px; }
+#wconvert-admin .wconvert-help-support h2 { font-size:var(--text-section); font-weight:600; letter-spacing:-.02em; color:var(--foreground); }
+#wconvert-admin .wconvert-help-support p { margin-block-start:4px !important; max-inline-size:40rem; font-size:var(--text-note); }
+#wconvert-admin .wconvert-help-support__tip { display:flex; align-items:flex-start; gap:6px; margin-block-start:8px !important; }
+#wconvert-admin .wconvert-help-support__tip svg { inline-size:14px; block-size:14px; margin-block-start:.2em; }
+#wconvert-admin .wconvert-help-support__tip b { font-weight:600; }
+#wconvert-admin .wconvert-help-version { margin-block-start:-12px !important; padding-inline:2px; font-size:var(--text-micro); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-help-version a { font-size:inherit; }
+
+/* The button sits 8px in from the field's edge on every side. Its height and padding are important
+   utilities, so the override has to be one too, in the same layer (as `shell/header.css` does). */
+@layer utilities {
+  #wconvert-admin .wconvert-help-search__field [data-slot=button] { block-size:2.5rem !important; padding-inline:18px !important; }
+}
+
+@media (max-width:1100px) {
+  #wconvert-admin .wconvert-help-pair { grid-template-columns:minmax(0,1fr); }
+}
+@media (max-width:900px) {
+  #wconvert-admin .wconvert-help-support { grid-template-columns:auto minmax(0,1fr); }
+  #wconvert-admin .wconvert-help-support > [data-slot=button] { grid-column:1 / -1; justify-self:start; }
+}
+@media (max-width:600px) {
+  #wconvert-admin .wconvert-help { gap:16px; }
+  #wconvert-admin .wconvert-help-search { margin-block-end:4px; }
+  #wconvert-admin .wconvert-help-search__field input { min-block-size:3.25rem; padding-inline:46px 104px; font-size:var(--text-item); }
+  #wconvert-admin .wconvert-help-search__field > svg { inset-inline-start:15px; }
+  #wconvert-admin .wconvert-help-search__field [data-slot=button] { inset-inline-end:6px; }
+  #wconvert-admin .wconvert-help-start { grid-template-columns:auto minmax(0,1fr); padding:16px; }
+  #wconvert-admin .wconvert-help-start > [data-slot=button] { grid-column:1 / -1; }
+  #wconvert-admin .wconvert-help-topics { grid-template-columns:minmax(0,1fr); }
+  #wconvert-admin .wconvert-help-card__head { padding-inline:16px; }
+  #wconvert-admin .wconvert-help-support { grid-template-columns:minmax(0,1fr); padding:20px; }
+  #wconvert-admin .wconvert-help-support > [data-slot=button] { justify-self:stretch; }
+  #wconvert-admin .wconvert-help-version { margin-block-start:-8px !important; padding-inline:4px; }
+}

@@ -7,6 +7,7 @@ import { Disclosure } from '@/shell/Disclosure';
 import { formatShortDay, formatWhen } from '@/lib/format';
 import { describeLicense, type Door, type Icon, type LicensePayload } from './describeLicense';
 import { Ext, KeyField } from './parts';
+import { GUIDES, docsUrl } from '@/shell/docs';
 
 const ICONS: Record<Icon, typeof CircleCheck> = {
   checkCircle: CircleCheck,
@@ -161,6 +162,7 @@ function UpdatesLine({ license, stopped, elsewhere }: { license: LicensePayload;
               <li>{__('In Plugins → Add New Plugin → Upload Plugin, choose the ZIP.', 'wconvert-pro')}</li>
               <li>{__('Choose Replace current with uploaded.', 'wconvert-pro')}</li>
             </ol>
+            <Ext href={docsUrl(GUIDES.update, 'update-the-files')}>{__('Full steps, with a backup first', 'wconvert-pro')}</Ext>
           </Disclosure>
         )}
       </div>

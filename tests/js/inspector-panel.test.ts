@@ -30,6 +30,7 @@ const ARRIVAL: Arrival = {
 const LABELS: Labels = {
   title: 'Why each popup did or did not show',
   intro: 'This page only.',
+  guide: { label: 'Troubleshooting guide', url: 'https://wconvert.io/docs/popup-not-showing/#common-causes' },
   close: 'Close',
   collapse: 'Collapse',
   expand: 'Expand',
@@ -203,6 +204,16 @@ describe('the panel', () => {
 
     expect(root.mode).toBe('open');
     expect(root.querySelector('.panel')).not.toBeNull();
+  });
+
+  // What the report cannot see — a cache, a theme — is the guide's (ADR 0145), in the server's words.
+  it('links the troubleshooting guide in a new tab', () => {
+    const { root } = draw();
+    const link = root.querySelector<HTMLAnchorElement>('a.guide');
+
+    expect(link?.href).toBe('https://wconvert.io/docs/popup-not-showing/#common-causes');
+    expect(link?.target).toBe('_blank');
+    expect(link?.textContent).toContain('Troubleshooting guide');
   });
 
   it('names the chosen overlay placement on the real page', () => {

@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Description } from './Description';
+import { GuideLink } from './GuideLink';
 
 /**
  * What a region shows when it has nothing, and the way out of it.
@@ -24,17 +25,24 @@ import { Description } from './Description';
  * log fills when a published Optin captures something, and the honest action
  * there is a link to the Optins section rather than a button that pretends to
  * make a Lead.
+ *
+ * `guide` (a `docsUrl()`) adds the article for this state under the action,
+ * for the merchant the one sentence does not get unstuck (ADR 0145).
  */
 export function EmptyState({
   icon: Icon,
   title,
   children,
   action,
+  guide,
+  guideLabel,
 }: {
   icon: LucideIcon;
   title: string;
   children?: ReactNode;
   action?: ReactNode;
+  guide?: string;
+  guideLabel?: string;
 }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-3 px-5 py-12 text-center">
@@ -42,6 +50,7 @@ export function EmptyState({
       <p className="m-0 text-heading font-semibold text-foreground">{title}</p>
       {children !== undefined && <Description>{children}</Description>}
       {action}
+      {guide && <GuideLink href={guide}>{guideLabel}</GuideLink>}
     </div>
   );
 }

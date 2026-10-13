@@ -23,6 +23,7 @@ import { Disclosure } from '../shell/Disclosure';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { StatRowSkeleton } from '../shell/Stat';
 import { EmptyState } from '../shell/EmptyState';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { CheckRow } from '../shell/CheckRow';
 import { DateRangePicker, type DatePreset, type DateRange } from '../shell/DateRangePicker';
 import {
@@ -359,6 +360,8 @@ function DashboardContent({
               'Your first results start with a live campaign',
               'wconvert',
             )}
+            guide={docsUrl(GUIDES.readResults)}
+            guideLabel={__('How results are read', 'wconvert')}
             action={
               <Button asChild>
                 <a href={createHref()}>{__('Create campaign', 'wconvert')}</a>

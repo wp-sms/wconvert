@@ -999,6 +999,7 @@ defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '1.0.0');
 // services with the same directory this constant holds — buys the signal back
 // by weakening the one claim the boot test exists to make.
 defined('WCONVERT_DIR') || define('WCONVERT_DIR', dirname(__DIR__) . '/');
+defined('WCONVERT_MAIN_FILE') || define('WCONVERT_MAIN_FILE', WCONVERT_DIR . 'wconvert.php');
 
 // And where it is on the web, which is what an enqueue turns a path into.
 //

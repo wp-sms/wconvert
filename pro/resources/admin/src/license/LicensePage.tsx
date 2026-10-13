@@ -6,13 +6,13 @@ import { Region, RegionBody, RegionError } from '@/shell/Region';
 import { RegionSkeleton } from '@/shell/RegionSkeleton';
 import { LOADING, messageOf, ready, type Loadable } from '@/shell/loadable';
 import { setPlanBadge } from '@/shell/planBadge';
+import { markSubmenuCurrent } from '@/shell/menuHighlight';
 import {
   activateKey, asLicenseError, checkUpdates, goSignIn, moveLicense, reactivate, readLicense, removeLicense, removeSite, replaceKey,
   type Changed, type LicenseError,
 } from './api';
 import { type LicensePayload, type LicenseSite } from './describeLicense';
 import { errorCopy } from './errorCopy';
-import { markLicenseCurrent } from './menuHighlight';
 import { Notice, type NoticeTone } from './parts';
 import { ActivateCard, Ways } from './ActivateCard';
 import { StatusCard } from './StatusCard';
@@ -52,7 +52,7 @@ export function LicensePage() {
   const results = useRef(0);
   const lastKey = useRef<Partial<Record<KeyField, string>>>({});
 
-  useEffect(() => markLicenseCurrent(), []);
+  useEffect(() => markSubmenuCurrent('license'), []);
 
   const say = useCallback((tone: NoticeTone, title: string, body?: ReactNode) => setResult({ tone, title, body, id: ++results.current }), []);
 

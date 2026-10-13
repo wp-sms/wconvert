@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import apiFetch from '@wordpress/api-fetch';
 import Settings from '../../modules/analytics/admin/Settings';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
-const saved = { settings: { enabled: false, route: 'gtag', measurement_id: '', consent: 'wp', dismissals: false, exclude_managers: true, data_layer: 'dataLayer' }, home: 'https://example.org/', environment: 'production', site_matches: true, excluded: 0, test_url: 'https://example.org/', guide_url: 'https://example.org/guide.html', asset_available: true };
+const saved = { settings: { enabled: false, route: 'gtag', measurement_id: '', consent: 'wp', dismissals: false, exclude_managers: true, data_layer: 'dataLayer' }, home: 'https://example.org/', environment: 'production', site_matches: true, excluded: 0, test_url: 'https://example.org/', asset_available: true };
 const on = { ...saved, settings: { ...saved.settings, enabled: true, measurement_id: 'G-ABC123' } };
 beforeEach(() => { vi.mocked(apiFetch).mockReset(); vi.mocked(apiFetch).mockResolvedValue(saved); });
 it('keeps edited settings on save failure and protects dirty navigation', async () => {
@@ -57,7 +57,8 @@ it('sets up Plausible without Google fields and asks for a fresh consent choice 
   expect(screen.queryByLabelText('Measurement ID', { exact: true })).not.toBeInTheDocument();
   expect(screen.getByRole('radio', { name: 'WP Consent API' })).toBeChecked();
   expect(screen.getByRole('radio', { name: 'Existing tracker' })).not.toBeChecked();
-  expect(screen.getByRole('link', { name: 'Plausible setup' })).toHaveAttribute('href', saved.guide_url + '#plausible');
+  // The site's guide, not one bundled in the plugin (ADR 0145).
+  expect(screen.getByRole('link', { name: 'Plausible setup' })).toHaveAttribute('href', 'https://wconvert.io/docs/external-analytics-reference/#plausible');
   vi.mocked(apiFetch).mockResolvedValueOnce({ ...on, settings: { ...on.settings, route: 'plausible' } });
   fireEvent.click(screen.getByRole('button', { name: 'Save analytics integration' }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Save analytics integration' })).toBeDisabled());

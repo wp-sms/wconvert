@@ -6,7 +6,7 @@ import Revenue from '../../modules/analytics/admin/Revenue';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 const period = { days: 7, from: '2026-09-24', to: '2026-09-30' };
-const report = { ...period, guide_url: '/guide', available: true, consent_ready: true, site_matches: true, settings: { enabled: true, since: '2026-09-01T00:00:00Z' }, complete: true, eligible_orders: 3, linked_orders: 1, currencies: [{ currency: 'USD', orders: 1, amount: 10, unallocated_refunds: 0 }], orders: [{ id: 42, campaign: 'offer', paid: '2026-09-25', status: 'completed', refunded: false, amount: 10, currency: 'USD', url: '/order/42' }] };
+const report = { ...period, available: true, consent_ready: true, site_matches: true, settings: { enabled: true, since: '2026-09-01T00:00:00Z' }, complete: true, eligible_orders: 3, linked_orders: 1, currencies: [{ currency: 'USD', orders: 1, amount: 10, unallocated_refunds: 0 }], orders: [{ id: 42, campaign: 'offer', paid: '2026-09-25', status: 'completed', refunded: false, amount: 10, currency: 'USD', url: '/order/42' }] };
 it('retains accepted totals, dates and campaign links after a failed period change', async () => {
   vi.mocked(apiFetch).mockResolvedValueOnce(report);
   const view = render(<Revenue period={period} campaignNames={{ offer: 'Autumn offer' }} />);

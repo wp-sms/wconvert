@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import { Bell, BookOpen, CircleCheck, CircleHelp, ExternalLink, LifeBuoy, Rocket, Sparkles } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { ArrowUpRight, Bell, BookOpen, CircleCheck, CircleHelp, ExternalLink, LifeBuoy, Rocket, Search, Sparkles } from 'lucide-react';
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { readDestinations } from '../destinations/api';
 import { issueCount } from '../destinations/issueCount';
@@ -16,6 +16,7 @@ import { RowsSkeleton } from './RowsSkeleton';
 import { messageOf } from './loadable';
 import { adminSettings } from '../settings';
 import { PlanBadge } from './Brand';
+import { DOCS_URL, GUIDES, docsUrl } from './docs';
 
 /** Where every "Explore Pro" link on a free install goes. */
 export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
@@ -28,16 +29,20 @@ export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
 export const PORTAL_DOWNLOADS_URL = 'https://my.wconvert.io/account/downloads';
 
 /**
- * **Help's destinations, in one place.** The owner supplies the real addresses
- * (ADR 0097: guides and support need real destinations); until then each is
- * `#`, so the shape ships and only this table changes.
+ * **Help's destinations, in one place** (ADR 0097, amended by ADR 0144): the
+ * header's popover, the footer and the Help page all read this table, so one
+ * place is never three addresses. `changes` is the plugin's wordpress.org
+ * changelog until wconvert.io has one.
  */
 export const HELP_URLS = {
-  start: '#',
-  guides: '#',
-  support: '#',
-  changes: '#',
+  start: docsUrl(GUIDES.firstCampaign),
+  guides: DOCS_URL,
+  support: 'https://wconvert.io/support/',
+  changes: 'https://wordpress.org/plugins/wconvert/#developers',
 } as const;
+
+/** The Help page's hash on the one WConvert screen (`help/page.ts`). */
+export const HELP_PAGE_ID = 'help';
 
 export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
@@ -109,12 +114,13 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
       <span className="wconvert-plan-mobile"><PlanBadge tier={tier} currentPage={currentPage} /></span>
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="icon-sm" aria-label={__('Help', 'wconvert')}>
+          {/* On the Help page the ? reads as "you are here", as the plan badge does on its page (ADR 0143). */}
+          <Button variant="ghost" size="icon-sm" aria-label={__('Help', 'wconvert')} aria-current={currentPage === HELP_PAGE_ID ? 'page' : undefined}>
             <CircleHelp aria-hidden="true" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="wconvert-header-popover">
-          <HelpLinks />
+          <HelpLinks currentPage={currentPage} />
         </PopoverContent>
       </Popover>
       <Popover
@@ -200,22 +206,44 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
 }
 
 /**
- * **One Help**, opened from the header's ? and from the footer (ADR 0131):
- * the same name and the same links in both, so neither reads as a second,
- * different kind of help.
+ * **One Help**, opened from the header's ? and from the footer (ADR 0131),
+ * and the Help page it leads to (ADR 0144): the same name and the same links
+ * in all three, so none reads as a second, different kind of help. On the
+ * Help page itself the link to it is left out.
  */
-export function HelpLinks() {
+export function HelpLinks({ currentPage }: { currentPage?: string } = {}) {
   const version = adminSettings()?.version;
+  const out = (href: string, Icon: typeof Rocket, label: string) => (
+    <a href={href} target="_blank" rel="noreferrer">
+      <Icon aria-hidden="true" />{label}
+      <ArrowUpRight aria-hidden="true" className="wconvert-help-links__out" />
+      <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
+    </a>
+  );
   return <>
     <h2>{__('Help', 'wconvert')}</h2>
-    <a href={HELP_URLS.start} target="_blank" rel="noreferrer"><Rocket aria-hidden="true" />{__('Getting started', 'wconvert')}</a>
-    <a href={HELP_URLS.guides} target="_blank" rel="noreferrer"><BookOpen aria-hidden="true" />{__('Guides', 'wconvert')}</a>
-    <a href={HELP_URLS.support} target="_blank" rel="noreferrer"><LifeBuoy aria-hidden="true" />{__('Contact support', 'wconvert')}</a>
-    <a href={HELP_URLS.changes} target="_blank" rel="noreferrer"><Sparkles aria-hidden="true" />
-      {version ? sprintf(/* translators: %s: the plugin's version, e.g. 1.0.0. */ __('What’s new in %s', 'wconvert'), version) : __('What’s new', 'wconvert')}
-    </a>
-    <a className="wconvert-help-site" href="https://wconvert.io/" target="_blank" rel="noreferrer">
-      {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" />
-    </a>
+    {/* The Help page's own search, one Enter away: it opens wconvert.io's docs in a new tab (ADR 0144). */}
+    <form className="wconvert-help-links__search" role="search" action={HELP_URLS.guides} method="get" target="_blank" rel="noreferrer">
+      <Search aria-hidden="true" />
+      <input name="q" type="search" autoComplete="off" placeholder={__('Search the guides', 'wconvert')}
+        aria-label={__('Search the guides on wconvert.io', 'wconvert')} />
+    </form>
+    {out(HELP_URLS.start, Rocket, __('Getting started', 'wconvert'))}
+    {out(HELP_URLS.guides, BookOpen, __('Guides', 'wconvert'))}
+    {out(HELP_URLS.support, LifeBuoy, __('Contact support', 'wconvert'))}
+    {out(HELP_URLS.changes, Sparkles, version
+      ? sprintf(/* translators: %s: the plugin's version, e.g. 1.0.0. */ __('What’s new in %s', 'wconvert'), version)
+      : __('What’s new', 'wconvert'))}
+    <div className="wconvert-help-links__foot">
+      {currentPage !== HELP_PAGE_ID && (
+        <PopoverClose asChild>
+          <Button asChild variant="outline" size="sm"><a className="wconvert-help-links__open" href={`#${HELP_PAGE_ID}`}>{__('Open the Help page', 'wconvert')}</a></Button>
+        </PopoverClose>
+      )}
+      <a className="wconvert-help-links__site" href="https://wconvert.io/" target="_blank" rel="noreferrer">
+        {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" />
+      </a>
+    </div>
   </>;
 }
+

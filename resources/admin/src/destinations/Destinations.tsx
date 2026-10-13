@@ -90,6 +90,8 @@ import { readLog, type Lead } from '../leads/api';
 import { LeadDetail } from '../leads/LeadDetail';
 import { campaignName, listOptins } from '../optins/api';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 
 /**
  * **Where a merchant finds out whether sending is working.**
@@ -557,7 +559,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         open={replaying !== null}
         onOpenChange={(open) => { if (!open) setReplaying(null); }}
         title={__('Send stored submissions again?', 'wconvert')}
-        description={replaying === null ? '' : replaying.health.last_success_at
+        description={replaying === null ? '' : <>{replaying.health.last_success_at
           ? sprintf(
               /* translators: 1: a destination's name. 2: a date and time. */
               __('Submissions for “%1$s” since its last success on %2$s are queued again, from campaigns whose published version uses it. Some may arrive twice, including emails.', 'wconvert'),
@@ -568,7 +570,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
               /* translators: %s: a destination's name. */
               __('Every stored submission for “%s” is queued again, from campaigns whose published version uses it. Some may arrive twice, including emails.', 'wconvert'),
               replaying.label,
-            )}
+            )}{' '}<GuideLink href={docsUrl(GUIDES.resend, 'understand-the-scope')}>{__('Before you send again', 'wconvert')}</GuideLink></>}
         confirmLabel={__('Send again', 'wconvert')}
         returnFocusTo={returnFocus}
         onConfirm={() => { if (replaying !== null) replay(replaying); setReplaying(null); }}
@@ -1217,7 +1219,8 @@ function IssuesVerdict({ data }: { data: DestinationsPayload }) {
   const failing = data.destinations.filter((destination) => hasSendingIssue(destination, data)).length;
   const oldest = data.failures.reduce<string | null>((first, failure) => first === null || failure.at < first ? failure.at : first, null);
   if (failing === 0 && data.failures.length === 0) return null;
-  return <p className="m-0 font-medium" role="status">
+  return <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+    <p className="m-0 font-medium" role="status">
     {[
       failing > 0 ? sprintf(
         /* translators: %s: how many destinations have a known problem. */
@@ -1227,7 +1230,9 @@ function IssuesVerdict({ data }: { data: DestinationsPayload }) {
         _n('%1$s submission not sent since %2$s', '%1$s submissions not sent since %2$s', data.failures.length, 'wconvert'),
         formatCount(data.failures.length), formatWhen(oldest, 'list')) : null,
     ].filter(Boolean).join(' · ')}
-  </p>;
+    </p>
+    <GuideLink href={docsUrl(GUIDES.sendStatuses, 'destination-health')}>{__('What each status means', 'wconvert')}</GuideLink>
+  </div>;
 }
 
 /** One submission, read by its ID and drawn as the Leads detail draws it. */

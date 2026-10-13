@@ -17,7 +17,12 @@ import { createHref, editorHref, hashFor, leadsHref, reportHref, sendingIssuesHr
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
 import { RegionSkeleton } from './shell/RegionSkeleton';
-import { extraPageFor } from './extraPages';
+import { extraPageFor, registerPage } from './extraPages';
+import { HELP_PAGE } from './help/page';
+
+// Free's own registered page (ADR 0144). Here rather than in `main.tsx`, so
+// Pro's entry, which imports this app and not free's entry, has it too.
+registerPage(HELP_PAGE);
 
 /**
  * The WConvert admin screen.

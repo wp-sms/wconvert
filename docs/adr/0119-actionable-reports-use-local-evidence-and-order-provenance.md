@@ -35,7 +35,7 @@ The first release shows site-wide and exact-campaign sales. Its store-wide eligi
 
 ## Validation
 
-See [the implementation review](../reviews/actionable-analytics-2026-10-04.md) for actual checks and remaining release validation. A setup walkthrough is shipped at `pro/docs/campaign-sales.html`. Merchant interviews, gateway-specific test-mode adapters and production-store load measurements are not claimed by automated tests.
+See [the implementation review](../reviews/actionable-analytics-2026-10-04.md) for actual checks and remaining release validation. A setup walkthrough is shipped at `pro/docs/campaign-sales.html`. *Amended by [ADR 0145](0145-guides-are-linked-where-people-get-stuck.md): the walkthrough is wconvert.io's `campaign-sales-reporting` guide, and `pro/docs/` is gone.* Merchant interviews, gateway-specific test-mode adapters and production-store load measurements are not claimed by automated tests.
 
 ## Presentation clarity follow-up
 

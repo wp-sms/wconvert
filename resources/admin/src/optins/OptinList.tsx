@@ -60,6 +60,8 @@ import { CampaignDetailsDialog } from './DetailsDialog';
 import type { CampaignResults } from './CampaignSummary';
 import { decisionCopy, type DecisionKind } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
@@ -408,7 +410,10 @@ export function OptinList({
           {canUnpublish(status) && row.has_unpublished_changes && (
             <p className="wconvert-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
           )}
-          {status === 'suspended' && <p className="wconvert-campaign-note">{row.suspended}</p>}
+          {status === 'suspended' && <p className="wconvert-campaign-note">
+            {row.suspended}{' '}
+            <GuideLink href={docsUrl(GUIDES.proUnavailable, 'identify-the-problem')}>{__('What to check', 'wconvert')}</GuideLink>
+          </p>}
           {productHealthLabel(productHealth.rows[row.id]) && <button type="button" className="wconvert-product-health-link" aria-haspopup="dialog" onClick={e => openDetails(row, e.currentTarget)}>
             {productHealthLabel(productHealth.rows[row.id])}
           </button>}
@@ -581,6 +586,8 @@ export function OptinList({
               <EmptyState
                 icon={Megaphone}
                 title={__('No campaigns yet', 'wconvert')}
+                guide={docsUrl(GUIDES.firstCampaign)}
+                guideLabel={__('Follow the step-by-step guide', 'wconvert')}
                 action={
                   onCreate && (
                     <Button ref={createFocus} onClick={onCreate}>
@@ -650,7 +657,8 @@ export function OptinList({
               )}
               {shown.some((c) => c.arms.length > 0) && (
                 <p className="wconvert-campaign-test-note">
-                  {__('A/B tests split visitors by browser, not by person.', 'wconvert')}
+                  {__('A/B tests split visitors by browser, not by person.', 'wconvert')}{' '}
+                  <GuideLink href={docsUrl(GUIDES.abTest, 'check-the-split')}>{__('How the split works', 'wconvert')}</GuideLink>
                 </p>
               )}
             </div>}

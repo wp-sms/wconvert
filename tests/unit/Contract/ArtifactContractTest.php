@@ -194,9 +194,7 @@ final class ArtifactContractTest extends TestCase
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
             'modules/analytics/public/revenue.js' => "console.log('revenue');\n",
-            'docs/campaign-sales.html' => '<html>Campaign sales setup</html>',
             'public/analytics/analytics.js' => "console.log('analytics');\n",
-            'docs/analytics-integrations.html' => '<html>Analytics setup</html>',
             // Pro's admin bundle, both halves. Pro replaces free's on the same
             // rule it replaces the loader (ADR 0014 extended to the admin), so
             // a Pro ZIP without it degrades to free's screen — correctly and

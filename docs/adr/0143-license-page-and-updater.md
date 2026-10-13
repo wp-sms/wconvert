@@ -71,7 +71,10 @@ nothing, and asserts no file on the front-end read path touches it.
 7. **Placement.** No nav tab. A WP submenu WConvert → License (the first item
    renamed *Campaigns*) and the header plan badge link to `#license` on the
    existing `admin.php?page=wconvert` page, registered through a generic
-   `registerPage()` slot in free that names neither Pro nor licences. The badge
+   `registerPage()` slot in free that names neither Pro nor licences.
+   *Amended by [ADR 0144](0144-help-is-a-page.md): free registers Campaigns and
+   Help itself, so Pro adds only License, last; free's Help uses the same slot,
+   and the submenu highlight is free's `markSubmenuCurrent()`.* The badge
    carries an amber or red dot with a hover reason, and reads "Activate Pro"
    with no licence. The bell is untouched: it belongs to notifications.
 8. **The page.** One status card — headline, one action, then Updates · Support

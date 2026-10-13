@@ -95,7 +95,7 @@ export function Shell({
           )}
           {children}
         </main>
-        {navigable && !hidePageHeading && <Footer />}
+        {navigable && !hidePageHeading && <Footer currentPage={page?.id} />}
       </div>
     </PageActionSlotProvider>
   );

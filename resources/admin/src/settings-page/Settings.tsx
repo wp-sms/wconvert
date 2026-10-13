@@ -18,6 +18,8 @@ import { Destinations } from '../destinations/Destinations';
 import type { SettingsEditing } from './useSettingsEditing';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { Description } from '../shell/Description';
 
 /**
@@ -236,6 +238,7 @@ function DataPrivacySettings({ onEditingStateChange }: { onEditingStateChange?: 
               <a className="underline underline-offset-2" href="erase-personal-data.php" data-setting="erase-personal-data">
                 {__('Erase personal data', 'wconvert')}
               </a>
+              <GuideLink href={docsUrl(GUIDES.erasePersonalData)}>{__('How a request works', 'wconvert')}</GuideLink>
             </div>
           </div>
         </RegionBody>

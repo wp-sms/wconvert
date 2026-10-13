@@ -28,6 +28,7 @@ import { journeysSupported } from '../settings';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
 import { createHref, hashFor, leadsHref } from '../nav';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { LEAD_PRESETS, presetWindow, rangeOf, siteToday, type DayWindow } from './calendar';
 import { listGoals } from '../goals/api';
 
@@ -266,12 +267,16 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       <div aria-busy={updating || undefined} className={updating && !quiet && data !== null ? 'opacity-60' : undefined}>
       {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         hasAppliedFilters ? <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : __('No matching submissions', 'wconvert')}
+          guide={applied.query.leadId ? docsUrl(GUIDES.missingSubmissions, 'find-missing-record') : undefined}
+          guideLabel={__('What to check', 'wconvert')}
           action={<Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>}>
           {applied.query.leadId ? __('Retention or a privacy request may have deleted it, or another filter excludes it.', 'wconvert')
             : __('Try another search, period or campaign.', 'wconvert')}
         </EmptyState>
           // The way out is the action that fills it: create the first campaign, or go to the ones there are.
           : <EmptyState icon={Inbox} title={__('No submissions yet', 'wconvert')}
+            guide={anyPublished === false ? undefined : docsUrl(GUIDES.missingSubmissions, 'find-missing-record')}
+            guideLabel={__('Expected one? See what to check', 'wconvert')}
             action={anyPublished === false
               ? <Button asChild><a href={createHref()}><Plus aria-hidden="true" />{__('Create campaign', 'wconvert')}</a></Button>
               : <Button asChild><a href={hashFor('optins')}>{__('View campaigns', 'wconvert')}</a></Button>}>

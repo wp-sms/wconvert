@@ -12,8 +12,8 @@ defined('ABSPATH') || exit;
  *
  * **No nav tab** (ADR 0143, decision 7): a licence is looked at a few times a
  * year. Two doors lead to it instead, both to `#license` on the one WConvert
- * page — a WordPress submenu, WConvert → License, and the plan badge in the
- * header, which carries the dot.
+ * page — a WordPress submenu, WConvert → License, after free's Campaigns and
+ * Help, and the plan badge in the header, which carries the dot.
  *
  * Everything here is for somebody who may manage the licence (P4). The
  * WConvert screen itself needs `manage_options` today, so the badge check
@@ -40,18 +40,14 @@ final class AdminSurfaces
     }
 
     /**
-     * WConvert → Campaigns, then WConvert → License.
+     * WConvert → License, last: free registers Campaigns and Help at 10.
      *
-     * The first entry repeats the top level's slug, which is how WordPress
-     * renames the submenu's automatic first item: without it the list would
-     * open on a second "WConvert". The License entry's slug is a URL, so
-     * WordPress links it as written — the same page, at `#license`. Both
-     * entries are one page, so which is `current` is decided in the browser
-     * from the hash.
+     * The slug is a URL, so WordPress links it as written — the same page, at
+     * `#license`. Every entry is one page, so which is `current` is decided in
+     * the browser from the hash.
      */
     public function registerSubmenu(): void
     {
-        add_submenu_page(AdminMenu::SLUG, __('Campaigns', 'wconvert-pro'), __('Campaigns', 'wconvert-pro'), self::CAPABILITY, AdminMenu::SLUG);
         add_submenu_page(AdminMenu::SLUG, __('License', 'wconvert-pro'), __('License', 'wconvert-pro'), self::CAPABILITY, self::HREF);
     }
 

@@ -108,7 +108,8 @@ a submenu — WConvert → Campaigns and WConvert → License. Both are this one
 Campaigns repeats the top level's slug (how WordPress renames its automatic first
 item) and License's slug is `admin.php?page=wconvert#license`. Because both are one
 page, the browser decides which is `current` from the hash. Free alone still has no
-submenu.*
+submenu.* *Amended by [ADR 0144](0144-help-is-a-page.md): free now has one —
+WConvert → Campaigns and WConvert → Help (`#help`) — and Pro adds License after it.*
 
 WSMS runs exactly this configuration in production, which is the strongest
 evidence available that it holds. It is still the single thing most likely to go

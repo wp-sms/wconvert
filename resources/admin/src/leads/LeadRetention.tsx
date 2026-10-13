@@ -20,6 +20,8 @@ import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { readRetention, saveRetention, type Retention } from './api';
 import { formatCount } from '../lib/format';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
 
 interface Draft {
@@ -168,7 +170,8 @@ export function LeadRetention({ onEditingStateChange }: { onEditingStateChange?:
         {error !== null && confirmDays === null && <RegionError message={error} />}
         <RegionBody className="flex flex-col gap-3">
           <p className="m-0 text-note text-muted-foreground" id={`${id}-scope`}>
-            {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}
+            {__('Applies to submissions from every campaign. Copies already sent to destinations or exported aren’t affected.', 'wconvert')}{' '}
+            <GuideLink href={docsUrl(GUIDES.retention, 'choose-policy')}>{__('Choosing a policy', 'wconvert')}</GuideLink>
           </p>
           <fieldset className="wconvert-radio-cards" disabled={saving} aria-describedby={`${id}-scope`}>
             <legend className="mb-4 pt-2 font-medium">{__('Keep submissions', 'wconvert')}</legend>

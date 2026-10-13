@@ -27,6 +27,7 @@ import { FieldHeading, PanelField, PanelHint, PanelSection } from './PanelSectio
 import { CheckRow } from '../shell/CheckRow';
 import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { OptionItem, OptionMenuContent, refusal } from '../components/ui/option-menu';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 type ChoiceQuestion = QuestionNode & { id: string };
@@ -106,7 +107,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
         : required
           ? __('Otherwise, check the next result.', 'wconvert')
           : __('Otherwise, skip this screen.', 'wconvert')}</p>
-        <InfoTip label={__('How answer conditions work', 'wconvert')}>
+        <InfoTip label={__('How answer conditions work', 'wconvert')} guide={docsUrl(GUIDES.quizPaths, 'separate-conditions')}>
           {__('A skipped or unanswered question never matches, including “is not” and “does not include”. Only answered questions are compared.', 'wconvert')}
         </InfoTip>
       </div>

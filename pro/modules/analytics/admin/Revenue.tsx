@@ -17,9 +17,10 @@ import { Button } from '@/components/ui/button';
 import type { ReportExtensionProps } from '@/stats/extensions';
 import { periodOf, periodParams, type PeriodQuery } from '@/stats/api';
 import { chooseToday, todayAppearsTomorrow } from '@/stats/reporting';
+import { GUIDES, docsUrl } from '@/shell/docs';
 import { formatCount, formatDay, formatMoney, formatRange, formatWhen, labelOf } from '@/lib/format';
 interface Report {
-  guide_url: string; available: boolean; consent_ready: boolean; site_matches: boolean;
+  available: boolean; consent_ready: boolean; site_matches: boolean;
   settings: { enabled: boolean; since: string | null };
   days?: number; month?: string; from?: string; to?: string; complete?: boolean; eligible_orders?: number; linked_orders?: number;
   currencies?: { currency: string; orders: number; amount: number | null; unallocated_refunds: number }[];
@@ -114,11 +115,11 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
             <li><strong>{__('Turn on tracking', 'wconvert')}</strong><span>{__('A signup or eligible click can link one checkout within 30 minutes.', 'wconvert')}</span></li>
           </ol>
         </div>
-        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert')}</a></Button>}<a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
+        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert')}</a></Button>}<a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
       </RegionFooter></> : <>
         <RegionBody>
           <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert')}</span><span>{__('By order paid date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
-          {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert')}</strong><a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>}
+          {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert')}</strong><a href={docsUrl(GUIDES.campaignSales, 'turn-on-tracking')} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>}
           {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert')}</p>}
           {period.days === 0 ? <EmptyState icon={ShoppingBag} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
             : report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert')}</p>
@@ -144,7 +145,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
         <ReportDisclosure title={__('Tracking & setup', 'wconvert')}>
           <div className="wa-report-setting"><SlidersHorizontal aria-hidden="true" className="size-5" /><div><strong>{status}</strong><p className="wa-muted">{__('Turning tracking off keeps existing order links.', 'wconvert')}</p></div><div className="wconvert-toolbar">{trackingControl}{optinId && <a href={reportHref()}>{__('Manage tracking', 'wconvert')}</a>}</div></div>
           <p className="wa-muted">{sprintf(__('First turned on %s', 'wconvert'), formatWhen(report.settings.since, 'detail'))}</p>
-          <a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a>
+          <a href={docsUrl(GUIDES.campaignSales)} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a>
         </ReportDisclosure>
       </>}
       <ReportDisclosure title={__('How sales are linked', 'wconvert')}>

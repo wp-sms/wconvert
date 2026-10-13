@@ -25,6 +25,13 @@ function PopoverTrigger({
  * popover follows the page here rather than at each call site, where two
  * remembered it and the rest did not.
  */
+/** Closes its popover when pressed — for a link inside one that navigates in place. */
+function PopoverClose({
+  ...props
+}: React.ComponentProps<typeof PopoverPrimitive.Close>) {
+  return <PopoverPrimitive.Close data-slot="popover-close" {...props} />
+}
+
 function PopoverContent({
   className,
   align = "center",
@@ -92,6 +99,7 @@ function PopoverDescription({
 export {
   Popover,
   PopoverTrigger,
+  PopoverClose,
   PopoverContent,
   PopoverAnchor,
   PopoverHeader,

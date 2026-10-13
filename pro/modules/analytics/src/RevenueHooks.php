@@ -98,7 +98,7 @@ final class RevenueHooks
     public function report(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         $settings = $this->settings();
-        $base = ['guide_url' => WCONVERT_PRO_URL . 'docs/campaign-sales.html', 'available' => function_exists('wc_get_orders'), 'settings' => $settings, 'site_matches' => $settings['home'] === home_url('/'),
+        $base = ['available' => function_exists('wc_get_orders'), 'settings' => $settings, 'site_matches' => $settings['home'] === home_url('/'),
             'consent_ready' => function_exists('wp_has_consent') && in_array(apply_filters('wp_get_consent_type', false), ['optin', 'optout'], true)];
         if (!$base['available'] || $settings['since'] === null) return new WP_REST_Response($base);
         try { $range = \WConvert\Rest\ReportWindow::read($request); }

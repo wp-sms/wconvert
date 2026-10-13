@@ -1,7 +1,8 @@
 import type { ComponentType } from 'react';
 
 /**
- * Pages another bundle adds to this screen, reached by their own hash.
+ * Pages reached by their own hash rather than a tab: free's Help (ADR 0144)
+ * and whatever another bundle adds, such as Pro's License.
  *
  * A slot like `analyticsIntegration`'s — the other bundle fills it, free
  * draws whatever is there and names nothing it does not ship — with a

@@ -7,6 +7,7 @@ import type { PickerRules } from './campaignPicker';
 import { CampaignPickerFields, NewTabLink, campaignName, useCampaignChoices } from './campaignPicker';
 import type { InlineCampaign, InlineChoices } from './optins';
 import { inlineSource } from './optins';
+import { GUIDES, docsUrl } from '../../../admin/src/shell/docs';
 
 /**
  * The shortcode's tag, and its other spelling is
@@ -118,6 +119,7 @@ export function Edit({
                     campaignName(selected),
                   )
                 : __('This campaign is no longer published inline, so this block shows nothing on the page. Republish it or choose another.', 'wconvert')}
+              {' '}<NewTabLink href={docsUrl(GUIDES.inlineMissing, 'manual-checks')}>{__('What to check', 'wconvert')}</NewTabLink>
             </Notice>
           )}
         </CampaignPickerFields>
