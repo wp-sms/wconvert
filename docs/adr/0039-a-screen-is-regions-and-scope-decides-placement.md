@@ -259,7 +259,7 @@ move one would move the other by accident. So the table gets its own: **below
 901px a table becomes a stacked list of row-cards**, one card per row,
 label-and-value pairs inside.
 
-*Amended by [PR_LINK]: **a row that names itself is headed by that cell.** A cell
+*Amended by [#269](https://github.com/wp-sms/wconvert/pull/269): **a row that names itself is headed by that cell.** A cell
 marked `heading` (`DataTableCell heading`) takes the card's first line, full
 width and without its label, and the row's actions sit beside it rather than
 under a rule of their own; the other cells are still label-and-value pairs
