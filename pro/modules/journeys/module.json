@@ -16,6 +16,9 @@
     "Move to another line…",
     "Review where visitors go next",
     "Follow-up order",
-    "+ Follow-up"
-  ]
+    "+ Follow-up",
+    "Duplicate after this screen",
+    "Choose where the signup goes."
+  ],
+  "_admin_markers_note": "Strings only this module's admin code carries, one or more per piece moved out of free (ADR 0147). bin/check-admin.mjs fails if free's built admin or inspector holds any; pro/tests/js/admin-markers.test.ts fails if one no longer occurs in this module's admin source, so a copy edit cannot turn the scan into one that asserts nothing."
 }

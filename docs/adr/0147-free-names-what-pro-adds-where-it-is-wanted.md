@@ -72,7 +72,11 @@ runtime. It fails on `main` as of `aeef6f95`.
    each Pro type's `label()`); formats from `DISPLAY_TYPES`
    minus the free ones; the product from `tierProductName('pro')`; joined by
    `Intl.ListFormat` in the admin's locale. A feature that becomes free drops
-   out without a copy edit.
+   out without a copy edit. Two placements name one feature with no list to
+   read it from — the Flow map's "Quizzes that branch on answers" and the ⋯
+   menu's "A/B testing" — so those are fixed phrases, but each still shows
+   only while its feature is absent (no journey authoring registered; the
+   `variants` availability `locked`).
 7. **Absence after Pro is removed still names no product** (0116 §3). Repair
    states and hints are different things.
 8. **On by default.** `add_filter('wconvert_show_pro_hints', '__return_false')`
@@ -100,7 +104,9 @@ downloads link carries none: it serves people who already bought.
 
 **5. Pro installed but inactive** (`ProHints::proInstalledInactive()`: Pro's
 file in `get_plugins()`, the user can `activate_plugins`). The hint, the header
-and More with Pro say *"WConvert Pro is installed. Activate it"* and link
+and More with Pro say Pro is installed and *"Activate it"* — the header in
+those words, the hint as *"Also in WConvert Pro, which is installed: a, b.
+Activate it"*, keeping its list — and link
 `plugins.php`, in the same tab, so without ↗.
 
 ## Consequences

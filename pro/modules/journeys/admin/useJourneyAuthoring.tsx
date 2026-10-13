@@ -2,7 +2,7 @@ import { useId, useRef, useState } from 'react';
 import { ListPlus, Plus, Workflow } from 'lucide-react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionNode, TemplateNode, TemplateTree } from '@renderer/types';
-import type { JourneyAuthoringUI, JourneyEditorContext } from '@/journeyAuthoring';
+import { NO_AUTHORING, type JourneyAuthoringUI, type JourneyEditorContext } from '@/journeyAuthoring';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { AdminDialogContent } from '@/components/ui/admin-dialog';
@@ -272,11 +272,6 @@ export function useJourneyAuthoring(ctx: JourneyEditorContext): JourneyAuthoring
   };
 }
 
-const NO_AUTHORING: JourneyAuthoringUI = {
-  busy: false, reset: () => undefined, add: () => undefined, addOptional: () => undefined, canAddOptional: false,
-  treeAddItems: null, headerAddItems: null, answersGroup: null, headerAdd: null, dialogs: null, question: null, questionPanel: null, route: null,
-  screenCondition: null, then: null, followupOrder: null, result: null, nextSummary: null, flowNudge: null, screenItems: null, screenPanel: null, lines: false,
-};
 
 function renameNewQuestion(node: TemplateNode, label: string, answerType?: QuestionNode['answer_type']): TemplateNode {
   if (node.type === 'question') return { ...node, ...(label ? { label } : {}), ...(answerType ? { answer_type: answerType, ...(answerType === 'text' ? { options: [] } : {}) } : {}) } as TemplateNode;

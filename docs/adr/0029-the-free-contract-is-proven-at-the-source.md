@@ -137,6 +137,8 @@ bundles, opposite verdicts.
 
 ## The gate is three programs, and none takes a flag
 
+*Four since [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): `bin/check-admin.mjs` joins them, on the same no-flags rule.*
+
 `bin/verify-source-contract.sh` (no build, every PR), `npm run check:loader` (the
 loader build, every PR), `bin/verify-artifact-contract.sh <staged-tree>` (called from
 the release build, WSMS's exact slot). Each is **fail-closed**: a check that cannot

@@ -4,7 +4,7 @@ import { OptionItem } from '../components/ui/option-menu';
 import { tierProductName } from '../goals/availability';
 import { interpolate } from '../lib/interpolate';
 import { adminSettings } from '../settings';
-import { proUrl, type ProMedium } from './HeaderTools';
+import { PLUGINS_URL, proUrl, type ProMedium } from './HeaderTools';
 
 /**
  * **Free names what Pro adds, where it would sit** (ADR 0147): one muted line
@@ -27,7 +27,7 @@ export function ProHint({ medium, features, className }: { medium: ProMedium; fe
     return <p className={classes(className)}>
       {interpolate(/* translators: 1: the product, e.g. “WConvert Pro”. 2: features, e.g. “Floating bar, Slide-in, Fullscreen”. 3: “Activate it”, a link to Plugins. */
         __('Also in %1$s, which is installed: %2$s. %3$s', 'wconvert'), [product, list,
-          <a key="activate" href="plugins.php">{__('Activate it', 'wconvert')}</a>])}
+          <a key="activate" href={PLUGINS_URL}>{__('Activate it', 'wconvert')}</a>])}
     </p>;
   }
   return <p className={classes(className)}>
@@ -47,7 +47,7 @@ export function ProHintItem({ medium, features }: { medium: ProMedium; features:
   const name = inactive
     ? sprintf(/* translators: 1: the product. 2: features. */ __('Also in %1$s, which is installed: %2$s. Activate it', 'wconvert'), tierProductName('pro'), listOf(features))
     : sprintf(/* translators: 1: the product. 2: features, e.g. “A/B testing”. */ __('Also in %1$s: %2$s.', 'wconvert'), tierProductName('pro'), listOf(features));
-  return <OptionItem className="wconvert-pro-hint-item" name={name} href={inactive ? 'plugins.php' : proUrl(medium)} newTab={!inactive}
+  return <OptionItem className="wconvert-pro-hint-item" name={name} href={inactive ? PLUGINS_URL : proUrl(medium)} newTab={!inactive}
     trail={inactive ? undefined : <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />} />;
 }
 

@@ -2,7 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink } from 'lucide-react';
 import { tierName, tierProductName } from '../goals/availability';
 import { adminSettings } from '../settings';
-import { PORTAL_DOWNLOADS_URL, proUrl } from '../shell/HeaderTools';
+import { PLUGINS_URL, PORTAL_DOWNLOADS_URL, proUrl } from '../shell/HeaderTools';
 
 /**
  * Free's one list of what Pro adds — static, bundled copy with no remote
@@ -26,7 +26,7 @@ export function MoreWithPro() {
       {adminSettings()?.proInstalledInactive ? <p className="m-0 mt-2">
         {/* Installed, not running: the way on is Plugins (ADR 0147). */}
         {sprintf(/* translators: %s: the product, e.g. “WConvert Pro”. */ __('%s is installed.', 'wconvert'), tierProductName('pro'))}{' '}
-        <a className="underline" href="plugins.php">{__('Activate it', 'wconvert')}</a>
+        <a className="underline" href={PLUGINS_URL}>{__('Activate it', 'wconvert')}</a>
       </p> : <>
       <a className="mt-2 inline-flex items-center gap-1 underline" href={proUrl('settings-list')} target="_blank" rel="noreferrer">
         {sprintf(/* translators: %s: the paid edition's name, e.g. “Pro”. */ __('Explore %s', 'wconvert'), tierName('pro'))}<ExternalLink aria-hidden="true" className="size-3 rtl:-scale-x-100" />

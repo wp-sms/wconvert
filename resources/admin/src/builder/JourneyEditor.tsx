@@ -20,7 +20,7 @@ import { JourneyScreenCard } from './JourneyScreenCard';
 import { JourneyArrivalSummary } from './JourneyArrivalSummary';
 import { FlowMapBoundary } from './FlowMapBoundary';
 import { FlowSkeleton } from './flow/FlowSkeleton';
-import { journeyAuthoring, type JourneyAuthoringUI, type JourneyEditorContext, type QuestionReviewContext } from '../journeyAuthoring';
+import { journeyAuthoring, NO_AUTHORING, type JourneyAuthoringUI, type JourneyEditorContext, type QuestionReviewContext } from '../journeyAuthoring';
 import { JourneyTest } from './JourneyTest';
 import { JourneyScreenContent } from './JourneyScreenContent';
 import type { TemplateLabels } from '../templates/api';
@@ -719,11 +719,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
 }
 
 
-const NO_AUTHORING: JourneyAuthoringUI = {
-  busy: false, reset: () => undefined, add: () => undefined, addOptional: () => undefined, canAddOptional: false,
-  treeAddItems: null, headerAddItems: null, answersGroup: null, headerAdd: null, dialogs: null, question: null, questionPanel: null, route: null,
-  screenCondition: null, then: null, followupOrder: null, result: null, nextSummary: null, flowNudge: null, screenItems: null, screenPanel: null, lines: false,
-};
 
 /** Free's journey authoring: none (ADR 0147). Named as a hook so the call site reads as one. */
 function useNoAuthoring(context: JourneyEditorContext): JourneyAuthoringUI {

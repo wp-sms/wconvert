@@ -1221,6 +1221,28 @@ it('makes a free install’s graph draft a straight campaign in one undoable edi
   expect(screen.queryByText(/This design uses elements this site can’t display/)).toBeNull();
 });
 
+it('undoes making it straight in one step', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  function HistoryEditor() {
+    const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree: initial, tokens: {} } } }));
+    const [step, setStep] = useState(0);
+    return <><button onClick={() => setHistory(undo)}>Undo edit</button>
+      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+        onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
+      <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
+  }
+  render(<HistoryEditor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Make it a straight campaign' }));
+  await user.click(screen.getByRole('button', { name: 'Make it straight' }));
+  expect(draft()).not.toHaveProperty('graph');
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Undo edit' }));
+  expect(draft()).toEqual(initial);
+});
+
 it('keeps result screens and used answers on a site with the journey editors', () => {
   const initial = finder.tree as TemplateTree;
   const result = initial.steps.findIndex(item => item.kind === 'result');

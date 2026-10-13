@@ -115,6 +115,13 @@ export interface JourneyAuthoringUI {
   lines: boolean;
 }
 
+/** No journey authoring: what free's screens editor draws with, and Pro's hook returns before a screen exists. */
+export const NO_AUTHORING: JourneyAuthoringUI = {
+  busy: false, reset: () => undefined, add: () => undefined, addOptional: () => undefined, canAddOptional: false,
+  treeAddItems: null, headerAddItems: null, answersGroup: null, headerAdd: null, dialogs: null, question: null, questionPanel: null, route: null,
+  screenCondition: null, then: null, followupOrder: null, result: null, nextSummary: null, flowNudge: null, screenItems: null, screenPanel: null, lines: false,
+};
+
 export const journeyAuthoring: {
   /** The question element's settings, for the element inspector outside the screens editor. */
   question?: ComponentType<QuestionSlotProps>;

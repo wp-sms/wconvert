@@ -21,6 +21,9 @@ import { DOCS_URL, GUIDES, docsUrl } from './docs';
 /** Where every "Explore Pro" link on a free install goes. */
 export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
 
+/** WordPress's Plugins screen, where an installed but inactive Pro is activated (ADR 0147). */
+export const PLUGINS_URL = 'plugins.php';
+
 /** Which free surface a Pro link came from, as its `utm_medium` (ADR 0147). */
 export type ProMedium = 'header' | 'settings-list' | 'format-picker' | 'rule-menu' | 'flow-map' | 'destinations' | 'campaign-menu';
 
@@ -105,7 +108,7 @@ export function HeaderTools({ currentPage }: { currentPage?: string } = {}) {
     <div className="wconvert-header-tools">
       {tier === 'free' && proInactive && (
         // Pro is on disk and not running: what to do is on Plugins, not on the sales page (ADR 0147).
-        <a className="wconvert-explore-pro" href="plugins.php">
+        <a className="wconvert-explore-pro" href={PLUGINS_URL}>
           {sprintf(/* translators: %s: the product, e.g. “WConvert Pro”. */ __('%s is installed. Activate it', 'wconvert'), tierProductName('pro'))}
         </a>
       )}

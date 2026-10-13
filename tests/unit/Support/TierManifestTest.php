@@ -106,8 +106,9 @@ final class TierManifestTest extends TestCase
         $labels = [];
 
         foreach (glob(self::PLUGIN_DIR . '/pro/modules/destinations/src/*DestinationType.php') ?: [] as $file) {
-            $this->assertMatchesRegularExpression("/function label\(\): string \{ return __\('([^']+)'/", (string) file_get_contents($file), $file);
-            preg_match("/function label\(\): string \{ return __\('([^']+)'/", (string) file_get_contents($file), $match);
+            if (preg_match("/function label\(\): string \{ return __\('([^']+)'/", (string) file_get_contents($file), $match) !== 1) {
+                $this->fail("{$file} declares no literal label()");
+            }
             $labels[] = $match[1];
         }
         sort($labels);
