@@ -47,3 +47,15 @@ export function docsUrl(guide?: Guide, section?: string): string {
 export function docsSearchUrl(query: string): string {
   return `${DOCS_URL}?q=${encodeURIComponent(query)}`;
 }
+
+/**
+ * The guide a suspended campaign links (ADR 0147), or null for none.
+ *
+ * A missing site plugin links that plugin's topic on the docs home. Otherwise
+ * the cause is the install, and the guide for that is about Pro, so a free
+ * install gets no link: free names no Pro page in a repair state (ADR 0116 §3).
+ */
+export function suspensionGuide(needs: string | null | undefined, free: boolean): string | null {
+  if (needs === 'woocommerce') return docsUrl(undefined, 'woocommerce');
+  return free ? null : docsUrl(GUIDES.proUnavailable, 'identify-the-problem');
+}

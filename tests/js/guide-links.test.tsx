@@ -2,10 +2,10 @@ import { expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Inbox } from 'lucide-react';
-import { GuideLink } from '../../resources/admin/src/shell/GuideLink';
+import { GuideLink, SuspensionGuideLink } from '../../resources/admin/src/shell/GuideLink';
 import { InfoTip } from '../../resources/admin/src/shell/InfoTip';
 import { EmptyState } from '../../resources/admin/src/shell/EmptyState';
-import { GUIDES, docsUrl } from '../../resources/admin/src/shell/docs';
+import { GUIDES, docsUrl, suspensionGuide } from '../../resources/admin/src/shell/docs';
 import { errorCopy } from '../../pro/resources/admin/src/license/errorCopy';
 
 /**
@@ -38,4 +38,19 @@ it('puts an empty state\'s guide under its action', () => {
 it('offers the troubleshooting guide when the license server cannot be reached', () => {
   expect(errorCopy({ code: 'network_error', message: '' }).ways).toContain('guide');
   expect(errorCopy({ code: 'license_expired', message: '' }).ways).not.toContain('guide');
+});
+
+/** A suspended campaign's "What to check" (ADR 0147): free never links the Pro guide. */
+it('links the missing plugin’s guide, and the Pro guide only where Pro is installed', () => {
+  expect(suspensionGuide('woocommerce', true)).toBe('https://wconvert.io/docs/#woocommerce');
+  expect(suspensionGuide(null, true)).toBeNull();
+  expect(suspensionGuide(null, false)).toBe('https://wconvert.io/docs/pro-features-unavailable/#identify-the-problem');
+
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'free' };
+  const { unmount } = render(<p><SuspensionGuideLink needs={null} /></p>);
+  expect(screen.queryByRole('link')).toBeNull();
+  unmount();
+  render(<p><SuspensionGuideLink needs="woocommerce" /></p>);
+  expect(screen.getByRole('link', { name: 'What to check (opens in a new tab)' })).toHaveAttribute('href', 'https://wconvert.io/docs/#woocommerce');
+  delete window.wconvertAdmin;
 });

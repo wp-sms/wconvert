@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Lock, Minus, Plus } from 'lucide-react';
-import { __, sprintf } from '@wordpress/i18n';
+import { Minus, Plus } from 'lucide-react';
+import { __ } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { issuesByScreen, type CampaignIssue } from '../readiness/campaignIssues';
 import { flowModel, lineIsOn, type FlowLine, type Priority } from '../structure/flowModel';
@@ -8,7 +8,6 @@ import { flowLayout, layoutInput } from '../structure/flowLayout';
 import { clampZoom, fitZoom, revealScroll, stepZoom, zoomAt } from '../structure/flowViewport';
 import { questionsIn, walkNodes } from '../structure/journey';
 import { useDirection } from '../../hooks/useDirection';
-import { tierProductName } from '../../goals/availability';
 import { FlowCard, FlowGroup } from './FlowCard';
 import { FlowLines, LinePill, type TraceState } from './FlowLines';
 import { FlowLegend, FlowOverview, FlowViewport } from './FlowViewport';
@@ -51,8 +50,6 @@ export interface FlowMapProps {
   onAdd?(index: number, edgeId: string): void;
   /** A straight campaign's first answer line. */
   onBranch?(): void;
-  /** On a plan without answer lines, the prompt shows they come with Pro. */
-  branchLocked?: boolean;
 }
 
 /**
@@ -61,7 +58,7 @@ export interface FlowMapProps {
  * cards and the pills as buttons in reading order, the lines in one SVG —
  * with a roving tab stop like the Edit tree's.
  */
-export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, samplePath = null, sampleEdges = null, onClearTrace, issues = noIssues, onIssue, destinationSummary, onAdd, onBranch, branchLocked = false }: FlowMapProps) {
+export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, samplePath = null, sampleEdges = null, onClearTrace, issues = noIssues, onIssue, destinationSummary, onAdd, onBranch }: FlowMapProps) {
   const id = useId();
   const rtl = useDirection() === 'rtl';
   const coarse = useMedia('(pointer: coarse)');
@@ -225,8 +222,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
     <section className="wconvert-flow-region" aria-label={__('Flow map', 'wconvert')} aria-describedby={`${id}-keys`} ref={region}>
       {model.straight && <div className="wconvert-flow-nudge">
         <span>{__('Every visitor sees these screens in order.', 'wconvert')}</span>
-        {branchLocked ? <span className="wconvert-flow-nudge__locked"><Lock aria-hidden="true" />{sprintf(/* translators: %s: the product that adds answer lines, e.g. “WConvert Pro”. */ __('Sending answers to different screens comes with %s.', 'wconvert'), tierProductName('pro'))}</span>
-          : onBranch && hasChoiceQuestion ? <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>
+        {onBranch && hasChoiceQuestion ? <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>
             : onBranch ? <span>{__('Add a question to send answers to different screens.', 'wconvert')}</span> : null}
       </div>}
       {visitorRoute && visitor ? <FlowVisitor tree={tree} answers={visitor} trace={visitorRoute} onAnswers={setVisitor} onStop={() => setVisitor(null)} />

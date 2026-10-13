@@ -16,17 +16,20 @@ import './help.css';
 
 interface Topic { readonly id: string; readonly icon: LucideIcon; readonly title: string; readonly text: string }
 
-/** The docs' own categories, linked to their headings on the docs home. */
-function topics(): readonly Topic[] {
+/**
+ * The docs' own categories, linked to their headings on the docs home. On a
+ * free install a topic's line names only what this install does (ADR 0147).
+ */
+function topics(paid: boolean): readonly Topic[] {
   return [
     { id: 'build-campaigns', icon: Palette, title: __('Build and manage campaigns', 'wconvert'), text: __('Edit your content, preview it and publish with confidence.', 'wconvert') },
     { id: 'display-rules', icon: SlidersHorizontal, title: __('Placement and display rules', 'wconvert'), text: __('Choose where, when and how often campaigns appear.', 'wconvert') },
-    { id: 'forms', icon: ListChecks, title: __('Forms and quizzes', 'wconvert'), text: __('Build forms, guide quiz answers and match visitors to useful results.', 'wconvert') },
+    { id: 'forms', icon: ListChecks, title: __('Forms and quizzes', 'wconvert'), text: paid ? __('Build forms, guide quiz answers and match visitors to useful results.', 'wconvert') : __('Build forms and collect the details you need.', 'wconvert') },
     { id: 'connections', icon: Send, title: __('Connections and delivery', 'wconvert'), text: __('Save locally, connect MailPoet or send a useful resource.', 'wconvert') },
     { id: 'leads', icon: Users, title: __('Leads and privacy', 'wconvert'), text: __('Find, export and manage the information visitors submit.', 'wconvert') },
     { id: 'spam-protection', icon: ShieldCheck, title: __('Spam protection', 'wconvert'), text: __('Understand built-in checks, filter emails and investigate blocked requests.', 'wconvert') },
     { id: 'analytics', icon: ChartColumn, title: __('Analytics and testing', 'wconvert'), text: __('Read campaign results and compare report periods.', 'wconvert') },
-    { id: 'woocommerce', icon: ShoppingCart, title: __('WooCommerce', 'wconvert'), text: __('Recommend products, target baskets and understand product activity.', 'wconvert') },
+    { id: 'woocommerce', icon: ShoppingCart, title: __('WooCommerce', 'wconvert'), text: paid ? __('Recommend products, target baskets and understand product activity.', 'wconvert') : __('Target baskets and understand product activity.', 'wconvert') },
   ];
 }
 
@@ -63,7 +66,7 @@ export function HelpPage() {
   const popular = [
     __('Publish a campaign', 'wconvert'),
     __('MailPoet', 'wconvert'),
-    __('Exit intent', 'wconvert'),
+    paid ? __('Exit intent', 'wconvert') : __('Scroll trigger', 'wconvert'),
     __('Export leads', 'wconvert'),
   ];
 
@@ -103,7 +106,7 @@ export function HelpPage() {
             <a href={HELP_URLS.guides} target="_blank" rel="noreferrer">{__('All guides', 'wconvert')}<NewTab /></a>
           </div>
           <ul className="wconvert-help-topics">
-            {topics().map(({ id, icon: Icon, title, text }) => (
+            {topics(paid).map(({ id, icon: Icon, title, text }) => (
               <li key={id}>
                 <a href={`${HELP_URLS.guides}#${id}`} target="_blank" rel="noreferrer">
                   <span className="wconvert-help-topics__icon" aria-hidden="true"><Icon /></span>

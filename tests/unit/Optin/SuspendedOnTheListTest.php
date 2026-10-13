@@ -317,6 +317,26 @@ final class SuspendedOnTheListTest extends TestCase
     }
 
     /**
+     * The row says which plugin is missing as data too, so the admin links
+     * that plugin's guide rather than one about Pro (ADR 0147).
+     */
+    public function testTheRowNamesTheMissingPluginForItsGuide(): void
+    {
+        $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
+
+        $needs = static function (array $rows) use ($id): mixed {
+            $row = array_values(array_filter($rows, static fn (array $row): bool => ($row['id'] ?? null) === $id))[0];
+
+            // Present on every row, as null too: "absent" is not an answer.
+            return array_key_exists('suspended_needs', $row) ? $row['suspended_needs'] : 'absent';
+        };
+
+        $this->assertSame('woocommerce', $needs($this->listedOn(true, false)));
+        $this->assertNull($needs($this->listedOn(false)));
+        $this->assertNull($needs($this->listedOn(true)));
+    }
+
+    /**
      * Both gone at once, and `unavailable` still beats `locked`. This is the
      * merchant who has neither, and the one a collapsed state would try to
      * sell Pro to for a feature Pro alone would not deliver.

@@ -337,3 +337,22 @@ describe('a negated rule', () => {
     expect(only(pending)!.standing).toBe('ineligible');
   });
 });
+
+/** A reopen button saved where nothing draws it: the panel words it, naming no product (ADR 0147). */
+describe('a saved reopen button', () => {
+  const withTeaser = () => input({ entries: [{ ...entry(), teaser: { label: 'Open' } } as PayloadEntry] });
+
+  it('is flagged where no module presents it, with no sentence spelled here', () => {
+    const report = only(explain(withTeaser()));
+
+    expect(report.reopenUnavailable).toBe(true);
+    expect(report.recoveryStatus).toBeUndefined();
+  });
+
+  it('is the presenter’s to explain where one is registered', () => {
+    const report = only(explain(withTeaser(), { recovery: () => 'Recovery note' }));
+
+    expect(report.reopenUnavailable).toBe(false);
+    expect(report.recoveryStatus).toBe('Recovery note');
+  });
+});

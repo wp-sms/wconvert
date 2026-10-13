@@ -60,7 +60,7 @@ import { CampaignDetailsDialog } from './DetailsDialog';
 import type { CampaignResults } from './CampaignSummary';
 import { decisionCopy, type DecisionKind } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
-import { GuideLink } from '../shell/GuideLink';
+import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
 import './campaigns.css';
 
@@ -411,8 +411,8 @@ export function OptinList({
             <p className="wconvert-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
           )}
           {status === 'suspended' && <p className="wconvert-campaign-note">
-            {row.suspended}{' '}
-            <GuideLink href={docsUrl(GUIDES.proUnavailable, 'identify-the-problem')}>{__('What to check', 'wconvert')}</GuideLink>
+            {row.suspended}
+            <SuspensionGuideLink needs={row.suspended_needs} />
           </p>}
           {productHealthLabel(productHealth.rows[row.id]) && <button type="button" className="wconvert-product-health-link" aria-haspopup="dialog" onClick={e => openDetails(row, e.currentTarget)}>
             {productHealthLabel(productHealth.rows[row.id])}

@@ -132,7 +132,7 @@ describe('the Flow map (ADR 0142)', () => {
     expect(onClearTrace).toHaveBeenCalledOnce();
   });
 
-  it('invites the first branch on a straight campaign, or says it comes with Pro', async () => {
+  it('invites the first branch on a straight campaign, and shows no padlock without it', async () => {
     const user = userEvent.setup();
     const straight = splitCapture as unknown as TemplateTree;
     const onBranch = vi.fn();
@@ -140,8 +140,9 @@ describe('the Flow map (ADR 0142)', () => {
     expect(screen.getByText('Every visitor sees these screens in order.')).toBeInTheDocument();
     // No choice question yet, so there is nothing to send elsewhere.
     expect(screen.getByText('Add a question to send answers to different screens.')).toBeInTheDocument();
-    rerender(<FlowMap {...props()} tree={straight} branchLocked />);
-    expect(screen.getByText(/Sending answers to different screens comes with/)).toBeInTheDocument();
+    rerender(<FlowMap {...props()} tree={straight} />);
+    expect(screen.getByText('Every visitor sees these screens in order.')).toBeInTheDocument();
+    expect(screen.queryByText(/comes with|Pro/)).toBeNull();
     const withQuestion: TemplateTree = { ...straight, steps: straight.steps.map((step, index) => index === 0 ? { ...step, content: { type: 'stack', children: [
       { type: 'question', id: 'q', label: 'Which?', answer_type: 'single', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] }] } } : step) } as TemplateTree;
     rerender(<FlowMap {...props()} tree={withQuestion} onBranch={onBranch} />);

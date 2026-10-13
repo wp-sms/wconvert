@@ -3,6 +3,7 @@
 namespace WConvert\Admin;
 
 use WConvert\Frontend\InspectorEnqueue;
+use WConvert\Optin\PublishedSet;
 use WConvert\Rest\Routes;
 use WP_Admin_Bar;
 
@@ -39,6 +40,11 @@ final class InspectorBar
 {
     private const NODE_ID = 'wconvert-inspect';
 
+    public function __construct(
+        private readonly PublishedSet $published,
+    ) {
+    }
+
     public function hooks(): void
     {
         add_action('admin_bar_menu', [$this, 'node'], 100);
@@ -50,6 +56,12 @@ final class InspectorBar
         // written out — so the link and the thing it links to can never come
         // to disagree about who may have it.
         if (is_admin() || !current_user_can(Routes::MANAGE_CAPABILITY)) {
+            return;
+        }
+
+        // Nothing published shows nowhere, so there is no popup to ask about:
+        // a fresh install's admin bar stays WordPress's own (ADR 0147).
+        if ($this->published->all() === []) {
             return;
         }
 

@@ -625,7 +625,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 const at = displayOrder.find(index => walkNodes(tree.steps[index].content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
                 if (at !== undefined) branchFrom(at);
               } : undefined}
-              branchLocked={!journeys}
               destinationSummary={destinationSummary} />
           </Suspense></FlowMapBoundary>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>

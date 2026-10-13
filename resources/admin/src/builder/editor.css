@@ -2347,8 +2347,6 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
    =========================================================================== */
 .wconvert-flow { display: flex; flex-direction: column; --flow-ink: var(--input); }
 .wconvert-flow-nudge { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 16px 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); font-size: var(--text-note); }
-.wconvert-flow-nudge__locked { display: inline-flex; align-items: center; gap: 6px; color: var(--muted-foreground); }
-.wconvert-flow-nudge__locked svg { inline-size: 14px; block-size: 14px; }
 .wconvert-flow-region { position: relative; flex: 1; display: flex; flex-direction: column; min-block-size: 0; }
 .wconvert-flow-viewport { position: relative; flex: 1; min-inline-size: 0; overflow: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; }
 .wconvert-flow-sizer { position: relative; margin-inline: auto; margin-block-end: 64px; }

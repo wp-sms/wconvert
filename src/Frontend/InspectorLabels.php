@@ -58,6 +58,8 @@ final class InspectorLabels
             'expand' => __('Expand', 'wconvert'),
             'nothing' => __('This site has no Campaigns yet.', 'wconvert'),
             'fullscreen' => __('Format: Fullscreen — covers the viewport until dismissed.', 'wconvert'),
+            // Names no product (ADR 0116 §3): it says what the site can't do, not what to buy.
+            'reopen_unavailable' => __('Reopen settings are saved, but this site can’t show them.', 'wconvert'),
             'placement' => [
                 /* translators: %s: a logical overlay position, such as “Top” or “Bottom end”. */
                 'position' => __('Position: %s', 'wconvert'),

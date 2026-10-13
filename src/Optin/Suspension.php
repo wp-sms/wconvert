@@ -90,17 +90,43 @@ final class Suspension
      */
     public static function reasonsIn(iterable $set, Degradation $degradation, RuleCatalogue $rules): array
     {
-        $reasons = [];
+        return array_map(static fn (self $suspension): string => $suspension->reason(), self::in($set, $degradation, $rules));
+    }
+
+    /**
+     * Each suspended Optin's suspension, by id: the sentence and its cause.
+     *
+     * @param iterable<array<string, mixed>> $set The published set, as stored.
+     * @return array<string, self>
+     */
+    public static function in(iterable $set, Degradation $degradation, RuleCatalogue $rules): array
+    {
+        $suspensions = [];
 
         foreach (PublishedOptin::fromSet($set) as $optin) {
             $suspension = self::of($optin, $degradation, $rules);
 
             if ($suspension !== null) {
-                $reasons[$optin->id] = $suspension->reason();
+                $suspensions[$optin->id] = $suspension;
             }
         }
 
-        return $reasons;
+        return $suspensions;
+    }
+
+    /**
+     * The REST fields for one Optin: the sentence, and the plugin the site is
+     * missing, so the admin can link that plugin's guide rather than one about
+     * Pro (ADR 0147). Both null when it is not suspended.
+     *
+     * @return array{suspended: string|null, suspended_needs: string|null}
+     */
+    public static function fields(?self $suspension): array
+    {
+        return [
+            'suspended' => $suspension?->reason(),
+            'suspended_needs' => $suspension?->dependency?->value,
+        ];
     }
 
     /** Whether one published Optin is suspended on this install, and why. */
