@@ -1207,6 +1207,20 @@ it('lets a free install delete a journey draft’s question and result screens',
   }
 });
 
+/** A graph draft can't publish on free however many screens go, so free offers one way out (ADR 0147). */
+it('makes a free install’s graph draft a straight campaign in one undoable edit', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.queryByRole('button', { name: 'Add screen' })).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Make it a straight campaign' }));
+  await user.click(screen.getByRole('button', { name: 'Make it straight' }));
+  expect(draft()).not.toHaveProperty('graph');
+  expect(draft().steps.map(item => item.id)).toEqual(['contact', 'received']);
+  expect(screen.queryByText(/This design uses elements this site can’t display/)).toBeNull();
+});
+
 it('keeps result screens and used answers on a site with the journey editors', () => {
   const initial = finder.tree as TemplateTree;
   const result = initial.steps.findIndex(item => item.kind === 'result');

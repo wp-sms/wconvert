@@ -1,14 +1,10 @@
-import { createContext, useContext, useId, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
 import { FactRow, PanelHint, PanelSection } from './PanelSection';
 import type { TemplateTree } from '@renderer/types';
-import { addGraphConnection, canAddGraphConnection, canTargetGraphScreen, reconnectGraphEdge } from './structure/graphConnections';
-import { upgradeToGraph, graphDisplayOrder, skipEdge } from './structure/graph';
 import { nodesOf, type Block } from './structure/tree';
 import { nameOfBlock } from './BlockRow';
-import { conditionText } from './structure/conditionText';
-import { followupGroups } from './structure/followupGroups';
 import { answerColor, answerColors, flowModel } from './structure/flowModel';
 import { questionsIn } from './structure/journey';
 import { Arrow } from './flow/FlowCard';
@@ -28,22 +24,16 @@ import type { TemplateLabels } from '../templates/api';
  * the Look already hold. What is left is what only a screen can answer.
  */
 
-/** "Then → Thank you": where this screen goes next, and the one control that changes it. */
-export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEditLine, onUpgrade, onBranch }: {
+/** "Then → Thank you": where this screen goes next, read-only, or the editor Pro supplies. */
+export function ScreenThen({ tree, step, editor, onEditPaths, onEditLine }: {
   tree: TemplateTree; step: number;
-  /** Pro: a select. Free, or a screen whose answers decide: read-only. */
-  editable: boolean;
-  onChange(next: TemplateTree): void;
+  /** Pro's "Then" select (ADR 0147). Absent, the next screen is a fact, not a control. */
+  editor?: ReactNode;
   /** For a question with paths: open the question, where its paths live. */
   onEditPaths?(): void;
   /** Opens one of the question's lines where it is edited, on the question. */
   onEditLine?(priority: number): void;
-  /** A linear journey becomes a graph the moment one screen chooses its own next. */
-  onUpgrade?(next: TemplateTree): void;
-  /** A choice question with no answer lines yet: start one (ADR 0142). */
-  onBranch?(): void;
 }) {
-  const id = useId();
   const screen = tree.steps[step];
   // A one-screen campaign goes nowhere next, so there is nothing to say (ADR 0134).
   if (tree.steps.length === 1) return null;
@@ -56,7 +46,7 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEdit
     const model = graph ? flowModel(tree, { selectedQuestion: selected }) : undefined;
     const lines = model?.lines.filter(line => line.from === screen.id && line.style !== 'skipped') ?? [];
     return <>
-      <FactRow label={__('Then', 'wconvert')} action={__('Edit lines', 'wconvert')} onAction={onEditPaths}>{__('First match wins, top to bottom', 'wconvert')}</FactRow>
+      <FactRow label={__('Then', 'wconvert')} action={onEditPaths && __('Edit lines', 'wconvert')} onAction={onEditPaths}>{__('First match wins, top to bottom', 'wconvert')}</FactRow>
       {lines.length > 0 && <ol className="wconvert-screen-lines">{lines.map(line => {
         const words = <><span className="wconvert-flow-dot" data-color={line.color} aria-hidden="true" /><span><bdi>{line.label ?? __('All other answers', 'wconvert')}</bdi>
           {' '}<Arrow />{' '}<b><bdi>{model?.nameOf(line.to)}</bdi></b></span></>;
@@ -66,42 +56,12 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEdit
       })}</ol>}
     </>;
   }
-  const fallback = graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'default');
-  const nextId = graph ? fallback?.to : screen.paths?.[0]?.to ?? tree.steps[step + 1]?.id;
+  if (editor) return editor;
+  const nextId = graph ? graph.edges.find(edge => edge.from === screen.id && edge.kind === 'default')?.to : screen.paths?.[0]?.to ?? tree.steps[step + 1]?.id;
   const next = tree.steps.find(item => item.id === nextId);
-  if (!editable) {
-    return <>
-      <FactRow label={__('Then', 'wconvert')}>{next?.name ?? __('The campaign ends here', 'wconvert')}</FactRow>
-      {!graph && tree.steps.length > 2 && <PanelHint>{__('Change the order in the screen’s ⋯ menu.', 'wconvert')}</PanelHint>}
-    </>;
-  }
-  const order = graphDisplayOrder(tree).filter(index => index !== step);
-  // A graph screen with no path out yet gets one, unless nothing may follow it (a final result).
-  if (graph && !fallback && !order.some(index => canAddGraphConnection(tree, screen.id, tree.steps[index].id))) {
-    return <FactRow label={__('Then', 'wconvert')}>{__('The campaign ends here', 'wconvert')}</FactRow>;
-  }
-  const reachable = (target: string) => graph ? canTargetGraphScreen(tree, screen.id, target) : tree.steps.findIndex(item => item.id === target) > step;
-  const choose = (target: string) => {
-    if (graph) { onChange(fallback ? reconnectGraphEdge(tree, fallback.id, target) : addGraphConnection(tree, screen.id, target)); return; }
-    // A straight journey choosing its own next screen becomes a graph first.
-    const upgraded = upgradeToGraph(tree);
-    const edge = upgraded.graph?.edges.find(item => item.from === screen.id && item.kind === 'default');
-    if (edge) (onUpgrade ?? onChange)(reconnectGraphEdge(upgraded, edge.id, target));
-  };
-  const box = next ? followupGroups(tree).find(group => tree.steps[group.screens[0]].id === next.id) : undefined;
-  // When the next screen has "Only if…", say who sees it and where everyone else goes (the prototype's panel, ADR 0142).
-  const skipTo = graph && next?.when ? skipEdge(graph, next.id)?.to : undefined;
   return <>
-    <FactRow label={__('Then', 'wconvert')} htmlFor={`${id}-then`}>
-      <select id={`${id}-then`} data-then value={nextId ?? ''} onChange={event => choose(event.target.value)}>
-        {nextId === undefined && <option value="">{__('Choose a screen', 'wconvert')}</option>}
-        {order.map(index => <option key={tree.steps[index].id} value={tree.steps[index].id} disabled={!reachable(tree.steps[index].id)}>{tree.steps[index].name}</option>)}
-      </select>
-    </FactRow>
-    {box ? <PanelHint>{sprintf(/* translators: %s: a screen's name. */ __('Visitors with any matching answer go through the follow-ups. The rest go straight to “%s”.', 'wconvert'), tree.steps.find(item => item.id === box.next)?.name ?? '')}</PanelHint>
-      : next?.when && skipTo && <PanelHint>{sprintf(/* translators: 1: a rule. 2, 3: screen names. */ __('Only visitors with %1$s see “%2$s”. All other answers go to “%3$s”.', 'wconvert'),
-        conditionText(tree, next.when), next.name, tree.steps.find(item => item.id === skipTo)?.name ?? '')}</PanelHint>}
-    {onBranch && <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>}
+    <FactRow label={__('Then', 'wconvert')}>{next?.name ?? __('The campaign ends here', 'wconvert')}</FactRow>
+    {!graph && tree.steps.length > 2 && <PanelHint>{__('Change the order in the screen’s ⋯ menu.', 'wconvert')}</PanelHint>}
   </>;
 }
 
@@ -109,10 +69,10 @@ export function ScreenThen({ tree, step, editable, onChange, onEditPaths, onEdit
  * A question screen's answers, each in the color its lines, chips and
  * results carry on the Flow map (ADR 0142), with the follow-ups it opens.
  */
-export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
+export function ScreenAnswers({ tree, step, onSelect, followup }: {
   tree: TemplateTree; step: number; onSelect(index: number): void;
-  /** Starts a follow-up question for one answer; absent where follow-ups are not offered. */
-  onFollowup?(question: string, value: string): void;
+  /** Pro's "+ Follow-up" for one answer (ADR 0147); absent where follow-ups are not offered. */
+  followup?(question: string, option: { value: string; label: string }): ReactNode;
 }) {
   const question = questionsIn(tree.steps[step].content).find(node => node.answer_type !== 'text');
   if (!question?.options?.length) return null;
@@ -129,8 +89,7 @@ export function ScreenAnswers({ tree, step, onSelect, onFollowup }: {
         <span className="wconvert-screen-answers__label"><bdi>{option.label}</bdi></span>
         {shown.length ? <span className="wconvert-screen-answers__followups">{shown.map(({ screen, index }) =>
           <button key={screen.id} type="button" className="wconvert-panel-link" onClick={() => onSelect(index)}>{sprintf(/* translators: %s: a follow-up's name. */ __('Follow-up: %s', 'wconvert'), screen.name)}</button>)}</span>
-          : onFollowup && <button type="button" className="wconvert-panel-link" onClick={() => onFollowup(question.id, option.value)}
-            aria-label={sprintf(/* translators: %s: an answer. */ __('Add a follow-up for “%s”', 'wconvert'), option.label)}>{__('+ Follow-up', 'wconvert')}</button>}
+          : followup?.(question.id, option)}
       </li>;
     })}</ul>
     {focusQuestion && focusQuestion !== question.id && <PanelHint>{__('Too many answers to color them all. Select a question to color its answers.', 'wconvert')}</PanelHint>}

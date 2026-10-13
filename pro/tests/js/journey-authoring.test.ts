@@ -13,7 +13,7 @@ import { registerJourneyAuthoring } from '../../modules/journeys/admin/register'
 describe('journey authoring slots', () => {
   it('fills every slot free leaves open', () => {
     registerJourneyAuthoring();
-    const slots = ['question', 'result', 'screenCondition', 'route'] as const;
+    const slots = ['question', 'useAuthoring'] as const;
     for (const slot of slots) expect(journeyAuthoring[slot], slot).toBeTypeOf('function');
     expect(Object.keys(journeyAuthoring).sort()).toEqual([...slots].sort());
   });

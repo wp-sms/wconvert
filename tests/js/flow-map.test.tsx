@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
 import { FlowMap } from '../../resources/admin/src/builder/flow/FlowMap';
+import { BranchNudge } from '../../pro/modules/journeys/admin/BranchNudge';
 import { journeyTraceEdges } from '../../resources/admin/src/builder/structure/journeyTraceEdges';
 import type { CampaignIssue } from '../../resources/admin/src/builder/readiness/campaignIssues';
 import enquiry from '../fixtures/journey-graph-enquiry.json';
@@ -132,11 +133,11 @@ describe('the Flow map (ADR 0142)', () => {
     expect(onClearTrace).toHaveBeenCalledOnce();
   });
 
-  it('invites the first branch on a straight campaign, and shows no padlock without it', async () => {
+  it('shows Pro’s first-branch nudge on a straight campaign, and no padlock without it', async () => {
     const user = userEvent.setup();
     const straight = splitCapture as unknown as TemplateTree;
     const onBranch = vi.fn();
-    const { rerender } = render(<FlowMap {...props()} tree={straight} onBranch={onBranch} />);
+    const { rerender } = render(<FlowMap {...props()} tree={straight} nudge={<BranchNudge tree={straight} onBranch={onBranch} />} />);
     expect(screen.getByText('Every visitor sees these screens in order.')).toBeInTheDocument();
     // No choice question yet, so there is nothing to send elsewhere.
     expect(screen.getByText('Add a question to send answers to different screens.')).toBeInTheDocument();
@@ -145,7 +146,7 @@ describe('the Flow map (ADR 0142)', () => {
     expect(screen.queryByText(/comes with|Pro/)).toBeNull();
     const withQuestion: TemplateTree = { ...straight, steps: straight.steps.map((step, index) => index === 0 ? { ...step, content: { type: 'stack', children: [
       { type: 'question', id: 'q', label: 'Which?', answer_type: 'single', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] }] } } : step) } as TemplateTree;
-    rerender(<FlowMap {...props()} tree={withQuestion} onBranch={onBranch} />);
+    rerender(<FlowMap {...props()} tree={withQuestion} nudge={<BranchNudge tree={withQuestion} onBranch={onBranch} />} />);
     await user.click(screen.getByRole('button', { name: 'Send some answers to a different screen' }));
     expect(onBranch).toHaveBeenCalledOnce();
   });

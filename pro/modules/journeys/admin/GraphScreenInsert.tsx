@@ -1,18 +1,18 @@
 import { useId, useState } from 'react';
-import { CheckRow } from '../shell/CheckRow';
+import { CheckRow } from '@/shell/CheckRow';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ArrowRight, CircleHelp, Flag, LayoutTemplate, Send } from 'lucide-react';
-import { followupGroups, followupGroupSource } from './structure/followupGroups';
-import { conditionText } from './structure/conditionText';
-import { walkNodes } from './structure/journey';
-import { gatesOf } from './structure/gateEndings';
-import { graphReaches } from './structure/graph';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { graphInsertionLocations, insertionUnavailable, type GraphScreenKind } from './structure/graphInsertion';
-import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from './structure/graphConnections';
+import { followupGroups, followupGroupSource } from '@/builder/structure/followupGroups';
+import { conditionText } from '@/builder/structure/conditionText';
+import { walkNodes } from '@/builder/structure/journey';
+import { gatesOf } from '@/builder/structure/gateEndings';
+import { graphReaches } from '@/builder/structure/graph';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
+import { graphInsertionLocations, insertionUnavailable, type GraphScreenKind } from '@/builder/structure/graphInsertion';
+import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from '@/builder/structure/graphConnections';
 
 export function GraphScreenInsert({ tree, source, kind: initialKind, initialLocation, initialIntent, initialAnswer, onInsert, onExisting, onCapture, onEditCapture, onCancel }: {
   tree: TemplateTree; source: string; kind: GraphScreenKind; initialLocation?: string; initialIntent?: 'branch'; initialAnswer?: { question: string; value: string };

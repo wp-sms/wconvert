@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
-import { Button } from '../components/ui/button';
-import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { graphCaptureInsertion } from './structure/graphCaptureInsertion';
+import { Button } from '@/components/ui/button';
+import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
+import { graphCaptureInsertion } from '@/builder/structure/graphCaptureInsertion';
 
 /** The body of a Small `AdminDialog`; the host owns the dialog and its focus. */
 export function GraphCaptureInsert({ tree, primaryChannel, source, onInsert, onCancel }: {

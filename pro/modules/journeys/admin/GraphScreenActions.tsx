@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
-import { Disclosure } from '../shell/Disclosure';
+import { Disclosure } from '@/shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
-import { duplicateGraphScreen, duplicateGraphScreenReason, moveGraphScreen } from './structure/graphScreenActions';
-import { followupGroups } from './structure/followupGroups';
-import { graphInsertionLocations } from './structure/graphInsertion';
-import { Button } from '../components/ui/button';
+import { duplicateGraphScreen, duplicateGraphScreenReason, moveGraphScreen } from '@/builder/structure/graphScreenActions';
+import { followupGroups } from '@/builder/structure/followupGroups';
+import { graphInsertionLocations } from '@/builder/structure/graphInsertion';
+import { Button } from '@/components/ui/button';
 
 export function GraphScreenActions({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree, selected: number): void }) {
   const [target, setTarget] = useState('');

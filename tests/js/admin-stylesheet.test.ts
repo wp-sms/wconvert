@@ -501,11 +501,13 @@ describe('the type scale', () => {
  */
 describe('every class the builder renders', () => {
   const BUILDER = resolve(import.meta.dirname, '../../resources/admin/src/builder');
+  // Journey authoring renders in the builder from Pro's module (ADR 0147), styled by the same sheet.
+  const JOURNEYS = resolve(import.meta.dirname, '../../pro/modules/journeys/admin');
 
   /** Every class name that is the WHOLE of what a `className` states. */
   const RENDERED = new Set<string>();
 
-  for (const file of sources(BUILDER)) {
+  for (const file of [...sources(BUILDER), ...sources(JOURNEYS)]) {
     const source = readFileSync(file, 'utf8');
 
     /*

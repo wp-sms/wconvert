@@ -5,7 +5,7 @@ import { graphTrace } from '@loader/journey-graph';
 import { moveFollowup, followupInsertionEdge } from '../../resources/admin/src/builder/structure/followupActions';
 import { retireAnswerPlan } from '../../resources/admin/src/builder/structure/retireAnswer';
 import { ResultSettings } from '../../pro/modules/journeys/admin/JourneySettings';
-import { GraphScreenInsert } from '../../resources/admin/src/builder/GraphScreenInsert';
+import { GraphScreenInsert } from '../../pro/modules/journeys/admin/GraphScreenInsert';
 import { GraphScreenRemove } from '../../resources/admin/src/builder/GraphScreenRemove';
 import { Dialog, DialogContent } from '../../resources/admin/src/components/ui/dialog';
 import { AlertDialog, AlertDialogContent } from '../../resources/admin/src/components/ui/alert-dialog';
