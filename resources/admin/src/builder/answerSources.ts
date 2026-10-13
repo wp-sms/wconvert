@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { Template, TemplateNode } from '@renderer/types';
+import type { SampleQuestion } from '../destinations/api';
 
 export interface AnswerSource {
   id: string;
@@ -25,9 +26,8 @@ const children = (node: TemplateNode): readonly TemplateNode[] => {
   return [...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])];
 };
 
-/** Stable choice values keep mappings intact when labels change. */
-export function answerSources(template: Template, submissionId: string): AnswerSource[] {
-  const found: AnswerSource[] = [];
+/** Visits every visible node on the screens up to and including the one a save point submits from. */
+function walkSubmission(template: Template, submissionId: string, visit: (node: TemplateNode) => void): void {
   const submission = template.tree.submissions.find((item) => item.id === submissionId);
   const boundary = template.tree.steps.findIndex((step) => submission?.fields.some((id) => {
     const contains = (node: TemplateNode): boolean => {
@@ -37,8 +37,20 @@ export function answerSources(template: Template, submissionId: string): AnswerS
     return contains(step.content);
   }));
   const walk = (node: TemplateNode) => {
-    const item = node as { type: string; id?: string; label?: string; name?: string; hidden?: boolean; answer_type?: string; options?: readonly { value: string; label: string }[] };
-    if (item.hidden) return;
+    if ((node as { hidden?: boolean }).hidden) return;
+    visit(node);
+    children(node).forEach(walk);
+  };
+  template.tree.steps.slice(0, boundary < 0 ? 0 : boundary + 1).forEach((step) => walk(step.content));
+}
+
+type Visited = { type: string; id?: string; label?: string; name?: string; answer_type?: string; options?: readonly { value: string; label: string }[] };
+
+/** Stable choice values keep mappings intact when labels change. */
+export function answerSources(template: Template, submissionId: string): AnswerSource[] {
+  const found: AnswerSource[] = [];
+  walkSubmission(template, submissionId, (node) => {
+    const item = node as Visited;
     if (item.type === 'question' && item.id && item.label) {
       found.push({ id: item.id, label: item.label });
       const questionLabel = item.label;
@@ -51,8 +63,23 @@ export function answerSources(template: Template, submissionId: string): AnswerS
       }));
     }
     if (item.type === 'field' && (item.name === 'interest' || item.name === 'message')) found.push({ id: `field:${item.name}`, label: item.name === 'message' ? __('Message', 'wconvert') : __('Interest', 'wconvert') });
-    children(node).forEach(walk);
-  };
-  template.tree.steps.slice(0, boundary < 0 ? 0 : boundary + 1).forEach((step) => walk(step.content));
+  });
   return found.filter((item, index) => found.findIndex((other) => other.id === item.id) === index);
+}
+
+/**
+ * The real questions a save point asks, for a webhook test's sample answers —
+ * no `choice:` or `field:` ids, which are mapping sources rather than
+ * questions. Only ids the server accepts, so a test never fails on a draft's
+ * odd id (ADR 0148).
+ */
+export function sampleQuestions(template: Template, submissionId: string): SampleQuestion[] {
+  const found: SampleQuestion[] = [];
+  walkSubmission(template, submissionId, (node) => {
+    const item = node as Visited;
+    if (item.type !== 'question' || !item.id || !item.label || !/^[A-Za-z0-9_-]{1,64}$/.test(item.id) || found.some((other) => other.id === item.id)) return;
+    found.push({ id: item.id, label: item.label.slice(0, 200), answer_type: item.answer_type === 'multi' || item.answer_type === 'text' ? item.answer_type : 'single',
+      options: (item.options ?? []).map((option) => option.label) });
+  });
+  return found;
 }

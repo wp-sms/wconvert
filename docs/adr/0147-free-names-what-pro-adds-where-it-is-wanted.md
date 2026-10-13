@@ -69,7 +69,11 @@ runtime. It fails on `main` as of `aeef6f95`.
    menu already holds; destination services from `tiers.json`'s
    `destinations` (Pro's types are not registered on a free install, so the
    registry cannot name them — `TierManifestTest` keeps the list in step with
-   each Pro type's `label()`); formats from `DISPLAY_TYPES`
+   each Pro type's `label()`), *amended by [ADR 0148](0148-the-webhook-signs-by-standard-webhooks.md):
+   the list stays the source of names, but the Destinations hint says them as
+   one general phrase — "more integrations, like Mailchimp, Brevo and
+   webhooks": the first two services, then "webhooks" where Pro has the
+   webhook — because every label no longer fits a line*; formats from `DISPLAY_TYPES`
    minus the free ones; the product from `tierProductName('pro')`; joined by
    `Intl.ListFormat` in the admin's locale. A feature that becomes free drops
    out without a copy edit. Two placements name one feature with no list to

@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuTrigger } from '../../resources/admin/src/com
 import { OptionMenuContent } from '../../resources/admin/src/components/ui/option-menu';
 import { proDisplayTypeLabels } from '../../resources/admin/src/displayTypes';
 import { ruleTypes } from './support/rule-types';
-import { proDestinationNames } from '../../resources/admin/src/destinations/ProviderTiles';
+import { ProviderTiles, proDestinationNames, proDestinationSummary } from '../../resources/admin/src/destinations/ProviderTiles';
 import type { DestinationType } from '../../resources/admin/src/destinations/api';
 
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn(() => Promise.resolve([])) }));
@@ -90,6 +90,26 @@ describe('where its names come from', () => {
     const type = (label: string, availability: DestinationType['availability']) => ({ id: label.toLowerCase(), label, availability }) as DestinationType;
     expect(proDestinationNames([type('MailPoet', 'unavailable')])).toEqual(['Mailchimp', 'Brevo', 'Mailtrap']);
     expect(proDestinationNames([type('Brevo', 'ready')])).toEqual(['Mailchimp', 'Mailtrap']);
+  });
+
+  it('sums Pro’s services up as one phrase: two examples, then webhooks where Pro has them', () => {
+    expect(proDestinationSummary(['Mailchimp', 'Brevo', 'Mailtrap', 'Webhook'])).toBe('more integrations, like Mailchimp, Brevo and webhooks');
+    expect(proDestinationSummary(['Mailchimp', 'Mailtrap'])).toBe('more integrations, like Mailchimp and Mailtrap');
+    expect(proDestinationSummary(['Webhook'])).toBe('more integrations, like webhooks');
+    expect(proDestinationSummary([])).toBeNull();
+  });
+
+  it('frames the phrase in the Add dialog, installed-but-inactive included', () => {
+    const tiers = { pro: { ...PRO.pro, destinations: ['Mailchimp', 'Brevo', 'Mailtrap', 'Webhook'] } };
+    const mailpoet = { id: 'mailpoet', label: 'MailPoet', icon: 'mail-plus', availability: 'ready' } as DestinationType;
+    free({ tiers });
+    const { unmount } = render(<ProviderTiles types={[mailpoet]} rule={null} suggested={[]} onChoose={vi.fn()} />);
+    expect(screen.getByText(/^Also in/)).toHaveTextContent(/^Also in WConvert Pro\(opens in a new tab\): more integrations, like Mailchimp, Brevo and webhooks\.$/);
+    unmount();
+
+    free({ tiers, proInstalledInactive: true });
+    render(<ProviderTiles types={[mailpoet]} rule={null} suggested={[]} onChoose={vi.fn()} />);
+    expect(screen.getByText(/^Also in/)).toHaveTextContent(/^Also in WConvert Pro, which is installed: more integrations, like Mailchimp, Brevo and webhooks\. Activate it$/);
   });
 
   it('names the formats a free install lacks', () => {
