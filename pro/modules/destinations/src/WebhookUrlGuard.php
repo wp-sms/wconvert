@@ -60,10 +60,11 @@ final class WebhookUrlGuard
     }
 
     /**
-     * PHP's private and reserved flags, plus three ranges they let through:
-     * carrier-grade NAT (`100.64.0.0/10`), benchmarking (`198.18.0.0/15`), and
-     * NAT64 (`64:ff9b::/96`), whose last 32 bits are an IPv4 address that may
-     * itself be loopback.
+     * PHP's private and reserved flags, plus the ranges they let through:
+     * carrier-grade NAT (`100.64.0.0/10`), benchmarking (`198.18.0.0/15`),
+     * NAT64 (`64:ff9b::/96`) and IPv4-mapped IPv6 (`::ffff:0:0/96`, which
+     * PHP 8.1's flags do not catch), whose last 32 bits are an IPv4 address
+     * that may itself be loopback.
      */
     private static function isPublic(string $address): bool
     {
@@ -71,7 +72,8 @@ final class WebhookUrlGuard
         $packed = inet_pton($address);
         if ($packed === false) return false;
         if (strlen($packed) === 16) {
-            if (substr($packed, 0, 12) !== "\x00\x64\xff\x9b" . str_repeat("\x00", 8)) return true;
+            $prefix = substr($packed, 0, 12);
+            if ($prefix !== "\x00\x64\xff\x9b" . str_repeat("\x00", 8) && $prefix !== str_repeat("\x00", 10) . "\xff\xff") return true;
             $mapped = inet_ntop(substr($packed, 12));
             return is_string($mapped) && self::isPublic($mapped);
         }

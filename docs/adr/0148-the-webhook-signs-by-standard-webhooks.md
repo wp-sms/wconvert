@@ -110,8 +110,10 @@ mapping (`settingsSchema()` is empty), and it is JSON only.
   and its campaign, so a receiver can map them before the first real Lead.
 
 **6. The page a Lead came from is recorded on the Lead.** The loader sends
-`page_url` (path and query) with the capture request. `CaptureSource` keeps
-the path and the five `utm_*` tags and drops every other parameter, because
+`page_url` (`location.href`, the shortest spelling, which kept the free loader
+inside its budget) with the capture request. `CaptureSource` keeps only the
+path and the five `utm_*` tags, dropping the host, the fragment and every
+other parameter, because
 an `?email=` or a token in a link must not be stored. It filters on the server
 because the request is the visitor's to forge, and because filtering in the
 loader cost bytes the free loader does not have. It is stored as
