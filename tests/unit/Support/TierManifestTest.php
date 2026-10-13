@@ -95,6 +95,30 @@ final class TierManifestTest extends TestCase
         $this->assertSame($onDisk, $declared);
     }
 
+    /**
+     * Free's Destinations hint names Pro's services from `tiers.json`, because
+     * Pro's types are not registered without Pro (ADR 0147). Read from each
+     * type's `label()` in source, so a service added to or dropped from Pro
+     * fails here rather than on a free merchant's screen.
+     */
+    public function testTheAdminNamesEveryDestinationProConnectsTo(): void
+    {
+        $labels = [];
+
+        foreach (glob(self::PLUGIN_DIR . '/pro/modules/destinations/src/*DestinationType.php') ?: [] as $file) {
+            $this->assertMatchesRegularExpression("/function label\(\): string \{ return __\('([^']+)'/", (string) file_get_contents($file), $file);
+            preg_match("/function label\(\): string \{ return __\('([^']+)'/", (string) file_get_contents($file), $match);
+            $labels[] = $match[1];
+        }
+        sort($labels);
+
+        $declared = self::shipped()->forTheAdmin()['pro']['destinations'];
+        sort($declared);
+
+        $this->assertNotSame([], $labels);
+        $this->assertSame($labels, $declared);
+    }
+
     public function testAModuleNoTierClaimsIsShippedByNothing(): void
     {
         $this->assertNull(self::shipped()->tierThatShips('something-nobody-declared'));

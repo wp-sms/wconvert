@@ -9,6 +9,8 @@ import { DropdownMenu, DropdownMenuTrigger } from '../../resources/admin/src/com
 import { OptionMenuContent } from '../../resources/admin/src/components/ui/option-menu';
 import { proDisplayTypeLabels } from '../../resources/admin/src/displayTypes';
 import { ruleTypes } from './support/rule-types';
+import { proDestinationNames } from '../../resources/admin/src/destinations/ProviderTiles';
+import type { DestinationType } from '../../resources/admin/src/destinations/api';
 
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn(() => Promise.resolve([])) }));
 
@@ -81,6 +83,13 @@ describe('where its names come from', () => {
     render(<AddRule axis={types.map(type => type === first ? { ...type, availability: 'ready' as const } : type)} label="Add" onAdd={vi.fn()} />);
     await userEvent.click(screen.getByRole('button', { name: 'Add' }));
     expect(screen.getByText(/^Also in/)).not.toHaveTextContent(first.label);
+  });
+
+  it('names Pro’s destination services from tiers.json, minus any this site has', () => {
+    free({ tiers: { pro: { ...PRO.pro, destinations: ['Mailchimp', 'Brevo', 'Mailtrap'] } } });
+    const type = (label: string, availability: DestinationType['availability']) => ({ id: label.toLowerCase(), label, availability }) as DestinationType;
+    expect(proDestinationNames([type('MailPoet', 'unavailable')])).toEqual(['Mailchimp', 'Brevo', 'Mailtrap']);
+    expect(proDestinationNames([type('Brevo', 'ready')])).toEqual(['Mailchimp', 'Mailtrap']);
   });
 
   it('names the formats a free install lacks', () => {

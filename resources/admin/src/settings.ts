@@ -123,7 +123,7 @@ export interface AdminSettings {
    * (ADR 0013). A tier's name is a product name, so it is the one string that
    * should not be translated; the sentence around it still is.
    */
-  readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string }>>;
+  readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string; readonly destinations?: readonly string[] }>>;
   /**
    * Whether this install can run an A/B test, and which tier supplies it.
    *

@@ -65,8 +65,11 @@ runtime. It fails on `main` as of `aeef6f95`.
    shares a viewport with the Flow map's. Never in the dashboard, the Plugins
    screen, the block editor, admin notices, the front end or the inspector.
 5. **Bundled copy, no remote call.** Links carry fixed UTMs only (G7).
-6. **Names come from data, not copy.** Rules and destinations from the
-   `locked` members the surface already holds; formats from `DISPLAY_TYPES`
+6. **Names come from data, not copy.** Rules from the `locked` members the
+   menu already holds; destination services from `tiers.json`'s
+   `destinations` (Pro's types are not registered on a free install, so the
+   registry cannot name them — `TierManifestTest` keeps the list in step with
+   each Pro type's `label()`); formats from `DISPLAY_TYPES`
    minus the free ones; the product from `tierProductName('pro')`; joined by
    `Intl.ListFormat` in the admin's locale. A feature that becomes free drops
    out without a copy edit.

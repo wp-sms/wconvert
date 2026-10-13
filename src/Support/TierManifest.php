@@ -38,7 +38,7 @@ final class TierManifest
     public const PATH = 'tiers.json';
 
     /**
-     * @param array<string, array{name: string, plugin_name: string, modules: list<string>}> $tiers Slug => what the file says about it.
+     * @param array<string, array{name: string, plugin_name: string, modules: list<string>, destinations: list<string>}> $tiers Slug => what the file says about it.
      */
     private function __construct(private readonly array $tiers)
     {
@@ -68,11 +68,13 @@ final class TierManifest
             }
 
             $modules = $entry['modules'] ?? [];
+            $destinations = $entry['destinations'] ?? [];
 
             $tiers[$entry['slug']] = [
                 'name' => is_string($entry['name'] ?? null) ? $entry['name'] : $entry['slug'],
                 'plugin_name' => is_string($entry['plugin_name'] ?? null) ? $entry['plugin_name'] : '',
                 'modules' => array_values(array_filter(is_array($modules) ? $modules : [], 'is_string')),
+                'destinations' => array_values(array_filter(is_array($destinations) ? $destinations : [], 'is_string')),
             ];
         }
 
@@ -155,7 +157,11 @@ final class TierManifest
      * should not be translated. The sentence AROUND it stays translatable, with
      * this as its `%s`.
      *
-     * @return array<string, array{name: string, product_name: string}>
+     * **And the services its Destinations connect to** (ADR 0147): brand
+     * names, untranslated for the same reason, which free's Destinations hint
+     * lists because Pro's types are not registered on a free install.
+     *
+     * @return array<string, array{name: string, product_name: string, destinations: list<string>}>
      */
     public function forTheAdmin(): array
     {
@@ -165,6 +171,7 @@ final class TierManifest
             $tiers[$tier->value] = [
                 'name' => $this->displayName($tier),
                 'product_name' => $this->productName($tier),
+                'destinations' => $this->tiers[$tier->value]['destinations'] ?? [],
             ];
         }
 
