@@ -35,7 +35,8 @@ final class ProHints
     {
         return $pro->installedTier() === Tier::Free
             && current_user_can('install_plugins')
-            && (bool) apply_filters(self::FILTER, true);
+            // Spelled out rather than self::FILTER, so Plugin Check can see the prefix.
+            && (bool) apply_filters('wconvert_show_pro_hints', true);
     }
 
     /**
