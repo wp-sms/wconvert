@@ -40,7 +40,9 @@ inline-placement fallbacks) filter on the same `isFreeInstall()`.
 
 Wherever Pro is installed, `locked` is still an upsell. A Basic site sees
 Elite's members, because it has already bought into the ladder and the next
-rung is information it can act on.
+rung is information it can act on. *Amended by [ADR 0146](0146-pro-is-one-tier.md): Pro is one tier and
+supplies every member, so a Pro install meets no `locked` member and this
+upsell is unreachable in practice.*
 
 **2. Free's whole upsell is two things.** The header's *Explore Pro* link, and
 one static *More with Pro* list in Settings. Both are bundled copy with no

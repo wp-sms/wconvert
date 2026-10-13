@@ -51,7 +51,7 @@ final class ArtifactContractTest extends TestCase
      * against the repository's real file — and the module slugs in
      * {@see self::stagedPro()} are the product's for that reason.
      */
-    private const LADDER = <<<'JSON'
+    private const TIERS_FILE = <<<'JSON'
         {
           "premium": {
             "slug": "wconvert-pro",
@@ -163,7 +163,7 @@ final class ArtifactContractTest extends TestCase
             'resources/templates/library/centred-card.json' => "{\"tier\":\"free\"}\n",
             // The tier file, which is free's and ships in free's ZIP: the admin
             // renders every upsell card's tier name from it (ADR 0056).
-            'tiers.json' => self::LADDER,
+            'tiers.json' => self::TIERS_FILE,
             'resources/templates/locked.json' => "{\"designs\":[]}\n",
             'resources/playbooks/welcome.php' => "<?php\nreturn [];\n",
             // What rebuilds the bundles above from the sources above. The
@@ -459,7 +459,7 @@ final class ArtifactContractTest extends TestCase
      * a tier. ADR 0015 records WSMS's shipped elite ZIP missing exactly this
      * file, benign there only because every lookup fails open.
      */
-    public function testFailsWhenTheFreeArtifactCarriesNoTierLadder(): void
+    public function testFailsWhenTheFreeArtifactCarriesNoTiersFile(): void
     {
         $result = $this->verify($this->stagedFree(['tiers.json' => null]));
 

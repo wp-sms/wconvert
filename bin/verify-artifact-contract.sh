@@ -453,13 +453,13 @@ section
 # tiers.json is free's file and is not in Pro's ZIP, so it is read from the
 # repository this program lives in unless the tree carries its own: it is a
 # fact about the PRODUCT rather than about the tree being inspected.
-LADDER="$(dirname "$SCRIPT_DIR")/tiers.json"
+TIERS_FILE="$(dirname "$SCRIPT_DIR")/tiers.json"
 
 if [ -r "$TREE/tiers.json" ]; then
-    LADDER="$TREE/tiers.json"
+    TIERS_FILE="$TREE/tiers.json"
 fi
 
-if [ ! -r "$LADDER" ]; then
+if [ ! -r "$TIERS_FILE" ]; then
     fail "tiers.json could not be read — the tier checks inspected nothing"
     verdict
 fi
@@ -469,12 +469,12 @@ fi
 PAID_TIERS=""
 ALL_TIERS="free"
 
-while IFS= read -r rung; do
-    [ -n "$rung" ] || continue
+while IFS= read -r paid_tier; do
+    [ -n "$paid_tier" ] || continue
 
-    PAID_TIERS="${PAID_TIERS:+$PAID_TIERS|}$rung"
-    ALL_TIERS="$ALL_TIERS|$rung"
-done < <(php "$SCRIPT_DIR/tier-manifest.php" tiers "$LADDER")
+    PAID_TIERS="${PAID_TIERS:+$PAID_TIERS|}$paid_tier"
+    ALL_TIERS="$ALL_TIERS|$paid_tier"
+done < <(php "$SCRIPT_DIR/tier-manifest.php" tiers "$TIERS_FILE")
 
 if [ -z "$PAID_TIERS" ]; then
     fail "tiers.json declares no paid tier — the design checks inspected nothing"
@@ -577,7 +577,7 @@ verdict
 # `pro/` tree inside it.
 section
 
-# `$LADDER` was resolved and proven readable in [5].
+# `$TIERS_FILE` was resolved and proven readable in [5].
 
 if [ "$tier" = "pro" ]; then
     PAID_TIER="${PAID_TIERS%%|*}"
@@ -585,7 +585,7 @@ if [ "$tier" = "pro" ]; then
 
     if [ "$PAID_TIER" != "$PAID_TIERS" ]; then
         fail "tiers.json declares more than one paid tier ($PAID_TIERS) — Pro is one tier (ADR 0146)"
-    elif ! DECLARED="$(php "$SCRIPT_DIR/tier-manifest.php" modules "$LADDER" "$PAID_TIER" 2>&1)"; then
+    elif ! DECLARED="$(php "$SCRIPT_DIR/tier-manifest.php" modules "$TIERS_FILE" "$PAID_TIER" 2>&1)"; then
         fail "cannot read Pro's module set — cannot verify"
         printf '%s\n' "$DECLARED" | sed 's/^/        /' >&2
     else

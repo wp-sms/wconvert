@@ -188,7 +188,7 @@ final class TierManifest
      * answer comes out of the file the build is checked against rather than a
      * second declaration in PHP.
      */
-    public function tierShipping(string $module): ?Tier
+    public function tierThatShips(string $module): ?Tier
     {
         foreach (Tier::paid() as $tier) {
             if ($this->shipsModule($tier, $module)) {

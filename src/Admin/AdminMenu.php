@@ -374,7 +374,7 @@ final class AdminMenu
      */
     private static function whetherTestsCanRun(TierManifest $manifest, ProPresence $pro): array
     {
-        $tier = $manifest->tierShipping(self::VARIANT_MODULE);
+        $tier = $manifest->tierThatShips(self::VARIANT_MODULE);
 
         return [
             // `true` for the site half, always. A test needs no store, no WSMS

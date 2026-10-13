@@ -567,10 +567,8 @@ button and no reason at all. `ChoiceCard` and `TemplateCard` both take a
 
 **Nothing spells a tier's name.** `tierName()` for a badge,
 `tierProductName()` for a sentence — both read `tiers.json` through
-`window.wconvertAdmin.tiers`, so a second rung is a manifest edit rather than
-five strings and a release. At launch every rung answers *"Pro"*, so nothing on
-screen changes; what changes is the day the ladder splits, which is the whole
-reason the manifest exists.
+`window.wconvertAdmin.tiers`, so renaming the product is a manifest edit rather
+than five strings and a release.
 
 **A locked design is a link, never a disabled button.** The design is not on
 this install to be used, so an "unavailable" control would be a control for

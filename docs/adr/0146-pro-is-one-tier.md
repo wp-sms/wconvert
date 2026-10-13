@@ -3,10 +3,16 @@
 Date: 2026-10-13. Status: accepted.
 Supersedes [0056](0056-the-tier-ladder-is-a-manifest.md) (the three-rung ladder).
 Amends [0014](0014-pro-replaces-the-loader.md), [0015](0015-enforcement-is-by-non-registration.md),
+[0026](0026-a-goal-the-site-cannot-serve-is-hidden.md),
+[0028](0028-the-free-loader-source-carries-no-premium-code.md),
 [0029](0029-the-free-contract-is-proven-at-the-source.md),
 [0030](0030-free-and-pro-release-on-independent-tags.md),
 [0045](0045-an-ab-variant-is-a-whole-optin.md),
-[0058](0058-a-test-ends-when-the-merchant-says-so.md) and
+[0058](0058-a-test-ends-when-the-merchant-says-so.md),
+[0098](0098-fullscreen-is-a-pro-modal-surface.md),
+[0106](0106-question-journeys-extend-the-paid-loader.md),
+[0116](0116-free-shows-nothing-it-cannot-run.md),
+[0124](0124-quiz-products-share-protected-cart-actions.md) and
 [0143](0143-license-page-and-updater.md).
 
 The product is **free plus one Pro with every feature**. ADR 0056 modelled Pro
@@ -39,7 +45,7 @@ next, so it goes.
 3. **The installed tier is no longer inferred from module directories.**
    `WpProPresence` answers `Pro` when `WCONVERT_PRO_LOADED` is defined and
    `Free` otherwise. `TierManifest::tierFor()` is gone; `lowestTierSupplying()`
-   is `tierShipping()`, still read by the admin to name A/B testing's tier.
+   is `tierThatShips()`, still read by the admin to name A/B testing's tier.
    Possession is still the gate (ADR 0015): a module whose files are missing
    registers nothing, whatever this answers.
 

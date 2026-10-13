@@ -1,5 +1,5 @@
 {
-  "_note": "The tier ladder. Read by WConvert\\Support\\TierManifest in free's tree, by bin/build.sh, and by bin/verify-artifact-contract.sh when it proves the Pro ZIP carries every module it names. Free ships this file; Pro does not, because free is always present beside it (Pro's min-core guard refuses to boot without it) and two copies is two things to drift. See docs/adr/0146-pro-is-one-tier.md.",
+  "_note": "The paid tier and its modules. Read by WConvert\\Support\\TierManifest in free's tree, and by bin/verify-artifact-contract.sh when it proves the Pro ZIP carries every module it names. Free ships this file; Pro does not, because free is always present beside it (Pro's min-core guard refuses to boot without it) and two copies is two things to drift. See docs/adr/0146-pro-is-one-tier.md.",
 
   "free": {
     "slug": "wconvert",
@@ -14,7 +14,7 @@
 
     "_no_wildcard_note": "Pro NAMES its modules — there is no \"*\". A wildcard reads as \"everything\", which is true of what the build should contain and useless to a check: bin/verify-artifact-contract.sh asserts the Pro ZIP carries every module named here, and against \"*\" that asserts nothing. The cost is that a new module must be added to this list, and that cost is paid loudly: a Pro ZIP carrying a module this list does not name fails the contract before the ZIP is written.",
 
-    "_tiers_note": "One paid tier. The product is free plus one Pro with every feature; the Nexus plans (single-site, 5-sites, unlimited) differ only in how many sites they cover, so a plan is not a tier (ADR 0146, superseding ADR 0056's three-rung ladder). WConvert\\Support\\Tier spells the same list in code, and TierManifestTest keeps the two in step. Every `tier:` value in resources/rules/manifest.json, resources/templates/locked.json, the Pro module templates and Goal::tier() is a slug from WConvert\\Support\\Tier — TierSlugsAreRealTest fails on any that is not, because an unknown slug reads as free.",
+    "_tiers_note": "One paid tier. The product is free plus one Pro with every feature; the Nexus plans (single-site, 5-sites, unlimited) differ only in how many sites they cover, so a plan is not a tier (ADR 0146, superseding ADR 0056's three-rung ladder). WConvert\\Support\\Tier spells the same list in code, and TierManifestTest keeps the two in step. Every `tier:` value in resources/rules/manifest.json, resources/templates/locked.json and the design libraries is a slug from WConvert\\Support\\Tier — TierSlugsAreRealTest fails on any that is not, because an unknown slug reads as free.",
 
     "tiers": [
       {

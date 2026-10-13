@@ -1666,7 +1666,8 @@ retired ADR 0056's `basic` / `pro` / `elite` ladder). Its display name is data
 > value that is not `free` or `pro` reads as free, so the shipped data is
 > tested for it.
 
-`basic`, `elite` and "rung" are the retired ladder's words and name nothing now. What Nexus calls a *tier* is a [[Plan]].
+`basic`, `elite` and "rung" are the retired ladder's words and name nothing
+now. What Nexus calls a *tier* is a [[Plan]].
 
 ### Module
 

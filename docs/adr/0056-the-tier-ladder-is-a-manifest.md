@@ -13,7 +13,7 @@ every module rather than `"*"`. Read the rest as history.
 with the module directories that tier does not ship **deleted**; and the tier an
 install is running at is **inferred from the modules on disk**, never stored.
 
-One tier is sold. All three are built, and all three display as **"Pro"**.
+One tier is sold. All three are built, and all three display as **"Pro"**. *Superseded: there is one paid tier, `pro`, and one build ([ADR 0146](0146-pro-is-one-tier.md)).*
 
 ## Why now, when one product ships
 
@@ -31,7 +31,7 @@ headroom was rhetorical.
 
 So the values are real slugs from day one and the display name is data. **At
 launch every rung's `name` is "Pro"**, and splitting the range later is an edit
-to `tiers.json` — not a code change, and not a data migration.
+to `tiers.json` — not a code change, and not a data migration. *Superseded: the split never came, and the rungs were removed with the data re-tagged in the same commit ([ADR 0146](0146-pro-is-one-tier.md)).*
 
 ## The ladder is spelled twice, on purpose
 
@@ -48,7 +48,7 @@ no file, no modules, or modules nothing claims, and a loaded Pro reads as the
 **bottom** paid rung. Reading it as free would show a paying customer upsell
 cards for what they bought ([ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md));
 reading it as elite would offer them a feature their ZIP does not contain. The
-bottom rung is the only answer wrong in the recoverable direction.
+bottom rung is the only answer wrong in the recoverable direction. *Superseded: nothing is inferred; a loaded Pro is `pro` ([ADR 0146](0146-pro-is-one-tier.md)).*
 
 `tests/unit/Support/TierManifestTest.php` asserts the two spellings agree, and
 `bin/verify-artifact-contract.sh` requires `tiers.json` in the free ZIP — so the
@@ -67,18 +67,18 @@ replaces machinery one of the reference products maintains by hand:
   the rung that first ships it, and the build is the highest such rung. It is
   spoof-resistant downward by construction — claiming a lower tier costs you the
   modules — and it needs no new storage, which matters given CLAUDE.md's
-  sign-off rule.
+  sign-off rule. *Superseded: `WpProPresence` reads no directories ([ADR 0146](0146-pro-is-one-tier.md)).*
 - **The artifact contract is not told which tier it is inspecting.** It infers,
   the same way, so no `--basic` flag exists to be passed to the wrong tree —
   [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md)'s rule about the
-  gate having no opt-outs, one level down.
+  gate having no opt-outs, one level down. *Superseded: check (f) is a completeness check of the one Pro ZIP ([ADR 0146](0146-pro-is-one-tier.md)).*
 
 **Every rung names its modules, including the top one — there is no `"*"`.** The
 contract asserts two things: that a rung carries no module it does not declare,
 *and* that it carries every module it does. Against a wildcard the second half
 asserts nothing, which would leave the rung every customer buys today as the one
 rung with no completeness check. The cost is that a new module must be added to
-each rung that ships it, and that cost is paid loudly.
+each rung that ships it, and that cost is paid loudly. *Still true, for the one Pro tier ([ADR 0146](0146-pro-is-one-tier.md)).*
 
 ## The JavaScript half, which is the one that is usually skipped
 
@@ -114,7 +114,7 @@ applied a rung down: **one entry per tier, in source, and no build flag
 anywhere.** A `define()` would put every tier's code in every tier's bundle and
 ask the bundler to hide it, which is precisely the shape being refused. Rollup's
 tree-shaking then does the work: free 7,337 B, basic 8,146 B, pro 8,499 B, elite
-8,687 B gzipped, and `basic/loader.js` contains no premium identifier at all.
+8,687 B gzipped, and `basic/loader.js` contains no premium identifier at all. *Superseded: one Pro loader; only free's loader is scanned ([ADR 0146](0146-pro-is-one-tier.md)).*
 
 ## What is NOT changed
 
@@ -138,7 +138,7 @@ one statement about free, and it is the same statement at every rung.
 - **`bin/build.sh pro` produces three ZIPs, and CI builds all three even though
   one ships.** Machinery that is not exercised rots, and the release that first
   needs a per-tier build is the release nobody can wait for. Three ZIPs cost
-  seconds.
+  seconds. *Superseded: one ZIP, `wconvert-pro-v{VERSION}.zip` ([ADR 0146](0146-pro-is-one-tier.md)).*
 - **The top-level directory inside every Pro ZIP is `wconvert-pro`**, at every
   rung. They are one plugin at three tiers, so moving up replaces an install
   rather than adding a second beside it; only the ZIP's file name carries the
@@ -149,6 +149,7 @@ one statement about free, and it is the same statement at every rung.
   `Tier::paid()` and stopping where the installed tier stops. It still names no
   rule type: it asks the one manifest both plugins read for the types filed at
   each rung, so the premium split still adds **zero new lists** (ADR 0015).
+  *Superseded: one pass, for `Tier::Pro` ([ADR 0146](0146-pro-is-one-tier.md)).*
 - **The admin bundle is one build shared by all three rungs**, and that is honest
   only while Pro's admin adds no screen of its own — nothing is being withheld
   from anybody, which is the distinction from WSMS's identical `main.js`.
@@ -162,10 +163,11 @@ one statement about free, and it is the same statement at every rung.
   and the arms nest inside the list free already renders. `PRO_SCREENS` is
   still empty, the tripwire has not fired, and no admin build was split
   ([ADR 0058](0058-a-test-ends-when-the-merchant-says-so.md)).*
+  *The tripwire is deleted by [ADR 0146](0146-pro-is-one-tier.md): one Pro, one admin build.*
 - **`public/tiers/` is repository scaffolding and ships in nothing.** The top
   rung builds to the canonical `pro/public/{loader,inspector}` so a source
   checkout runs the whole product; the other two land under `public/tiers/`, and
   the build moves the rung's bundle into place and deletes the directory. A
   staged tree that still has one fails the contract — leaving it would put every
   other rung's bundle inside this rung's ZIP, which is the byte-identical
-  failure arriving through the build instead of through a flag.
+  failure arriving through the build instead of through a flag. *Superseded: `public/tiers/` no longer exists ([ADR 0146](0146-pro-is-one-tier.md)).*

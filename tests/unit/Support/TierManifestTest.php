@@ -97,8 +97,8 @@ final class TierManifestTest extends TestCase
 
     public function testAModuleNoTierClaimsIsShippedByNothing(): void
     {
-        $this->assertNull(self::shipped()->tierShipping('something-nobody-declared'));
-        $this->assertSame(Tier::Pro, self::shipped()->tierShipping('ab-testing'));
+        $this->assertNull(self::shipped()->tierThatShips('something-nobody-declared'));
+        $this->assertSame(Tier::Pro, self::shipped()->tierThatShips('ab-testing'));
     }
 
     // =========================================================================

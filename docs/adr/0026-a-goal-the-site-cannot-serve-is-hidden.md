@@ -8,7 +8,8 @@ upsell card.
 
 > **Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): on a free
 > install a `locked` member is hidden on every surface, this Goal included.** It
-> is an upsell only where Pro is installed and a higher rung is what is missing.
+> is an upsell only where Pro is installed and a higher rung is what is missing
+> (*with one Pro since [ADR 0146](0146-pro-is-one-tier.md), that no longer happens*).
 > The precedence below is unchanged, and so is the rule that `unavailable` is
 > never an upsell. When both reasons apply at once, **`unavailable` wins**: a merchant with
 no store is never sold [[Pro]] for a feature Pro would not give them.
