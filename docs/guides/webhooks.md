@@ -3,18 +3,43 @@
 *WConvert Pro.* A webhook sends each signup to a URL you choose, as a signed
 JSON `POST`. Use it with Zapier, Make, n8n, or your own code.
 
-1. Open **Destinations**, choose **Add**, and pick **Webhook**.
-2. Paste the URL from your receiver. Treat it like a password: anyone who has
+1. Open **Settings → Connections & destinations**, choose **Connect an
+   account**, then **Webhook**.
+2. **Choose where signups go**: Zapier, Make, n8n or Your own code. The next
+   step asks only what that tool needs.
+3. Paste the URL from your receiver. Treat it like a password: anyone who has
    it can send data to your Zap or scenario.
-3. Copy the **signing secret** now. It is shown once, when the webhook is
-   created or the secret is regenerated. Afterwards it shows only as set.
-4. Add a custom header if your receiver asks for one (up to five).
-5. Choose the campaigns that send to it, then use **Send a test** from the
-   campaign editor. That sample carries the campaign's own questions, so you
-   can map them before the first real signup arrives.
+   - **Zapier:** the Catch Hook URL. Nothing else.
+   - **Make:** the Custom webhook URL, and its API key if you set one. WConvert
+     sends the key as the `x-make-apikey` header.
+   - **n8n:** the Webhook node URL, and the Header Auth name and value if you
+     use Header Auth.
+   - **Your own code:** any URL, and up to five headers.
+
+   Any tool can add more headers under **Other headers** (five in all).
+4. Choose **Check and save account**. Copy the **signing secret** now. It is
+   shown once, when the webhook is created or the secret is regenerated.
+   Afterwards it shows only as stored. Zapier, Make and n8n don't check it, so
+   you can skip it for them; your own code should (see *Verify the signature*).
+5. Choose **Add a Webhook destination**, then turn it on in a campaign's
+   **Destinations** tab and use **Send a test** there. That sample carries the
+   campaign's own questions, with sample answers you can change, so you can
+   map them before the first real signup arrives. The result says what your
+   receiver answered and how long it took, for example *Answered 200 in
+   0.4 s*.
 
 Saving checks the URL and the secret. It does not send anything, so your Zap
 does not get a junk sample. **Send a test** is the way to send one.
+
+To change the URL or headers later, choose **Edit** in the account's **⋯**
+menu. Stored values stay hidden: leave a field blank to keep it. **Regenerate**
+makes a new secret and uses it at once, so update your receiver straight away.
+
+An account shows the tool's logo when its URL is on that tool's own address,
+and the webhook icon otherwise. On a copy of your site, such as staging, the
+account says *On a copy of the site*: signups there still reach the receiver,
+marked `staging`. Turn the destination off in that copy's campaigns to stop
+them.
 
 ## Zapier, Make and n8n
 

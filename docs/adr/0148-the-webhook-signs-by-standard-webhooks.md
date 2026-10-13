@@ -157,6 +157,40 @@ merchant's real one. *Send a test* is the explicit way to send.
 carries no webhook class. `throughput()` is 60, which paces bulk re-push, where
 each lead may cost the merchant a Zapier or Make task.
 
+**12. Setup screens: pick the tool, then a form made for it.** Approved on the
+prototype (claude.ai/artifact/KJWnB3Hym1VBiL2MpVbgh4, variant B, 2026-10-13).
+
+- *Step 1* asks "Where should signups go?" as four radio cards: Zapier, Make,
+  n8n and Your own code, each with the tool's own logo **in colour** — the
+  companies' files, never recoloured (sources in
+  `pro/modules/destinations/admin/README.md`). *Step 2* asks only what that
+  tool needs: a Catch Hook URL; a URL and an optional API key sent as
+  `x-make-apikey`; a URL and optional Header Auth; or a URL and up to five
+  headers. Every tool stores the same Connection, so the choice decides the
+  words, never the data. An existing account skips the picker.
+- *The signing secret* is shown once, read-only, with Copy and a note that
+  this is the only time. **Done is never blocked**: a receiver that ignores
+  signatures has no use for it. Regenerate asks in the footer, not in a
+  second dialog (§9), then shows the new one the same way.
+- *An account row* shows a tool's logo when the URL's host is that tool's
+  (`hooks.zapier.com`, `make.com` and `*.make.com`, `*.n8n.cloud`), else the
+  webhook icon — a self-hosted n8n included. The host comes from the
+  Connection's `account_identity`, never the URL.
+- *Send a test* keeps the sentence as its headline (ADR 0042) and adds the
+  receiver's status and time under it: "Answered 200 in 0.4 s."
+  `PushResult::withTransport()` carries them; `TestReport` adds `status` and
+  `ms` only when set, so an email service's report is unchanged. From a
+  campaign, the test carries that campaign's questions with editable sample
+  answers.
+- *A staging copy* is a badge on the account row, "On a copy of the site",
+  and one line under it saying where it was set up — not a banner (§14).
+- **Free names no tool.** The picker, the tailored forms, the logos and the
+  host mapping are Pro's (`connectionSetup` slots, registered from Pro's admin
+  entry), and `module.json`'s `admin_markers` keep them out of free's bundle.
+  Free draws the generic field kinds, the one-time secret, the badge, the
+  status line, and copy driven by the type's `forwards_submission` flag. The
+  free hint becomes general (ADR 0147, amended).
+
 ## Consequences
 
 - **A webhook push is not idempotent**, which is the one exception to
