@@ -32,6 +32,8 @@ The three shipped adapters declare these facts:
 | Lead-magnet email | Email | File URL | Email |
 
 This table describes shipped adapters, not planned ESP or webhook support.
+*The Pro webhook now ships ([ADR 0148](0148-the-webhook-signs-by-standard-webhooks.md)):
+email **or** phone, no settings, and it sends every field and answer.*
 `fields` describes what an adapter uses, not a promise to overwrite an existing
 Contact. Provider availability, a missing Connection, incomplete settings and
 form compatibility remain separate facts. A nonempty file URL is not a check

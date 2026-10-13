@@ -143,10 +143,17 @@ final class PushDispatcher
      * exist. Delivery state is about Leads that were captured (ADR 0008), and
      * nothing was.
      *
+     * **A campaign editor may name its campaign and pass its questions**, so a
+     * receiver that learns its fields from a sample (Zapier, Make) can map that
+     * campaign's answers before its first real Lead. The questions are sample
+     * values typed by the merchant, not a visitor's, so nothing here becomes
+     * evidence of anything.
+     *
      * @param array<string, mixed> $values Canonical keys; anything else is dropped.
      * @param array<string, string|true> $mapped
+     * @param array<string, array{question: string, answer: string|list<string>}>|null $answers
      */
-    public function test(string $destinationId, array $values, array $mapped = []): PushResult
+    public function test(string $destinationId, array $values, array $mapped = [], ?array $answers = null, ?string $optinId = null): PushResult
     {
         $destination = $this->destinations->find($destinationId);
 
@@ -163,14 +170,20 @@ final class PushDispatcher
             return PushResult::skipped(self::unavailableHere());
         }
 
-        return $type->push(PushSubject::test($values, $mapped), new PushContext(
-            // Null, and deliberately so. `optinName` becomes `source_ref` on
-            // the WSMS push, and a test send has no [[Optin]] — writing one
+        // Only a type that forwards the submission whole is told the campaign.
+        $optin = $optinId === null || !$type instanceof ForwardsWholeSubmission ? null : $this->optins->find($optinId);
+
+        return $type->push(PushSubject::test($values, $mapped, 'email_marketing', $answers), new PushContext(
+            // Null unless a campaign editor named its campaign to a type that
+            // forwards it, and deliberately so. `optinName` becomes `source_ref` on the WSMS push, and a test
+            // send from the Destinations screen has no [[Optin]] — writing one
             // would assert provenance that does not exist, which is the case
             // {@see PushContext} already documents null for (ADR 0023).
-            null,
+            $optin?->name,
             $destination->settings,
-            $this->connections->credentialsFor($destination)
+            $this->connections->credentialsFor($destination),
+            $optin?->id,
+            $optin?->goal
         ));
     }
 }

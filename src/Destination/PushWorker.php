@@ -120,7 +120,7 @@ final class PushWorker
                 PushResult::terminal(__('This destination’s account, target or policy changed after capture. Review before resending.', 'wconvert')), [], []);
             return;
         }
-        $subject = PushSubject::of($snapshot, $job->destinationId);
+        $subject = PushSubject::of($snapshot, $job->destinationId, $job->submissionId, $lead);
         $credentials = $this->connections->credentialsFor($destination);
         try {
             $mappingIssue = $this->mappingIssue($type, $destination, $subject, $credentials);
@@ -128,7 +128,9 @@ final class PushWorker
                 // Preserve the campaign's name as provider-side provenance.
                 $this->optins->nameOf($lead->optinId),
                 $destination->settings,
-                $credentials
+                $credentials,
+                $lead->optinId,
+                $this->optins->goalOf($lead->optinId)?->value
             ));
             $result = $mappingIssue ?? ($destination->type === 'lead_magnet_email' && $this->sendGuard !== null
                 ? $this->sendGuard->send($subject->values['email'] ?? '', (string) ($destination->settings['file_url'] ?? ''), $send)
@@ -137,7 +139,8 @@ final class PushWorker
             $result = PushResult::retryable(__('The destination stopped unexpectedly. The result may be uncertain.', 'wconvert'));
         }
 
-        $this->record($job, $lead->optinId, $destination->type, $result, $subject->values, $credentials);
+        $this->record($job, $lead->optinId, $destination->type, $result, $subject->values, $credentials,
+            $type instanceof DeclaresRetrySchedule ? $type->retryDelays() : null);
     }
 
     /** @param array<string, mixed> $credentials */
@@ -165,6 +168,7 @@ final class PushWorker
      *
      * @param array<string, string> $personal
      * @param array<string, mixed> $secrets
+     * @param list<int>|null $delays The type's own retry schedule, where it declares one.
      */
     private function record(
         PushJob $job,
@@ -172,7 +176,8 @@ final class PushWorker
         string $destinationType,
         PushResult $result,
         array $personal,
-        array $secrets
+        array $secrets,
+        ?array $delays = null
     ): void
     {
         $now = current_time('mysql');
@@ -209,10 +214,10 @@ final class PushWorker
         if ($result->retryable) {
             $this->health->failed($job->destinationId, $error, $now);
 
-            if ($job->hasAttemptsLeft()) {
+            if ($job->hasAttemptsLeft($delays)) {
                 try {
                     $this->queue->schedule(
-                        time() + $job->backoffSeconds(),
+                        time() + $job->backoffSeconds($delays),
                         PushJob::HOOK,
                         $job->next()->toArgs()
                     );

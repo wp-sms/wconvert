@@ -216,6 +216,7 @@ final class ProServiceProvider implements ServiceProvider
             $registry->register(new \WConvert\Pro\Module\Destinations\MailchimpDestinationType());
             $registry->register(new \WConvert\Pro\Module\Destinations\BrevoDestinationType());
             $registry->register(new \WConvert\Pro\Module\Destinations\MailtrapDestinationType());
+            $registry->register(new \WConvert\Pro\Module\Destinations\WebhookDestinationType());
         }
         if (class_exists(\WConvert\Pro\Module\SpamFilters\SpamFilters::class)) {
             \WConvert\Pro\Module\SpamFilters\SpamFilters::hooks();

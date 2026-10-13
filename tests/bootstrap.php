@@ -420,6 +420,14 @@ if (!function_exists('get_object_taxonomies')) {
     }
 }
 
+if (!function_exists('wp_get_environment_type')) {
+    /** WordPress's own default is `production`; a test sets another through the query state. */
+    function wp_get_environment_type(): string
+    {
+        return (string) wconvertTestQueried('environment_type', 'production');
+    }
+}
+
 if (!function_exists('home_url')) {
     /** The site root, which a subdirectory install makes interesting. */
     function home_url(string $path = '', ?string $scheme = null): string

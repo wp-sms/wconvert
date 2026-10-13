@@ -1582,9 +1582,12 @@ Stored credentials for one remote account — a Mailchimp API key, a Brevo key. 
 Connection backs one or more [[Destination]]s, so two Mailchimp audiences are two
 Destinations over one Connection and the merchant pastes the key once.
 
-Not every Destination has one. A webhook's URL is its whole configuration, and
-the lead-magnet delivery email, the WSMS push and the MailPoet push authenticate
-against nothing — the last two because they are the same site, where there is no
+A webhook has one too, and its URL is part of it: a Zapier or Make URL is a
+secret, so it is a credential rather than a setting. The Connection also holds
+the webhook's signing secret and custom headers (ADR 0148).
+
+Not every Destination has one. The lead-magnet delivery email, the WSMS push and
+the MailPoet push authenticate against nothing — the last two because they are the same site, where there is no
 key to paste.
 
 ### Standalone

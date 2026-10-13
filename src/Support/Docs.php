@@ -21,6 +21,8 @@ final class Docs
 
     public const UPDATE = 'update-wconvert';
 
+    public const WEBHOOKS = 'webhooks';
+
     /** A guide's address, optionally at one of its section ids. */
     public static function url(string $guide = '', string $section = ''): string
     {

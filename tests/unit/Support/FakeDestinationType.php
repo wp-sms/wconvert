@@ -17,7 +17,7 @@ use WConvert\Support\Tier;
  * {@see PushResult} without a vendor — the distinction ADR 0008 rests on is
  * between *kinds of failure*, and only the type knows which kind a failure is.
  */
-final class FakeDestinationType implements DestinationType
+class FakeDestinationType implements DestinationType
 {
     /** @var list<PushResult> Answers, taken in order; the last one repeats. */
     public array $answers = [];

@@ -32,6 +32,8 @@ final class Submission
         public readonly array $fields,
         /** @var list<array<string, mixed>> Frozen question text, values and labels. */
         public readonly array $questionAnswers = [],
+        /** @var array{page_url: string, utm: array<string, string|null>}|null The page it came from, filtered by {@see CaptureSource}. */
+        public readonly ?array $source = null,
     ) {
     }
 }

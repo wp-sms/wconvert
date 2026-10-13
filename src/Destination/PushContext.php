@@ -35,11 +35,15 @@ final class PushContext
     /**
      * @param array<string, mixed> $settings    The Destination's own configuration, including whatever selects the target.
      * @param array<string, mixed> $credentials The Connection underneath it, or `[]` where the type has none.
+     * @param string|null $optinId The [[Optin]] that captured it, for a type that routes on it; null for a test.
+     * @param string|null $goal    That Optin's [[Goal]], as its stored value.
      */
     public function __construct(
         public readonly ?string $optinName,
         public readonly array $settings = [],
         public readonly array $credentials = [],
+        public readonly ?string $optinId = null,
+        public readonly ?string $goal = null,
     ) {
     }
 }

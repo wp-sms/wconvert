@@ -136,6 +136,21 @@ final class LeadCsvTest extends TestCase
      * is closed (ADR 0010), so the columns are known before the first row is
      * fetched, and a merchant gets the same shape from every export.
      */
+    /** The page and campaign tags a Lead signed up with, one column each; an older Lead leaves them empty. */
+    public function testThePageAndItsUtmTagsAreColumns(): void
+    {
+        $tagged = new Lead('01J0000000ZZZZZZZZZZZZZZZZ', 'OPTIN1', 'sarah@example.com', null, [], '2026-08-01 09:30:00',
+            ['source' => ['page_url' => '/pricing?utm_source=fb', 'utm' => ['source' => 'fb', 'medium' => null, 'campaign' => 'spring', 'term' => null, 'content' => null]]]);
+        $rows = $this->parse([$tagged, self::lead()], []);
+        $cell = static fn (int $row, string $column): string => $rows[$row][array_search($column, $rows[0], true)];
+
+        self::assertSame('/pricing?utm_source=fb', $cell(1, 'page_url'));
+        self::assertSame('fb', $cell(1, 'utm_source'));
+        self::assertSame('spring', $cell(1, 'utm_campaign'));
+        self::assertSame('', $cell(1, 'utm_medium'));
+        self::assertSame('', $cell(2, 'page_url'));
+    }
+
     public function testTheHeaderIsTheClosedFieldVocabularyAndNotWhateverTheRowsCarried(): void
     {
         $vocabulary = TemplateVocabulary::fromManifest(__DIR__ . '/../../..');

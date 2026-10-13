@@ -134,7 +134,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       busy = true; clear(root); const release = pending(root);
       void (async () => {
         try {
-          const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
+          const base = { optin_id: entry.id, contract: entry.capture_contract, website: website(), page_url: location.pathname + location.search };
           if (!grant) {
             const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};

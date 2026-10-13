@@ -69,7 +69,7 @@ workflow builder, synchronization engine or provider capability hierarchy.
 | Concern | Decision |
 | --- | --- |
 | First providers | Mailchimp, then Brevo; provider selection delegated to us |
-| Next candidate | Outbound webhook, separately scoped after the first two providers |
+| Next candidate | Outbound webhook, separately scoped after the first two providers. *Delivered by [ADR 0148](../adr/0148-the-webhook-signs-by-standard-webhooks.md).* |
 | Packaging | Remote providers in Pro; shared foundation and existing local providers in Free |
 | Shared setup | Connection credentials, Destination audience/list and existing-contact policy |
 | Basic fields | Provider-owned automatic handling; no mandatory mapping table |
@@ -502,6 +502,11 @@ Define an outbound JSON contract, safe destination URL handling, authentication,
 explicit sample sends and a stable event identifier first. A webhook POST is not
 automatically idempotent; the receiver must tolerate duplicates. No generic HTTP
 method/body template builder or inbound Contact synchronization is included here.
+
+*Scoped and decided in [ADR 0148](../adr/0148-the-webhook-signs-by-standard-webhooks.md):
+Standard Webhooks signing, the URL as a Connection credential, up to five custom
+headers, payload v1 with a stable `id`, a day of retries, and a private-network
+guard on save and send.*
 
 ## 10. Storage and performance budget
 
