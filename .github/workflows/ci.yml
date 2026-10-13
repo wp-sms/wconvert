@@ -109,6 +109,11 @@ jobs:
       - name: Verify the loader contract
         run: npm run check:loader
 
+      # Free's admin and inspector carry no Pro module's admin code and never
+      # say "upgrade" (ADR 0147). Two more small builds, same job.
+      - name: Verify the admin contract
+        run: npm run check:admin
+
   changes:
     name: 'Changed paths'
     runs-on: ubuntu-latest

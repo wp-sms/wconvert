@@ -23,9 +23,8 @@ import { JourneyScreenCard } from './JourneyScreenCard';
 import { JourneyArrivalSummary } from './JourneyArrivalSummary';
 import { FlowMapBoundary } from './FlowMapBoundary';
 import { FlowSkeleton } from './flow/FlowSkeleton';
-import { QuestionSettings, type QuestionReviewContext, ResultSettings, RouteSettings, ScreenConditionSettings } from './JourneySettings';
+import { journeyAuthoring, type QuestionReviewContext } from '../journeyAuthoring';
 import { JourneyTest } from './JourneyTest';
-import { GraphRouteSettings } from './GraphRouteSettings';
 import { JourneyScreenContent } from './JourneyScreenContent';
 import type { TemplateLabels } from '../templates/api';
 import { JourneyConsentSettings } from './JourneyConsentSettings';
@@ -83,10 +82,14 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   focusActions?: ReactNode;
 }) {
   const id = useId();
-  // Questions, results, screen conditions and answer paths are offered only
-  // where Pro registered them, which it does when its `journeys` module shipped. A free install keeps linear
-  // screens and never meets a control the publish route would refuse (ADR 0116).
+  // Questions, results, screen conditions and answer paths are Pro's editors,
+  // in Pro's bundle (ADR 0147). Free's bundle has none of them, so a free
+  // install keeps linear screens and can still delete a journey's screens.
   const journeys = journeysSupported();
+  const QuestionSettings = journeys ? journeyAuthoring.question : undefined;
+  const ResultSettings = journeys ? journeyAuthoring.result : undefined;
+  const ScreenConditionSettings = journeys ? journeyAuthoring.screenCondition : undefined;
+  const RouteEditor = journeys ? journeyAuthoring.route : undefined;
   const testTemplate = useMemo(() => ({ tree, tokens }), [tree, tokens]);
   const [referenceRequest, setReferenceRequest] = useState<(JourneyRepair & { serial: number }) | undefined>(requestedRepair);
   const referenceSerial = useRef(0);
@@ -406,15 +409,15 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       write({ ...tree, steps, submissions: [...tree.submissions, { id, required: false, fields: [], consents: [] }] }, steps.length - 2);
     }
   };
-  const removal = screenRemoval(tree, step);
+  const removal = screenRemoval(tree, step, journeys);
   const selectedCapture = tree.graph ? captureOnScreen(tree, current.id) : undefined;
   const optionalRemoval = selectedCapture && !selectedCapture.required ? graphCaptureRemovalPlan(tree, selectedCapture.id) : null;
-  const graphDelete = tree.graph ? graphRemovalPlan(tree, current.id) : null;
+  const graphDelete = tree.graph ? graphRemovalPlan(tree, current.id, journeys) : null;
   const deletionReason = optionalRemoval ? optionalRemoval.reason : graphDelete?.reason;
   // Why Delete is refused, in two lengths for its menu row (ADR 0139).
   const deletionRefusal = tree.graph
     ? deletionReason ? refusal((optionalRemoval ?? graphDelete)?.short ?? deletionReason, deletionReason) : null
-    : removal.screens.length === 0 ? whyScreenStays(tree, step) : null;
+    : removal.screens.length === 0 ? whyScreenStays(tree, step, journeys) : null;
   const applyGraphRemoval = (next: TemplateTree, destination: string) => {
     deletedGraphScreen.current = true;
     const target = next.steps.findIndex(screen => screen.id === destination);
@@ -442,7 +445,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     else setDeleting(true);
   };
   const remove = () => {
-    const next = removedScreen(tree, step);
+    const next = removedScreen(tree, step, journeys);
     write(next, Math.min(step, next.steps.length - 1));
     setSaid(__('Screen removed. Undo brings it back.', 'wconvert'));
   };
@@ -476,7 +479,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   };
   // Every path from the open screen, with the dialogs it opens: the Flow
   // pane's Next screen, the slim panel's disclosure and the question panel.
-  const routes = <GraphRouteSettings tree={tree} step={step} onSelect={index => { select(index); setReturnInspection({ screenId: current.id, section: panelSection }); }} focusPath={pathFocus} focusTarget={repairRequest?.screenId === current.id && repairRequest.focus === 'route-target'} onChange={onChange} onInsert={insertOnGraphPath} onAdd={intent => {
+  const route = (titled = false) => RouteEditor && <RouteEditor titled={titled} tree={tree} step={step} onSelect={index => { select(index); setReturnInspection({ screenId: current.id, section: panelSection }); }} focusPath={pathFocus} focusTarget={repairRequest?.screenId === current.id && repairRequest.focus === 'route-target'} onChange={onChange} onInsertOnEdge={insertOnGraphPath} onInsertOnPath={insertOnPath} onAdd={intent => {
               contextAddTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
               setFollowupAnswer(undefined); setInsertLocation(undefined); insertedScreen.current = false;
               setInsertIntent(intent === 'branch' ? 'branch' : undefined); setAddKind(intent === 'followup' ? 'followup' : 'input');
@@ -492,15 +495,12 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const startFollowup = (question: string, value: string) => { setFollowupAnswer({ question, value }); contextAddTrigger.current = document.activeElement as HTMLElement;
     const edge = followupInsertionEdge(insertionTree, current.id, question, value);
     setInsertLocation(edge ? `edge:${edge.id}` : 'choose'); setInsertIntent(undefined); insertedScreen.current = false; setAddKind('followup'); };
-  const questionSettings = <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={!journeys ? undefined : startFollowup} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />;
+  const questionSettings = QuestionSettings && <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={startFollowup} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />;
   // The question element's panel on the Edit tab: its settings, then where
   // visitors go next — "Send some answers down another path" (ADR 0134).
   const questionPanel = () => <>
-    {journeys && questionSettings}
-    {journeys && <PanelSection title={__('Where visitors go next', 'wconvert')} className="wconvert-question-next"
-      tip={__('First match wins, top to bottom. All other answers follow the last line.', 'wconvert')}>
-      {tree.graph ? routes : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
-    </PanelSection>}
+    {questionSettings}
+    {route(true)}
   </>;
   const isFirst = current.id === (tree.graph?.entry ?? tree.steps[0]?.id);
   const questionPath = nodesOf(tree).find(block => block.path[0] === step && block.type === 'question')?.path;
@@ -564,7 +564,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             </div>}
           </div>}
         </div>
-          {!journeys && usesJourneyElements(tree) && <p className="wconvert-journey-settings__warning" role="status">{__('This site’s plan can’t show questions, results, answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.', 'wconvert')}</p>}
+          {!journeys && usesJourneyElements(tree) && <p className="wconvert-journey-settings__warning" role="status">{__('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.', 'wconvert')}</p>}
           <div className="wconvert-journey-dialog__header-actions">
             {embedded && view !== 'edit' && <Button ref={focusTrigger} type="button" variant="outline" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
               {focused ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
@@ -716,7 +716,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               {submission && <FactRow label={__('When submitted', 'wconvert')}>{__('Save the lead', 'wconvert')}</FactRow>}
               {submission && onGoToDestinations && <FactRow label={__('Where leads go', 'wconvert')} action={__('Destinations', 'wconvert')} onAction={() => openContext('destinations')}>{destinationSummary || __('Keep in WConvert only', 'wconvert')}</FactRow>}
             </FactList>
-            {journeys && (!slim || !isFirst) && <ScreenConditionSettings key={`visibility:${current.id}`} reveal={repairRequest?.screenId === current.id && repairRequest.section === 'content' && !repairRequest.focus ? repairRequest.serial : undefined} tree={tree} step={step} onChange={onChange} onSelect={select} />}
+            {ScreenConditionSettings && (!slim || !isFirst) && <ScreenConditionSettings key={`visibility:${current.id}`} reveal={repairRequest?.screenId === current.id && repairRequest.section === 'content' && !repairRequest.focus ? repairRequest.serial : undefined} tree={tree} step={step} onChange={onChange} onSelect={select} />}
           </PanelSection>}
             {!slim && <OptionStrip className="wconvert-journey-pane__tabs" label={__('Screen settings section', 'wconvert')} value={panelSection} onChange={value => setRequestedSection(value as typeof requestedSection)}
               options={[
@@ -726,7 +726,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
 
           {slim || panelSection === 'content' ? <>
 
-          {!slim && journeys && questionSettings}
+          {!slim && questionSettings}
           {currentFollowups && <PanelSection title={__('Follow-up order', 'wconvert')}
             tip={followupSource === undefined ? __('Other lines lead into these follow-ups. Check them in Flow before changing the order.', 'wconvert') : __('Visitors see matching questions in this order. Other lines stay the same.', 'wconvert')}>
             <FactList><FactRow label={__('Position', 'wconvert')}>{sprintf(/* translators: 1: this follow-up's place. 2: how many follow-ups match. */ __('%1$d of %2$d', 'wconvert'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</FactRow></FactList>
@@ -738,7 +738,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
 
 
           {/* An imported journey on a free install is not edited further: the header already says it cannot be displayed (ADR 0116). */}
-          {journeys && <ResultSettings key={current.id} onResultSelect={onResultSelect} tree={tree} step={step} onChange={(next, coalesce) => { onChange(next, coalesce); if (!coalesce) setSaid(__('Result rules updated. Test which result visitors see.', 'wconvert')); }} repairRequest={repairRequest?.screenId === current.id ? repairRequest : undefined} />}
+          {ResultSettings && <ResultSettings key={current.id} onResultSelect={onResultSelect} tree={tree} step={step} onChange={onChange} onAction={setSaid} repairRequest={repairRequest?.screenId === current.id ? repairRequest : undefined} />}
           {journeys && current.kind === 'result' && <PanelSection title={__('When visitors see their result', 'wconvert')}
             tipLabel={__('About result access', 'wconvert')} tip={tree.submissions.length > 0 ? __('Changing this moves signup before or after the result, and you can undo the whole change. Mention required contact details on the first screen.', 'wconvert') : undefined}>
             <div role="radiogroup" aria-label={__('When visitors see their result', 'wconvert')} className="wconvert-panel-radios">
@@ -777,13 +777,12 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 : sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
             <small>{remainingFollowups ? sprintf(__('Then: %s', 'wconvert'), tree.steps.find(item => item.id === remainingFollowups.next)?.name ?? '') : __('Review where visitors go next', 'wconvert')}</small>
           </button>}
-          {slim && tree.graph && !questionPath && (tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') || !!current.when) && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
-            open={panelSection === 'paths' || undefined} title={__('Lines', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d line', '%d lines', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{routes}</Disclosure></PanelSection>}
+          {RouteEditor && slim && tree.graph && !questionPath && (tree.graph.edges.some(edge => edge.from === current.id && edge.kind !== 'default') || !!current.when) && <PanelSection><Disclosure variant="inline" className="wconvert-screen-paths"
+            open={panelSection === 'paths' || undefined} title={__('Lines', 'wconvert')} summary={sprintf(/* translators: %d: how many paths leave this screen. */ _n('%d line', '%d lines', tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length, 'wconvert'), tree.graph.edges.filter(edge => edge.from === current.id && edge.kind !== 'hidden').length)}>{route()}</Disclosure></PanelSection>}
           {slim && tree.graph && <ScreenAnswers tree={tree} step={step} onSelect={select} onFollowup={journeys ? startFollowup : undefined} />}
           {slim && <ScreenChips tree={tree} step={step} labels={labels} onSelect={onSelectElement} />}
 
-          </> : tree.graph ? routes
-            : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
+          </> : route()}
             {!onCanvas && <PanelSection><Button type="button" variant="outline" className="wconvert-journey-appearance" onClick={() => { if (editorCanvas) setView('edit'); else if (embedded) onGoToDesign?.(); else setOpen(false); }}>{editorCanvas ? __('Edit on the canvas', 'wconvert') : __('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button></PanelSection>}
             </div>
 
@@ -814,7 +813,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       }}>
         {confirmGraphRemoval && (optionalRemoval && selectedCapture
           ? <GraphCaptureRemove tree={tree} submissionId={selectedCapture.id} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />
-          : <GraphScreenRemove tree={tree} screenId={current.id} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />)}
+          : <GraphScreenRemove tree={tree} screenId={current.id} journeys={journeys} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />)}
       </AlertDialogContent>
     </AlertDialog>
     <Dialog open={addCapture} onOpenChange={setAddCapture}>
@@ -851,7 +850,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             select(tree.steps.findIndex(screen => screen.id === from));
             setAddKind(null); setRequestedSection('paths');
             if (impact) setPendingRoute({ tree: next, description: impact }); else onChange(next);
-            setSaid(impact ? __('Check this change before applying it.', 'wconvert') : __('Line updated. Check its order under “Where visitors go next”.', 'wconvert'));
+            setSaid(impact ? __('Check this change before applying it.', 'wconvert') : __('Line updated. Check where it sits among this screen’s lines.', 'wconvert'));
           }}
           onInsert={(location, kind, name, when, includeHidden, branch, answerType) => {
             let next = branch && when ? addGraphBranchScreen(insertionTree, current.id, kind === 'ending' ? 'ending' : kind === 'content' ? 'content' : 'input', when) : addGraphScreen(insertionTree, location, kind, when, includeHidden);

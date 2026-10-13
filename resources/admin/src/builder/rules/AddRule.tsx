@@ -49,7 +49,7 @@ export function AddRule({ axis, label, onAdd, autoOpen = false, onClose }: AddRu
     ...[...byTier(on('upsell'))].map(([product, types]) => ({
       // translators: %s: the product that supplies these rules.
       reason: sprintf(__('With %s', 'wconvert'), product), types, locked: true,
-      tip: __('Your plan does not include these rules. Upgrade to add them.', 'wconvert'),
+      tip: __('This site’s plan does not include these rules.', 'wconvert'),
     })),
     ...[...byDependency(on('explain'))].map(([needs, types]) => ({
       // translators: %s: the plugin the site needs.

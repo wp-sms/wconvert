@@ -2,40 +2,38 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUp, ChevronDown, FilePlus2, GitBranch, ListPlus, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
-import { replaceAnswer, unreachableScreens, walkNodes } from './structure/journey';
-import { followupGroups } from './structure/followupGroups';
-import { questionTypeChange } from './structure/questionTypeChange';
-import { retireAnswerPlan } from './structure/retireAnswer';
-import { answerReferences } from './structure/answerReferences';
-import { conditionText, resultsMayOverlap } from './structure/conditionText';
-import { answerColorOf, answerColors } from './structure/flowModel';
-import type { JourneyRepair } from './structure/journeyReadiness';
-import { graphReaches } from './structure/graph';
-import { ConfirmDialog } from '../shell/ConfirmDialog';
-import { Dialog } from '../components/ui/dialog';
-import { AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
-import { Disclosure } from '../shell/Disclosure';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { LinkField } from './LinkField';
-import { ResultProductFilter } from './ResultProductFilter';
-import { ProductPicker } from './ResultProductPicker';
-import { commerceSupported } from '../settings';
-import { tierProductName, unlessFree } from '../goals/availability';
-import { InfoTip } from '../shell/InfoTip';
-import { FieldHeading, PanelField, PanelHint, PanelSection } from './PanelSection';
-import { CheckRow } from '../shell/CheckRow';
-import { DropdownMenu, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { OptionItem, OptionMenuContent, refusal } from '../components/ui/option-menu';
-import { GUIDES, docsUrl } from '../shell/docs';
-import { AutoGrowTextarea } from './AutoGrowTextarea';
+import { replaceAnswer, unreachableScreens, walkNodes } from '@/builder/structure/journey';
+import { followupGroups } from '@/builder/structure/followupGroups';
+import { questionTypeChange } from '@/builder/structure/questionTypeChange';
+import { retireAnswerPlan } from '@/builder/structure/retireAnswer';
+import { answerReferences } from '@/builder/structure/answerReferences';
+import { conditionText, resultsMayOverlap } from '@/builder/structure/conditionText';
+import { answerColorOf, answerColors } from '@/builder/structure/flowModel';
+import type { JourneyRepair } from '@/builder/structure/journeyReadiness';
+import { graphReaches } from '@/builder/structure/graph';
+import { ConfirmDialog } from '@/shell/ConfirmDialog';
+import { Dialog } from '@/components/ui/dialog';
+import { AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '@/components/ui/admin-dialog';
+import { Disclosure } from '@/shell/Disclosure';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { LinkField } from '@/builder/LinkField';
+import { ResultProductFilter } from '@/builder/ResultProductFilter';
+import { ProductPicker } from '@/builder/ResultProductPicker';
+import { commerceSupported } from '@/settings';
+import { tierProductName, unlessFree } from '@/goals/availability';
+import { InfoTip } from '@/shell/InfoTip';
+import { FieldHeading, PanelField, PanelHint, PanelSection } from '@/builder/PanelSection';
+import { CheckRow } from '@/shell/CheckRow';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { OptionItem, OptionMenuContent, refusal } from '@/components/ui/option-menu';
+import { GUIDES, docsUrl } from '@/shell/docs';
+import { AutoGrowTextarea } from '@/builder/AutoGrowTextarea';
+import { answerTypeName } from '@/builder/answerType';
+import type { QuestionReviewContext } from '@/journeyAuthoring';
 
 type ChoiceQuestion = QuestionNode & { id: string };
 
-/** An answer type in the words the Answer type menu uses. */
-export function answerTypeName(type: string): string {
-  return type === 'multi' ? __('Choose several', 'wconvert') : type === 'text' ? __('Short answer', 'wconvert') : __('Choose one', 'wconvert');
-}
 const questionsBefore = (tree: TemplateTree, at: number): ChoiceQuestion[] => tree.steps.filter((screen, index) => tree.graph
   ? index !== at && graphReaches(tree.graph, screen.id, tree.steps[at].id)
   : index < at)
@@ -224,14 +222,6 @@ export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect
   </Disclosure>;
 }
 
-export interface QuestionReviewContext {
-  questionId: string;
-  choiceValue?: string;
-  replacement: string;
-  retiring: boolean;
-  answerType?: QuestionNode['answer_type'];
-}
-
 export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, onFollowup, onAction, resumeReview }: {
   tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void; onSelect(step: number): void; onNavigate?(repair: JourneyRepair, review: QuestionReviewContext): void; resumeReview?: QuestionReviewContext & { serial: number }; onFollowup?(question: string, value: string): void; onAction?(message: string): void;
 }) {
@@ -350,8 +340,10 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
 }
 
 
-export function ResultSettings({ tree, step, onChange, repairRequest, onResultSelect }: { onResultSelect?(id: string | undefined): void; tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void;
-  repairRequest?: JourneyRepair & { readonly serial: number } }) {
+export function ResultSettings({ tree, step, onChange: change, onAction, repairRequest, onResultSelect }: { onResultSelect?(id: string | undefined): void; tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void;
+  onAction?(message: string): void; repairRequest?: JourneyRepair & { readonly serial: number } }) {
+  // A typed field coalesces into one Undo step and says nothing; anything else is a rule change worth testing.
+  const onChange = (next: TemplateTree, coalesce?: string) => { change(next, coalesce); if (!coalesce) onAction?.(__('Result rules updated. Test which result visitors see.', 'wconvert')); };
   const tabsId = useId();
   const [draftResult, setDraftResult] = useState<{ heading: string; when: QuestionCondition } | null>(null);
   const [selectedId, setSelectedId] = useState<string | null | undefined>(undefined);

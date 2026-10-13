@@ -15,14 +15,14 @@ import { BorderPreview, ImageFitPreview, ImageShapePreview, SplitRatioPreview } 
 import { SlotFields, buttonActionOf, buttonDoes } from './SlotFields';
 import { PanelField, PanelHeader, PanelHint, PanelSection } from './PanelSection';
 import { DesignColors, designColorsOf } from './ColorField';
-import { answerTypeName } from './JourneySettings';
+import { answerTypeName } from './answerType';
 import { nameOfBlock } from './BlockRow';
 import { elementIcon } from './elementIcon';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
 import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
-import { QuestionSettings } from './JourneySettings';
+import { journeyAuthoring } from '../journeyAuthoring';
 import { useQuestionPanel } from './ScreenPanel';
 import { AdvancedContext, AdvancedToggle } from './advanced';
 import { CaptureOwnership } from './CaptureOwnership';
@@ -285,10 +285,9 @@ function contentBody({
       onChange({ ...template, tree });
     }} />;
   }
-  if (block.type === 'question' && !journeysSupported()) {
-    return <PanelHint>{__('This design uses elements this site can’t display.', 'wconvert')}</PanelHint>;
-  }
   if (block.type === 'question') {
+    const QuestionSettings = journeyAuthoring.question;
+    if (!journeysSupported() || !QuestionSettings) return <PanelHint>{__('This design uses elements this site can’t display.', 'wconvert')}</PanelHint>;
     return <QuestionSettings tree={template.tree} step={Number(path[0])} onChange={tree => onChange({ ...template, tree })} onSelect={() => undefined} />;
   }
   return (

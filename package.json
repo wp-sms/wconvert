@@ -18,6 +18,7 @@
     "build:loader:pro": "vite build -c vite.config.loader-pro.mjs",
     "build:inspector": "vite build -c vite.config.inspector.mjs",
     "build:inspector:pro": "vite build -c vite.config.inspector-pro.mjs",
+    "check:admin": "npm run build:admin && npm run build:inspector && node bin/check-admin.mjs",
     "check:loader": "npm run build:loader && npm run build:loader:pro && npm run build:phone && node bin/check-loader.mjs && node bin/check-phone.mjs && npm run build:analytics && node bin/check-analytics.mjs && npm run build:commerce && node bin/check-commerce.mjs && npm run build:revenue && node bin/check-revenue.mjs",
     "test": "vitest run",
     "test:watch": "vitest",

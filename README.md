@@ -151,6 +151,7 @@ path grows a tier branch or touches the licence at all.
 ```bash
 bin/verify-source-contract.sh          # no build, runs on every pull request
 npm run check:loader                   # two loader builds, runs on every pull request
+npm run check:admin                    # free's admin + inspector builds, same job
 ```
 
 Use Node 22 (`nvm use`, matching `.nvmrc`) for release and loader-size checks,
@@ -173,12 +174,14 @@ it. Both halves apply in both languages: PHP is checked for `pro/` paths too,
 since `require_once WCONVERT_DIR . 'pro/…'` is the shape a WordPress developer
 reaches for first.
 
-`npm run check:loader` is the **one build a pull request pays for**, and it
-earns it: both of its assertions are about build output. Free's and Pro's
+`npm run check:loader` and `npm run check:admin` are the **builds a pull
+request pays for**, and they earn it: every assertion is about build output. Free's and Pro's
 loader, gzip -9 on Node 22, hard-fail at 14,720 / 27,712 bytes for Free / Pro (ADR 0139, amended; ADR 0146); and free's loader is scanned for
-every rule identifier the manifest calls premium — free's *admin* bundle is
-deliberately never scanned, because it carries premium identifiers on purpose
-for its `locked` cards.
+every rule identifier the manifest calls premium. Free's *admin* bundle is
+never scanned for identifiers, because its Pro hints name Pro's rules on
+purpose. `check:admin` scans free's admin and inspector instead for Pro's admin
+*code* — each module's `admin_markers` — and for the word "upgrade"
+([ADR 0147](docs/adr/0147-free-names-what-pro-adds-where-it-is-wanted.md)).
 
 The artifact contract, Plugin Check and the release guard run at **release**,
 not here — each half lands with the thing it inspects, and their subject is a
@@ -862,6 +865,7 @@ composer install && composer install -d pro && npm install
 npm run build          # build:free then build:pro — every bundle, both plugins
 npm run build:free     # free's bundles only; what the shipped package.json rebuilds
 npm run check:loader   # the loader byte budget + the premium-identifier scan
+npm run check:admin    # free's admin + inspector carry no Pro admin code, no "upgrade"
 composer verify:artifact dist/stage/plain/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit
 composer phpstan       # PHPStan, level 7

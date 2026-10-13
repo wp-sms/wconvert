@@ -2,5 +2,12 @@
   "slug": "journeys",
   "name": "Questions and results",
   "description": "Conditional question journeys and WooCommerce product results.",
-  "bundle_marker": "data-question-id"
+  "bundle_marker": "data-question-id",
+  "admin_markers": [
+    "Where visitors go next",
+    "Result rules updated",
+    "Only if an answer matches",
+    "Add matching result",
+    "Review answer uses"
+  ]
 }

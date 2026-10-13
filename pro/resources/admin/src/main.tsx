@@ -11,6 +11,7 @@ import { decorateFullscreen } from '../../../modules/display-types/loader/surfac
 import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
+import { registerJourneyAuthoring } from '../../../modules/journeys/admin/register';
 import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
 import { registerPage } from '@/extraPages';
 import { __ } from '@wordpress/i18n';
@@ -25,6 +26,7 @@ registerPage({
 });
 
 registerPremiumJourneyRenderer();
+registerJourneyAuthoring();
 registerProviderMarks();
 registerProductPreview();
 reportExtensions.commerce = lazy(() => import('../../../modules/analytics/admin/Revenue'));

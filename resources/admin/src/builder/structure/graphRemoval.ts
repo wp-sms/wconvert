@@ -1,10 +1,16 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, TemplateTree } from '@renderer/types';
 import { graphDisplayOrder, graphReaches } from './graph';
-import { walkNodes, withoutBackButtons } from './journey';
+import { walkNodes, withoutAnswersFrom, withoutBackButtons } from './journey';
 
-/** Plan first: deleting a branch point must never silently pick one of its exits. */
-export function graphRemovalPlan(tree: TemplateTree, screenId: string) {
+/**
+ * Plan first: deleting a branch point must never silently pick one of its exits.
+ *
+ * `journeys` false is a site without Pro's journey editors (ADR 0147): a result
+ * and the rules on its answers can't be edited there, so they don't hold a
+ * screen, and the rules go with the questions they ask about.
+ */
+export function graphRemovalPlan(tree: TemplateTree, screenId: string, journeys = true) {
   const graph = tree.graph;
   const screen = tree.steps.find(item => item.id === screenId);
   const incoming = graph?.edges.filter(edge => edge.to === screenId && edge.from !== screenId) ?? [];
@@ -17,31 +23,33 @@ export function graphRemovalPlan(tree: TemplateTree, screenId: string) {
   const destinations = new Set(outgoing.map(edge => edge.to));
   const preferred = destinations.size === 1 && targets.some(item => destinations.has(item.id)) ? outgoing[0].to : '';
   const nodes = screen ? walkNodes(screen.content) : [];
-  const questions = new Set(nodes.flatMap(node => node.type === 'question' && 'id' in node ? [node.id] : []));
+  const questions = new Set(nodes.flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : []));
   const references = (condition?: QuestionCondition) => condition?.clauses.some(clause => questions.has(clause.question));
   const dependents = tree.steps.filter(item => item.id !== screenId && (
     [item.when, ...(item.paths?.map(path => path.when) ?? []), ...(item.results?.map(result => result.when) ?? [])].some(references)
     || graph?.edges.some(edge => edge.from === item.id && references(edge.when))));
   // Each refusal in two lengths: a few words for the menu row, the sentence for its ⓘ (ADR 0139).
   const refusal = !graph || !screen ? [__('No longer in the campaign', 'wconvert'), __('This screen is no longer in the campaign.', 'wconvert')]
-    : screen.kind === 'result'
+    : screen.kind === 'result' && journeys
       ? [__('Keeps the recommendation', 'wconvert'), __('Keep this result screen for the campaign’s recommendation. Edit its results, content or the lines into it here.', 'wconvert')]
     : screen.kind === 'acknowledgement' && tree.steps.filter(item => item.kind === 'acknowledgement').length === 1
       ? [__('The only ending', 'wconvert'), __('Keep this ending so visitors have somewhere to finish. You can edit its content and the lines into it.', 'wconvert')]
       : nodes.some(node => node.type === 'field' || node.type === 'consent' || node.type === 'button' && 'action' in node && node.action === 'submit')
         ? [__('Collects contact details', 'wconvert'), __('This screen collects or saves contact details. Its fields, consent and save settings must stay together; it cannot be deleted here.', 'wconvert')]
-        : dependents.length ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))]
+        : dependents.length && journeys ? [__('Other screens use its answers', 'wconvert'), sprintf(/* translators: %s: screen names, already joined. */ __('Answers on this screen are used by rules on: %s. Update those rules before deleting it.', 'wconvert'), dependents.map(item => item.name).join(', '))]
           : (isEntry || incoming.length > 0) && !targets.length
             ? [__('Nowhere to continue', 'wconvert'), __('There is nowhere suitable for its lines to go. Add a screen or change the lines before deleting this one.', 'wconvert')] : null;
   const reason = refusal?.[1] ?? null;
   const short = refusal?.[0] ?? null;
-  return { reason, short, incoming, outgoing, isEntry, targets, preferred, needsDestination: isEntry || incoming.length > 0 };
+  return { reason, short, incoming, outgoing, isEntry, targets, preferred, needsDestination: isEntry || incoming.length > 0, questions };
 }
 
 /** One immutable edit preserves incoming rules/priority and leaves detached work in the draft. */
-export function graphRemoval(tree: TemplateTree, screenId: string, destination?: string): { next: TemplateTree; destination: string; incoming: number } | null {
-  const plan = graphRemovalPlan(tree, screenId);
-  if (plan.reason || !tree.graph) return null;
+export function graphRemoval(source: TemplateTree, screenId: string, destination?: string, journeys = true): { next: TemplateTree; destination: string; incoming: number } | null {
+  const plan = graphRemovalPlan(source, screenId, journeys);
+  if (plan.reason || !source.graph) return null;
+  const tree = !journeys && plan.questions.size ? withoutAnswersFrom(source, plan.questions) : source;
+  if (!tree.graph) return null;
   const target = plan.needsDestination ? destination ?? plan.preferred : tree.graph.entry;
   if (plan.needsDestination && !plan.targets.some(item => item.id === target)) return null;
   return { destination: target, incoming: plan.incoming.length, next: { ...tree,
