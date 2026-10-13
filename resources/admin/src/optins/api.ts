@@ -61,6 +61,11 @@ export interface OptinState {
    * until the day a request half-failed.
    */
   suspended: string | null;
+  /**
+   * The plugin the site is missing when that is the cause (`woocommerce`),
+   * or null — so the row can link that plugin's guide (ADR 0147).
+   */
+  suspended_needs?: string | null;
 }
 
 /** What `GET /wconvert/v1/optins` returns: the list projection, no config blobs. */

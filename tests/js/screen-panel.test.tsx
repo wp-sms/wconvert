@@ -3,6 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { ScreenAnswers, ScreenChips, ScreenThen } from '../../resources/admin/src/builder/ScreenPanel';
+import { ThenSelect } from '../../pro/modules/journeys/admin/ThenSelect';
+import { AnswerFollowup } from '../../pro/modules/journeys/admin/AnswerFollowup';
+import type { ComponentProps } from 'react';
+
+/** The editable "Then" as Pro composes it (ADR 0147). */
+function EditableThen({ onEditPaths, onEditLine, ...select }: ComponentProps<typeof ThenSelect> & Pick<ComponentProps<typeof ScreenThen>, 'onEditPaths' | 'onEditLine'>) {
+  return <ScreenThen tree={select.tree} step={select.step} onEditPaths={onEditPaths} onEditLine={onEditLine} editor={<ThenSelect {...select} />} />;
+}
 import enquiry from '../fixtures/journey-graph-enquiry.json';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { treeFixture } from './support/journey';
@@ -20,7 +28,7 @@ const three = (): TemplateTree => treeFixture({ steps: [
 
 describe('Then →', () => {
   it('says where a screen goes, read-only, on Free', () => {
-    render(<ScreenThen tree={three()} step={0} editable={false} onChange={vi.fn()} />);
+    render(<ScreenThen tree={three()} step={0} />);
     expect(screen.getByText('Screen 2')).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).toBeNull();
     expect(screen.getByText(/Change the order in the screen’s ⋯ menu/)).toBeInTheDocument();
@@ -29,19 +37,19 @@ describe('Then →', () => {
   /** A bar or a one-screen offer goes nowhere next. */
   it('says nothing about next on a one-screen campaign', () => {
     const one = treeFixture({ steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Sale' }, { type: 'button', action: 'link', label: 'Shop', href: '/shop/' }] }] });
-    const { container } = render(<ScreenThen tree={one} step={0} editable onChange={vi.fn()} />);
+    const { container } = render(<EditableThen tree={one} step={0} onChange={vi.fn()} />);
     expect(container).toBeEmptyDOMElement();
   });
 
   it('says an ending ends the campaign', () => {
-    render(<ScreenThen tree={three()} step={2} editable onChange={vi.fn()} />);
+    render(<EditableThen tree={three()} step={2} onChange={vi.fn()} />);
     expect(screen.getByText('The campaign ends here')).toBeInTheDocument();
   });
 
   /** A straight journey choosing its own next screen becomes a graph first, then rewrites that screen's path. */
   it('turns a straight journey into paths when one screen chooses its own next', async () => {
     const onUpgrade = vi.fn();
-    render(<ScreenThen tree={three()} step={0} editable onChange={vi.fn()} onUpgrade={onUpgrade} />);
+    render(<EditableThen tree={three()} step={0} onChange={vi.fn()} onUpgrade={onUpgrade} />);
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's3');
     const next = onUpgrade.mock.calls[0][0] as TemplateTree;
     expect(next.graph?.edges.find(edge => edge.from === 's1' && edge.kind === 'default')?.to).toBe('s3');
@@ -49,7 +57,7 @@ describe('Then →', () => {
 
   it('rewrites a graph screen’s path in place', async () => {
     const onChange = vi.fn();
-    render(<ScreenThen tree={upgradeToGraph(three())} step={0} editable onChange={onChange} />);
+    render(<EditableThen tree={upgradeToGraph(three())} step={0} onChange={onChange} />);
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's3');
     expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.from === 's1' && edge.kind === 'default')?.to).toBe('s3');
   });
@@ -58,7 +66,7 @@ describe('Then →', () => {
     const graphed = upgradeToGraph(three());
     const open = { ...graphed, graph: { ...graphed.graph!, edges: graphed.graph!.edges.filter(edge => edge.from !== 's1') } };
     const onChange = vi.fn();
-    render(<ScreenThen tree={open} step={0} editable onChange={onChange} />);
+    render(<EditableThen tree={open} step={0} onChange={onChange} />);
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's3');
     expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.from === 's1' && edge.kind === 'default')?.to).toBe('s3');
   });
@@ -69,7 +77,7 @@ describe('Then →', () => {
       { type: 'stack', children: [{ type: 'heading', text: 'Result' }] },
     ] }));
     const tree = { ...graphed, steps: graphed.steps.map((item, at) => at === 1 ? { ...item, kind: 'result' as const } : item) };
-    render(<ScreenThen tree={tree} step={1} editable onChange={vi.fn()} />);
+    render(<EditableThen tree={tree} step={1} onChange={vi.fn()} />);
     expect(screen.getByText('The campaign ends here')).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).toBeNull();
   });
@@ -79,7 +87,7 @@ describe('Then →', () => {
     const withAnswer = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
       { id: 'a', from: 's1', to: 's3', kind: 'answer' as const, when: { match: 'all' as const, clauses: [{ question: 'q', operator: 'is' as const, values: ['x'] }] } }] } };
     const onEditPaths = vi.fn(), onEditLine = vi.fn();
-    render(<ScreenThen tree={withAnswer} step={0} editable onChange={vi.fn()} onEditPaths={onEditPaths} onEditLine={onEditLine} />);
+    render(<EditableThen tree={withAnswer} step={0} onChange={vi.fn()} onEditPaths={onEditPaths} onEditLine={onEditLine} />);
     expect(screen.getByText('First match wins, top to bottom')).toBeInTheDocument();
     // Each line as the map draws it, in the order it is checked, "All other answers" last (ADR 0142).
     const lines = [...document.querySelectorAll('.wconvert-screen-lines li')].map(item => item.textContent);
@@ -115,13 +123,13 @@ it('drops a copied skip edge when the screen’s next screen changes, and keeps 
   const withSkip = (to: string) => ({ ...graphed, steps: graphed.steps.map((item, at) => at === 1 ? { ...item, when } : item),
     graph: { ...graphed.graph!, edges: [...graphed.graph!.edges, { id: 'skip', from: 's2', to, kind: 'hidden' as const }] } });
   const onChange = vi.fn();
-  const { unmount } = render(<ScreenThen tree={withSkip('s3')} step={1} editable onChange={onChange} />);
+  const { unmount } = render(<EditableThen tree={withSkip('s3')} step={1} onChange={onChange} />);
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's4');
   expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.some(edge => edge.id === 'skip')).toBe(false);
   unmount();
   onChange.mockClear();
   // A real override (to somewhere other than the old default) is the merchant's choice and stays.
-  render(<ScreenThen tree={withSkip('s4')} step={1} editable onChange={onChange} />);
+  render(<EditableThen tree={withSkip('s4')} step={1} onChange={onChange} />);
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Then' }), 's4');
   expect((onChange.mock.calls[0][0] as TemplateTree).graph?.edges.find(edge => edge.id === 'skip')?.to).toBe('s4');
 });
@@ -144,7 +152,7 @@ describe('a question screen’s answers', () => {
   it('offers “+ Follow-up” for an answer that has none', async () => {
     const onFollowup = vi.fn();
     const bare: TemplateTree = { ...tree, steps: tree.steps.map(item => item.id === 'balcony' ? { ...item, when: undefined } : item) };
-    render(<ScreenAnswers tree={bare} step={at} onSelect={vi.fn()} onFollowup={onFollowup} />);
+    render(<ScreenAnswers tree={bare} step={at} onSelect={vi.fn()} followup={(question, option) => <AnswerFollowup question={question} option={option} onFollowup={onFollowup} />} />);
     await userEvent.click(screen.getByRole('button', { name: 'Add a follow-up for “Balcony”' }));
     expect(onFollowup).toHaveBeenCalledWith('n1', 'balcony');
     expect(document.querySelectorAll('.wconvert-screen-answers .wconvert-flow-dot')[2]).not.toHaveAttribute('data-color');

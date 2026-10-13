@@ -1,6 +1,6 @@
 import { render, screen, within, fireEvent, cleanup } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { GraphScreenInsert } from '../../resources/admin/src/builder/GraphScreenInsert';
+import { GraphScreenInsert } from '../../pro/modules/journeys/admin/GraphScreenInsert';
 import { Dialog, DialogContent } from '../../resources/admin/src/components/ui/dialog';
 import { addGraphScreen } from '../../resources/admin/src/builder/structure/graphInsertion';
 import type { TemplateTree } from '../../resources/renderer/src/types';

@@ -78,7 +78,7 @@ export default function Revenue({ period, optinId, campaignNames = {}, onSummary
       setError(sprintf(__('Could not load campaign sales for these dates. %s', 'wconvert'), reason).trim());
     }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
-  }, [period.from, period.to, windowQuery, optinId, retry]);
+  }, [period.from, period.to, windowQuery, optinId, retry]); // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the dates, not the period object, so a new object for the same window does not refetch
   // The overview's Linked sales card (ADR 0132): only a complete report for
   // exactly these dates, with linked orders. A stale or partial one says nothing.
   const current = !optinId && report?.complete && report.from === period.from && report.to === period.to && period.days > 0 ? report : null;

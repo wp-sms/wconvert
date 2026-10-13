@@ -58,6 +58,8 @@ export interface EntryReport {
   readonly opening?: { mode: string; match: string; minimum: number; answer: MatchAnswer };
   readonly placementStatus?: string;
   readonly recoveryStatus?: string;
+  /** A reopen button is saved and nothing on this site draws it; the panel words it (ADR 0147). */
+  readonly reopenUnavailable?: boolean;
   readonly id: string;
   readonly displayType?: string;
   readonly placement?: string;
@@ -224,8 +226,8 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
         displayType: entry.display_type,
         placement: entry.placement,
         placementStatus: presentation.placement?.(entry),
-        recoveryStatus: presentation.recovery ? presentation.recovery(entry, decision)
-          : (entry as PayloadEntry & { teaser?: unknown }).teaser ? 'Reopen settings are saved; this feature requires Pro.' : undefined,
+        recoveryStatus: presentation.recovery?.(entry, decision),
+        reopenUnavailable: !presentation.recovery && !!(entry as PayloadEntry & { teaser?: unknown }).teaser,
         standing,
         groups: entry.display_rules?.audience.mode === 'groups' ? entry.display_rules.audience.groups.map(group => ({ match: group.match, answer: groupMatches(group, rule => decision.withheld.has(rule.type) ? 'blocked' : answers.get(rule) ?? false), rules: group.rules.map(rule => report(rule, answers, decision)) })) : [],
         opening: entry.display_rules ? { mode: entry.display_rules.opening.mode, match: entry.display_rules.opening.mode === 'automatic' ? entry.display_rules.opening.match : 'any', minimum: entry.display_rules.opening.mode === 'automatic' ? entry.display_rules.opening.minimum_seconds ?? 0 : 0, answer: openingMatches(entry.display_rules.opening, rule => decision.withheld.has(rule.type) ? 'blocked' : answers.get(rule) ?? false, decision.elapsedSeconds ?? 0) } : undefined,

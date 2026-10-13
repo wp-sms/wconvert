@@ -14,15 +14,15 @@ import { conditionText } from './structure/conditionText';
  * (§9): what visitors will see after the removal comes first, then what
  * survives, then the one red button.
  */
-export function GraphScreenRemove({ tree, screenId, onRemove, onCancel }: {
-  tree: TemplateTree; screenId: string; onRemove(next: TemplateTree, destination: string): void; onCancel(): void;
+export function GraphScreenRemove({ tree, screenId, journeys = true, onRemove, onCancel }: {
+  tree: TemplateTree; screenId: string; journeys?: boolean; onRemove(next: TemplateTree, destination: string): void; onCancel(): void;
 }) {
   const id = useId();
-  const plan = graphRemovalPlan(tree, screenId);
+  const plan = graphRemovalPlan(tree, screenId, journeys);
   const [destination, setDestination] = useState(plan.preferred);
   const [custom, setCustom] = useState(!plan.preferred);
   const group = followupGroups(tree).find(item => item.screens.some(at => tree.steps[at].id === screenId));
-  const removal = graphRemoval(tree, screenId, destination);
+  const removal = graphRemoval(tree, screenId, destination, journeys);
   const impact = removal ? graphChangeImpact(tree, removal.next) : null;
   const name = (screen: string) => tree.steps.find(item => item.id === screen)?.name ?? __('Removed screen', 'wconvert');
   const answersFrom = (source: string) => tree.graph?.edges.filter(edge => edge.from === source && edge.kind === 'answer') ?? [];

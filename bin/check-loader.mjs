@@ -39,14 +39,16 @@
 //      what the manifest calls premium — and beside it, every module's
 //      declared `bundle_marker`, for the modules that ship no rule type.
 //
-//      DO NOT SCAN THE ADMIN BUNDLE. Free's admin bundle contains premium
-//      identifiers ON PURPOSE — the data-only catalogue of premium Destination
-//      types, and every `locked` Availability card. Free's loader never
-//      renders an upsell, so it has no such excuse. Same rule, two bundles,
-//      opposite verdicts; WSMS's own script warns against exactly the unscoped
-//      version.
+//      DO NOT SCAN THE ADMIN BUNDLE FOR IDENTIFIERS. Free's admin bundle
+//      contains premium identifiers ON PURPOSE — the data-only catalogue of
+//      premium Destination types, and the Pro hints that name Pro's rules
+//      (ADR 0147). Free's loader never renders an upsell, so it has no such
+//      excuse. Same rule, two bundles, opposite verdicts; WSMS's own script
+//      warns against exactly the unscoped version. What free's admin and
+//      inspector may not carry is Pro's admin CODE, and `bin/check-admin.mjs`
+//      proves that with each module's `admin_markers` (ADR 0147).
 //
-//      AND DO NOT SCAN THE INSPECTOR BUNDLE EITHER, for the admin bundle's
+//      AND DO NOT SCAN THE INSPECTOR BUNDLE HERE EITHER, for the admin bundle's
 //      reason rather than the loader's. `public/inspector/inspector.js` is
 //      admin-gated and parameter-gated (ADR 0048): it is enqueued only for a
 //      merchant holding `manage_options` who asked for it by name, never for a

@@ -72,3 +72,19 @@ it('previews a lost required save when rerouting past the capture screen', () =>
   expect(graphChangeImpact(base, removed)).toContain('One enquiry');
   expect(removed.submissions).toEqual(base.submissions);
 });
+
+/** Without Pro's editors the rules can't be fixed, so they can't hold the screen either (ADR 0147). */
+it('lets a site without the journey editors delete a question that rules use, and drops those rules', () => {
+  expect(graphRemovalPlan(base, 'interests', false).reason).toBeNull();
+  const removed = graphRemoval(base, 'interests', 'contact', false)!.next;
+  expect(removed.steps.map(item => item.id)).not.toContain('interests');
+  expect(JSON.stringify(removed)).not.toMatch(/"question":"n1"/);
+  for (const screen of removed.steps) expect(screen.when?.clauses ?? [null]).not.toHaveLength(0);
+});
+
+it('lets a site without the journey editors delete a result screen', () => {
+  const result = { ...freshScreen(base, 'content'), kind: 'result' as const, results: [] };
+  const tree: TemplateTree = { ...base, steps: [...base.steps, result] };
+  expect(graphRemovalPlan(tree, result.id).reason).not.toBeNull();
+  expect(graphRemovalPlan(tree, result.id, false).reason).toBeNull();
+});

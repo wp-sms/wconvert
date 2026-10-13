@@ -342,6 +342,28 @@ export function usedBy(tree: TemplateTree, questionId: string): string[] {
     || tree.graph?.edges.some(edge => edge.from === screen.id && edge.when?.clauses.some(clause => clause.question === questionId))).map(screen => screen.id);
 }
 
+/**
+ * The tree with every rule clause on these questions removed. A condition left
+ * with no clause goes; so does an answer line, which has nothing else to match.
+ */
+export function withoutAnswersFrom(tree: TemplateTree, questions: ReadonlySet<string>): TemplateTree {
+  const trim = (when?: QuestionCondition): QuestionCondition | undefined => {
+    if (!when) return when;
+    const clauses = when.clauses.filter(clause => !questions.has(clause.question));
+    return clauses.length ? { ...when, clauses } : undefined;
+  };
+  const steps = tree.steps.map(screen => {
+    const next = { ...screen };
+    if (screen.when) { const when = trim(screen.when); if (when) next.when = when; else delete next.when; }
+    if (screen.results) next.results = screen.results.map(result => { const when = trim(result.when); const copy = { ...result }; if (when) copy.when = when; else delete copy.when; return copy; });
+    if (screen.paths) next.paths = screen.paths.filter(path => !path.when || trim(path.when)).map(path => path.when ? { ...path, when: trim(path.when) } : path);
+    return next;
+  });
+  const graph = tree.graph && { ...tree.graph, edges: tree.graph.edges.filter(edge => !edge.when || trim(edge.when))
+    .map(edge => edge.when ? { ...edge, when: trim(edge.when) } : edge) };
+  return { ...tree, steps, ...(graph ? { graph } : {}) };
+}
+
 /** Replace a referenced choice everywhere in one undoable draft edit. IDs and rule order stay stable. */
 export function replaceAnswer(tree: TemplateTree, questionId: string, removed: string, replacement: string): TemplateTree {
   if (!replacement || replacement === removed) return tree;
@@ -426,9 +448,9 @@ export function screenMoveRefusal(tree: TemplateTree, from: number, to: number):
 
 /** Removing a signup also removes the screens collecting its declared details.
  * Content-only offers between those screens are independent and stay in place. */
-export function screenRemoval(tree: TemplateTree, index: number): { screens: string[]; submission?: string } {
+export function screenRemoval(tree: TemplateTree, index: number, journeys = true): { screens: string[]; submission?: string } {
   const screen = tree.steps[index];
-  if (!screen || whyScreenStays(tree, index) !== null) return { screens: [] };
+  if (!screen || whyScreenStays(tree, index, journeys) !== null) return { screens: [] };
   const submission = tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
   if (!submission) return { screens: [screen.id] };
   const owned = new Set([...submission.fields, ...submission.consents]);
@@ -438,17 +460,21 @@ export function screenRemoval(tree: TemplateTree, index: number): { screens: str
 /**
  * Why {@link screenRemoval} keeps this screen, in two lengths for a menu row
  * (ADR 0139), or null where it may go.
+ *
+ * `journeys` false is a site without Pro's journey editors (ADR 0147). There a
+ * result and the answers rules use cannot be edited, so they cannot be what
+ * keeps a screen: removing it is the only way to "Remove them to publish".
  */
-export function whyScreenStays(tree: TemplateTree, index: number): Refusal | null {
+export function whyScreenStays(tree: TemplateTree, index: number, journeys = true): Refusal | null {
   const screen = tree.steps[index];
   if (!screen) return null;
-  if (screen.kind === 'result') return { short: __('Keeps the result', 'wconvert'), reason: __('Keep this result screen. Edit its results or content instead.', 'wconvert') };
+  if (screen.kind === 'result' && journeys) return { short: __('Keeps the result', 'wconvert'), reason: __('Keep this result screen. Edit its results or content instead.', 'wconvert') };
   if (screen.kind === 'acknowledgement') return { short: __('Keeps the ending', 'wconvert'), reason: __('Keep this ending so visitors have somewhere to finish.', 'wconvert') };
   if (tree.steps.length <= 2) return { short: __('Needs two screens', 'wconvert'), reason: __('A campaign keeps at least two screens.', 'wconvert') };
   if (tree.steps.some(item => item.paths?.some(path => path.to === screen.id))) {
     return { short: __('A line leads here', 'wconvert'), reason: __('Another screen’s line leads here. Change that line first.', 'wconvert') };
   }
-  if (walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) {
+  if (journeys && walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) {
     return { short: __('Other screens use its answers', 'wconvert'), reason: __('Answers on this screen are used by rules on other screens. Update those rules first.', 'wconvert') };
   }
   if (tree.submissions.find(sub => submissionScreen(tree, sub.id) === index)?.required) {
@@ -457,9 +483,13 @@ export function whyScreenStays(tree: TemplateTree, index: number): Refusal | nul
   return null;
 }
 
-export function removedScreen(tree: TemplateTree, index: number): TemplateTree {
-  const removal = screenRemoval(tree, index);
+export function removedScreen(tree: TemplateTree, index: number, journeys = true): TemplateTree {
+  const removal = screenRemoval(tree, index, journeys);
   if (!removal.screens.length) return tree;
+  // Only reachable without the journey editors: rules on the removed questions go with them.
+  const gone = new Set(tree.steps.filter(s => removal.screens.includes(s.id)).flatMap(s => walkNodes(s.content))
+    .filter(n => n.type === 'question' && 'id' in n && typeof n.id === 'string').map(n => (n as { id: string }).id));
+  if (gone.size) tree = withoutAnswersFrom(tree, gone);
   const clean = (node: TemplateNode, first: boolean): TemplateNode => {
     const n = { ...node } as Record<string, unknown>;
     for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) {

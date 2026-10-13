@@ -56,9 +56,12 @@ final class AdminServiceProvider implements ServiceProvider
         );
 
         // The door into the eligibility inspector, on the page it explains.
-        // It has no dependencies at all — it adds one node to the admin bar
-        // and links to the URL the merchant is already on.
-        $container->register(InspectorBar::class, static fn (): InspectorBar => new InspectorBar());
+        // It adds one node to the admin bar, linking the URL the merchant is
+        // already on — once something is published to ask about (ADR 0147).
+        $container->register(
+            InspectorBar::class,
+            static fn (ServiceContainer $c): InspectorBar => new InspectorBar($c->resolve(PublishedSet::class))
+        );
 
         // The CSV download is an `admin-post.php` action rather than a REST
         // route: a download is a navigation, and the browser has to be handed

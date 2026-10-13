@@ -1,18 +1,18 @@
-import { followupGroups, followupGroupSource } from './structure/followupGroups';
+import { followupGroups, followupGroupSource } from '@/builder/structure/followupGroups';
 import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
-import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { ConfirmDialog } from '@/shell/ConfirmDialog';
 import { ConditionSettings } from './JourneySettings';
-import { graphEdgeId, graphTargets } from './structure/graph';
-import { answerLinesOverlap, conditionText } from './structure/conditionText';
-import { graphChangeImpact } from './structure/graphChangeImpact';
-import { graphChoiceSources } from './structure/graphConnections';
-import { questionsIn, unreachableScreens } from './structure/journey';
-import { answerColorOf, answerColors } from './structure/flowModel';
-import { graphInsertionLocations } from './structure/graphInsertion';
-import { FieldHeading, PanelHint } from './PanelSection';
+import { graphEdgeId, graphTargets } from '@/builder/structure/graph';
+import { answerLinesOverlap, conditionText } from '@/builder/structure/conditionText';
+import { graphChangeImpact } from '@/builder/structure/graphChangeImpact';
+import { graphChoiceSources } from '@/builder/structure/graphConnections';
+import { questionsIn, unreachableScreens } from '@/builder/structure/journey';
+import { answerColorOf, answerColors } from '@/builder/structure/flowModel';
+import { graphInsertionLocations } from '@/builder/structure/graphInsertion';
+import { FieldHeading, PanelHint } from '@/builder/PanelSection';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
 export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd, onSelect }: {

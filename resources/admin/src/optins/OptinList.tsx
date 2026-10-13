@@ -60,7 +60,8 @@ import { CampaignDetailsDialog } from './DetailsDialog';
 import type { CampaignResults } from './CampaignSummary';
 import { decisionCopy, type DecisionKind } from './decisionCopy';
 import { StatusBadge } from './StatusBadge';
-import { GuideLink } from '../shell/GuideLink';
+import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
+import { ProHintItem, proHintsShown } from '../shell/ProHint';
 import { GUIDES, docsUrl } from '../shell/docs';
 import './campaigns.css';
 
@@ -411,8 +412,8 @@ export function OptinList({
             <p className="wconvert-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
           )}
           {status === 'suspended' && <p className="wconvert-campaign-note">
-            {row.suspended}{' '}
-            <GuideLink href={docsUrl(GUIDES.proUnavailable, 'identify-the-problem')}>{__('What to check', 'wconvert')}</GuideLink>
+            {row.suspended}
+            <SuspensionGuideLink needs={row.suspended_needs} />
           </p>}
           {productHealthLabel(productHealth.rows[row.id]) && <button type="button" className="wconvert-product-health-link" aria-haspopup="dialog" onClick={e => openDetails(row, e.currentTarget)}>
             {productHealthLabel(productHealth.rows[row.id])}
@@ -833,6 +834,8 @@ function CampaignMenu({
             onSelect={() => onDecision('delete', trigger.current)} />
         </OptionGroup>
         {/* Upsells are grey with a lock (GUIDELINES §14): a line, not a dead item, because the route does not exist on this build. */}
+        {/* Where "Create A/B test" would sit: one link row, last, with no feature icon (ADR 0147). */}
+        {!arm && availability === 'locked' && proHintsShown() && <OptionGroup><ProHintItem medium="campaign-menu" features={[__('A/B testing', 'wconvert')]} /></OptionGroup>}
         {upsell && (
           <OptionGroup heading={sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('With %s', 'wconvert'), tierProductName(adminSettings()?.variants?.tier ?? undefined))} icon="lock">
             <OptionItem icon={Split} name={__('Create A/B test', 'wconvert')} />

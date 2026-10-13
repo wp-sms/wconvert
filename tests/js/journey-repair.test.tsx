@@ -3,8 +3,8 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, expect, it, vi } from 'vitest';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
-import { ConditionSettings, ScreenConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
-import { GraphRouteSettings } from '../../resources/admin/src/builder/GraphRouteSettings';
+import { ConditionSettings, ScreenConditionSettings } from '../../pro/modules/journeys/admin/JourneySettings';
+import { GraphRouteSettings } from '../../pro/modules/journeys/admin/GraphRouteSettings';
 import { journeyReadinessIssues } from '../../resources/admin/src/builder/structure/journeyReadiness';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 

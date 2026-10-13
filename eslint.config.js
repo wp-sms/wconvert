@@ -64,7 +64,7 @@ export default [
     },
   },
   {
-    files: ['resources/**/*.{ts,tsx}', 'pro/resources/**/*.{ts,tsx}', 'tests/js/**/*.{ts,tsx}', 'pro/tests/js/**/*.{ts,tsx}'],
+    files: ['resources/**/*.{ts,tsx}', 'pro/resources/**/*.{ts,tsx}', 'pro/modules/*/admin/**/*.{ts,tsx}', 'tests/js/**/*.{ts,tsx}', 'pro/tests/js/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

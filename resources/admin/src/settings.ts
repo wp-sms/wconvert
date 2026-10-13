@@ -17,6 +17,13 @@ export interface AdminSettings {
   readonly phoneDefaultCountry?: string;
   readonly installedTier?: 'free' | 'pro';
   /**
+   * The contextual Pro hints show (ADR 0147): a free install, a user who can
+   * install plugins, and `wconvert_show_pro_hints` not turned off. Absent reads as no.
+   */
+  readonly proHints?: boolean;
+  /** Pro's plugin is installed but not active: hints say "Activate it" and lead to Plugins. */
+  readonly proInstalledInactive?: boolean;
+  /**
    * Whether Pro registered question journeys on this install — its provider
    * does so when the `journeys` module shipped — `JourneySupport::active()`, read on the server (ADR 0116).
    *
@@ -116,7 +123,7 @@ export interface AdminSettings {
    * (ADR 0013). A tier's name is a product name, so it is the one string that
    * should not be translated; the sentence around it still is.
    */
-  readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string }>>;
+  readonly tiers?: Readonly<Record<string, { readonly name: string; readonly product_name: string; readonly destinations?: readonly string[] }>>;
   /**
    * Whether this install can run an A/B test, and which tier supplies it.
    *

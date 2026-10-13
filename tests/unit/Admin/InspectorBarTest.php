@@ -6,7 +6,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Admin\InspectorBar;
 use WConvert\Frontend\InspectorEnqueue;
+use WConvert\Optin\PublishedSet;
 use WConvert\Rest\Routes;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 use WP_Admin_Bar;
 
 /**
@@ -37,13 +39,16 @@ final class InspectorBarTest extends TestCase
     }
 
     /**
+     * @param list<array<string, mixed>> $published
      * @return list<array<string, mixed>>
      */
-    private function nodes(): array
+    private function nodes(array $published = [['id' => 'a', 'payload' => []]]): array
     {
         $bar = new WP_Admin_Bar();
+        $options = new FakeOptionStore();
+        $options->set(PublishedSet::OPTION, $published);
 
-        (new InspectorBar())->node($bar);
+        (new InspectorBar(new PublishedSet($options)))->node($bar);
 
         return $bar->nodes;
     }
@@ -54,6 +59,12 @@ final class InspectorBarTest extends TestCase
 
         $this->assertCount(1, $nodes);
         $this->assertSame('https://example.test/pricing?wconvert-inspect=1', $nodes[0]['href']);
+    }
+
+    /** Nothing published shows nowhere, so there is nothing to ask about (ADR 0147). */
+    public function testItIsNotOfferedWhileNothingIsPublished(): void
+    {
+        $this->assertSame([], $this->nodes([]));
     }
 
     /**

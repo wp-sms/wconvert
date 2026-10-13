@@ -25,7 +25,7 @@ it('searches the docs on wconvert.io with a plain form, opening a new tab', () =
   expect(form).toHaveAttribute('method', 'get');
   expect(form).toHaveAttribute('target', '_blank');
   expect(within(form).getByRole('searchbox', { name: 'Search the guides on wconvert.io' })).toHaveAttribute('name', 'q');
-  expect(within(form).getByRole('link', { name: /^Exit intent/ })).toHaveAttribute('href', 'https://wconvert.io/docs/?q=Exit%20intent');
+  expect(within(form).getByRole('link', { name: /^Scroll trigger/ })).toHaveAttribute('href', 'https://wconvert.io/docs/?q=Scroll%20trigger');
   expect(docsSearchUrl('a&b')).toBe('https://wconvert.io/docs/?q=a%26b');
   expect(docsUrl(GUIDES.publishBlocked, 'publication-blockers')).toBe('https://wconvert.io/docs/form-rejected/#publication-blockers');
   expect(docsUrl()).toBe('https://wconvert.io/docs/');
@@ -103,4 +103,19 @@ it('makes the page\'s own WordPress submenu entry current, and puts Campaigns ba
   expect(help).not.toHaveAttribute('aria-current');
   expect(campaigns).toHaveClass('current');
   menu.remove();
+});
+
+/** A free install's suggestions and topic lines name only what it does (ADR 0147). */
+it('keeps Pro features out of a free install’s searches and topics', () => {
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'free' };
+  const { unmount } = render(<HelpPage />);
+  expect(screen.queryByRole('link', { name: /^Exit intent/ })).toBeNull();
+  expect(screen.queryByText(/Recommend products|quiz answers/)).toBeNull();
+  expect(screen.getByText('Target baskets and understand product activity.')).toBeInTheDocument();
+  unmount();
+
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro', tiers: { pro: { name: 'Pro', product_name: 'WConvert Pro' } } };
+  render(<HelpPage />);
+  expect(screen.getByRole('link', { name: /^Exit intent/ })).toBeInTheDocument();
+  expect(screen.getByText(/Recommend products/)).toBeInTheDocument();
 });

@@ -258,6 +258,8 @@ description under a control whose label already said it, a text box echoing a
 value shown beside it, an onboarding tour on a working screen, a marketing
 line, a reassurance repeated on every card, a permanent "No unsaved changes".
 
+> _Amended by ADR 0147: **the Pro hint is the one marketing line allowed**, and it passes this section's test — without it a free merchant keeps hunting for a feature this install doesn't have. So it goes only in the list where that feature would sit (Add rule, format picker, Flow map, destinations, campaign ⋯), never on an empty state, a success screen or a dashboard._
+
 **Save feedback is "Saved just now", beside the Save button** (`shell/SaveStatus`,
 ADR 0131). It appears when a save succeeds and clears on the next edit, so it
 is only ever true. No toast, no "…saved." sentence at the top of a region.
@@ -536,6 +538,7 @@ Three places had collapsed them.
 |---|---|---|
 | **Amber** (`warning`) | **The site is holding this back.** | Suspended, *Paused*, *Needs X* |
 | **Grey** (`secondary`) + a lock | It costs money. | every Pro upsell |
+| Muted note, ink link — **no badge, no lock** | Pro has this; this install doesn't. | the Pro hint, free only (ADR 0147) |
 | **Green** (`success`) | It is working. | *Delivering* |
 | **Red** (`destructive`) | It is broken. | *Failing* |
 

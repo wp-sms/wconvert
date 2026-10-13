@@ -4,8 +4,8 @@ import { render, screen, fireEvent, cleanup, within } from '@testing-library/rea
 import { afterEach, expect, it, vi } from 'vitest';
 import type { Template, TemplateTree } from '@renderer/types';
 import type { TemplateLabels } from '../../resources/admin/src/templates/api';
-import { GraphRouteSettings } from '../../resources/admin/src/builder/GraphRouteSettings';
-import { ResultSettings, QuestionSettings } from '../../resources/admin/src/builder/JourneySettings';
+import { GraphRouteSettings } from '../../pro/modules/journeys/admin/GraphRouteSettings';
+import { ResultSettings, QuestionSettings } from '../../pro/modules/journeys/admin/JourneySettings';
 import { JourneyConsentSettings } from '../../resources/admin/src/builder/JourneyConsentSettings';
 import { Tokens } from '../../resources/admin/src/builder/Tokens';
 import { walkNodes } from '../../resources/admin/src/builder/structure/journey';

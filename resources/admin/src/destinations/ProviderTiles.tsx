@@ -3,6 +3,8 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Badge } from '../components/ui/badge';
 import { isShown, renderingFor, tierProductName } from '../goals/availability';
 import { ProviderMark } from './ProviderMark';
+import { ProHint } from '../shell/ProHint';
+import { adminSettings } from '../settings';
 import type { Destination, DestinationType } from './api';
 
 /*
@@ -45,6 +47,17 @@ export function providerRefusal(type: DestinationType, rule: ChannelRule | null)
 }
 
 /**
+ * The services Pro connects to that this site has no type for. Pro's types are
+ * not registered on a free install, so their names come from `tiers.json`; a
+ * type registered here (or shown locked) is not named twice.
+ */
+export function proDestinationNames(types: readonly DestinationType[]): readonly string[] {
+  const here = new Set(types.filter((type) => type.availability !== 'locked').map((type) => type.label));
+  const locked = types.filter((type) => type.availability === 'locked').map((type) => type.label);
+  return [...new Set([...locked, ...(adminSettings()?.tiers?.pro?.destinations ?? [])])].filter((name) => !here.has(name));
+}
+
+/**
  * The providers a merchant can set a new route up over, as tiles.
  *
  * A locked type on a free install is not drawn (ADR 0116); every other refusal
@@ -60,7 +73,7 @@ export function ProviderTiles({ types, rule, suggested, onChoose }: {
   const id = useId();
   const shown = types.filter((type) => isShown(type.availability));
   if (shown.length === 0) return <p className="m-0 text-note text-muted-foreground">{__('No destination providers are available on this site.', 'wconvert')}</p>;
-  return (
+  return (<>
     <ul className="wconvert-provider-tiles" aria-label={__('Destination providers', 'wconvert')}>
       {shown.map((type) => {
         const refusal = providerRefusal(type, rule);
@@ -81,5 +94,7 @@ export function ProviderTiles({ types, rule, suggested, onChoose }: {
         );
       })}
     </ul>
-  );
+    {/* The providers this install lacks are not drawn as tiles; they are named once, below (ADR 0147). */}
+    <ProHint medium="destinations" features={proDestinationNames(types)} />
+  </>);
 }

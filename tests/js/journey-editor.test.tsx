@@ -20,7 +20,7 @@ function QuestionPanelProbe({ step }: { step: number }) {
 const questionPanel = (step: number) => ({ elementSelection: { path: [step, 'children', 0] }, elementPanel: <QuestionPanelProbe step={step} /> });
 import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
-import { ConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
+import { ConditionSettings } from '../../pro/modules/journeys/admin/JourneySettings';
 import { addGraphResultSignup, movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
@@ -28,6 +28,7 @@ import source from '../../resources/templates/library/journey-email-only.json';
 import rules from '../fixtures/journey-rules.json';
 import service from '../../pro/modules/journeys/templates/journey-service-enquiry.json';
 import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
+import { registerJourneyAuthoring } from '../../pro/modules/journeys/admin/register';
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 import branchGroups from '../fixtures/journey-graph-branch-groups.json';
 
@@ -65,7 +66,8 @@ vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ 
   <button onClick={() => onAdd(0, 'saved')}>Insert after save</button>
   <button onClick={() => onAdd(2, 'start')}>Insert test screen</button>
 </div> }));
-// Journey authoring is offered only where Pro's `journeys` module registered it (ADR 0116).
+// Journey authoring is Pro's: its `journeys` module sets the flag and fills the slots (ADR 0147).
+registerJourneyAuthoring();
 beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); window.wconvertAdmin = { exportUrl: '', journeys: true }; });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); delete window.wconvertAdmin; });
 
@@ -1159,7 +1161,7 @@ it('offers a free install linear screens only, with no question, condition or pa
   expect(tree.steps).toHaveLength(3);
   expect(tree.graph).toBeUndefined();
   expect(tree.steps.some(item => item.paths || item.when || walkNodes(item.content).some(node => node.type === 'question'))).toBe(false);
-  expect(screen.queryByText('This site’s plan can’t show questions, results, answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.')).not.toBeInTheDocument();
+  expect(screen.queryByText('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.')).not.toBeInTheDocument();
 });
 
 it('tells a free install it cannot display a journey draft, without naming Pro', async () => {
@@ -1167,14 +1169,91 @@ it('tells a free install it cannot display a journey draft, without naming Pro',
   const user = userEvent.setup();
   render(<Editor initial={finder.tree as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  expect(screen.getByText('This site’s plan can’t show questions, results, answer lines or “Only if…”. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them, or upgrade.')).toBeInTheDocument();
-  expect(screen.queryByText(/WConvert Pro|requires Pro|needs Pro/)).not.toBeInTheDocument();
+  expect(screen.getByText('This design uses elements this site can’t display. This campaign can’t be published, and a live copy is paused; your draft keeps saving. Remove them to publish.')).toBeInTheDocument();
+  expect(screen.queryByText(/WConvert Pro|requires Pro|needs Pro|upgrade/i)).not.toBeInTheDocument();
   // An imported journey is not edited further on a free install.
   expect(screen.queryByRole('heading', { name: 'Results' })).not.toBeInTheDocument();
   expect(screen.queryByText('When visitors see their result')).not.toBeInTheDocument();
   expect(screen.queryByRole('textbox', { name: 'Question' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
   expect(screen.queryByRole('menuitem', { name: 'Add question screen' })).not.toBeInTheDocument();
+});
+
+/** "Remove them to publish" has to be doable without Pro's editors (ADR 0147). */
+it('lets a free install delete a journey draft’s question and result screens', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  const initial = finder.tree as TemplateTree;
+  const at = (id: string) => initial.steps.findIndex(item => item.id === id);
+  const question = initial.steps.find(item => item.kind === 'input' && item.id !== initial.steps[0].id && JSON.stringify(item.content).includes('"question"'))!;
+  const result = initial.steps.find(item => item.kind === 'result')!;
+  function FreeEditor({ start }: { start: number }) {
+    const [tree, setTree] = useState(initial);
+    const [step, setStep] = useState(start);
+    return <><JourneyEditor tree={tree} step={step} primaryChannel="email" onChange={setTree} onSelect={setStep} />
+      <output data-testid="draft">{JSON.stringify(tree)}</output></>;
+  }
+  for (const target of [question, result]) {
+    const view = render(<FreeEditor start={at(target.id)} />);
+    await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+    await user.click(screenMenu());
+    const item = screen.getByRole('menuitem', { name: 'Delete screen' });
+    expect(item).not.toHaveAttribute('aria-disabled');
+    await user.click(item);
+    const confirm = screen.getAllByRole('button', { name: 'Delete screen' }).at(-1)!;
+    await user.click(confirm);
+    expect(draft().steps.map(step => step.id)).not.toContain(target.id);
+    view.unmount();
+  }
+});
+
+/** A graph draft can't publish on free however many screens go, so free offers one way out (ADR 0147). */
+it('makes a free install’s graph draft a straight campaign in one undoable edit', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.queryByRole('button', { name: 'Add screen' })).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Make it a straight campaign' }));
+  await user.click(screen.getByRole('button', { name: 'Make it straight' }));
+  expect(draft()).not.toHaveProperty('graph');
+  expect(draft().steps.map(item => item.id)).toEqual(['contact', 'received']);
+  expect(screen.queryByText(/This design uses elements this site can’t display/)).toBeNull();
+});
+
+it('undoes making it straight in one step', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  function HistoryEditor() {
+    const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree: initial, tokens: {} } } }));
+    const [step, setStep] = useState(0);
+    return <><button onClick={() => setHistory(undo)}>Undo edit</button>
+      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+        onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
+      <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
+  }
+  render(<HistoryEditor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Make it a straight campaign' }));
+  await user.click(screen.getByRole('button', { name: 'Make it straight' }));
+  expect(draft()).not.toHaveProperty('graph');
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Undo edit' }));
+  expect(draft()).toEqual(initial);
+});
+
+it('keeps result screens and used answers on a site with the journey editors', () => {
+  const initial = finder.tree as TemplateTree;
+  const result = initial.steps.findIndex(item => item.kind === 'result');
+  const garden = initial.steps.findIndex(item => item.id === 'garden');
+  expect(removedScreen(initial, result)).toBe(initial);
+  expect(removedScreen(initial, garden)).toBe(initial);
+  const freed = removedScreen(initial, garden, false);
+  expect(freed.steps.map(item => item.id)).not.toContain('garden');
+  const asked = walkNodes(initial.steps[garden].content).flatMap(node => node.type === 'question' && 'id' in node ? [node.id] : []);
+  expect(asked.length).toBeGreaterThan(0);
+  for (const id of asked) expect(JSON.stringify(freed)).not.toContain(`"question":"${id}"`);
 });
 
 /** D4: Flow is offered only while there is more than one way through, and leaving it is automatic when the last branch goes. */

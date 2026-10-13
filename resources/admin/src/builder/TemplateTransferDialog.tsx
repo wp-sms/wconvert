@@ -175,7 +175,7 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
                   <li><Check aria-hidden="true" /><div><strong>{__('Your latest edits', 'wconvert')}</strong><p>{__('Includes changes you haven’t saved yet', 'wconvert')}</p></div></li>
                 </ul>
               </section>
-              <div className="wconvert-transfer__note"><h3>{__('Design only', 'wconvert')}</h3><p>{__('Campaign settings, connections, and leads stay on this site. Paid features still need a matching plan on the receiving site.', 'wconvert')}</p></div>
+              <div className="wconvert-transfer__note"><h3>{__('Design only', 'wconvert')}</h3><p>{__('Campaign settings, connections, and leads stay on this site. Some features may not be available on the receiving site.', 'wconvert')}</p></div>
               {hasProblems && <section className="wconvert-transfer__warning"><h3><TriangleAlert aria-hidden="true" />{__('Some images can’t be included', 'wconvert')}</h3><ul>{Object.entries(problems).map(([slot, message]) => <li key={slot}>{message}</li>)}</ul><p>{__('Continue without these images, or cancel and replace them in the editor.', 'wconvert')}</p></section>}
             </> : <>
               <fieldset className="wconvert-transfer__section wconvert-transfer__content wconvert-radio-cards" disabled={busy}><legend>{__('Content to use', 'wconvert')}</legend>

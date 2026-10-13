@@ -12,7 +12,7 @@ import {
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
 import { FactList } from '../shell/FactList';
-import { GuideLink } from '../shell/GuideLink';
+import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
 import { campaignFacts, linksIn } from '../optins/campaignFacts';
 import { formatCount, humanize, labelOf } from '../lib/format';
@@ -307,8 +307,8 @@ export function ReadinessDialog({
           <AdminDialogBody inert={publishing}>
             {optin.suspended !== null && (
               <p className="wconvert-launch-review__notice">
-                {optin.suspended}{' '}
-                <GuideLink href={docsUrl(GUIDES.proUnavailable, 'identify-the-problem')}>{__('What to check', 'wconvert')}</GuideLink>
+                {optin.suspended}
+                <SuspensionGuideLink needs={optin.suspended_needs} />
               </p>
             )}
             {published ? (

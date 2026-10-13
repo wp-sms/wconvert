@@ -273,6 +273,7 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
   }
 
   if (row.browser.recoveryStatus) details.append(note(row.browser.recoveryStatus));
+  if (row.browser.reopenUnavailable) details.append(note(text(labels, 'reopen_unavailable')));
 
   if (row.browser.opening) {
     const opening = row.browser.opening;

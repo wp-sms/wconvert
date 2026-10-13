@@ -215,7 +215,7 @@ final class OptinController implements RestController
         $includeDeleted = (bool) $request->get_param('include_deleted');
 
         $summaries = $this->optins->summaries($includeDeleted);
-        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
+        $suspended = Suspension::in($this->publishedSet->all(), $this->degradation, $this->rules);
 
         // ====================================================================
         // AND THE ARMS, NESTED — THE OTHER HALF OF ADR 0045'S LIST.
@@ -231,8 +231,7 @@ final class OptinController implements RestController
         // performs for the same reason (ADR 0034).
         $arms = $this->optins->armsByParent($includeDeleted);
 
-        $describe = static fn (array $row): array => array_replace($row, [
-            'suspended' => $suspended[$row['id'] ?? ''] ?? null,
+        $describe = static fn (array $row): array => array_replace($row, Suspension::fields($suspended[$row['id'] ?? ''] ?? null), [
             'has_unpublished_changes' => (bool) ($row['has_unpublished_changes'] ?? false),
         ]);
 
@@ -277,10 +276,9 @@ final class OptinController implements RestController
             return self::notFound();
         }
 
-        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
+        $suspended = Suspension::in($this->publishedSet->all(), $this->degradation, $this->rules);
 
-        return new WP_REST_Response($optin->toArray() + [
-            'suspended' => $suspended[$optin->id] ?? null,
+        return new WP_REST_Response($optin->toArray() + Suspension::fields($suspended[$optin->id] ?? null) + [
             'sibling_act' => $this->actOfTheOtherArms($optin->id)?->value,
         ]);
     }
@@ -693,9 +691,9 @@ final class OptinController implements RestController
         // A successful promotion is not necessarily showing on this install.
         // Return the confirmed state so the editor needs no second request to
         // distinguish a published snapshot from a suspended one.
-        $suspended = Suspension::reasonsIn($this->publishedSet->all(), $this->degradation, $this->rules);
+        $suspended = Suspension::in($this->publishedSet->all(), $this->degradation, $this->rules);
 
-        return new WP_REST_Response($published->toArray() + ['suspended' => $suspended[$id] ?? null]);
+        return new WP_REST_Response($published->toArray() + Suspension::fields($suspended[$id] ?? null));
     }
 
     /**

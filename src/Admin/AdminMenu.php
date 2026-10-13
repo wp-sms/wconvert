@@ -241,6 +241,7 @@ final class AdminMenu
     public static function settings(): array
     {
         $manifest = TierManifest::load();
+        $pro = new WpProPresence();
 
         return [
             // The CSV download is a navigation to `admin-post.php`, so the
@@ -248,7 +249,10 @@ final class AdminMenu
             // `apiFetch` would read the file into memory and then have to turn
             // it back into a download.
             'exportUrl' => LeadExport::url(),
-            'installedTier' => (new \WConvert\Support\WpProPresence())->installedTier()->value,
+            'installedTier' => $pro->installedTier()->value,
+            // The contextual Pro hints, and whether they say "Activate it" (ADR 0147).
+            'proHints' => ProHints::shown($pro),
+            'proInstalledInactive' => ProHints::proInstalledInactive($pro),
             // Registered by Pro's journeys module, never inferred from a tier:
             // the builder offers questions, results and paths only where the
             // code that draws them is on disk (ADR 0116).
@@ -331,7 +335,7 @@ final class AdminMenu
             // It never renders `unavailable`: nothing about the SITE makes a
             // test impossible, so this is `ready` or `locked` and the `locked`
             // card names {@see self::VARIANT_MODULE}'s tier.
-            'variants' => self::whetherTestsCanRun($manifest, new WpProPresence()),
+            'variants' => self::whetherTestsCanRun($manifest, $pro),
         ];
     }
 

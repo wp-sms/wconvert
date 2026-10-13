@@ -16,7 +16,8 @@ import { Gallery, type Fit } from './Gallery';
 import { DesignComparison } from './DesignComparison';
 import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
-import { displayTypeOptions } from '../displayTypes';
+import { displayTypeOptions, proDisplayTypeLabels } from '../displayTypes';
+import { ProHint } from '../shell/ProHint';
 import { nameOf, type TemplateIndex, type TemplateIndexEntry } from '../templates/api';
 import type { Template } from '@renderer/types';
 import { usePicker } from '../discovery/usePicker';
@@ -181,6 +182,8 @@ export function TemplatePicker({
             </select>
             <Button variant="outline" disabled={busy} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('Preferences','wconvert')}</Button>
           </div>
+          {/* Under the row with the Format select: where the formats this site lacks would be listed (ADR 0147). */}
+          {onFormatChange && <ProHint medium="format-picker" features={proDisplayTypeLabels()} />}
           {/* The rarer filters as a quiet toggle, and the count at the far end (index.css orders them). */}
           <div className="wconvert-picker__facet">
             <span role="status" aria-live="polite" aria-atomic="true" className="wconvert-picker__count">

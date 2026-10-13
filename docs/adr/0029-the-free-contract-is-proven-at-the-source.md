@@ -133,7 +133,11 @@ the unscoped version: it *deliberately does not* grep its core bundle for premiu
 module slugs, because core owns the slot↔module map by design. Same rule, two
 bundles, opposite verdicts.
 
+*Amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): the identifier scan still stays out of the admin bundle, but the admin and inspector bundles now get a check of their own. `bin/check-admin.mjs` — a fourth program, on the same no-flags rule — fails if free's built admin or inspector carries any Pro module's `admin_markers` (its admin CODE, which free must not ship) or the word "upgrade".*
+
 ## The gate is three programs, and none takes a flag
+
+*Four since [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): `bin/check-admin.mjs` joins them, on the same no-flags rule.*
 
 `bin/verify-source-contract.sh` (no build, every PR), `npm run check:loader` (the
 loader build, every PR), `bin/verify-artifact-contract.sh <staged-tree>` (called from
