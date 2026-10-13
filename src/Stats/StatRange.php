@@ -51,6 +51,9 @@ final class StatRange
     /**
      * Why a window was refused, as exception codes, so the route can say it in
      * the merchant's language: this class has no WordPress in it to translate.
+     *
+     * Thrown as `(int) self::…`: Plugin Check's escaping sniff reads every
+     * exception argument as output and accepts a cast, not a constant.
      */
     public const INVALID_MONTH = 1;
     public const INVALID_DAY = 2;
@@ -96,7 +99,7 @@ final class StatRange
     public static function calendarMonth(string $month, string $today): self
     {
         if (!preg_match('/^[1-9][0-9]{3}-(0[1-9]|1[0-2])$/D', $month) || $month > substr($today, 0, 7)) {
-            throw new \InvalidArgumentException('Choose a current or earlier calendar month.', self::INVALID_MONTH);
+            throw new \InvalidArgumentException('Choose a current or earlier calendar month.', (int) self::INVALID_MONTH);
         }
         $from = $month . '-01';
         $end = (new \DateTimeImmutable($from, new \DateTimeZone('UTC')))->format('Y-m-t');
@@ -120,17 +123,17 @@ final class StatRange
     public static function between(string $from, string $to, string $today): self
     {
         if (!self::isDay($from) || !self::isDay($to)) {
-            throw new \InvalidArgumentException('Choose two calendar days.', self::INVALID_DAY);
+            throw new \InvalidArgumentException('Choose two calendar days.', (int) self::INVALID_DAY);
         }
         if ($from > $to) {
-            throw new \InvalidArgumentException('The first day comes after the last.', self::REVERSED);
+            throw new \InvalidArgumentException('The first day comes after the last.', (int) self::REVERSED);
         }
         if ($to > $today) {
-            throw new \InvalidArgumentException('The last day cannot be after today.', self::AFTER_TODAY);
+            throw new \InvalidArgumentException('The last day cannot be after today.', (int) self::AFTER_TODAY);
         }
         $range = new self($from, $to);
         if ($range->days() > self::MAX_DAYS) {
-            throw new \InvalidArgumentException('Choose a shorter range.', self::TOO_LONG);
+            throw new \InvalidArgumentException('Choose a shorter range.', (int) self::TOO_LONG);
         }
 
         return $range;
