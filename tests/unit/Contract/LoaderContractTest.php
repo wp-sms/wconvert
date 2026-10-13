@@ -84,82 +84,39 @@ final class LoaderContractTest extends TestCase
     }
 
     /**
-     * A rule vocabulary with one entry at each rung of the ladder.
+     * A rule vocabulary with a free entry and two premium ones.
      *
      * @return array<string, mixed>
      */
-    private static function ladderManifest(): array
+    private static function premiumManifest(): array
     {
         return [
             'targeting' => ['url' => ['kind' => 'page', 'tier' => 'free']],
-            'triggers' => [
-                'exit_intent' => ['kind' => 'trigger', 'tier' => 'pro'],
-                'a_bar' => ['kind' => 'trigger', 'tier' => 'basic'],
-            ],
-            'conditions' => ['cart_has_items' => ['kind' => 'condition', 'tier' => 'elite']],
+            'triggers' => ['exit_intent' => ['kind' => 'trigger', 'tier' => 'pro']],
+            'conditions' => ['cart_has_items' => ['kind' => 'condition', 'tier' => 'pro']],
         ];
     }
 
-    /** The tier ladder, as `tiers.json` declares it. */
-    private static function tiers(): string
-    {
-        return (string) json_encode([
-            'premium' => [
-                'tiers' => [
-                    ['slug' => 'basic', 'name' => 'Pro', 'modules' => ['display-types']],
-                    ['slug' => 'pro', 'name' => 'Pro', 'modules' => ['display-types', 'premium-triggers']],
-                    // Named rather than `'*'`, because there IS no wildcard:
-                    // against one the artifact contract's completeness half
-                    // asserts nothing, and the top rung — the one every
-                    // customer buys — would be the only rung with no check
-                    // (ADR 0056). A fixture that spelled a ladder the product
-                    // forbids was a fixture asserting the wrong thing.
-                    [
-                        'slug' => 'elite',
-                        'name' => 'Pro',
-                        'modules' => ['display-types', 'premium-triggers', 'cart-recovery'],
-                    ],
-                ],
-            ],
-        ]);
-    }
-
     /**
-     * A tree with all four bundles and both manifests, each overridable.
+     * A tree with both bundles, the rule manifest and the module manifests,
+     * each overridable.
      *
-     * ========================================================================
-     * FOUR BUNDLES, BECAUSE THERE ARE FOUR (ADR 0056).
-     * ========================================================================
-     * These fixtures named two while Pro was one build, and a fixture that is
-     * missing a bundle the program checks is a fixture the program fails
-     * closed on — which would have read as "the new check works" for every
-     * test in this file at once. So the trees are complete by default and each
-     * test poisons exactly the one thing it is about.
+     * The trees are complete by default and each test poisons exactly the one
+     * thing it is about: a fixture missing something the program inspects is
+     * a fixture the program fails CLOSED on, which would read as "the check
+     * works" for every test in this file at once.
      *
      * @param array<string, string|null> $overrides
      */
     private function loaderTree(array $overrides = []): string
     {
         return $this->tree([
-            'tiers.json' => self::tiers(),
             'resources/rules/manifest.json' => self::manifest(self::freeOnlyManifest()),
             'public/loader/loader.js' => 'console.log("free");',
-            'pro/public/tiers/basic/loader/loader.js' => 'console.log("basic");',
-            'pro/public/tiers/pro/loader/loader.js' => 'console.log("pro");',
-            'pro/public/loader/loader.js' => 'console.log("elite");',
-            // ================================================================
-            // AND THE MODULE MANIFESTS, BECAUSE A MODULE MAY DECLARE A MARKER.
-            // ================================================================
-            // The identifier scan reads its list out of the RULE manifest, so
-            // it can only see a module whose contribution is a rule. A module
-            // that ships loader code and declares no rule type — `ab-testing`
-            // is the first — declares a token instead, in its own
-            // `module.json`, and the same scan runs over that (ADR 0056).
-            //
-            // The tree carries them by default for the reason it carries four
-            // bundles: a fixture missing what the program inspects is a
-            // fixture the program fails CLOSED on, which would read as "the
-            // check works" for every test in this file at once.
+            'pro/public/loader/loader.js' => 'console.log("pro");',
+            // A module may declare a marker — a token its built JavaScript
+            // carries — for when its contribution is not a rule type the
+            // identifier scan could look for. `ab-testing` is the first.
             'pro/modules/display-types/module.json' => '{"slug":"display-types"}',
             'pro/modules/premium-triggers/module.json' =>
                 '{"slug":"premium-triggers","bundle_marker":".aTokenOnlyProShips"}',
@@ -181,10 +138,10 @@ final class LoaderContractTest extends TestCase
         return ['status' => $status, 'output' => implode("\n", $output)];
     }
 
-    public function testPassesOnATreeWhoseBundlesAreSmallAndCarryNoHigherRungsRules(): void
+    public function testPassesOnATreeWhoseBundlesAreSmallAndWhoseFreeLoaderCarriesNoPremiumRule(): void
     {
         $result = $this->check($this->loaderTree([
-            'resources/rules/manifest.json' => self::manifest(self::ladderManifest()),
+            'resources/rules/manifest.json' => self::manifest(self::premiumManifest()),
         ]));
 
         $this->assertSame(0, $result['status'], $result['output']);
@@ -195,29 +152,31 @@ final class LoaderContractTest extends TestCase
      * THE SAME LEAK FOR A MODULE THAT SHIPS NO RULE TYPE AT ALL.
      * ========================================================================
      * The identifier scan reads its list out of the rule manifest, so a module
-     * whose contribution is not a rule has nothing there to look for — and a
-     * Basic bundle carrying that module's whole implementation would pass
-     * every other check in this program. That is the byte-identical
-     * JavaScript ADR 0056 measures WSMS by, reached through a gap in the scan
-     * rather than through a flag, so the module declares a token of its own
-     * and this is what proves the token is read.
+     * whose contribution is not a rule has nothing there to look for — and
+     * free's bundle carrying that module's whole implementation would pass
+     * every other check in this program. So the module declares a token of its
+     * own and this is what proves the token is read.
      */
-    public function testFailsWhenALowerRungsBundleCarriesAHigherRungsModuleMarker(): void
+    public function testFailsWhenFreesLoaderCarriesAModuleMarker(): void
     {
         $result = $this->check($this->loaderTree([
-            'pro/public/tiers/basic/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
+            'public/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
         $this->assertStringContainsString('.aTokenOnlyProShips', $result['output']);
     }
 
-    /** And a bundle at or above the rung that ships it may carry it. */
-    public function testARungMayCarryTheMarkerOfAModuleItShips(): void
+    /**
+     * Pro's loader IS the premium code, so it may carry every marker and every
+     * premium identifier. Without this half a program that failed every Pro
+     * bundle unconditionally would pass the tests above.
+     */
+    public function testProsLoaderMayCarryEveryPremiumIdentifierAndMarker(): void
     {
         $result = $this->check($this->loaderTree([
-            'pro/public/tiers/pro/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
-            'pro/public/loader/loader.js' => 'var x=e.aTokenOnlyProShips;',
+            'pro/public/loader/loader.js' => 'var rules={exit_intent:1,cart_has_items:1},x=e.aTokenOnlyProShips;',
+            'resources/rules/manifest.json' => self::manifest(self::premiumManifest()),
         ]));
 
         $this->assertSame(0, $result['status'], $result['output']);
@@ -230,9 +189,7 @@ final class LoaderContractTest extends TestCase
      * The marker list is what a module DECLARES, so a module that declares
      * none is one this scan cannot see — and a tick printed beside a scan that
      * skipped three of them reports "clean" while asserting less than it says,
-     * which is the failure this ADR is about. It is also what would hide the
-     * next module to ship loader code and no rule type, exactly as
-     * `ab-testing` was hidden until it was looked for.
+     * which is the failure ADR 0029 is about.
      */
     public function testItNamesTheModulesItDidNotScanFor(): void
     {
@@ -265,109 +222,31 @@ final class LoaderContractTest extends TestCase
 
     /**
      * The leak this exists to catch: free's loader carrying a rule type the
-     * manifest files at a paid rung.
+     * manifest files as premium — every premium entry, not just one.
      */
     public function testFailsWhenFreesLoaderCarriesAPremiumIdentifier(): void
     {
-        $result = $this->check($this->loaderTree([
-            'public/loader/loader.js' => 'var rules={exit_intent:1};',
-            'resources/rules/manifest.json' => self::manifest(self::ladderManifest()),
-        ]));
-
-        $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('exit_intent', $result['output']);
-    }
-
-    /**
-     * ========================================================================
-     * AND FREE IS SCANNED FOR EVERY RUNG, NOT FOR ONE WORD.
-     * ========================================================================
-     * This program read `entry.tier === 'pro'`, which was right while `pro`
-     * was the only paid word. Under the ladder (ADR 0056) it silently stopped
-     * looking for anything filed at `basic` or `elite` — the check would have
-     * gone on printing a tick while asserting less than it said, which is the
-     * exact shape ADR 0029 exists to refuse.
-     */
-    public function testFailsForAnIdentifierAtEveryPaidRungAndNotJustTheMiddleOne(): void
-    {
-        foreach (['a_bar' => 'basic', 'cart_has_items' => 'elite'] as $identifier => $rung) {
+        foreach (['exit_intent', 'cart_has_items'] as $identifier) {
             $result = $this->check($this->loaderTree([
                 'public/loader/loader.js' => sprintf('var rules={%s:1};', $identifier),
-                'resources/rules/manifest.json' => self::manifest(self::ladderManifest()),
+                'resources/rules/manifest.json' => self::manifest(self::premiumManifest()),
             ]));
 
-            $this->assertSame(1, $result['status'], sprintf('a %s rule went unscanned: %s', $rung, $result['output']));
+            $this->assertSame(1, $result['status'], $result['output']);
             $this->assertStringContainsString($identifier, $result['output']);
         }
     }
 
     /**
-     * ========================================================================
-     * A RUNG MAY CARRY ITS OWN RULES AND NEVER A HIGHER RUNG'S.
-     * ========================================================================
-     * This is the JavaScript half of the per-tier artifact contract, and it is
-     * the difference between a tier split and a decoration. WSMS ships a
-     * byte-identical `main.js` at all three of its tiers, so a Basic customer
-     * holds the Elite UI behind a client-readable flag — under
-     * possession-gating that is not a weaker gate, it is no gate (ADR 0056).
-     *
-     * Both directions are asserted: the rung's OWN identifier is fine, and the
-     * one above it is not. Without the first half a program that failed every
-     * Pro bundle unconditionally would pass this test.
+     * An empty premium list scans for nothing, and the program says so rather
+     * than printing a tick it did not earn.
      */
-    public function testAPaidBundleMayCarryItsOwnRungAndNotTheOneAbove(): void
+    public function testAManifestWithNothingPremiumIsToldSo(): void
     {
-        $manifest = self::manifest(self::ladderManifest());
-
-        $ownRung = $this->check($this->loaderTree([
-            'pro/public/tiers/pro/loader/loader.js' => 'var rules={exit_intent:1};',
-            'resources/rules/manifest.json' => $manifest,
-        ]));
-
-        $this->assertSame(0, $ownRung['status'], $ownRung['output']);
-
-        foreach (['basic', 'pro'] as $rung) {
-            $result = $this->check($this->loaderTree([
-                "pro/public/tiers/{$rung}/loader/loader.js" => 'var rules={cart_has_items:1};',
-                'resources/rules/manifest.json' => $manifest,
-            ]));
-
-            $this->assertSame(1, $result['status'], sprintf('%s shipped an elite rule: %s', $rung, $result['output']));
-            $this->assertStringContainsString('cart_has_items', $result['output']);
-        }
-    }
-
-    /**
-     * The top rung is supposed to contain every premium identifier — that is
-     * what elite is — so nothing is filed above it and the scan says so
-     * rather than printing a tick it did not earn.
-     */
-    public function testTheTopRungCarriesEverythingAndIsToldSo(): void
-    {
-        $result = $this->check($this->loaderTree([
-            'pro/public/loader/loader.js' => 'var rules={exit_intent:1,cart_has_items:1};',
-            'resources/rules/manifest.json' => self::manifest(self::ladderManifest()),
-        ]));
+        $result = $this->check($this->loaderTree());
 
         $this->assertSame(0, $result['status'], $result['output']);
         $this->assertStringContainsString('asserted nothing', $result['output']);
-    }
-
-    /**
-     * A rung the ladder does not declare is a rung whose identifiers would
-     * belong to no scan at all — dropped silently rather than looked for.
-     */
-    public function testFailsWhenTheManifestFilesARuleAtARungTheLadderDoesNotDeclare(): void
-    {
-        $result = $this->check($this->loaderTree([
-            'resources/rules/manifest.json' => self::manifest([
-                'targeting' => ['url' => ['kind' => 'page', 'tier' => 'free']],
-                'triggers' => ['agency_rules' => ['kind' => 'trigger', 'tier' => 'enterprise']],
-            ]),
-        ]));
-
-        $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('enterprise', $result['output']);
     }
 
     public function testFailsWhenABundleExceedsTheByteBudget(): void
@@ -382,6 +261,16 @@ final class LoaderContractTest extends TestCase
         $this->assertStringContainsString('14720', $result['output']);
     }
 
+    public function testFailsWhenProsBundleExceedsItsByteBudget(): void
+    {
+        $result = $this->check($this->loaderTree([
+            'pro/public/loader/loader.js' => base64_encode(random_bytes(40960)),
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('27712', $result['output']);
+    }
+
     /**
      * @return iterable<string, array{array<string, string|null>}>
      */
@@ -389,14 +278,7 @@ final class LoaderContractTest extends TestCase
     {
         yield 'free bundle missing' => [['public/loader/loader.js' => null]];
 
-        // EVERY paid rung, not just the top one. A build that wrote two of the
-        // three is the state a half-finished per-tier build leaves behind, and
-        // a ZIP is cut from whichever one is there (ADR 0056).
-        yield 'basic bundle missing' => [['pro/public/tiers/basic/loader/loader.js' => null]];
-
-        yield 'pro bundle missing' => [['pro/public/tiers/pro/loader/loader.js' => null]];
-
-        yield 'elite bundle missing' => [['pro/public/loader/loader.js' => null]];
+        yield 'pro bundle missing' => [['pro/public/loader/loader.js' => null]];
 
         yield 'bundle present but empty' => [['public/loader/loader.js' => '']];
 
@@ -405,14 +287,6 @@ final class LoaderContractTest extends TestCase
         yield 'manifest unparseable' => [['resources/rules/manifest.json' => '{ not json']];
 
         yield 'manifest declares no axes' => [['resources/rules/manifest.json' => '{}']];
-
-        yield 'tier ladder missing' => [['tiers.json' => null]];
-
-        yield 'tier ladder unparseable' => [['tiers.json' => '{ not json']];
-
-        yield 'tier ladder declares no tiers' => [['tiers.json' => '{"premium":{"tiers":[]}}']];
-
-        yield 'a declared tier has no slug' => [['tiers.json' => '{"premium":{"tiers":[{"name":"Pro"}]}}']];
     }
 
     /**

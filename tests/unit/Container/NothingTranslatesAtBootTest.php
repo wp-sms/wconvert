@@ -306,8 +306,8 @@ final class NothingTranslatesAtBootTest extends TestCase
     public function testAuthoringRoutesLoadTheCombinedFreeAndProCatalogOnDemand(): void
     {
         // A Pro install that knows it is one: free sends no locked design at
-        // all (ADR 0116), so Pro's designs only appear where Pro is the rung.
-        $this->boot(new FakeProPresence(\WConvert\Support\Tier::Elite));
+        // all (ADR 0116), so Pro's designs only appear where Pro is installed.
+        $this->boot(new FakeProPresence(\WConvert\Support\Tier::Pro));
         do_action('rest_api_init');
 
         $callbacks = [];

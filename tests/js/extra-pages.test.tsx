@@ -34,14 +34,14 @@ it('draws a registered page inside the frame with no tab current', () => {
 
 it('is a plain label when nothing says where it goes', () => {
   setPlanBadge(null);
-  render(<PlanBadge tier="elite" />);
+  render(<PlanBadge tier="pro" />);
 
   expect(screen.queryByRole('link')).toBeNull();
 });
 
 it('becomes a prompt with the words it is given', () => {
   setPlanBadge({ href: '#elsewhere', label: 'Do the thing', prompt: true, tone: null, reason: null });
-  render(<PlanBadge tier="elite" />);
+  render(<PlanBadge tier="pro" />);
 
   const link = screen.getByRole('link', { name: 'Do the thing' });
   expect(link).toHaveAttribute('href', '#elsewhere');
@@ -50,7 +50,7 @@ it('becomes a prompt with the words it is given', () => {
 
 it('carries a dot whose reason a pointer and a screen reader both get, and updates live', () => {
   setPlanBadge({ href: '#elsewhere', label: null, prompt: false, tone: 'red', reason: 'Needs a look now' });
-  render(<PlanBadge tier="elite" currentPage="elsewhere" />);
+  render(<PlanBadge tier="pro" currentPage="elsewhere" />);
 
   const link = screen.getByRole('link', { name: /Needs a look now/ });
   expect(link).toHaveAttribute('title', 'Needs a look now');

@@ -389,13 +389,13 @@ sample content** (ADR 0075), so it teaches the house style and must be truthful.
 | | Free | Pro |
 |---|---|---|
 | Path | `resources/templates/library/*.json` | `pro/modules/display-types/templates/*.json` |
-| `tier` | `free` | `basic`, `pro` or `elite` |
+| `tier` | `free` | `pro` |
 | Display Types | `popup`, `inline` | any, and the only home of `floating_bar` and `slide_in` |
 
 **A Pro design costs two things a free one does not.** A metadata-only stub in
 `resources/templates/locked.json` — the one place a facet is *written* rather
 than derived — and a live page at `https://wconvert.io/designs/<slug>/` for
-its `preview_url`, because a paid install missing that rung shows a card with
+its `preview_url`, because a paid install missing that design shows a card with
 a *"See this design"* link and a dead link is worse than one fewer card. A free
 install is shown no such card (ADR 0116).
 

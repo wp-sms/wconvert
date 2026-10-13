@@ -32,7 +32,7 @@ creation stays intact: merchants choose a Goal, then filter setups by Format.
 ## Merchant experience and starter library
 
 Three `basic` designs: editorial newsletter, split guide request, and poster
-link offer. Their playbooks live beside the Pro module's trees and are composed
+link offer. *Tagged `pro` since [ADR 0146](0146-pro-is-one-tier.md).* Their playbooks live beside the Pro module's trees and are composed
 through the existing additional-playbooks seam, with installed packs preserved.
 Free cannot register a playbook against an absent premium tree. Existing Goals
 are reused, including email growth, lead magnet and promotion.

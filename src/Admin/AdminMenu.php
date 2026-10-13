@@ -31,8 +31,8 @@ final class AdminMenu
      *
      * Free names it because free is what renders the `locked` card for it, on
      * the same footing as every `tier:` value in the rule manifest and on every
-     * [[Goal]] — free's PHP can only mark a capability absent for a rung it can
-     * name (ADR 0005, ADR 0015). Which rung that is stays `tiers.json`'s to
+     * [[Goal]] — free's PHP can only mark a capability absent for a tier it can
+     * name (ADR 0005, ADR 0015). Which tier that is stays `tiers.json`'s to
      * say.
      */
     private const VARIANT_MODULE = 'ab-testing';
@@ -312,31 +312,26 @@ final class AdminMenu
             // here, one line up.
             'designBudget' => DesignBudget::PER_DESIGN,
             // **What to call each paid tier**, read from `tiers.json` rather
-            // than written into five components as the literal "Pro"
-            // (ADR 0056). At launch every rung answers "Pro", so nothing on
-            // screen changes — and splitting the range later is an edit to that
-            // file rather than five strings and a release.
+            // than written into five components as the literal "Pro", so
+            // renaming the product is an edit to that file rather than five
+            // strings and a release.
             'tiers' => $manifest->forTheAdmin(),
             // **Whether this install can run an A/B test**, resolved on the
             // server so no surface recombines two facts in an order of its own
             // (ADR 0026).
             //
             // ================================================================
-            // THE RUNG IS READ OUT OF `tiers.json`, NOT WRITTEN DOWN HERE.
+            // THE TIER IS READ OUT OF `tiers.json`, NOT WRITTEN DOWN HERE.
             // ================================================================
             // A/B testing is a MODULE — `pro/modules/ab-testing/` — so the
-            // question *"which rung supplies it"* already has an answer in the
-            // one file both the build and `WpProPresence` read. Naming
-            // {@see Tier::Pro} here instead would be a second declaration of
-            // the ladder, and moving the feature a rung would then be an edit
-            // to `tiers.json` AND to this file — which is exactly the drift
-            // ADR 0056 spells the ladder twice to avoid, with a parity test
-            // between the two spellings.
+            // question *"which tier supplies it"* already has an answer in the
+            // one file the build is checked against. Naming {@see Tier::Pro}
+            // here instead would be a second declaration of the same fact.
             //
             // It never renders `unavailable`: nothing about the SITE makes a
             // test impossible, so this is `ready` or `locked` and the `locked`
-            // card names {@see self::VARIANT_MODULE}'s rung.
-            'variants' => self::whetherTestsCanRun($manifest, new WpProPresence($manifest)),
+            // card names {@see self::VARIANT_MODULE}'s tier.
+            'variants' => self::whetherTestsCanRun($manifest, new WpProPresence()),
         ];
     }
 
@@ -379,7 +374,7 @@ final class AdminMenu
      */
     private static function whetherTestsCanRun(TierManifest $manifest, ProPresence $pro): array
     {
-        $tier = $manifest->lowestTierSupplying(self::VARIANT_MODULE);
+        $tier = $manifest->tierThatShips(self::VARIANT_MODULE);
 
         return [
             // `true` for the site half, always. A test needs no store, no WSMS

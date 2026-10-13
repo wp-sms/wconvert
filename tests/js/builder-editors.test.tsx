@@ -26,7 +26,7 @@ const menu = () => screen.getByRole('navigation', { name: 'Display rules' });
 const section = async (name: string) => userEvent.click(within(menu()).getByRole('button', { name: new RegExp(name.replace('?', '\\?')) }));
 const picks = (question: string) => screen.getByRole('group', { name: question });
 const pick = (question: string, name: string | RegExp) => within(picks(question)).getByRole('radio', { name });
-const asTier = (installedTier: 'free' | 'basic' | 'pro' | 'elite') => {
+const asTier = (installedTier: 'free' | 'pro') => {
   window.wconvertAdmin = { exportUrl: '', installedTier };
   onTestFinished(() => { delete window.wconvertAdmin; });
 };
@@ -168,14 +168,14 @@ describe('When', () => {
 
   it('hides the Pro picks on a free install', async () => {
     asTier('free');
-    setup(simple, { pro: 'locked', elite: 'locked' }); await section('When does it open?');
+    setup(simple, { pro: 'locked' }); await section('When does it open?');
     expect(within(picks('When does it open?')).queryByRole('radio', { name: /try to leave/ })).toBeNull();
     expect(within(picks('When does it open?')).queryByRole('radio', { name: /click/ })).toBeNull();
     expect(screen.queryByText('Pro')).toBeNull();
   });
 
-  it('draws a locked pick on a lower tier, and refuses it with a reason', async () => {
-    asTier('basic');
+  it('draws a locked pick on a paid install, and refuses it with a reason', async () => {
+    asTier('pro');
     const changed = setup(simple, { pro: 'locked' }); await section('When does it open?');
     const leave = pick('When does it open?', /When they try to leave/);
     expect(leave).toHaveAttribute('aria-disabled', 'true');
@@ -188,14 +188,14 @@ describe('When', () => {
     expect(leave).toHaveAccessibleDescription('“When they try to leave” is part of WConvert Pro. Compare plans');
   });
 
-  it('reads a stored rule this tier cannot run as Custom, so its row explains it', async () => {
-    asTier('basic');
+  it('reads a stored rule this install cannot run as Custom, so its row explains it', async () => {
+    asTier('pro');
     setup({ ...simple, display_rules: displayPlan([{ type: 'exit_intent' }]) }, { pro: 'locked' }); await section('When does it open?');
     expect(pick('When does it open?', 'Custom…')).toBeChecked();
   });
 
   it('explains missing premium capability in the rule picker without offering a disabled rule', async () => {
-    asTier('basic');
+    asTier('pro');
     setup(initial, { pro: 'locked' }); await section('When does it open?');
     await userEvent.click(screen.getByRole('button', { name: 'Add a rule' }));
     const picker = screen.getByRole('dialog', { name: 'Choose a rule' });
@@ -316,8 +316,8 @@ describe('Who', () => {
   });
 
   it('names WooCommerce when the cart pick cannot run here', async () => {
-    asTier('elite');
-    const changed = setup(simple, { elite: 'unavailable' }); await section('Who sees it?');
+    asTier('pro');
+    const changed = setup(simple, { pro: 'unavailable' }); await section('Who sees it?');
     const cart = pick('Who sees it?', /Shoppers with items in their cart/);
     expect(cart.closest('label')).toHaveTextContent('Needs WooCommerce');
     await userEvent.click(cart);

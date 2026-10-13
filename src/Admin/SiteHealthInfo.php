@@ -74,7 +74,7 @@ final class SiteHealthInfo
 
         return [
             'version' => ['label' => __('Version', 'wconvert'), 'value' => WCONVERT_VERSION, 'debug' => WCONVERT_VERSION],
-            // `tiers.json` names the paid rungs only; free is the admin's own word for it.
+            // `tiers.json` names the paid tier only; free is the admin's own word for it.
             'plan' => ['label' => __('Plan', 'wconvert'), 'value' => $tier === Tier::Free ? __('Free', 'wconvert') : $this->manifest->displayName($tier), 'debug' => $tier->value],
             'campaigns' => [
                 'label' => __('Campaigns', 'wconvert'),

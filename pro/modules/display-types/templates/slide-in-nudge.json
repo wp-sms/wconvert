@@ -2,7 +2,7 @@
   "id": "slide-in-nudge",
   "name": "Corner nudge",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "width": "20rem",
     "align": "start",

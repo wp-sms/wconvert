@@ -23,7 +23,7 @@ it('offers it beside Explore Pro on a free install only', () => {
   expect(screen.getByRole('link', { name: /Download it/ })).toHaveAttribute('href', PORTAL_DOWNLOADS_URL);
   unmount();
 
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'elite' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   render(<HeaderTools />);
   expect(screen.queryByRole('link', { name: /Download it/ })).toBeNull();
 });

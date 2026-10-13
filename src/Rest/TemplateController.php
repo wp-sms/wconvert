@@ -128,7 +128,7 @@ final class TemplateController implements RestController
      *
      * ***Amended by ADR 0116: a free install is sent no locked design at
      * all.*** The interleaving above holds wherever Pro is installed, where
-     * the next rung's designs are information the site can act on. On free,
+     * Pro's designs are information the site can act on. On free,
      * `locked.json` stays in the ZIP but never reaches the payload, so the
      * gallery has no card to hide and the REST answer carries no upsell.
      */

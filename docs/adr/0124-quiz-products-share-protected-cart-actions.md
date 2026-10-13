@@ -34,6 +34,8 @@ Direct actions and product-level tracking use the existing cart-recovery module
 (internal Elite, the WConvert Pro package sold today), plus WooCommerce. The
 shared journey presenter offers a result renderer extension. Only Elite registers
 the commerce bridge; Free, Basic and Pro bundles carry no commerce marker.
+*Amended by [ADR 0146](0146-pro-is-one-tier.md): there is one Pro and its bundle carries the commerce
+bridge; Free's carries no commerce marker.*
 Cart-action campaigns suspend when the module disappears, with their configuration
 and history retained. Link-only quizzes can continue without product tracking.
 Transfer retains the action, strips site-specific product/filter references, and

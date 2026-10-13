@@ -19,7 +19,7 @@
       "setup_id": "sale-deadline",
       "stage": "during",
       "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-      "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
+      "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
     },
     {
       "setup_id": "first-order-receipt",
@@ -41,6 +41,6 @@
     }
   ],
   "dependencies_current": true,
-  "revision": "0170f8f4dafc3eac3b4931afeeb01cc15b04129605137a93cd614943c13d8b80",
+  "revision": "caddb922275d93366d525ec175ad021334e7d1395bf546f6ec23790422d73a35",
   "status": "published"
 }

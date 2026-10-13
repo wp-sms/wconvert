@@ -12,7 +12,7 @@ describe('display type vocabulary', () => {
   });
 
   it('keeps the supported formats in the product order', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     expect(DISPLAY_TYPES).toEqual(['popup', 'inline', 'floating_bar', 'slide_in', 'fullscreen']);
     expect(displayTypeOptions()).toEqual([
       { value: 'popup', label: 'Popup' },

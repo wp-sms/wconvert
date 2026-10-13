@@ -155,8 +155,8 @@ const unloadPrevented = () => {
 
 describe('a goal then a draft', () => {
   it('preserves ready, locked and unavailable Goal semantics on a paid install', async () => {
-    // A paid install meeting a higher rung's Goal (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    // A paid install meeting a Goal it does not have (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     render(<GoalScreen onCreated={vi.fn()} />);
     await screen.findByText('Grow my email list');
@@ -682,7 +682,7 @@ it('changes the use case inside inspection and creates the exact chosen snapshot
 
 it('uses one collection dialog, recovers an empty filtered stage and restores its view after inspection', async () => {
   // A floating bar is a paid format; a free install is not offered it (ADR 0116).
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
   const announcement = { ...PLAYBOOK, id: 'sale-bar', name: 'Sale announcement', template_id: 'bar', setup: { ...PLAYBOOK.setup, display_type: 'floating_bar' } };
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK, announcement]);
@@ -733,8 +733,8 @@ it('keeps comparison recoverable when a search hides every selected design', asy
 });
 
 it('keeps a refused setup focusable with its reason and never prepares it', async () => {
-  // A paid site on a lower rung is shown the next rung's setup, refused.
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  // A paid site is shown a setup it does not have, refused.
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
   goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, availability: 'locked', template: undefined }]);
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();

@@ -2,7 +2,7 @@
   "id": "sample-envelope",
   "name": "Sample envelope",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f7f3eb",
     "fg": "#363a32",

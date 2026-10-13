@@ -60,7 +60,7 @@ const INSPECTOR_ELEMENT_ID = 'wconvert-inspector';
  * Composed with the same narrowing the loader was, or the panel reports an
  * engine the page did not run.
  *
- * That is ADR 0048's own hazard one rung finer: free's inspector on a Pro
+ * That is ADR 0048's own hazard read once more: free's inspector on a Pro
  * install reports every `exit_intent` Optin as `inert` while it works
  * perfectly, and an inspector that skipped Pro's arm assignment would report
  * the arm this browser is NOT on as though the page had considered it.

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import manifest from '../../../resources/rules/manifest.json';
-import { ELITE_MODULES } from '../../resources/loader/src/modules';
+import { PRO_MODULES } from '../../resources/loader/src/modules';
 import type { LoaderModule, Rule } from '@loader/types';
 
 /**
@@ -18,10 +18,10 @@ import type { LoaderModule, Rule } from '@loader/types';
  */
 
 const moduleFor = (id: string): LoaderModule => {
-  const found = ELITE_MODULES.find((module) => module.id === id);
+  const found = PRO_MODULES.find((module) => module.id === id);
 
   if (found === undefined) {
-    throw new Error(`Pro's top rung ships no ${id} module`);
+    throw new Error(`Pro ships no ${id} module`);
   }
 
   return found;

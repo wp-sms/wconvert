@@ -22,7 +22,7 @@
           "setup_id": "sale-deadline",
           "stage": "during",
           "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-          "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
+          "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
         },
         {
           "setup_id": "first-order-receipt",
@@ -200,7 +200,7 @@
           "setup_id": "sale-deadline",
           "stage": "during",
           "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-          "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
+          "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
         },
         {
           "setup_id": "homeware-care-notes",
@@ -232,37 +232,37 @@
           "setup_id": "recommend-accessory",
           "stage": "any",
           "setup_hash": "382238823d1c6f34af6f38cfb2deb7a3cea589deb6cc1ee33c80412ece631280",
-          "design_hash": "f2ace1cb29060239e6527538c5a02a7b94a2f0a53b4ee5d7d7fa6a0fb928ddbb"
+          "design_hash": "aeee64fce2435c10710e0ecfb379ca61d3f8384b28ab1f2445658a4e0d9bcc03"
         },
         {
           "setup_id": "explore-compatible-extras",
           "stage": "any",
           "setup_hash": "88dca4a3a693cdd3784ba4164bfbccae57cff05fd13cd3b1d9ab4300d804d25d",
-          "design_hash": "dbb85f5e6ffc63a6b650a801e871288f48e5f8b59a0b29c8dfa0785fd5b2a22d"
+          "design_hash": "cbab584f5977c35f3732d2b104d56bff98a80083e7b6e859c3799b4ff4bac840"
         },
         {
           "setup_id": "add-useful-extras",
           "stage": "any",
           "setup_hash": "b182091e91a1224c639f74cc2d8813c439b7ef0600febc230143f65b79fdc2f6",
-          "design_hash": "2b13a21a109df89b4cb12b2df796ad7830bed949c2ad863d9a5651eb68b2ea5d"
+          "design_hash": "efee3e5109441272ac8cdd5c652fe677bff2d10dff939279c4a73aecb291d0d5"
         },
         {
           "setup_id": "basket-cross-sells",
           "stage": "any",
           "setup_hash": "20d274dd56881c686ab40b91f3258c2ea7278a061e8caacdd94f79bb47a485f4",
-          "design_hash": "5c7988631ae3f2bce61f64118f2e0aad0ec38e8c2175b6d717ecdc37d6008e68"
+          "design_hash": "80926b1e1a4954ff43866c674eb2dafa0b608b119bc21a4a23632125b695993d"
         },
         {
           "setup_id": "coffee-taste-finder",
           "stage": "any",
           "setup_hash": "4f03b922b7dfc1f8c215d8fb0a0623a7877c5f5c43af3b56bd398ec9797679ae",
-          "design_hash": "005713171a32115d6bdfa052ea36b47fa65ba7db480d13f205f1e3dbad5a2a83"
+          "design_hash": "9b214034fabc90988860eea8081cd49cadac5f74f4d5de7fb3c2042463e5c66a"
         },
         {
           "setup_id": "shopping-guidance",
           "stage": "any",
           "setup_hash": "7b09af0ee424de83700161b7f73623a461069c1a59638b456d7d52397fab9e9d",
-          "design_hash": "509ba936a477c68eeb6b05f3047cb74d8104b5e4dd0e30d1ffba7079f6105d15"
+          "design_hash": "7b3219d5a9f76005dc5d29da3d553ec9aa99cbbdb3be79337e8388b5fd851dbe"
         }
       ]
     }

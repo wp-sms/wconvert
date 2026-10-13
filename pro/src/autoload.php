@@ -35,14 +35,14 @@ defined('ABSPATH') || exit;
 |   WConvert\Pro\Module\CartRecovery\X → pro/modules/cart-recovery/src/X.php
 |
 | Everything under pro/modules/<slug>/ is that module and nothing outside it
-| is, which is what lets a per-tier build be a DELETION rather than a list of
-| paths somebody maintains. The price is this second rule: a module's PHP
+| is, which is what lets the artifact contract check a module by checking a
+| directory. The price is this second rule: a module's PHP
 | cannot live under pro/src/ without leaving the module, so the namespace
 | carries the module name and this maps it back to the directory.
 |
 | A CLASS THAT IS NOT THERE IS NOT AN ERROR HERE, and that is the whole point
-| of the shape. A Basic build has no pro/modules/cart-recovery/ at all, so
-| `class_exists(CartCookie::class)` is false on it — which is
+| of the shape. A build without pro/modules/cart-recovery/ has no CartCookie,
+| so `class_exists(CartCookie::class)` is false on it — which is
 | enforcement-by-non-registration read from the file system exactly as
 | ADR 0015 describes it, rather than a tier test somebody wrote.
 */

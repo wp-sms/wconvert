@@ -3,7 +3,7 @@
 defined('ABSPATH') || exit;
 add_action('init', static function (): void {
     // Test the ordinary quiz reader and an actual Store API failure independently.
-    // Cart-recovery's adapter only (priority 10): the journeys module still answers, as on a Basic install.
+    // Cart-recovery's adapter only (priority 10): the journeys module still answers, as on an install without cart recovery.
     if (($_GET['wconvert_health_mode'] ?? '') === 'links') remove_all_filters('wconvert_check_products', 10);
     if (($_GET['wconvert_health_mode'] ?? '') === 'read_error') add_filter('rest_pre_dispatch', static function ($response, $server, $request) {
         return $request->get_route() === '/wc/store/v1/products' ? new WP_Error('fixture_unavailable', 'Catalog unavailable', ['status' => 503]) : $response;

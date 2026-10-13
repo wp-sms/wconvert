@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  *
  * Adapted from WP Statistics' `SdkConfig`, less one key. There is **no
  * `installed_tier`**: Nexus's tiers for WConvert are plans — `single-site`,
- * `5-sites`, `unlimited` — and not the rungs of `tiers.json`, so the SDK's
+ * `5-sites`, `unlimited` — and not the tier in `tiers.json`, so the SDK's
  * tier-mismatch offer must stay inert. A plan changes how many sites a licence
  * covers, never which build is installed (ADR 0143).
  *

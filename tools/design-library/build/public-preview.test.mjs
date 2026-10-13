@@ -6,7 +6,7 @@ import { publicPreview } from './public-preview.mjs';
 const renderer = readFileSync(new URL('../out/renderer.iife.js', import.meta.url), 'utf8');
 test('public Free and Pro previews contain every inert screen without editable trees or renderer code', () => {
   const entry = JSON.parse(readFileSync(new URL('../../../resources/templates/library/excerpt-window.json', import.meta.url)));
-  const markup = publicPreview({ name: 'A & B', description: 'Try the designs', version: '1.0.0', templates: [entry, {...entry, tier: 'basic', name: 'Pro example'}] }, renderer);
+  const markup = publicPreview({ name: 'A & B', description: 'Try the designs', version: '1.0.0', templates: [entry, {...entry, tier: 'pro', name: 'Pro example'}] }, renderer);
   const dom = new JSDOM(markup);
   assert.equal(dom.window.document.querySelectorAll('template').length, 4);
   assert.equal(dom.window.document.querySelectorAll('#screen option').length, 4);

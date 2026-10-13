@@ -2,7 +2,7 @@
   "id": "fullscreen-split",
   "name": "Fullscreen split",
   "display_type": "fullscreen",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#edf1ef",
     "fg": "#153a32",

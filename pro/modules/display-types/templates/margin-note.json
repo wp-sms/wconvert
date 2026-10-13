@@ -2,7 +2,7 @@
   "id": "margin-note",
   "name": "Margin note",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#faf9f5",
     "fg": "#202b31",

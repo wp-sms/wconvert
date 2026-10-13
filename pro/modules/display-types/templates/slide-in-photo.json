@@ -2,7 +2,7 @@
   "id": "slide-in-photo",
   "name": "Corner card with a picture",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f4f0e9",
     "fg": "#343f40",

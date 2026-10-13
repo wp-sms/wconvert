@@ -2,7 +2,7 @@
   "id": "journey-content-guide",
   "name": "Content guide with optional signup",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f7efdf",
     "fg": "#423421",

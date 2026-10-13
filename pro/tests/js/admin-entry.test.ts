@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { PRO_SCREENS } from '../../resources/admin/src/screens';
 
 /**
  * =============================================================================
@@ -60,37 +59,5 @@ describe("Pro's admin entry", () => {
   it("mounts free's own node, and does nothing when it is absent", () => {
     expect(source).toContain("getElementById('wconvert-admin')");
     expect(source).toMatch(/if\s*\(mount\)/);
-  });
-
-  /**
-   * ==========================================================================
-   * THE TRIPWIRE: THE FIRST PREMIUM SCREEN MAKES THIS BUILD PER-TIER.
-   * ==========================================================================
-   * Pro's admin bundle is ONE build shared by all three rungs today, and that
-   * is honest only while `PRO_SCREENS` is empty: with no premium screen in it,
-   * every rung's admin is free's admin and nothing is being withheld from
-   * anybody. Nothing is hidden behind a flag, which is the distinction from
-   * WSMS — its three tiers ship a byte-identical `main.js` that DOES contain
-   * the Elite UI, gated client-side (ADR 0056).
-   *
-   * The moment a screen lands here that only some rungs supply, one shared
-   * build becomes exactly that failure: a Basic customer's ZIP carrying an
-   * Elite screen. So this test fails on the pull request that adds the first
-   * one, and the message says what to do — the same shape the loader already
-   * has, where `vite.config.pro-tier.mjs` builds one bundle per rung from one
-   * entry per rung.
-   *
-   * It is deliberately a failing test rather than a comment. A comment saying
-   * "remember to split the admin build" is read by nobody at the moment it
-   * matters.
-   */
-  it('has no premium screen yet, and gains one only with a per-tier admin build', () => {
-    expect(
-      PRO_SCREENS,
-      "Pro's admin now has screens of its own. Before this ships, give the admin " +
-        'a build per tier the way the loader has one (vite.config.pro-tier.mjs): ' +
-        'one shared bundle would put a higher rung’s screen inside a lower rung’s ZIP, ' +
-        'which is the client-side gate ADR 0056 refuses.',
-    ).toEqual([]);
   });
 });

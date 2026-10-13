@@ -477,10 +477,10 @@ describe('a design a free install does not have', () => {
 });
 
 describe('a design this install does not have', () => {
-  // A paid install meeting a higher rung's design — the one install still
+  // A paid install meeting a design it does not have — the one install still
   // shown an upsell (ADR 0116).
   beforeEach(() => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   });
 
   afterEach(() => {
@@ -653,7 +653,7 @@ describe('recommended designs', () => {
   });
 
   it('keeps the recommendation order through search, field, layout, and availability filters', async () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     picker([
       card({ id: 'extension', name: 'Email extension', shape: 'split' }),
       card({ id: 'launch-checklist', name: 'Email checklist', shape: 'split', locked: true }),
@@ -858,7 +858,7 @@ describe('narrowing the library', () => {
   });
 
   it('lets merchants show installed designs while keeping the full library recoverable', async () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     picker([ENTRIES[0], LOCKED]);
     expect(shown()).toEqual(['Centred card', 'Two-column offer']);
 

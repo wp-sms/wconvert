@@ -14,6 +14,13 @@ the full record for the team.
 
 ### Changed
 
+- Pro is one tier with every feature (ADR 0146). The `basic` and `elite` tiers
+  are gone; the tiers are `free` and `pro`. A release builds one Pro ZIP,
+  `wconvert-pro-v{VERSION}.zip`, and posts it to Nexus once per plan
+  (`single-site`, `5-sites`, `unlimited`). One Pro loader and one Pro inspector
+  are built, and the loader budgets are Free 14,720 B and Pro 27,712 B.
+  Every premium rule and design is tagged `pro`; a new test fails on any
+  `tier` that is not a real tier, because an unknown one reads as free.
 - Pro: the licence SDK (`veronalabs/wp-premium-sdk`) moves from 1.0.0-beta.8
   to 1.0.0-beta.9, which needs Nexus v2.3.1 or later (the update check sends
   the key in a header, not in the URL).

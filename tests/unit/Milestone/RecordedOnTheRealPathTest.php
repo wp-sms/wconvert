@@ -65,7 +65,7 @@ final class RecordedOnTheRealPathTest extends TestCase
         $designs = TemplateLibrary::fromDirectory($templates, self::PLUGIN_DIR);
         $published = new PublishedSet(new FakeOptionStore());
 
-        $pro = new FakeProPresence(Tier::Elite);
+        $pro = new FakeProPresence(Tier::Pro);
         $site = new FakeSitePresence([SiteDependency::WooCommerce]);
 
         $this->prefill = new Prefill(

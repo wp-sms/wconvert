@@ -66,4 +66,4 @@ current defect exists and do not authorize publishing or external test sends.
   recovery with explicitly authorized test recipients. Distinguish provider
   acceptance, local mail transport, inbox receipt and subscription confirmation.
 - [ ] Recheck visitor bundle budgets for changes that affect them; the latest
-  recorded Elite loader result reaches the current cap.
+  recorded Pro loader result reaches the current cap.

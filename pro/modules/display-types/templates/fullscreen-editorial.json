@@ -2,7 +2,7 @@
   "id": "fullscreen-editorial",
   "name": "Fullscreen editorial",
   "display_type": "fullscreen",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f7f3e9",
     "fg": "#25352d",

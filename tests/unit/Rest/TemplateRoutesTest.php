@@ -70,7 +70,7 @@ final class TemplateRoutesTest extends TestCase
         return new TemplateController(
             TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR),
             $vocabulary,
-            new FakeProPresence($pro instanceof Tier ? $pro : ($pro ? Tier::Elite : Tier::Free)),
+            new FakeProPresence($pro instanceof Tier ? $pro : ($pro ? Tier::Pro : Tier::Free)),
             $privacyDefaults ? new PrivacyGuidance(new FakeOptionStore()) : null
         );
     }
@@ -220,21 +220,18 @@ final class TemplateRoutesTest extends TestCase
     }
 
     /**
-     * A paid install still sees the designs its rung lacks — a name, its facets
-     * and a link to a live preview on wconvert.io — and never the design.
+     * A paid install still sees a stub's card — a name, its facets and a link to
+     * a live preview on wconvert.io — and never the design. A stub is `locked`
+     * by construction, because it has no tree.
      */
     public function testAPaidInstallIsOfferedLockedCardsWithSomewhereToGo(): void
     {
-        $locked = array_values(array_filter(self::cards(Tier::Basic), static fn (array $c): bool => $c['availability'] === 'locked'));
+        $locked = array_values(array_filter(self::cards(Tier::Pro), static fn (array $c): bool => $c['availability'] === 'locked'));
 
-        $this->assertNotSame([], $locked, 'a paid install is shown no designs from the rungs above it');
+        $this->assertNotSame([], $locked, 'a paid install is shown no locked stub');
 
         foreach ($locked as $card) {
-            // The eight cards are the `display-types` module's, which is the
-            // BOTTOM paid rung — so the upsell names the cheapest tier that
-            // actually carries the design rather than the most expensive one
-            // (ADR 0056). At launch every rung displays as "Pro" regardless.
-            $this->assertSame(in_array($card['id'], ['accessory-workbench', 'basket-companion', 'cart-accessories', 'cart-additions'], true) ? 'elite' : 'basic', $card['tier']);
+            $this->assertSame('pro', $card['tier']);
             $this->assertArrayNotHasKey('tree', $card);
             // Fullscreen (ADR 0098), decision-support and contextual enquiry
             // designs have no published marketing pages yet. Their cards
@@ -296,7 +293,7 @@ final class TemplateRoutesTest extends TestCase
             $this->assertSame('locked', $card['availability'], $card['id'] . ' resolved ready with no design behind it');
         }
 
-        // The loop above asserted nothing at all when the cards moved rung and
+        // The loop above asserted nothing at all when the cards moved tier and
         // the filter still named the old one — a vacuous pass on the exact
         // claim this test exists to make. It cannot go quiet again.
         $this->assertGreaterThan(0, $stubs, 'no premium card reached the assertion');

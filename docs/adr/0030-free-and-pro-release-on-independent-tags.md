@@ -72,7 +72,9 @@ about.*
   putting each condition in a program under `bin/`: the Pro run now builds three
   ZIPs and the contract runs once per staged tree, so a rung that leaked a higher
   rung's module fails before its own ZIP is written. No YAML changed shape to
-  make that true.*
+  make that true.* *Amended by [ADR 0146](0146-pro-is-one-tier.md): the Pro run builds one ZIP,
+  `wconvert-pro-v{VERSION}.zip`, and the contract checks it carries every
+  module `tiers.json` names.*
   *Built in [#37](https://github.com/navidkashani/wconvert/issues/37) as
   `release-free.yml` and `release-pro.yml`. What the two share is **not YAML**: it is
   the programs under `bin/`, one per condition, each existing once and called from
@@ -94,7 +96,8 @@ about.*
   constant would be three statements about free where the ADR above is careful to
   have exactly one. Condition 5 is therefore unaffected — it is evaluated once
   per release run, not once per ZIP — and so is the tag, which stays `pro-vX.Y.Z`
-  with the tier appearing only in each artifact's file name.*
+  with the tier appearing only in each artifact's file name.* *Since
+  [ADR 0146](0146-pro-is-one-tier.md) there is one Pro ZIP and no tier in its name.*
   *Amended by [#37](https://github.com/navidkashani/wconvert/issues/37): "the version
   header" is not one fact per plugin. **A free release states its version three
   times** — the `Version:` header, `WCONVERT_VERSION`, and `readme.txt`'s `Stable

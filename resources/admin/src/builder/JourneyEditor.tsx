@@ -534,8 +534,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         {journeys && <OptionItem icon={ListPlus} name={__('Follow-up question', 'wconvert')} refused={followupRefusal} onSelect={() => add('input', true)} />}
         {canAddOptional && <OptionItem icon={Plus} name={__('Optional signup', 'wconvert')} refused={optionalRefusal} onSelect={addOptional} />}
       </OptionGroup>
-      {lockedQuestions && <OptionGroup heading={sprintf(/* translators: %s: the product that supplies these, e.g. “WConvert Pro”. */ __('With %s', 'wconvert'), tierProductName('basic'))} icon="lock"
-        tip={sprintf(/* translators: %s: the product that supplies them, e.g. “WConvert Pro”. */ __('Question screens and follow-ups come with %s.', 'wconvert'), tierProductName('basic'))}>
+      {lockedQuestions && <OptionGroup heading={sprintf(/* translators: %s: the product that supplies these, e.g. “WConvert Pro”. */ __('With %s', 'wconvert'), tierProductName('pro'))} icon="lock"
+        tip={sprintf(/* translators: %s: the product that supplies them, e.g. “WConvert Pro”. */ __('Question screens and follow-ups come with %s.', 'wconvert'), tierProductName('pro'))}>
         <OptionItem icon={ListPlus} name={__('Question', 'wconvert')} />
         <OptionItem icon={ListPlus} name={__('Follow-up question', 'wconvert')} />
       </OptionGroup>}

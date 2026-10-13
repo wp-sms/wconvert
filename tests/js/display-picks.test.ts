@@ -164,34 +164,34 @@ describe('availability', () => {
     return Object.fromEntries(picksIn(section).map(pick => [pick.id, availabilityOf(pick, vocab)]));
   };
 
-  it('locks the Pro gestures and the cart on a lower tier, naming the tier', () => {
-    const when = ids('when', { pro: 'locked', elite: 'locked' });
+  it('locks the Pro gestures and the cart where Pro is not supplied, naming the tier', () => {
+    const when = ids('when', { pro: 'locked' });
     expect(when.leave).toEqual({ availability: 'locked', tier: 'pro', requires_label: null });
     expect(when.click.availability).toBe('locked');
     expect(when['leave-or-scroll-up'].availability).toBe('locked');
     expect(when.after.availability).toBe('ready');
-    expect(ids('who', { elite: 'locked' }).cart).toMatchObject({ availability: 'locked', tier: 'elite' });
+    expect(ids('who', { pro: 'locked' }).cart).toMatchObject({ availability: 'locked', tier: 'pro' });
   });
 
   it('locks every paid pick on a free install, even one that also needs a plugin', () => {
     window.wconvertAdmin = { exportUrl: '', installedTier: 'free' } as typeof window.wconvertAdmin;
-    expect(ids('who', { elite: 'unavailable' }).cart).toMatchObject({ availability: 'locked', tier: 'elite' });
+    expect(ids('who', { pro: 'unavailable' }).cart).toMatchObject({ availability: 'locked', tier: 'pro' });
     expect(ids('when', { pro: 'locked' }).after.availability).toBe('ready');
   });
 
   it('names WooCommerce when the cart pick cannot run on this store', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'elite' } as typeof window.wconvertAdmin;
-    expect(ids('who', { elite: 'unavailable' }).cart).toEqual({ availability: 'unavailable', tier: 'elite', requires_label: 'WooCommerce' });
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' } as typeof window.wconvertAdmin;
+    expect(ids('who', { pro: 'unavailable' }).cart).toEqual({ availability: 'unavailable', tier: 'pro', requires_label: 'WooCommerce' });
   });
 
   it('reads a stored rule this site cannot run as Custom, so the rule stays on screen', () => {
     const value = opening({ mode: 'automatic', match: 'any', minimum_seconds: 0, rules: [{ type: 'exit_intent' }] });
-    for (const installedTier of ['free', 'basic'] as const) {
+    for (const installedTier of ['free', 'pro'] as const) {
       window.wconvertAdmin = { exportUrl: '', installedTier } as typeof window.wconvertAdmin;
       expect(pickFor('when', value, ruleTypes({ pro: 'locked' })).id, installedTier).toBe('custom');
     }
     const cart = audience({ mode: 'groups', groups: [group({ type: 'cart_has_items' })] });
-    expect(pickFor('who', cart, ruleTypes({ elite: 'unavailable' })).id).toBe('custom');
+    expect(pickFor('who', cart, ruleTypes({ pro: 'unavailable' })).id).toBe('custom');
     expect(pickFor('who', cart, ruleTypes()).id).toBe('cart');
   });
 });

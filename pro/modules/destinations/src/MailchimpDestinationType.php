@@ -18,7 +18,7 @@ final class MailchimpDestinationType implements DestinationType
     public function id(): string { return 'mailchimp'; }
     public function label(): string { return __('Mailchimp', 'wconvert'); }
     public function icon(): string { return 'mail'; }
-    public function tier(): Tier { return Tier::Elite; }
+    public function tier(): Tier { return Tier::Pro; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
     public function throughput(): int { return 60; }
 

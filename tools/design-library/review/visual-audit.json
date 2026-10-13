@@ -191,7 +191,7 @@
       "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "dff7e6fa643aae5267d68cf8db2e6af772d7290111387f6bfb42235c59aafbf0"
+      "source_revision": "76888cdff2cace923492bde4136d1b74aefe5969afdf8b70cb5cca589a8e3903"
     },
     {
       "id": "slide-in-code",
@@ -311,7 +311,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "915daf0c7b84528b467bb9b8a7804236fb3d87be00e0e4b38449563202dfe17b"
+      "source_revision": "c3a39620d850162763c27362cec97469849013db16f5c12d2861c98d1cce57fe"
     },
     {
       "id": "edition-pass",
@@ -371,7 +371,7 @@
       "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "4ee3c86d047ad101cf3fc4624026f2d9c94742e0ae30446e449b1c2865d6ed25"
+      "source_revision": "78d10a17dcefa0d7c39ab0233f252bf1cc36e2840793249c2ea823b9292d9c8b"
     },
     {
       "id": "collection-poster",
@@ -401,7 +401,7 @@
       "reason": "The illustration explains the subject, with a clearly separated action or request area.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "6a62a9e35523f5b80b06b4fd7e75c93e85cacceef3ab9314e2bda7bfdb65fd54"
+      "source_revision": "6ad0cf49414927ac37ced4ca027d794dba6de0b6a1e3458c8533561b41e2609e"
     },
     {
       "id": "session-card",
@@ -411,7 +411,7 @@
       "reason": "The illustration explains the subject, with a clearly separated action or request area.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "99bb2a3065d70fa194a54881e2bfdb4461d70bd3168d241afa43081c0c587a99"
+      "source_revision": "8a697c9bc3cc798ce05d1017fd85597a2dc5ac66717a78b281dbcf3933490b29"
     },
     {
       "id": "agenda-card",
@@ -461,7 +461,7 @@
       "reason": "Labelled information groups help the visitor decide before following the single action.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "4b1ad4748eb37d8fe0df6ff394cdc33483c8f66287c45f7e4b12fde876db628d"
+      "source_revision": "a5c6b295721e0a39f8cb2d52311ca70d65bc3c795b0d882e8d6a2396a2161dd8"
     },
     {
       "id": "service-summary",
@@ -541,7 +541,7 @@
       "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "1755ca7a753d75e8a096376cc6dae1be7cb688efe6348b39fef6e49d8f00fd13"
+      "source_revision": "7d23e8668c8b93d3c260fd2c0603f77f39e9eb487bfb595ad2c436bc14a553c4"
     },
     {
       "id": "journey-email-then-sms",
@@ -762,7 +762,7 @@
       "compare_to": [
         "inline-cta"
       ],
-      "source_revision": "f0efcaacba9f935846a2187e76524ea778aad7ca6aa4ab5a12f4c44c9964d1ba"
+      "source_revision": "0bce43a2509635d2f07b209280a6eba3f20180df8666fddbd2d5dc8a78f1c040"
     },
     {
       "id": "inline-split",
@@ -788,7 +788,7 @@
         "session-card",
         "sample-envelope"
       ],
-      "source_revision": "237c87219463e97172f351626e8e7b5e0fd870dd6bca16bf3d83e852c51724da"
+      "source_revision": "a3a8946f38d5c6f1fa35279d778ff08eed9620ff41e5729f208ba1783cc78909"
     },
     {
       "id": "fullscreen-editorial",
@@ -800,7 +800,7 @@
       "compare_to": [
         "quieter-frequency"
       ],
-      "source_revision": "ad50f061772c84bec3516975eb1f27c1f2878265766a584a3ba9e7b3f40c4bbe"
+      "source_revision": "fbf875f98cc6999cbc59f187f6f64ecdcfa045fab371628aae87d1e9add82052"
     },
     {
       "id": "fullscreen-split",
@@ -813,7 +813,7 @@
         "reading-cover",
         "ink-split"
       ],
-      "source_revision": "1961477f1e22436df56bde5007371d80d74547cf0a93bd53ab5c47442b1aeeea"
+      "source_revision": "d1f8dc84cd40c9cb98d97145ac6e7dc65fdf7a2b78d9324097f222547323ba18"
     },
     {
       "id": "reader-review",
@@ -899,7 +899,7 @@
       "compare_to": [
         "flash-offer"
       ],
-      "source_revision": "5014f59ccf23eec14279375cd3febcd46f40e079437c09218d02b6484e6de0ce",
+      "source_revision": "1473b336b419126910fd3253c4750f78d8595fc631ffb4a7673fcdb3f133a29a",
       "variant_of": "flash-offer",
       "canonical_revision": "92b6525716ae31cb0b7ec7effe7cab6b4a390d5a743c16f454dcb0d2d3d9b927"
     },
@@ -913,7 +913,7 @@
       "compare_to": [
         "split-hero"
       ],
-      "source_revision": "f32a16a33be2f06d1370046fb438036e878037173d18c029bb61d661e118c81b"
+      "source_revision": "bad14860acbb39114bd5c7e6ad446acacfd2be81e04267277bb455113d1448d7"
     },
     {
       "id": "inline-quiet",

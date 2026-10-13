@@ -5,8 +5,8 @@ import { start } from '@loader/shell';
 import type { Store } from '@loader/storage';
 import type { PayloadEntry } from '@loader/types';
 import { templatePresenter } from '@loader/present';
-import { ELITE_MODULES } from '../../resources/loader/src/modules';
-import proLoader, { presenter } from '../../resources/loader/src/elite';
+import { PRO_MODULES } from '../../resources/loader/src/modules';
+import proLoader, { presenter } from '../../resources/loader/src/main';
 import { proPresenter } from '../../modules/display-types/loader';
 import { recordingPresenter } from '../../../tests/js/support/presenter';
 
@@ -39,7 +39,7 @@ describe("Pro's loader entry", () => {
   it("is free's modules plus Pro's own", () => {
     const composed = proLoader.modules.map((m) => m.id);
 
-    expect(composed).toEqual([...FREE_MODULES.map((m) => m.id), ...ELITE_MODULES.map((m) => m.id)]);
+    expect(composed).toEqual([...FREE_MODULES.map((m) => m.id), ...PRO_MODULES.map((m) => m.id)]);
   });
 
   /**

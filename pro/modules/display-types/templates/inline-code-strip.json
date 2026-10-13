@@ -2,7 +2,7 @@
   "id": "inline-code-strip",
   "name": "Strip that hands over a code",
   "display_type": "inline",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#eef2ff",
     "fg": "#1e1b4b",

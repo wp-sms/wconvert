@@ -155,7 +155,7 @@ Six keys, exactly. One JSON file per design, in
   "id": "kebab-case-and-unique-across-both-libraries",
   "name": "Sentence case, shown on the gallery card",
   "display_type": ${list(Object.keys(DISPLAY_TYPES))},
-  "tier": "free | basic | pro | elite",
+  "tier": "free | pro",
   "tokens": { },
   "tree": { "v": 2, "steps": [ ], "submissions": [ ] }
 }

@@ -204,7 +204,7 @@ it('decodes compact settings and preserves the exact selected arm', () => {
   expect(document.querySelector('[data-wconvert-reopen]')).not.toBeNull();
   expect(options.beacon.report).not.toHaveBeenCalled();
   stop(); document.body.innerHTML = '';
-  // Basic receives all arms; its stable primary must not inherit the child's reminder.
+  // A loader without the narrowing receives all arms; its stable primary must not inherit the child's reminder.
   options.entries = [campaign, child];
   stop = start(options);
   expect(document.querySelector('dialog[open]')).not.toBeNull();

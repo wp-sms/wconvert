@@ -393,8 +393,8 @@ describe('the goal picker', () => {
    * it to stop agreeing (ADR 0026).
    */
   it('upsells a goal this install has to buy, and never as a button', async () => {
-    // A paid install meeting a higher rung's Goal (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    // A paid install meeting a Goal it does not have (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     open();
     await changeGoal();

@@ -1545,7 +1545,7 @@ describe('whole-draft Undo and Redo', () => {
 describe('changing templates in the draft', () => {
   it('browses formats without editing, then applies format and design in one undoable edit', async () => {
     // A floating bar is a paid format; a free install is not offered it (ADR 0116).
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     onTestFinished(() => { delete window.wconvertAdmin; });
     builder.getOptin.mockResolvedValue(optin({ config: {
       ...optin().config,

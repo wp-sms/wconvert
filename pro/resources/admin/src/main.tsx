@@ -15,8 +15,8 @@ import { registerProviderMarks } from '../../../modules/destinations/admin/marks
 import { registerPage } from '@/extraPages';
 import { __ } from '@wordpress/i18n';
 
-// The License page (ADR 0143): every rung's, so it is a registered page in the
-// one shared bundle rather than an entry in PRO_SCREENS, which stays empty.
+// The License page (ADR 0143): a registered page in the one shared bundle
+// rather than an entry in PRO_SCREENS, which stays empty.
 registerPage({
   id: 'license',
   title: __('License', 'wconvert-pro'),

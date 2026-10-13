@@ -23,7 +23,7 @@ describe('what a surface does with an availability', () => {
   // A paid install unless a test says otherwise: a free one is shown no
   // locked member at all (ADR 0116), asserted on its own below.
   beforeEach(() => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   });
 
   afterEach(() => {
@@ -99,26 +99,6 @@ describe('what a surface does with an availability', () => {
       }
     }
   });
-
-  /**
-   * ==========================================================================
-   * A BASIC INSTALL MEETING A MEMBER A HIGHER RUNG SUPPLIES.
-   * ==========================================================================
-   * The ladder (ADR 0056) does not add a rendering. `locked` already means
-   * "absent because this install does not have it, and it is buyable from us",
-   * and that is as true of a Basic install meeting an `elite` member as of a
-   * free install meeting a `basic` one. What the rung decides is the WORD, and
-   * that is `tierName()`'s job rather than this one's — which is why the state
-   * machine below is unchanged by three tiers existing.
-   */
-  it('renders one upsell however many rungs the ladder has', () => {
-    const rungs = ladder.premium.tiers.map((tier) => tier.slug);
-
-    expect(rungs.length).toBeGreaterThan(1);
-    expect(new Set(rungs.map(() => renderingFor('locked', 'creation_flow')))).toEqual(
-      new Set(['upsell']),
-    );
-  });
 });
 
 /**
@@ -127,9 +107,8 @@ describe('what a surface does with an availability', () => {
  * ============================================================================
  * The word on a locked badge was `__('Pro')`, written out in five components.
  * It is `tiers.json`'s now, delivered in `window.wconvertAdmin.tiers` — so
- * splitting the range is a manifest edit rather than five strings and a
- * release, and none of the `tier` values already saved on live Optins moves
- * (ADR 0056).
+ * renaming the product is a manifest edit rather than five strings and a
+ * release.
  */
 describe('what an upsell calls the tier', () => {
   const withTiers = (tiers: Record<string, { name: string; product_name: string }> | undefined) => {
@@ -141,12 +120,10 @@ describe('what an upsell calls the tier', () => {
   });
 
   /**
-   * **The launch reading.** One product is sold and three rungs are understood,
-   * so every rung answers "Pro" and nothing on screen changes. A rung that
-   * started displaying its own slug would be this product announcing a tier
-   * nobody can buy.
+   * Pro reads as "Pro". A tier that started displaying its own slug would be
+   * this product announcing a tier nobody can buy.
    */
-  it('reads every shipped rung as Pro at launch', () => {
+  it('reads the shipped tier as Pro', () => {
     withTiers(
       Object.fromEntries(
         ladder.premium.tiers.map((tier) => [
@@ -162,19 +139,12 @@ describe('what an upsell calls the tier', () => {
     }
   });
 
-  /**
-   * And when the range IS split, the badge follows the manifest without a
-   * component changing — which is the whole claim this indirection makes.
-   */
-  it('follows the manifest once two rungs are named differently', () => {
-    withTiers({
-      basic: { name: 'Pro', product_name: 'WConvert Pro' },
-      elite: { name: 'Agency', product_name: 'WConvert Agency' },
-    });
+  /** The badge follows the manifest without a component changing. */
+  it('follows the manifest when the tier is renamed', () => {
+    withTiers({ pro: { name: 'Plus', product_name: 'WConvert Plus' } });
 
-    expect(tierName('basic')).toBe('Pro');
-    expect(tierName('elite')).toBe('Agency');
-    expect(tierProductName('elite')).toBe('WConvert Agency');
+    expect(tierName('pro')).toBe('Plus');
+    expect(tierProductName('pro')).toBe('WConvert Plus');
   });
 
   /**
@@ -184,9 +154,8 @@ describe('what an upsell calls the tier', () => {
    * `adminSettings()` is legitimately absent — a test rendering a component on
    * its own, a screen that changed and left the localised object behind — and a
    * badge showing an empty string is worse than one naming the tier nobody has
-   * renamed. The same fallback covers a member declaring a rung this build has
-   * never heard of, which is what a saved Optin meets when an install is moved
-   * BACKWARDS onto an older free.
+   * renamed. The same fallback covers a member declaring a tier this build has
+   * never heard of.
    */
   it.each([
     ['no settings at all', undefined],
@@ -194,13 +163,13 @@ describe('what an upsell calls the tier', () => {
   ] as const)('falls back to the word the product has always used with %s', (_case, tiers) => {
     withTiers(tiers);
 
-    expect(tierName('elite')).toBe('Pro');
-    expect(tierProductName('elite')).toBe('WConvert Pro');
+    expect(tierName('pro')).toBe('Pro');
+    expect(tierProductName('pro')).toBe('WConvert Pro');
     expect(tierName(undefined)).toBe('Pro');
   });
 
-  it('falls back for a rung this build has never heard of', () => {
-    withTiers({ basic: { name: 'Pro', product_name: 'WConvert Pro' } });
+  it('falls back for a tier this build has never heard of', () => {
+    withTiers({ pro: { name: 'Pro', product_name: 'WConvert Pro' } });
 
     expect(tierName('enterprise')).toBe('Pro');
     expect(tierProductName('enterprise')).toBe('WConvert Pro');

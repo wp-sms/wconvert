@@ -54,7 +54,7 @@ beforeEach(() => {
 });
 
 const paid = () => {
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
 };
 const search = () => screen.getByRole('searchbox', { name: 'Find a setting' });
@@ -284,7 +284,7 @@ it('lands a free install deep-linked to analytics on the default group', async (
 });
 
 it('keeps the analytics category and drops the Pro list on a paid install', () => {
-  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
   onTestFinished(() => { delete window.wconvertAdmin; });
   render(<Settings group="experience" />);
   expect(screen.getByRole('link', { name: /Analytics integrations/ })).toBeInTheDocument();

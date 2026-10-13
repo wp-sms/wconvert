@@ -2,7 +2,7 @@
   "id": "gift-edit",
   "name": "Gift edit",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#fffaf3",
     "fg": "#332e28",

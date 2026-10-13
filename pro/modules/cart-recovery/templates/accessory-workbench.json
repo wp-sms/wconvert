@@ -2,7 +2,7 @@
   "id": "accessory-workbench",
   "name": "Accessory workbench",
   "display_type": "inline",
-  "tier": "elite",
+  "tier": "pro",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#21362e",

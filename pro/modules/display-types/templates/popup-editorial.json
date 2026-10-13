@@ -2,7 +2,7 @@
   "id": "popup-editorial",
   "name": "Editorial split",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#fdfcfb",
     "fg": "#1c1917",

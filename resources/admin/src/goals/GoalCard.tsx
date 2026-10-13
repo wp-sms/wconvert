@@ -142,9 +142,7 @@ export function GoalCard({
         rendering === 'upsell' ? (
           /*
             Bundled copy, never fetched (ADR 0015). The tier's own name rather
-            than the literal "Pro", so a second rung is a `tiers.json` edit
-            (ADR 0056) — at launch every rung answers "Pro" and this reads
-            unchanged.
+            than the literal "Pro", so renaming it is a `tiers.json` edit.
           */
           <span className="text-muted-foreground">
             {sprintf(

@@ -551,10 +551,10 @@ describe('an A/B test on the list', () => {
    */
   it('marks A/B testing as premium rather than offering a control that would 404', async () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
-    // A paid install whose rung lacks A/B testing (ADR 0116).
+    // A paid install without A/B testing (ADR 0116).
     window.wconvertAdmin = {
       exportUrl: '',
-      installedTier: 'basic',
+      installedTier: 'pro',
       variants: { availability: 'locked', tier: 'pro' },
       tiers: { pro: { name: 'Pro', product_name: 'WConvert Pro' } },
     };

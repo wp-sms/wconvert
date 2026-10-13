@@ -4,7 +4,7 @@ import { AnalyticsIntegrationSettings, CampaignAnalytics } from '../../resources
 
 /**
  * The analytics fallbacks render only where Pro's module did not register its
- * own screens. A free install is shown nothing there (ADR 0116); a paid rung
+ * own screens. A free install is shown nothing there (ADR 0116); a paid install
  * without the module is told which one has it.
  */
 afterEach(() => {
@@ -23,7 +23,7 @@ describe('analytics integrations where the module is absent', () => {
   });
 
   it('name the tier that has them on a paid install', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'pro' };
     render(<AnalyticsIntegrationSettings />);
     expect(screen.getByText('Analytics integrations')).toBeInTheDocument();
     expect(screen.getByText(/with WConvert Pro\./)).toBeInTheDocument();

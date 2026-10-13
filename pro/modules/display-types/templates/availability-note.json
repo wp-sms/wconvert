@@ -2,7 +2,7 @@
   "id": "availability-note",
   "name": "Availability note",
   "display_type": "slide_in",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#edf3ef",
     "fg": "#263e34",

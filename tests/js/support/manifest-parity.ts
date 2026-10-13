@@ -25,7 +25,7 @@ export interface ManifestEntry {
 
 export type Manifest = Readonly<Record<string, Readonly<Record<string, ManifestEntry>>>>;
 
-export type Tier = 'free' | 'basic' | 'pro' | 'elite';
+export type Tier = 'free' | 'pro';
 
 const CLIENT_KINDS = ['trigger', 'condition'];
 
@@ -50,11 +50,8 @@ function clientEntries(manifest: Manifest): Map<string, ManifestEntry> {
 }
 
 /**
- * @param tier    The rung being checked — free's tree, or one PAID rung's own
- *                additions. Never a cumulative set: the ladder is cumulative
- *                and the manifest is not, so `elite` is asked about the modules
- *                the elite rung ADDS and nothing it merely inherits (ADR 0056).
- * @param modules The modules that rung ships, and only that rung's own.
+ * @param tier    The tier being checked — free's tree, or Pro's.
+ * @param modules The modules that tier ships, and only that tier's own.
  */
 export function parityProblems(manifest: Manifest, tier: Tier, modules: readonly LoaderModule[]): string[] {
   const problems: string[] = [];

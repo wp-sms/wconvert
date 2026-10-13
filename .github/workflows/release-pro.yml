@@ -158,17 +158,14 @@ jobs:
     uses: ./.github/workflows/frontend-tests.yml
 
   # ---------------------------------------------------------------------------
-  # [2] BUILD — the Pro ZIPs, through the same script and the same contract.
+  # [2] BUILD — the Pro ZIP, through the same script and the same contract.
   #
-  # ONE PER TIER, AND ALL OF THEM EVERY TIME (ADR 0056). `bin/build.sh pro`
-  # loops the ladder in tiers.json, cuts each stage down to that rung's modules
-  # and runs the artifact contract on each before writing a ZIP. Only the top
-  # rung is sold today; the other two are built anyway, because machinery that
-  # is not exercised rots and the release that first needs a per-tier build is
-  # the release nobody can wait for.
+  # ONE ZIP (ADR 0146). Pro is one tier with every module; `bin/build.sh pro`
+  # stages it, runs the artifact contract on the stage and only then writes
+  # `wconvert-pro-v{VERSION}.zip`.
   # ---------------------------------------------------------------------------
   build:
-    name: '[2] Build the Pro ZIPs'
+    name: '[2] Build the Pro ZIP'
     needs: [guard, php-tests, frontend-tests]
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -190,25 +187,24 @@ jobs:
 
       # EVERY bundle, free's included, because Pro's entries build from free's
       # modules plus their own (ADR 0028) — one command, and no arrangement
-      # where Pro's is built from a stale copy of free's. That now means one
-      # loader and one inspector per rung, plus Pro's admin bundle.
+      # where Pro's is built from a stale copy of free's.
       - run: npm run build
 
       - name: Build, gated by the artifact contract
         run: bash bin/build.sh pro
 
-      # Every rung's ZIP, in one artifact. `if-no-files-found: error` is what
-      # makes a build that silently produced nothing a failed run.
-      - name: Upload the Pro ZIPs
+      # `if-no-files-found: error` is what makes a build that silently produced
+      # nothing a failed run.
+      - name: Upload the Pro ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: pro-zips
+          name: pro-zip
           path: dist/*.zip
           retention-days: 14
           if-no-files-found: error
 
   # ---------------------------------------------------------------------------
-  # [3] NEXUS — the elite ZIP to the licensing store, once per PLAN. OFF until
+  # [3] NEXUS — the Pro ZIP to the licensing store, once per PLAN. OFF until
   # both switches exist, as for free's wp.org publish:
   #   repository variables RELEASE_PUBLISH_ENABLED = true and PUBLISH_NEXUS = true
   #   (repository level, because a job's `if:` cannot read environment
@@ -217,13 +213,12 @@ jobs:
   # NEXUS_CATALOG_ITEM_SLUG (`wconvert-pro`), NEXUS_PLAN_SLUGS
   # (`single-site 5-sites unlimited`).
   #
-  # PLANS, NOT RUNGS (ADR 0143). Nexus calls its tiers what WConvert sells as
-  # plans — how many sites a licence covers — and every plan gets the same,
-  # top-rung build. Nexus keeps one release per (catalog item, tier_slug,
-  # version), so the elite ZIP is posted once per plan slug. The basic and pro
-  # ZIPs are still built and contract-checked (ADR 0056: machinery that is not
-  # exercised rots) and attached to the run; they are not sold, so they are not
-  # posted. Plan slugs live here and not in `tiers.json`, which ships in free.
+  # PLANS, NOT TIERS (ADR 0143, ADR 0146). Nexus calls its tiers what WConvert
+  # sells as plans — how many sites a licence covers — and every plan gets the
+  # same Pro build. Nexus keeps one release per (catalog item, tier_slug,
+  # version), so the Pro ZIP is posted once per plan slug, keyed on the
+  # `tier_slug` form field rather than on the file name. Plan slugs live here
+  # and not in `tiers.json`, which ships in free.
   #
   # Skipped for pre-releases: the store is told `release_type=stable` and
   # nothing else. The store is idempotent per (catalog item, tier, version), so
@@ -242,13 +237,13 @@ jobs:
     environment:
       name: nexus
     steps:
-      - name: Download the Pro ZIPs
+      - name: Download the Pro ZIP
         uses: actions/download-artifact@v4
         with:
-          name: pro-zips
+          name: pro-zip
           path: dist
 
-      - name: Upload the elite ZIP once per plan
+      - name: Upload the Pro ZIP once per plan
         env:
           NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
           NEXUS_URL: ${{ vars.NEXUS_URL }}
@@ -266,10 +261,10 @@ jobs:
             fi
           done
 
-          zip="dist/${CATALOG_ITEM_SLUG}-elite-v${VERSION}.zip"
+          zip="dist/${CATALOG_ITEM_SLUG}-v${VERSION}.zip"
 
           if [ ! -f "$zip" ]; then
-            echo "::error::$zip was not built — every plan is sold the elite build."
+            echo "::error::$zip was not built — every plan is sold the Pro ZIP."
             exit 1
           fi
 
@@ -306,13 +301,11 @@ jobs:
             echo "## WConvert Pro ${VERSION}"
             echo ""
             if [ "$BUILD" = "success" ]; then
-              echo "Built and contract-checked, one ZIP per tier. They are attached to this run for 14 days; only the elite ZIP is sold, once per plan."
+              echo "Built and contract-checked, and attached to this run for 14 days. The one ZIP is sold to every plan."
               echo ""
-              echo "| Tier | ZIP |"
+              echo "| Plugin | ZIP |"
               echo "|---|---|"
-              echo "| Basic | \`wconvert-pro-basic-v${VERSION}.zip\` |"
-              echo "| Pro | \`wconvert-pro-pro-v${VERSION}.zip\` |"
-              echo "| Elite | \`wconvert-pro-elite-v${VERSION}.zip\` |"
+              echo "| Pro | \`wconvert-pro-v${VERSION}.zip\` |"
             else
               echo "Build or checks did not pass — no artifact was produced."
             fi
@@ -320,7 +313,7 @@ jobs:
             echo "- Highest free version published: \`${PUBLISHED}\`"
             echo ""
             case "$NEXUS" in
-              success) echo "- ✅ Nexus — the elite ZIP published, once per plan" ;;
+              success) echo "- ✅ Nexus — the Pro ZIP published, once per plan" ;;
               skipped) echo "- ⏸️ Nexus — held back (switch is off, or this is a pre-release)" ;;
               failure) echo "- ❌ Nexus — FAILED; re-running is safe, the store keeps what it already holds" ;;
               *)       echo "- ⚪ Nexus — $NEXUS" ;;

@@ -23,6 +23,11 @@ plugin, so there is still no licence read on any path and still not one premium
 feature with an `if` around it. What replaced the boolean is arithmetic —
 `Tier::includes()` — not a gate.*
 
+***Superseded in part by [ADR 0146](0146-pro-is-one-tier.md): `Tier` is `free` and `pro` only, and
+`installedTier()` answers `pro` exactly when Pro is loaded. The two paragraphs
+on rungs and on inferring the tier from directories below describe the retired
+ladder.***
+
 ***And the tier is INFERRED rather than stored**, which is what keeps it inside
 this ADR rather than beside it: a module is a directory under `pro/modules/`, and
 an install reads its own rung back off the directories its build left behind.
@@ -68,7 +73,9 @@ Basic customer holds the Elite React UI behind a client-readable flag — under
 possession-gating that is not a weaker gate, it is no gate. The scan also had a
 hole of its own until then: it read `entry.tier === 'pro'`, so the moment the two
 cart Conditions moved to `elite` it stopped looking for them at all, while going
-on printing a tick.*
+on printing a tick.* *Superseded by [ADR 0146](0146-pro-is-one-tier.md): there are no paid rungs to scan
+between. The scan of free's loader for every non-free identifier and every Pro
+module's marker stays.*
 
 *Built in [#32](https://github.com/navidkashani/wconvert/issues/32), first row
 only: `exit_intent` and `scroll_up` are two modules under
@@ -101,7 +108,7 @@ and would put a branch on the request path 0004 exists to protect.
   the feature.
   *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): a free install renders `locked` as `hide`, and the server sends it
   no locked design at all. The data is still needed, because a paid install still
-  renders the rungs above it as upsells, and because free hides by reading it.* Content, never capability — the same line the Playbook library holds.
+  renders the rungs above it as upsells, and because free hides by reading it.* *With one paid tier ([ADR 0146](0146-pro-is-one-tier.md)) a Pro install supplies every member, so the locked state only reaches free.* Content, never capability — the same line the Playbook library holds.
 - **That data is bundled, never fetched.** A free wp.org plugin phoning home for
   *upsell copy* is a different conversation with the review team than fetching a
   template library the user asked for.
@@ -152,7 +159,9 @@ and would put a branch on the request path 0004 exists to protect.
   could only be handed a two-valued answer, and every `tier:` declaration in the
   product could only mean "not free". It answers a `Tier` now. **It is still one
   accessor and still not a gate** — one interface asks, one file looks the answer
-  up, and what it reports is which rung's modules are on disk.*
+  up, and what it reports is which rung's modules are on disk.* *Amended by
+  [ADR 0146](0146-pro-is-one-tier.md): it reports whether Pro is loaded — `pro` or `free` — and reads
+  no directory.*
   *Amended by [#27](https://github.com/navidkashani/wconvert/issues/27): it is now
   an **interface** with one production implementation
   ([`WpProPresence`](../../src/Support/WpProPresence.php)) rather than a concrete
@@ -197,7 +206,8 @@ and would put a branch on the request path 0004 exists to protect.
   scopes it directly rather than through a `premium` profile — Pro has nothing
   else to scope, so a profile would be a switch with one position. And Nexus
   does not serve a tier-matched ZIP: its tiers for WConvert are **plans** (how
-  many sites), and the elite ZIP is posted once per plan. The test is narrowed
+  many sites), and the elite ZIP is posted once per plan (*one Pro ZIP since
+  [ADR 0146](0146-pro-is-one-tier.md)*). The test is narrowed
   to `pro/src/License/` and Pro's bootstrap, which runs it and asks it nothing.*
 
   ***What that work is, written down while it is fresh.** `veronalabs/wp-premium-sdk`
@@ -221,3 +231,4 @@ and would put a branch on the request path 0004 exists to protect.
     whole point of it being total today.*
   - *Nothing else. **The build stays the gate**: Nexus serves the ZIP matching
     the licence's tier, and no runtime check unlocks anything (ADR 0056).*
+    *Corrected by ADR 0143 and [ADR 0146](0146-pro-is-one-tier.md): every plan gets the one Pro ZIP.*

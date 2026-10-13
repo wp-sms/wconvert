@@ -51,7 +51,7 @@ final class AdminServiceProvider implements ServiceProvider
             static function (ServiceContainer $c): SiteHealthInfo {
                 $manifest = TierManifest::load();
 
-                return new SiteHealthInfo($c->resolve(OptinRepository::class), new WpProPresence($manifest), $manifest);
+                return new SiteHealthInfo($c->resolve(OptinRepository::class), new WpProPresence(), $manifest);
             }
         );
 

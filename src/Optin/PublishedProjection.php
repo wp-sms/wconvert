@@ -131,8 +131,8 @@ final class PublishedProjection
      * choose. A minifier keeps a property access as `.ab`, and `.ab` is not
      * something a scan can look for in 9 KB of minified JavaScript without
      * matching half of it — so the one thing `bin/check-loader.mjs` proves
-     * about a per-tier build, that a Basic bundle carries no higher rung's
-     * code, would have had no observable token to prove it with.
+     * about free's bundle, that it carries no A/B code, would have had no
+     * observable token to prove it with.
      *
      * `.variant` is unmistakable in a bundle, it is the word CONTEXT.md
      * already uses for the thing, and it costs four bytes on an arm and

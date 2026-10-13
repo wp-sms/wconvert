@@ -235,6 +235,8 @@ reports the numbers, once per screen and only where a test is running.
   the rung about other systems, WooCommerce and outbound Destinations, neither
   of which a test needs. Filing it at Elite would also leave the middle rung
   promising optimisation while withholding the only tool that measures it.
+  *Superseded by [ADR 0146](0146-pro-is-one-tier.md): Pro is one tier, so A/B testing ships in every
+  Pro ZIP and there is no rung to choose.*
 - **The tier gate could not see this module, and now it can.**
   `bin/check-loader.mjs` and `bin/verify-artifact-contract.sh` both read their
   identifier list out of the RULE manifest, so they can only see a module whose
@@ -247,6 +249,9 @@ reports the numbers, once per screen and only where a test is running.
   it, and both programs scan for it exactly as they scan for a rule
   identifier. Recorded inline in ADR 0056 and
   [ADR 0029](0029-the-free-contract-is-proven-at-the-source.md).
+  *Amended by [ADR 0146](0146-pro-is-one-tier.md): the scans between paid rungs are gone with the
+  rungs. `bin/check-loader.mjs` still scans free's loader for every marker, so
+  the `bundle_marker` keeps its job on the free side.*
 
   **A module that declares none is NAMED beside the tick, never folded into
   it.** Only `ab-testing` declares one today, so free's loader prints
@@ -261,7 +266,7 @@ reports the numbers, once per screen and only where a test is running.
 - **The Optins list is the result screen.** There is no new admin screen and
   `PRO_SCREENS` is still empty, so Pro's admin bundle is still one build for
   all three rungs and `pro/tests/js/admin-entry.test.ts`'s tripwire has not
-  fired. The two actions are gated the way every other premium capability is —
+  fired. *That tripwire is deleted by [ADR 0146](0146-pro-is-one-tier.md): one Pro, one admin build.* The two actions are gated the way every other premium capability is —
   free's admin renders a `locked` state as DATA
   ([ADR 0015](0015-enforcement-is-by-non-registration.md)) — and the actual
   enforcement is that the routes do not exist on a build without the module.

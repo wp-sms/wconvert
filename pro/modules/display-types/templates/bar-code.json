@@ -2,7 +2,7 @@
   "id": "bar-code",
   "name": "Bar that hands over a code",
   "display_type": "floating_bar",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "heading-size": "1.0625rem",
     "heading-weight": "600",

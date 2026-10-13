@@ -225,7 +225,7 @@ export function FlowMap({ tree, selected, focusedPath = null, onSelect, onSelect
     <section className="wconvert-flow-region" aria-label={__('Flow map', 'wconvert')} aria-describedby={`${id}-keys`} ref={region}>
       {model.straight && <div className="wconvert-flow-nudge">
         <span>{__('Every visitor sees these screens in order.', 'wconvert')}</span>
-        {branchLocked ? <span className="wconvert-flow-nudge__locked"><Lock aria-hidden="true" />{sprintf(/* translators: %s: the product that adds answer lines, e.g. “WConvert Pro”. */ __('Sending answers to different screens comes with %s.', 'wconvert'), tierProductName('basic'))}</span>
+        {branchLocked ? <span className="wconvert-flow-nudge__locked"><Lock aria-hidden="true" />{sprintf(/* translators: %s: the product that adds answer lines, e.g. “WConvert Pro”. */ __('Sending answers to different screens comes with %s.', 'wconvert'), tierProductName('pro'))}</span>
           : onBranch && hasChoiceQuestion ? <button type="button" className="wconvert-panel-link" onClick={onBranch}>{__('Send some answers to a different screen', 'wconvert')}</button>
             : onBranch ? <span>{__('Add a question to send answers to different screens.', 'wconvert')}</span> : null}
       </div>}

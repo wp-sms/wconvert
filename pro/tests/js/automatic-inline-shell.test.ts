@@ -4,7 +4,7 @@ import { afterEach, expect, it } from 'vitest';
 import { start } from '@loader/shell';
 import { explain } from '@loader/inspect/explain';
 import { proLoaderFor, presenter } from '../../resources/loader/src/compose';
-import { BASIC_MODULES } from '../../resources/loader/src/modules';
+import { PRO_MODULES } from '../../resources/loader/src/modules';
 import { automaticPlacementState } from '../../modules/inline-placement/loader';
 import type { PayloadEntry } from '@loader/types';
 
@@ -15,7 +15,7 @@ afterEach(() => { document.querySelectorAll('dialog').forEach(dialog => dialog.c
 
 it('selects after frequency and schedule checks and leaves manual and overlay rendering independent', () => {
   document.body.innerHTML = '<div hidden data-wconvert-auto="capped"></div><div hidden data-wconvert-auto="future"></div><div hidden data-wconvert-auto="winner"></div><div data-wconvert-optin="manual"></div>';
-  const stop = start({ loader: proLoaderFor(BASIC_MODULES), presenter,
+  const stop = start({ loader: proLoaderFor(PRO_MODULES), presenter,
     entries: [entry('capped', { priority: 99, frequency: { maxImpressions: 1 } }), entry('future', { priority: 98, starts_at: 9999999999999 }), entry('winner'), entry('manual'), entry('overlay', { display_type: 'popup' })],
     store: { read: () => JSON.stringify({ capped: { i: 1, l: 0 } }), write() {} }, now: () => 1000,
   });
@@ -29,7 +29,7 @@ it('selects after frequency and schedule checks and leaves manual and overlay re
 
 it('an assigned variant uses its own position but the parent manual anchor takes precedence', () => {
   document.body.innerHTML = '<div hidden data-wconvert-auto="parent"></div><div hidden data-wconvert-auto="variant"></div><div data-wconvert-optin="parent"></div>';
-  const stop = start({ loader: proLoaderFor(BASIC_MODULES), presenter,
+  const stop = start({ loader: proLoaderFor(PRO_MODULES), presenter,
     entries: [entry('variant', { anchor: 'parent' })], store: { read: () => null, write() {} },
   });
   expect(document.querySelector('[data-wconvert-optin="parent"]')!.childElementCount).toBe(1);
@@ -37,10 +37,10 @@ it('an assigned variant uses its own position but the parent manual anchor takes
   stop();
 });
 
-it('a manual A/B arm cannot consume an automatic family anchor when Basic has no arm assignment', () => {
+it('a manual A/B arm cannot consume an automatic family anchor without an arm assignment', () => {
   document.body.innerHTML = '<div hidden data-wconvert-auto="parent"></div>';
   const manualArm = { ...entry('variant', { anchor: 'parent' }), inline_placement: undefined };
-  const stop = start({ loader: proLoaderFor(BASIC_MODULES), presenter,
+  const stop = start({ loader: proLoaderFor(PRO_MODULES), presenter,
     entries: [entry('parent'), manualArm],
     store: { read: () => null, write() {} },
   });

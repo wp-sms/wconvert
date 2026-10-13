@@ -25,7 +25,7 @@
       "setup_id": "sale-deadline",
       "stage": "during",
       "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
-      "design_hash": "6039da2280e078ee4f37573a8ced5c29be7489107274e02037f06b323cf18759"
+      "design_hash": "9c345ebb5bff7e47f337e4079d45353694f464276090ba3510cd631385883aad"
     },
     {
       "setup_id": "homeware-care-notes",
@@ -42,6 +42,6 @@
     "feature_end_exclusive": "2026-12-01"
   },
   "dependencies_current": true,
-  "revision": "8a772da90a3e99d70ff680f869694f92c237cd521a7c31a9aa0274bd1b2837c6",
+  "revision": "396112cee41ff69f66dc0b1dc8087e4655cff340470e7f861fc266a9164ff8b3",
   "status": "published"
 }

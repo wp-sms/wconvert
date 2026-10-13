@@ -11,16 +11,15 @@ defined('ABSPATH') || exit;
  * =============================================================================
  * WHAT IS IN THE FILE, AND WHAT IS DELIBERATELY NOT.
  * =============================================================================
- * The ORDER of the ladder is {@see Tier}'s, in code, and is not read from here
- * ({@see Tier::ladder()} says why: a ladder that fails open when its file is
- * missing is not a ladder, which is ADR 0015's recorded complaint about WSMS's
- * `TierGate`). What lives here is what only data can carry:
+ * The tiers themselves are {@see Tier}'s, in code, and are not read from here:
+ * a tier list that fails open when its file is missing is ADR 0015's recorded
+ * complaint about WSMS's `TierGate`. What lives here is what only data can
+ * carry:
  *
- * - the **display name**, so the one product sold at launch can display as
- *   "Pro" at every rung and splitting the range later is an edit to this file
- *   rather than a code change and a data migration (ADR 0056);
- * - the **module set** per tier, which is what a per-tier build cuts to and
- *   what {@see WpProPresence} infers the installed tier back out of.
+ * - the **display name** and **product name** the admin shows on a `locked`
+ *   card;
+ * - the **module set** Pro ships, which `bin/verify-artifact-contract.sh`
+ *   proves the Pro ZIP carries in full.
  *
  * So every method here has a defined answer when the file is missing, and none
  * of those answers is "you have everything". A tier whose name cannot be read
@@ -96,9 +95,7 @@ final class TierManifest
     /**
      * What a merchant is offered when they meet a member this tier supplies.
      *
-     * **Every paid tier answers "Pro" at launch**, which is the whole point of
-     * the indirection: one product is sold, three are understood, and the
-     * `locked → upsell` card names this rather than a hard-coded word
+     * The `locked → upsell` card names this rather than a hard-coded word
      * (`resources/admin/src/goals/availability.ts`).
      *
      * A tier the file does not name falls back to its own slug — visibly odd
@@ -112,13 +109,10 @@ final class TierManifest
     /**
      * Whether a tier's build ships a module.
      *
-     * **Every rung names its modules, including the top one — there is no
-     * `"*"`.** A wildcard reads as "everything", which is true of what the top
-     * build should contain and useless to a check: the artifact contract
-     * asserts both that a rung carries no module it does not declare AND that
-     * it carries every module it does, and against a wildcard the second half
-     * asserts nothing — leaving the rung every customer buys today as the one
-     * rung with no completeness check (ADR 0056).
+     * **Pro names its modules — there is no `"*"`.** A wildcard reads as
+     * "everything", which is true of what the build should contain and useless
+     * to a check: the artifact contract asserts the Pro ZIP carries every
+     * module this file names, and against a wildcard that asserts nothing.
      */
     public function shipsModule(Tier $tier, string $module): bool
     {
@@ -144,16 +138,15 @@ final class TierManifest
     }
 
     /**
-     * Every paid rung's words, as the admin bundle receives them.
+     * Every paid tier's words, as the admin bundle receives them.
      *
      * ========================================================================
      * THE ONE PLACE THE ADMIN LEARNS WHAT TO CALL A TIER.
      * ========================================================================
      * Free's admin renders the upsell for a member it does not have, and the
-     * word on that card used to be the literal "Pro" in five components. At
-     * launch every rung answers "Pro" here, so nothing on screen changes — and
-     * splitting the range later is an edit to `tiers.json` rather than five
-     * strings and a release (ADR 0056).
+     * word on that card used to be the literal "Pro" in five components. It is
+     * read from `tiers.json` instead, so renaming the product is an edit to
+     * that file rather than five strings and a release.
      *
      * **The words are not translatable, and that is the trade.** `make-pot`
      * cannot see a JSON string, which is why every other piece of merchant-
@@ -189,20 +182,13 @@ final class TierManifest
     }
 
     /**
-     * The lowest tier whose build ships this module, or null when none does.
+     * The tier whose build ships this module, or null when none does.
      *
-     * This is the direction {@see WpProPresence} reads the ladder in, and it is
-     * what makes the installed tier INFERRED rather than stored: a module on
-     * disk is evidence of at least the tier that first ships it, and the
-     * highest such tier across everything installed is what this build is.
-     *
-     * Spoof-resistant downward by construction — claiming a lower tier costs
-     * you the modules — which is the property WP Statistics' `TierGate` has and
-     * a stored label does not. Upward it is not resistant at all, and does not
-     * need to be: possession is the gate, and a module you do not have supplies
-     * nothing however the install is labelled (ADR 0015).
+     * Read by the admin to name the tier on a module's `locked` card, so the
+     * answer comes out of the file the build is checked against rather than a
+     * second declaration in PHP.
      */
-    public function lowestTierSupplying(string $module): ?Tier
+    public function tierThatShips(string $module): ?Tier
     {
         foreach (Tier::paid() as $tier) {
             if ($this->shipsModule($tier, $module)) {
@@ -211,48 +197,5 @@ final class TierManifest
         }
 
         return null;
-    }
-
-    /**
-     * The tier a build carrying these modules is at.
-     *
-     * ========================================================================
-     * THE WHOLE INFERENCE, AND IT DOES NOT FAIL OPEN.
-     * ========================================================================
-     * The highest of each module's lowest supplying tier. A module on disk is
-     * evidence of at least the rung that first ships it; the top such rung is
-     * what this build is.
-     *
-     * **The floor is {@see Tier::Basic}, never {@see Tier::Free}, and never the
-     * top.** Every unreadable state resolves DOWNWARD: no manifest, no modules,
-     * or modules nothing claims, and a loaded Pro reads as the lowest paid rung
-     * — which is what "Pro is here and said nothing about itself" honestly
-     * means. Reading it as free would show a paying customer upsell cards for
-     * what they bought, which ADR 0026 forbids outright; reading it as elite
-     * would offer them a feature their ZIP does not contain. The bottom rung is
-     * the only answer wrong in the recoverable direction.
-     *
-     * That is the opposite posture to WSMS's `TierGate`, whose every lookup
-     * fails open — ADR 0015 records why: a ladder that fails open is not a
-     * ladder.
-     *
-     * **The caller decides whether Pro is here at all**; this answers only
-     * which rung, so it is pure and a test can reach every rung of it.
-     *
-     * @param list<string> $modules Slugs read off the module directories on disk.
-     */
-    public function tierFor(array $modules): Tier
-    {
-        $highest = Tier::Basic;
-
-        foreach ($modules as $module) {
-            $supplies = $this->lowestTierSupplying($module);
-
-            if ($supplies !== null && $supplies->includes($highest)) {
-                $highest = $supplies;
-            }
-        }
-
-        return $highest;
     }
 }

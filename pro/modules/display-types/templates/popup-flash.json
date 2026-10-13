@@ -2,7 +2,7 @@
   "id": "popup-flash",
   "name": "Flash over a picture",
   "display_type": "popup",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#0c0a09",
     "fg": "#ffffff",

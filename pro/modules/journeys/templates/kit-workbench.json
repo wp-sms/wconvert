@@ -2,7 +2,7 @@
   "id": "kit-workbench",
   "name": "Kit workbench",
   "display_type": "fullscreen",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f0f4f5",
     "fg": "#332e28",

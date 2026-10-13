@@ -25,7 +25,7 @@ import { assignArms } from './arms';
  * =============================================================================
  * WHAT A BUILD WITHOUT THIS MODULE DOES, WHICH IS NOT NOTHING.
  * =============================================================================
- * Free's loader, and a Basic build's, carry no narrowing at all — so both arms
+ * Free's loader carries no narrowing at all — so both arms
  * of a published test reach `decide()` as two entries. For the three overlay
  * [[Display Type]]s `arbitrate()` then shows exactly one, deterministically:
  * priority first, then id, and a variant copies its parent's priority, so the

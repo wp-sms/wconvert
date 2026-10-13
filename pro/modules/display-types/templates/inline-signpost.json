@@ -2,7 +2,7 @@
   "id": "inline-signpost",
   "name": "Inline signpost",
   "display_type": "floating_bar",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#f7f9f6",
     "fg": "#2e3c33",

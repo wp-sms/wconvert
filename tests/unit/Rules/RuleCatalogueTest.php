@@ -47,7 +47,7 @@ final class RuleCatalogueTest extends TestCase
     {
         return new RuleCatalogue(
             RuleVocabulary::fromManifest(self::PLUGIN_DIR),
-            new FakeProPresence($hasPro ? Tier::Elite : Tier::Free),
+            new FakeProPresence($hasPro ? Tier::Pro : Tier::Free),
             new FakeSitePresence($hasStore ? [SiteDependency::WooCommerce] : []),
             // Two sources, because the seam is the feature: WordPress's own
             // roles, and what a membership adapter would register beside

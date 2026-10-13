@@ -77,14 +77,14 @@ final class TransferDraftTest extends TestCase
         self::assertSame(3, $prepared['v']);
         self::assertSame($tree['graph'], $prepared['graph']);
         self::assertNull(GraphCaptureContract::issue($prepared, 'collect_enquiries'));
-        TransferDraft::validate(['template' => ['tree' => $prepared, 'tokens' => []], 'display_type' => 'popup'], 'Enquiry', new PackValidator(TemplateManifest::load(), $vocabulary, Tier::Basic));
+        TransferDraft::validate(['template' => ['tree' => $prepared, 'tokens' => []], 'display_type' => 'popup'], 'Enquiry', new PackValidator(TemplateManifest::load(), $vocabulary, Tier::Pro));
     }
 
     public function testCandidateValidationRejectsRoutingDamagedAfterReadingTheArchive(): void
     {
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
         $tree['graph']['entry'] = 'missing';
-        $validator = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Basic);
+        $validator = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Pro);
         $this->expectException(\RuntimeException::class);
         TransferDraft::validate(['template' => ['tree' => $tree, 'tokens' => []], 'display_type' => 'popup'], 'Enquiry', $validator);
     }

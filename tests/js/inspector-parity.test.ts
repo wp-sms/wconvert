@@ -32,72 +32,45 @@ const source = (path: string) => readFileSync(resolve(ROOT, path), 'utf8');
 /**
  * Which module sets an entry composes.
  *
- * Free's entries call `createLoader(...)` directly. Pro's do not: there is one
- * entry per TIER (ADR 0056) and the composition they share — free's modules
- * first, Pro's presenter, the boot — lives in `pro/resources/loader/src/tier.ts`
- * so it cannot be got right at two rungs and wrong at the third. What a Pro
- * entry states is the one thing that differs, which is the argument it hands
- * `bootProLoader` / `bootProInspector`.
+ * Free's entries call `createLoader(...)` directly. Pro's call `proLoaderFor`,
+ * which puts free's modules first and lives in `pro/resources/loader/src/
+ * compose.ts`. What a Pro entry states is the argument it hands that call.
  *
  * Both spellings are read the same way — the identifiers ending `_MODULES` in
  * the composing call — so this asserts what each entry NAMES rather than how
  * its tree happens to be factored.
  */
 function composed(path: string): string[] {
-  const call = /(?:createLoader|bootProLoader|bootProInspector)\(\[?([^)]*)\]?\)/.exec(source(path));
+  const call = /(?:createLoader|proLoaderFor)\(\[?([^)]*)\]?\)/.exec(source(path));
 
   expect(call, `${path} does not compose a loader`).not.toBeNull();
 
   return [...(call as RegExpExecArray)[1].matchAll(/([A-Z_]+_MODULES)/g)].map((match) => match[1]);
 }
 
-/** Every paid rung, ascending — the same three `tiers.json` declares. */
-const TIERS = ['basic', 'pro', 'elite'] as const;
-
 describe('each build’s inspector', () => {
   it('composes exactly what that build’s loader composes', () => {
     expect(composed('resources/loader/src/inspect/main.ts')).toEqual(
       composed('resources/loader/src/main.ts'),
     );
-  });
-
-  /**
-   * ==========================================================================
-   * AND PER RUNG, WHICH IS WHERE THE HAZARD GOT FINER.
-   * ==========================================================================
-   * Free's inspector on a Pro install reports every `exit_intent` Optin as
-   * `inert` while it works perfectly. One rung down that same mistake is an
-   * ELITE inspector on a Basic install reporting the cart Conditions as
-   * evaluable on a build that cannot evaluate them — the same confidently
-   * wrong diagnostic, arriving from inside Pro rather than from free.
-   */
-  it.each(TIERS)('composes at the %s rung exactly what that rung’s loader composes', (tier) => {
-    expect(composed(`pro/resources/loader/src/inspect/${tier}.ts`)).toEqual(
-      composed(`pro/resources/loader/src/${tier}.ts`),
+    expect(composed('pro/resources/loader/src/inspect/main.ts')).toEqual(
+      composed('pro/resources/loader/src/main.ts'),
     );
   });
 
   /**
-   * Each rung names its own set, and no two name the same one — asserted
-   * positively so the equalities above cannot be satisfied by two entries that
-   * are both wrong in the same way, or by three rungs that are all elite.
+   * Asserted positively so the equalities above cannot be satisfied by two
+   * entries that are both wrong in the same way.
    */
-  it('is free’s modules alone in free, and one distinct set per paid rung', () => {
+  it('is free’s modules alone in free, and Pro’s set in Pro', () => {
     expect(composed('resources/loader/src/inspect/main.ts')).toEqual(['FREE_MODULES']);
-
-    const named = TIERS.map((tier) => composed(`pro/resources/loader/src/${tier}.ts`));
-
-    expect(named).toEqual([['BASIC_MODULES'], ['PRO_MODULES'], ['ELITE_MODULES']]);
+    expect(composed('pro/resources/loader/src/main.ts')).toEqual(['PRO_MODULES']);
   });
 
-  /** All four run the SAME inspector, imported from free's tree rather than forked. */
+  /** Both run the SAME inspector, imported from free's tree rather than forked. */
   it('runs one implementation, which lives in free’s tree', () => {
     expect(source('resources/loader/src/inspect/main.ts')).toContain("from './run'");
-    expect(source('pro/resources/loader/src/inspect/tier.ts')).toContain("from '@loader/inspect/run'");
-
-    for (const tier of TIERS) {
-      expect(source(`pro/resources/loader/src/inspect/${tier}.ts`)).toContain("from './tier'");
-    }
+    expect(source('pro/resources/loader/src/inspect/main.ts')).toContain("from '@loader/inspect/run'");
   });
 });
 
@@ -167,7 +140,7 @@ describe('the production loader graph', () => {
 
   it.each([
     ['free', 'resources/loader/src/main.ts'],
-    ...TIERS.map((tier): [string, string] => [`pro ${tier}`, `pro/resources/loader/src/${tier}.ts`]),
+    ['pro', 'pro/resources/loader/src/main.ts'],
   ])('never reaches the inspector from %s’s loader entry', (_name, entry) => {
     const inspector = resolve(LOADER, 'inspect');
 

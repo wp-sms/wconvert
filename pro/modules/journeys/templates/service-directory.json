@@ -2,7 +2,7 @@
   "id": "service-directory",
   "name": "Service directory",
   "display_type": "inline",
-  "tier": "basic",
+  "tier": "pro",
   "tokens": {
     "bg": "#ffffff",
     "fg": "#23374c",

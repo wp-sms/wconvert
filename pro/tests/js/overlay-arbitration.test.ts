@@ -5,7 +5,7 @@ import { start } from '@loader/shell';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import type { Store } from '@loader/storage';
 import type { PayloadEntry } from '@loader/types';
-import proLoader from '../../resources/loader/src/elite';
+import proLoader from '../../resources/loader/src/main';
 import { proPresenter } from '../../modules/display-types/loader';
 
 /**

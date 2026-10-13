@@ -79,7 +79,7 @@ anyone's WooCommerce basket.
 
 Create a campaign with **Increase basket value → Add useful extras**. Choose the
 main product and extras, then keep **Product action → Add to cart** selected.
-This starting point requires the Elite commerce capability (shown as WConvert Pro).
+This starting point requires WConvert Pro.
 An existing published click campaign keeps its original goal; create a new campaign
 for addition results.
 

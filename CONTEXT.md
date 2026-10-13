@@ -494,7 +494,7 @@ arms and be counted twice. That is the same limit [[Impression]] and
 honest count of people anywhere in WConvert — the Optins list says so where it
 reports the two numbers.
 
-A Variant is [[Pro]]'s, at the `pro` rung. See
+A Variant is [[Pro]]'s. See
 [ADR 0045](docs/adr/0045-an-ab-variant-is-a-whole-optin.md) for the shape and
 [ADR 0058](docs/adr/0058-a-test-ends-when-the-merchant-says-so.md) for how a
 test runs and ends.
@@ -1622,8 +1622,9 @@ expired licence stops the updater; it does not change what a running site does.
 > both must be a fully working install. A free install is not a crippled Pro install —
 > it is the whole product minus features it never carried.
 
-Pro is **one plugin at three [[Tier]]s**, and a customer moving up replaces their
-install rather than adding a second beside it.
+Pro is **one [[Tier]], with every feature**. The [[Plan]]s differ only in how
+many sites they cover, and every plan gets the same Pro ZIP
+([ADR 0146](docs/adr/0146-pro-is-one-tier.md)).
 
 ### Licence
 
@@ -1653,23 +1654,20 @@ installed — every plan gets the same Pro. Plan slugs never appear in
 
 ### Tier
 
-Which install supplies a registry member: `free`, or one of Pro's three rungs —
-`basic`, `pro`, `elite`. A **ladder**, not a flag: a higher rung supplies
-everything a lower one does, and `free` is supplied by all of them.
+Which install supplies a registry member: `free` or `pro`. `pro` includes
+everything `free` supplies, so a Pro install is the whole product.
 
-**One tier is sold and all three display as "Pro".** The words are data
-(`tiers.json`), so splitting the range later is an edit to that file rather than
-a code change and a migration of every `tier` already saved on a live [[Optin]].
-
-A tier is **inferred, never stored**: an install reads its own rung back off the
-[[Module]] directories its build left behind. Possession is the whole gate — a
-module you do not have supplies nothing, whatever an install claims to be — so
-this is the same sentence [[Pro]] already makes, counted rather than answered
-yes or no.
+There is **one paid tier** ([ADR 0146](docs/adr/0146-pro-is-one-tier.md), which
+retired ADR 0056's `basic` / `pro` / `elite` ladder). Its display name is data
+(`tiers.json`), and an install is at `pro` exactly when [[Pro]] is loaded.
 
 > Every registry declares `tier` locally, on members it already enumerates.
-> There is no cross-cutting list of premium capabilities anywhere, and adding a
-> rung adds no list either.
+> There is no cross-cutting list of premium capabilities anywhere. A `tier`
+> value that is not `free` or `pro` reads as free, so the shipped data is
+> tested for it.
+
+`basic`, `elite` and "rung" are the retired ladder's words and name nothing
+now. What Nexus calls a *tier* is a [[Plan]].
 
 ### Module
 
@@ -1677,11 +1675,11 @@ A named unit of premium capability, and **a directory** under `pro/modules/`
 holding its own `module.json`. Everything inside it is the module — its PHP, its
 loader source, its designs — and nothing outside it is.
 
-That is what makes a per-[[Tier]] build a deletion rather than a list of paths
-somebody maintains, and what lets an install infer its own rung by looking at
-what is on disk. A module is not a runtime concept: nothing loads one, registers
-one, or asks whether one is enabled. It is a boundary the *build* cuts on and the
-file system answers about.
+`tiers.json` names every module Pro ships, and the artifact contract checks the
+Pro ZIP carries exactly those directories. A module is not a runtime concept:
+nothing loads one, registers one, or asks whether one is enabled. It is a
+boundary the file system answers about — a class in a module that is not on disk
+is a class `class_exists()` cannot find.
 
 ### Availability
 

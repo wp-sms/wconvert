@@ -25,7 +25,7 @@ extracted at `/tmp/wconvert-rc-installed`, branch-base packages built under
 `/tmp/wconvert-rc-baseline/dist/stage`, and current packages under this repo's
 `dist/stage`. It changes only those temporary plugin copies and always restores
 the candidate. Do not point a saved site at these directories. It compares actual
-saved campaign/statistic records across rollback/re-upgrade and Basic/Elite changes.
+saved campaign/statistic records across rollback and re-upgrade.
 
 See `docs/reviews/recommendations-rc-2026-10-05/` for the verified runtime matrix,
 logs, visual evidence and exact artifact hashes. WordPress Playground patch
