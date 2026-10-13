@@ -48,6 +48,11 @@ final class InspectorLabels
                 'Published rules on this page, with browser allowances as the page began. Unsaved draft changes are not included. Only you can see this report.',
                 'wconvert'
             ),
+            // The troubleshooting guide, for the cause this report cannot see (ADR 0145).
+            'guide' => [
+                'label' => __('Troubleshooting guide', 'wconvert'),
+                'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::POPUP_NOT_SHOWING, 'common-causes'),
+            ],
             'close' => __('Close', 'wconvert'),
             'collapse' => __('Collapse', 'wconvert'),
             'expand' => __('Expand', 'wconvert'),

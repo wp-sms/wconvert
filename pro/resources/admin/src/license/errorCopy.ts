@@ -10,7 +10,8 @@ import type { LicenseError } from './api';
  * (P6): it is shown with its code, beside Try again and Contact support, so a
  * future store's new refusal still reads as something and can be reported.
  */
-export type Way = 'sign_in' | 'find_key' | 'renew' | 'sites' | 'upgrade' | 'retry' | 'support';
+/** `guide` is the troubleshooting article on wconvert.io (ADR 0145). */
+export type Way = 'sign_in' | 'find_key' | 'renew' | 'sites' | 'upgrade' | 'retry' | 'support' | 'guide';
 
 export interface ErrorCopy { text: string; ways: Way[] }
 
@@ -46,7 +47,7 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
     case 'network_error':
     case 'server_error':
     case 'invalid_response':
-      return { text: sprintf(__('Couldn’t reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry'] };
+      return { text: sprintf(__('Couldn’t reach the license server. Some hosts block outgoing connections. Ask yours to allow %s.', 'wconvert-pro'), host), ways: ['retry', 'guide'] };
     case 'account_expired':
     case 'token_expired':
       return { text: __('Your sign-in timed out. Sign in again.', 'wconvert-pro'), ways: [] };
@@ -58,6 +59,6 @@ export function errorCopy(error: LicenseError, { host = 'my.wconvert.io', fromCo
       return { text: __('That license isn’t on this account any more.', 'wconvert-pro'), ways: ['retry'] };
     default:
       /* translators: %s: the error code, for support */
-      return { text: sprintf(__('Something went wrong (%s).', 'wconvert-pro'), error.code), ways: ['retry', 'support'] };
+      return { text: sprintf(__('Something went wrong (%s).', 'wconvert-pro'), error.code), ways: ['retry', 'support', 'guide'] };
   }
 }

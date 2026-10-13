@@ -169,6 +169,16 @@ function arrivalOf(funnel: Funnel, labels: Labels, endpoint: string | null, conn
 
   intro.textContent = text(labels, 'intro');
   section.append(intro);
+  // The guide for what this report cannot see — a cache, a theme, a conflict (ADR 0145). A new tab, so the page stays put.
+  const guide = labels.guide;
+  if (typeof guide === 'object' && typeof guide.url === 'string' && typeof guide.label === 'string') {
+    const link = el('a', 'guide') as HTMLAnchorElement;
+    link.href = guide.url;
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.textContent = `${guide.label} ↗`;
+    section.append(link);
+  }
   if (funnel.arrival.loaderStatus !== 'unobserved') {
     section.append(note(text(labels, 'arrival', funnel.arrival.loaderStatus)));
   } else if (funnel.arrival.entries > 0) {
@@ -573,6 +583,8 @@ const CSS = `
 .icon:focus-visible { outline: 2px solid #2271b1; outline-offset: 1px; }
 .body { overflow: auto; padding: .5rem .75rem .75rem; }
 .muted, .note { color: #646970; margin: .25rem 0; }
+.guide { display: inline-block; margin-block-end: .25rem; color: #2271b1; }
+.guide:focus-visible { outline: 2px solid #2271b1; outline-offset: 1px; }
 .row { border-block-start: 1px solid #f0f0f1; padding-block: .375rem; }
 .row:first-of-type { border-block-start: 0; }
 .summary { cursor: pointer; display: flex; flex-direction: column; gap: .125rem; }

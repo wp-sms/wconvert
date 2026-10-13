@@ -109,6 +109,13 @@ WConvert works fully on its own. The separate WConvert Pro plugin adds:
 
 None of that code is in this plugin.
 
+= Guides and support =
+
+Step-by-step guides for every feature are at [wconvert.io/docs](https://wconvert.io/docs/),
+starting with [Create your first campaign](https://wconvert.io/docs/create-your-first-campaign/).
+Inside WordPress, open **WConvert → Help**. For anything the guides don't
+answer, [contact our team](https://wconvert.io/support/).
+
 = Source code =
 
 The admin screens, the visitor-facing loader and the editor block are built
@@ -152,17 +159,20 @@ anywhere, such as a page builder, a widget or a theme file:
 `[wconvert_optin id="YOUR_CAMPAIGN_ID"]`
 
 Popups don't need this. They show on the pages you choose by themselves.
+Guide: [Add an inline campaign with a block or shortcode](https://wconvert.io/docs/add-inline-campaign/).
 
 = How do I stop a popup from showing again and again? =
 
 Each campaign has its own limits, for example once per visit or never again
 after someone signs up. Under **Settings** you can also set a limit for the
 whole site, so visitors never see too many campaigns.
+Guide: [Limit how often visitors see campaigns](https://wconvert.io/docs/limit-campaign-frequency/).
 
 = Can I show a popup only on some pages? =
 
 Yes. Pick the posts, pages, categories or page addresses where it should show,
 or where it should not.
+Guide: [Show a campaign on selected pages](https://wconvert.io/docs/show-on-selected-pages/).
 
 = Will it slow down my site? =
 
@@ -177,11 +187,13 @@ No. There is no visitor ID and no tracking across pages. Results are daily
 totals for each campaign. To slow down spam, a scrambled, one-way code made
 from the visitor's network address is kept for a few minutes. The address
 itself is never saved.
+Guide: [What WConvert stores, sends and counts](https://wconvert.io/docs/what-wconvert-stores/).
 
 = Where do my leads go? =
 
 Into your own WordPress database, and to MailPoet or WP SMS if you set that up.
 WConvert never sends your leads to us or to anyone else.
+Guide: [Choose where submissions go](https://wconvert.io/docs/choose-where-submissions-go/).
 
 = How do I delete someone's data? =
 
@@ -192,6 +204,7 @@ services, downloaded files and backups need to be removed there too.
 
 Under **WConvert → Settings → Data & privacy** you can see where visitor data
 goes and set how long submissions are kept.
+Guide: [Erase someone's personal data](https://wconvert.io/docs/erase-personal-data/).
 
 = What happens if I delete the plugin? =
 
@@ -199,6 +212,7 @@ Deactivating changes nothing, and everything is still there when you turn it
 back on. Deleting the plugin removes all of its data, including your leads, and
 this cannot be undone. Export your leads to CSV from **WConvert → Leads** first
 if you want to keep them.
+Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or-uninstall/).
 
 == External services ==
 

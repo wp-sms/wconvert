@@ -6,10 +6,14 @@ use WConvert\Admin\AdminMenu;
 use WConvert\Admin\AdminNotices;
 use WConvert\Admin\InspectorBar;
 use WConvert\Admin\LeadExport;
+use WConvert\Admin\PluginRowMeta;
+use WConvert\Admin\SiteHealthInfo;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Support\TierManifest;
+use WConvert\Support\WpProPresence;
 
 defined('ABSPATH') || exit;
 
@@ -38,6 +42,17 @@ final class AdminServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): AdminMenu => new AdminMenu(
                 $c->resolve(AdminNotices::class)
             )
+        );
+
+        // Tools → Site Health → Info → WConvert, which the Help page points
+        // support requests at instead of drawing a report of its own.
+        $container->register(
+            SiteHealthInfo::class,
+            static function (ServiceContainer $c): SiteHealthInfo {
+                $manifest = TierManifest::load();
+
+                return new SiteHealthInfo($c->resolve(OptinRepository::class), new WpProPresence($manifest), $manifest);
+            }
         );
 
         // The door into the eligibility inspector, on the page it explains.
@@ -75,5 +90,9 @@ final class AdminServiceProvider implements ServiceProvider
         $container->resolve(AdminNotices::class)->hooks();
         $container->resolve(AdminMenu::class)->hooks();
         $container->resolve(LeadExport::class)->hooks();
+        (new PluginRowMeta(plugin_basename(WCONVERT_MAIN_FILE)))->hooks();
+        // Built only when Site Health asks, since it reads the tier manifest
+        // and the campaigns table; every other admin request skips both.
+        add_filter('debug_information', static fn ($info): array => $container->resolve(SiteHealthInfo::class)->addSection($info));
     }
 }

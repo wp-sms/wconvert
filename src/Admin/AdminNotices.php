@@ -52,7 +52,7 @@ final class AdminNotices
     /**
      * Messages the plugin needs a human to read, in the order they were added.
      *
-     * @var list<string>
+     * @var list<array{text: string, guide: array{url: string, label: string}|null}>
      */
     private array $messages = [];
 
@@ -89,10 +89,12 @@ final class AdminNotices
 
     /**
      * Record a message for whichever render path this request reaches.
+     *
+     * @param array{url: string, label: string}|null $guide The guide with the fix ({@see \WConvert\Support\Docs::url()}), linked after the message (ADR 0145).
      */
-    public function add(string $message): void
+    public function add(string $message, ?array $guide = null): void
     {
-        $this->messages[] = $message;
+        $this->messages[] = ['text' => $message, 'guide' => $guide];
     }
 
     /**
@@ -139,7 +141,10 @@ final class AdminNotices
         $this->add(__(
             'WConvert has published Campaigns but its loader script is missing, so none of them can display. Reinstall the plugin to restore it.',
             'wconvert'
-        ));
+        ), [
+            'url' => \WConvert\Support\Docs::url(\WConvert\Support\Docs::UPDATE, 'update-the-files'),
+            'label' => __('How to reinstall', 'wconvert'),
+        ]);
     }
 
     /**
@@ -256,7 +261,17 @@ final class AdminNotices
     {
         foreach ($this->messages as $message) {
             echo '<div class="notice notice-error wconvert-notice"><p>';
-            echo esc_html($message);
+            echo esc_html($message['text']);
+
+            if ($message['guide'] !== null) {
+                printf(
+                    ' <a href="%1$s" target="_blank" rel="noreferrer">%2$s<span class="screen-reader-text"> %3$s</span></a>',
+                    esc_url($message['guide']['url']),
+                    esc_html($message['guide']['label']),
+                    esc_html__('(opens in a new tab)', 'wconvert')
+                );
+            }
+
             echo '</p></div>';
         }
     }

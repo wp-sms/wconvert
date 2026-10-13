@@ -63,7 +63,10 @@ Campaign guides and direct support need real destinations before those prototype
 labels can ship. **Amended by [0132](0132-every-screen-answers-its-first-question.md):**
 Help carries Getting started, Guides, Contact support and What's new (with the
 plugin version), and the footer's Resources column Getting started, Guides and
-What's new, all from one `HELP_URLS` table, `#` until the owner supplies addresses; the footer no longer repeats a
+What's new, all from one `HELP_URLS` table, `#` until the owner supplies addresses
+(*amended by [ADR 0144](0144-help-is-a-page.md): the addresses are wconvert.io's
+docs and support and the wordpress.org changelog, and Help is also a page the
+popover opens*); the footer no longer repeats a
 Settings shortcut. No sample version, account session or operational status is
 invented. *Amended by [ADR 0143](0143-license-page-and-updater.md): with Pro, the
 badge does show a status — the licence's, read from the store by the server,

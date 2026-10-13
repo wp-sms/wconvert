@@ -63,7 +63,6 @@ final class Hooks
         return new WP_REST_Response(['settings' => array_diff_key($value, ['home' => 1, 'version' => 1]),
             'home' => home_url('/'), 'environment' => wp_get_environment_type(),
             'site_matches' => $value['home'] === rtrim(home_url('/'), '/'), 'excluded' => $excluded,
-            'guide_url' => WCONVERT_PRO_URL . 'docs/analytics-integrations.html',
             'asset_available' => is_file(WCONVERT_PRO_DIR . 'public/analytics/analytics.js'),
             'test_url' => add_query_arg('wconvert-analytics', '1', home_url('/'))]);
     }

@@ -6289,6 +6289,11 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   #wconvert-admin .wconvert-info-trigger { flex-shrink:0 !important; color:var(--muted-foreground) !important; }
   .wconvert-info-content p { margin:0 !important; }
   .wconvert-info-content p + p { margin-block-start:8px !important; }
+  /* A guide on wconvert.io (ADR 0145). Global, because tips and dialogs are portaled out of #wconvert-admin;
+     important, because wp-admin's link colours load after this sheet. */
+  .wconvert-guide-link { display:inline-flex !important; align-items:center; gap:4px; color:var(--link) !important; font-size:var(--text-note); text-decoration-line:underline !important; text-decoration-color:color-mix(in srgb, var(--link) 40%, transparent) !important; text-underline-offset:4px; }
+  .wconvert-guide-link:hover { text-decoration-color:currentColor !important; }
+  .wconvert-guide-link svg { inline-size:13px; block-size:13px; flex:none; }
 }
 @layer utilities {
   @media (forced-colors: active) {

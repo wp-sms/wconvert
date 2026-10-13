@@ -12,7 +12,7 @@ const veronaLabsLogo = new URL('../assets/branding/veronalabs.svg', import.meta.
  * resource link and Help carry the same names as everywhere else — "Visitor
  * experience" and "Help" — so one place is never three labels (ADR 0131).
  */
-export function Footer() {
+export function Footer({ currentPage }: { currentPage?: string } = {}) {
   const tier = adminSettings()?.installedTier ?? 'free';
   return <footer className="wconvert-service-footer">
     <div className="wconvert-measure wconvert-service-inner mx-auto w-full">
@@ -36,7 +36,7 @@ export function Footer() {
             <strong>{__('Help', 'wconvert')}<ChevronUp aria-hidden="true" /></strong>
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="wconvert-header-popover"><HelpLinks /></PopoverContent>
+        <PopoverContent align="end" className="wconvert-header-popover"><HelpLinks currentPage={currentPage} /></PopoverContent>
       </Popover>
     </div>
     <div className="wconvert-measure wconvert-publisher-row mx-auto w-full">

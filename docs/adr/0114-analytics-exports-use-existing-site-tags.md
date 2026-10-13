@@ -93,6 +93,9 @@ The optional analytics asset is separately capped at 4096 bytes gzip and is only
 enqueued on eligible pages (or a manager's diagnostic page). Existing Free/Pro
 loader ceilings are unchanged; the small semantic bridge fits those ceilings.
 Artifact checks require the adapter and its setup guide in each Pro package.
+*Amended by [ADR 0145](0145-guides-are-linked-where-people-get-stuck.md): the
+setup guide is wconvert.io's `external-analytics-reference`, so the checks
+require only the adapter.*
 Combined loader/analytics/phone costs are measured by `bin/check-analytics.mjs`.
 
 No user research or live provider receipt is claimed by repository/browser

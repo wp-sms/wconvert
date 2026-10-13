@@ -16,6 +16,8 @@ import { Field } from '../shell/Field';
 import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
 import { messageOf } from '../shell/loadable';
 import { formatCount, formatWhen, labelOf } from '../lib/format';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { useSettingsEditing, type SettingsEditing } from './useSettingsEditing';
 
 type Provider = 'none' | 'turnstile' | 'recaptcha' | 'hcaptcha';
@@ -86,7 +88,10 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
   };
   const counts = Object.entries(saved.diagnostics.counts);
   const noSavedRules = saved.rule_fields.every(f => f.value.trim() === '');
-  const rulesHelp = <Description>{__('Apply to every campaign. Leave a list empty to allow all emails.', 'wconvert')}</Description>;
+  const rulesHelp = <Description>
+    {__('Apply to every campaign. Leave a list empty to allow all emails.', 'wconvert')}{' '}
+    <GuideLink href={docsUrl(GUIDES.blockEmails, 'add-the-rules')}>{__('How filters match', 'wconvert')}</GuideLink>
+  </Description>;
   const ruleFields = <>
     {saved.rule_fields.map(f => <Field key={f.id} label={f.label} htmlFor={`${id}-${f.id}`} hint={f.help} hintId={`${id}-${f.id}-hint`}>
       <Textarea id={`${id}-${f.id}`} data-setting={`rule-${f.id}`} rows={3} aria-describedby={`${id}-${f.id}-hint`} value={(draft.rules as Record<string, string> | undefined)?.[f.id] ?? ''} onChange={e => edit({ rules: { ...draft.rules, [f.id]: e.target.value } })} />
@@ -96,7 +101,8 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
     : draft.provider === 'recaptcha' ? __('Use v2 checkbox keys. v3 and Cloud API keys are not supported.', 'wconvert')
       : __('Use standard hCaptcha keys.', 'wconvert');
   return <div className="grid gap-6"><Region>
-    <RegionHeader title={title} description={__('Built-in checks always slow bots, rapid submissions and repeated resource emails.', 'wconvert')} />
+    <RegionHeader title={title} description={__('Built-in checks always slow bots, rapid submissions and repeated resource emails.', 'wconvert')}
+      trailing={<GuideLink href={docsUrl(GUIDES.spamProtection)}>{__('How protection works', 'wconvert')}</GuideLink>} />
     <RegionBody className="grid gap-5">
       <fieldset disabled={busy} className="m-0 grid min-w-0 gap-5 border-0 p-0">
         <Field label={__('Bot verification', 'wconvert')} htmlFor={`${id}-provider`}>
@@ -115,6 +121,7 @@ export function SpamProtection({ onEditingStateChange }: { onEditingStateChange?
               {__('Get keys', 'wconvert')}<ExternalLink aria-hidden="true" className="size-3 rtl:-scale-x-100" />
               <span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span>
             </a>
+            {draft.provider === 'hcaptcha' && <>{' '}<GuideLink href={docsUrl(GUIDES.hcaptcha, 'save-keys')}>{__('Setup guide', 'wconvert')}</GuideLink></>}
           </Description>
           <Field label={__('Site key', 'wconvert')} htmlFor={`${id}-site`} hint={keyHelp} hintId={`${id}-site-hint`}>
             <Input id={`${id}-site`} data-setting="protection-site-key" autoComplete="off" aria-describedby={`${id}-site-hint`} value={draft.site_key} onChange={e => edit({ site_key: e.target.value.trim() })} />

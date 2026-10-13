@@ -28,8 +28,8 @@ it('shows publisher branding without site identity and opens working footer help
   await userEvent.click(screen.getByRole('button', { name: 'Need a hand? Help' }));
   // Help is help: where to learn and who to ask, never a Settings shortcut.
   const help = await screen.findByRole('dialog');
-  expect(within(help).getByRole('link', { name: 'Getting started' })).toBeInTheDocument();
-  expect(within(help).getByRole('link', { name: 'Contact support' })).toBeInTheDocument();
+  expect(within(help).getByRole('link', { name: /^Getting started/ })).toBeInTheDocument();
+  expect(within(help).getByRole('link', { name: /^Contact support/ })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Connections & destinations' })).toBeNull();
   expect(screen.getByRole('link', { name: 'WConvert website' })).toHaveAttribute('href', 'https://wconvert.io/');
 });

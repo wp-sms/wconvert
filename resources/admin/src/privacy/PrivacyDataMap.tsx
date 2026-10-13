@@ -9,6 +9,8 @@ import { Disclosure } from '../shell/Disclosure';
 import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { failed, LOADING, ready, type Loadable } from '../shell/loadable';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { readDataMap, type PrivacyDataMap as DataMap } from './api';
 
 /**
@@ -249,7 +251,10 @@ export function PrivacyDataMap() {
         sprintf(_n('%s service receives data', '%s services receive data', recipients.length, 'wconvert'), formatCount(recipients.length)),
       )}>
       <RegionBody className="flex flex-wrap items-center justify-between gap-2">
-        <Description>{__('What this site keeps, and why. Rows follow your current setup.', 'wconvert')}</Description>
+        <Description>
+          {__('What this site keeps, and why. Rows follow your current setup.', 'wconvert')}{' '}
+          <GuideLink href={docsUrl(GUIDES.whatIsStored)}>{__('What WConvert stores, sends and counts', 'wconvert')}</GuideLink>
+        </Description>
         {/* The text WConvert adds to WordPress's privacy-policy guide: the merchant reading this is the one writing that policy. */}
         <a className="inline-flex items-center gap-1 text-note underline underline-offset-2" href="options-privacy.php?tab=policyguide" data-setting="privacy-policy-text">
           {__('Suggested privacy-policy text', 'wconvert')}<ArrowRight aria-hidden="true" className="size-3.5 rtl:-scale-x-100" />

@@ -19,6 +19,9 @@ defined('ABSPATH') || exit;
  * is React, rendered from the Vite build; PHP's whole job here is to reserve
  * the page and put the bundle on it.
  *
+ * Its submenu is WConvert → Campaigns, then WConvert → Help. Both are this one
+ * page; Help's slug is a URL to it at `#help` (Pro adds License after it).
+ *
  * @since 0.1.0
  */
 final class AdminMenu
@@ -35,6 +38,9 @@ final class AdminMenu
     private const VARIANT_MODULE = 'ab-testing';
 
     public const SLUG = 'wconvert';
+
+    /** The Help page, as this one admin page with a hash. */
+    public const HELP_HREF = 'admin.php?page=' . self::SLUG . '#help';
 
     /**
      * The handle the admin bundle is registered under.
@@ -110,6 +116,23 @@ final class AdminMenu
         // suppression that empties `admin_notices` on WConvert's screens and
         // nowhere else (ADR 0035).
         $this->notices->owns($this->screenId);
+
+        $this->registerSubmenu();
+    }
+
+    /**
+     * WConvert → Campaigns, then WConvert → Help.
+     *
+     * The first entry repeats the top level's slug, which is how WordPress
+     * renames the submenu's automatic first item: without it the list would
+     * open on a second "WConvert". Help's slug is a URL, so WordPress links it
+     * as written. Both entries are one page, so which is `current` is decided
+     * in the browser from the hash (`shell/menuHighlight.ts`).
+     */
+    public function registerSubmenu(): void
+    {
+        add_submenu_page(self::SLUG, __('Campaigns', 'wconvert'), __('Campaigns', 'wconvert'), 'manage_options', self::SLUG);
+        add_submenu_page(self::SLUG, __('Help', 'wconvert'), __('Help', 'wconvert'), 'manage_options', self::HELP_HREF);
     }
 
     /**

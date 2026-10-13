@@ -117,7 +117,9 @@ is the thing they came for the most visible thing, with one way forward?
     editor's preloader is the editor's own frame; Data & privacy's data map is
     closed by default; the Needs attention card leads with what is wrong and
     puts the fix and its evidence on one row.
-26. Help holds help (Getting started, Guides, Contact support, What's new);
+26. Help holds help (Getting started, Guides, Contact support, What's new;
+    *amended by [ADR 0144](0144-help-is-a-page.md): and a WConvert → Help page
+    the popover opens, from the same `HELP_URLS`*);
     the bell shows a count and says "Everything is running" when it is, and
     counts forms paused by spam protection; reading-page headings are tighter.
 27. The blocks are "WConvert campaign", "WConvert content lock" and "WConvert

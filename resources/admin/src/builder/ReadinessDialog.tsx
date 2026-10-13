@@ -12,6 +12,8 @@ import {
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
 import { FactList } from '../shell/FactList';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { campaignFacts, linksIn } from '../optins/campaignFacts';
 import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
@@ -304,7 +306,10 @@ export function ReadinessDialog({
           />
           <AdminDialogBody inert={publishing}>
             {optin.suspended !== null && (
-              <p className="wconvert-launch-review__notice">{optin.suspended}</p>
+              <p className="wconvert-launch-review__notice">
+                {optin.suspended}{' '}
+                <GuideLink href={docsUrl(GUIDES.proUnavailable, 'identify-the-problem')}>{__('What to check', 'wconvert')}</GuideLink>
+              </p>
             )}
             {published ? (
               <div className="wconvert-launch-review__success" role="status">
@@ -345,6 +350,7 @@ export function ReadinessDialog({
                         </li>
                       ))}
                     </ul>
+                    <p><GuideLink href={docsUrl(GUIDES.publishBlocked, 'publication-blockers')}>{__('What each check means', 'wconvert')}</GuideLink></p>
                   </section>
                 )}
                 <section className="wconvert-launch-review__section wconvert-launch-review__what">
