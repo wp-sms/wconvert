@@ -225,7 +225,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       {!neverCaptured && <RegionBody className="flex flex-col gap-4">
         {/* On a phone the three choices scroll inside the strip rather than leaving Enquiries a line of its own. */}
         <OptionStrip
-          className="max-sm:-m-1 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:p-1 max-sm:[&>label]:shrink-0"
+          className="wconvert-option-strip--scroll"
           label={__('Submission purpose', 'wconvert')}
           value={requested.purpose ?? 'all'}
           options={[

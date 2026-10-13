@@ -6521,6 +6521,17 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   position: absolute; appearance: none; inline-size: 1px; block-size: 1px; min-block-size: 0; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%);
 }
 :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-option-strip > label, .wconvert-compare-choice) > input::before { content: none; }
+/*
+ * A one-of-N strip that scrolls INSIDE itself on a phone rather than wrapping
+ * (GUIDELINES §16, amended). Leads' purpose strip left "Enquiries" a line of
+ * its own; one line keeps it a row, and its cut edge is the cue to scroll. The
+ * page never scrolls sideways. The 4px inset is the focus ring's room, which an
+ * overflow container would otherwise clip; the negative margin gives it back.
+ */
+@media (max-width: 639px) {
+  .wconvert-option-strip--scroll { flex-wrap: nowrap; overflow-x: auto; margin: -0.25rem; padding: 0.25rem; }
+  .wconvert-option-strip--scroll > label { flex: none; }
+}
 .wconvert-preview-controls, .wconvert-setup-preview__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; min-inline-size: 0; }
 :is(.wconvert-setup-preview__tools, .wconvert-design-detail__controls) > .wconvert-preview-controls { flex: 1 1 auto; }
 .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: .75rem; border-inline-start: 1px solid var(--border); }

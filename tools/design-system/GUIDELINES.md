@@ -637,6 +637,11 @@ forgotten.
 four strips is a MINIMUM, not a fixed size: *"Erfassungsdatensätze als
 CSV-Datei herunterladen"* in a `whitespace-nowrap shrink-0` button takes the
 whole screen sideways at 360px.
+_Amended by [#269](https://github.com/wp-sms/wconvert/pull/269): **a one-of-N
+`OptionStrip` may scroll inside itself instead**, below 640px, with
+`.wconvert-option-strip--scroll`. Its choices stay one row, its cut edge says
+there is more, and the page still never moves sideways. Toolbars and footers
+still wrap._
 
 **A long unbreakable token wraps.** `overflow-wrap: anywhere` on the data cell,
 because a 60-character email, a captured field value or a provider error
