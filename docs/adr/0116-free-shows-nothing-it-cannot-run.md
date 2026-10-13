@@ -36,6 +36,8 @@ reaches the payload. Surfaces that don't route through `renderingFor` (format
 picker, starting points, rule notes, the A/B item, packs, analytics, reopen and
 inline-placement fallbacks) filter on the same `isFreeInstall()`.
 
+> _Amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): a locked member is still never drawn, but the list where it would sit may end in one line of text naming it — "Also in WConvert Pro ↗: …" — under that ADR's eight rules. Text, never an item._
+
 > _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): "starting points" in this list were the rule panel's rule sets, which are gone. The Display rules Quick picks route through `renderingFor` and hide a locked pick the same way._
 
 Wherever Pro is installed, `locked` is still an upsell. A Basic site sees
@@ -47,6 +49,8 @@ upsell is unreachable in practice.*
 **2. Free's whole upsell is two things.** The header's *Explore Pro* link, and
 one static *More with Pro* list in Settings. Both are bundled copy with no
 remote fetch.
+
+> _Amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): three, with the contextual hints — one muted line at the end of the Add rule menu, the format picker, the Flow map, the destination providers and the campaign ⋯ menu, on a free install, for a user who can install plugins. The header link and the list now carry fixed UTMs, and both say "Activate it" when Pro is installed but inactive._
 
 > _Amended by [ADR 0143](0143-license-page-and-updater.md): each now carries one
 > more plain link for a customer who already paid — "Already bought? Download it"
@@ -70,6 +74,8 @@ disk. The publish refusal, the capture refusal, the suspension, the pack
 validator and the builder all ask this one question, and none of them asks
 about a tier. The builder offers no question element, result, screen condition
 or flexible path unless `wconvertAdmin.journeys` is true.
+
+> _Corrected by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): the flag only gated editors that still shipped in free's bundle, which is trialware under Guideline 5. Those editors now live in Pro's admin bundle behind `journeyAuthoring`; the flag stays the server's word._
 
 It is a filter rather than a container registry because two readers are static:
 `AdminMenu::settings()` and `PackValidator::shipping()`.

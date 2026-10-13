@@ -3,7 +3,7 @@
 The explicit graph model and current paid byte caps are amended by
 [ADR 0108](0108-explicit-journey-graph-and-legacy-migration.md).
 
-**Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md):** "require paid entitlement" below is now a capability Pro registers (`JourneySupport`, filter `wconvert_journeys`), not a tier check. Free's builder offers no question, result, condition or path. Free's refusals say *"This design uses elements this site can't display."* rather than naming Pro.
+**Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md):** "require paid entitlement" below is now a capability Pro registers (`JourneySupport`, filter `wconvert_journeys`), not a tier check. Free's builder offers no question, result, condition or path. Free's refusals say *"This design uses elements this site can't display."* rather than naming Pro. **Amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md):** the authoring editors themselves now ship in Pro's admin bundle (`pro/modules/journeys/admin/`), not behind the flag in free's; free can delete a journey's screens or make it a straight campaign.
 
 Accepted 2026-09-24. Implements the [shared questions plan](../plans/questions-and-conditional-screens.md).
 

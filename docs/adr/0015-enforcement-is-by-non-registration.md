@@ -92,7 +92,7 @@ axis is for.*
 
 **wp.org Guideline 9 fires on the word *locked*.** A free ZIP that ships exit-intent
 code and refuses to run it is trialware; a free ZIP that simply does not contain it
-makes the identical upsell honest marketing. Absence is the compliance position, and
+makes the identical upsell honest marketing (*amended by [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): the admin bundle is held to this too — Pro's journey editors moved out of it, and the upsell is a line of text where a feature would sit, never a locked item*). Absence is the compliance position, and
 once absence is real, enforcement is redundant.
 
 **The remaining bypass is named and accepted:** someone copies the Pro loader onto a

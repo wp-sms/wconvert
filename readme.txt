@@ -284,8 +284,8 @@ are installed by `npm ci` from `package-lock.json`.
 * Lucide icons (`lucide-react`) — ISC
 * class-variance-authority — Apache-2.0
 * Pragmatic drag and drop (`@atlaskit/pragmatic-drag-and-drop`) — Apache-2.0
-* DM Sans font — SIL Open Font License 1.1; its licence ships in
-  `resources/admin/src/assets/fonts/`
+* DM Sans font — SIL Open Font License 1.1; its licence ships as
+  `public/admin/fonts/OFL-DM-Sans.txt`
 
 PHP:
 
