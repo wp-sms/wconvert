@@ -223,7 +223,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   return <div className="flex flex-col gap-5">
     <Region label={__('Submissions', 'wconvert')}>
       {!neverCaptured && <RegionBody className="flex flex-col gap-4">
+        {/* On a phone the three choices scroll inside the strip rather than leaving Enquiries a line of its own. */}
         <OptionStrip
+          className="max-sm:-m-1 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:p-1 max-sm:[&>label]:shrink-0"
           label={__('Submission purpose', 'wconvert')}
           value={requested.purpose ?? 'all'}
           options={[
@@ -235,7 +237,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         />
         <HistoryFilters query={requested} optins={optins} onApply={changeQuery} />
       </RegionBody>}
-      {!neverCaptured && <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
+      {!neverCaptured && <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 max-sm:justify-start">
         {narrowed && <ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>{submissionCount(data.submissions)}</ToolbarCount>}
         {/* A small select beside the set it orders: the only thing More filters had left. */}
         <NativeSelect aria-label={__('Order', 'wconvert')} value={requested.order ?? 'newest'}
@@ -243,13 +245,14 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
           <option value="newest">{__('Newest first', 'wconvert')}</option>
           <option value="oldest">{__('Oldest first', 'wconvert')}</option>
         </NativeSelect>
-        {csv && <>
+        {/* One unit, so a wrap never leaves the ⓘ alone on a line under the button it explains. */}
+        {csv && <span className="flex items-center gap-x-2">
           <ExportMenu filter={applied.query} answers={questionCsv} />
           <InfoTip label={__('About this export', 'wconvert')}>
             <p className="m-0 font-medium">{scopeDescription(applied.query, nameOf)}</p>
             <p className="mb-0 text-muted-foreground">{__('Export includes every matching submission on all pages, as of when this list loaded. Grouping doesn’t change it.', 'wconvert')}</p>
           </InfoTip>
-        </>}
+        </span>}
         {privacyIdentifier !== null && <Button variant="outline" onClick={(event) => startErasure(privacyIdentifier, event.currentTarget)}>
           <Trash2 aria-hidden="true" />{__('Delete this lead', 'wconvert')}
         </Button>}
@@ -285,7 +288,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       ) : shownGrouped ? <DataTable>
         <DataTableHead><DataTableColumn>{__('Email or phone', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Submissions', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last submitted', 'wconvert')}</DataTableColumn><DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn></DataTableHead>
         <DataTableBody>{data.groups.map((group) => <DataTableRow key={group.identifier}>
-          <DataTableCell label={__('Email or phone', 'wconvert')}><bdi dir="ltr" className="break-all">{group.identifier}</bdi></DataTableCell>
+          <DataTableCell label={__('Email or phone', 'wconvert')} heading><bdi dir="ltr" className="break-all">{group.identifier}</bdi></DataTableCell>
           <DataTableCell label={__('Submissions', 'wconvert')} numeric>{formatCount(group.submissions)}</DataTableCell>
           <DataTableCell label={__('Last submitted', 'wconvert')}>{group.latest_at === null ? '—' : <time className="text-note" dateTime={group.latest_at.replace(' ', 'T')} title={formatWhen(group.latest_at, 'detail')}>{formatWhen(group.latest_at, 'list')}</time>}</DataTableCell>
           <DataTableActions><Button variant="ghost" aria-label={sprintf(__('Open submissions from %s', 'wconvert'), group.identifier)} onClick={(event) => open({ kind: 'history', group, query: applied.query }, event.currentTarget)}>
@@ -447,14 +450,14 @@ function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: 
   // this one in the DOM but not in React's tree; their submit is not a search.
   return <form className="flex flex-wrap items-end gap-3" aria-label={__('Filter submissions', 'wconvert')}
     onSubmit={(event) => { event.preventDefault(); if (event.target === event.currentTarget) apply(draft); }}>
-    {/* Below `sm` the search takes the line and the campaign the next, rather than squeezing the input to nothing. */}
+    {/* Below `sm` the search takes the line, its button an icon so the placeholder is not cut off; the campaign and period share the next. */}
     <Field label={__('Search submissions', 'wconvert')} htmlFor="wconvert-lead-search" className="flex-1 basis-full sm:basis-64">
       <div className="flex gap-2">
         <Input id="wconvert-lead-search" className="min-w-0 flex-1" type="search" maxLength={254} value={draft.search} onChange={(event) => setDraft({ ...draft, search: event.target.value })} placeholder={__('Name, email, phone or message', 'wconvert')} />
-        <Button type="submit" variant="outline"><Search aria-hidden="true" />{__('Search', 'wconvert')}</Button>
+        <Button type="submit" variant="outline"><Search aria-hidden="true" /><span className="max-sm:sr-only">{__('Search', 'wconvert')}</span></Button>
       </div>
     </Field>
-    <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin" className="basis-full sm:basis-auto">
+    <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin" className="grow basis-28 sm:grow-0 sm:basis-auto">
       <NativeSelect id="wconvert-lead-optin" className="w-full sm:w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
         <option value="">{__('All campaigns', 'wconvert')}</option>
         {missing && <option value={draft.optinId}>{optins === null ? __('Selected campaign', 'wconvert') : __('Deleted campaign', 'wconvert')}</option>}

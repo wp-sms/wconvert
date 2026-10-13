@@ -10,6 +10,11 @@ import { cn } from '../lib/utils';
  * cell as a label-and-value pair off `data-label`. Nothing here changes with the
  * viewport, and no JavaScript measures anything.
  *
+ * **A row can name itself.** One cell marked `heading` — the lead, the
+ * destination — becomes the card's first line, full width and unlabelled, with
+ * the row's actions beside it rather than under a rule of their own. A row
+ * without one keeps the plain label-and-value card.
+ *
  * **900px is the table's own number.** ADR 0038 owns the adaptive editor
  * and 360 (a floor, not a breakpoint), and a table reusing either would make one
  * number mean two things. The two alternatives were refused on what they cost
@@ -89,20 +94,28 @@ export function DataTableColumn({
  * different places and a cell that loses its label below 900px is a value with
  * nothing saying what it is. A screen that finds itself wanting to omit one is a
  * screen with a column it cannot name.
+ *
+ * `heading` marks the cell that names the row. Below 900px it drops its label
+ * and takes the card's first line: "SUBMITTED BY" over a name and an avatar is
+ * a label for something that is already its own heading, and the 8rem label
+ * column it took left the email a third of the card to break across. One per
+ * row, and only on a column that says which row this is.
  */
 export function DataTableCell({
   label,
   numeric = false,
+  heading = false,
   className,
   children,
 }: {
   label: string;
   numeric?: boolean;
+  heading?: boolean;
   className?: string;
   children: ReactNode;
 }) {
   return (
-    <td role="cell" data-label={label} className={cn(numeric && 'is-numeric', className)}>
+    <td role="cell" data-label={label} data-card={heading ? 'heading' : undefined} className={cn(numeric && 'is-numeric', className)}>
       {children}
     </td>
   );
@@ -112,8 +125,9 @@ export function DataTableCell({
  * The trailing Actions cell — the one place a row's own actions live.
  *
  * It takes no `data-label`: below 900px it becomes the card's footer, under a
- * rule, and a heading reading "Actions" above two buttons is a label for
- * something that is already labelled.
+ * rule — or, in a row with a `heading` cell, sits beside that heading on the
+ * card's first line — and a heading reading "Actions" above two buttons is a
+ * label for something that is already labelled.
  *
  * More than two controls collapse into an overflow menu rather than widening
  * this cell, which is the rule and not this component's business.

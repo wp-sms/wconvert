@@ -1121,7 +1121,8 @@ body:has(#wconvert-admin) #wpbody-content {
    * Label and value, not label above value: a lead log is scanned down its
    * values, and a two-column pair keeps them on one axis. The label column is
    * capped so a long translated column name cannot push the value off the
-   * card.
+   * card. The one cell that names the row is the exception — see the heading
+   * rules at the end of this block.
    */
   :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td {
     display: grid;
@@ -1161,6 +1162,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * The Actions cell has no label worth repeating — the controls say what they
    * are — so it takes the whole card width and sits under a rule, which is
    * where a card's actions read as the card's rather than as one more field.
+   * A row with a heading cell moves them up beside it instead (below).
    *
    * **`inline-size` and `white-space` are taken BACK here, and forgetting them
    * is what shipped a 3px cell.** Both are set above for the table, where they
@@ -1190,6 +1192,47 @@ body:has(#wconvert-admin) #wpbody-content {
     inline-size: auto;
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  /*
+   * **A row with a heading cell is headed by it** (`DataTableCell heading`).
+   * The heading takes the card's first line without a label, the actions sit
+   * beside it, and every other pair flows full width underneath. Before it a
+   * lead's card spent 8rem of a phone's width on "SUBMITTED BY", broke the
+   * email mid-word in what was left, and put one Open button under a rule of
+   * its own — about 550px a lead.
+   *
+   * Scoped by `:has()` so a row without a heading keeps the card above
+   * untouched. Every selector carries the same `:has()`, which is what lets
+   * the two placed cells outrank the full-width rule they would otherwise share.
+   */
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0.75rem;
+    align-items: start;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td {
+    grid-column: 1 / -1;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td[data-card="heading"] {
+    display: block;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td[data-card="heading"]::before {
+    content: none;
+  }
+
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:has(> td[data-card="heading"]) > td.wconvert-table__actions {
+    grid-column: 2;
+    grid-row: 1;
+    margin-block-start: 0;
+    padding-block-start: 0.3125rem;
+    border-block-start: 0;
   }
 }
 
