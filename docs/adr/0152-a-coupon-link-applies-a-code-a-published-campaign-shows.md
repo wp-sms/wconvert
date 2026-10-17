@@ -27,6 +27,13 @@ it applies on the page the visitor is already on. The panel says so when the
 link's code no longer matches the block's. Free's slot for this
 (`codeLinkControls`) draws nothing, so free sells nothing (ADR 0116, 0147).
 
+  *Completed by #287: Pro also reads a shown code's expiry, read-only.
+  `GET /coupon-expiry` looks the coupon up by code and reads its
+  `date_expires` meta, nothing else, in ADR 0127's seam posture. The code
+  block's panel then says when the coupon outlives the campaign's `ends_at`, or
+  never expires. It loads no coupon object and writes nothing, so
+  `NoWriteIntoWooCommerceTest` is unchanged.*
+
 **3. Pro applies only a code a published campaign shows now.** On `wp_loaded`,
 `CouponLink` reads `?coupon=`. It acts only when all of these hold:
 
