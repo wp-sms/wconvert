@@ -101,7 +101,10 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
         await screenshot(page, info, 'page');
         if (state === 'failed') {
           await context.clearCookies({ name: 'wconvert_ds_state' });
-          await page.getByRole('button', { name: screen.retry, exact: true }).first().click();
+          // A screen can hold more than one region that failed (Settings: destinations and AI agents),
+          // and the one that answers first need not be first on the page. Retry each.
+          const retries = page.getByRole('button', { name: screen.retry, exact: true });
+          for (let left = 5; left > 0 && await retries.count() > 0; left--) await retries.first().click();
           await expect(page.getByText(screen.full, { exact: true }).first()).toBeVisible();
         }
         expect(errors).toEqual([]);
