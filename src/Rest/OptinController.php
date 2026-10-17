@@ -240,6 +240,9 @@ final class OptinController implements RestController
             'has_unpublished_changes' => (bool) ($row['has_unpublished_changes'] ?? false),
             // Read-time detach (ADR 0149 §5): an occasion deleted since reads as none.
             'occasion' => OccasionLink::read($row['occasion'] ?? null, $occasions),
+            'display_type' => (DisplayType::of($row['display_type'] ?? null) ?? DisplayType::Popup)->value,
+            'starts_at' => is_string($row['starts_at'] ?? null) ? $row['starts_at'] : null,
+            'ends_at' => is_string($row['ends_at'] ?? null) ? $row['ends_at'] : null,
         ]);
 
         return new WP_REST_Response(array_map(

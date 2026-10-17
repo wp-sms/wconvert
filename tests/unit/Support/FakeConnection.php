@@ -70,12 +70,17 @@ final class FakeConnection implements Connection
         $rows = array_values($this->rows);
         usort($rows, static fn (array $a, array $b): int => strcmp((string) $b['id'], (string) $a['id']));
 
-        // The list's projection extracts `config.occasion` in SQL; this fake
-        // models the table, so it performs the extraction the database would.
-        if (str_contains($sql, 'AS occasion')) {
-            $rows = array_map(static function (array $row): array {
-                $occasion = json_decode((string) ($row['config'] ?? ''), true)['occasion'] ?? null;
-                return $row + ['occasion' => is_string($occasion) ? $occasion : null];
+        // The list's projection extracts a few `config` keys in SQL; this
+        // fake models the table, so it performs the extraction the database
+        // would — as MySQL does, handing each value back as JSON.
+        if (preg_match_all('/JSON_EXTRACT\(config, \'\$\.(\w+)\'\) AS (\w+)/', $sql, $extracted, PREG_SET_ORDER) > 0) {
+            $rows = array_map(static function (array $row) use ($extracted): array {
+                $config = json_decode((string) ($row['config'] ?? ''), true);
+                foreach ($extracted as [, $key, $alias]) {
+                    $value = is_array($config) ? ($config[$key] ?? null) : null;
+                    $row += [$alias => $value === null ? null : (string) json_encode($value)];
+                }
+                return $row;
             }, $rows);
         }
 

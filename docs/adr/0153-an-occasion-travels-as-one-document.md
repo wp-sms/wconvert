@@ -19,6 +19,8 @@ never written. Variants are not carried, the same as Duplicate.
 **2. The occasion is written first, through `OccasionStore`.** The campaigns
 link to it, and the create refuses a link to an occasion that does not exist
 (ADR 0149, as completed by #276). An id already taken gets `-2`, `-3`… added.
+"Taken" includes the ids of deleted occasions, because their campaigns still
+carry them (ADR 0149 §5).
 
 **3. Copy to next year moves wall-clock strings, never instants.**
 `NextYear` adds one to the year digits of `Y-m-d` and `Y-m-d H:i`. A schedule

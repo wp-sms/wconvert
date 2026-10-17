@@ -58,6 +58,10 @@ final class OccasionController implements RestController
 
     public function registerRoutes(): void
     {
+        register_rest_route(Routes::NAMESPACE, '/occasions', [
+            'methods' => 'GET', 'callback' => fn (): WP_REST_Response => new WP_REST_Response($this->occasions->read()),
+            'permission_callback' => [Routes::class, 'canManage'],
+        ]);
         register_rest_route(Routes::NAMESPACE, '/occasions/' . self::ID . '/copy', [
             'methods' => 'POST', 'callback' => [$this, 'copy'], 'permission_callback' => [Routes::class, 'canManage'],
         ]);
@@ -251,15 +255,17 @@ final class OccasionController implements RestController
     }
 
     /**
-     * Add an occasion, renaming its id until it is free.
+     * Add an occasion, renaming its id until it is free — of live occasions
+     * and of deleted ones, whose campaigns still carry it.
      *
      * @param array<string, string> $occasion
      * @return array<string, string>|WP_Error
      */
     private function add(array $occasion): array|WP_Error
     {
-        $saved = $this->occasions->write(static function (array $items) use (&$occasion): array {
-            $taken = array_column($items, 'id');
+        $taken = $this->occasions->taken();
+        $saved = $this->occasions->write(static function (array $items) use (&$occasion, $taken): array {
+            $taken = [...$taken, ...array_column($items, 'id')];
             $base = $occasion['id'];
             for ($n = 2; in_array($occasion['id'], $taken, true); $n++) {
                 $suffix = '-' . $n;

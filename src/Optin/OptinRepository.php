@@ -52,12 +52,21 @@ final class OptinRepository
      * into this list — which is the read ADR 0001 measured exhausting PHP's
      * memory at a few hundred rows, and the whole reason this constant exists.
      *
-     * **`occasion` is extracted, for the same reason** (ADR 0149 §4): the
-     * list filters by it, and the database hands back the one id rather than
-     * the blob it sits in.
+     * **`occasion`, the schedule and the display type are extracted, for the
+     * same reason** (ADR 0149 §4): the list filters by the occasion and the
+     * occasion page draws each campaign's dates, so the database hands back
+     * those four short values rather than the blob they sit in.
+     *
+     * Bare `JSON_EXTRACT`, the one spelling MySQL, MariaDB and the SQLite
+     * integration all accept: SQLite has no `JSON_UNQUOTE` and MariaDB no
+     * `->>`. MySQL hands the value back as JSON (`"black-friday"`) and SQLite
+     * as text, so {@see self::unquoted()} reads both.
      */
     private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at, '
-        . 'JSON_UNQUOTE(JSON_EXTRACT(config, \'$.occasion\')) AS occasion, '
+        . 'JSON_EXTRACT(config, \'$.occasion\') AS occasion, '
+        . 'JSON_EXTRACT(config, \'$.display_type\') AS display_type, '
+        . 'JSON_EXTRACT(config, \'$.starts_at\') AS starts_at, '
+        . 'JSON_EXTRACT(config, \'$.ends_at\') AS ends_at, '
         . '(published_at IS NOT NULL AND deleted_at IS NULL AND CASE '
         . 'WHEN config IS NULL AND published_config IS NULL THEN 0 '
         . 'WHEN config IS NULL OR published_config IS NULL THEN 1 '
@@ -213,10 +222,32 @@ final class OptinRepository
     {
         $where = $includeDeleted ? 'parent_id IS NULL' : 'parent_id IS NULL AND deleted_at IS NULL';
 
-        return $this->db->results(
+        return self::unquoted($this->db->results(
             Connection::TABLE_OPTINS,
             'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE ' . $where . ' ORDER BY id DESC LIMIT 500'
-        );
+        ));
+    }
+
+    /**
+     * The extracted `config` keys as plain strings, whichever database read them.
+     *
+     * @param list<array<string, string|null>> $rows
+     * @return list<array<string, string|null>>
+     */
+    private static function unquoted(array $rows): array
+    {
+        foreach ($rows as &$row) {
+            foreach (['occasion', 'display_type', 'starts_at', 'ends_at'] as $key) {
+                $value = $row[$key] ?? null;
+                if (is_string($value) && str_starts_with($value, '"')) {
+                    $decoded = json_decode($value, true);
+                    $row[$key] = is_string($decoded) ? $decoded : null;
+                } elseif ($value !== null && (!is_string($value) || $value === 'null')) {
+                    $row[$key] = null;
+                }
+            }
+        }
+        return $rows;
     }
 
     /**
@@ -287,10 +318,10 @@ final class OptinRepository
      */
     public function armsByParent(bool $includeDeleted = false): array
     {
-        $rows = $this->db->results(
+        $rows = self::unquoted($this->db->results(
             Connection::TABLE_OPTINS,
             'SELECT ' . self::SUMMARY_COLUMNS . ' FROM %i WHERE parent_id IS NOT NULL ORDER BY id ASC'
-        );
+        ));
 
         $arms = [];
 

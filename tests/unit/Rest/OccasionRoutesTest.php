@@ -113,6 +113,18 @@ final class OccasionRoutesTest extends TestCase
         self::assertSame('black-friday-2026', $this->row($draft['id'])['occasion']);
     }
 
+    /** The occasion page draws each campaign's dates and format from the list alone. */
+    public function testTheListCarriesEachCampaignsScheduleAndDisplayType(): void
+    {
+        $draft = $this->create(['starts_at' => '2026-11-20 00:00', 'ends_at' => '2026-12-02 00:00']);
+        self::assertIsArray($draft);
+        $row = $this->row($draft['id']);
+
+        self::assertSame('2026-11-20 00:00', $row['starts_at']);
+        self::assertSame('2026-12-02 00:00', $row['ends_at']);
+        self::assertSame('popup', $row['display_type']);
+    }
+
     public function testAnUnknownOccasionIsRefusedOnTheOccasionField(): void
     {
         $refused = $this->create(['occasion' => 'cyber-monday']);
@@ -187,6 +199,27 @@ final class OccasionRoutesTest extends TestCase
         $this->occasions([self::blackFriday()]);
         self::assertSame('black-friday-2027', $this->copy('black-friday-2026')['occasion']['id']);
         self::assertSame('black-friday-2027-2', $this->copy('black-friday-2026')['occasion']['id']);
+    }
+
+    /**
+     * A deleted occasion's campaigns still carry its id, so the id is never
+     * minted again: re-importing the same file must not take them back.
+     */
+    public function testADeletedOccasionsIdIsNeverGivenOutAgain(): void
+    {
+        $first = $this->import(self::fixture());
+        self::assertSame('black-friday-2026', $first['occasion']['id']);
+        $this->occasions([]);
+
+        $again = $this->import(self::fixture());
+
+        self::assertSame('black-friday-2026-2', $again['occasion']['id']);
+        foreach ($first['created'] as $created) {
+            self::assertNull($this->row($created['id'])['occasion'], 'the old campaigns stay detached');
+        }
+        $refused = (new OccasionStore())->write(static fn (array $items): array => [...$items, self::blackFriday()]);
+        self::assertInstanceOf(WP_Error::class, $refused, 'the settings route cannot bring the id back either');
+        self::assertSame(['black-friday-2026'], (new OccasionStore())->read()['retired']);
     }
 
     public function testCopyingAnOccasionThatDoesNotExistIs404(): void

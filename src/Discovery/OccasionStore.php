@@ -18,12 +18,37 @@ final class OccasionStore
 {
     private const LOCK = 'wconvert_picker_lock_occasions';
 
-    /** @return array{schema: int, revision: int, items: list<array<string, string>>} */
+    /** How many deleted ids are remembered; the oldest are forgotten first. */
+    private const RETIRED = 500;
+
+    /** @return array{schema: int, revision: int, items: list<array<string, string>>, retired: list<string>} */
     public function read(): array
     {
         $document = get_option(PickerDocuments::OCCASIONS, null);
         $items = is_array($document) && is_array($document['items'] ?? null) ? array_values($document['items']) : [];
-        return ['schema' => 1, 'revision' => is_array($document) ? (int) ($document['revision'] ?? 0) : 0, 'items' => $items];
+        $retired = is_array($document) && is_array($document['retired'] ?? null) ? array_values(array_filter($document['retired'], 'is_string')) : [];
+        return ['schema' => 1, 'revision' => is_array($document) ? (int) ($document['revision'] ?? 0) : 0, 'items' => $items, 'retired' => $retired];
+    }
+
+    /**
+     * Every id an occasion has had here, live or deleted.
+     *
+     * ========================================================================
+     * A DELETED ID IS NEVER GIVEN OUT AGAIN.
+     * ========================================================================
+     * Deleting an occasion writes no campaign (ADR 0149 §5): its campaigns
+     * keep the id and read as unlinked only because nothing answers to it. A
+     * new occasion under the same id — an import of the same file, say —
+     * would quietly take back every campaign nobody had saved since. So the
+     * ids of deleted occasions are kept beside the live ones, and minting
+     * avoids both.
+     *
+     * @return list<string>
+     */
+    public function taken(): array
+    {
+        $document = $this->read();
+        return [...array_column($document['items'], 'id'), ...$document['retired']];
     }
 
     /** @return list<string> */
@@ -44,6 +69,9 @@ final class OccasionStore
     /**
      * Replace the items with what `$change` makes of the current ones.
      *
+     * An occasion `$change` drops is retired ({@see self::taken()}), and one
+     * it adds under a retired id is refused.
+     *
      * @param callable(list<array<string, string>>): mixed $change Throws \InvalidArgumentException to refuse.
      * @param int|null $revision The revision the caller read, or null when the server is the caller.
      * @return array<string, mixed>|WP_Error The saved document.
@@ -53,7 +81,14 @@ final class OccasionStore
         return self::leased(self::LOCK, function () use ($change, $revision) {
             $current = $this->read();
             if ($revision !== null && $revision !== $current['revision']) return self::conflict();
-            $next = ['schema' => 1, 'revision' => $current['revision'] + 1, 'items' => PickerDocuments::validateOccasions($change($current['items']))];
+            $items = PickerDocuments::validateOccasions($change($current['items']));
+            $before = array_column($current['items'], 'id');
+            $after = array_column($items, 'id');
+            if (array_intersect(array_diff($after, $before), $current['retired']) !== []) {
+                throw new \InvalidArgumentException(__('That occasion was deleted. Add it as a new occasion.', 'wconvert'));
+            }
+            $retired = array_slice(array_values(array_unique([...$current['retired'], ...array_diff($before, $after)])), -self::RETIRED);
+            $next = ['schema' => 1, 'revision' => $current['revision'] + 1, 'items' => $items, 'retired' => $retired];
             return update_option(PickerDocuments::OCCASIONS, $next, false) === false ? self::saveFailed() : $next;
         });
     }

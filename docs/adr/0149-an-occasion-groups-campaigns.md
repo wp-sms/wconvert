@@ -61,6 +61,12 @@ Nothing is published, paused or removed as a side effect.
   held is dropped this way. So no write fans out across campaigns, and the
   route stays the only thing that edits one.*
 
+  *Because the stale id stays on those campaigns, a deleted occasion's id is
+  never used again. The occasions option keeps a `retired` list of deleted
+  ids. Copy and Import pick a new id around them, and a settings save that
+  brings one back is refused. Otherwise importing the same file again would
+  give the new occasion every campaign nobody had saved since.*
+
 **6. An occasion never schedules or publishes anything by itself.** Publishing
 is still a per-campaign act. The occasion's dates are only the prefill in 3,
 never a rule the loader reads.
