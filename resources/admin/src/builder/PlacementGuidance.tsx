@@ -8,6 +8,7 @@ import { useDirection } from '../hooks/useDirection';
 import { physicalPlacementLabel } from './PlacementControl';
 import { inlinePlacementLabel } from '../inlinePlacement';
 import { Shortcode } from './ManualPlacement';
+import { siteCheckUrl } from '../siteLinks';
 
 export { inlineShortcode } from './ManualPlacement';
 
@@ -24,28 +25,7 @@ export interface PlacementGuidanceProps {
   readonly everywhere?: boolean;
 }
 
-/** The site's home page with one parameter set, using WordPress's subdirectory-aware home URL. */
-function onSite(homeUrl: string | undefined, param: string | undefined, value: string): string | null {
-  if (!homeUrl || !param) return null;
-  try {
-    const target = new URL(homeUrl);
-    if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password) return null;
-    target.searchParams.set(param, value);
-    return target.toString();
-  } catch {
-    return null;
-  }
-}
-
-/** Open the existing real-page inspector. */
-export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | null {
-  return onSite(homeUrl, inspectParam, '1');
-}
-
-/** Show this campaign's saved draft on the home page, now, to this admin only (ADR 0151). */
-export function draftPreviewUrl(optinId: string, homeUrl = adminSettings()?.homeUrl, previewParam = adminSettings()?.previewParam): string | null {
-  return onSite(homeUrl, previewParam, optinId);
-}
+export { siteCheckUrl, draftPreviewUrl } from '../siteLinks';
 
 /** Placement instructions shared by draft review and the result of publishing. */
 export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published, everywhere = true }: PlacementGuidanceProps) {

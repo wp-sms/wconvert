@@ -64,7 +64,7 @@ import { StatusBadge } from './StatusBadge';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { ProHintItem, proHintsShown } from '../shell/ProHint';
 import { GUIDES, docsUrl } from '../shell/docs';
-import { draftPreviewUrl } from '../builder/PlacementGuidance';
+import { draftPreviewUrl } from '../siteLinks';
 import { CheckRow } from '../shell/CheckRow';
 import { ToolbarCount } from '../shell/Toolbar';
 import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type GroupAction, type GroupPlan, type GroupResult } from './groupActions';
