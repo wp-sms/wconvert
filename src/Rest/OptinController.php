@@ -68,7 +68,7 @@ final class OptinController implements RestController
         private readonly MilestoneStore $milestones,
         private readonly DestinationStore $destinations,
         private readonly DestinationRegistry $destinationTypes,
-        private readonly OccasionStore $occasions = new OccasionStore(),
+        private readonly OccasionStore $occasions,
     ) {
     }
 

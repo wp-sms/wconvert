@@ -121,6 +121,18 @@ export function formatRange(from: string, to: string): string {
     .formatRange(new Date(`${from}T12:00:00Z`), new Date(`${to}T12:00:00Z`));
 }
 
+/** Two calendar days without the year, e.g. "Nov 20 – Dec 1": an occasion's own days. */
+export function formatShortRange(from: string, to: string): string {
+  return new Intl.DateTimeFormat(siteLocale(), { day: 'numeric', month: 'short', timeZone: 'UTC' })
+    .formatRange(new Date(`${from}T12:00:00Z`), new Date(`${to}T12:00:00Z`));
+}
+
+/** One calendar day without the year ("Nov 20"), or only its day of the month ("21"). */
+export function formatDateTick(day: string, withMonth: boolean): string {
+  return new Intl.DateTimeFormat(siteLocale(), { day: 'numeric', ...(withMonth ? { month: 'short' } : {}), timeZone: 'UTC' })
+    .format(new Date(`${day}T12:00:00Z`));
+}
+
 /** A count in the site's digits and grouping. */
 export const formatCount = (count: number) => new Intl.NumberFormat(siteLocale()).format(count);
 

@@ -169,6 +169,13 @@ final class OccasionController implements RestController
             if (is_string($result)) $refused[] = ['name' => $campaign['name'], 'reason' => $result];
             else $created[] = $result;
         }
+        // Nothing came across, so nothing stays: an empty occasion is not
+        // what the file described. Its id retires, and nothing links to it.
+        if ($created === [] && $refused !== []) {
+            $id = $occasion['id'];
+            $this->occasions->write(static fn (array $items): array => array_values(array_filter($items, static fn (array $item): bool => $item['id'] !== $id)));
+            return new WP_Error('wconvert_occasion_nothing_imported', __('No campaign in this file can be imported here. Nothing was changed.', 'wconvert'), ['status' => 422, 'refused' => $refused]);
+        }
 
         return new WP_REST_Response(['occasion' => $occasion, 'created' => $created, 'refused' => $refused], 201);
     }
@@ -199,12 +206,13 @@ final class OccasionController implements RestController
             if (!is_array($campaign)) { $errors[$at] = __('Invalid campaign.', 'wconvert'); continue; }
             $name = $campaign['name'] ?? null;
             if (!is_string($name) || trim($name) === '' || mb_strlen($name) > 190) $errors[$at . '.name'] = __('Give each campaign a name under 190 characters.', 'wconvert');
-            if (!is_string($campaign['goal'] ?? null) || $campaign['goal'] === '') $errors[$at . '.goal'] = __('Name a goal.', 'wconvert');
+            if (\WConvert\Goal\Goal::tryFrom(is_string($campaign['goal'] ?? null) ? $campaign['goal'] : '') === null) $errors[$at . '.goal'] = __('Name a goal WConvert has.', 'wconvert');
             if (DisplayType::of($campaign['display_type'] ?? null) === null) $errors[$at . '.display_type'] = __('Use a known display type.', 'wconvert');
             $design = $campaign['design'] ?? null;
             if ($design !== null && (!is_string($design) || !preg_match('/^[a-z0-9-]{1,100}$/D', $design))) $errors[$at . '.design'] = __('Name a design by its id.', 'wconvert');
             if ($design === null && !is_array($campaign['template'] ?? null)) $errors[$at . '.design'] = __('Name a design, or include its template.', 'wconvert');
-            if (isset($campaign['copy']) && (!is_array($campaign['copy']) || ($campaign['copy'] !== [] && array_is_list($campaign['copy'])))) $errors[$at . '.copy'] = __('Copy is a map of words by role.', 'wconvert');
+            if (isset($campaign['copy']) && (!is_array($campaign['copy']) || ($campaign['copy'] !== [] && array_is_list($campaign['copy']))
+                || array_filter($campaign['copy'], static fn ($words) => !is_string($words) && !is_array($words)) !== [])) $errors[$at . '.copy'] = __('Copy is a map of words by role.', 'wconvert');
             if (isset($campaign['link']) && (!is_string($campaign['link']) || strlen($campaign['link']) > 2000)) $errors[$at . '.link'] = __('Use a link of up to 2000 characters.', 'wconvert');
             foreach (['targeting', 'frequency', 'display_rules'] as $key) {
                 if (isset($campaign[$key]) && !is_array($campaign[$key])) $errors[$at . '.' . $key] = __('Invalid campaign settings.', 'wconvert');

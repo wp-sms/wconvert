@@ -689,7 +689,7 @@ export function OptinList({
                   <div className="wconvert-campaign-viewtools">
                     {/* Shown only once the site has an occasion (ADR 0149). */}
                     {occasions !== null && occasions.length > 0 && onOccasionChange && (
-                      <label className="wconvert-campaign-period">
+                      <label className="wconvert-campaign-period wconvert-campaign-occasion">
                         {__('Occasion', 'wconvert')}
                         <NativeSelect value={chosen ?? ''} onChange={(e) => { onOccasionChange(e.target.value || undefined); setPage(0); }}>
                           <option value="">{__('All campaigns', 'wconvert')}</option>

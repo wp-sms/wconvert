@@ -171,6 +171,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const start = async (playbookId?: string) => {
     // The ref closes the same-tick double-click gap before React disables UI.
     if (goal === null || busy.current) return;
+    // Created into an occasion, the draft needs its dates; never create it
+    // unlinked because they had not arrived yet.
+    if (into && !picker.data) { setError(__('Occasions are still loading. Try again in a moment.', 'wconvert')); return; }
     const choice = previewEntries.find(entry => entry.id === playbookId);
     if (choice?.availability && choice.availability !== 'ready') return;
     busy.current = true;

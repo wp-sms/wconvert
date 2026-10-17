@@ -3,8 +3,6 @@
 Date: 2026-10-17. Status: accepted.
 Amends [0112](0112-template-discovery-and-reviewed-collections.md) and the
 [[Site occasion]] entry in `CONTEXT.md`. Records the vocabulary #273 builds on.
-Amended by [0153](0153-an-occasion-travels-as-one-document.md): copy and
-export/import.
 
 Until now a [[Site occasion]] was a name and an inclusive date range kept for
 planning. It suggested ideas in the design picker and stored nothing that could
@@ -46,8 +44,9 @@ existing `config`, holding the occasion's id. No table or column is added.
 
   *Completed in #276: `OccasionLink` checks the link on every save. An unknown
   id is refused with 400 `wconvert_optin_unknown_occasion` on the `occasion`
-  field. The list reads the id with `JSON_EXTRACT` in its projection, so it
-  still never selects the `config` blob (ADR 0001). Copy, export and import
+  field. The list reads the id, the display type and the schedule with bare
+  `JSON_EXTRACT` in its projection (the one spelling MySQL, MariaDB and SQLite
+  share), so it still never selects the `config` blob (ADR 0001). Copy, export and import
   are [ADR 0153](0153-an-occasion-travels-as-one-document.md).*
 
 **5. Deleting an occasion detaches its campaigns and never deletes them.** A

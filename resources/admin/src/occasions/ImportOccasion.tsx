@@ -62,9 +62,12 @@ function ImportDialog({ returnFocusTo, onClose, onImported }: {
     } catch (cause) {
       setError(messageOf(cause));
       // A 422 names each wrong value; nothing was written.
-      const errors = typeof cause === 'object' && cause !== null && 'data' in cause
-        ? (cause as { data?: { errors?: Record<string, string> } }).data?.errors : undefined;
-      if (errors) setProblems(Object.entries(errors).slice(0, 8).map(([path, message]) => `${path}: ${message}`));
+      const data = typeof cause === 'object' && cause !== null && 'data' in cause
+        ? (cause as { data?: { errors?: Record<string, string>; refused?: { name: string; reason: string }[] } }).data : undefined;
+      const errors = data?.errors;
+      // Or no campaign could come across, and each says why.
+      if (data?.refused) setProblems(data.refused.map((refused) => sprintf(/* translators: 1: a campaign's name, 2: why it was not imported. */ __('%1$s wasn’t imported. %2$s', 'wconvert'), refused.name, refused.reason)));
+      if (errors) setProblems(Object.entries(errors).slice(0, 8).map(([path, message]) => `${whereIn(document, path)}: ${message}`));
     } finally { setBusy(false); }
   };
   return (
@@ -91,4 +94,20 @@ function ImportDialog({ returnFocusTo, onClose, onImported }: {
       </AdminDialogContent>
     </AdminDialog>
   );
+}
+
+/**
+ * Where in the file a refusal points, in words: the campaign's own name, or
+ * its place in the file, never the key path the server reports (GUIDELINES §8).
+ */
+export function whereIn(document: unknown, path: string): string {
+  const [head, index] = path.split('.');
+  if (head === 'campaigns' && index !== undefined) {
+    const campaigns = typeof document === 'object' && document !== null && Array.isArray((document as { campaigns?: unknown }).campaigns)
+      ? (document as { campaigns: unknown[] }).campaigns : [];
+    const name = (campaigns[Number(index)] as { name?: unknown } | undefined)?.name;
+    /* translators: %d: a campaign's position in the imported file, from 1. */
+    return typeof name === 'string' && name.trim() !== '' ? name : sprintf(__('Campaign %d', 'wconvert'), Number(index) + 1);
+  }
+  return head === 'occasion' ? __('Occasion', 'wconvert') : head === 'campaigns' ? __('Campaigns', 'wconvert') : __('File', 'wconvert');
 }

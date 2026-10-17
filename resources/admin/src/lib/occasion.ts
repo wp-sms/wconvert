@@ -3,7 +3,7 @@ import type { DashboardPayload } from '../stats/api';
 import { addNumbers } from '../stats/reporting';
 
 /**
- * What an [[Occasion]]'s screens compute from its dates, kept pure so each
+ * What a [[Site occasion]]'s screens compute from its dates, kept pure so each
  * answer is tested once (ADR 0149).
  *
  * An occasion's days are inclusive `Y-m-d`. A campaign's `starts_at` and
@@ -12,7 +12,7 @@ import { addNumbers } from '../stats/reporting';
  * UTC, so no browser timezone ever moves a day.
  */
 
-const DAY = 86_400_000;
+export const DAY = 86_400_000;
 const wall = (value: string): number => Date.parse(`${value.replace(' ', 'T').slice(0, 16)}:00Z`);
 const dayAfter = (day: string): string => new Date(Date.parse(`${day}T00:00:00Z`) + DAY).toISOString().slice(0, 10);
 
@@ -67,12 +67,13 @@ export function occasionWindow(occasion: Pick<Occasion, 'start' | 'end'>, today:
 }
 
 export interface OccasionTotals {
-  views: number;
+  /** Impressions: "Shown" on every screen (GUIDELINES §20). */
+  shown: number;
   /** Conversions of the campaigns that convert on a click. */
   clicks: number;
-  /** Clicks out of the views of those same campaigns, or null where none was shown. */
+  /** Clicks out of the times those same campaigns were shown, or null where none was. */
   clickRate: number | null;
-  closes: number;
+  dismissed: number;
   /** Whether any campaign here converts on a click, so Clicks means something. */
   counted: boolean;
 }
@@ -91,7 +92,7 @@ export function occasionTotals(report: Pick<DashboardPayload, 'goals'>, ids: Rea
   const all = addNumbers(rows.map(({ row }) => row));
   const clicking = rows.filter(({ goal }) => goal.action === 'click');
   const clicks = addNumbers(clicking.map(({ row }) => row));
-  return { views: all.impressions, closes: all.dismissals, clicks: clicks.conversions, clickRate: clicks.conversion_rate, counted: clicking.length > 0 };
+  return { shown: all.impressions, dismissed: all.dismissals, clicks: clicks.conversions, clickRate: clicks.conversion_rate, counted: clicking.length > 0 };
 }
 
 const yearLater = (day: string): string => {

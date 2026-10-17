@@ -83,13 +83,13 @@ describe('an occasion’s totals', () => {
   });
   const goal = (action: GoalReport['action'], optins: OptinReport[]) => ({ action, optins } as unknown as GoalReport);
 
-  it('adds views and closes across campaigns, and counts clicks only from click goals', () => {
+  it('adds shown and dismissed across campaigns, and counts clicks only from click goals', () => {
     const report = { goals: [
       goal('click', [numbers('bar', 9000, 600, 1400), numbers('popup', 5000, 500, 1300), numbers('arm', 1000, 100, 100, 'popup'), numbers('elsewhere', 999, 99, 9)]),
       goal('submit', [numbers('teaser', 3000, 200, 500)]),
     ] } as Pick<DashboardPayload, 'goals'>;
     const totals = occasionTotals(report, new Set(['bar', 'popup', 'teaser']));
-    expect(totals).toEqual({ views: 18000, clicks: 1200, clickRate: 1200 / 15000, closes: 3300, counted: true });
+    expect(totals).toEqual({ shown: 18000, clicks: 1200, clickRate: 1200 / 15000, dismissed: 3300, counted: true });
   });
 
   it('says when nothing here converts on a click', () => {

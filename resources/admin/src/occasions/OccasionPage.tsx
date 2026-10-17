@@ -170,7 +170,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const next = nextYearOf(occasion);
   const totals = report?.status === 'ready' ? occasionTotals(report.data, new Set(campaigns.map((row) => row.id))) : null;
   const numbers = report?.status === 'ready'
-    ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, { count: row.conversions, label: goal.result_label }])))
+    ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, { count: row.conversions, shown: row.impressions, rate: row.conversion_rate, label: goal.result_label }])))
     : {};
   const summary = query === null ? null
     : 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to)
@@ -214,13 +214,14 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
             } />
             <RegionBody>
               {report?.status === 'failed' ? <RegionError message={report.message} onRetry={() => setAttempt((n) => n + 1)} />
-                : totals === null || totals.views === 0
+                : totals === null || totals.shown === 0
                   ? <p className="m-0 text-note text-muted-foreground">{report?.status === 'loading' ? __('Loading results…', 'wconvert') : __('Totals appear once a campaign here is published and shown.', 'wconvert')}</p>
                   : <StatRow>
-                    <Stat emphasis label={__('Views', 'wconvert')} value={formatCount(totals.views)} />
-                    {totals.counted && <Stat label={__('Clicks', 'wconvert')} value={formatCount(totals.clicks)}
-                      hint={totals.clickRate === null ? undefined : sprintf(/* translators: %s: a rate such as "7.4%". */ __('%s of views', 'wconvert'), formatRate(totals.clickRate))} />}
-                    <Stat label={__('Closes', 'wconvert')} value={formatCount(totals.closes)} />
+                    <Stat emphasis label={__('Shown', 'wconvert')} value={formatCount(totals.shown)} />
+                    {/* Clicks count click goals only, so with none here there is no number to give. */}
+                    <Stat label={__('Clicks', 'wconvert')} value={totals.counted ? formatCount(totals.clicks) : '—'}
+                      hint={!totals.counted || totals.clickRate === null ? undefined : sprintf(/* translators: %s: a rate such as "7.4%". */ __('%s of shown', 'wconvert'), formatRate(totals.clickRate))} />
+                    <Stat label={__('Dismissed', 'wconvert')} value={formatCount(totals.dismissed)} />
                   </StatRow>}
             </RegionBody>
           </Region>
@@ -262,7 +263,8 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                       <DataTableCell label={__('Status', 'wconvert')} className="wconvert-campaign-state"><StatusBadge status={status} /></DataTableCell>
                       <DataTableCell label={__('Results', 'wconvert')} numeric className="wconvert-campaign-results">
                         {result && result.count > 0
-                          ? <><strong>{formatCount(result.count)}</strong><span>{result.label}</span></>
+                          ? <><strong>{formatCount(result.count)}</strong><span>{result.label}</span>
+                            {result.shown > 0 && <span>{sprintf(/* translators: 1: a conversion rate such as "2.5%", 2: how many times the campaign was shown. */ __('%1$s of %2$s shown', 'wconvert'), formatRate(result.rate), formatCount(result.shown))}</span>}</>
                           : <span>{status === 'draft' ? __('No results yet', 'wconvert') : __('No results in this period', 'wconvert')}</span>}
                       </DataTableCell>
                       <DataTableActions className="wconvert-campaign-row-actions">

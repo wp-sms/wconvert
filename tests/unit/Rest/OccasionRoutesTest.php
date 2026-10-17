@@ -331,6 +331,33 @@ final class OccasionRoutesTest extends TestCase
         self::assertSame('This display type needs WConvert Pro.', $reply['refused'][0]['reason']);
     }
 
+    /** Every campaign refused leaves no occasion behind. */
+    public function testAFileNothingOfWhichCanBeImportedChangesNothing(): void
+    {
+        $document = self::fixture();
+        $document['campaigns'] = [$document['campaigns'][0]];
+
+        $refused = $this->occasionController(Tier::Free)->import($this->importRequest($document));
+
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame(422, $refused->get_error_data()['status']);
+        self::assertSame('Black Friday top bar', $refused->get_error_data()['refused'][0]['name']);
+        self::assertSame([], (new OccasionStore())->ids());
+        self::assertSame([], $this->db->writes);
+    }
+
+    public function testAGoalWConvertDoesNotHaveIsAnErrorInTheFile(): void
+    {
+        $document = self::fixture();
+        $document['campaigns'][1]['goal'] = 'sell_everything';
+        $document['campaigns'][2]['copy'] = ['headline' => 42];
+
+        $refused = $this->occasionController()->import($this->importRequest($document));
+
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame(['campaigns.1.goal', 'campaigns.2.copy'], array_keys($refused->get_error_data()['errors']));
+    }
+
     public function testAnUnknownDesignIsRefusedForThatCampaignAlone(): void
     {
         $document = self::fixture();
