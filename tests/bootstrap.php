@@ -2464,3 +2464,22 @@ if (!function_exists('is_rtl')) {
         return (bool) ($GLOBALS['wconvertTestRtl'] ?? false);
     }
 }
+
+// The Abilities API (WordPress 6.9), recording what was registered so a test
+// can read it back. `Abilities::hooks()` is handed its own `function_exists`
+// to stand in for WordPress 6.8, which has neither function.
+if (!function_exists('wp_register_ability_category')) {
+    /** @param array<string, mixed> $args */
+    function wp_register_ability_category(string $slug, array $args): void
+    {
+        $GLOBALS['wconvertTestAbilityCategories'][$slug] = $args;
+    }
+}
+
+if (!function_exists('wp_register_ability')) {
+    /** @param array<string, mixed> $args */
+    function wp_register_ability(string $name, array $args): void
+    {
+        $GLOBALS['wconvertTestAbilities'][$name] = $args;
+    }
+}

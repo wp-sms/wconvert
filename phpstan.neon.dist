@@ -30,6 +30,8 @@ parameters:
         # WooCommerce and WSMS, which WpSitePresence asks about and never
         # calls. See the header of the file itself.
         - phpstan-stubs/site-dependencies.php
+        # The MCP Adapter, which WConvert uses only where it is loaded.
+        - phpstan-stubs/mcp-adapter.php
     bootstrapFiles:
         - phpstan-bootstrap.php
         - pro/phpstan-bootstrap.php

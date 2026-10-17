@@ -39,6 +39,13 @@ installed cache plugins whose function or method it reached. An agent's
 publish or pause reply (#284) will name them. The actions are not in the list:
 firing one says nothing about whether anything listened.
 
+  *Amended by [ADR 0154](0154-agents-act-through-wordpress-abilities.md): the
+  reply does not read `purge()`'s return, because the purge runs inside the
+  publish route through `wconvert_published_set_changed`. `PageCache` remembers
+  the last purge in the request instead, and `PageCache::lastPurged()` gives the
+  caches it reached by product name ("WP Super Cache"). `purge()` still returns
+  what it called.*
+
 **5. The object cache is still left alone**, for 0014's reason: what changed is
 cached HTML, and flushing Redis would evict every other plugin's data.
 

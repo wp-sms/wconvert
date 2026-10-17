@@ -3,6 +3,7 @@
 namespace WConvert;
 
 use WConvert\Container\AdminServiceProvider;
+use WConvert\Container\AgentServiceProvider;
 use WConvert\Container\CoreServiceProvider;
 use WConvert\Container\PrivacyServiceProvider;
 use WConvert\Container\ServiceContainer;
@@ -43,6 +44,7 @@ final class Bootstrap
         CoreServiceProvider::class,
         PrivacyServiceProvider::class,
         AdminServiceProvider::class,
+        AgentServiceProvider::class,
     ];
 
     /**

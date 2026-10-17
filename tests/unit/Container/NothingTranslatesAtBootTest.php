@@ -542,6 +542,7 @@ final class NothingTranslatesAtBootTest extends TestCase
             CoreServiceProvider::class,
             PrivacyServiceProvider::class,
             AdminServiceProvider::class,
+            \WConvert\Container\AgentServiceProvider::class,
             ProServiceProvider::class,
             // The licence's provider, which builds the SDK and lets it hook in.
             // Building it must read nothing and translate nothing either.
