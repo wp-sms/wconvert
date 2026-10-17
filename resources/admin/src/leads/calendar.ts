@@ -28,7 +28,7 @@ export function shiftDay(day: string, days: number): string {
 /** A day window the log can read: both days included, either end open. */
 export interface DayWindow { from?: string; to?: string }
 
-type WindowPreset = Exclude<DatePreset, 'all'>;
+type WindowPreset = Exclude<DatePreset, 'all' | 'occasion'>;
 
 /**
  * What a preset covers on the log, **today included**: "Last 7 days" is today

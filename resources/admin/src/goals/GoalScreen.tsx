@@ -22,6 +22,7 @@ import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
+import { occasionSchedule } from '../lib/occasion';
 import { formatCount, formatDay, formatRange } from '../lib/format';
 import { GoalCard, offerableGoals } from './GoalCard';
 import { listGoals, listPlaybooks, prefill, type GoalEntry, type PlaybookEntry } from './api';
@@ -53,11 +54,13 @@ import { matchesSearch } from '../discovery/search';
  */
 export interface GoalScreenProps {
   onCreated: (id: string) => void;
+  /** The occasion a new campaign is created into: its ideas first, its dates prefilled (ADR 0149 §3). */
+  occasion?: string;
   onBusyChange?: (busy: boolean) => void;
   onCheckOptins?: () => void;
 }
 
-export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScreenProps) {
+export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: into }: GoalScreenProps) {
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
   const [packsOpen, setPacksOpen] = useState(false);
   const [inspected, setInspected] = useState<PlaybookEntry | null>(null);
@@ -80,7 +83,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const [allCollections, setAllCollections] = useState(false);
   const [editorialCollection, setEditorialCollection] = useState<Collection | null>(null);
   const [stage, setStage] = useState('any');
-  const [occasion, setOccasion] = useState<string | null>(null);
+  const [occasion, setOccasion] = useState<string | null>(into ?? null);
   const [sort, setSort] = useState('recommended');
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
@@ -184,7 +187,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       const prefilled = selected?.revision ? await prefill(goal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
       // Leads stay in WConvert until a service is connected (ADR 0133), so
       // the prefill needs no capture mode written into it.
-      const draft = prefilled;
+      const home = into ? picker.data?.occasions.items.find(item => item.id === into) : undefined;
+      const draft = home ? { ...prefilled, config: { ...prefilled.config, occasion: home.id, ...occasionSchedule(home.start, home.end) } } : prefilled;
       if (!active.current || request !== operation.current) return;
       creating = true;
       const optin = await createOptin(draft.name, draft.goal, draft.config);

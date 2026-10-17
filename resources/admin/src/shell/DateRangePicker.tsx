@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popove
  * A named window of days. What each preset covers is the caller's to resolve:
  * Leads counts today in "Last 7 days", Analytics reads complete days.
  */
-export type DatePreset = 'all' | 'today' | 'yesterday' | '7' | '30' | '90' | 'this_month' | 'last_month';
+export type DatePreset = 'all' | 'today' | 'yesterday' | '7' | '30' | '90' | 'this_month' | 'last_month' | 'occasion';
 export type DateRange = { preset: DatePreset } | { preset: 'custom'; from: string; to: string };
 
 export const presetLabel = (preset: DatePreset | 'custom'): string => {
@@ -22,6 +22,8 @@ export const presetLabel = (preset: DatePreset | 'custom'): string => {
     case '90': return __('Last 90 days', 'wconvert');
     case 'this_month': return __('This month', 'wconvert');
     case 'last_month': return __('Last month', 'wconvert');
+    // An occasion's own days, so far (ADR 0149).
+    case 'occasion': return __('Occasion dates', 'wconvert');
     case 'custom': return __('Custom dates', 'wconvert');
   }
 };

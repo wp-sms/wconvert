@@ -97,6 +97,13 @@ export interface OptinSummary extends OptinState {
    * arms has exactly one entry here.
    */
   arms: OptinSummary[];
+  /** The occasion this campaign belongs to, or null, including after that occasion was deleted (ADR 0149 §5). */
+  occasion: string | null;
+  /** The saved draft's display type, read in SQL so the list never carries the design. */
+  display_type: string;
+  /** The saved draft's schedule as wall times in the site's timezone, or null. */
+  starts_at: string | null;
+  ends_at: string | null;
 }
 
 /**

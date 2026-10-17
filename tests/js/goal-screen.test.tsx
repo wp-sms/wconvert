@@ -285,6 +285,23 @@ describe('a goal then a draft', () => {
     expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, draft.config);
   });
 
+  /** ADR 0149 §3: a campaign made inside an occasion is linked and starts with its dates. */
+  it('creates into the occasion it was started from, with the occasion’s dates', async () => {
+    picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] },
+      occasions: { schema: 1, revision: 3, items: [{ id: 'black-friday-2026', name: 'Black Friday 2026', start: '2026-11-20', end: '2026-12-01' }] } });
+    const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
+    goals.prefill.mockResolvedValue(draft);
+    const created = vi.fn();
+    render(<GoalScreen occasion="black-friday-2026" onCreated={created} />);
+    await pickGoal();
+    expect(await screen.findByText('Black Friday 2026')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
+    await waitFor(() => expect(created).toHaveBeenCalled());
+    expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, {
+      rules: [], occasion: 'black-friday-2026', starts_at: '2026-11-20 00:00', ends_at: '2026-12-02 00:00',
+    });
+  });
+
   it('offers a blank draft when this Goal has no starting points', async () => {
     goals.listPlaybooks.mockResolvedValue([]);
     render(<GoalScreen onCreated={vi.fn()} />);

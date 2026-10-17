@@ -3,6 +3,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowLeft,
   ArrowRight,
+  CalendarDays,
   ChartNoAxesCombined,
   ChevronDown,
   Copy,
@@ -36,7 +37,10 @@ import { EmptyState } from '../shell/EmptyState';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { leadsHref, reportHref } from '../nav';
+import { leadsHref, occasionHref, reportHref } from '../nav';
+import type { Occasion } from '../discovery/api';
+import { readOccasions, type OccasionNotice } from '../occasions/api';
+import { OccasionNoticeView } from '../occasions/Notice';
 import { readDashboard, type DashboardPayload } from '../stats/api';
 import { formatCount, formatRange, formatRate, labelOf } from '../lib/format';
 import {
@@ -95,12 +99,26 @@ export function OptinList({
   onCreate,
   onBusyChange,
   onEmptyChange,
+  occasion,
+  notice = null,
+  onDismissNotice,
+  onOccasionChange,
+  onOpenOccasion,
+  onCreateInOccasion,
 }: {
   onEdit: (id: string) => void;
   onCreate?: () => void;
   onBusyChange?: (busy: boolean) => void;
   /** An empty list carries the one Create button, so the header drops its own. */
   onEmptyChange?: (empty: boolean) => void;
+  /** The Occasion filter, from the address so it survives a reload (ADR 0149). */
+  occasion?: string;
+  /** What an import did, kept above the rows it added. */
+  notice?: OccasionNotice | null;
+  onDismissNotice?: () => void;
+  onOccasionChange?: (occasion?: string) => void;
+  onOpenOccasion?: (occasion: string) => void;
+  onCreateInOccasion?: (occasion: string) => void;
 }) {
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
   const [labelsError, setLabelsError] = useState<string | null>(null);
@@ -141,6 +159,14 @@ export function OptinList({
   const [previews, setPreviews] = useState<Record<string, CampaignPreview>>({});
   const [previewError, setPreviewError] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  // The site's occasions, for the filter and each row's tag. A failed read
+  // only hides both; the list itself does not depend on it.
+  const [occasions, setOccasions] = useState<Occasion[] | null>(null);
+  useEffect(() => {
+    let active = true;
+    readOccasions().then((data) => { if (active) setOccasions(data.items); }, () => { if (active) setOccasions([]); });
+    return () => { active = false; };
+  }, [refreshKey]);
   const returnFocus = useRef<HTMLElement | null>(null);
   const createFocus = useRef<HTMLButtonElement>(null);
   const refresh = useCallback(async () => {
@@ -210,7 +236,10 @@ export function OptinList({
       ),
     [report],
   );
-  const rows = list.status === 'ready' ? list.data : [];
+  const all = list.status === 'ready' ? list.data : [];
+  // A filter naming an occasion deleted since filters nothing.
+  const chosen = occasion !== undefined && (occasions === null || occasions.some((item) => item.id === occasion)) ? occasion : undefined;
+  const rows = chosen === undefined ? all : all.filter((c) => c.occasion === chosen);
   const family = (c: OptinSummary) => [c, ...c.arms];
   // A pasted ID still finds its campaign, though no screen shows one (ADR 0131).
   const needle = query.trim().toLocaleLowerCase();
@@ -236,7 +265,7 @@ export function OptinList({
     currentPage = Math.min(page, lastPage);
   const shown = visible.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   // A selection means "these, on this view": changing the view clears it.
-  useEffect(() => setTicked(new Set()), [filter, query, currentPage, sort]);
+  useEffect(() => setTicked(new Set()), [filter, query, currentPage, sort, chosen]);
   const tickedRows = shown.filter((c) => ticked.has(c.id));
   const allTicked = shown.length > 0 && tickedRows.length === shown.length;
   // A new selection, or any other action, makes the last group result old news.
@@ -296,7 +325,7 @@ export function OptinList({
       )
         createdId = result.id;
     } catch (cause) {
-      const row = rows.find((candidate) => candidate.id === id);
+      const row = all.find((candidate) => candidate.id === id);
       const name = row ? nameOf(row) : __('Deleted campaign', 'wconvert');
       /* translators: 1: a campaign's name, 2: why an action on it failed. */
       mutationErrorsRef.current.set(id, { message: sprintf(__('%1$s: %2$s', 'wconvert'), name, messageOf(cause)), action, openCreated });
@@ -375,7 +404,7 @@ export function OptinList({
   };
   // An arm's A/B test is its parent row; a campaign is its own.
   const parentOf = (row: OptinSummary) =>
-    row.parent_id === null ? row : rows.find((candidate) => candidate.id === row.parent_id) ?? row;
+    row.parent_id === null ? row : all.find((candidate) => candidate.id === row.parent_id) ?? row;
   const request = (next: Decision, trigger: HTMLElement | null) => {
     returnFocus.current = trigger;
     setDecision(next);
@@ -396,6 +425,7 @@ export function OptinList({
     labelsError ? __('Goal unavailable', 'wconvert') : labels === null ? null : labelOf(row.goal, labels, __('Unknown goal', 'wconvert'));
   const describe = (row: OptinSummary): string =>
     [previews[row.id] ? displayTypeLabel(previews[row.id].display_type) : null, goalOf(row)].filter(Boolean).join(' · ');
+  const occasionOf = (row: OptinSummary): Occasion | undefined => row.occasion === null ? undefined : occasions?.find((item) => item.id === row.occasion);
   const resultsOf = (row: OptinSummary): CampaignResults =>
     report
       ? { status: 'ready', days: report.days, from: report.from, to: report.to, result: numbers[row.id] }
@@ -470,7 +500,16 @@ export function OptinList({
             <button type="button" className="wconvert-campaign-name" aria-haspopup="dialog" onClick={(e) => openDetails(row, e.currentTarget)}>
               {name}
             </button>
-            <p className="wconvert-campaign-meta">{describe(row)}</p>
+            <p className="wconvert-campaign-meta">
+              {describe(row)}
+              {/* With no occasion chosen, a campaign's occasion is a link to its page. */}
+              {!arm && chosen === undefined && occasionOf(row) && <>
+                {describe(row) && ' · '}
+                <a className="wconvert-occasion-tag" href={occasionHref(occasionOf(row)!.id)}>
+                  <CalendarDays aria-hidden="true" /><bdi>{occasionOf(row)!.name}</bdi>
+                </a>
+              </>}
+            </p>
             {testing && !arm && (
               <button
                 type="button"
@@ -557,7 +596,7 @@ export function OptinList({
       </CampaignRow>
     );
   };
-  const empty = list.status === 'ready' && rows.length === 0;
+  const empty = list.status === 'ready' && all.length === 0;
   useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
   const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row)) : null;
   const groupWords = groupConfirm ? groupConfirmCopy(groupConfirm.action, groupConfirm.plan) : null;
@@ -572,6 +611,8 @@ export function OptinList({
           <RegionErrorState message={list.message} onRetry={() => void refresh()} />
         ) : (
           <>
+            {notice && onDismissNotice && <OccasionNoticeView notice={notice} onDismiss={onDismissNotice}
+              action={onOpenOccasion && <Button type="button" variant="outline" onClick={() => onOpenOccasion(notice.occasion)}>{__('Open occasion', 'wconvert')}</Button>} />}
             {error && <RegionError message={error} onRetry={() => void refresh()} />}
             {[...mutationErrors].map(([id, failure]) => (
               <RegionError
@@ -646,6 +687,24 @@ export function OptinList({
                     }}
                   />
                   <div className="wconvert-campaign-viewtools">
+                    {/* Shown only once the site has an occasion (ADR 0149). */}
+                    {occasions !== null && occasions.length > 0 && onOccasionChange && (
+                      <label className="wconvert-campaign-period">
+                        {__('Occasion', 'wconvert')}
+                        <NativeSelect value={chosen ?? ''} onChange={(e) => { onOccasionChange(e.target.value || undefined); setPage(0); }}>
+                          <option value="">{__('All campaigns', 'wconvert')}</option>
+                          {occasions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                        </NativeSelect>
+                      </label>
+                    )}
+                    {chosen !== undefined && onOpenOccasion && (
+                      <Button variant="outline" onClick={() => onOpenOccasion(chosen)}>{__('Open occasion', 'wconvert')}</Button>
+                    )}
+                    {chosen !== undefined && onCreateInOccasion && (
+                      <Button variant="outline" disabled={busy.size > 0} onClick={() => onCreateInOccasion(chosen)}>
+                        <Plus aria-hidden="true" />{__('New campaign in this occasion', 'wconvert')}
+                      </Button>
+                    )}
                     <NativeSelect
                       aria-label={__('Sort campaigns', 'wconvert')}
                       value={sort}
@@ -700,6 +759,7 @@ export function OptinList({
                       setQuery('');
                       setFilter('all');
                       setPage(0);
+                      if (chosen !== undefined) onOccasionChange?.(undefined);
                     }}
                   >
                     {__('Clear filters', 'wconvert')}

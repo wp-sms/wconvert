@@ -151,3 +151,55 @@
 }
 /* The campaign's name heads its ⋯ menu on one line (ADR 0139). */
 .wconvert-campaign-menu .wconvert-option-menu__heading > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Occasions (ADR 0149, #277). The occasion page reuses the campaign table
+ * with its own columns: no tick-boxes, and a Dates column. */
+#wconvert-admin .wconvert-campaign-table.is-occasion tr { grid-template-columns:minmax(200px,1fr) 190px 120px 120px 150px; }
+#wconvert-admin .wconvert-campaign-table.is-occasion th:nth-child(n+4) { text-align:end; }
+#wconvert-admin .wconvert-occasion-dates { font-size:var(--text-note); color:var(--foreground); }
+#wconvert-admin .wconvert-occasion-outside { display:block; margin-block-start:4px; font-size:var(--text-micro); color:var(--warning); }
+/* A campaign's occasion, under its name in the list: a link to the occasion's page. */
+#wconvert-admin .wconvert-occasion-tag { display:inline-flex; align-items:center; gap:4px; color:var(--action); text-decoration:none; }
+#wconvert-admin .wconvert-occasion-tag:hover { text-decoration:underline; }
+#wconvert-admin .wconvert-occasion-tag svg { inline-size:12px; block-size:12px; flex:none; }
+/* What a copy or an import did (GUIDELINES §8): beside what it made, until dismissed. */
+#wconvert-admin .wconvert-occasion-notice { display:flex; align-items:flex-start; gap:12px; padding:14px 24px; border-block-end:1px solid var(--border); background:var(--card); font-size:var(--text-note); }
+#wconvert-admin .flex > .wconvert-occasion-notice { border:1px solid var(--border); border-radius:var(--radius); }
+#wconvert-admin .wconvert-occasion-notice > svg { inline-size:18px; block-size:18px; flex:none; margin-block-start:1px; }
+#wconvert-admin .wconvert-occasion-notice > .min-w-0 { flex:1; }
+.wconvert-occasion-notice__problems { margin:6px 0 0; padding-inline-start:18px; color:var(--muted-foreground); font-size:var(--text-note); }
+.wconvert-occasion-drop { position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:24px 16px; border:1px dashed var(--border); border-radius:var(--radius); text-align:center; cursor:pointer; }
+.wconvert-occasion-drop:focus-within { outline:2px solid var(--ring); outline-offset:2px; }
+.wconvert-occasion-drop > svg { inline-size:22px; block-size:22px; color:var(--muted-foreground); }
+
+/* The date line: the occasion's days across, a bar per campaign. */
+.wconvert-dateline { display:flex; flex-direction:column; gap:8px; }
+.wconvert-dateline__grid { display:grid; grid-template-columns:minmax(8rem,12rem) minmax(0,1fr); align-items:center; gap:12px; }
+.wconvert-dateline__axis { position:relative; block-size:1.25rem; font-size:var(--text-micro); color:var(--muted-foreground); }
+.wconvert-dateline__axis span { position:absolute; inset-block-start:0; transform:translateX(-50%); white-space:nowrap; font-variant-numeric:tabular-nums; }
+[dir=rtl] .wconvert-dateline__axis span { transform:translateX(50%); }
+.wconvert-dateline__rows { display:flex; flex-direction:column; gap:8px; margin:0; padding:0; list-style:none; }
+.wconvert-dateline__label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--text-note); }
+.wconvert-dateline__track { position:relative; block-size:1.5rem; border-radius:var(--radius); background:var(--surface); }
+.wconvert-dateline__bar { position:absolute; inset-block:3px; display:flex; align-items:center; padding-inline:6px; overflow:hidden; white-space:nowrap; border-radius:calc(var(--radius) - 2px); background:var(--action); color:var(--primary-foreground, #fff); font-size:var(--text-micro); font-weight:600; }
+.wconvert-dateline__bar.is-draft { color:var(--foreground); }
+.wconvert-dateline__bar.is-draft { background:repeating-linear-gradient(135deg, color-mix(in srgb, var(--action) 18%, transparent) 0 4px, transparent 4px 8px); border:1px solid var(--action); }
+.wconvert-dateline__out { position:absolute; inset-block:3px; display:inline-flex; align-items:center; gap:4px; padding-inline:6px; border:1px solid var(--warning); border-radius:999px; background:var(--warning-surface); color:var(--warning); font-size:var(--text-micro); font-weight:600; white-space:nowrap; }
+.wconvert-dateline__out.is-before { inset-inline-start:0; }
+.wconvert-dateline__out.is-after { inset-inline-end:0; }
+.wconvert-dateline__out svg, .wconvert-dateline__legend svg { inline-size:14px; block-size:14px; }
+.wconvert-dateline__today { position:absolute; inset-block:-2px; inline-size:2px; background:var(--foreground); opacity:.6; }
+.wconvert-dateline__legend { display:flex; flex-wrap:wrap; gap:16px; margin:4px 0 0; font-size:var(--text-micro); color:var(--muted-foreground); }
+.wconvert-dateline__legend span { display:inline-flex; align-items:center; gap:6px; }
+.wconvert-dateline__legend svg { color:var(--warning); }
+.wconvert-dateline__key { display:inline-block; inline-size:14px; block-size:8px; border-radius:2px; background:var(--action); }
+.wconvert-dateline__key.is-draft { background:repeating-linear-gradient(135deg, color-mix(in srgb, var(--action) 35%, transparent) 0 3px, transparent 3px 6px); border:1px solid var(--action); }
+@media(max-width:640px) {
+  .wconvert-dateline__grid { grid-template-columns:minmax(0,1fr); gap:4px; }
+  .wconvert-dateline__grid > span:empty { display:none; }
+  /* Twelve day numbers do not fit 360px: the first and last day say the span. */
+  .wconvert-dateline__axis span:not(:first-child):not(:last-child) { display:none; }
+  .wconvert-dateline__axis span:first-child { transform:none; inset-inline-start:0 !important; }
+  .wconvert-dateline__axis span:last-child { transform:none; inset-inline-start:auto !important; inset-inline-end:0; }
+  #wconvert-admin .wconvert-occasion-notice { padding-inline:18px; }
+}

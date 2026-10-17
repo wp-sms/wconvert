@@ -15,6 +15,8 @@ export function Shell({
   section,
   actions,
   pageTitle,
+  pageDescription,
+  pageBack,
   hideDescription = false,
   bareHeader = false,
   hidePageHeading = false,
@@ -27,6 +29,10 @@ export function Shell({
   page?: Pick<ExtraPage, 'id' | 'title' | 'description'>;
   actions?: ReactNode;
   pageTitle?: string;
+  /** A page's own line under its title, in place of the section's. */
+  pageDescription?: ReactNode;
+  /** A way back to the page this one sits inside, above the title. */
+  pageBack?: ReactNode;
   hideDescription?: boolean;
   bareHeader?: boolean;
   hidePageHeading?: boolean;
@@ -77,10 +83,11 @@ export function Shell({
               ) : (
                 <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
                   <div className="wconvert-page-copy">
+                    {pageBack}
                     <h1 className="m-0 wconvert-page-title text-foreground">
                       {pageTitle ?? page?.title ?? SECTIONS.find((entry) => entry.id === section)?.label}
                     </h1>
-                    {!hideDescription && <Description className="wconvert-page-description">{page ? page.description : section && descriptionFor(section)}</Description>}
+                    {!hideDescription && <Description className="wconvert-page-description">{pageDescription ?? (page ? page.description : section && descriptionFor(section))}</Description>}
                   </div>
                   {actions}
                   <div ref={setTarget} className="contents" />
