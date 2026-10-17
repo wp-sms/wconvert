@@ -9,7 +9,7 @@ use WConvert\Optin\OccasionSchedule;
 use WConvert\Optin\Schedule;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
-use WConvert\Template\CampaignBuilder;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -36,7 +36,7 @@ final class AgentCampaignInput
     public function __construct(
         private readonly TemplateLibrary $library,
         private readonly TemplateVocabulary $vocabulary,
-        private readonly CampaignBuilder $builder,
+        private readonly OptinConfigBuilder $builder,
         private readonly OccasionStore $occasions,
         private readonly PlaybookLibrary $playbooks,
         private readonly Prefill $prefill,
@@ -156,7 +156,7 @@ final class AgentCampaignInput
             if ($copy instanceof WP_Error) return $copy;
             $config['template']['tree'] = SlotRoles::bind($tree, $copy, $this->vocabulary);
         }
-        if (is_string($input['link'] ?? null) && $input['link'] !== '') $config = CampaignBuilder::linked($config, (string) $input['link']);
+        if (is_string($input['link'] ?? null) && $input['link'] !== '') $config = OptinConfigBuilder::linked($config, (string) $input['link']);
         $config = $this->colored($config, $input);
         return self::needs($config) ?? $config;
     }

@@ -3,6 +3,7 @@
 namespace WConvert\Agent\Publish;
 
 use WConvert\Agent\Reply;
+use WConvert\Optin\OptinState;
 
 defined('ABSPATH') || exit;
 
@@ -37,6 +38,6 @@ final class Pause extends CampaignSwitch
     /** @param array<string, mixed> $row */
     protected function alreadyThere(array $row): ?string
     {
-        return in_array($row['status'], ['published', 'suspended'], true) ? null : __('Not published, so nothing to pause.', 'wconvert');
+        return OptinState::isPublished($row['status']) ? null : __('Not published, so nothing to pause.', 'wconvert');
     }
 }

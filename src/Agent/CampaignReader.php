@@ -4,13 +4,13 @@ namespace WConvert\Agent;
 
 use WConvert\Discovery\OccasionStore;
 use WConvert\Frontend\DraftPreview;
-use WConvert\Optin\CampaignState;
+use WConvert\Optin\OptinState;
 use WConvert\Optin\ConfigRevision;
 use WConvert\Optin\Frequency;
 use WConvert\Optin\Optin;
 use WConvert\Rest\InternalRest;
 use WConvert\Rules\RuleLabels;
-use WConvert\Template\CampaignBuilder;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -75,7 +75,7 @@ final class CampaignReader
         $published = is_array($optin['published_config'] ?? null) ? $optin['published_config'] : null;
         $names = $this->occasionNames();
         $occasion = is_string($config['occasion'] ?? null) ? $config['occasion'] : null;
-        $status = CampaignState::status($optin['published_at'] ?? null, $optin['deleted_at'] ?? null, ($optin['suspended'] ?? null) !== null);
+        $status = OptinState::ofRow($optin);
         $tree = $config['template']['tree'] ?? null;
         $roles = is_array($tree) ? SlotRoles::declaredIn($tree, $this->vocabulary) : [];
         $copy = is_array($tree) ? SlotRoles::copyFrom($tree, $this->vocabulary) : [];
@@ -90,7 +90,7 @@ final class CampaignReader
             'design' => $this->design($config),
             'copy' => $copy,
             'empty_roles' => array_values(array_diff($roles, array_keys(array_filter($copy, static fn ($words): bool => $words !== '' && $words !== [] && $words !== null)))),
-            'link' => CampaignBuilder::linkIn($config),
+            'link' => OptinConfigBuilder::linkIn($config),
             'pages' => self::pages($config['targeting'] ?? []),
             'inline_position' => is_array($config['inline_placement'] ?? null) ? $config['inline_placement'] : null,
             'opens' => self::opens($config['display_rules'] ?? []),
@@ -99,7 +99,9 @@ final class CampaignReader
             'occasion' => $occasion === null ? null : ['occasion_id' => $occasion, 'name' => $names[$occasion] ?? $occasion],
             'is_ab_test_variant' => ($optin['parent_id'] ?? null) !== null,
             'has_unpublished_changes' => (bool) ($optin['has_unpublished_changes'] ?? false),
-            'revision' => ConfigRevision::of(new Optin((string) $optin['id'], (string) $optin['name'], (string) $optin['goal'], $config)),
+            // `GET /optins/{id}` gives the stored draft's: its config has a deleted occasion
+            // detached (ADR 0149 §5). A write's reply is the stored draft, so it is computed from that.
+            'revision' => is_string($optin['revision'] ?? null) ? $optin['revision'] : ConfigRevision::of(new Optin((string) $optin['id'], (string) $optin['name'], (string) $optin['goal'], $config)),
             'preview_url' => DraftPreview::url((string) $optin['id']),
         ];
         // What visitors see now, where the draft has moved on from it.
@@ -134,7 +136,7 @@ final class CampaignReader
         return [
             'starts_at' => Reply::when($config['starts_at'] ?? null),
             'ends_at' => Reply::when($config['ends_at'] ?? null),
-            'phase' => CampaignState::phase($config, wp_timezone()),
+            'phase' => OptinState::phase($config, wp_timezone()),
         ];
     }
 
@@ -152,7 +154,7 @@ final class CampaignReader
             'campaign_id' => (string) $row['id'],
             'name' => (string) $row['name'],
             'goal' => (string) $row['goal'],
-            'status' => CampaignState::status($row['published_at'] ?? null, $row['deleted_at'] ?? null, ($row['suspended'] ?? null) !== null),
+            'status' => OptinState::ofRow($row),
             'suspended_because' => $row['suspended'] ?? null,
             'display_type' => (string) ($row['display_type'] ?? 'popup'),
             'schedule' => self::schedule(['starts_at' => $row['starts_at'] ?? null, 'ends_at' => $row['ends_at'] ?? null]),
@@ -163,7 +165,7 @@ final class CampaignReader
             $described['ab_test_variants'] = array_map(static fn (array $arm): array => [
                 'campaign_id' => (string) $arm['id'],
                 'name' => (string) $arm['name'],
-                'status' => CampaignState::status($arm['published_at'] ?? null, $arm['deleted_at'] ?? null, ($arm['suspended'] ?? null) !== null),
+                'status' => OptinState::ofRow($arm),
             ], array_values(array_filter($row['arms'], 'is_array')));
         }
         return $described;

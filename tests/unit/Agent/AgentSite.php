@@ -17,7 +17,7 @@ use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\SiteDependency;
 use WConvert\Support\Tier;
 use WConvert\Targeting\RoleRegistry;
-use WConvert\Template\CampaignBuilder;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeConnection;
@@ -45,7 +45,7 @@ final class AgentSite
     public readonly RuleVocabulary $rules;
     public readonly TemplateLibrary $library;
     public readonly FakeProPresence $pro;
-    public readonly CampaignBuilder $builder;
+    public readonly OptinConfigBuilder $builder;
     public readonly CampaignReader $reader;
     public readonly PublishReadiness $readiness;
     public readonly FakeConnection $db;
@@ -81,7 +81,7 @@ final class AgentSite
             new SiteFrequency(new FakeOptionStore()), new MilestoneStore($milestones), $destinations, $destinationTypes,
             $this->occasions = new OccasionStore(),
         );
-        $this->builder = new CampaignBuilder($this->library, $this->templates, $this->pro);
+        $this->builder = new OptinConfigBuilder($this->library, $this->templates, $this->pro);
         $this->occasionController = new OccasionController($this->optins, $this->occasions, $this->library, $this->templates, $this->builder);
         $this->reader = new CampaignReader($this->occasions, $this->library, $this->templates);
         $this->publishing = new \WConvert\Agent\AgentPublishing(new FakeOptionStore());
@@ -162,6 +162,7 @@ final class AgentSite
     {
         $GLOBALS['wconvertTestAbilities'] = [];
         $GLOBALS['wconvertTestActions'] = [];
+        \WConvert\Tests\Unit\Support\Journeys::off();
         unset($GLOBALS['wconvertTestRestServer'], $GLOBALS['wpdb']);
         $GLOBALS['wconvertTestOptionTable'] = [];
     }

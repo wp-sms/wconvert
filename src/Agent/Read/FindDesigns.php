@@ -10,7 +10,7 @@ use WConvert\Goal\Goal;
 use WConvert\Optin\DisplayType;
 use WConvert\Support\ProPresence;
 use WConvert\Support\Tier;
-use WConvert\Template\CampaignBuilder;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -25,7 +25,7 @@ final class FindDesigns implements Ability
     public function __construct(
         private readonly TemplateLibrary $library,
         private readonly TemplateVocabulary $vocabulary,
-        private readonly CampaignBuilder $builder,
+        private readonly OptinConfigBuilder $builder,
         private readonly ProPresence $pro,
     ) {
     }
@@ -59,7 +59,7 @@ final class FindDesigns implements Ability
             if (!(Tier::tryFrom((string) ($entry['tier'] ?? 'free')) ?? Tier::Free)->isSuppliedBy($this->pro) || !$this->builder->displayTypeRuns($type)) continue;
             if (isset($input['display_type']) && $type !== $input['display_type']) continue;
             // A design's link button has no address until the campaign gives one, so ask with one given.
-            if ($goal !== null && $goal->outcome()->designIssue(CampaignBuilder::linked(['template' => $entry], 'https://example.com/')) !== null) continue;
+            if ($goal !== null && $goal->outcome()->designIssue(OptinConfigBuilder::linked(['template' => $entry], 'https://example.com/')) !== null) continue;
             if ($search !== '' && !str_contains(mb_strtolower((string) $entry['name']), $search) && !str_contains((string) $id, $search)) continue;
             $designs[] = [
                 'design_id' => (string) $id,

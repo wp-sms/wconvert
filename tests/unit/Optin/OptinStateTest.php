@@ -4,21 +4,21 @@ namespace WConvert\Tests\Unit\Optin;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use WConvert\Optin\CampaignState;
+use WConvert\Optin\OptinState;
 use WConvert\Optin\ConfigRevision;
 use WConvert\Optin\Optin;
 
 /** The PHP twin of `statusOf()`, the schedule phase beside it, and the draft's revision. */
-#[CoversClass(CampaignState::class)]
+#[CoversClass(OptinState::class)]
 #[CoversClass(ConfigRevision::class)]
-final class CampaignStateTest extends TestCase
+final class OptinStateTest extends TestCase
 {
     public function testStatusOverridesInTheListsOrder(): void
     {
-        self::assertSame('draft', CampaignState::status(null, null, false));
-        self::assertSame('published', CampaignState::status('2026-11-01 00:00:00', null, false));
-        self::assertSame('suspended', CampaignState::status('2026-11-01 00:00:00', null, true));
-        self::assertSame('deleted', CampaignState::status('2026-11-01 00:00:00', '2026-11-02 00:00:00', true));
+        self::assertSame('draft', OptinState::status(null, null, false));
+        self::assertSame('published', OptinState::status('2026-11-01 00:00:00', null, false));
+        self::assertSame('suspended', OptinState::status('2026-11-01 00:00:00', null, true));
+        self::assertSame('deleted', OptinState::status('2026-11-01 00:00:00', '2026-11-02 00:00:00', true));
     }
 
     public function testPhaseReadsTheLoadersHalfOpenWindow(): void
@@ -26,11 +26,11 @@ final class CampaignStateTest extends TestCase
         $utc = new \DateTimeZone('UTC');
         $config = ['starts_at' => '2026-11-20 00:00', 'ends_at' => '2026-12-02 00:00'];
 
-        self::assertSame('always', CampaignState::phase([], $utc));
-        self::assertSame('not_started', CampaignState::phase($config, $utc, strtotime('2026-11-19 23:59 UTC')));
-        self::assertSame('running', CampaignState::phase($config, $utc, strtotime('2026-11-20 00:00 UTC')));
-        self::assertSame('ended', CampaignState::phase($config, $utc, strtotime('2026-12-02 00:00 UTC')));
-        self::assertSame('running', CampaignState::phase(['starts_at' => '2026-11-20 00:00'], $utc, strtotime('2030-01-01 UTC')));
+        self::assertSame('always', OptinState::phase([], $utc));
+        self::assertSame('not_started', OptinState::phase($config, $utc, strtotime('2026-11-19 23:59 UTC')));
+        self::assertSame('running', OptinState::phase($config, $utc, strtotime('2026-11-20 00:00 UTC')));
+        self::assertSame('ended', OptinState::phase($config, $utc, strtotime('2026-12-02 00:00 UTC')));
+        self::assertSame('running', OptinState::phase(['starts_at' => '2026-11-20 00:00'], $utc, strtotime('2030-01-01 UTC')));
     }
 
     public function testTheRevisionChangesWithTheDraftAndNothingElse(): void

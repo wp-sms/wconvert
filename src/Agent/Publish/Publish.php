@@ -3,6 +3,7 @@
 namespace WConvert\Agent\Publish;
 
 use WConvert\Agent\Reply;
+use WConvert\Optin\OptinState;
 
 defined('ABSPATH') || exit;
 
@@ -37,7 +38,7 @@ final class Publish extends CampaignSwitch
     /** @param array<string, mixed> $row */
     protected function alreadyThere(array $row): ?string
     {
-        return in_array($row['status'], ['published', 'suspended'], true) && !$row['has_unpublished_changes']
+        return OptinState::isPublished($row['status']) && !$row['has_unpublished_changes']
             ? __('Already published, with no unpublished changes.', 'wconvert')
             : null;
     }

@@ -53,12 +53,13 @@ final class DraftAbilitiesTest extends TestCase
         self::assertSame('2026-11-20 00:00', $created['schedule']['starts_at']['wall']);
         self::assertSame('2026-12-02 00:00', $created['schedule']['ends_at']['wall']);
         self::assertSame(['POST /optins'], $this->site->dispatched);
+        self::assertSame($this->ask('wconvert/get-campaign', ['campaign_id' => $created['campaign_id']])['revision'], $created['revision']);
 
         $optin = $this->site->optins->find($created['campaign_id']);
         self::assertNotNull($optin);
         self::assertNull($optin->publishedAt);
         self::assertSame('black-friday-2026', $optin->config['occasion']);
-        self::assertSame('/black-friday/', \WConvert\Template\CampaignBuilder::linkIn($optin->config));
+        self::assertSame('/black-friday/', \WConvert\Template\OptinConfigBuilder::linkIn($optin->config));
         self::assertSame(['mode' => 'selected', 'include' => [['type' => 'url', 'value' => '/black-friday/*']]], $optin->config['targeting']);
         self::assertSame(1, $optin->config['frequency']['maxPerSession']);
     }
@@ -161,13 +162,26 @@ final class DraftAbilitiesTest extends TestCase
 
         self::assertSame('Last day: 30% off', $updated['copy']['headline']);
         self::assertTrue($updated['has_unpublished_changes']);
-        self::assertSame('Saved to the draft. The live version is unchanged until it is published; preview_url shows the draft.', $updated['next']);
+        self::assertSame('Saved to the draft. The published version is unchanged until it is published again; preview_url shows the draft.', $updated['next']);
         $optin = $this->site->optins->find($id);
         self::assertNotNull($optin);
         self::assertSame('Shop the sale', \WConvert\Template\SlotRoles::copyFrom($optin->publishedConfig['template']['tree'] ?? [], $this->site->templates)['cta_label']);
         self::assertSame('Ends Monday: 30% off', \WConvert\Template\SlotRoles::copyFrom($optin->publishedConfig['template']['tree'] ?? [], $this->site->templates)['headline']);
         self::assertArrayNotHasKey('starts_at', $optin->config);
         self::assertSame('2026-12-02 00:00', $optin->config['ends_at']);
+    }
+
+    /** ADR 0149 §5: the read detaches a deleted occasion, and the revision must still be the stored draft's. */
+    public function testACampaignWhoseOccasionWasDeletedCanStillBeUpdated(): void
+    {
+        $id = $this->ask('wconvert/create-campaign', self::countdownBar())['campaign_id'];
+        $this->site->occasions([]);
+        $campaign = $this->ask('wconvert/get-campaign', ['campaign_id' => $id]);
+        self::assertNull($campaign['occasion']);
+
+        $updated = $this->ask('wconvert/update-campaign', ['campaign_id' => $id, 'expected_revision' => $campaign['revision'], 'name' => 'Still editable']);
+
+        self::assertSame('Still editable', $updated['name']);
     }
 
     public function testUpdateRefusesAStaleRevision(): void
@@ -181,7 +195,8 @@ final class DraftAbilitiesTest extends TestCase
         self::assertInstanceOf(WP_Error::class, $stale);
         self::assertSame('wconvert_optin_changed', $stale->get_error_code());
         self::assertSame(409, $stale->get_error_data()['status']);
-        self::assertSame('Someone changed this campaign since you read it. Read it again with wconvert/get-campaign, then reapply your change with the new revision.', $stale->get_error_message());
+        self::assertSame('Someone changed this campaign since you read it. Read it again, then reapply your change with the new revision.', $stale->get_error_message());
+        self::assertSame(16, strlen((string) $stale->get_error_data()['revision']));
         self::assertSame('Renamed', $this->site->optins->find($id)?->name);
     }
 

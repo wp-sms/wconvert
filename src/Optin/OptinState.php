@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * Computed on every read and stored nowhere, for the reason suspension is
  * (ADR 0027): each input is already a fact the site holds.
  */
-final class CampaignState
+final class OptinState
 {
     /** `draft`, `published`, `suspended` or `deleted`, overriding in that order from the right. */
     public static function status(?string $publishedAt, ?string $deletedAt, bool $suspended): string
@@ -20,6 +20,22 @@ final class CampaignState
         if ($deletedAt !== null) return 'deleted';
         if ($publishedAt === null) return 'draft';
         return $suspended ? 'suspended' : 'published';
+    }
+
+    /**
+     * The status of a row the list or `GET /optins/{id}` returned.
+     *
+     * @param array<string, mixed> $row
+     */
+    public static function ofRow(array $row): string
+    {
+        return self::status($row['published_at'] ?? null, $row['deleted_at'] ?? null, ($row['suspended'] ?? null) !== null);
+    }
+
+    /** Published, whether or not the site is holding it back: what Pause can act on. */
+    public static function isPublished(string $status): bool
+    {
+        return $status === 'published' || $status === 'suspended';
     }
 
     /**

@@ -7,6 +7,7 @@ use WConvert\Agent\AgentCampaignInput;
 use WConvert\Agent\CampaignReader;
 use WConvert\Agent\ManagersOnly;
 use WConvert\Agent\Reply;
+use WConvert\Optin\OptinState;
 use WConvert\Rest\InternalRest;
 use WP_Error;
 
@@ -62,14 +63,10 @@ final class UpdateCampaign implements Ability
         if (isset($input['name'])) $body['name'] = (string) $input['name'];
         $result = InternalRest::run('PATCH', '/optins/' . $id, $body);
         if (InternalRest::failed($result) || !is_array($result['data'])) {
-            $refusal = Reply::fromRest($result, __('This campaign could not be saved.', 'wconvert'));
-            if ($refusal->get_error_code() === 'wconvert_optin_changed') {
-                return new WP_Error('wconvert_optin_changed', __('Someone changed this campaign since you read it. Read it again with wconvert/get-campaign, then reapply your change with the new revision.', 'wconvert'), ['status' => 409]);
-            }
-            return $refusal;
+            return Reply::fromRest($result, __('This campaign could not be saved.', 'wconvert'));
         }
         $campaign = $this->reader->describe($result['data']);
-        $live = in_array($campaign['status'], ['published', 'suspended'], true);
+        $published = OptinState::isPublished($campaign['status']);
         return [
             'campaign_id' => $id,
             'name' => $campaign['name'],
@@ -82,8 +79,8 @@ final class UpdateCampaign implements Ability
             'revision' => $campaign['revision'],
             'has_unpublished_changes' => $campaign['has_unpublished_changes'],
             'preview_url' => $campaign['preview_url'],
-            'next' => $live
-                ? __('Saved to the draft. The live version is unchanged until it is published; preview_url shows the draft.', 'wconvert')
+            'next' => $published
+                ? __('Saved to the draft. The published version is unchanged until it is published again; preview_url shows the draft.', 'wconvert')
                 : __('Saved. Check it with wconvert/review-campaign.', 'wconvert'),
         ];
     }

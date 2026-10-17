@@ -96,7 +96,7 @@ final class Reply
         return new WP_Error(
             is_string($data['code'] ?? null) ? $data['code'] : 'wconvert_agent_refused',
             is_string($data['message'] ?? null) ? $data['message'] : $fallback,
-            ['status' => $result['status']]
+            (is_array($data['data'] ?? null) ? $data['data'] : []) + ['status' => $result['status']]
         );
     }
 

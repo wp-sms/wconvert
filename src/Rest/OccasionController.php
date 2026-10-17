@@ -8,7 +8,7 @@ use WConvert\Optin\NextYear;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\Schedule;
-use WConvert\Template\CampaignBuilder;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -46,7 +46,7 @@ final class OccasionController implements RestController
         private readonly OccasionStore $occasions,
         private readonly TemplateLibrary $library,
         private readonly TemplateVocabulary $vocabulary,
-        private readonly CampaignBuilder $builder,
+        private readonly OptinConfigBuilder $builder,
     ) {
     }
 
@@ -121,7 +121,7 @@ final class OccasionController implements RestController
                 'display_type' => (DisplayType::of($config['display_type'] ?? null) ?? DisplayType::Popup)->value,
                 'design' => $design,
                 'copy' => is_array($tree) ? SlotRoles::copyFrom($tree, $this->vocabulary) : [],
-                'link' => CampaignBuilder::linkIn($config),
+                'link' => OptinConfigBuilder::linkIn($config),
             ];
             // A design the library does not hold cannot be named, so it travels whole.
             if ($design === null && is_array($config['template'] ?? null)) $entry['template'] = $config['template'];

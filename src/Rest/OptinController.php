@@ -305,6 +305,8 @@ final class OptinController implements RestController
 
         return new WP_REST_Response($data + Suspension::fields($suspended[$optin->id] ?? null) + [
             'sibling_act' => $this->actOfTheOtherArms($optin->id)?->value,
+            // Of the STORED draft, which is what `expected_revision` is checked against (ADR 0154 §6).
+            'revision' => ConfigRevision::of($optin),
         ]);
     }
 
@@ -459,7 +461,7 @@ final class OptinController implements RestController
         $expected = self::optionalString($request->get_param('expected_revision'));
         if ($stored !== null && $expected !== null && $expected !== ConfigRevision::of($stored)) {
             return new WP_Error('wconvert_optin_changed',
-                __('This campaign changed since you read it. Read it again and reapply your change.', 'wconvert'),
+                __('Someone changed this campaign since you read it. Read it again, then reapply your change with the new revision.', 'wconvert'),
                 ['status' => 409, 'revision' => ConfigRevision::of($stored)]);
         }
 

@@ -18,7 +18,7 @@ defined('ABSPATH') || exit;
  * become the same config. What it returns is still only a draft's body: it
  * goes through `POST /optins`, which normalises and refuses as for any save.
  */
-final class CampaignBuilder
+final class OptinConfigBuilder
 {
     /** The display types a free install has designs for (PackValidator's rule). */
     public const FREE_DISPLAY_TYPES = ['popup', 'inline'];

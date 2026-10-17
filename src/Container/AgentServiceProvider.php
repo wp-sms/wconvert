@@ -21,7 +21,7 @@ use WConvert\Playbook\Prefill;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\Dashboard;
 use WConvert\Support\ProPresence;
-use WConvert\Template\CampaignBuilder;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -73,7 +73,7 @@ final class AgentServiceProvider implements ServiceProvider
         $container->register(Read\ListOccasions::class, static fn (ServiceContainer $c) => new Read\ListOccasions($c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)));
         $container->register(Read\GetOccasion::class, static fn (ServiceContainer $c) => new Read\GetOccasion($c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)));
         $container->register(Read\FindDesigns::class, static fn (ServiceContainer $c) => new Read\FindDesigns(
-            $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(CampaignBuilder::class), $c->resolve(ProPresence::class)
+            $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(OptinConfigBuilder::class), $c->resolve(ProPresence::class)
         ));
         $container->register(Read\ListStarters::class, static fn (ServiceContainer $c) => new Read\ListStarters(
             $c->resolve(PlaybookLibrary::class), $c->resolve(SetupIndex::class), $c->resolve(TemplateLibrary::class), $c->resolve(GoalRegistry::class)
@@ -86,7 +86,7 @@ final class AgentServiceProvider implements ServiceProvider
         ));
 
         $container->register(AgentCampaignInput::class, static fn (ServiceContainer $c): AgentCampaignInput => new AgentCampaignInput(
-            $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(CampaignBuilder::class), $c->resolve(OccasionStore::class),
+            $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(OptinConfigBuilder::class), $c->resolve(OccasionStore::class),
             $c->resolve(PlaybookLibrary::class), $c->resolve(Prefill::class), $c->resolve(SetupIndex::class)
         ));
         $container->register(Draft\CreateCampaign::class, static fn (ServiceContainer $c) => new Draft\CreateCampaign($c->resolve(AgentCampaignInput::class), $c->resolve(CampaignReader::class)));

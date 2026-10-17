@@ -7,7 +7,7 @@ use WConvert\Agent\CampaignReader;
 use WConvert\Agent\ManagersOnly;
 use WConvert\Agent\Reply;
 use WConvert\Discovery\OccasionStore;
-use WConvert\Optin\CampaignState;
+use WConvert\Optin\OptinState;
 use WConvert\Optin\OccasionSchedule;
 
 defined('ABSPATH') || exit;
@@ -62,7 +62,7 @@ final class ListOccasions implements Ability
             'name' => $item['name'],
             'first_day' => $item['start'],
             'last_day' => $item['end'],
-            'phase' => CampaignState::phase(OccasionSchedule::of($item['start'], $item['end']), wp_timezone()),
+            'phase' => OptinState::phase(OccasionSchedule::of($item['start'], $item['end']), wp_timezone()),
         ];
     }
 }
