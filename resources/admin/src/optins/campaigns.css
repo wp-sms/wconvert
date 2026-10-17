@@ -27,6 +27,8 @@
 /* Ticking hands the rows to a tray at the foot of the sheet, as Compare does in the design picker. */
 #wconvert-admin .wconvert-campaign-tray { padding-inline:24px; }
 #wconvert-admin .wconvert-campaign-tray [data-slot="button"] svg { inline-size:16px; block-size:16px; }
+#wconvert-admin .wconvert-campaign-tray .wconvert-comparison-tray__selection { flex:0 1 auto; }
+#wconvert-admin .wconvert-campaign-tray__delete { margin-inline-end:auto; }
 /* What a group action did: one line, kept beside the rows it is about (GUIDELINES §8). */
 #wconvert-admin .wconvert-campaign-group-result { margin:0; font-size:var(--text-note); color:var(--foreground); }
 #wconvert-admin .wconvert-campaign-group-result:not(:empty) { padding:12px 24px; border-block-end:1px solid var(--border); }
@@ -140,7 +142,7 @@
   #wconvert-admin .wconvert-table.wconvert-campaign-table > tbody > tr > td.wconvert-table__actions { border-block-start:1px solid var(--border); padding-block-start:0.625rem; }
 }
 @media(max-width:640px) {
-  #wconvert-admin .wconvert-campaign-viewtools { inline-size:100%; justify-content:space-between; }
+  #wconvert-admin .wconvert-campaign-viewtools { inline-size:100%; flex-wrap:wrap; justify-content:space-between; }
   #wconvert-admin .wconvert-campaign-toolbar .wconvert-picker__search { max-inline-size:none; }
   #wconvert-admin .wconvert-campaign-workspace[data-layout=gallery] tbody { grid-template-columns:1fr; }
   .wconvert-campaign-detail-stats { grid-template-columns:1fr; gap:8px; }

@@ -70,13 +70,16 @@ function Button({
   }) {
   const Comp = asChild ? Slot.Root : "button"
 
+  // `data-slot` goes last: a `DropdownMenuTrigger asChild` passes its own, and
+  // the ⋯ beside Create campaign lost every scope rule that reads
+  // `[data-slot="button"]` — 36px beside a 48px heading button.
   return (
     <Comp
-      data-slot="button"
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
+      data-slot="button"
     />
   )
 }

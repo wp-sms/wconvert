@@ -2,15 +2,15 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { campaignName, statusOf, type OptinSummary } from './api';
 
 /**
- * Publish, Pause and Duplicate over the ticked rows of the campaign list.
+ * Publish, Pause, Duplicate and Delete over the ticked rows of the campaign list.
  *
  * Each row goes through the route a single row uses, one after another. The
  * server refuses none of the skips below, so the browser decides them, and
  * names every one in the result rather than leaving a ticked row untouched
  * without a word.
  */
-export type GroupAction = 'publish' | 'pause' | 'duplicate';
-/** The two that change what visitors see, and so ask first. */
+export type GroupAction = 'publish' | 'pause' | 'duplicate' | 'delete';
+/** The three that can take a campaign off the site or put one on, and so ask first. */
 export type ConfirmedAction = Exclude<GroupAction, 'duplicate'>;
 
 export type SkipReason = 'variant' | 'test' | 'suspended' | 'no_design' | 'current' | 'draft';
@@ -46,9 +46,10 @@ function skipOf(action: GroupAction, row: OptinSummary, missingDesign: boolean):
   // A variant is a sub-row of its test and has no tick-box. Belt and braces.
   if (row.parent_id !== null) return 'variant';
   if (action === 'duplicate') return null;
-  // Publishing or pausing the first arm would leave the others running, so a
-  // test is changed from its own row, where each arm is in view.
+  // Changing the first arm alone would leave the others running, so a test is
+  // changed from its own row, where each arm is in view.
   if (row.arms.length > 0) return 'test';
+  if (action === 'delete') return null;
   const status = statusOf(row);
   if (action === 'pause') return status === 'draft' ? 'draft' : null;
   if (status === 'suspended') return 'suspended';
@@ -109,7 +110,9 @@ export function resultSentence(result: GroupResult): string {
       ? sprintf(/* translators: %d: how many campaigns were published. */ __('Published %d.', 'wconvert'), count)
       : result.action === 'pause'
         ? sprintf(/* translators: %d: how many campaigns were unpublished. */ __('Unpublished %d.', 'wconvert'), count)
-        : sprintf(/* translators: %d: how many campaigns were copied. */ _n('Copied %d as a draft.', 'Copied %d as drafts.', count, 'wconvert'), count),
+        : result.action === 'delete'
+          ? sprintf(/* translators: %d: how many campaigns were deleted. */ __('Deleted %d.', 'wconvert'), count)
+          : sprintf(/* translators: %d: how many campaigns were copied. */ _n('Copied %d as a draft.', 'Copied %d as drafts.', count, 'wconvert'), count),
   ];
   if (result.skipped.length) {
     /* translators: 1: how many campaigns were skipped, 2: why and which, e.g. "A/B test: Spring sale". */
@@ -122,13 +125,20 @@ export function resultSentence(result: GroupResult): string {
   return parts.join(' ');
 }
 
-/** The confirm's words for Publish and Pause, counted and naming what is left alone. */
+/** The confirm's words for Publish, Pause and Delete, counted and naming what is left alone. */
 export function groupConfirmCopy(action: ConfirmedAction, group: GroupPlan): { title: string; description: string; confirmLabel: string } {
   const n = group.run.length;
   const skipped = group.skipped.length
     /* translators: 1: how many campaigns are left alone, 2: why and which, e.g. "A/B test: Spring sale". */
     ? ' ' + sprintf(__('%1$d will be skipped (%2$s).', 'wconvert'), group.skipped.length, skippedList(group.skipped))
     : '';
+  if (action === 'delete') {
+    return {
+      title: sprintf(/* translators: %d: how many campaigns. */ _n('Delete %d campaign?', 'Delete %d campaigns?', n, 'wconvert'), n),
+      description: __('They stop showing and leave this list. Their leads and results are kept.', 'wconvert') + skipped,
+      confirmLabel: sprintf(/* translators: %d: how many campaigns. */ _n('Delete %d campaign', 'Delete %d campaigns', n, 'wconvert'), n),
+    };
+  }
   return action === 'publish'
     ? {
       title: sprintf(/* translators: %d: how many campaigns. */ _n('Publish %d campaign?', 'Publish %d campaigns?', n, 'wconvert'), n),

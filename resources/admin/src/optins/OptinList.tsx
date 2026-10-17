@@ -12,6 +12,7 @@ import {
   Megaphone,
   Plus,
   Search,
+  Trash2,
   Upload,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -144,6 +145,7 @@ export function OptinList({
   const [groupConfirm, setGroupConfirm] = useState<{ action: ConfirmedAction; plan: GroupPlan } | null>(null);
   const [groupResult, setGroupResult] = useState<GroupResult | null>(null);
   const trayFocus = useRef<HTMLElement | null>(null);
+  const selectAll = useRef<HTMLInputElement | null>(null);
   const [previews, setPreviews] = useState<Record<string, CampaignPreview>>({});
   const [previewError, setPreviewError] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -348,6 +350,9 @@ export function OptinList({
    */
   const runGroup = async (action: GroupAction, group: GroupPlan) => {
     if (busyRef.current.size > 0) return;
+    // Clearing the ticks takes the tray, and the button that started this, away.
+    trayFocus.current = selectAll.current;
+    if (document.activeElement?.closest('.wconvert-campaign-tray')) selectAll.current?.focus();
     setTicked(new Set());
     let result = startResult(action, group.skipped);
     setGroupResult(group.run.length ? null : result);
@@ -365,7 +370,9 @@ export function OptinList({
         ? () => publishOptin(row.id)
         : action === 'pause'
           ? () => unpublishOptin(row.id)
-          : () => copyOf(row);
+          : action === 'delete'
+            ? () => deleteOptin(row.id)
+            : () => copyOf(row);
       try {
         await call();
         result = reduceResult(result, { type: 'done', row });
@@ -765,10 +772,14 @@ export function OptinList({
                         label={<span className="sr-only">{__('Select all campaigns on this page', 'wconvert')}</span>}
                         checked={allTicked}
                         ref={(input: HTMLInputElement | null) => {
+                          selectAll.current = input;
                           if (input) input.indeterminate = tickedRows.length > 0 && !allTicked;
                         }}
-                        disabled={busy.size > 0}
+                        // Refused, not disabled: a group action unmounts the tray it
+                        // was started from, and this is where focus goes (§14).
+                        aria-disabled={busy.size > 0 || undefined}
                         onChange={() => {
+                          if (busyRef.current.size > 0) return;
                           setGroupResult(null);
                           setTicked(allTicked ? new Set() : new Set(shown.map((c) => c.id)));
                         }}
@@ -795,6 +806,10 @@ export function OptinList({
                     {sprintf(/* translators: %d: how many campaigns are ticked. */ _n('%d campaign selected', '%d campaigns selected', tickedRows.length, 'wconvert'), tickedRows.length)}
                   </ToolbarCount>
                 </div>
+                {/* Beside the count and apart from the safe actions (ADR 0039). */}
+                <Button variant="outline" className="wconvert-campaign-tray__delete text-destructive hover:text-destructive" disabled={busy.size > 0} onClick={(e) => askGroup('delete', e.currentTarget)}>
+                  <Trash2 aria-hidden="true" />{__('Delete', 'wconvert')}
+                </Button>
                 <Button variant="outline" disabled={busy.size > 0} onClick={() => setTicked(new Set())}>{__('Clear', 'wconvert')}</Button>
                 <Button variant="outline" disabled={busy.size > 0} onClick={() => void runGroup('duplicate', groupPlan('duplicate'))}>
                   <Copy aria-hidden="true" />{__('Duplicate', 'wconvert')}
@@ -896,6 +911,7 @@ export function OptinList({
         }}
       />
       <ConfirmDialog
+        variant={groupConfirm?.action === 'delete' ? 'destructive' : 'default'}
         open={groupConfirm !== null}
         onOpenChange={(open) => {
           if (!open) setGroupConfirm(null);

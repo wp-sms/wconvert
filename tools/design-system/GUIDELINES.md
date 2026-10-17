@@ -174,6 +174,14 @@ stack edge-to-edge tinted panels or repeat the same shared-change warning.
   popover handles viewport edges, Escape dismissal and returning keyboard focus.
 - The header navigation divider spans the row; individual navigation and plan
   elements do not draw disconnected pieces of the same line.
+- A `Button` keeps `data-slot="button"` under a Radix trigger's `asChild`, so
+  scope heights reach a ⋯ too; a heading's icon button is square at the
+  heading's height, level with the Create beside it.
+- A region clips (`overflow: clip`), never `hidden`: a scroll container would
+  pin a sticky tray to the region instead of the viewport.
+- A menu is as wide as its longest item, 12rem to 320px. Its highlight is the
+  `--accent` tint alone, on hover and keyboard alike, because Radix focuses the
+  item under the pointer; a ring there is a hover ring. List mode keeps a ring.
 
 ## 7. Every control has the shape of its value
 
@@ -699,7 +707,9 @@ Not gaps. Each was decided:
 - The campaign list is a grid variant of `DataTable`: a tick-box column, then
   four. Thumbnails and names open saved-design details; explicit row actions
   lead to editing. Ticked rows are acted on together from a tray at the foot
-  of the sheet, the way Compare works in the design picker.
+  of the sheet, the way Compare works in the design picker: Delete, Duplicate,
+  Unpublish and Publish, each confirmed where it changes what visitors see. The
+  tray sticks to the viewport's foot, so ticking a row shows it.
   Gallery reuses those rows and semantics. On cards, identity is the heading,
   status/results retain their labels, and actions form the footer.
 - Use `StatusBadge` everywhere: **Draft**, **Published**, **Suspended** and

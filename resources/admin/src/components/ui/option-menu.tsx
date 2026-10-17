@@ -175,6 +175,12 @@ function OptionList({
   )
 }
 
+/**
+ * A menu is as wide as its longest item, up to 320px — a fixed 320 drew the
+ * campaigns ⋯, which holds one "Import occasion", twice its width.
+ */
+const MENU_WIDTH = "w-max min-w-48 max-w-[min(320px,calc(100vw-24px))]"
+
 /** A dropdown menu's content, drawn as an option menu. Radix owns the keys. */
 function OptionMenuContent({
   className,
@@ -185,7 +191,7 @@ function OptionMenuContent({
     <ModeContext.Provider value="menu">
       <TooltipPrimitive.Provider delayDuration={300}>
         <DropdownMenuContent
-          className={cn("wconvert-option-menu wconvert-option-menu--menu w-[min(320px,calc(100vw-24px))] p-1", className)}
+          className={cn(MENU_WIDTH, "wconvert-option-menu wconvert-option-menu--menu p-1", className)}
           {...props}
         >
           {children}
@@ -225,7 +231,7 @@ function OptionSub({
         </span>
       </DropdownMenuPrimitive.SubTrigger>
       <DropdownMenuSubContent
-        className={cn("wconvert-option-menu wconvert-option-menu--menu w-[min(320px,calc(100vw-24px))] p-1", className)}
+        className={cn(MENU_WIDTH, "wconvert-option-menu wconvert-option-menu--menu p-1", className)}
       >
         {children}
       </DropdownMenuSubContent>
