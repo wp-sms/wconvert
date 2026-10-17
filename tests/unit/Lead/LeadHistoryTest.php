@@ -68,6 +68,23 @@ final class LeadHistoryTest extends TestCase
         foreach ($db->reads as $read) $this->assertStringContainsString($filter['sql'], $read['sql']);
     }
 
+    /** SQLite has no JSON_UNQUOTE, so a search using it fails on every Playground and SQLite site. */
+    public function testNoStatementUsesASpellingSqliteLacks(): void
+    {
+        $query = LeadQuery::fromInput(['search' => 'Sarah', 'snapshot' => self::SNAPSHOT]);
+        $db = new FakeConnection();
+        $db->answers = [[], [], []];
+        $repo = new LeadRepository($db);
+        (new LeadLog($repo))->read(null, false, 50, $query);
+        $repo->since(null, '', 500, $query);
+
+        $this->assertNotSame([], $db->statements);
+        foreach ($db->statements as $sql) {
+            $this->assertStringNotContainsString('JSON_UNQUOTE', $sql);
+            $this->assertStringNotContainsString('->>', $sql);
+        }
+    }
+
     public function testPurposeViewsUseAllMatchingCampaignIdsOnceForCountPageAndExport(): void
     {
         $query = LeadQuery::fromInput(['purpose' => 'enquiries', 'snapshot' => self::SNAPSHOT]);

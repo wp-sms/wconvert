@@ -191,8 +191,11 @@ final class PackValidator
                 $pack['templates'][$position] = array_replace($template, $this->vocabulary->normalize($template));
             } else {
                 $source = new class ($template) implements TemplateSource {
+                    /** @var array<string, mixed> */
+                    private readonly array $entry;
+
                     /** @param array<string, mixed> $entry */
-                    public function __construct(private readonly array $entry) {}
+                    public function __construct(array $entry) { $this->entry = $entry; }
                     public function entries(): array { return [$this->entry]; }
                 };
                 $library = TemplateLibrary::from($this->vocabulary, $source);
