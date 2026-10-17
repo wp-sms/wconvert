@@ -247,7 +247,8 @@ final class CoreServiceProvider implements ServiceProvider
         $container->register(\WConvert\Discovery\CollectionLibrary::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\CollectionLibrary(WCONVERT_DIR, $c->resolve(PlaybookLibrary::class), $c->resolve(TemplateCatalog::class)));
         $container->register(\WConvert\Rest\PickerController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\PickerController($c->resolve(\WConvert\Discovery\CollectionLibrary::class), $c->resolve(TemplateLibrary::class), $c->resolve(\WConvert\Discovery\OccasionStore::class)));
         $container->register(\WConvert\Discovery\OccasionStore::class, static fn () => new \WConvert\Discovery\OccasionStore());
-        $container->register(\WConvert\Rest\OccasionController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\OccasionController($c->resolve(OptinRepository::class), $c->resolve(\WConvert\Discovery\OccasionStore::class), $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(ProPresence::class)));
+        $container->register(\WConvert\Template\CampaignBuilder::class, static fn (ServiceContainer $c) => new \WConvert\Template\CampaignBuilder($c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(ProPresence::class)));
+        $container->register(\WConvert\Rest\OccasionController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\OccasionController($c->resolve(OptinRepository::class), $c->resolve(\WConvert\Discovery\OccasionStore::class), $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(\WConvert\Template\CampaignBuilder::class)));
 
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
         $container->register(PackValidator::class, static fn (): PackValidator => PackValidator::shipping());

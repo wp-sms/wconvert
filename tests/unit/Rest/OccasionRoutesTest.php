@@ -427,7 +427,7 @@ final class OccasionRoutesTest extends TestCase
 
     private function occasionController(Tier $tier = Tier::Pro): OccasionController
     {
-        return new OccasionController($this->optins, new OccasionStore(), $this->library, $this->templates, new FakeProPresence($tier));
+        return new OccasionController($this->optins, new OccasionStore(), $this->library, $this->templates, new \WConvert\Template\CampaignBuilder($this->library, $this->templates, new FakeProPresence($tier)));
     }
 
     /** @return array<string, mixed> */
