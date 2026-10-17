@@ -51,8 +51,13 @@ final class OptinRepository
      * proposed, neither could be asked without putting a LONGTEXT blob back
      * into this list — which is the read ADR 0001 measured exhausting PHP's
      * memory at a few hundred rows, and the whole reason this constant exists.
+     *
+     * **`occasion` is extracted, for the same reason** (ADR 0149 §4): the
+     * list filters by it, and the database hands back the one id rather than
+     * the blob it sits in.
      */
     private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at, '
+        . 'JSON_UNQUOTE(JSON_EXTRACT(config, \'$.occasion\')) AS occasion, '
         . '(published_at IS NOT NULL AND deleted_at IS NULL AND CASE '
         . 'WHEN config IS NULL AND published_config IS NULL THEN 0 '
         . 'WHEN config IS NULL OR published_config IS NULL THEN 1 '

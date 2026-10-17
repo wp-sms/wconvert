@@ -5,13 +5,16 @@ namespace WConvert\Rest;
 use WConvert\Destination\OptinBinding;
 use WConvert\Destination\DestinationStore;
 use WConvert\Destination\DestinationRegistry;
+use WConvert\Discovery\OccasionStore;
 use WConvert\Goal\Goal;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Milestone\FirstEdit;
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\DisplayType;
 use WConvert\Optin\Frequency;
+use WConvert\Optin\InvalidOccasion;
 use WConvert\Optin\InvalidSchedule;
+use WConvert\Optin\OccasionLink;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\OverlayPlacement;
@@ -65,6 +68,7 @@ final class OptinController implements RestController
         private readonly MilestoneStore $milestones,
         private readonly DestinationStore $destinations,
         private readonly DestinationRegistry $destinationTypes,
+        private readonly OccasionStore $occasions = new OccasionStore(),
     ) {
     }
 
@@ -231,8 +235,11 @@ final class OptinController implements RestController
         // performs for the same reason (ADR 0034).
         $arms = $this->optins->armsByParent($includeDeleted);
 
+        $occasions = $this->occasions->ids();
         $describe = static fn (array $row): array => array_replace($row, Suspension::fields($suspended[$row['id'] ?? ''] ?? null), [
             'has_unpublished_changes' => (bool) ($row['has_unpublished_changes'] ?? false),
+            // Read-time detach (ADR 0149 §5): an occasion deleted since reads as none.
+            'occasion' => OccasionLink::read($row['occasion'] ?? null, $occasions),
         ]);
 
         return new WP_REST_Response(array_map(
@@ -278,7 +285,15 @@ final class OptinController implements RestController
 
         $suspended = Suspension::in($this->publishedSet->all(), $this->degradation, $this->rules);
 
-        return new WP_REST_Response($optin->toArray() + Suspension::fields($suspended[$optin->id] ?? null) + [
+        $data = $optin->toArray();
+        // The same read-time detach the list applies, so the editor and a
+        // duplicate never hand back an occasion deleted since (ADR 0149 §5).
+        if (is_array($data['config'] ?? null) && array_key_exists('occasion', $data['config'])
+            && OccasionLink::read($data['config']['occasion'], $this->occasions->ids()) === null) {
+            unset($data['config']['occasion']);
+        }
+
+        return new WP_REST_Response($data + Suspension::fields($suspended[$optin->id] ?? null) + [
             'sibling_act' => $this->actOfTheOtherArms($optin->id)?->value,
         ]);
     }
@@ -373,6 +388,8 @@ final class OptinController implements RestController
             $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
         } catch (InvalidSchedule $refused) {
             return self::refuseTheSchedule($refused);
+        } catch (InvalidOccasion) {
+            return self::refuseTheOccasion();
         } catch (\InvalidArgumentException $refused) {
             return new WP_Error('wconvert_configuration', $refused->getMessage(), ['status' => 400]);
         }
@@ -453,9 +470,11 @@ final class OptinController implements RestController
             return $refusal;
         }
         try {
-            $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
+            $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore, self::optionalString($stored?->config['occasion'] ?? null)) : null;
         } catch (InvalidSchedule $refused) {
             return self::refuseTheSchedule($refused);
+        } catch (InvalidOccasion) {
+            return self::refuseTheOccasion();
         } catch (\InvalidArgumentException $refused) {
             return new WP_Error('wconvert_configuration', $refused->getMessage(), ['status' => 400]);
         }
@@ -831,9 +850,11 @@ final class OptinController implements RestController
      *
      * @param array<string, mixed> $config
      * @param string|null $pickedBefore The Template the copy in `$config` was taken for.
+     * @param string|null $occasionBefore The occasion the stored campaign belonged to.
      * @return array<string, mixed>
+     * @throws InvalidOccasion
      */
-    private function normalizeConfig(array $config, ?string $pickedBefore = null): array
+    private function normalizeConfig(array $config, ?string $pickedBefore = null, ?string $occasionBefore = null): array
     {
         // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if (isset($config['capture_mode'])) {
@@ -1025,6 +1046,13 @@ final class OptinController implements RestController
         if (array_key_exists('analytics', $config)) {
             $config['analytics'] = \WConvert\Optin\AnalyticsPreference::normalize($config['analytics']);
         }
+        if (array_key_exists('occasion', $config)) {
+            // ADR 0149 §5: a link to an occasion deleted since is dropped here
+            // rather than refused, which is what makes the detach true.
+            $occasion = OccasionLink::normalize($config['occasion'], $this->occasions->ids(), $occasionBefore);
+            if ($occasion === null) unset($config['occasion']);
+            else $config['occasion'] = $occasion;
+        }
         // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
         return $config;
     }
@@ -1087,6 +1115,15 @@ final class OptinController implements RestController
                 ? __('A campaign’s start and end have to be a date and a time.', 'wconvert')
                 : __('A campaign’s schedule has to end after it starts.', 'wconvert'),
             ['status' => 400]
+        );
+    }
+
+    private static function refuseTheOccasion(): WP_Error
+    {
+        return new WP_Error(
+            'wconvert_optin_unknown_occasion',
+            __('That occasion no longer exists. Choose another or none.', 'wconvert'),
+            ['status' => 400, 'field' => 'occasion']
         );
     }
 

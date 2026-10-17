@@ -2047,6 +2047,25 @@ if (!function_exists('delete_option')) {
     }
 }
 
+/*
+ * The occasion lease (`WConvert\Discovery\OccasionStore`) takes a token and
+ * compares it serialised,.
+ */
+if (!function_exists('wp_generate_uuid4')) {
+    function wp_generate_uuid4(): string
+    {
+        return bin2hex(random_bytes(16));
+    }
+}
+
+if (!function_exists('maybe_serialize')) {
+    /** @param mixed $data */
+    function maybe_serialize($data): mixed
+    {
+        return is_array($data) || is_object($data) ? serialize($data) : $data;
+    }
+}
+
 if (!function_exists('get_site_transient')) {
     /** @return mixed */
     function get_site_transient(string $name)

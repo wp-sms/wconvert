@@ -244,7 +244,8 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->register(\WConvert\Discovery\SetupIndex::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\SetupIndex($c->resolve(TemplateLibrary::class), $c->resolve(ProPresence::class)));
         $container->register(\WConvert\Discovery\CollectionLibrary::class, static fn (ServiceContainer $c) => new \WConvert\Discovery\CollectionLibrary(WCONVERT_DIR, $c->resolve(PlaybookLibrary::class), $c->resolve(TemplateCatalog::class)));
-        $container->register(\WConvert\Rest\PickerController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\PickerController($c->resolve(\WConvert\Discovery\CollectionLibrary::class), $c->resolve(TemplateLibrary::class)));
+        $container->register(\WConvert\Rest\PickerController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\PickerController($c->resolve(\WConvert\Discovery\CollectionLibrary::class), $c->resolve(TemplateLibrary::class), $c->resolve(\WConvert\Discovery\OccasionStore::class)));
+        $container->register(\WConvert\Discovery\OccasionStore::class, static fn () => new \WConvert\Discovery\OccasionStore());
 
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
         $container->register(PackValidator::class, static fn (): PackValidator => PackValidator::shipping());
@@ -438,7 +439,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(SiteFrequency::class),
                 $c->resolve(MilestoneStore::class),
                 $c->resolve(DestinationStore::class),
-                $c->resolve(DestinationRegistry::class)
+                $c->resolve(DestinationRegistry::class),
+                $c->resolve(\WConvert\Discovery\OccasionStore::class)
             )
         );
 

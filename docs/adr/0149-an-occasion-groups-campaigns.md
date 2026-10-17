@@ -42,9 +42,22 @@ campaign.
 option (ADR 0112). A campaign links to it with an `occasion` key in its
 existing `config`, holding the occasion's id. No table or column is added.
 
+  *Completed in #276: `OccasionLink` checks the link on every save. An unknown
+  id is refused with 400 `wconvert_optin_unknown_occasion` on the `occasion`
+  field. The list reads the id with `JSON_EXTRACT` in its projection, so it
+  still never selects the `config` blob (ADR 0001). Copy, export and import
+  are [ADR 0153](0153-an-occasion-travels-as-one-document.md).*
+
 **5. Deleting an occasion detaches its campaigns and never deletes them.** A
 campaign whose `occasion` names a missing id reads as belonging to no occasion.
 Nothing is published, paused or removed as a side effect.
+
+  *Completed in #276: the detach happens on read, and deleting writes no
+  campaign. The list and `GET /optins/<id>` drop an id that names no existing
+  occasion. The campaign's next save hands that id back, and `OccasionLink`
+  drops it instead of refusing it, because only the id the campaign already
+  held is dropped this way. So no write fans out across campaigns, and the
+  route stays the only thing that edits one.*
 
 **6. An occasion never schedules or publishes anything by itself.** Publishing
 is still a per-campaign act. The occasion's dates are only the prefill in 3,
