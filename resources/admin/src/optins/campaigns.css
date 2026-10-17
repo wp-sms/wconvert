@@ -140,7 +140,7 @@
   #wconvert-admin .wconvert-table.wconvert-campaign-table > tbody > tr > td.wconvert-table__actions { border-block-start:1px solid var(--border); padding-block-start:0.625rem; }
 }
 @media(max-width:640px) {
-  #wconvert-admin .wconvert-campaign-viewtools { inline-size:100%; justify-content:space-between; }
+  #wconvert-admin .wconvert-campaign-viewtools { inline-size:100%; flex-wrap:wrap; justify-content:space-between; }
   #wconvert-admin .wconvert-campaign-toolbar .wconvert-picker__search { max-inline-size:none; }
   #wconvert-admin .wconvert-campaign-workspace[data-layout=gallery] tbody { grid-template-columns:1fr; }
   .wconvert-campaign-detail-stats { grid-template-columns:1fr; gap:8px; }

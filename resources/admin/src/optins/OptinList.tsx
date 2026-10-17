@@ -12,6 +12,7 @@ import {
   Megaphone,
   Plus,
   Search,
+  Trash2,
   Upload,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -365,7 +366,9 @@ export function OptinList({
         ? () => publishOptin(row.id)
         : action === 'pause'
           ? () => unpublishOptin(row.id)
-          : () => copyOf(row);
+          : action === 'delete'
+            ? () => deleteOptin(row.id)
+            : () => copyOf(row);
       try {
         await call();
         result = reduceResult(result, { type: 'done', row });
@@ -796,6 +799,10 @@ export function OptinList({
                   </ToolbarCount>
                 </div>
                 <Button variant="outline" disabled={busy.size > 0} onClick={() => setTicked(new Set())}>{__('Clear', 'wconvert')}</Button>
+                {/* Away from Publish, the one primary in the tray. */}
+                <Button variant="outline" className="text-destructive hover:text-destructive" disabled={busy.size > 0} onClick={(e) => askGroup('delete', e.currentTarget)}>
+                  <Trash2 aria-hidden="true" />{__('Delete', 'wconvert')}
+                </Button>
                 <Button variant="outline" disabled={busy.size > 0} onClick={() => void runGroup('duplicate', groupPlan('duplicate'))}>
                   <Copy aria-hidden="true" />{__('Duplicate', 'wconvert')}
                 </Button>
@@ -896,6 +903,7 @@ export function OptinList({
         }}
       />
       <ConfirmDialog
+        variant={groupConfirm?.action === 'delete' ? 'destructive' : 'default'}
         open={groupConfirm !== null}
         onOpenChange={(open) => {
           if (!open) setGroupConfirm(null);

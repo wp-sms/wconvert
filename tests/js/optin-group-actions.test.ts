@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { OptinSummary } from '../../resources/admin/src/optins/api';
-import { plan, reduceResult, resultSentence, startResult } from '../../resources/admin/src/optins/groupActions';
+import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult } from '../../resources/admin/src/optins/groupActions';
 
 /**
  * Which ticked campaigns a group action runs on, and the one line that says
@@ -51,6 +51,25 @@ describe('plan', () => {
     const p = plan('duplicate', [draft, test, bare, variant], noDesign);
     expect(names(p.run)).toEqual(['Draft', 'Test', 'Bare']);
     expect(reasons(p)).toEqual([['Variant', 'variant']]);
+  });
+
+  it('deletes any campaign whatever its status or design, but leaves tests and variants', () => {
+    const p = plan('delete', [draft, live, suspended, bare, test, variant], noDesign);
+    expect(names(p.run)).toEqual(['Draft', 'Live', 'Suspended', 'Bare']);
+    expect(reasons(p)).toEqual([['Test', 'test'], ['Variant', 'variant']]);
+  });
+});
+
+describe('group delete', () => {
+  it('asks counted, says what survives and names what is left alone', () => {
+    const words = groupConfirmCopy('delete', plan('delete', [draft, live, test], noDesign));
+    expect(words.title).toBe('Delete 2 campaigns?');
+    expect(words.description).toBe('They stop showing and leave this list. Their leads and results are kept. 1 will be skipped (A/B test: Test).');
+    expect(words.confirmLabel).toBe('Delete 2 campaigns');
+  });
+
+  it('says how many went', () => {
+    expect(resultSentence(reduceResult(startResult('delete', []), { type: 'done', row: draft }))).toBe('Deleted 1.');
   });
 });
 

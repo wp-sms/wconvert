@@ -32,10 +32,13 @@ export function Region({
   className?: string;
   children: ReactNode;
 }) {
+  // `clip`, not `hidden`: it rounds the edge without becoming a scroll
+  // container, which would pin a sticky tray (the campaign list's selection)
+  // to the region instead of the viewport, a screen below the ticked rows.
   return (
     <section
       aria-label={label}
-      className={cn('overflow-hidden rounded-md border border-border bg-card', className)}
+      className={cn('overflow-clip rounded-md border border-border bg-card', className)}
     >
       {children}
     </section>

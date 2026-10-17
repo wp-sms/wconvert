@@ -6554,8 +6554,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @media (max-width: 639px) { .wconvert-preview-controls > .wconvert-preview-controls__screen { padding-inline-start: 0; border-inline-start: 0; } }
 /* The utility layer is necessary for shared Button/Input important sizing. */
 @layer utilities {
-  /* Clip the region's rounded edge without stealing viewport sticky behavior. */
-  .wconvert-creation { overflow: clip !important; }
   :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-pack-detail__toolbar, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) :is([data-slot="button"], [data-slot="input"], select) { line-height: 1.4 !important; min-block-size: var(--control-height-sm) !important; block-size: auto !important; padding-block: .3125rem !important; }
   :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-picker__controls, .wconvert-preview-controls, .wconvert-setup-preview__tools, .wconvert-design-detail__header, .wconvert-design-detail__controls, .wconvert-pack-detail__toolbar, .wconvert-picker__pagination, .wconvert-comparison-tray, .wconvert-setup-detail__actions) select { font-size: var(--text-body) !important; }
   /* A 16px phone input must not grow beyond its adjacent 32px controls. */
@@ -6900,7 +6898,11 @@ body .wconvert-option-menu__item { display: grid; grid-template-columns: minmax(
 body .wconvert-option-menu__item[data-icon] { grid-template-columns: 16px minmax(0, 1fr) auto; }
 body .wconvert-option-menu__item > svg, body .wconvert-option-menu__item > span[aria-hidden='true']:first-child { inline-size: 16px; block-size: 16px; margin-block-start: 2px; color: var(--muted-foreground); }
 body .wconvert-option-menu__item:is(:hover, :focus-visible, [data-highlighted], [data-state='open']):not([data-static]) { background: var(--accent); }
-body .wconvert-option-menu__item:focus-visible { box-shadow: inset 0 0 0 2px var(--ring); }
+/* In a menu Radix focuses whatever the pointer is over, so a focus ring there is a hover ring: wp-admin's
+   blue `a:focus` on the link rows (View report) and none on the rest, or ours on every row after one key
+   press. The tint is a menu's highlight, as on every `DropdownMenuItem`; the ring is list mode's alone. */
+body .wconvert-option-menu__item:focus { box-shadow: none; }
+body .wconvert-option-menu:not(.wconvert-option-menu--menu) .wconvert-option-menu__item:focus-visible { box-shadow: inset 0 0 0 2px var(--ring); }
 body .wconvert-option-menu__item[data-static] { cursor: default; }
 body .wconvert-option-menu__item:is([aria-disabled='true'], [data-static]:not([aria-hidden])) { cursor: default; }
 body .wconvert-option-menu__item:is([aria-disabled='true'], [data-static]:not([aria-hidden])) .wconvert-option-menu__name { color: var(--muted-foreground); }
