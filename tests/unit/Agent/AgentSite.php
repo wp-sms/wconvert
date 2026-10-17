@@ -49,6 +49,7 @@ final class AgentSite
     public readonly CampaignReader $reader;
     public readonly PublishReadiness $readiness;
     public readonly FakeConnection $db;
+    public readonly \WConvert\Agent\AgentPublishing $publishing;
 
     /** @var list<string> Every internal call, as `METHOD /route`. */
     public array $dispatched = [];
@@ -83,6 +84,7 @@ final class AgentSite
         $this->builder = new CampaignBuilder($this->library, $this->templates, $this->pro);
         $this->occasionController = new OccasionController($this->optins, $this->occasions, $this->library, $this->templates, $this->builder);
         $this->reader = new CampaignReader($this->occasions, $this->library, $this->templates);
+        $this->publishing = new \WConvert\Agent\AgentPublishing(new FakeOptionStore());
         $this->readiness = new PublishReadiness($this->optins, $this->rules, $destinations, $destinationTypes);
 
         $GLOBALS['wconvertTestRestServer'] = function (WP_REST_Request $request) {
@@ -136,6 +138,8 @@ final class AgentSite
             new \WConvert\Agent\Draft\UpdateCampaign($input, $this->reader),
             new \WConvert\Agent\Draft\SaveOccasion($this->occasions, $this->reader),
             new \WConvert\Agent\Draft\CopyOccasion(),
+            new \WConvert\Agent\Publish\Publish($this->publishing, $this->occasions, $this->reader),
+            new \WConvert\Agent\Publish\Pause($this->publishing, $this->occasions, $this->reader),
         ];
     }
 

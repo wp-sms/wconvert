@@ -113,6 +113,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         DestinationController::class => '/destinations',
         \WConvert\Rest\PrivacyController::class => '/privacy/data-map',
         \WConvert\Rest\ProtectionController::class => '/protection',
+        \WConvert\Rest\AgentController::class => '/agents/publishing',
     ];
 
     /**

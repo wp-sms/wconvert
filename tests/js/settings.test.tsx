@@ -21,6 +21,11 @@ const privacy = vi.hoisted(() => ({
   savePrivacyGuidance: vi.fn(),
 }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
+const agents = vi.hoisted(() => ({
+  readAgentPublishing: vi.fn(),
+  saveAgentPublishing: vi.fn(),
+}));
+vi.mock('../../resources/admin/src/agents/api', () => agents);
 const request = vi.hoisted(() => vi.fn());
 vi.mock('@wordpress/api-fetch', () => ({ default: request }));
 // Connections & destinations is another screen's subject; here it only has to
@@ -50,6 +55,8 @@ beforeEach(() => {
   });
   privacy.readPrivacyGuidance.mockResolvedValue({ enabled: true });
   privacy.savePrivacyGuidance.mockImplementation(async (enabled) => ({ enabled }));
+  agents.readAgentPublishing.mockResolvedValue({ enabled: false });
+  agents.saveAgentPublishing.mockImplementation(async (enabled) => ({ enabled }));
   request.mockReset().mockImplementation(async ({ data }: { data?: { country: string } }) => ({ country: data?.country ?? 'AM', countries: COUNTRIES }));
 });
 
@@ -134,9 +141,10 @@ it('opens a folded section to reach the setting inside it', async () => {
   expect(screen.getByLabelText('Always allow these emails')).toHaveFocus();
 });
 
-it('orders the rail as setup happens, Connections first', () => {
+it('orders the rail as setup happens, Connections first', async () => {
   paid();
   render(<Settings group="connections" />);
+  await screen.findByLabelText(/Let AI agents publish/);
   const rail = screen.getByRole('navigation', { name: 'Settings categories' });
   expect(within(rail).getAllByRole('link').slice(0, 5).map((link) => link.querySelector('.font-medium')?.textContent)).toEqual([
     'Connections & destinations', 'Visitor experience', 'Spam protection', 'Data & privacy', 'Analytics integrations',
@@ -244,6 +252,27 @@ it('orders Data & privacy by use: retention, the data map, requests, then guidan
   expect(screen.getByText(/Download submissions as CSV in/)).toHaveTextContent('Download submissions as CSV in Leads');
   expect(screen.getByRole('link', { name: 'Leads' })).toHaveAttribute('href', '#leads');
   expect(screen.queryByText('Choose the campaigns and dates in Leads.')).not.toBeInTheDocument();
+});
+
+it('keeps agents to drafts until “Let AI agents publish” is switched on and saved', async () => {
+  render(<Settings group="connections" />);
+
+  const publish = await screen.findByLabelText(/Let AI agents publish/);
+  expect(publish).not.toBeChecked();
+  expect(publish).toHaveAccessibleDescription('Agents can always read and make drafts. Give your agent its own WordPress user so you can see and revoke what it does.');
+
+  await userEvent.click(publish);
+  expect(agents.saveAgentPublishing).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: 'Save AI agent setting' }));
+
+  expect(agents.saveAgentPublishing).toHaveBeenCalledExactlyOnceWith(true);
+  expect(await screen.findByText('Saved just now')).toBeInTheDocument();
+});
+
+it('finds the agents switch by the words people use for agents', async () => {
+  render(<Settings group="data" />);
+  await userEvent.type(search(), 'claude mcp');
+  expect(screen.getByRole('link', { name: 'Let AI agents publish · Connections & destinations' })).toBeInTheDocument();
 });
 
 it('saves campaign privacy guidance without disabling core privacy tools', async () => {

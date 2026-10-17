@@ -1192,6 +1192,9 @@ anything, and deleting it detaches its campaigns.*
 *Amended by [ADR 0153](docs/adr/0153-an-occasion-travels-as-one-document.md):
 an occasion copies to next year and exports or imports as one JSON document;
 both create draft campaigns only.*
+*Completed by [ADR 0154](docs/adr/0154-agents-act-through-wordpress-abilities.md):
+an AI agent may read occasions and make draft campaigns in one; it publishes
+or pauses them only once **Let AI agents publish** is on.*
 
 ### Agent ability
 

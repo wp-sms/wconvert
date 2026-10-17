@@ -87,6 +87,8 @@ $wconvertOptions = [
     'wconvert_picker_occasions',
     // Optin\PhoneCountry::OPTION — the phone field's default country.
     'wconvert_phone_default_country',
+    // Agent\AgentPublishing::OPTION — "Let AI agents publish".
+    'wconvert_agents_publish',
 ];
 
 foreach ($wconvertOptions as $wconvertOption) {

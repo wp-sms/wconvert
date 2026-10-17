@@ -49,6 +49,8 @@ final class Abilities
         'wconvert/update-campaign',
         'wconvert/save-occasion',
         'wconvert/copy-occasion',
+        'wconvert/publish',
+        'wconvert/pause',
     ];
 
     /**

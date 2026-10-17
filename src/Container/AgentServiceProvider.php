@@ -5,7 +5,9 @@ namespace WConvert\Container;
 use WConvert\Agent\Abilities;
 use WConvert\Agent\AgentCampaignInput;
 use WConvert\Agent\CampaignReader;
+use WConvert\Agent\AgentPublishing;
 use WConvert\Agent\Draft;
+use WConvert\Agent\Publish;
 use WConvert\Agent\Read;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
@@ -53,6 +55,8 @@ final class AgentServiceProvider implements ServiceProvider
         Draft\UpdateCampaign::class,
         Draft\SaveOccasion::class,
         Draft\CopyOccasion::class,
+        Publish\Publish::class,
+        Publish\Pause::class,
     ];
 
     public function register(ServiceContainer $container): void
@@ -89,6 +93,9 @@ final class AgentServiceProvider implements ServiceProvider
         $container->register(Draft\UpdateCampaign::class, static fn (ServiceContainer $c) => new Draft\UpdateCampaign($c->resolve(AgentCampaignInput::class), $c->resolve(CampaignReader::class)));
         $container->register(Draft\SaveOccasion::class, static fn (ServiceContainer $c) => new Draft\SaveOccasion($c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)));
         $container->register(Draft\CopyOccasion::class, static fn () => new Draft\CopyOccasion());
+
+        $container->register(Publish\Publish::class, static fn (ServiceContainer $c) => new Publish\Publish($c->resolve(AgentPublishing::class), $c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)));
+        $container->register(Publish\Pause::class, static fn (ServiceContainer $c) => new Publish\Pause($c->resolve(AgentPublishing::class), $c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)));
     }
 
     public function boot(ServiceContainer $container): void

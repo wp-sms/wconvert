@@ -77,7 +77,15 @@ final class ReadAbilitiesTest extends TestCase
             self::assertTrue($args['meta']['mcp']['public'], $name);
             self::assertSame(in_array($name, self::READS, true), $args['meta']['annotations']['readonly'], $name);
             self::assertStringNotContainsString('"type":["', (string) wp_json_encode($args['input_schema']), $name . ' uses a union type');
-            self::assertTrue(($args['permission_callback'])([]), $name);
+            $permitted = ($args['permission_callback'])([]);
+            if (in_array($name, ['wconvert/publish', 'wconvert/pause'], true)) {
+                // Off by default (ADR 0154 §7); PublishAbilitiesTest turns it on.
+                self::assertInstanceOf(WP_Error::class, $permitted, $name);
+                self::assertTrue($args['meta']['annotations']['destructive'], $name);
+            } else {
+                self::assertTrue($permitted, $name);
+                self::assertFalse($args['meta']['annotations']['destructive'], $name);
+            }
         }
         $GLOBALS['wconvertTestCapabilities'] = ['edit_posts'];
         foreach ($GLOBALS['wconvertTestAbilities'] as $name => $args) {
