@@ -25,8 +25,6 @@ export interface PlacementGuidanceProps {
   readonly everywhere?: boolean;
 }
 
-export { siteCheckUrl, draftPreviewUrl } from '../siteLinks';
-
 /** Placement instructions shared by draft review and the result of publishing. */
 export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published, everywhere = true }: PlacementGuidanceProps) {
   const id = useId();

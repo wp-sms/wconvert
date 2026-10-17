@@ -1,8 +1,9 @@
 # 0152: A coupon link applies a code a published campaign shows
 
 Date: 2026-10-17. Status: accepted.
-Amends [0025](0025-cart-recovery-captures-nothing.md),
-[0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md) and
+Amends [0025](0025-cart-recovery-captures-nothing.md), including the
+[0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md)
+amendment recorded inside it, and
 [0124](0124-quiz-products-share-protected-cart-actions.md). Delivers #286.
 
 A Black Friday bar shows `BF30`. The merchant wants a link beside it that lands
@@ -32,10 +33,10 @@ link's code no longer matches the block's. Free's slot for this
 - the code equals, without case, the text of a visible `code` block in a
   published, servable campaign whose schedule includes now;
 - WooCommerce has a coupon with that code (`wc_get_coupon_id_by_code`);
-- functional consent, by `CartAddition`'s rule;
-- the cart does not already have it.
+- functional consent, by `CartAddition`'s rule.
 
-With items in the cart it applies the code. With an empty cart it keeps the
+With the code already in the cart it changes nothing. With items in the cart it
+applies the code. With an empty cart it keeps the
 code in the WooCommerce session as `wconvert_pending_coupon` and applies it on
 the first `woocommerce_add_to_cart`, asking all four questions again. Then it
 redirects to the same address without the parameter, with `nocache_headers()`.
@@ -63,7 +64,13 @@ The link costs the free loader 44 B gzip-9 on Node 22, which is the runtime CI
 measures: 14,712 B before, 14,756 B after. The free budget rises by 48 B, from
 14,720 B to 14,768 B. Pro's 27,692 B stays inside its 27,712 B.
 
-## Caveat
+## Caveats
 
 A full-page cache that caches URLs with query strings answers before PHP runs,
 so the code is not applied. Most page caches skip query strings by default.
+
+`?coupon=<code>` replaces the page's own query string. On a site with plain
+permalinks (`?page_id=5`) or on a filtered shop page, the visitor gets the
+coupon and lands on the page without its query: the home page, or the shop
+unfiltered. A merchant who needs a fixed landing page types a full address,
+such as `/pricing/?coupon=BF30`, into the same field.

@@ -3,7 +3,8 @@ import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { draftPreviewUrl, inlineShortcode, PlacementGuidance, siteCheckUrl } from '../../resources/admin/src/builder/PlacementGuidance';
+import { inlineShortcode, PlacementGuidance } from '../../resources/admin/src/builder/PlacementGuidance';
+import { draftPreviewUrl, siteCheckUrl } from '../../resources/admin/src/siteLinks';
 import { ManualPlacement } from '../../resources/admin/src/builder/ManualPlacement';
 
 const OPTIN = '01J00000000000000000000000';

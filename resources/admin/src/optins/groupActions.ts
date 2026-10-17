@@ -10,6 +10,8 @@ import { campaignName, statusOf, type OptinSummary } from './api';
  * without a word.
  */
 export type GroupAction = 'publish' | 'pause' | 'duplicate';
+/** The two that change what visitors see, and so ask first. */
+export type ConfirmedAction = Exclude<GroupAction, 'duplicate'>;
 
 export type SkipReason = 'variant' | 'test' | 'suspended' | 'no_design' | 'current' | 'draft';
 
@@ -121,7 +123,7 @@ export function resultSentence(result: GroupResult): string {
 }
 
 /** The confirm's words for Publish and Pause, counted and naming what is left alone. */
-export function groupConfirmCopy(action: 'publish' | 'pause', group: GroupPlan): { title: string; description: string; confirmLabel: string } {
+export function groupConfirmCopy(action: ConfirmedAction, group: GroupPlan): { title: string; description: string; confirmLabel: string } {
   const n = group.run.length;
   const skipped = group.skipped.length
     /* translators: 1: how many campaigns are left alone, 2: why and which, e.g. "A/B test: Spring sale". */

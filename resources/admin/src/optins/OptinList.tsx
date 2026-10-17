@@ -67,7 +67,7 @@ import { GUIDES, docsUrl } from '../shell/docs';
 import { draftPreviewUrl } from '../siteLinks';
 import { CheckRow } from '../shell/CheckRow';
 import { ToolbarCount } from '../shell/Toolbar';
-import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type GroupAction, type GroupPlan, type GroupResult } from './groupActions';
+import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type ConfirmedAction, type GroupAction, type GroupPlan, type GroupResult } from './groupActions';
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
@@ -135,7 +135,7 @@ export function OptinList({
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   // Ticked campaigns, by parent id. A variant is a sub-row and is never ticked.
   const [ticked, setTicked] = useState<Set<string>>(new Set());
-  const [groupConfirm, setGroupConfirm] = useState<{ action: 'publish' | 'pause'; plan: GroupPlan } | null>(null);
+  const [groupConfirm, setGroupConfirm] = useState<{ action: ConfirmedAction; plan: GroupPlan } | null>(null);
   const [groupResult, setGroupResult] = useState<GroupResult | null>(null);
   const trayFocus = useRef<HTMLElement | null>(null);
   const [previews, setPreviews] = useState<Record<string, CampaignPreview>>({});
@@ -239,13 +239,16 @@ export function OptinList({
   useEffect(() => setTicked(new Set()), [filter, query, currentPage, sort]);
   const tickedRows = shown.filter((c) => ticked.has(c.id));
   const allTicked = shown.length > 0 && tickedRows.length === shown.length;
-  const toggle = (id: string) =>
+  // A new selection, or any other action, makes the last group result old news.
+  const toggle = (id: string) => {
+    setGroupResult(null);
     setTicked((previous) => {
       const next = new Set(previous);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
+  };
   const displayed = shown.flatMap((c) => (collapsed.has(c.id) ? [c] : family(c)));
   const ids = displayed.map((c) => c.id).join(',');
   // Only a site that can put a product in a campaign is asked about products:
@@ -273,6 +276,7 @@ export function OptinList({
   }, [ids, refreshKey]);
   const run = async (id: string, action: () => Promise<unknown>, openCreated = false) => {
     if (busyRef.current.has(id)) return;
+    setGroupResult(null);
     mutationErrorsRef.current.delete(id);
     setMutationErrors(new Map(mutationErrorsRef.current));
     busyRef.current.add(id);
@@ -316,8 +320,8 @@ export function OptinList({
             ? declareWinner(d.parent!.id, d.row.id)
             : publishOptin(d.row.id),
     );
-  const duplicate = (row: OptinSummary, parent: OptinSummary) =>
-    void run(parent.id, () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row))), true);
+  const copyOf = (row: OptinSummary) => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row)));
+  const duplicate = (row: OptinSummary, parent: OptinSummary) => void run(parent.id, () => copyOf(row), true);
   const groupPlan = (action: GroupAction) => plan(action, tickedRows, (row) => previews[row.id]?.template === null);
   /**
    * One row after another through the routes a single row uses, then one
@@ -344,7 +348,7 @@ export function OptinList({
         ? () => publishOptin(row.id)
         : action === 'pause'
           ? () => unpublishOptin(row.id)
-          : () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row)));
+          : () => copyOf(row);
       try {
         await call();
         result = reduceResult(result, { type: 'done', row });
@@ -362,7 +366,7 @@ export function OptinList({
     onBusyChange?.(busyRef.current.size > 0);
     setGroupResult(result);
   };
-  const askGroup = (action: 'publish' | 'pause', trigger: HTMLElement | null) => {
+  const askGroup = (action: ConfirmedAction, trigger: HTMLElement | null) => {
     const group = groupPlan(action);
     // Nothing would run: say which and why, rather than ask to confirm nothing.
     if (!group.run.length) return void runGroup(action, group);
@@ -716,7 +720,10 @@ export function OptinList({
                           if (input) input.indeterminate = tickedRows.length > 0 && !allTicked;
                         }}
                         disabled={busy.size > 0}
-                        onChange={() => setTicked(allTicked ? new Set() : new Set(shown.map((c) => c.id)))}
+                        onChange={() => {
+                          setGroupResult(null);
+                          setTicked(allTicked ? new Set() : new Set(shown.map((c) => c.id)));
+                        }}
                       />
                     )}
                   </DataTableColumn>

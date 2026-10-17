@@ -53,22 +53,25 @@ final class CouponLink
      * Pure, because there are no WooCommerce stubs: every WooCommerce answer
      * is asked by the caller and handed in.
      *
+     * `held` is a code that is already in the cart: nothing to do but take
+     * the parameter off the address.
+     *
      * @param array<string, true> $shown Lower-cased codes published campaigns show now.
-     * @return 'skip'|'pending'|'apply'
+     * @return 'skip'|'held'|'pending'|'apply'
      */
     public static function decide(string $code, array $shown, bool $exists, bool $consent, bool $applied, bool $cartEmpty): string
     {
-        if ($code === '' || !isset($shown[strtolower($code)]) || !$exists || !$consent || $applied) {
+        if ($code === '' || !isset($shown[mb_strtolower($code)]) || !$exists || !$consent) {
             return 'skip';
         }
 
-        return $cartEmpty ? 'pending' : 'apply';
+        return $applied ? 'held' : ($cartEmpty ? 'pending' : 'apply');
     }
 
     /**
      * Every code a published, servable campaign shows at this instant.
      *
-     * Lower-cased, as WooCommerce matches codes. A campaign outside its
+     * Lower-cased, multibyte-safe, as WooCommerce matches codes. A campaign outside its
      * schedule shows nothing, and neither does a hidden code block.
      *
      * @param iterable<array<string, mixed>> $set
@@ -92,7 +95,7 @@ final class CouponLink
 
             TemplateTree::rewrittenIn($payload, static function (array $node) use (&$codes): array {
                 if (($node['type'] ?? null) === 'code' && empty($node['hidden']) && is_string($node['text'] ?? null) && trim($node['text']) !== '') {
-                    $codes[strtolower(trim($node['text']))] = true;
+                    $codes[mb_strtolower(trim($node['text']))] = true;
                 }
 
                 return $node;
@@ -141,7 +144,7 @@ final class CouponLink
                 WC()->session->set_customer_session_cookie(true);
                 WC()->session->set(self::PENDING, $code);
                 WC()->session->save_data();
-            } else {
+            } elseif ($action === 'apply') {
                 WC()->cart->apply_coupon($code);
             }
         } catch (\Throwable) {

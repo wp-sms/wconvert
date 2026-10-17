@@ -7,8 +7,9 @@ import { commerceSupported } from '@/settings';
 /**
  * The code's link that applies it in WooCommerce (ADR 0152).
  *
- * `?coupon=<code>` is relative, so it applies the coupon on whatever page the
- * visitor is on and lands them back there without the parameter. The server
+ * `?coupon=<code>` is relative, so it applies the coupon on the page the
+ * visitor is on and lands them back there without the parameter. It replaces
+ * that page's own query string, which ADR 0152 records. The server
  * applies only a code a published campaign shows, which is what makes this
  * address safe to share.
  */

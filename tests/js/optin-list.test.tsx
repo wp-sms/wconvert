@@ -956,6 +956,9 @@ describe('group actions on ticked campaigns', () => {
     expect(optins.publishOptin.mock.calls.map(([id]) => id)).toEqual([draft(3).id, draft(2).id, draft(1).id]);
     expect(screen.queryByText(/selected$/)).toBeNull();
     expect(screen.getByRole('checkbox', { name: 'Select all campaigns on this page' })).not.toBeChecked();
+    // The next selection makes it old news.
+    await user.click(screen.getByRole('checkbox', { name: 'Select Campaign 1' }));
+    expect(screen.queryByText('Published 3.')).toBeNull();
   });
 
   it('skips a suspended row and an A/B test, and names both before and after', async () => {

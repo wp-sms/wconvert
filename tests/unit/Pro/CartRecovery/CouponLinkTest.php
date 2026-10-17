@@ -63,9 +63,16 @@ final class CouponLinkTest extends TestCase
         $this->assertSame('skip', self::decide(['consent' => false, 'empty' => true]));
     }
 
+    /** It is only taken off the address, which still says `?coupon=`. */
     public function testACodeAlreadyInTheCartIsNotAppliedTwice(): void
     {
-        $this->assertSame('skip', self::decide(['applied' => true]));
+        $this->assertSame('held', self::decide(['applied' => true]));
+    }
+
+    /** WooCommerce lower-cases with mbstring, so a non-ASCII code still matches. */
+    public function testANonAsciiCodeMatchesWithoutCase(): void
+    {
+        $this->assertSame('apply', self::decide(['code' => 'ÉTÉ20', 'shown' => ['été20' => true]]));
     }
 
     /**
