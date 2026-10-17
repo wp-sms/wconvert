@@ -7,7 +7,7 @@ use WConvert\Rest\Routes;
 use WConvert\Rest\RateLimit;
 use WConvert\Storage\OptionStore;
 use WConvert\Assets\BuiltAsset;
-use WConvert\Pro\Boot\PageCache;
+use WConvert\Frontend\PageCache;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;

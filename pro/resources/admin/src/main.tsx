@@ -9,6 +9,7 @@ import { PRO_SCREENS } from './screens';
 import { previewSurfaces } from '@/previewSurfaces';
 import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
 import { reopenControls } from '@/reopenControls';
+import { codeLinkControls } from '@/codeLinkControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
 import { registerJourneyAuthoring } from '../../../modules/journeys/admin/register';
@@ -37,6 +38,7 @@ analyticsIntegration.campaign = lazy(() => import('../../../modules/analytics/ad
 
 reopenControls.component = lazy(() => import('../../../modules/display-types/admin/ReopenSettings'));
 reopenControls.preview = lazy(() => import('../../../modules/display-types/admin/ReopenPreview'));
+codeLinkControls.component = lazy(() => import('../../../modules/cart-recovery/admin/CouponLinkSettings'));
 previewSurfaces.fullscreen = decorateFullscreen;
 inlinePlacementControls.preview = lazy(() => import('../../../modules/content-lock/admin/LockPreview'));
 inlinePlacementControls.previewControls = lazy(() => import('../../../modules/content-lock/admin/LockPreview').then(module => ({ default: module.LockPreviewControls })));

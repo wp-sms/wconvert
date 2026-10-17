@@ -112,6 +112,10 @@ Merchant-defined occasions use a non-autoloaded site option. Their names and
 dates aid planning; no targeting, discount, campaign, or publication command is
 stored. Writes use document revisions and bounded short-lived option leases;
 a conflict requires reload. No table or column is introduced.
+*Amended by [ADR 0149](0149-an-occasion-groups-campaigns.md): campaigns now
+point at an occasion through `config.occasion`, and creating one inside it
+prefills its schedule. The occasion still stores no targeting, discount or
+publication command, and still schedules nothing by itself.*
 
 ## Internal review and the future API
 
@@ -227,7 +231,7 @@ creation retains that management surface.
 
 Named WordPress timezones can suggest a country using the timezone database. Suggestions never choose a market automatically or identify visitors. The user confirms or dismisses; explicit markets take precedence. UTC/fixed offsets/unknown zones have no inferred country. Dismissal is personal and scoped to the suggested timezone.
 
-Custom occasions now select an available stage in reviewed evergreen planning collections. The inclusive occasion end remains distinct from campaign scheduling. HTTP sites use a shared getRandomValues-based authoring ID helper. The journey tester excludes genuinely hidden consent from submitted answers; it neither invents consent nor accepts unresolved references.
+Custom occasions now select an available stage in reviewed evergreen planning collections. The inclusive occasion end remains distinct from campaign scheduling. *Amended by [ADR 0149](0149-an-occasion-groups-campaigns.md): it is converted once, as a prefill, when a campaign is created inside the occasion — `ends_at` is the day after the inclusive end, 00:00.* HTTP sites use a shared getRandomValues-based authoring ID helper. The journey tester excludes genuinely hidden consent from submitted answers; it neither invents consent nor accepts unresolved references.
 
 Raster pack installation is implemented in ADR 0082. The local publisher exports reviewed source raster bytes only with recorded redistribution rights. Public HTML previews contain inert rendered design screens, including result variants, and no importable template tree. Free and Pro use the same generation path and desktop/mobile/RTL controls. Catalog cards offer the same public preview URL for website and plugin use. Hosting and premium entitlement are still deferred; no default remote endpoint is introduced.
 

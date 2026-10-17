@@ -63,6 +63,9 @@ namespace {
             public function add_to_cart(int $product_id, int $quantity = 1): string|false { return false; }
             public function calculate_totals(): void {}
             public function set_session(): void {}
+            public function is_empty(): bool { return true; }
+            public function has_discount(string $coupon_code = ''): bool { return false; }
+            public function apply_coupon(string $coupon_code): bool { return false; }
             /** @return array<string, array<string, mixed>> */
             public function get_cart(): array { return []; }
             public function get_cart_contents_count(): int
@@ -120,6 +123,8 @@ namespace {
         /** @return list<string> */
         function wc_get_is_paid_statuses(): array { return []; }
         function wc_load_cart(): void {}
+        function wc_format_coupon_code(string $value): string { return $value; }
+        function wc_get_coupon_id_by_code(string $code, int $exclude = 0): int { return 0; }
         function wc_get_order_status_name(string $status): string { return $status; }
     }
 

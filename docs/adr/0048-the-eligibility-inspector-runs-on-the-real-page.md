@@ -2,6 +2,8 @@
 
 > **Amended by [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** The visitor loader now exposes two anonymous boot milestones for delivery diagnostics. The inspector still runs its own evaluators and the real `decide()`; no Campaign IDs, decision state or debug registry enter the marker. The earlier byte-identical-loader statement below is historical.
 
+> **Amended by [ADR 0151](0151-a-draft-preview-shows-now.md):** the inspector is the *explain* view and stays one: it reports on the published set and changes nothing that shows. Seeing a draft on the page is a separate *show* view, `?wconvert-preview=<id>`, which replaces the set for one request instead.
+
 A merchant asking *"why didn't my popup show?"* is asking about a page. WConvert
 answers it by **opening that page**: an administrator visits
 `https://site/pricing?wconvert-inspect=1` and a panel appears beside the real

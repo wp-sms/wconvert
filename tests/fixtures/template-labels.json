@@ -198,6 +198,8 @@
         "copy_label": "Copy button label",
         "copied_label": "Message when copied",
         "copy_failed_label": "Message when copying is unavailable",
+        "apply_label": "Code link text",
+        "apply_href": "Where the code link goes",
         "text": "Text",
         "link": "Link",
         "emphasis": "Words in bold",

@@ -8,6 +8,7 @@ import { useDirection } from '../hooks/useDirection';
 import { physicalPlacementLabel } from './PlacementControl';
 import { inlinePlacementLabel } from '../inlinePlacement';
 import { Shortcode } from './ManualPlacement';
+import { siteCheckUrl } from '../siteLinks';
 
 export { inlineShortcode } from './ManualPlacement';
 
@@ -22,19 +23,6 @@ export interface PlacementGuidanceProps {
   readonly published: boolean;
   /** Its rules name no pages, so the homepage is one it can show on. */
   readonly everywhere?: boolean;
-}
-
-/** Open the existing real-page inspector, using WordPress's subdirectory-aware home URL. */
-export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | null {
-  if (!homeUrl || !inspectParam) return null;
-  try {
-    const target = new URL(homeUrl);
-    if (!['http:', 'https:'].includes(target.protocol) || target.username || target.password) return null;
-    target.searchParams.set(inspectParam, '1');
-    return target.toString();
-  } catch {
-    return null;
-  }
 }
 
 /** Placement instructions shared by draft review and the result of publishing. */

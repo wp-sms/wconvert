@@ -1,39 +1,46 @@
 <?php
 
-namespace WConvert\Tests\Unit\Pro\Boot;
+namespace WConvert\Tests\Unit\Frontend;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Container\CoreServiceProvider;
+use WConvert\Container\ServiceContainer;
+use WConvert\Database\Connection;
+use WConvert\Frontend\PageCache;
 use WConvert\Pro\Bootstrap;
-use WConvert\Pro\Boot\PageCache;
+use WConvert\Pro\Container\ProServiceProvider;
+use WConvert\Queue\Queue;
+use WConvert\Storage\OptionStore;
+use WConvert\Storage\TransientStore;
+use WConvert\Support\ProPresence;
+use WConvert\Support\SitePresence;
+use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeProPresence;
+use WConvert\Tests\Unit\Support\FakeQueue;
+use WConvert\Tests\Unit\Support\FakeSitePresence;
+use WConvert\Tests\Unit\Support\FakeTransientStore;
 
-require_once __DIR__ . '/../../Support/installed-cache-plugins.php';
+require_once __DIR__ . '/../Support/installed-cache-plugins.php';
 
 /**
  * =============================================================================
- * ACTIVATING OR DEACTIVATING PRO PURGES THE PAGE CACHE.
+ * WHAT A CACHED PAGE CARRIES CHANGED, SO THE PAGE CACHE IS PURGED.
  * =============================================================================
- * [[Pro]] replaces free's loader and dequeues it (ADR 0014), so turning Pro on
- * or off **changes the asset URL every cached page already carries**. A
- * full-page cache is the whole reason the loader is shaped the way it is
- * (ADR 0004), and it is exactly what would keep serving the old URL.
- *
- * This is a concrete, synchronous, plugin-lifecycle trigger. ADR 0014 replaced
- * the loader prototype's vaguer "an entitlement change must purge the page
- * cache" with it precisely because **there is no licence webhook in this design
- * to miss** — a licence never gated a feature (ADR 0015), so the only event
- * that changes what a page loads is a plugin going on or off, and WordPress
- * hands us both.
+ * Two events change it. The published set — inlined into every page — changes
+ * when a campaign is published, paused or edited, and free purges on that
+ * (ADR 0150). Pro going on or off changes the loader's asset URL (ADR 0014),
+ * and Pro's lifecycle hooks purge on that.
  *
  * WHAT A PURGE IS NOT. WordPress has no page-cache API, so no purge can be
  * complete: a CDN, a host-level Varnish or a reverse proxy we were never told
- * about will all keep their copy. The design therefore does not rest on it —
- * a stale page keeps working in both directions, because free's loader is
- * still on disk after Pro activates and Pro's is still on disk after it
- * deactivates. The purge is what makes the change take effect PROMPTLY, not
- * what keeps the site working.
+ * about will all keep their copy. The design therefore does not rest on it.
+ * The purge is what makes a change take effect PROMPTLY, not what keeps the
+ * site working.
  */
 #[CoversClass(PageCache::class)]
+#[CoversClass(CoreServiceProvider::class)]
 #[CoversClass(Bootstrap::class)]
 final class PageCacheTest extends TestCase
 {
@@ -41,6 +48,14 @@ final class PageCacheTest extends TestCase
     {
         $GLOBALS['wconvertTestActions'] = [];
         $GLOBALS['wconvertTestPurgesCalled'] = [];
+    }
+
+    protected function tearDown(): void
+    {
+        // Booting Pro registers its filters, and a suite that left them
+        // behind would run every later test on a Pro install (ADR 0116).
+        $GLOBALS['wconvertTestFilters'] = [];
+        $GLOBALS['wconvertTestActions'] = [];
     }
 
     /**
@@ -60,6 +75,77 @@ final class PageCacheTest extends TestCase
         foreach ($GLOBALS['wconvertTestLifecycle'][$moment] as $callback) {
             $callback();
         }
+    }
+
+    /**
+     * The providers as `plugins_loaded` boots them, against fakes for
+     * everything that would reach the database.
+     *
+     * @param list<class-string<\WConvert\Container\ServiceProvider>> $providers
+     */
+    private static function boot(array $providers): void
+    {
+        /** @var ServiceContainer $container */
+        $container = (new \ReflectionClass(ServiceContainer::class))->newInstanceWithoutConstructor();
+        $booting = [];
+
+        foreach ($providers as $class) {
+            $provider = new $class();
+            $provider->register($container);
+            $booting[] = $provider;
+        }
+
+        $container->register(Connection::class, static fn (): Connection => new FakeConnection());
+        $container->register(OptionStore::class, static fn (): OptionStore => new FakeOptionStore());
+        $container->register(TransientStore::class, static fn (): TransientStore => new FakeTransientStore());
+        $container->register(Queue::class, static fn (): Queue => new FakeQueue());
+        $container->register(ProPresence::class, static fn (): ProPresence => new FakeProPresence());
+        $container->register(SitePresence::class, static fn (): SitePresence => new FakeSitePresence());
+
+        foreach ($booting as $provider) {
+            $provider->boot($container);
+        }
+    }
+
+    /**
+     * #275. Pausing a campaign early is a free act, so the cached page that
+     * still shows it has to be cleared on a site with no Pro at all.
+     */
+    public function testWithOnlyFreeBootedAChangeToThePublishedSetPurges(): void
+    {
+        self::boot([CoreServiceProvider::class]);
+
+        do_action('wconvert_published_set_changed');
+
+        $this->assertContains('wp_cache_clear_cache', $GLOBALS['wconvertTestPurgesCalled']);
+    }
+
+    /**
+     * Pro's analytics module used to hook the same purge. With both booted it
+     * must still run once per change, not once per plugin.
+     */
+    public function testFreeAndProTogetherPurgeOncePerChange(): void
+    {
+        self::boot([CoreServiceProvider::class, ProServiceProvider::class]);
+
+        do_action('wconvert_published_set_changed');
+
+        $this->assertSame(
+            ['wp_cache_clear_cache', 'Cache_Enabler::clear_complete_cache'],
+            $GLOBALS['wconvertTestPurgesCalled']
+        );
+    }
+
+    /**
+     * What an agent's publish or pause reply will name (#284): the caches that
+     * were installed and called, and nothing that was skipped.
+     */
+    public function testItReturnsTheNamesOfThePurgesItCalled(): void
+    {
+        $this->assertSame(
+            ['wp_cache_clear_cache', 'Cache_Enabler::clear_complete_cache'],
+            PageCache::purge()
+        );
     }
 
     /**
@@ -128,9 +214,7 @@ final class PageCacheTest extends TestCase
     }
 
     /**
-     * The ordinary case is a site with no cache plugin at all, and a purge
-     * that fataled there would take activation down with it — a plugin that
-     * cannot be activated, on a site that had nothing wrong with it.
+     * Turning Pro on changes the loader URL every cached page carries.
      */
     public function testActivatingProPurgesThePageCache(): void
     {

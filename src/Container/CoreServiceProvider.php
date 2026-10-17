@@ -40,8 +40,10 @@ use WConvert\Destination\Wsms\WpWsmsContacts;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Frontend\InlineOptinBlock;
 use WConvert\Frontend\InlineOptinShortcode;
+use WConvert\Frontend\DraftPreview;
 use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Frontend\LoaderEnqueue;
+use WConvert\Frontend\PageCache;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadCsv;
@@ -334,7 +336,18 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class),
                 $c->resolve(SiteFrequency::class),
-                $c->resolve(RoleRegistry::class)
+                $c->resolve(RoleRegistry::class),
+                $c->resolve(DraftPreview::class)
+            )
+        );
+
+        // A draft shown on the real site to an administrator who asked
+        // (ADR 0151). Beside the loader, which prints it.
+        $container->register(
+            DraftPreview::class,
+            static fn (ServiceContainer $c): DraftPreview => new DraftPreview(
+                $c->resolve(OptinRepository::class),
+                $c->resolve(RuleVocabulary::class)
             )
         );
 
@@ -777,6 +790,13 @@ final class CoreServiceProvider implements ServiceProvider
             if ($id === (int) get_option('wp_page_for_privacy_policy')) { $policyChanged(); }
         });
 
+        // Every cached page inlines the published set, so a change to it
+        // purges the page caches WConvert knows (ADR 0150). Free's, because
+        // pausing a campaign early is a free act.
+        add_action('wconvert_published_set_changed', static function (): void {
+            PageCache::purge();
+        });
+
 
         /*
          * ====================================================================
@@ -875,6 +895,7 @@ final class CoreServiceProvider implements ServiceProvider
             // fact goes stale. It costs an ordinary page view one capability
             // check and one `isset($_GET[...])`.
             $container->resolve(InspectorEnqueue::class)->hooks();
+            $container->resolve(DraftPreview::class)->hooks();
         }
     }
 }

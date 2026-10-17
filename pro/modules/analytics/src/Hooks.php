@@ -5,7 +5,6 @@ use WConvert\Assets\BuiltAsset;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
-use WConvert\Pro\Boot\PageCache;
 use WConvert\Rest\Routes;
 use WP_Error;
 use WP_REST_Request;
@@ -23,7 +22,6 @@ final class Hooks
     public function hooks(): void
     {
         add_action('rest_api_init', [$this, 'routes']);
-        add_action('wconvert_published_set_changed', [PageCache::class, 'purge']);
         add_action('wconvert_frontend_entries', [$this, 'observeEntries']);
         add_action('template_redirect', function (): void {
             if (!$this->diagnostic()) return;

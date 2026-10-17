@@ -560,7 +560,9 @@ final class TemplateVocabulary
             // settings panel offers it, because a click-metered Optin with no
             // href is a button that goes nowhere — so it is the merchant's to
             // get wrong, and `javascript:` is the way it gets wrong.
-            if ($key === 'href') {
+            // And a code's link that applies it, which is the same kind of
+            // value typed into the same kind of box.
+            if ($key === 'href' || ($type === 'code' && $key === 'apply_href')) {
                 $href = $this->href($node[$key]);
 
                 if ($href !== null) {

@@ -72,5 +72,8 @@ rule fires at 5.1 s. One line; not a crash, a wrong number nobody notices.
   cache. There is no licence webhook in this design to miss, and under
   [ADR 0015](0015-enforcement-is-by-non-registration.md) no licence event that
   could stand in for one.*
+  *Amended by [ADR 0150](0150-free-clears-the-page-cache-when-the-published-set-changes.md):
+  the inlined published set is cached HTML too, so free purges on every change
+  to it, and fires `wconvert_purge_page_cache` for caches it does not know.*
 - The budget is **two numbers, not one**: the loader asset and the inlined
   payload are paid on completely different schedules.

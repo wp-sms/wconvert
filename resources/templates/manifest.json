@@ -416,13 +416,16 @@
         "text",
         "copy_label",
         "copied_label",
-        "copy_failed_label"
+        "copy_failed_label",
+        "apply_label",
+        "apply_href"
       ],
       "copy": [
         "text",
         "copy_label",
         "copied_label",
-        "copy_failed_label"
+        "copy_failed_label",
+        "apply_label"
       ],
       "params": [
         "hidden",

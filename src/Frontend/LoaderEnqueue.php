@@ -57,6 +57,10 @@ final class LoaderEnqueue
         // asks it only where a published Optin actually names a role — a
         // membership adapter's answer may be a query (#92).
         private readonly RoleRegistry $roles,
+        // An administrator previewing a draft replaces the set for one
+        // request (ADR 0151). Asked first, and it answers null on every other
+        // page view after one capability check.
+        private readonly DraftPreview $preview,
     ) {
     }
 
@@ -77,7 +81,8 @@ final class LoaderEnqueue
         // is stored as plain arrays because that is what an option is; letting
         // those arrays travel further means every reader downstream spells a
         // rule type as a string literal (ADR 0005).
-        $set = PublishedOptin::fromSet($this->publishedSet->all());
+        $preview = $this->preview->set();
+        $set = PublishedOptin::fromSet($preview ?? $this->publishedSet->all());
 
         if ($set === []) {
             return;
@@ -137,7 +142,13 @@ final class LoaderEnqueue
             );
         }
 
-        do_action('wconvert_frontend_entries', $entries);
+        // A preview is not a page view anyone should count, so the observers
+        // that report one — Pro's analytics among them — are not told.
+        if ($preview === null) {
+            do_action('wconvert_frontend_entries', $entries);
+        } else {
+            self::anchorPreviewedInline($entries);
+        }
 
         $dist = WCONVERT_DIR . self::DIST;
 
@@ -221,6 +232,15 @@ final class LoaderEnqueue
         $siteAllowance = $this->siteFrequency->forPayload();
         $timezone = wp_timezone()->getName();
 
+        // A preview records nothing: no beacon, no capture, and no allowance
+        // shared with the rest of the site. A submit shows the form's own
+        // "not confirmed" state rather than creating a Lead (ADR 0151).
+        if ($preview !== null) {
+            $captureUrl = '';
+            $beaconUrl = '';
+            $siteAllowance = null;
+        }
+
         add_action('wp_head', static function () use ($entries, $captureUrl, $beaconUrl, $siteAllowance, $timezone): void {
             // Not escaped, and correctly so: PayloadTag renders JSON with
             // JSON_HEX_TAG, which is the escaping this context needs. Running
@@ -236,6 +256,31 @@ final class LoaderEnqueue
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, wp_get_inline_script_tag() on the attributes.
             echo PayloadTag::render($entries, $captureUrl, $beaconUrl, $siteAllowance, $timezone);
         }, 5);
+    }
+
+    /**
+     * An `inline` campaign renders at its anchor, and a preview on a page
+     * without its block would show nothing. So the preview adds one at the end
+     * of the page. Where the page already has the merchant's block, that one
+     * comes first in the document and the loader uses it.
+     *
+     * @param list<array<string, mixed>> $entries
+     */
+    private static function anchorPreviewedInline(array $entries): void
+    {
+        foreach ($entries as $entry) {
+            if (($entry['display_type'] ?? null) !== 'inline') {
+                continue;
+            }
+
+            $anchor = InlineAnchor::html((string) ($entry['id'] ?? ''));
+            // Before the footer scripts print at 20, so the anchor is in the
+            // document when the loader decides.
+            add_action('wp_footer', static function () use ($anchor): void {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InlineAnchor::html() refuses anything but a ULID and escapes the attribute.
+                echo $anchor;
+            }, 5);
+        }
     }
 
     /**

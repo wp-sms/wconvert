@@ -1008,28 +1008,41 @@ function field(node: FieldNode): HTMLElement | null {
   return wrapper;
 }
 
-/** Copying is optional; the readable code remains available when clipboard access fails. */
+/**
+ * Copying is optional; the readable code remains available when clipboard
+ * access fails. So is a link that applies it, drawn as the button anchor is
+ * and only where its address is safe.
+ */
 function code(node: CodeNode, at: string | null): HTMLElement {
   const value = words('span', 'wc-code', node.text);
-  if (!node.copy) return value;
+  const href = safeHref(node.apply_href);
+  if (!node.copy && href === null) return value;
   const wrapper = wrap('div', 'wc-stack', value);
-  const copy = words('button', 'wc-button', node.copy_label || 'Copy code') as HTMLButtonElement;
-  copy.type = 'button';
-  const status = words('span', 'wc-text', '');
-  status.setAttribute('role', 'status');
-  wrapper.append(copy, status);
-  // A selectable preview has addresses and edits the block instead of copying.
-  if (!EDITABLE || at === null) copy.addEventListener('click', async () => {
-    copy.disabled = true;
-    try {
-      await navigator.clipboard.writeText(node.text ?? '');
-      status.textContent = node.copied_label || 'Copied';
-    } catch {
-      status.textContent = node.copy_failed_label || 'Copy failed. Select the code.';
-    } finally {
-      copy.disabled = false;
-    }
-  });
+  if (node.copy) {
+    const copy = words('button', 'wc-button', node.copy_label || 'Copy code') as HTMLButtonElement;
+    copy.type = 'button';
+    const status = words('span', 'wc-text', '');
+    status.setAttribute('role', 'status');
+    wrapper.append(copy, status);
+    // A selectable preview has addresses and edits the block instead of copying.
+    if (!EDITABLE || at === null) copy.addEventListener('click', async () => {
+      copy.disabled = true;
+      try {
+        await navigator.clipboard.writeText(node.text ?? '');
+        status.textContent = node.copied_label || 'Copied';
+      } catch {
+        status.textContent = node.copy_failed_label || 'Copy failed. Select the code.';
+      } finally {
+        copy.disabled = false;
+      }
+    });
+  }
+  if (href !== null) {
+    // Same-tab, so no `rel`: it opens no window to protect.
+    const apply = words('a', 'wc-button', node.apply_label || 'Apply code') as HTMLAnchorElement;
+    apply.href = href;
+    wrapper.append(apply);
+  }
   return wrapper;
 }
 

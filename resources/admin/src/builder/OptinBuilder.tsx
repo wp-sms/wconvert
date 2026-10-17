@@ -11,6 +11,7 @@ import { referencedJourney, submissionScreen } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
+import { draftPreviewUrl } from '../siteLinks';
 import './editor.css';
 import './preview-test.css';
 import { Activity, Suspense, lazy, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -23,6 +24,7 @@ import {
   Blocks,
   Eye,
   Info,
+  MonitorPlay,
   MoreHorizontal,
   Redo2,
   Undo2,
@@ -164,6 +166,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const dirty = config !== null && baseline !== JSON.stringify({ name, config });
   useEffect(() => { onEditingStateChange?.({ dirty, busy }); }, [dirty, busy, onEditingStateChange]);
   const small = useCompactEditor(640);
+  const sitePreview = draftPreviewUrl(id);
   const [editingResult, setEditingResult] = useState<string | undefined>();
   const [lockPreview, setLockPreview] = useState<ContentLockPreviewState>('locked');
   useEffect(() => {
@@ -964,6 +967,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}><Redo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.redo}</DropdownMenuItem></>}
               <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}><ArrowUpFromLine aria-hidden="true" />{__('Import design', 'wconvert')}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}><ArrowDownToLine aria-hidden="true" />{__('Export design', 'wconvert')}</DropdownMenuItem>
+              {/* The SAVED draft is what the site shows, so unsaved edits ask for a save first (ADR 0151). */}
+              {sitePreview !== null && (dirty || !template
+                ? <DropdownMenuItem aria-disabled="true" onSelect={(event) => event.preventDefault()}><MonitorPlay aria-hidden="true" />{!template ? __('Add a design to preview on site', 'wconvert') : __('Save draft to preview on site', 'wconvert')}</DropdownMenuItem>
+                : <DropdownMenuItem asChild disabled={busy}><a href={sitePreview} target="_blank" rel="noopener noreferrer"><MonitorPlay aria-hidden="true" />{__('Preview on site', 'wconvert')}<span className="sr-only">{__('(opens in a new tab)', 'wconvert')}</span></a></DropdownMenuItem>)}
               <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = campaignActions.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

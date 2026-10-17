@@ -66,6 +66,7 @@ next, so it goes.
    the scan that still means something — **free's loader carries no premium
    rule identifier and no Pro module's `bundle_marker`** — and two budgets:
    Free 14,720 B, Pro 27,712 B (the old top rung's, unchanged). *Amended by
+   [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): Free 14,768 B.* *Amended by
    [ADR 0147](0147-free-names-what-pro-adds-where-it-is-wanted.md): `bin/check-admin.mjs` runs the free scan over the admin and
    inspector bundles too, with each module's `admin_markers` and the word
    "upgrade".*

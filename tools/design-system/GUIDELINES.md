@@ -696,8 +696,10 @@ Not gaps. Each was decided:
 
 ## 20. Campaign management applies the shared grammar
 
-- The four-column campaign list is a grid variant of `DataTable`. Thumbnails
-  and names open saved-design details; explicit row actions lead to editing.
+- The campaign list is a grid variant of `DataTable`: a tick-box column, then
+  four. Thumbnails and names open saved-design details; explicit row actions
+  lead to editing. Ticked rows are acted on together from a tray at the foot
+  of the sheet, the way Compare works in the design picker.
   Gallery reuses those rows and semantics. On cards, identity is the heading,
   status/results retain their labels, and actions form the footer.
 - Use `StatusBadge` everywhere: **Draft**, **Published**, **Suspended** and

@@ -1,6 +1,6 @@
 # Pro replaces the loader rather than augmenting it
 
-**Current loader byte limits — [ADR 0146](0146-pro-is-one-tier.md):** Pro is one tier. Free caps at 14,720 B and Pro at 27,712 B gzip-9 (the old Elite figure), measured on Node 22. The per-rung figures below are historical.
+**Current loader byte limits — [ADR 0146](0146-pro-is-one-tier.md):** Pro is one tier. Free caps at 14,720 B and Pro at 27,712 B gzip-9 (the old Elite figure), measured on Node 22. *Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): Free caps at 14,768 B.* The per-rung figures below are historical.
 
 **Loader byte limits — [ADR 0139](0139-one-option-menu-and-sentence-rows.md), amended 2026-10-12:** Free / Basic / Pro / Elite cap at 14,720 / 25,472 / 27,040 / 27,712 bytes gzip-9, measured on Node 22. The ADR 0111 and ADR 0109 loader figures below are historical.
 
@@ -177,7 +177,7 @@ ever sees that queue's output.*
   change must purge the page cache" with a concrete, synchronous, plugin-lifecycle
   trigger — there is no licence webhook in this design to miss.
   *Built in [#32](https://github.com/navidkashani/wconvert/issues/32):
-  [`PageCache`](../../pro/src/Boot/PageCache.php), on both lifecycle hooks, and
+  [`PageCache`](../../src/Frontend/PageCache.php), on both lifecycle hooks, and
   registered OUTSIDE the min-core guard — a Pro that refused to boot changes
   nothing about what the already-cached pages should say, and a merchant
   deactivating one is exactly the person whose cache should not be left holding
@@ -189,3 +189,8 @@ ever sees that queue's output.*
   deactivates. A stale page therefore serves the previous tier's behaviour for
   a few minutes rather than a 404 and a dead popup. The purge makes the change
   take effect promptly; it is not what keeps the site working.*
+  *Amended by [ADR 0150](0150-free-clears-the-page-cache-when-the-published-set-changes.md):
+  this is no longer the only trigger. `PageCache` moved to free
+  (`src/Frontend/PageCache.php`), which also purges whenever the published set
+  changes. Pro's lifecycle hooks still call it, and skip it when free is not
+  loaded.*
