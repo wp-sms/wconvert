@@ -40,6 +40,7 @@ use WConvert\Destination\Wsms\WpWsmsContacts;
 use WConvert\Destination\Wsms\WsmsDestinationType;
 use WConvert\Frontend\InlineOptinBlock;
 use WConvert\Frontend\InlineOptinShortcode;
+use WConvert\Frontend\DraftPreview;
 use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Frontend\LoaderEnqueue;
 use WConvert\Frontend\PageCache;
@@ -335,7 +336,18 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(PublishedSet::class),
                 $c->resolve(Degradation::class),
                 $c->resolve(SiteFrequency::class),
-                $c->resolve(RoleRegistry::class)
+                $c->resolve(RoleRegistry::class),
+                $c->resolve(DraftPreview::class)
+            )
+        );
+
+        // A draft shown on the real site to an administrator who asked
+        // (ADR 0151). Beside the loader, which prints it.
+        $container->register(
+            DraftPreview::class,
+            static fn (ServiceContainer $c): DraftPreview => new DraftPreview(
+                $c->resolve(OptinRepository::class),
+                $c->resolve(RuleVocabulary::class)
             )
         );
 
@@ -883,6 +895,7 @@ final class CoreServiceProvider implements ServiceProvider
             // fact goes stale. It costs an ordinary page view one capability
             // check and one `isset($_GET[...])`.
             $container->resolve(InspectorEnqueue::class)->hooks();
+            $container->resolve(DraftPreview::class)->hooks();
         }
     }
 }

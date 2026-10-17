@@ -8,6 +8,7 @@ import {
   Copy,
   EyeOff,
   Inbox,
+  MonitorPlay,
   Info,
   LayoutGrid,
   List,
@@ -63,6 +64,7 @@ import { StatusBadge } from './StatusBadge';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { ProHintItem, proHintsShown } from '../shell/ProHint';
 import { GUIDES, docsUrl } from '../shell/docs';
+import { draftPreviewUrl } from '../builder/PlacementGuidance';
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
@@ -784,6 +786,7 @@ function CampaignMenu({
     status = statusOf(row);
   const availability = adminSettings()?.variants?.availability ?? 'locked';
   const upsell = !arm && availability !== 'ready' && renderingFor(availability, 'settings_list') === 'upsell';
+  const preview = draftPreviewUrl(row.id);
   const publish = (replaces: boolean) => (
     <OptionItem
       icon={Upload}
@@ -810,6 +813,10 @@ function CampaignMenu({
       <OptionMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu" aria-label={sprintf(/* translators: %s: a campaign's name. */ __('More actions for %s', 'wconvert'), name)}>
         <OptionGroup heading={name}>
           <OptionItem icon={Info} name={__('Details', 'wconvert')} onSelect={() => onDetails(trigger.current)} />
+          {preview !== null && (
+            <OptionItem icon={MonitorPlay} name={__('Preview on site', 'wconvert')} href={preview} newTab
+              refused={missingDesign ? refusal(__('Add a design first', 'wconvert'), __('Add a design in the editor before previewing it on your site.', 'wconvert')) : null} />
+          )}
           <OptionItem icon={ChartNoAxesCombined} name={__('View report', 'wconvert')} href={reportHref({ optinId: row.id, days })} />
           {reportReady && result?.capture && (
             <OptionItem icon={Inbox} name={__('View submissions', 'wconvert')} href={leadsHref({ optinId: row.id, ...range })} />

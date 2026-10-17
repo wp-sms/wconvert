@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { inlineShortcode, PlacementGuidance, siteCheckUrl } from '../../resources/admin/src/builder/PlacementGuidance';
+import { draftPreviewUrl, inlineShortcode, PlacementGuidance, siteCheckUrl } from '../../resources/admin/src/builder/PlacementGuidance';
 import { ManualPlacement } from '../../resources/admin/src/builder/ManualPlacement';
 
 const OPTIN = '01J00000000000000000000000';
@@ -192,6 +192,18 @@ describe('the real site-check URL', () => {
     }
     expect(siteCheckUrl('https://example.org/', undefined)).toBeNull();
     expect(siteCheckUrl(undefined, 'inspect')).toBeNull();
+  });
+
+  it('previews a draft on the subdirectory home page by its id, with the parameter PHP names', () => {
+    window.wconvertAdmin = { ...window.wconvertAdmin!, previewParam: 'wconvert-preview' };
+
+    expect(draftPreviewUrl(OPTIN)).toBe(`https://example.org/blog/?wconvert-preview=${OPTIN}`);
+    expect(draftPreviewUrl(OPTIN, 'javascript:alert(1)', 'wconvert-preview')).toBeNull();
+    window.wconvertAdmin = { ...window.wconvertAdmin!, previewParam: undefined };
+    expect(draftPreviewUrl(OPTIN)).toBeNull();
+
+    const php = readFileSync(resolve(import.meta.dirname, '../../src/Frontend/DraftPreview.php'), 'utf8');
+    expect(php).toContain("public const PARAM = 'wconvert-preview';");
   });
 });
 

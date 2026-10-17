@@ -3,6 +3,7 @@
 namespace WConvert\Admin;
 
 use WConvert\Assets\ViteHelper;
+use WConvert\Frontend\DraftPreview;
 use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
@@ -302,6 +303,7 @@ final class AdminMenu
             'siteName' => wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES),
             'phoneDefaultCountry' => \WConvert\Optin\PhoneCountry::effectiveDefault(),
             'inspectParam' => InspectorEnqueue::PARAM,
+            'previewParam' => DraftPreview::PARAM,
             // WordPress owns site-wide layout. WConvert only names the native
             // editor this theme actually exposes, and only when the current
             // user may edit that layout. A classic theme with no registered

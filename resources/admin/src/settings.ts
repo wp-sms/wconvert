@@ -87,6 +87,8 @@ export interface AdminSettings {
    * renders no panel, silently.
    */
   readonly inspectParam?: string;
+  /** `DraftPreview::PARAM`, for `inspectParam`'s reason. */
+  readonly previewParam?: string;
   /** Native WordPress layout editor available to this user and active theme. */
   readonly placementEditor?: {
     readonly type: 'site_editor' | 'widgets';
