@@ -4,7 +4,7 @@ namespace WConvert\Pro;
 
 use WConvert\Bootstrap as Core;
 use WConvert\Pro\Boot\BootGuard;
-use WConvert\Pro\Boot\PageCache;
+use WConvert\Frontend\PageCache;
 use WConvert\Pro\Container\ProServiceProvider;
 use WConvert\Pro\License\LicenseServiceProvider;
 use WConvert\Pro\License\RefreshCron;
@@ -79,7 +79,7 @@ final class Bootstrap
             );
         }
 
-        PageCache::purge();
+        self::purgePageCache();
     }
 
     /**
@@ -88,8 +88,21 @@ final class Bootstrap
      */
     public static function deactivate(): void
     {
-        PageCache::purge();
+        self::purgePageCache();
         RefreshCron::unschedule();
+    }
+
+    /**
+     * The purge is free's class, and these two hooks run outside the min-core
+     * guard — so on a site where free is inactive or too old there may be no
+     * class to call. Then there is no free loader on any cached page either,
+     * and nothing to purge for.
+     */
+    private static function purgePageCache(): void
+    {
+        if (class_exists(PageCache::class)) {
+            PageCache::purge();
+        }
     }
 
     public static function setup(): void

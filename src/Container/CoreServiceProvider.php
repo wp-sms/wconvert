@@ -42,6 +42,7 @@ use WConvert\Frontend\InlineOptinBlock;
 use WConvert\Frontend\InlineOptinShortcode;
 use WConvert\Frontend\InspectorEnqueue;
 use WConvert\Frontend\LoaderEnqueue;
+use WConvert\Frontend\PageCache;
 use WConvert\Goal\GoalRegistry;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\LeadCsv;
@@ -775,6 +776,13 @@ final class CoreServiceProvider implements ServiceProvider
         }
         add_action('post_updated', static function (int $id) use ($policyChanged): void {
             if ($id === (int) get_option('wp_page_for_privacy_policy')) { $policyChanged(); }
+        });
+
+        // Every cached page inlines the published set, so a change to it
+        // purges the page caches WConvert knows (ADR 0150). Free's, because
+        // pausing a campaign early is a free act.
+        add_action('wconvert_published_set_changed', static function (): void {
+            PageCache::purge();
         });
 
 

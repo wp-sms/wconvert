@@ -177,7 +177,7 @@ ever sees that queue's output.*
   change must purge the page cache" with a concrete, synchronous, plugin-lifecycle
   trigger — there is no licence webhook in this design to miss.
   *Built in [#32](https://github.com/navidkashani/wconvert/issues/32):
-  [`PageCache`](../../pro/src/Boot/PageCache.php), on both lifecycle hooks, and
+  [`PageCache`](../../src/Frontend/PageCache.php), on both lifecycle hooks, and
   registered OUTSIDE the min-core guard — a Pro that refused to boot changes
   nothing about what the already-cached pages should say, and a merchant
   deactivating one is exactly the person whose cache should not be left holding
@@ -189,3 +189,8 @@ ever sees that queue's output.*
   deactivates. A stale page therefore serves the previous tier's behaviour for
   a few minutes rather than a 404 and a dead popup. The purge makes the change
   take effect promptly; it is not what keeps the site working.*
+  *Amended by [ADR 0150](0150-free-clears-the-page-cache-when-the-published-set-changes.md):
+  this is no longer the only trigger. `PageCache` moved to free
+  (`src/Frontend/PageCache.php`), which also purges whenever the published set
+  changes. Pro's lifecycle hooks still call it, and skip it when free is not
+  loaded.*

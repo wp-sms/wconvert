@@ -3,7 +3,7 @@
 /*
  * WP Super Cache and Cache Enabler, as much of each as the purge touches.
  *
- * The GLOBAL namespace, deliberately: `WConvert\Pro\Boot\PageCache` reaches
+ * The GLOBAL namespace, deliberately: `WConvert\Frontend\PageCache` reaches
  * these by name, and a name resolves in the global namespace or not at all —
  * so a copy declared inside a test's own namespace would be invisible to the
  * code under test and the whole file would prove nothing.

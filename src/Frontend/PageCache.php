@@ -1,35 +1,37 @@
 <?php
 
-namespace WConvert\Pro\Boot;
+namespace WConvert\Frontend;
 
 defined('ABSPATH') || exit;
 
 /**
  * =============================================================================
- * TURNING PRO ON OR OFF CHANGES THE ASSET URL, SO THE PAGE CACHE MUST GO.
+ * WHAT A CACHED PAGE CARRIES CHANGED, SO THE PAGE CACHE MUST GO.
  * =============================================================================
- * [[Pro]] ships a complete replacement loader and dequeues free's (ADR 0014),
- * so activating or deactivating it changes the `<script src>` that every
- * already-cached page carries. A full-page cache is the whole reason the
- * loader is shaped the way it is (ADR 0004), and it is exactly what would keep
- * serving the old URL.
+ * Every page carries two things a full-page cache freezes (ADR 0004): the
+ * published set, inlined as the payload, and the loader's `<script src>`. Two
+ * events change them, and each purges.
  *
- * **This is the trigger, and there is no other.** ADR 0014 replaced the loader
- * prototype's vaguer "an entitlement change must purge the page cache" with a
- * concrete, synchronous, plugin-lifecycle event, because a licence never gated
- * a feature (ADR 0015) — so there is no licence webhook in this design to miss
- * and no licence event that could stand in for one. What changes the page is a
- * plugin going on or off, and WordPress hands us both moments.
+ * - **The published set changed** — a campaign was published, paused, edited
+ *   or deleted. Free hooks this to `wconvert_published_set_changed`, which only
+ *   {@see \WConvert\Optin\PublishedSet::replaceWith()} fires (ADR 0150). It is
+ *   free's, not Pro's, because pausing a campaign early is a free act and a
+ *   cached page that keeps showing it is a free bug. A rebuild for a timezone,
+ *   a permalink or an upgrade fires it too. Those are rare admin saves, and an
+ *   extra purge on one costs less than a second hook to tell them apart.
+ * - **Pro went on or off** — Pro replaces free's loader (ADR 0014), so the
+ *   asset URL changed. Pro's lifecycle hooks call {@see self::purge()}
+ *   directly.
  *
  * WHAT THIS IS NOT. WordPress has no page-cache API, so no purge can be
  * complete: a CDN, a host-level Varnish, a reverse proxy nobody told us about
- * will all keep their copy. **The design does not rest on it.** A stale page
- * keeps working in both directions — free's loader is still on disk after Pro
- * activates, and Pro's is still on disk after it deactivates, because
- * deactivating a plugin does not delete its files. So a merchant on a stale
- * page gets the previous tier's behaviour for a few minutes, not a 404 and a
- * dead popup. The purge makes the change take effect promptly; it is not what
- * keeps the site working.
+ * will all keep their copy. **The design does not rest on it.** A schedule's
+ * ends are enforced by the loader against the visitor's clock (ADR 0050), so a
+ * stale page still stops showing a campaign whose window closed; and a stale
+ * loader URL still resolves, because deactivating a plugin does not delete its
+ * files. The purge makes a change take effect promptly; it is not what keeps
+ * the site correct. `wconvert_purge_page_cache` is where a Cloudflare or a
+ * host cache joins in.
  *
  * @since 0.1.0
  */
@@ -91,18 +93,25 @@ final class PageCache
     /**
      * Purge every page cache this build can reach.
      *
-     * It runs on activation and on deactivation, which are admin requests a
-     * merchant is waiting on — never on a front-end request, where ADR 0004's
-     * whole argument is that the request path carries no branches it does not
-     * have to.
+     * It runs when the published set is rebuilt and on Pro's activation and
+     * deactivation — admin and REST requests a merchant is waiting on, never a
+     * front-end page view, where ADR 0004's whole argument is that the request
+     * path carries no branches it does not have to.
      *
      * **The object cache is deliberately left alone.** What changed is one
      * asset URL inside cached HTML; flushing a shared Redis or Memcached would
      * evict every other plugin's data on the site to fix it, which is a far
      * larger act than the one being asked for.
+     *
+     * @return list<string> The PURGES entries that were installed and called,
+     *                      for a reply that names what was cleared. The
+     *                      actions are not in it: firing one says nothing
+     *                      about whether anything listened.
      */
-    public static function purge(): void
+    public static function purge(): array
     {
+        $called = [];
+
         foreach (self::PURGES as $purge) {
             // A cache that is not installed is skipped, not asked — the
             // ordinary WordPress site has none of these. `is_callable()`
@@ -111,6 +120,7 @@ final class PageCache
             // rather than fataled on.
             if (is_callable($purge)) {
                 $purge();
+                $called[] = $purge;
             }
         }
 
@@ -119,10 +129,12 @@ final class PageCache
         }
 
         /**
-         * Fires when WConvert Pro has purged what it knows how to purge.
+         * Fires when WConvert has purged what it knows how to purge.
          *
          * @since 0.1.0
          */
         do_action(self::PURGED);
+
+        return $called;
     }
 }

@@ -119,9 +119,11 @@ Three details are load-bearing rather than incidental:
 
 Turning Pro on or off changes that asset URL on every already-cached page, so
 both lifecycle hooks purge the page cache
-([`PageCache`](pro/src/Boot/PageCache.php)). Nothing rests on the purge
+([`PageCache`](src/Frontend/PageCache.php)). Nothing rests on the purge
 landing: deactivating a plugin does not delete its files, so a stale page
 serves the previous tier's behaviour for a few minutes rather than a 404.
+Free purges the same caches whenever the published set changes — see
+[Clearing the page cache](#clearing-the-page-cache).
 
 ```bash
 wp eval-file bin/verify-loader-replacement.php   # needs both plugins active
@@ -693,6 +695,35 @@ well as a named zone; dispatches a backwards schedule through
 `rest_do_request()` for its 400; and rebuilds over a hand-edited backwards blob
 to prove the reader's door is total. **It refuses to run on a site that already
 has Optins**, because it rebuilds the published set.
+
+### Clearing the page cache
+
+Every page inlines the published set, so publishing, pausing or editing a
+campaign changes what a cached page should say. Free purges the page caches it
+knows on `wconvert_published_set_changed`
+([ADR 0150](docs/adr/0150-free-clears-the-page-cache-when-the-published-set-changes.md)):
+WP Super Cache, W3 Total Cache, WP Rocket, WP Fastest Cache, SiteGround
+Optimizer, Cache Enabler, Autoptimize, LiteSpeed, Nginx Helper, Breeze and
+WP-Optimize. Nothing rests on it: a window's ends are enforced in the browser,
+so a stale page still stops showing a campaign whose dates passed. Pausing one
+early is what needs the purge.
+
+**Cloudflare, or your own cache.** After every purge attempt, whether or not a
+known plugin was found, WConvert fires `wconvert_purge_page_cache`. Hook it to
+clear anything else:
+
+```php
+add_action('wconvert_purge_page_cache', static function (): void {
+    wp_remote_post('https://api.cloudflare.com/client/v4/zones/' . MY_CF_ZONE . '/purge_cache', [
+        'headers' => ['Authorization' => 'Bearer ' . MY_CF_TOKEN, 'Content-Type' => 'application/json'],
+        'body'    => wp_json_encode(['purge_everything' => true]),
+        'blocking' => false,
+    ]);
+});
+```
+
+The official Cloudflare plugin purges on its own hooks; this is for a site that
+caches HTML at Cloudflare without it.
 
 ## Telling visitors apart, and letting another plugin help
 
