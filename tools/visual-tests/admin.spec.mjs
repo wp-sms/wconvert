@@ -100,11 +100,13 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
         await commonChecks(page, direction);
         await screenshot(page, info, 'page');
         if (state === 'failed') {
+          // A screen can hold more than one region that fails (Settings: destinations and AI agents),
+          // and the first to fail is enough for the checks above. Let every region settle, then
+          // retry each once, last first so a button that goes cannot shift the ones before it.
+          await expect(page.getByRole('status').filter({ hasText: /Loading/ })).toHaveCount(0);
           await context.clearCookies({ name: 'wconvert_ds_state' });
-          // A screen can hold more than one region that failed (Settings: destinations and AI agents),
-          // and the one that answers first need not be first on the page. Retry each.
-          const retries = page.getByRole('button', { name: screen.retry, exact: true });
-          for (let left = 5; left > 0 && await retries.count() > 0; left--) await retries.first().click();
+          const retries = await page.getByRole('button', { name: screen.retry, exact: true }).all();
+          for (const retry of retries.reverse()) await retry.click();
           await expect(page.getByText(screen.full, { exact: true }).first()).toBeVisible();
         }
         expect(errors).toEqual([]);
