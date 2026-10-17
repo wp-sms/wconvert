@@ -79,7 +79,7 @@ final class AgentServiceProvider implements ServiceProvider
             $c->resolve(PlaybookLibrary::class), $c->resolve(SetupIndex::class), $c->resolve(TemplateLibrary::class), $c->resolve(GoalRegistry::class)
         ));
         $container->register(Read\ReviewCampaign::class, static fn (ServiceContainer $c) => new Read\ReviewCampaign(
-            $c->resolve(OptinRepository::class), $c->resolve(PublishReadiness::class), $c->resolve(CampaignReader::class)
+            $c->resolve(OptinRepository::class), $c->resolve(PublishReadiness::class), $c->resolve(CampaignReader::class), $c->resolve(AgentPublishing::class)
         ));
         $container->register(Read\GetStats::class, static fn (ServiceContainer $c) => new Read\GetStats(
             $c->resolve(Dashboard::class), $c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)

@@ -87,7 +87,18 @@ listing its fourteen tools. Every ability is also `meta.mcp.public`, so the
 Adapter's default server lists them. Schemas use no union types, because the
 Adapter's validator rejects `["integer", "null"]`; an optional value is left
 out instead. Without the Adapter the abilities still answer over REST, which is
-what scripts, n8n and Zapier use.
+what scripts, n8n and Zapier use. WordPress picks the REST method from the
+annotations: `GET` for a read (input in the query string, `input[campaign_id]=…`),
+`DELETE` for `publish` and `pause` (they are `destructive`), and `POST` with a
+JSON `{"input": {…}}` body for the rest. The Adapter (0.7) needs WordPress 6.9;
+on 6.8 it will not activate, and WConvert registers nothing.
+
+**10. The switch governs abilities, not the user.** An application password
+carries its user's capabilities, so a client that skips the abilities and calls
+WConvert's own routes directly can do whatever that user can — publishing
+included. "Let AI agents publish" is what keeps an agent working through its
+tools to drafts. The docs say so, and say to connect the agent through MCP, not
+to hand it the password for a general REST client.
 
 ## Considered and rejected
 

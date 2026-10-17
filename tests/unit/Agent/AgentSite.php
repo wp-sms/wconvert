@@ -132,7 +132,7 @@ final class AgentSite
             new \WConvert\Agent\Read\GetOccasion($this->occasions, $this->reader),
             new \WConvert\Agent\Read\FindDesigns($this->library, $this->templates, $this->builder, $this->pro),
             new \WConvert\Agent\Read\ListStarters($playbooks, $index, $this->library, new GoalRegistry($this->pro, new FakeSitePresence([SiteDependency::WooCommerce]))),
-            new \WConvert\Agent\Read\ReviewCampaign($this->optins, $this->readiness, $this->reader),
+            new \WConvert\Agent\Read\ReviewCampaign($this->optins, $this->readiness, $this->reader, $this->publishing),
             new \WConvert\Agent\Read\GetStats(new \WConvert\Stats\Dashboard(new \WConvert\Stats\StatsRepository($this->db), $this->optins), $this->occasions, $this->reader),
             new \WConvert\Agent\Draft\CreateCampaign($input, $this->reader),
             new \WConvert\Agent\Draft\UpdateCampaign($input, $this->reader),

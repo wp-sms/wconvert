@@ -46,6 +46,15 @@ it('leads to the first guide, the topics, the quick fixes and support, all on wc
   }
 });
 
+it('shows how to connect an AI agent and where it is allowed to publish (ADR 0154)', () => {
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'free', version: '1.0.0' };
+  render(<HelpPage />);
+
+  const agents = screen.getByRole('region', { name: 'Connect an AI agent' });
+  expect(within(agents).getByRole('link', { name: /How to connect one/ })).toHaveAttribute('href', 'https://wconvert.io/docs/connect-an-ai-agent/');
+  expect(within(agents).getByRole('link', { name: 'Settings → AI agents' })).toHaveAttribute('href', '#settings?group=connections');
+});
+
 it('names the Pro troubleshooting guide and Pro support only where Pro is installed (ADR 0116)', () => {
   window.wconvertAdmin = { exportUrl: '', installedTier: 'free' };
   const { unmount } = render(<HelpPage />);

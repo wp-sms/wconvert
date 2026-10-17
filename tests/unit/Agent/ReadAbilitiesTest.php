@@ -135,7 +135,7 @@ final class ReadAbilitiesTest extends TestCase
         self::assertSame('30% off everything', $campaign['copy']['headline']);
         self::assertSame(['occasion_id' => 'black-friday-2026', 'name' => 'Black Friday 2026'], $campaign['occasion']);
         self::assertSame(['wall' => '2026-11-20 00:00', 'timezone' => 'UTC'], $campaign['schedule']['starts_at']);
-        self::assertSame(['everywhere' => false, 'show_on' => ['/black-friday/*'], 'hide_on' => []], $campaign['pages']);
+        self::assertSame(['everywhere' => false, 'show_on' => ['/black-friday/*'], 'show_on_types' => [], 'hide_on' => [], 'other_rules' => []], $campaign['pages']);
         self::assertSame(16, strlen($campaign['revision']));
         self::assertSame('https://example.test/?wconvert-preview=' . $id, $campaign['preview_url']);
     }

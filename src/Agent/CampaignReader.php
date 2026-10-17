@@ -92,6 +92,7 @@ final class CampaignReader
             'empty_roles' => array_values(array_diff($roles, array_keys(array_filter($copy, static fn ($words): bool => $words !== '' && $words !== [] && $words !== null)))),
             'link' => CampaignBuilder::linkIn($config),
             'pages' => self::pages($config['targeting'] ?? []),
+            'inline_position' => is_array($config['inline_placement'] ?? null) ? $config['inline_placement'] : null,
             'opens' => self::opens($config['display_rules'] ?? []),
             'frequency' => self::frequency($config['frequency'] ?? []),
             'schedule' => self::schedule($config),
@@ -184,21 +185,26 @@ final class CampaignReader
     }
 
     /**
-     * Which pages a campaign shows on, as an agent writes them back.
+     * Which pages a campaign shows on, in the fields an agent writes back:
+     * paths and post types, and any other rule in words.
      *
      * @param mixed $targeting
-     * @return array{everywhere: bool, show_on: list<string>, hide_on: list<string>}
+     * @return array{everywhere: bool, show_on: list<string>, show_on_types: list<string>, hide_on: list<string>, other_rules: list<string>}
      */
     public static function pages(mixed $targeting): array
     {
         $targeting = is_array($targeting) ? $targeting : [];
-        $words = static function (mixed $rules): array {
-            $out = [];
+        $selected = ($targeting['mode'] ?? '') === 'selected';
+        $pages = ['everywhere' => !$selected, 'show_on' => [], 'show_on_types' => [], 'hide_on' => [], 'other_rules' => []];
+        // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting key, not a get_posts() argument.
+        foreach (['include' => $selected ? ($targeting['include'] ?? []) : [], 'exclude' => $targeting['exclude'] ?? []] as $axis => $rules) {
             foreach (is_array($rules) ? $rules : [] as $rule) {
                 if (!is_array($rule)) continue;
                 $value = (string) ($rule['value'] ?? '');
-                $out[] = match ($rule['type'] ?? null) {
-                    'url' => $value,
+                $type = $rule['type'] ?? null;
+                if ($type === 'url') { $pages[$axis === 'include' ? 'show_on' : 'hide_on'][] = $value; continue; }
+                if ($type === 'singular' && $axis === 'include') { $pages['show_on_types'][] = $value; continue; }
+                $words = match ($type) {
                     /* translators: %s: a post or page ID. */
                     'post' => sprintf(__('the post or page with ID %s', 'wconvert'), $value),
                     /* translators: %s: a post type, e.g. product. */
@@ -209,13 +215,11 @@ final class CampaignReader
                     'term' => sprintf(__('posts in the category or tag with ID %s', 'wconvert'), $value),
                     default => $value,
                 };
+                /* translators: %s: a page rule in words. */
+                $pages['other_rules'][] = $axis === 'include' ? sprintf(__('only on %s', 'wconvert'), $words) : sprintf(__('never on %s', 'wconvert'), $words);
             }
-            return $out;
-        };
-        $showOn = ($targeting['mode'] ?? '') === 'selected' ? $words($targeting['include'] ?? []) : [];
-        // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting key, not a get_posts() argument.
-        $hideOn = $words($targeting['exclude'] ?? []);
-        return ['everywhere' => $showOn === [] && ($targeting['mode'] ?? '') !== 'selected', 'show_on' => $showOn, 'hide_on' => $hideOn];
+        }
+        return $pages;
     }
 
     /**

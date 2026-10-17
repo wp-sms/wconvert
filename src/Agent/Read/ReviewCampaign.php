@@ -3,6 +3,7 @@
 namespace WConvert\Agent\Read;
 
 use WConvert\Agent\Ability;
+use WConvert\Agent\AgentPublishing;
 use WConvert\Agent\CampaignReader;
 use WConvert\Agent\ManagersOnly;
 use WConvert\Agent\Reply;
@@ -21,6 +22,7 @@ final class ReviewCampaign implements Ability
         private readonly OptinRepository $optins,
         private readonly PublishReadiness $readiness,
         private readonly CampaignReader $reader,
+        private readonly AgentPublishing $publishing,
     ) {
     }
 
@@ -33,7 +35,7 @@ final class ReviewCampaign implements Ability
     {
         return [
             'label' => __('Review a campaign', 'wconvert'),
-            'description' => __('Checks one WConvert campaign the way Publish does, without publishing it. issues lists every reason Publish would refuse it now, each with what to do; an empty list means it is ready. Also gives the preview link (a site administrator sees the draft on the site there), the slot roles that still have no words, and where today falls in its schedule. Use it after wconvert/create-campaign or wconvert/update-campaign; then a person publishes it, or wconvert/publish does when the site allows agents to publish. Example: {"campaign_id": "01JD5Z7Q8X3M4N5P6R7S8T9V0W"}.', 'wconvert'),
+            'description' => __('Checks one WConvert campaign the way Publish does, without publishing it. issues lists every reason Publish would refuse it now, each with what to do; an empty list means it is ready. Also gives the preview link (a site administrator sees the draft on the site there), the slot roles that still have no words, where today falls in its schedule, and agents_may_publish: whether this site lets wconvert/publish and wconvert/pause work. Use it after wconvert/create-campaign or wconvert/update-campaign; then a person publishes it, or wconvert/publish does when the site allows agents to publish. Example: {"campaign_id": "01JD5Z7Q8X3M4N5P6R7S8T9V0W"}.', 'wconvert'),
             'input_schema' => Reply::input([
                 'campaign_id' => ['type' => 'string', 'description' => 'The campaign, from wconvert/find-campaigns.'],
             ], ['campaign_id']),
@@ -60,9 +62,12 @@ final class ReviewCampaign implements Ability
             'empty_roles' => $described['empty_roles'],
             'schedule' => $described['schedule'],
             'preview_url' => $described['preview_url'],
-            'next' => $issues === []
-                ? __('Ready. A person can publish it in WConvert → Campaigns, or wconvert/publish can if the site lets agents publish.', 'wconvert')
-                : __('Fix each issue (many need WConvert → Campaigns → Edit), then review again.', 'wconvert'),
+            'agents_may_publish' => $this->publishing->enabled(),
+            'next' => $issues !== []
+                ? __('Fix each issue (many need WConvert → Campaigns → Edit), then review again.', 'wconvert')
+                : ($this->publishing->enabled()
+                    ? __('Ready. This site lets agents publish, so wconvert/publish can put it live, or a person can in WConvert → Campaigns.', 'wconvert')
+                    : __('Ready. A person publishes it in WConvert → Campaigns; this site does not let agents publish.', 'wconvert')),
         ];
     }
 }

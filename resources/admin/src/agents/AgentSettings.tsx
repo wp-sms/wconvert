@@ -1,5 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { SwitchSetting } from '../shell/SwitchSetting';
+import { GuideLink } from '../shell/GuideLink';
+import { GUIDES, docsUrl } from '../shell/docs';
 import { readAgentPublishing, saveAgentPublishing } from './api';
 import type { SettingsEditing } from '../settings-page/useSettingsEditing';
 
@@ -21,6 +23,8 @@ export function AgentSettings({
       read={readAgentPublishing}
       save={saveAgentPublishing}
       onEditingStateChange={onEditingStateChange}
-    />
+    >
+      <p className="m-0 mt-3 text-note"><GuideLink href={docsUrl(GUIDES.aiAgents)}>{__('How to connect an AI agent', 'wconvert')}</GuideLink></p>
+    </SwitchSetting>
   );
 }

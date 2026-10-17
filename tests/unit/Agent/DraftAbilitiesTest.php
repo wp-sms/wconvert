@@ -63,6 +63,37 @@ final class DraftAbilitiesTest extends TestCase
         self::assertSame(1, $optin->config['frequency']['maxPerSession']);
     }
 
+    /** "In my blog posts": every single post, placed after a paragraph, read back as written. */
+    public function testAnInlineBannerGoesIntoBlogPosts(): void
+    {
+        $created = $this->ask('wconvert/create-campaign', [
+            'name' => 'Blog banner', 'goal' => 'promote_offer', 'design_id' => 'inline-cta', 'copy' => ['headline' => '30% off'],
+            'link' => '/black-friday/', 'pages' => ['show_on_types' => ['post']], 'inline_position' => 'after_paragraph', 'after_paragraph' => 3,
+        ]);
+
+        $optin = $this->site->optins->find($created['campaign_id']);
+        self::assertNotNull($optin);
+        self::assertSame(['mode' => 'selected', 'include' => [['type' => 'singular', 'value' => 'post']]], $optin->config['targeting']);
+        self::assertSame(['position' => 'after_paragraph', 'paragraph' => 3, 'fallback' => 'after_content'], $optin->config['inline_placement']);
+        self::assertSame(['post'], $this->ask('wconvert/get-campaign', ['campaign_id' => $created['campaign_id']])['pages']['show_on_types']);
+    }
+
+    public function testAnInlinePositionIsOnlyForInline(): void
+    {
+        $refused = $this->site->call('wconvert/create-campaign', ['inline_position' => 'after_content'] + self::countdownBar());
+
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame('inline_position is only for an inline campaign. Leave it out for this display type.', $refused->get_error_message());
+    }
+
+    public function testDesignsForAGoalIncludeThoseWhoseLinkTheCampaignGives(): void
+    {
+        $designs = array_column($this->ask('wconvert/find-designs', ['display_type' => 'popup', 'goal' => 'promote_offer', 'per_page' => 50])['items'], 'design_id');
+
+        self::assertContains('deadline-panel', $designs);
+        self::assertNotContains('bold-ask', $designs);
+    }
+
     public function testAStarterIsPrefilledAndTheGivenWordsReplaceItsOwn(): void
     {
         $created = $this->ask('wconvert/create-campaign', [
@@ -178,7 +209,8 @@ final class DraftAbilitiesTest extends TestCase
         self::assertSame('2026-11-20 00:00', $this->site->optins->find($id)?->config['starts_at']);
 
         $moved = $this->ask('wconvert/save-occasion', ['occasion_id' => 'black-friday-2026', 'name' => 'Black Friday 2026', 'start' => '2026-12-04', 'end' => '2026-12-15', 'move_campaigns' => true]);
-        self::assertSame([['campaign_id' => $id, 'name' => 'Black Friday bar']], $moved['moved']);
+        self::assertSame([$id], array_column($moved['moved'], 'campaign_id'));
+        self::assertSame('2026-11-27 00:00', $moved['moved'][0]['schedule']['starts_at']['wall']);
         $optin = $this->site->optins->find($id);
         self::assertNotNull($optin);
         $config = $optin->config;

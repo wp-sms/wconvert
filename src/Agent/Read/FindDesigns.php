@@ -43,7 +43,7 @@ final class FindDesigns implements Ability
             'input_schema' => Reply::input([
                 'display_type' => ['type' => 'string', 'enum' => array_map(static fn (DisplayType $type): string => $type->value, DisplayType::cases()), 'description' => 'popup, floating_bar, slide_in, fullscreen or inline.'],
                 'goal' => ['type' => 'string', 'enum' => array_map(static fn (Goal $goal): string => $goal->value, Goal::cases()), 'description' => 'Only designs that can serve this goal.'],
-                'search' => ['type' => 'string', 'description' => 'Words in the design name.'],
+                'search' => ['type' => 'string', 'description' => 'Words in the design name or its design_id.'],
             ] + Reply::pageSchema()),
             'annotations' => ['readonly' => true, 'destructive' => false, 'idempotent' => true],
         ];
@@ -58,8 +58,9 @@ final class FindDesigns implements Ability
             $type = (string) ($entry['display_type'] ?? 'popup');
             if (!(Tier::tryFrom((string) ($entry['tier'] ?? 'free')) ?? Tier::Free)->isSuppliedBy($this->pro) || !$this->builder->displayTypeRuns($type)) continue;
             if (isset($input['display_type']) && $type !== $input['display_type']) continue;
-            if ($goal !== null && $goal->outcome()->designIssue(['template' => $entry]) !== null) continue;
-            if ($search !== '' && !str_contains(mb_strtolower((string) $entry['name']), $search)) continue;
+            // A design's link button has no address until the campaign gives one, so ask with one given.
+            if ($goal !== null && $goal->outcome()->designIssue(CampaignBuilder::linked(['template' => $entry], 'https://example.com/')) !== null) continue;
+            if ($search !== '' && !str_contains(mb_strtolower((string) $entry['name']), $search) && !str_contains((string) $id, $search)) continue;
             $designs[] = [
                 'design_id' => (string) $id,
                 'name' => (string) $entry['name'],

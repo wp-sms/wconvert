@@ -68,7 +68,9 @@ final class CreateCampaign implements Ability
             'revision' => $campaign['revision'],
             'preview_url' => $campaign['preview_url'],
             'timezone' => Reply::timezone(),
-            'next' => __('It is a draft. Check it with wconvert/review-campaign and open preview_url to see it; then a person publishes it in WConvert → Campaigns.', 'wconvert'),
+            'next' => $campaign['display_type'] === 'inline' && $campaign['inline_position'] === null
+                ? __('It is a draft. An inline campaign with no inline_position shows only where someone places the WConvert block or the [wconvert_optin] shortcode; set inline_position with wconvert/update-campaign to place it automatically. Check it with wconvert/review-campaign; then a person publishes it.', 'wconvert')
+                : __('It is a draft. Check it with wconvert/review-campaign and open preview_url to see it; then a person publishes it in WConvert → Campaigns.', 'wconvert'),
         ];
     }
 }

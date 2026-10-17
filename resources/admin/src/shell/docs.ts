@@ -34,6 +34,7 @@ export const GUIDES = {
   quizPaths: 'conditional-quiz-paths',
   externalAnalytics: 'external-analytics-reference',
   campaignSales: 'campaign-sales-reporting',
+  aiAgents: 'connect-an-ai-agent',
 } as const;
 
 export type Guide = (typeof GUIDES)[keyof typeof GUIDES];

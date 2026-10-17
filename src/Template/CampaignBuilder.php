@@ -37,7 +37,7 @@ final class CampaignBuilder
      * and words; without one the campaign names a `design` or carries a whole
      * `template`.
      *
-     * @param array<string, mixed> $campaign `display_type`, `design`|`template`, `copy`, `link`, and any of `targeting`, `frequency`, `starts_at`, `ends_at`, `display_rules`.
+     * @param array<string, mixed> $campaign `display_type`, `design`|`template`, `copy`, `link`, and any of `targeting`, `frequency`, `starts_at`, `ends_at`, `inline_placement`, `display_rules`.
      * @param array<string, mixed>|null $base
      * @return array<string, mixed>|string
      */
@@ -65,7 +65,7 @@ final class CampaignBuilder
             $config = self::linked($config, $campaign['link']);
             unset($config['unchecked_links']);
         }
-        foreach (['targeting', 'frequency', 'starts_at', 'ends_at'] as $key) {
+        foreach (['targeting', 'frequency', 'starts_at', 'ends_at', 'inline_placement'] as $key) {
             if (isset($campaign[$key])) $config[$key] = $campaign[$key];
         }
         // A campaign that names no display plan shows as a fresh setup does.

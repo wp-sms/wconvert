@@ -87,7 +87,7 @@ final class SaveOccasion implements Ability
             foreach ($this->reader->all() as $row) {
                 if (($row['occasion']['occasion_id'] ?? null) !== $id) continue;
                 $result = $this->move($row['campaign_id'], $days);
-                if ($result === null) $moved[] = ['campaign_id' => $row['campaign_id'], 'name' => $row['name']];
+                if (is_array($result)) $moved[] = ['campaign_id' => $row['campaign_id'], 'name' => $row['name'], 'schedule' => $result];
                 else $failed[] = ['campaign_id' => $row['campaign_id'], 'name' => $row['name'], 'reason' => $result];
             }
         }
@@ -103,8 +103,12 @@ final class SaveOccasion implements Ability
         ];
     }
 
-    /** Shift one campaign's draft dates by whole days; null when done, else why not. */
-    private function move(string $campaignId, int $days): ?string
+    /**
+     * Shift one campaign's draft dates by whole days.
+     *
+     * @return array<string, mixed>|string Its new draft schedule, or why it did not move.
+     */
+    private function move(string $campaignId, int $days): array|string
     {
         $raw = $this->reader->raw($campaignId);
         if ($raw === null) return __('It no longer exists.', 'wconvert');
@@ -115,7 +119,7 @@ final class SaveOccasion implements Ability
             if ($wall !== false) $config[$key] = $wall->modify(sprintf('%+d days', $days))->format(Schedule::FORMAT);
         }
         $result = InternalRest::run('PATCH', '/optins/' . $campaignId, ['config' => $config, 'expected_revision' => $this->reader->describe($raw)['revision']]);
-        return InternalRest::failed($result) ? InternalRest::message($result, __('It could not be saved.', 'wconvert')) : null;
+        return InternalRest::failed($result) ? InternalRest::message($result, __('It could not be saved.', 'wconvert')) : CampaignReader::schedule($config);
     }
 
     /** An id from the name, with the start's year where the name has none. */

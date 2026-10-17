@@ -55,10 +55,13 @@ final class AgentCampaignInput
         return [
             'copy' => ['type' => 'object', 'additionalProperties' => true, 'description' => 'Words by slot role, plain text only, e.g. {"headline": "30% off everything", "cta_label": "Shop the sale"}. A role used several times takes a list. find-designs lists each design\'s roles.'],
             'link' => ['type' => 'string', 'description' => 'Where the design\'s link button goes: a full address or a path on this site, e.g. "/black-friday/".'],
-            'pages' => ['type' => 'object', 'additionalProperties' => false, 'description' => 'Which pages it shows on, as paths. * matches anything: "/black-friday/*". Leave show_on out for every page.', 'properties' => [
+            'pages' => ['type' => 'object', 'additionalProperties' => false, 'description' => 'Which pages it shows on. Paths, where * matches anything: "/black-friday/*"; and/or every single post of a type: "post" for blog posts, "page", "product". Leave both show_on fields out for every page.', 'properties' => [
                 'show_on' => $paths + ['description' => 'Only these paths.'],
+                'show_on_types' => ['type' => 'array', 'items' => ['type' => 'string', 'pattern' => '^[a-z0-9_-]{1,20}$'], 'maxItems' => 10, 'description' => 'Only on single posts of these types: "post" (blog posts), "page", "product".'],
                 'hide_on' => $paths + ['description' => 'Never these paths.'],
             ]],
+            'inline_position' => ['type' => 'string', 'enum' => ['before_content', 'after_content', 'after_paragraph', 'after_product_summary'], 'description' => 'For an inline campaign: where it goes in each page it shows on. Left out, it shows only where someone places the WConvert block or the [wconvert_optin] shortcode.'],
+            'after_paragraph' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'description' => 'With inline_position "after_paragraph": which paragraph it follows.'],
             'frequency' => ['type' => 'object', 'additionalProperties' => false, 'description' => 'How often one visitor sees it.', 'properties' => [
                 'per_session' => ['type' => 'integer', 'minimum' => 1, 'description' => 'At most this many times per visit.'],
                 'cooldown_days' => ['type' => 'integer', 'minimum' => 1, 'description' => 'Then not again for this many days.'],
@@ -198,6 +201,16 @@ final class AgentCampaignInput
             if ($targeting instanceof WP_Error) return $targeting;
             $campaign['targeting'] = $targeting;
         }
+        if (isset($input['inline_position'])) {
+            $type = (string) ($input['display_type'] ?? $stored['display_type'] ?? $this->typeOf($input));
+            if ($type !== 'inline') return Reply::refused(__('inline_position is only for an inline campaign. Leave it out for this display type.', 'wconvert'));
+            $placement = ['position' => (string) $input['inline_position']];
+            if ($placement['position'] === 'after_paragraph') {
+                if (!isset($input['after_paragraph'])) return Reply::refused(__('Give after_paragraph, the paragraph number it follows (1 to 100).', 'wconvert'));
+                $placement['paragraph'] = (int) $input['after_paragraph'];
+            }
+            $campaign['inline_placement'] = $placement;
+        }
         if (is_array($input['frequency'] ?? null)) {
             $frequency = $input['frequency'];
             $campaign['frequency'] = array_filter([
@@ -314,7 +327,22 @@ final class AgentCampaignInput
                 $rules[$axis][] = ['type' => 'url', 'value' => $path];
             }
         }
+        foreach ((array) ($pages['show_on_types'] ?? []) as $type) {
+            $rules['include'][] = ['type' => 'singular', 'value' => (string) $type];
+        }
         return (isset($rules['include']) ? ['mode' => 'selected'] : []) + $rules;
+    }
+
+    /**
+     * The display type a create will have, from the design or starter it names.
+     *
+     * @param array<string, mixed> $input
+     */
+    private function typeOf(array $input): string
+    {
+        if (isset($input['design_id'])) return (string) ($this->library->find((string) $input['design_id'])['display_type'] ?? 'popup');
+        if (isset($input['starter_id'])) return (string) ($this->playbooks->find((string) $input['starter_id'])->displayType ?? 'popup');
+        return 'popup';
     }
 
     /** A wall time in `Schedule::FORMAT`, from what an agent is likely to write; '' for none, null when unreadable. */
