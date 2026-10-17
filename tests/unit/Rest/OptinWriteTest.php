@@ -368,6 +368,51 @@ final class OptinWriteTest extends TestCase
         return $data;
     }
 
+    /** A writer naming the draft it read is refused once someone saved since (ADR 0154). */
+    public function testAStaleExpectedRevisionIsRefusedAndAFreshOneSaves(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['display_type' => 'popup']);
+        self::assertIsArray($draft);
+        $read = \WConvert\Optin\ConfigRevision::of($this->optins->find($draft['id']));
+
+        $first = new WP_REST_Request();
+        $first->set_param('id', $draft['id']);
+        $first->set_param('name', 'Renamed');
+        $first->set_param('expected_revision', $read);
+        self::assertNotInstanceOf(WP_Error::class, $this->controller->update($first));
+
+        $stale = new WP_REST_Request();
+        $stale->set_param('id', $draft['id']);
+        $stale->set_param('name', 'Renamed again');
+        $stale->set_param('expected_revision', $read);
+        $refused = $this->controller->update($stale);
+
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame('wconvert_optin_changed', $refused->get_error_code());
+        self::assertSame(409, $refused->get_error_data()['status']);
+        self::assertSame('Renamed', $this->optins->find($draft['id'])?->name);
+    }
+
+    /** The dry run reads every refusal; the route answers with the first of them. */
+    public function testReadinessListsWhatThePublishRouteRefusesFirst(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['display_type' => 'popup', 'targeting' => ['mode' => 'selected']]);
+        self::assertIsArray($draft);
+        $optin = $this->optins->find($draft['id']);
+        self::assertNotNull($optin);
+
+        $readiness = new \WConvert\Optin\PublishReadiness($this->optins, RuleVocabulary::fromManifest(self::PLUGIN_DIR), $this->destinations, new \WConvert\Destination\DestinationRegistry(new FakeProPresence(Tier::Pro), new FakeSitePresence([])));
+        $issues = $readiness->issues($optin);
+
+        self::assertSame(['wconvert_display_incomplete', 'wconvert_optin_needs_a_design'], array_column($issues, 'code'));
+        $request = new WP_REST_Request();
+        $request->set_param('id', $draft['id']);
+        $refused = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame($issues[0]['code'], $refused->get_error_code());
+        self::assertSame($issues[0]['message'], $refused->get_error_message());
+    }
+
     public function testPlacementIsNormalizedAgainstTheDisplayTypeOnWrite(): void
     {
         $topBar = $this->create(Goal::GrowEmailList, [

@@ -62,17 +62,22 @@ final class PageCache
      * ADR 0015 refuse — nothing here drifts against a manifest, and an entry
      * that goes stale simply stops matching and is skipped.
      *
-     * @var list<string>
+     * Keyed by what is called, valued by the product's name.
+     *
+     * @var array<string, string>
      */
     private const PURGES = [
-        'wp_cache_clear_cache',                    // WP Super Cache
-        'w3tc_flush_all',                          // W3 Total Cache
-        'rocket_clean_domain',                     // WP Rocket
-        'wpfc_clear_all_cache',                    // WP Fastest Cache
-        'sg_cachepress_purge_cache',               // SiteGround Optimizer
-        'Cache_Enabler::clear_complete_cache',     // Cache Enabler
-        'autoptimizeCache::clearall',              // Autoptimize
+        'wp_cache_clear_cache' => 'WP Super Cache',
+        'w3tc_flush_all' => 'W3 Total Cache',
+        'rocket_clean_domain' => 'WP Rocket',
+        'wpfc_clear_all_cache' => 'WP Fastest Cache',
+        'sg_cachepress_purge_cache' => 'SiteGround Optimizer',
+        'Cache_Enabler::clear_complete_cache' => 'Cache Enabler',
+        'autoptimizeCache::clearall' => 'Autoptimize',
     ];
+
+    /** @var list<string> The caches the last purge in this request reached, by name. */
+    private static array $lastPurged = [];
 
     /**
      * The page caches that listen on an action.
@@ -112,7 +117,7 @@ final class PageCache
     {
         $called = [];
 
-        foreach (self::PURGES as $purge) {
+        foreach (array_keys(self::PURGES) as $purge) {
             // A cache that is not installed is skipped, not asked — the
             // ordinary WordPress site has none of these. `is_callable()`
             // rather than `function_exists()`, because it answers for both
@@ -135,6 +140,24 @@ final class PageCache
          */
         do_action(self::PURGED);
 
+        self::$lastPurged = array_map(static fn (string $purge): string => self::PURGES[$purge], $called);
         return $called;
+    }
+
+    /**
+     * The page caches the last purge in this request reached, by product
+     * name, so a reply can say what it cleared. Empty before any purge.
+     *
+     * @return list<string>
+     */
+    public static function lastPurged(): array
+    {
+        return self::$lastPurged;
+    }
+
+    /** Forget the last purge, so a caller can tell whether its own act caused one. */
+    public static function forgetLastPurge(): void
+    {
+        self::$lastPurged = [];
     }
 }

@@ -57,6 +57,17 @@
 #wconvert-admin .wconvert-help-fixes svg { inline-size:16px; block-size:16px; color:var(--muted-foreground); opacity:.5; }
 #wconvert-admin .wconvert-help-fixes a:hover svg { opacity:1; }
 
+/* Connect an AI agent: one bordered row, two links. */
+#wconvert-admin .wconvert-help-agents { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:12px 18px; padding:18px 22px; border:1px solid var(--border); border-radius:8px; background:var(--card); }
+#wconvert-admin .wconvert-help-agents__icon { display:grid; place-items:center; inline-size:40px; block-size:40px; border-radius:8px; background:var(--background); color:var(--foreground); }
+#wconvert-admin .wconvert-help-agents__icon svg { inline-size:20px; block-size:20px; }
+#wconvert-admin .wconvert-help-agents__copy { display:grid; gap:2px; min-inline-size:0; }
+#wconvert-admin .wconvert-help-agents h2 { font-size:var(--text-item); font-weight:600; }
+#wconvert-admin .wconvert-help-agents p { font-size:var(--text-note); color:var(--muted-foreground); }
+#wconvert-admin .wconvert-help-agents__links { display:flex; flex-wrap:wrap; gap:8px 18px; font-size:var(--text-note); }
+#wconvert-admin .wconvert-help-agents__links a { display:inline-flex; align-items:center; gap:4px; }
+#wconvert-admin .wconvert-help-agents__links svg { inline-size:14px; block-size:14px; }
+
 /* Still stuck: one tinted band. */
 #wconvert-admin .wconvert-help-support { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:20px 24px; padding:24px 26px; border-radius:8px; background:var(--ice); color:var(--secondary-foreground); }
 #wconvert-admin .wconvert-help-support__icon { display:grid; place-items:center; inline-size:48px; block-size:48px; border-radius:50%; background:var(--card); color:var(--action); }
@@ -93,6 +104,8 @@
   #wconvert-admin .wconvert-help-topics { grid-template-columns:minmax(0,1fr); }
   #wconvert-admin .wconvert-help-card__head { padding-inline:16px; }
   #wconvert-admin .wconvert-help-support { grid-template-columns:minmax(0,1fr); padding:20px; }
+  #wconvert-admin .wconvert-help-agents { grid-template-columns:auto minmax(0,1fr); padding:16px; }
+  #wconvert-admin .wconvert-help-agents__links { grid-column:1 / -1; }
   #wconvert-admin .wconvert-help-support > [data-slot=button] { justify-self:stretch; }
   #wconvert-admin .wconvert-help-version { margin-block-start:-8px !important; padding-inline:4px; }
 }

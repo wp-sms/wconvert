@@ -111,6 +111,35 @@ final class LeadQuery
     }
 
     /**
+     * The search predicate, spelled for the database it runs on.
+     *
+     * ========================================================================
+     * THE ONE PLACE A STATEMENT IS SPELLED PER ENGINE.
+     * ========================================================================
+     * A captured answer must be compared as the text the visitor typed. MySQL
+     * and MariaDB hand `JSON_EXTRACT` back as JSON — quoted, with a newline as
+     * `\n` — so they need `JSON_UNQUOTE`, or a search for a quote or a line
+     * break finds nothing (`bin/verify-lead-search.php`). SQLite has no
+     * `JSON_UNQUOTE`, and its `JSON_EXTRACT` already returns the plain text.
+     * Elsewhere bare `JSON_EXTRACT` is read and unquoted in PHP
+     * ({@see \WConvert\Optin\OptinRepository}); a `WHERE` cannot do that.
+     *
+     * @return literal-string
+     */
+    public static function searchClause(bool $sqlite): string
+    {
+        return $sqlite
+            ? ' AND (LOWER(email) LIKE LOWER(%s) OR phone LIKE %s OR LOWER(JSON_EXTRACT(fields, \'$.answers.name\')) LIKE LOWER(%s) OR LOWER(JSON_EXTRACT(fields, \'$.answers.message\')) LIKE LOWER(%s))'
+            : ' AND (LOWER(email) LIKE LOWER(%s) OR phone LIKE %s OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.answers.name\'))) LIKE LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.answers.message\'))) LIKE LOWER(%s))';
+    }
+
+    /** The SQLite Database Integration (Playground, some hosts) declares itself here. */
+    private static function onSqlite(): bool
+    {
+        return defined('DB_ENGINE') && DB_ENGINE === 'sqlite';
+    }
+
+    /**
      * @param list<string>|null $purposeOptins All matching IDs, including historical Campaigns.
      * @return array{sql: literal-string, params: list<string>}
      */
@@ -145,7 +174,7 @@ final class LeadQuery
         if ($this->search !== null) {
             // Literal substring search is explicit, never run on each keystroke.
             // JSON values (not keys or consent text) are searched as captured.
-            $sql .= ' AND (LOWER(email) LIKE LOWER(%s) OR phone LIKE %s OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.answers.name\'))) LIKE LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.answers.message\'))) LIKE LOWER(%s))';
+            $sql .= self::searchClause(self::onSqlite());
             $term = '%' . addcslashes($this->search, '_%\\') . '%';
             $params = [$term, $term, $term, $term];
         }

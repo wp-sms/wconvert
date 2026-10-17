@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import {
-  ArrowUpRight, ChartColumn, ExternalLink, Info, LifeBuoy, ListChecks, Palette, Rocket, Search, Send, ShieldCheck, ShoppingCart,
+  ArrowUpRight, Bot, ChartColumn, ExternalLink, Info, LifeBuoy, ListChecks, Palette, Rocket, Search, Send, ShieldCheck, ShoppingCart,
   SlidersHorizontal, Users, type LucideIcon,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -9,6 +9,7 @@ import { HELP_URLS } from '../shell/HeaderTools';
 import { GUIDES, docsSearchUrl, docsUrl } from '../shell/docs';
 import { markSubmenuCurrent } from '../shell/menuHighlight';
 import { tierName } from '../goals/availability';
+import { settingsHref } from '../nav';
 import { adminSettings } from '../settings';
 import { interpolate } from '../lib/interpolate';
 import './help.css';
@@ -131,6 +132,19 @@ export function HelpPage() {
           </ul>
         </section>
       </div>
+
+      {/* Agents (ADR 0154): the guide on wconvert.io, and the one switch that lets them publish. */}
+      <section className="wconvert-help-agents" aria-labelledby="wconvert-help-agents">
+        <span className="wconvert-help-agents__icon" aria-hidden="true"><Bot /></span>
+        <div className="wconvert-help-agents__copy">
+          <h2 id="wconvert-help-agents">{__('Connect an AI agent', 'wconvert')}</h2>
+          <p>{__('Let Claude, ChatGPT or Cursor read your campaigns, report how they are doing and make drafts for you to check.', 'wconvert')}</p>
+        </div>
+        <div className="wconvert-help-agents__links">
+          <a href={docsUrl(GUIDES.aiAgents)} target="_blank" rel="noreferrer">{__('How to connect one', 'wconvert')}<ArrowUpRight aria-hidden="true" /><NewTab /></a>
+          <a href={settingsHref('connections')}>{__('Settings → AI agents', 'wconvert')}</a>
+        </div>
+      </section>
 
       <section className="wconvert-help-support" aria-labelledby="wconvert-help-stuck">
         <span className="wconvert-help-support__icon" aria-hidden="true"><LifeBuoy /></span>

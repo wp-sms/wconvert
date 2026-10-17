@@ -8,12 +8,9 @@ use WConvert\Optin\NextYear;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\Schedule;
-use WConvert\Rules\DisplayPlan;
-use WConvert\Support\ProPresence;
-use WConvert\Support\Tier;
+use WConvert\Template\OptinConfigBuilder;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
-use WConvert\Template\TemplateTree;
 use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
@@ -44,15 +41,12 @@ final class OccasionController implements RestController
 
     public const FORMAT = 'wconvert-occasion';
 
-    /** The display types a free install has designs for (PackValidator's rule). */
-    private const FREE_DISPLAY_TYPES = ['popup', 'inline'];
-
     public function __construct(
         private readonly OptinRepository $optins,
         private readonly OccasionStore $occasions,
         private readonly TemplateLibrary $library,
         private readonly TemplateVocabulary $vocabulary,
-        private readonly ProPresence $pro,
+        private readonly OptinConfigBuilder $builder,
     ) {
     }
 
@@ -87,7 +81,7 @@ final class OccasionController implements RestController
             'start' => (string) NextYear::day($source['start']),
             'end' => (string) NextYear::day($source['end']),
         ];
-        $occasion = $this->add($occasion);
+        $occasion = $this->occasions->add($occasion);
         if ($occasion instanceof WP_Error) return $occasion;
 
         $created = []; $failed = [];
@@ -127,7 +121,7 @@ final class OccasionController implements RestController
                 'display_type' => (DisplayType::of($config['display_type'] ?? null) ?? DisplayType::Popup)->value,
                 'design' => $design,
                 'copy' => is_array($tree) ? SlotRoles::copyFrom($tree, $this->vocabulary) : [],
-                'link' => self::linkIn($config),
+                'link' => OptinConfigBuilder::linkIn($config),
             ];
             // A design the library does not hold cannot be named, so it travels whole.
             if ($design === null && is_array($config['template'] ?? null)) $entry['template'] = $config['template'];
@@ -159,12 +153,12 @@ final class OccasionController implements RestController
             return new WP_Error('wconvert_occasion_invalid', __('This file cannot be imported. Nothing was changed.', 'wconvert'), ['status' => 422, 'errors' => $errors]);
         }
         /** @var array{occasion: array<string, string>, campaigns: list<array<string, mixed>>} $document */
-        $occasion = $this->add(array_intersect_key($document['occasion'], array_flip(['id', 'name', 'start', 'end'])));
+        $occasion = $this->occasions->add(array_intersect_key($document['occasion'], array_flip(['id', 'name', 'start', 'end'])));
         if ($occasion instanceof WP_Error) return $occasion;
 
         $created = []; $refused = [];
         foreach ($document['campaigns'] as $campaign) {
-            $config = $this->configFor($campaign, $occasion['id']);
+            $config = $this->builder->build($campaign, $occasion['id']);
             $result = is_string($config) ? $config : self::createDraft($campaign['name'], $campaign['goal'], $config);
             if (is_string($result)) $refused[] = ['name' => $campaign['name'], 'reason' => $result];
             else $created[] = $result;
@@ -226,65 +220,6 @@ final class OccasionController implements RestController
     }
 
     /**
-     * The config a document's campaign becomes, or why this site refuses it.
-     *
-     * @param array<string, mixed> $campaign Already checked by {@see self::errorsIn()}.
-     * @return array<string, mixed>|string
-     */
-    private function configFor(array $campaign, string $occasion): array|string
-    {
-        $type = (string) $campaign['display_type'];
-        if ($this->pro->installedTier() === Tier::Free && !in_array($type, self::FREE_DISPLAY_TYPES, true)) {
-            return __('This display type needs WConvert Pro.', 'wconvert');
-        }
-        $config = ['display_type' => $type, 'occasion' => $occasion];
-        $design = $campaign['design'] ?? null;
-        if (is_string($design)) {
-            $entry = $this->library->find($design);
-            if ($entry === null) return __('This site does not have that design.', 'wconvert');
-            if (($entry['display_type'] ?? 'popup') !== $type) return __('That design is for a different display type.', 'wconvert');
-            $config = $this->library->snapshotInto($config + ['template_id' => $design]);
-            $config['template']['tree'] = SlotRoles::bind($config['template']['tree'], $campaign['copy'] ?? [], $this->vocabulary);
-        } else {
-            $config['template'] = $campaign['template'];
-        }
-        if (is_string($campaign['link'] ?? null) && $campaign['link'] !== '') {
-            $config = TemplateTree::rewrittenIn($config, static function (array $node) use ($campaign): array {
-                if (($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link') $node['href'] = $campaign['link'];
-                return $node;
-            });
-        }
-        foreach (['targeting', 'frequency', 'starts_at', 'ends_at'] as $key) {
-            if (isset($campaign[$key])) $config[$key] = $campaign[$key];
-        }
-        // A document that names no display plan shows as a fresh setup does.
-        $config['display_rules'] = $campaign['display_rules'] ?? DisplayPlan::immediate();
-        return $config;
-    }
-
-    /**
-     * Add an occasion, renaming its id until it is free — of live occasions
-     * and of deleted ones, whose campaigns still carry it.
-     *
-     * @param array<string, string> $occasion
-     * @return array<string, string>|WP_Error
-     */
-    private function add(array $occasion): array|WP_Error
-    {
-        $taken = $this->occasions->taken();
-        $saved = $this->occasions->write(static function (array $items) use (&$occasion, $taken): array {
-            $taken = [...$taken, ...array_column($items, 'id')];
-            $base = $occasion['id'];
-            for ($n = 2; in_array($occasion['id'], $taken, true); $n++) {
-                $suffix = '-' . $n;
-                $occasion['id'] = substr($base, 0, 64 - strlen($suffix)) . $suffix;
-            }
-            return [...$items, $occasion];
-        });
-        return $saved instanceof WP_Error ? $saved : $occasion;
-    }
-
-    /**
      * The campaigns an occasion holds: parents only, as Duplicate copies no arm.
      *
      * @return list<Optin>
@@ -308,27 +243,12 @@ final class OccasionController implements RestController
      */
     private static function createDraft(string $name, string $goal, array $config): array|string
     {
-        $request = new WP_REST_Request('POST', '/' . Routes::NAMESPACE . '/optins');
-        $request->set_param('name', $name);
-        $request->set_param('goal', $goal);
-        $request->set_param('config', $config);
-        $response = rest_do_request($request);
-        $data = $response->get_data();
-        if ($response->get_status() >= 400 || !is_array($data) || !is_string($data['id'] ?? null)) {
-            return is_array($data) && is_string($data['message'] ?? null) ? $data['message'] : __('This campaign could not be created.', 'wconvert');
+        $result = InternalRest::run('POST', '/optins', ['name' => $name, 'goal' => $goal, 'config' => $config]);
+        $data = $result['data'];
+        if (InternalRest::failed($result) || !is_array($data) || !is_string($data['id'] ?? null)) {
+            return InternalRest::message($result, __('This campaign could not be created.', 'wconvert'));
         }
         return ['id' => $data['id'], 'name' => (string) ($data['name'] ?? $name)];
-    }
-
-    /** @param array<string, mixed> $config */
-    private static function linkIn(array $config): ?string
-    {
-        $link = null;
-        TemplateTree::rewrittenIn($config, static function (array $node) use (&$link): array {
-            if ($link === null && ($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link' && is_string($node['href'] ?? null) && $node['href'] !== '') $link = $node['href'];
-            return $node;
-        });
-        return $link;
     }
 
     private static function isWallTime(string $value): bool

@@ -12,7 +12,9 @@ import { formatCount, formatRange, formatRate, siteDay } from '../lib/format';
 import { spanOf } from './span';
 import { nextYearOf, occasionPhase, occasionTotals, occasionWindow, placeBar, type Phase } from '../lib/occasion';
 import { createHref, occasionHref, optinsHref } from '../nav';
-import { campaignName, listOptins, readCampaignPreviews, statusOf, type CampaignPreview, type OptinSummary } from '../optins/api';
+import { campaignName, deleteOptin, duplicateCampaign, listOptins, publishOptin, readCampaignPreviews, statusOf, unpublishOptin, type CampaignPreview, type OptinSummary } from '../optins/api';
+import { CampaignMenu } from '../optins/CampaignMenu';
+import { decisionCopy, type DecisionKind } from '../optins/decisionCopy';
 import { StatusBadge } from '../optins/StatusBadge';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
@@ -59,7 +61,9 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const [asking, setAsking] = useState<'copy' | 'delete' | 'edit' | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [decision, setDecision] = useState<{ kind: DecisionKind; row: OptinSummary } | null>(null);
   const menu = useRef<HTMLButtonElement>(null);
+  const rowFocus = useRef<HTMLElement | null>(null);
   const today = siteDay();
 
   useEffect(() => {
@@ -160,6 +164,18 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
     } catch (cause) { setError(messageOf(cause)); }
     finally { setBusy(false); }
   };
+  // A row's action, then the page reads its list again: the same routes the Campaigns screen uses.
+  const act = async (work: () => Promise<unknown>, name: string) => {
+    setBusy(true); setError(null);
+    try { await work(); setAttempt((n) => n + 1); }
+    catch (cause) { setError(sprintf(/* translators: 1: a campaign's name, 2: why an action on it failed. */ __('%1$s: %2$s', 'wconvert'), name, messageOf(cause))); }
+    finally { setBusy(false); }
+  };
+  const decide = ({ kind, row }: { kind: DecisionKind; row: OptinSummary }) => void act(
+    () => kind === 'delete' ? deleteOptin(row.id) : kind === 'pause' ? unpublishOptin(row.id) : publishOptin(row.id),
+    campaignName(row),
+  );
+  const decisionWords = decision ? decisionCopy(decision.kind, false, campaignName(decision.row)) : null;
   const exportFile = async () => {
     setBusy(true); setError(null);
     try { download(`${id}.json`, await exportOccasion(id)); }
@@ -170,7 +186,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const next = nextYearOf(occasion);
   const totals = report?.status === 'ready' ? occasionTotals(report.data, new Set(campaigns.map((row) => row.id))) : null;
   const numbers = report?.status === 'ready'
-    ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, { count: row.conversions, shown: row.impressions, rate: row.conversion_rate, label: goal.result_label }])))
+    ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, { count: row.conversions, shown: row.impressions, rate: row.conversion_rate, label: goal.result_label, capture: goal.action === 'submit' }])))
     : {};
   const summary = query === null ? null
     : 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to)
@@ -268,9 +284,24 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                           : <span>{status === 'draft' ? __('No results yet', 'wconvert') : __('No results in this period', 'wconvert')}</span>}
                       </DataTableCell>
                       <DataTableActions className="wconvert-campaign-row-actions">
-                        <Button variant="ghost" onClick={() => onEdit(row.id)}>
+                        <Button variant="ghost" disabled={busy} onClick={() => onEdit(row.id)}>
                           {status === 'draft' ? __('Continue editing', 'wconvert') : __('Edit', 'wconvert')}
                         </Button>
+                        <CampaignMenu
+                          row={row}
+                          name={name}
+                          parent={row}
+                          arm={false}
+                          busy={busy}
+                          navigationBusy={busy}
+                          missingDesign={previews[row.id]?.template === null}
+                          result={result}
+                          reportReady={report?.status === 'ready'}
+                          days={query !== null && 'days' in query && query.days !== undefined ? query.days : 30}
+                          range={report?.status === 'ready' ? { from: report.data.from, to: report.data.to } : undefined}
+                          onDuplicate={() => void act(() => duplicateCampaign(row.id, sprintf(/* translators: %s: a campaign's name. */ __('%s — copy', 'wconvert'), name)), name)}
+                          onDecision={(kind, trigger) => { rowFocus.current = trigger; setDecision({ kind, row }); }}
+                        />
                       </DataTableActions>
                     </DataTableRow>
                   );
@@ -281,6 +312,20 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
           </Region>
         </>}
       </div>
+      <ConfirmDialog
+        variant={decision?.kind === 'delete' ? 'destructive' : 'default'}
+        open={decision !== null}
+        onOpenChange={(open) => { if (!open) setDecision(null); }}
+        title={decisionWords?.title ?? ''}
+        description={decisionWords?.description ?? ''}
+        confirmLabel={decisionWords?.confirmLabel ?? ''}
+        returnFocusTo={rowFocus}
+        onConfirm={() => {
+          if (!decision) return;
+          const asked = decision;
+          setDecision(null);
+          decide(asked);
+        }} />
       <ConfirmDialog open={asking === 'copy'} onOpenChange={(open) => { if (!open) setAsking(null); }} returnFocusTo={menu}
         title={sprintf(/* translators: %s: an occasion's name. */ __('Copy %s to next year?', 'wconvert'), occasion.name)}
         description={<>

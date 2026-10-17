@@ -1192,6 +1192,22 @@ anything, and deleting it detaches its campaigns.*
 *Amended by [ADR 0153](docs/adr/0153-an-occasion-travels-as-one-document.md):
 an occasion copies to next year and exports or imports as one JSON document;
 both create draft campaigns only.*
+*Completed by [ADR 0154](docs/adr/0154-agents-act-through-wordpress-abilities.md):
+an AI agent may read occasions and make draft campaigns in one; it publishes
+or pauses them only once **Let AI agents publish** is on.*
+
+### Agent ability
+
+One thing an AI agent may do in WConvert, registered with WordPress's Abilities
+API as `wconvert/<verb>-<noun>` in the `wconvert` category. An agent signs in as
+a WordPress user with `manage_options` and reads campaigns, occasions, designs
+and stats, or makes and edits **draft** campaigns. It reads and writes words by
+[[Slot Role]] and never sees a design's tree or a [[Lead]]. Its writes go through
+the same routes as the editor's, so it meets the same refusals. Publishing and
+pausing are refused until a site administrator turns on **Let AI agents
+publish** (Settings → Connections & destinations → AI agents, off by default).
+Where the MCP Adapter runs, the abilities are also tools on WConvert's MCP
+server. See [ADR 0154](docs/adr/0154-agents-act-through-wordpress-abilities.md).
 
 ### Picker preferences
 

@@ -54,6 +54,7 @@ export function settingsIndex(): SettingEntry[] {
     { key: 'connect-account', group: 'connections', label: __('Connect an account', 'wconvert'), terms: __('account api key credentials sign in mailchimp brevo', 'wconvert'),
       find: [control(__('Connect an account', 'wconvert'), `${__('Connect', 'wconvert')} `), heading(__('Accounts', 'wconvert')), destinations] },
     { key: 'destinations', group: 'connections', label: __('Destinations', 'wconvert'), terms: __('where leads go failing sending issues recent sends status health', 'wconvert'), find: [destinations] },
+    { key: 'agents-publish', group: 'connections', label: __('Let AI agents publish', 'wconvert'), terms: __('ai agent claude chatgpt cursor mcp abilities automation publish drafts', 'wconvert'), find: [setting('agents-publish')] },
     { key: 'send-test', group: 'connections', label: __('Send a test', 'wconvert'), terms: __('test email try check delivery', 'wconvert'), find: [control(__('Send a test', 'wconvert')), destinations] },
 
     { key: 'allowance-max', group: 'experience', label: ALLOWANCE_LABELS.maxImpressions(), terms: __('frequency cap limit times visitor impressions shown ever', 'wconvert'), find: [setting('allowance-max')] },

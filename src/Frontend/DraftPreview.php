@@ -64,6 +64,12 @@ final class DraftPreview
     ) {
     }
 
+    /** The address that previews one campaign; `siteLinks.ts` builds the same one for the admin. */
+    public static function url(string $id): string
+    {
+        return add_query_arg(self::PARAM, $id, home_url('/'));
+    }
+
     public function hooks(): void
     {
         // Headers are still unsent here and no longer are by

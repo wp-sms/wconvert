@@ -68,6 +68,20 @@ final class LeadHistoryTest extends TestCase
         foreach ($db->reads as $read) $this->assertStringContainsString($filter['sql'], $read['sql']);
     }
 
+    /**
+     * SQLite has no JSON_UNQUOTE; MySQL needs it, or a quote or a line break
+     * in an answer is never found. One clause per engine, and every read uses it.
+     */
+    public function testTheSearchIsSpelledForTheEngineItRunsOn(): void
+    {
+        self::assertStringNotContainsString('JSON_UNQUOTE', LeadQuery::searchClause(true));
+        self::assertSame(2, substr_count(LeadQuery::searchClause(false), 'JSON_UNQUOTE(JSON_EXTRACT('));
+        self::assertStringNotContainsString('->>', LeadQuery::searchClause(false));
+
+        $query = LeadQuery::fromInput(['search' => 'Sarah', 'snapshot' => self::SNAPSHOT]);
+        self::assertStringContainsString(LeadQuery::searchClause(false), $query->constraints()['sql']);
+    }
+
     public function testPurposeViewsUseAllMatchingCampaignIdsOnceForCountPageAndExport(): void
     {
         $query = LeadQuery::fromInput(['purpose' => 'enquiries', 'snapshot' => self::SNAPSHOT]);

@@ -75,3 +75,10 @@ occasions and campaigns, and create draft campaigns inside an occasion.
 Publishing, scheduling or pausing a campaign is refused unless a site
 administrator has turned on "Let AI agents publish". The setting is per site
 and off by default.
+
+  *Amended by [ADR 0154](0154-agents-act-through-wordpress-abilities.md): agents
+  act through WordPress Abilities. "Scheduling" is no longer gated: it is a draft edit — an agent sets a
+  campaign's `starts_at`/`ends_at` with `update-campaign` like any other field,
+  and the dates reach visitors only when the campaign is published. The setting
+  is the option `wconvert_agents_publish` under Settings → Connections &
+  destinations → AI agents, and it gates `publish` and `pause` alone.*

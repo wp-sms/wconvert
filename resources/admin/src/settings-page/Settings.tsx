@@ -15,6 +15,7 @@ import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
 import { PrivacyGuidanceSettings } from '../privacy/PrivacyGuidanceSettings';
 import { Destinations } from '../destinations/Destinations';
+import { AgentSettings } from '../agents/AgentSettings';
 import type { SettingsEditing } from './useSettingsEditing';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
@@ -149,10 +150,7 @@ export function Settings({
       </nav>
       <div className="min-w-0 max-w-[900px]">
         {group === 'connections' && (
-          <Destinations
-            destinationId={destinationId}
-            onEditingStateChange={onEditingStateChange}
-          />
+          <ConnectionSettings destinationId={destinationId} onEditingStateChange={onEditingStateChange} />
         )}
         {group === 'experience' && <VisitorExperienceSettings onEditingStateChange={onEditingStateChange} />}
         {group === 'protection' && <SpamProtection onEditingStateChange={onEditingStateChange} />}
@@ -181,6 +179,16 @@ function usePairedEditing(report?: SettingsEditing): [SettingsEditing, SettingsE
   }, [first, second, report]);
 
   return [setFirst, setSecond];
+}
+
+function ConnectionSettings({ destinationId, onEditingStateChange }: { destinationId?: string; onEditingStateChange?: SettingsEditing }) {
+  const [destinations, agents] = usePairedEditing(onEditingStateChange);
+  return (
+    <div className="grid gap-6">
+      <Destinations destinationId={destinationId} onEditingStateChange={destinations} />
+      <AgentSettings onEditingStateChange={agents} />
+    </div>
+  );
 }
 
 function VisitorExperienceSettings({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing }) {

@@ -148,6 +148,17 @@ final class PageCacheTest extends TestCase
         );
     }
 
+    /** The same purge, remembered by product name for the rest of the request. */
+    public function testItRemembersWhatTheLastPurgeReachedByName(): void
+    {
+        PageCache::forgetLastPurge();
+        $this->assertSame([], PageCache::lastPurged());
+
+        PageCache::purge();
+
+        $this->assertSame(['WP Super Cache', 'Cache Enabler'], PageCache::lastPurged());
+    }
+
     /**
      * The function-shaped caches — WP Super Cache and the rest — are reached
      * by calling a function they define. `tests/unit/Support/installed-cache-plugins.php`
