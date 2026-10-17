@@ -1184,6 +1184,11 @@ See [ADR 0112](docs/adr/0112-template-discovery-and-reviewed-collections.md).
 A merchant-owned name and inclusive date range stored in a site option for
 planning, such as an anniversary sale. It suggests browsing ideas without
 creating targeting rules, discounts or campaign schedules.
+*Amended by [ADR 0149](docs/adr/0149-an-occasion-groups-campaigns.md): an
+occasion is also a folder that owns campaigns, linked by `config.occasion`.
+Creating a campaign inside one prefills its schedule (start 00:00 to the day
+after the end, 00:00). The occasion itself still never schedules or publishes
+anything, and deleting it detaches its campaigns.*
 
 ### Picker preferences
 
