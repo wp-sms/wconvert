@@ -8,7 +8,8 @@ use WConvert\Tests\Unit\Support\PhpSource;
 
 /**
  * Orders and coupons remain external. ADR 0121 permits quantity-one cart additions
- * and session persistence only in the protected recommendation transport.
+ * and session persistence only in the protected recommendation transport, and
+ * ADR 0152 permits applying an existing coupon only in the coupon link.
  * The scanner distinguishes action identifiers from executable cart method calls.
  */
 #[CoversNothing]
@@ -47,6 +48,10 @@ final class NoWriteIntoWooCommerceTest extends TestCase
                     if (str_ends_with($file, '/pro/modules/cart-recovery/src/CartAddition.php')) continue;
                     if (!preg_match('/->\s*' . $write . '\s*\(/', $code)) continue;
                 }
+                // ADR 0152 permits applying an existing coupon in exactly one
+                // place: the coupon link, guarded by "a published campaign
+                // shows this code". Every other write stays banned there too.
+                if ($write === 'apply_coupon' && str_ends_with($file, '/pro/modules/cart-recovery/src/CouponLink.php')) continue;
                 if (str_contains($code, $write)) {
                     $offenders[] = sprintf('%s names %s', $file, $write);
                 }

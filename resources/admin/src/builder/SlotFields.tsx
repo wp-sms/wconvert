@@ -2,7 +2,7 @@ import { StyleValueInput } from './StyleValueInput';
 import { CheckRow } from '../shell/CheckRow';
 import { SentenceEditor } from './SentenceEditor';
 import type { SentenceValue } from './sentence';
-import { useId, useState, type ReactNode } from 'react';
+import { Fragment, useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { useAdvanced } from './advanced';
 import { AutoGrowTextarea } from './AutoGrowTextarea';
@@ -22,6 +22,7 @@ import { phoneSiteCountry } from '../phoneSiteCountry';
 import { PhoneCountryPicker } from '../PhoneCountryPicker';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
+import { CodeLinkSettings } from '../codeLinkControls';
 
 /**
  * The controls for **one slot** — what it says, how it behaves, and whether it
@@ -109,7 +110,8 @@ export function SlotFields({
     <>
       {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, italic: slot.values.italic as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} italic={slot.keys.includes('italic')} link={slot.keys.includes('link')} policy={policy} onChange={onSentence} />}
       {slot.keys.map((key) => {
-        if (slot.type === 'code' && key !== 'text' && slot.settings.find(setting => setting.param === 'copy')?.held !== true) return null;
+        // The copy wording waits for the copy button; the apply link does not need it.
+        if (slot.type === 'code' && !['text', 'apply_label', 'apply_href'].includes(key) && slot.settings.find(setting => setting.param === 'copy')?.held !== true) return null;
         if (simple && ['text', 'emphasis', 'italic', 'link'].includes(key)) return null;
         /*
           **An address only where the button goes somewhere.** A submit, next,
@@ -146,6 +148,14 @@ export function SlotFields({
 
         const control = controlFor(key, slot);
         const id = `${fieldId}-${key}`;
+        if (slot.type === 'code' && key === 'apply_href') {
+          return <Fragment key={key}>
+            <PanelField label={label} htmlFor={id}>
+              <KeyControl id={id} control={control} label={label} value={held} onChange={(value) => onValue(key, value)} />
+            </PanelField>
+            <CodeLinkSettings code={text} href={held} onChange={(value) => onValue(key, value)} />
+          </Fragment>;
+        }
         if (control === 'media') {
           // The picture is the control (ADR 0136), so the field is named for the picture, not its address.
           return <div key={key} className="wconvert-panel-field">
@@ -410,7 +420,7 @@ export function LinkControl({
 export type KeyControlKind = 'link' | 'url' | 'media' | 'multiline' | 'text';
 
 export function controlFor(key: string, slot: Pick<Slot, 'type'>): KeyControlKind {
-  if (key === 'href') {
+  if (key === 'href' || key === 'apply_href') {
     return 'link';
   }
 

@@ -729,6 +729,8 @@ final class TemplateLabels
             'copy_label' => __('Copy button label', 'wconvert'),
             'copied_label' => __('Message when copied', 'wconvert'),
             'copy_failed_label' => __('Message when copying is unavailable', 'wconvert'),
+            'apply_label' => __('Code link text', 'wconvert'),
+            'apply_href' => __('Where the code link goes', 'wconvert'),
             'text' => __('Text', 'wconvert'),
             'link' => __('Link', 'wconvert'),
             /* translators: the words inside a sentence that are set in bold, where the sentence carries %b. */

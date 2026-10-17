@@ -418,6 +418,9 @@ export interface CodeNode extends HideableNode {
   readonly copy_label?: string;
   readonly copied_label?: string;
   readonly copy_failed_label?: string;
+  /** A link beside the code that applies it, e.g. a store's `?coupon=` URL. */
+  readonly apply_label?: string;
+  readonly apply_href?: string;
 }
 
 /**

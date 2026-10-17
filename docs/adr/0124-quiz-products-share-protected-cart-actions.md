@@ -51,7 +51,7 @@ existing bounded Store API read; cards share Woo eligibility and price formattin
 with standalone recommendations. Reading a named public result is not evidence
 that a visitor completed the quiz.
 
-`CartAddition` remains the only mutation path. The expiring session capability and
+`CartAddition` remains the only mutation path. *Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): `CouponLink` also applies an existing coupon, only one a published campaign shows; it adds and removes no product.* The expiring session capability and
 operation receipt now bind the result context as well as campaign/revision.
 Before mutation the server re-resolves the published selection, live eligibility,
 current price fingerprint and extension support. Existing origin, functional

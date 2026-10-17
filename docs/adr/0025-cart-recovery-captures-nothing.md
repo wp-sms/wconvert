@@ -184,6 +184,11 @@ Minting would also be a **write into WooCommerce's data** (a `shop_coupon` post)
 which is [ADR 0024](0024-wconvert-writes-no-wsms-engagements.md)'s error in a
 different table.
 
+*Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md):
+one narrow exception. A campaign's coupon link may apply an EXISTING coupon to
+the visitor's own cart, only when a published campaign shows that exact code
+now. Nothing here changes: WConvert still mints, edits and prices no coupon.*
+
 *This section is about the cart [[Goal]] and it turned out to be about the
 [[Template]] library too.
 [ADR 0053](0053-the-spin-to-win-card-is-withdrawn.md) withdrew the
@@ -204,7 +209,7 @@ the wheel for needing a code PER VISITOR.*
 
 *Asserted rather than argued as of [#36](https://github.com/navidkashani/wconvert/issues/36):
 `tests/unit/Pro/WooCommerce/NoWriteIntoWooCommerceTest.php` reads both plugin trees
-and rejects coupon creation and cart mutation. **Amended by [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** optional consented analytics may store a pending campaign reference in the WooCommerce session and provenance on the order. It may not alter cart contents, prices, payment, coupons or order status. The older scan covers the original trees; runtime attribution checks cover the analytics module. This is the same posture, and the same tokenised scan, that ADR 0024's own test
+and rejects coupon creation and cart mutation. **Amended by [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** optional consented analytics may store a pending campaign reference in the WooCommerce session and provenance on the order. It may not alter cart contents, prices, payment, coupons or order status. *Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): except the coupon link, which applies an existing code a published campaign shows.* The older scan covers the original trees; runtime attribution checks cover the analytics module. This is the same posture, and the same tokenised scan, that ADR 0024's own test
 takes over `wsms_engagements`. The failure either exists to catch is a line
 somebody ADDS, which no assertion about output can see.*
 
