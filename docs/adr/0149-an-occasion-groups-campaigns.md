@@ -3,6 +3,8 @@
 Date: 2026-10-17. Status: accepted.
 Amends [0112](0112-template-discovery-and-reviewed-collections.md) and the
 [[Site occasion]] entry in `CONTEXT.md`. Records the vocabulary #273 builds on.
+Amended by [0153](0153-an-occasion-travels-as-one-document.md): copy and
+export/import.
 
 Until now a [[Site occasion]] was a name and an inclusive date range kept for
 planning. It suggested ideas in the design picker and stored nothing that could

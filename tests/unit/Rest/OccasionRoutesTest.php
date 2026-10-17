@@ -12,6 +12,7 @@ use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
+use WConvert\Rest\OccasionController;
 use WConvert\Rest\OptinController;
 use WConvert\Rules\RuleCatalogue;
 use WConvert\Rules\RuleVocabulary;
@@ -39,17 +40,22 @@ use WP_REST_Response;
  * bootstrap hands to {@see OptinController::store()} here: the same refusals a
  * typed campaign meets, and nothing that could publish.
  */
+#[CoversClass(OccasionController::class)]
 #[CoversClass(OptinController::class)]
 #[CoversClass(OccasionStore::class)]
 final class OccasionRoutesTest extends TestCase
 {
     private const PLUGIN_DIR = __DIR__ . '/../../..';
+    private const FIXTURE = __DIR__ . '/../../fixtures/occasions/black-friday-2026.json';
 
     private OptinRepository $optins;
     private OptinController $controller;
     private TemplateVocabulary $templates;
     private TemplateLibrary $library;
     private FakeConnection $db;
+
+    /** @var list<string> */
+    private array $dispatched = [];
 
     protected function setUp(): void
     {
@@ -81,11 +87,15 @@ final class OccasionRoutesTest extends TestCase
             new \WConvert\Destination\DestinationRegistry($pro, $site),
             new OccasionStore(),
         );
+        $GLOBALS['wconvertTestRestServer'] = function (WP_REST_Request $request) {
+            $this->dispatched[] = $request->get_method() . ' ' . $request->get_route();
+            return $this->controller->store($request);
+        };
     }
 
     protected function tearDown(): void
     {
-        unset($GLOBALS['wpdb']);
+        unset($GLOBALS['wconvertTestRestServer'], $GLOBALS['wpdb']);
         $GLOBALS['wconvertTestOptionTable'] = [];
     }
 
@@ -139,6 +149,167 @@ final class OccasionRoutesTest extends TestCase
     }
 
     // ------------------------------------------------------------------
+    // #279: copy an occasion to next year
+    // ------------------------------------------------------------------
+
+    public function testCopyingMakesNextYearsOccasionWithLinkedDraftsAndLeavesTheOriginals(): void
+    {
+        $this->occasions([self::blackFriday()]);
+        $original = $this->create([
+            'occasion' => 'black-friday-2026', 'starts_at' => '2026-11-20 00:00', 'ends_at' => '2026-12-02 00:00',
+            'analytics' => ['off' => false, 'label' => 'bf-2026-popup'],
+        ], 'BF 2026 popup');
+        self::assertIsArray($original);
+        $this->create([], 'Not in the occasion');
+        $before = $this->optins->find($original['id']);
+
+        $reply = $this->copy('black-friday-2026');
+
+        self::assertSame(['id' => 'black-friday-2027', 'name' => 'Black Friday 2027', 'start' => '2027-11-20', 'end' => '2027-12-01'], $reply['occasion']);
+        self::assertSame([], $reply['failed']);
+        self::assertCount(1, $reply['created']);
+        self::assertSame('BF 2027 popup', $reply['created'][0]['name']);
+        self::assertSame(['POST /wconvert/v1/optins'], $this->dispatched, 'the copy goes through the REST route');
+
+        $copy = $this->optins->find($reply['created'][0]['id']);
+        self::assertNotNull($copy);
+        self::assertNull($copy->publishedAt, 'a copy is a draft');
+        self::assertSame('black-friday-2027', $copy->config['occasion']);
+        self::assertSame('2027-11-20 00:00', $copy->config['starts_at']);
+        self::assertSame('2027-12-02 00:00', $copy->config['ends_at']);
+        self::assertSame('', $copy->config['analytics']['label']);
+        self::assertEquals($before, $this->optins->find($original['id']), 'the original is never written');
+        self::assertSame(['black-friday-2026', 'black-friday-2027'], (new OccasionStore())->ids());
+    }
+
+    public function testCopyingTwiceFindsAFreeId(): void
+    {
+        $this->occasions([self::blackFriday()]);
+        self::assertSame('black-friday-2027', $this->copy('black-friday-2026')['occasion']['id']);
+        self::assertSame('black-friday-2027-2', $this->copy('black-friday-2026')['occasion']['id']);
+    }
+
+    public function testCopyingAnOccasionThatDoesNotExistIs404(): void
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('id', 'nothing');
+        $missing = $this->occasionController()->copy($request);
+        self::assertInstanceOf(WP_Error::class, $missing);
+        self::assertSame(404, $missing->get_error_data()['status']);
+    }
+
+    // ------------------------------------------------------------------
+    // #280: an occasion travels as one document
+    // ------------------------------------------------------------------
+
+    public function testTheFixtureImportsAsFourLinkedDraftsWithItsWordsAndLink(): void
+    {
+        $reply = $this->import(self::fixture());
+
+        self::assertSame('black-friday-2026', $reply['occasion']['id']);
+        self::assertSame([], $reply['refused']);
+        self::assertCount(4, $reply['created']);
+        foreach ($reply['created'] as $created) {
+            $optin = $this->optins->find($created['id']);
+            self::assertNotNull($optin);
+            self::assertNull($optin->publishedAt, 'an import never publishes');
+            self::assertSame('black-friday-2026', $optin->config['occasion']);
+        }
+        $popup = $this->optins->find($reply['created'][1]['id']);
+        self::assertSame('Black Friday popup', $popup?->name);
+        $copy = SlotRoles::copyFrom($popup->config['template']['tree'], $this->templates);
+        self::assertSame('Our biggest sale of the year', $copy['headline']);
+        self::assertStringContainsString('"href":"\/black-friday\/"', (string) json_encode($popup->config['template']));
+        self::assertSame('2026-11-10 00:00', $this->optins->find($reply['created'][3]['id'])?->config['starts_at']);
+    }
+
+    public function testExportThenImportRoundTrips(): void
+    {
+        $first = $this->import(self::fixture());
+        $exported = $this->export('black-friday-2026');
+
+        self::assertSame('wconvert-occasion', $exported['format']);
+        self::assertCount(4, $exported['campaigns']);
+        $byName = array_column($exported['campaigns'], null, 'name');
+        self::assertEqualsCanonicalizing(array_column(self::fixture()['campaigns'], 'name'), array_keys($byName));
+        foreach (self::fixture()['campaigns'] as $campaign) {
+            $out = $byName[$campaign['name']];
+            self::assertSame($campaign['design'], $out['design']);
+            self::assertSame($campaign['display_type'], $out['display_type']);
+            self::assertSame($campaign['link'], $out['link']);
+            self::assertSame($campaign['starts_at'], $out['starts_at']);
+            self::assertSame($campaign['ends_at'], $out['ends_at']);
+            foreach ($campaign['copy'] as $role => $words) {
+                self::assertSame($words, $out['copy'][$role], $campaign['name'] . ': ' . $role);
+            }
+        }
+
+        $again = $this->import($exported);
+        self::assertSame('black-friday-2026-2', $again['occasion']['id'], 'an id already taken is made unique');
+        self::assertCount(4, $again['created']);
+    }
+
+    public function testADesignOutsideTheLibraryTravelsWhole(): void
+    {
+        $this->occasions([self::blackFriday()]);
+        $template = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/resources/templates/library/offer-panel.json'), true);
+        $made = $this->create(['occasion' => 'black-friday-2026', 'template_id' => null, 'template' => ['tree' => $template['tree'], 'tokens' => $template['tokens']]]);
+        self::assertIsArray($made);
+
+        $exported = $this->export('black-friday-2026');
+        self::assertNull($exported['campaigns'][0]['design']);
+        self::assertSame($made['config']['template'], $exported['campaigns'][0]['template']);
+
+        $exported['occasion']['id'] = 'elsewhere';
+        $imported = $this->import($exported);
+        self::assertCount(1, $imported['created']);
+    }
+
+    public function testAMalformedDocumentIs422AndWritesNothing(): void
+    {
+        $document = self::fixture();
+        $document['campaigns'][2]['starts_at'] = '20 November';
+        $document['campaigns'][0]['display_type'] = 'billboard';
+
+        $refused = $this->occasionController()->import($this->importRequest($document));
+
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame(422, $refused->get_error_data()['status']);
+        self::assertSame(['campaigns.0.display_type', 'campaigns.2.starts_at'], array_keys($refused->get_error_data()['errors']));
+        self::assertSame([], $this->db->writes);
+        self::assertArrayNotHasKey(PickerDocuments::OCCASIONS, $GLOBALS['wconvertTestOptionTable']);
+    }
+
+    public function testAFileThatIsNotAnOccasionIsRefused(): void
+    {
+        $refused = $this->occasionController()->import($this->importRequest(['format' => 'wconvert-template', 'schema' => 1]));
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame(['format'], array_keys($refused->get_error_data()['errors']));
+    }
+
+    /** On free, the bar is refused and named; the rest import. */
+    public function testAProDisplayTypeOnFreeIsRefusedForThatCampaignAlone(): void
+    {
+        $reply = $this->import(self::fixture(), Tier::Free);
+
+        self::assertCount(3, $reply['created']);
+        self::assertCount(1, $reply['refused']);
+        self::assertSame('Black Friday top bar', $reply['refused'][0]['name']);
+        self::assertSame('This display type needs WConvert Pro.', $reply['refused'][0]['reason']);
+    }
+
+    public function testAnUnknownDesignIsRefusedForThatCampaignAlone(): void
+    {
+        $document = self::fixture();
+        $document['campaigns'][1]['design'] = 'a-design-this-site-lacks';
+
+        $reply = $this->import($document);
+
+        self::assertCount(3, $reply['created']);
+        self::assertSame([['name' => 'Black Friday popup', 'reason' => 'This site does not have that design.']], $reply['refused']);
+    }
+
+    // ------------------------------------------------------------------
 
     /** @param list<array<string, string>> $items */
     private function occasions(array $items): void
@@ -151,6 +322,12 @@ final class OccasionRoutesTest extends TestCase
     private static function blackFriday(): array
     {
         return ['id' => 'black-friday-2026', 'name' => 'Black Friday 2026', 'start' => '2026-11-20', 'end' => '2026-12-01'];
+    }
+
+    /** @return array<string, mixed> */
+    private static function fixture(): array
+    {
+        return json_decode((string) file_get_contents(self::FIXTURE), true);
     }
 
     /**
@@ -185,6 +362,50 @@ final class OccasionRoutesTest extends TestCase
         $request->set_param('id', $id);
         $response = $this->controller->show($request);
         self::assertInstanceOf(WP_REST_Response::class, $response);
+        return $response->get_data();
+    }
+
+    private function occasionController(Tier $tier = Tier::Pro): OccasionController
+    {
+        return new OccasionController($this->optins, new OccasionStore(), $this->library, $this->templates, new FakeProPresence($tier));
+    }
+
+    /** @return array<string, mixed> */
+    private function copy(string $id): array
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('id', $id);
+        $response = $this->occasionController()->copy($request);
+        self::assertInstanceOf(WP_REST_Response::class, $response, $response instanceof WP_Error ? $response->get_error_message() : '');
+        return $response->get_data();
+    }
+
+    /** @return array<string, mixed> */
+    private function export(string $id): array
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('id', $id);
+        $response = $this->occasionController()->export($request);
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        return json_decode((string) json_encode($response->get_data()), true);
+    }
+
+    /** @param array<string, mixed> $document */
+    private function importRequest(array $document): WP_REST_Request
+    {
+        $request = new WP_REST_Request();
+        $request->set_param('document', $document);
+        return $request;
+    }
+
+    /**
+     * @param array<string, mixed> $document
+     * @return array<string, mixed>
+     */
+    private function import(array $document, Tier $tier = Tier::Pro): array
+    {
+        $response = $this->occasionController($tier)->import($this->importRequest($document));
+        self::assertInstanceOf(WP_REST_Response::class, $response, $response instanceof WP_Error ? $response->get_error_message() . ' ' . json_encode($response->get_error_data()) : '');
         return $response->get_data();
     }
 }

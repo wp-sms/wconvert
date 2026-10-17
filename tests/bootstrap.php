@@ -2049,7 +2049,11 @@ if (!function_exists('delete_option')) {
 
 /*
  * The occasion lease (`WConvert\Discovery\OccasionStore`) takes a token and
- * compares it serialised,.
+ * compares it serialised, and the occasion routes create each campaign through
+ * `rest_do_request()`. The server is whatever the test installs in
+ * `$GLOBALS['wconvertTestRestServer']`: a callable taking the request and
+ * returning what the route returned, which is converted to a response the way
+ * WordPress converts a `WP_Error` — `{code, message, data}` at its status.
  */
 if (!function_exists('wp_generate_uuid4')) {
     function wp_generate_uuid4(): string
@@ -2063,6 +2067,21 @@ if (!function_exists('maybe_serialize')) {
     function maybe_serialize($data): mixed
     {
         return is_array($data) || is_object($data) ? serialize($data) : $data;
+    }
+}
+
+if (!function_exists('rest_do_request')) {
+    function rest_do_request(WP_REST_Request $request): WP_REST_Response
+    {
+        $server = $GLOBALS['wconvertTestRestServer'] ?? null;
+        if (!is_callable($server)) {
+            throw new LogicException('A test called rest_do_request() without installing a server.');
+        }
+        $result = $server($request);
+        if ($result instanceof WP_Error) {
+            return new WP_REST_Response(['code' => $result->get_error_code(), 'message' => $result->get_error_message(), 'data' => $result->get_error_data()], (int) ($result->get_error_data()['status'] ?? 500));
+        }
+        return $result;
     }
 }
 

@@ -1189,6 +1189,9 @@ occasion is also a folder that owns campaigns, linked by `config.occasion`.
 Creating a campaign inside one prefills its schedule (start 00:00 to the day
 after the end, 00:00). The occasion itself still never schedules or publishes
 anything, and deleting it detaches its campaigns.*
+*Amended by [ADR 0153](docs/adr/0153-an-occasion-travels-as-one-document.md):
+an occasion copies to next year and exports or imports as one JSON document;
+both create draft campaigns only.*
 
 ### Picker preferences
 

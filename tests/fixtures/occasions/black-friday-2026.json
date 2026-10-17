@@ -1,0 +1,63 @@
+{
+  "format": "wconvert-occasion",
+  "schema": 1,
+  "occasion": { "id": "black-friday-2026", "name": "Black Friday 2026", "start": "2026-11-20", "end": "2026-12-01" },
+  "campaigns": [
+    {
+      "name": "Black Friday top bar",
+      "goal": "promote_offer",
+      "display_type": "floating_bar",
+      "design": "bar-announcement",
+      "copy": { "badge": "Black Friday", "headline": "30% off everything until Monday", "cta_label": "Shop the sale" },
+      "link": "/black-friday/",
+      "starts_at": "2026-11-20 00:00",
+      "ends_at": "2026-12-02 00:00"
+    },
+    {
+      "name": "Black Friday popup",
+      "goal": "promote_offer",
+      "display_type": "popup",
+      "design": "flash-offer",
+      "copy": {
+        "badge": "30% OFF",
+        "eyebrow": "Black Friday",
+        "headline": "Our biggest sale of the year",
+        "body": { "text": "Everything in the shop, 30% off with code BF30." },
+        "cta_label": "Shop the sale",
+        "fine_print": { "text": "Ends 1 December at midnight." }
+      },
+      "link": "/black-friday/",
+      "frequency": { "maxImpressions": 3 },
+      "starts_at": "2026-11-20 00:00",
+      "ends_at": "2026-12-02 00:00"
+    },
+    {
+      "name": "Black Friday inline banner",
+      "goal": "promote_offer",
+      "display_type": "inline",
+      "design": "inline-cta",
+      "copy": {
+        "headline": "Black Friday: 30% off everything",
+        "body": { "text": "Use code BF30 at checkout until 1 December." },
+        "cta_label": "See the sale"
+      },
+      "link": "/black-friday/",
+      "starts_at": "2026-11-20 00:00",
+      "ends_at": "2026-12-02 00:00"
+    },
+    {
+      "name": "Black Friday coming soon",
+      "goal": "promote_offer",
+      "display_type": "popup",
+      "design": "offer-panel",
+      "copy": {
+        "headline": "Black Friday starts 20 November",
+        "body": { "text": "30% off everything, for twelve days. Get ready." },
+        "cta_label": "Browse the shop"
+      },
+      "link": "/shop/",
+      "starts_at": "2026-11-10 00:00",
+      "ends_at": "2026-11-20 00:00"
+    }
+  ]
+}
