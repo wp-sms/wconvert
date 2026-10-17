@@ -65,6 +65,9 @@ import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { ProHintItem, proHintsShown } from '../shell/ProHint';
 import { GUIDES, docsUrl } from '../shell/docs';
 import { draftPreviewUrl } from '../builder/PlacementGuidance';
+import { CheckRow } from '../shell/CheckRow';
+import { ToolbarCount } from '../shell/Toolbar';
+import { groupConfirmCopy, plan, reduceResult, resultSentence, startResult, type GroupAction, type GroupPlan, type GroupResult } from './groupActions';
 import './campaigns.css';
 
 import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
@@ -130,6 +133,11 @@ export function OptinList({
   const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(0);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  // Ticked campaigns, by parent id. A variant is a sub-row and is never ticked.
+  const [ticked, setTicked] = useState<Set<string>>(new Set());
+  const [groupConfirm, setGroupConfirm] = useState<{ action: 'publish' | 'pause'; plan: GroupPlan } | null>(null);
+  const [groupResult, setGroupResult] = useState<GroupResult | null>(null);
+  const trayFocus = useRef<HTMLElement | null>(null);
   const [previews, setPreviews] = useState<Record<string, CampaignPreview>>({});
   const [previewError, setPreviewError] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -227,6 +235,17 @@ export function OptinList({
   const lastPage = Math.max(0, Math.ceil(visible.length / PAGE_SIZE) - 1),
     currentPage = Math.min(page, lastPage);
   const shown = visible.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+  // A selection means "these, on this view": changing the view clears it.
+  useEffect(() => setTicked(new Set()), [filter, query, currentPage, sort]);
+  const tickedRows = shown.filter((c) => ticked.has(c.id));
+  const allTicked = shown.length > 0 && tickedRows.length === shown.length;
+  const toggle = (id: string) =>
+    setTicked((previous) => {
+      const next = new Set(previous);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const displayed = shown.flatMap((c) => (collapsed.has(c.id) ? [c] : family(c)));
   const ids = displayed.map((c) => c.id).join(',');
   // Only a site that can put a product in a campaign is asked about products:
@@ -299,6 +318,57 @@ export function OptinList({
     );
   const duplicate = (row: OptinSummary, parent: OptinSummary) =>
     void run(parent.id, () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row))), true);
+  const groupPlan = (action: GroupAction) => plan(action, tickedRows, (row) => previews[row.id]?.template === null);
+  /**
+   * One row after another through the routes a single row uses, then one
+   * refresh. A failure is recorded and the loop goes on; it lands in the same
+   * "Try again" list a single row's failure does. Nothing opens the editor,
+   * not even a copy.
+   */
+  const runGroup = async (action: GroupAction, group: GroupPlan) => {
+    if (busyRef.current.size > 0) return;
+    setTicked(new Set());
+    let result = startResult(action, group.skipped);
+    setGroupResult(group.run.length ? null : result);
+    if (!group.run.length) return;
+    const ids = group.run.map((row) => row.id);
+    for (const id of ids) {
+      mutationErrorsRef.current.delete(id);
+      busyRef.current.add(id);
+    }
+    setMutationErrors(new Map(mutationErrorsRef.current));
+    setBusy(new Set(busyRef.current));
+    onBusyChange?.(true);
+    for (const row of group.run) {
+      const call = action === 'publish'
+        ? () => publishOptin(row.id)
+        : action === 'pause'
+          ? () => unpublishOptin(row.id)
+          : () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), nameOf(row)));
+      try {
+        await call();
+        result = reduceResult(result, { type: 'done', row });
+      } catch (cause) {
+        result = reduceResult(result, { type: 'failed', row, message: messageOf(cause) });
+        /* translators: 1: a campaign's name, 2: why an action on it failed. */
+        mutationErrorsRef.current.set(row.id, { message: sprintf(__('%1$s: %2$s', 'wconvert'), nameOf(row), messageOf(cause)), action: call, openCreated: false });
+      }
+    }
+    setMutationErrors(new Map(mutationErrorsRef.current));
+    await refresh();
+    setRefreshKey((n) => n + 1);
+    for (const id of ids) busyRef.current.delete(id);
+    setBusy(new Set(busyRef.current));
+    onBusyChange?.(busyRef.current.size > 0);
+    setGroupResult(result);
+  };
+  const askGroup = (action: 'publish' | 'pause', trigger: HTMLElement | null) => {
+    const group = groupPlan(action);
+    // Nothing would run: say which and why, rather than ask to confirm nothing.
+    if (!group.run.length) return void runGroup(action, group);
+    trayFocus.current = trigger;
+    setGroupConfirm({ action, plan: group });
+  };
   // An arm's A/B test is its parent row; a campaign is its own.
   const parentOf = (row: OptinSummary) =>
     row.parent_id === null ? row : rows.find((candidate) => candidate.id === row.parent_id) ?? row;
@@ -371,6 +441,16 @@ export function OptinList({
           : __('Edit', 'wconvert');
     return (
       <CampaignRow key={row.id} name={name} arm={arm}>
+        <DataTableCell label={__('Select', 'wconvert')} className="wconvert-campaign-select">
+          {!arm && (
+            <CheckRow
+              label={<span className="sr-only">{sprintf(/* translators: %s: a campaign's name. */ __('Select %s', 'wconvert'), name)}</span>}
+              checked={ticked.has(row.id)}
+              disabled={busy.size > 0}
+              onChange={() => toggle(row.id)}
+            />
+          )}
+        </DataTableCell>
         <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
           {/* The name is the keyboard door to Details; the picture is a second, pointer-only one. */}
           <button
@@ -476,6 +556,7 @@ export function OptinList({
   const empty = list.status === 'ready' && rows.length === 0;
   useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
   const decisionWords = decision ? decisionCopy(decision.kind, decision.row.parent_id !== null, nameOf(decision.row)) : null;
+  const groupWords = groupConfirm ? groupConfirmCopy(groupConfirm.action, groupConfirm.plan) : null;
   return (
     <div className="wconvert-campaign-workspace" data-layout={layout}>
       {/*
@@ -515,6 +596,8 @@ export function OptinList({
             {productChecks && productHealth.failed && (
               <RegionError message={__('Products couldn’t be checked.', 'wconvert')} onRetry={productHealth.recheck} />
             )}
+            {/* In the page from the moment the rows are, so a result is announced when it arrives. */}
+            {list.status === 'ready' && !empty && <p role="status" className="wconvert-campaign-group-result">{groupResult && resultSentence(groupResult)}</p>}
             {productChecks && productHealth.loading && (
               <p role="status" className="sr-only">{__('Checking products…', 'wconvert')}</p>
             )}
@@ -624,6 +707,19 @@ export function OptinList({
             ) : (
               <DataTable label={__('Campaigns', 'wconvert')} className="wconvert-campaign-table">
                 <DataTableHead>
+                  <DataTableColumn className="wconvert-campaign-select">
+                    {list.status === 'ready' && (
+                      <CheckRow
+                        label={<span className="sr-only">{__('Select all campaigns on this page', 'wconvert')}</span>}
+                        checked={allTicked}
+                        ref={(input: HTMLInputElement | null) => {
+                          if (input) input.indeterminate = tickedRows.length > 0 && !allTicked;
+                        }}
+                        disabled={busy.size > 0}
+                        onChange={() => setTicked(allTicked ? new Set() : new Set(shown.map((c) => c.id)))}
+                      />
+                    )}
+                  </DataTableColumn>
                   <DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn>
                   <DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn>
                   <DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn>
@@ -636,6 +732,25 @@ export function OptinList({
                   ])}
                 </DataTableBody>}
               </DataTable>
+            )}
+            {tickedRows.length > 0 && (
+              <aside className="wconvert-comparison-tray wconvert-toolbar wconvert-campaign-tray" aria-label={__('Selected campaigns', 'wconvert')}>
+                <div className="wconvert-comparison-tray__selection">
+                  <ToolbarCount live>
+                    {sprintf(/* translators: %d: how many campaigns are ticked. */ _n('%d campaign selected', '%d campaigns selected', tickedRows.length, 'wconvert'), tickedRows.length)}
+                  </ToolbarCount>
+                </div>
+                <Button variant="outline" disabled={busy.size > 0} onClick={() => setTicked(new Set())}>{__('Clear', 'wconvert')}</Button>
+                <Button variant="outline" disabled={busy.size > 0} onClick={() => void runGroup('duplicate', groupPlan('duplicate'))}>
+                  <Copy aria-hidden="true" />{__('Duplicate', 'wconvert')}
+                </Button>
+                <Button variant="outline" disabled={busy.size > 0} onClick={(e) => askGroup('pause', e.currentTarget)}>
+                  <EyeOff aria-hidden="true" />{__('Unpublish', 'wconvert')}
+                </Button>
+                <Button disabled={busy.size > 0} onClick={(e) => askGroup('publish', e.currentTarget)}>
+                  <Upload aria-hidden="true" />{__('Publish', 'wconvert')}
+                </Button>
+              </aside>
             )}
             {/* One line: how many and over which dates, then the pages. */}
             {list.status === 'ready' && !empty && <div className="wconvert-footer wconvert-campaign-footer">
@@ -723,6 +838,22 @@ export function OptinList({
           const d = decision;
           setDecision(null);
           decide(d);
+        }}
+      />
+      <ConfirmDialog
+        open={groupConfirm !== null}
+        onOpenChange={(open) => {
+          if (!open) setGroupConfirm(null);
+        }}
+        title={groupWords?.title ?? ''}
+        description={groupWords?.description ?? ''}
+        confirmLabel={groupWords?.confirmLabel ?? ''}
+        returnFocusTo={trayFocus}
+        onConfirm={() => {
+          if (!groupConfirm) return;
+          const { action, plan: group } = groupConfirm;
+          setGroupConfirm(null);
+          void runGroup(action, group);
         }}
       />
     </div>

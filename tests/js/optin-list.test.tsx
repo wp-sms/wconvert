@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { OptinSummary } from '../../resources/admin/src/optins/api';
 
 /**
  * The Optin list, and the one thing on it that is a decision rather than a
@@ -931,4 +932,105 @@ it('puts the count, the dates and the pages on one line, and no inspector door',
   const pages = await screen.findByRole('navigation', { name: 'Campaign pages' });
   expect(pages.closest('.wconvert-campaign-footer')).toHaveTextContent('13 campaigns');
   expect(screen.queryByRole('button', { name: /Why isn’t a campaign showing/ })).toBeNull();
+});
+
+/**
+ * Tick-box group actions (#278): each ticked row through the single-row route,
+ * one after another, with every row the action leaves alone named.
+ */
+describe('group actions on ticked campaigns', () => {
+  const draft = (n: number, extra: Partial<OptinSummary> = {}): OptinSummary => ({ ...OPTIN, id: `01JQ00000000000000000000A${n}`, name: `Campaign ${n}`, ...extra } as OptinSummary);
+  const LIVE = { published_at: '2026-10-01 00:00:00' };
+
+  it('publishes every ticked row from select-all, reports one line and clears the selection', async () => {
+    const user = userEvent.setup();
+    optins.listOptins.mockResolvedValue([draft(1), draft(2), draft(3)]);
+    optins.publishOptin.mockResolvedValue({});
+    render(<OptinList onEdit={vi.fn()} />);
+    await user.click(await screen.findByRole('checkbox', { name: 'Select all campaigns on this page' }));
+    expect(screen.getByText('3 campaigns selected')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Publish' }));
+    await user.click(screen.getByRole('button', { name: 'Publish 3 campaigns' }));
+    await waitFor(() => expect(screen.getByText('Published 3.')).toHaveAttribute('role', 'status'));
+    // In the order the list shows them: newest first.
+    expect(optins.publishOptin.mock.calls.map(([id]) => id)).toEqual([draft(3).id, draft(2).id, draft(1).id]);
+    expect(screen.queryByText(/selected$/)).toBeNull();
+    expect(screen.getByRole('checkbox', { name: 'Select all campaigns on this page' })).not.toBeChecked();
+  });
+
+  it('skips a suspended row and an A/B test, and names both before and after', async () => {
+    const user = userEvent.setup();
+    const suspended = draft(2, { ...LIVE, suspended: 'Needs WooCommerce', name: 'Cart saver' });
+    const test = draft(3, { name: 'Spring test', arms: [{ ...draft(4), parent_id: draft(3).id, name: 'Spring test B' }] });
+    optins.listOptins.mockResolvedValue([draft(1), suspended, test]);
+    optins.publishOptin.mockResolvedValue({});
+    render(<OptinList onEdit={vi.fn()} />);
+    await user.click(await screen.findByRole('checkbox', { name: 'Select all campaigns on this page' }));
+    // The variant is a sub-row: it has no tick-box of its own.
+    expect(screen.queryByRole('checkbox', { name: 'Select Spring test B' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Publish' }));
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toHaveTextContent('2 will be skipped (A/B test: Spring test; Suspended: Cart saver).');
+    await user.click(within(dialog).getByRole('button', { name: 'Publish 1 campaign' }));
+    expect(await screen.findByText('Published 1. Skipped 2 (A/B test: Spring test; Suspended: Cart saver).')).toBeInTheDocument();
+    expect(optins.publishOptin).toHaveBeenCalledTimes(1);
+  });
+
+  it('carries on past a failure and offers Try again for the row that failed', async () => {
+    const user = userEvent.setup();
+    optins.listOptins.mockResolvedValue([draft(1, LIVE), draft(2, LIVE), draft(3, LIVE)]);
+    optins.unpublishOptin.mockImplementation(async (id: string) => {
+      if (id === draft(2).id) throw new Error('Server busy');
+    });
+    render(<OptinList onEdit={vi.fn()} />);
+    await user.click(await screen.findByRole('checkbox', { name: 'Select all campaigns on this page' }));
+    await user.click(screen.getByRole('button', { name: 'Unpublish' }));
+    await user.click(screen.getByRole('button', { name: 'Unpublish 3 campaigns' }));
+    expect(await screen.findByText('Unpublished 2. 1 failed.')).toBeInTheDocument();
+    expect(optins.unpublishOptin).toHaveBeenCalledTimes(3);
+    expect(screen.getByText('Campaign 2: Server busy')).toBeInTheDocument();
+    optins.unpublishOptin.mockResolvedValue(undefined);
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    await waitFor(() => expect(screen.queryByText('Campaign 2: Server busy')).toBeNull());
+    expect(optins.unpublishOptin).toHaveBeenLastCalledWith(draft(2).id);
+  });
+
+  it('duplicates without a confirm and never opens the editor', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    optins.listOptins.mockResolvedValue([draft(1), draft(2)]);
+    optins.duplicateCampaign.mockImplementation(async (id: string) => ({ id: `${id.slice(0, -1)}Z` }));
+    render(<OptinList onEdit={onEdit} />);
+    await user.click(await screen.findByRole('checkbox', { name: 'Select Campaign 1' }));
+    await user.click(screen.getByRole('checkbox', { name: 'Select Campaign 2' }));
+    await user.click(screen.getByRole('button', { name: 'Duplicate' }));
+    expect(await screen.findByText('Copied 2 as drafts.')).toBeInTheDocument();
+    expect(optins.duplicateCampaign.mock.calls).toEqual([[draft(2).id, 'Campaign 2 — copy'], [draft(1).id, 'Campaign 1 — copy']]);
+    expect(onEdit).not.toHaveBeenCalled();
+  });
+
+  it('ticks from the keyboard, and the header box is mixed while only some are ticked', async () => {
+    const user = userEvent.setup();
+    optins.listOptins.mockResolvedValue([draft(1), draft(2)]);
+    render(<OptinList onEdit={vi.fn()} />);
+    const one = await screen.findByRole('checkbox', { name: 'Select Campaign 1' });
+    one.focus();
+    await user.keyboard(' ');
+    expect(one).toBeChecked();
+    const all = screen.getByRole('checkbox', { name: 'Select all campaigns on this page' }) as HTMLInputElement;
+    expect(all.indeterminate).toBe(true);
+    expect(screen.getByText('1 campaign selected').closest('[aria-live]')).toHaveAttribute('aria-live', 'polite');
+    await user.click(screen.getByRole('button', { name: 'Clear' }));
+    expect(one).not.toBeChecked();
+    expect(all.indeterminate).toBe(false);
+  });
+
+  it('clears the selection when the filter changes', async () => {
+    const user = userEvent.setup();
+    optins.listOptins.mockResolvedValue([draft(1), draft(2, LIVE)]);
+    render(<OptinList onEdit={vi.fn()} />);
+    await user.click(await screen.findByRole('checkbox', { name: 'Select Campaign 1' }));
+    await user.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), 'Campaign');
+    expect(screen.getByRole('checkbox', { name: 'Select Campaign 1' })).not.toBeChecked();
+  });
 });
