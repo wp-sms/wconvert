@@ -86,6 +86,21 @@ final class Reply
     }
 
     /**
+     * A refusal one of WConvert's routes made, passed on as it was made.
+     *
+     * @param array{status: int, data: mixed} $result {@see \WConvert\Rest\InternalRest::run()}.
+     */
+    public static function fromRest(array $result, string $fallback): WP_Error
+    {
+        $data = is_array($result['data']) ? $result['data'] : [];
+        return new WP_Error(
+            is_string($data['code'] ?? null) ? $data['code'] : 'wconvert_agent_refused',
+            is_string($data['message'] ?? null) ? $data['message'] : $fallback,
+            ['status' => $result['status']]
+        );
+    }
+
+    /**
      * The paging parameters every list takes.
      *
      * @return array<string, array<string, mixed>>

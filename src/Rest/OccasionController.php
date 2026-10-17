@@ -81,7 +81,7 @@ final class OccasionController implements RestController
             'start' => (string) NextYear::day($source['start']),
             'end' => (string) NextYear::day($source['end']),
         ];
-        $occasion = $this->add($occasion);
+        $occasion = $this->occasions->add($occasion);
         if ($occasion instanceof WP_Error) return $occasion;
 
         $created = []; $failed = [];
@@ -153,7 +153,7 @@ final class OccasionController implements RestController
             return new WP_Error('wconvert_occasion_invalid', __('This file cannot be imported. Nothing was changed.', 'wconvert'), ['status' => 422, 'errors' => $errors]);
         }
         /** @var array{occasion: array<string, string>, campaigns: list<array<string, mixed>>} $document */
-        $occasion = $this->add(array_intersect_key($document['occasion'], array_flip(['id', 'name', 'start', 'end'])));
+        $occasion = $this->occasions->add(array_intersect_key($document['occasion'], array_flip(['id', 'name', 'start', 'end'])));
         if ($occasion instanceof WP_Error) return $occasion;
 
         $created = []; $refused = [];
@@ -217,28 +217,6 @@ final class OccasionController implements RestController
             }
         }
         return $errors;
-    }
-
-    /**
-     * Add an occasion, renaming its id until it is free — of live occasions
-     * and of deleted ones, whose campaigns still carry it.
-     *
-     * @param array<string, string> $occasion
-     * @return array<string, string>|WP_Error
-     */
-    private function add(array $occasion): array|WP_Error
-    {
-        $taken = $this->occasions->taken();
-        $saved = $this->occasions->write(static function (array $items) use (&$occasion, $taken): array {
-            $taken = [...$taken, ...array_column($items, 'id')];
-            $base = $occasion['id'];
-            for ($n = 2; in_array($occasion['id'], $taken, true); $n++) {
-                $suffix = '-' . $n;
-                $occasion['id'] = substr($base, 0, 64 - strlen($suffix)) . $suffix;
-            }
-            return [...$items, $occasion];
-        });
-        return $saved instanceof WP_Error ? $saved : $occasion;
     }
 
     /**

@@ -2483,3 +2483,10 @@ if (!function_exists('wp_register_ability')) {
         $GLOBALS['wconvertTestAbilities'][$name] = $args;
     }
 }
+
+if (!function_exists('remove_accents')) {
+    function remove_accents(string $text, string $locale = ''): string
+    {
+        return $text;
+    }
+}

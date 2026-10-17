@@ -45,6 +45,10 @@ final class Abilities
         'wconvert/list-starters',
         'wconvert/review-campaign',
         'wconvert/get-stats',
+        'wconvert/create-campaign',
+        'wconvert/update-campaign',
+        'wconvert/save-occasion',
+        'wconvert/copy-occasion',
     ];
 
     /**

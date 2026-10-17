@@ -111,8 +111,53 @@ final class AgentSite
         };
     }
 
+    /**
+     * Every ability, built on this site.
+     *
+     * @return list<\WConvert\Agent\Ability>
+     */
+    public function abilities(): array
+    {
+        $playbooks = \WConvert\Playbook\PlaybookLibrary::fromDirectory($this->library, $this->templates, $this->rules, self::PLUGIN_DIR);
+        $index = new \WConvert\Discovery\SetupIndex($this->library, $this->pro);
+        $degradation = $this->pro->installedTier() === Tier::Free ? InstalledRules::free($this->rules) : InstalledRules::withPro($this->rules);
+        $prefill = new \WConvert\Playbook\Prefill($playbooks, $this->library, $this->templates, $degradation, null, static fn (): array => ['href' => 'https://example.test/shop/', 'place' => 'shop']);
+        $input = new \WConvert\Agent\AgentCampaignInput($this->library, $this->templates, $this->builder, $this->occasions, $playbooks, $prefill, $index);
+        return [
+            new \WConvert\Agent\Read\FindCampaigns($this->reader),
+            new \WConvert\Agent\Read\GetCampaign($this->reader),
+            new \WConvert\Agent\Read\ListOccasions($this->occasions, $this->reader),
+            new \WConvert\Agent\Read\GetOccasion($this->occasions, $this->reader),
+            new \WConvert\Agent\Read\FindDesigns($this->library, $this->templates, $this->builder, $this->pro),
+            new \WConvert\Agent\Read\ListStarters($playbooks, $index, $this->library, new GoalRegistry($this->pro, new FakeSitePresence([SiteDependency::WooCommerce]))),
+            new \WConvert\Agent\Read\ReviewCampaign($this->optins, $this->readiness, $this->reader),
+            new \WConvert\Agent\Read\GetStats(new \WConvert\Stats\Dashboard(new \WConvert\Stats\StatsRepository($this->db), $this->optins), $this->occasions, $this->reader),
+            new \WConvert\Agent\Draft\CreateCampaign($input, $this->reader),
+            new \WConvert\Agent\Draft\UpdateCampaign($input, $this->reader),
+            new \WConvert\Agent\Draft\SaveOccasion($this->occasions, $this->reader),
+            new \WConvert\Agent\Draft\CopyOccasion(),
+        ];
+    }
+
+    /**
+     * Run one ability as WordPress would: through the callback it registered.
+     *
+     * @param array<string, mixed> $input
+     * @return array<string, mixed>|\WP_Error
+     */
+    public function call(string $name, array $input): array|\WP_Error
+    {
+        if (!isset($GLOBALS['wconvertTestAbilities'][$name])) {
+            \WConvert\Agent\Abilities::hooks(fn (): array => $this->abilities());
+            do_action('wp_abilities_api_init');
+        }
+        return ($GLOBALS['wconvertTestAbilities'][$name]['execute_callback'])($input);
+    }
+
     public function close(): void
     {
+        $GLOBALS['wconvertTestAbilities'] = [];
+        $GLOBALS['wconvertTestActions'] = [];
         unset($GLOBALS['wconvertTestRestServer'], $GLOBALS['wpdb']);
         $GLOBALS['wconvertTestOptionTable'] = [];
     }

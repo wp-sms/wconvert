@@ -5,7 +5,6 @@ namespace WConvert\Tests\Unit\Agent;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Agent\Abilities;
-use WConvert\Agent\Ability;
 use WConvert\Agent\Read;
 use WConvert\Agent\Reply;
 use WConvert\Rules\DisplayPlan;
@@ -30,6 +29,12 @@ use WP_Error;
 #[CoversClass(Read\GetStats::class)]
 final class ReadAbilitiesTest extends TestCase
 {
+    /** The abilities that change nothing. */
+    private const READS = [
+        'wconvert/find-campaigns', 'wconvert/get-campaign', 'wconvert/list-occasions', 'wconvert/get-occasion',
+        'wconvert/find-designs', 'wconvert/list-starters', 'wconvert/review-campaign', 'wconvert/get-stats',
+    ];
+
     private AgentSite $site;
 
     protected function setUp(): void
@@ -60,7 +65,7 @@ final class ReadAbilitiesTest extends TestCase
 
     public function testEveryAbilityRegistersInTheCategoryForManagersOnly(): void
     {
-        Abilities::hooks(fn (): array => $this->abilities());
+        Abilities::hooks(fn (): array => $this->site->abilities());
         do_action('wp_abilities_api_categories_init');
         do_action('wp_abilities_api_init');
 
@@ -70,7 +75,7 @@ final class ReadAbilitiesTest extends TestCase
             self::assertSame('wconvert', $args['category'], $name);
             self::assertTrue($args['meta']['show_in_rest'], $name);
             self::assertTrue($args['meta']['mcp']['public'], $name);
-            self::assertTrue($args['meta']['annotations']['readonly'], $name);
+            self::assertSame(in_array($name, self::READS, true), $args['meta']['annotations']['readonly'], $name);
             self::assertStringNotContainsString('"type":["', (string) wp_json_encode($args['input_schema']), $name . ' uses a union type');
             self::assertTrue(($args['permission_callback'])([]), $name);
         }
@@ -247,22 +252,6 @@ final class ReadAbilitiesTest extends TestCase
         return $this->site->draft($name, 'promote_offer', $config);
     }
 
-    /** @return list<Ability> */
-    private function abilities(): array
-    {
-        $s = $this->site;
-        return [
-            new Read\FindCampaigns($s->reader),
-            new Read\GetCampaign($s->reader),
-            new Read\ListOccasions($s->occasions, $s->reader),
-            new Read\GetOccasion($s->occasions, $s->reader),
-            new Read\FindDesigns($s->library, $s->templates, $s->builder, $s->pro),
-            new Read\ListStarters(\WConvert\Playbook\PlaybookLibrary::fromDirectory($s->library, $s->templates, $s->rules, AgentSite::PLUGIN_DIR), new \WConvert\Discovery\SetupIndex($s->library, $s->pro), $s->library, new \WConvert\Goal\GoalRegistry($s->pro, new \WConvert\Tests\Unit\Support\FakeSitePresence())),
-            new Read\ReviewCampaign($s->optins, $s->readiness, $s->reader),
-            new Read\GetStats(new \WConvert\Stats\Dashboard(new \WConvert\Stats\StatsRepository($s->db), $s->optins), $s->occasions, $s->reader),
-        ];
-    }
-
     /**
      * Run one ability as WordPress would, through its registered callback,
      * and expect a reply.
@@ -283,10 +272,6 @@ final class ReadAbilitiesTest extends TestCase
      */
     private function call(string $name, array $input): array|WP_Error
     {
-        if (!isset($GLOBALS['wconvertTestAbilities'][$name])) {
-            Abilities::hooks(fn (): array => $this->abilities());
-            do_action('wp_abilities_api_init');
-        }
-        return ($GLOBALS['wconvertTestAbilities'][$name]['execute_callback'])($input);
+        return $this->site->call($name, $input);
     }
 }

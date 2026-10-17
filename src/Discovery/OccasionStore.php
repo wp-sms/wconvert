@@ -94,6 +94,29 @@ final class OccasionStore
     }
 
     /**
+     * Add an occasion, renaming its id until it is free — of live occasions
+     * and of deleted ones, whose campaigns still carry it. Copy, Import and an
+     * agent's save-occasion all add this way.
+     *
+     * @param array<string, string> $occasion
+     * @return array<string, string>|WP_Error The occasion as saved, under the id it got.
+     */
+    public function add(array $occasion): array|WP_Error
+    {
+        $taken = $this->taken();
+        $saved = $this->write(static function (array $items) use (&$occasion, $taken): array {
+            $taken = [...$taken, ...array_column($items, 'id')];
+            $base = $occasion['id'];
+            for ($n = 2; in_array($occasion['id'], $taken, true); $n++) {
+                $suffix = '-' . $n;
+                $occasion['id'] = substr($base, 0, 64 - strlen($suffix)) . $suffix;
+            }
+            return [...$items, $occasion];
+        });
+        return $saved instanceof WP_Error ? $saved : $occasion;
+    }
+
+    /**
      * Run `$work` while holding `$lock`.
      *
      * add_option provides an atomic, bounded write lock for a shared site

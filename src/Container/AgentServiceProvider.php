@@ -3,7 +3,9 @@
 namespace WConvert\Container;
 
 use WConvert\Agent\Abilities;
+use WConvert\Agent\AgentCampaignInput;
 use WConvert\Agent\CampaignReader;
+use WConvert\Agent\Draft;
 use WConvert\Agent\Read;
 use WConvert\Destination\DestinationRegistry;
 use WConvert\Destination\DestinationStore;
@@ -13,6 +15,7 @@ use WConvert\Goal\GoalRegistry;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishReadiness;
 use WConvert\Playbook\PlaybookLibrary;
+use WConvert\Playbook\Prefill;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Stats\Dashboard;
 use WConvert\Support\ProPresence;
@@ -46,6 +49,10 @@ final class AgentServiceProvider implements ServiceProvider
         Read\ListStarters::class,
         Read\ReviewCampaign::class,
         Read\GetStats::class,
+        Draft\CreateCampaign::class,
+        Draft\UpdateCampaign::class,
+        Draft\SaveOccasion::class,
+        Draft\CopyOccasion::class,
     ];
 
     public function register(ServiceContainer $container): void
@@ -73,6 +80,15 @@ final class AgentServiceProvider implements ServiceProvider
         $container->register(Read\GetStats::class, static fn (ServiceContainer $c) => new Read\GetStats(
             $c->resolve(Dashboard::class), $c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)
         ));
+
+        $container->register(AgentCampaignInput::class, static fn (ServiceContainer $c): AgentCampaignInput => new AgentCampaignInput(
+            $c->resolve(TemplateLibrary::class), $c->resolve(TemplateVocabulary::class), $c->resolve(CampaignBuilder::class), $c->resolve(OccasionStore::class),
+            $c->resolve(PlaybookLibrary::class), $c->resolve(Prefill::class), $c->resolve(SetupIndex::class)
+        ));
+        $container->register(Draft\CreateCampaign::class, static fn (ServiceContainer $c) => new Draft\CreateCampaign($c->resolve(AgentCampaignInput::class), $c->resolve(CampaignReader::class)));
+        $container->register(Draft\UpdateCampaign::class, static fn (ServiceContainer $c) => new Draft\UpdateCampaign($c->resolve(AgentCampaignInput::class), $c->resolve(CampaignReader::class)));
+        $container->register(Draft\SaveOccasion::class, static fn (ServiceContainer $c) => new Draft\SaveOccasion($c->resolve(OccasionStore::class), $c->resolve(CampaignReader::class)));
+        $container->register(Draft\CopyOccasion::class, static fn () => new Draft\CopyOccasion());
     }
 
     public function boot(ServiceContainer $container): void
