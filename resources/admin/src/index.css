@@ -6651,7 +6651,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-pack-detail__information { margin-block-start: 1rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); }
 
 
-@media (pointer: coarse) { [data-slot="dialog-close"] { min-inline-size: 2.75rem; min-block-size: 2.75rem; } }
+/* A `Button` under `DialogClose asChild` keeps its own slot, so an icon close is named by its size. */
+@media (pointer: coarse) { :is([data-slot="dialog-close"], :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) [data-slot="button"][data-size^="icon"]) { min-inline-size: 2.75rem; min-block-size: 2.75rem; } }
 
 .wconvert-collection-detail__event { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
 

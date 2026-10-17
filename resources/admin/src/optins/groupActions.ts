@@ -10,7 +10,7 @@ import { campaignName, statusOf, type OptinSummary } from './api';
  * without a word.
  */
 export type GroupAction = 'publish' | 'pause' | 'duplicate' | 'delete';
-/** The three that change what visitors see, and so ask first. */
+/** The three that can take a campaign off the site or put one on, and so ask first. */
 export type ConfirmedAction = Exclude<GroupAction, 'duplicate'>;
 
 export type SkipReason = 'variant' | 'test' | 'suspended' | 'no_design' | 'current' | 'draft';
