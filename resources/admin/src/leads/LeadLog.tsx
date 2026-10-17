@@ -401,7 +401,7 @@ function windowSummary({ from, to }: DayWindow): string | null {
 /** The dates a chosen window means on the log, resolved on the site's day. */
 function windowOf(range: DateRange, today: string | null): DayWindow {
   if (range.preset === 'custom') return { from: range.from, to: range.to };
-  if (range.preset === 'all' || today === null) return {};
+  if (range.preset === 'all' || range.preset === 'occasion' || today === null) return {};
   return presetWindow(range.preset, today);
 }
 

@@ -1,4 +1,5 @@
 import { CampaignAnalytics } from '../analyticsIntegration';
+import { CampaignOccasion } from '../occasions/CampaignOccasion';
 import { useCompactEditor } from '../hooks/useCompactEditor';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
@@ -1077,6 +1078,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               })} />}
               developers={<ForDevelopers value={id} variant={analyticsParent !== null} />}
             >
+              <CampaignOccasion value={typeof config.occasion === 'string' ? config.occasion : undefined} onChange={occasion => edit({ occasion })} />
               <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
               {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
               {entry && adminSettings()?.dev === true && (

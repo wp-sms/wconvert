@@ -310,7 +310,8 @@ final class OptinWriteTest extends TestCase
             (new \WConvert\Destination\DestinationRegistry($pro, $site))->register(
                 new \WConvert\Destination\LeadMagnet\LeadMagnetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailer())
             )->register(new \WConvert\Destination\MailPoet\MailPoetDestinationType(new \WConvert\Tests\Unit\Support\FakeMailPoetSubscribers()))
-                ->register(new \WConvert\Destination\Wsms\WsmsDestinationType(new \WConvert\Tests\Unit\Support\FakeWsmsContacts()))
+                ->register(new \WConvert\Destination\Wsms\WsmsDestinationType(new \WConvert\Tests\Unit\Support\FakeWsmsContacts())),
+            new \WConvert\Discovery\OccasionStore()
         );
     }
 

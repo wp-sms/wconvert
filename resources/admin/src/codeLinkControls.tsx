@@ -10,6 +10,8 @@ export interface CodeLinkProps {
   code: string;
   /** The link's address as saved, or empty. */
   href: string;
+  /** When the campaign stops showing the code, as the merchant typed it, or undefined. */
+  endsAt?: string;
   onChange(href: string): void;
 }
 export const codeLinkControls: { component?: ComponentType<CodeLinkProps> } = {};

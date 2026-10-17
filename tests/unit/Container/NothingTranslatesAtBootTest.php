@@ -103,6 +103,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         GoalController::class => '/goals',
         PlaybookController::class => '/playbooks',
         PickerController::class => '/picker',
+        \WConvert\Rest\OccasionController::class => '/occasions/import',
         CaptureController::class => '/capture',
         BeaconController::class => '/beacon',
         LeadController::class => '/leads',

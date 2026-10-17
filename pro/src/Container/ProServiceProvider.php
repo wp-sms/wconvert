@@ -349,6 +349,8 @@ final class ProServiceProvider implements ServiceProvider
             (new \WConvert\Pro\Module\CartRecovery\CartAddition($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class), $commerce, $container->resolve(\WConvert\Stats\StatsRepository::class)))->hooks();
             // A campaign's coupon link, applied to the visitor's own cart (ADR 0152).
             (new \WConvert\Pro\Module\CartRecovery\CouponLink($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class)))->hooks();
+            // Whether a code the campaign shows outlives it, read-only (#287).
+            (new \WConvert\Pro\Module\CartRecovery\CouponExpiry())->hooks();
         }
 
         // The same guard free's loader sits behind, and for the same reason:

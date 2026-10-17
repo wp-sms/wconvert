@@ -112,6 +112,11 @@ Merchant-defined occasions use a non-autoloaded site option. Their names and
 dates aid planning; no targeting, discount, campaign, or publication command is
 stored. Writes use document revisions and bounded short-lived option leases;
 a conflict requires reload. No table or column is introduced.
+*Amended by [ADR 0153](0153-an-occasion-travels-as-one-document.md): Copy to
+next year and Import write the occasions under the same lease without a
+client revision, because the server read the document it changes. The option
+also keeps the ids of deleted occasions (`retired`), which are never used
+again (ADR 0149 §5).*
 *Amended by [ADR 0149](0149-an-occasion-groups-campaigns.md): campaigns now
 point at an occasion through `config.occasion`, and creating one inside it
 prefills its schedule. The occasion still stores no targeting, discount or

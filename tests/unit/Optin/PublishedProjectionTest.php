@@ -302,6 +302,18 @@ final class PublishedProjectionTest extends TestCase
         $this->assertStringNotContainsString('merchant secret', json_encode($set) ?: '');
     }
 
+    /** Which occasion a campaign belongs to is the merchant's filing, never the visitor's (ADR 0149 §4). */
+    public function testTheOccasionACampaignBelongsToStaysOnTheServer(): void
+    {
+        $set = self::build([self::row(['published_config' => (string) json_encode([
+            'display_type' => 'popup',
+            'occasion' => 'black-friday-2026',
+        ])])]);
+
+        $this->assertArrayNotHasKey('occasion', $set[0]['payload']);
+        $this->assertStringNotContainsString('black-friday-2026', json_encode($set) ?: '');
+    }
+
     public function testTheFlatRuleListIsPartitionedIntoTheTwoClientAxes(): void
     {
         $set = self::build([self::row(['published_config' => (string) json_encode([

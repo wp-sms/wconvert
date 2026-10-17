@@ -71,11 +71,12 @@ export interface SlotFieldsProps {
   /**
    * When this Optin stops running, as the merchant typed it — or undefined.
    *
-   * **Read by exactly one block type and passed to all of them**, because a
+   * **Read by two block types and passed to all of them**, because a
    * `countdown` counts to the Optin's `ends_at` and to nothing else (ADR 0052)
    * and therefore has no setting of its own to draw. What it needs is the
    * sentence saying what it counts to, and the deadline is not this block's to
-   * hold ({@see Countdown}).
+   * hold ({@see Countdown}). A `code` block's Pro panel compares its coupon's
+   * expiry against it (#287).
    */
   readonly endsAt?: string;
   /** Take the merchant to the field that sets it. */
@@ -153,7 +154,7 @@ export function SlotFields({
             <PanelField label={label} htmlFor={id}>
               <KeyControl id={id} control={control} label={label} value={held} onChange={(value) => onValue(key, value)} />
             </PanelField>
-            <CodeLinkSettings code={text} href={held} onChange={(value) => onValue(key, value)} />
+            <CodeLinkSettings code={text} href={held} endsAt={endsAt} onChange={(value) => onValue(key, value)} />
           </Fragment>;
         }
         if (control === 'media') {

@@ -176,7 +176,8 @@ final class SuspendedOnTheListTest extends TestCase
             new SiteFrequency(new FakeOptionStore()),
             new MilestoneStore(new FakeOptionStore()),
             new \WConvert\Destination\DestinationStore(new FakeOptionStore()),
-            new \WConvert\Destination\DestinationRegistry($pro, $site)
+            new \WConvert\Destination\DestinationRegistry($pro, $site),
+            new \WConvert\Discovery\OccasionStore()
         );
     }
 

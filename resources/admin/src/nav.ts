@@ -54,6 +54,10 @@ export const DEFAULT_SECTION: SectionId = 'optins';
 
 const IDS: ReadonlySet<string> = new Set(SECTIONS.map((section) => section.id));
 
+/** An occasion id, as `PickerDocuments::validateOccasions()` allows one. */
+const OCCASION_ID = /^[a-z0-9-]{1,64}$/;
+const OCCASION_PAGE = /^occasions\/[a-z0-9-]{1,64}$/;
+
 /**
  * Which section a hash names, or the default.
  *
@@ -69,6 +73,8 @@ export function sectionFrom(hash: string): SectionId {
   const id = hash.replace(/^#/, '').split('?')[0];
 
   if (id === 'destinations') return 'settings';
+  // An occasion's own page belongs to Campaigns (ADR 0149).
+  if (OCCASION_PAGE.test(id)) return 'optins';
 
   return IDS.has(id) ? (id as SectionId) : DEFAULT_SECTION;
 }
@@ -106,6 +112,10 @@ export interface ReportQuery {
 
 export interface AdminRoute {
   section: SectionId;
+  /** The occasion whose own page this is (`#occasions/<id>`). */
+  occasionId?: string;
+  /** The list's Occasion filter, which a new campaign is also created into. */
+  occasion?: string;
   /** Choosing a goal and setup for a new campaign: an address, so Back and reload keep it. */
   creating: boolean;
   editId?: string;
@@ -133,7 +143,7 @@ function returnHref(value: string | null): string {
   if (!value?.startsWith('#') || value.length > 2048) return hashFor('optins');
   const [section, ...query] = value.slice(1).split('?');
   // Returning to another editor can form an endless nested back-link chain.
-  return (IDS.has(section) || section === 'destinations') && !new URLSearchParams(query.join('?')).has('edit')
+  return (IDS.has(section) || section === 'destinations' || OCCASION_PAGE.test(section)) && !new URLSearchParams(query.join('?')).has('edit')
     ? value
     : hashFor('optins');
 }
@@ -144,7 +154,10 @@ export const editorHref = (id: string, returnTo?: string, tab?: 'rules'): string
     tab,
     back: returnTo ? returnHref(returnTo) : undefined,
   });
-export const createHref = (): string => withQuery('optins', { new: 1 });
+export const createHref = ({ occasion }: { occasion?: string } = {}): string => withQuery('optins', { new: 1, occasion });
+/** The campaign list, filtered to one occasion or not. */
+export const optinsHref = ({ occasion }: { occasion?: string } = {}): string => withQuery('optins', { occasion });
+export const occasionHref = (id: string): string => `#occasions/${id}`;
 export const reportHref = (query: ReportQuery = {}): string => {
   const custom = !query.today && query.from !== undefined && query.to !== undefined;
   return withQuery('analytics', {
@@ -192,8 +205,12 @@ export function routeFrom(hash: string): AdminRoute {
   const params = new URLSearchParams(hash.split('?').slice(1).join('?'));
   const value = (key: string) => params.get(key) || undefined;
   const days = Number(params.get('days'));
+  const path = hash.replace(/^#/, '').split('?')[0];
+  const occasion = section === 'optins' && OCCASION_ID.test(value('occasion') ?? '') ? value('occasion') : undefined;
   return {
     section,
+    ...(OCCASION_PAGE.test(path) ? { occasionId: path.slice('occasions/'.length) } : {}),
+    ...(occasion ? { occasion } : {}),
     creating: section === 'optins' && !value('edit') && value('new') === '1',
     editId: section === 'optins' ? value('edit') : undefined,
     editorTab: section === 'optins' && value('edit') && value('tab') === 'rules' ? 'rules' : undefined,
