@@ -14,9 +14,9 @@ const CONTENT = 'data-wconvert-locked-content';
 type Entry = PayloadEntry & { content_lock?: { mode?: string }; campaign?: string; inline_placement?: unknown };
 export const lockConfigured = (entry: Entry) => entry.content_lock?.mode === 'hide';
 export const lockFamily = (entry: Entry) => entry.campaign ?? entry.anchor ?? entry.id;
-const anchors = (id: string) => [...document.querySelectorAll<HTMLElement>('[data-wconvert-optin]')].filter(node => node.getAttribute('data-wconvert-optin') === id);
+const firstMatch = (attribute: string, id: string) => [...document.querySelectorAll<HTMLElement>(`[${attribute}]`)].find(node => node.getAttribute(attribute) === id);
 export function lockRegion(entry: Entry): HTMLElement | undefined {
-  return [...document.querySelectorAll<HTMLElement>(`[${REGION}]`)].find(node => node.getAttribute(REGION) === lockFamily(entry));
+  return firstMatch(REGION, lockFamily(entry));
 }
 export function lockAvailable(entry: Entry, input: Decision): boolean {
   return entry.display_type === 'inline' && entry.inline_placement == null && !!entry.template
@@ -96,7 +96,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
     show(entry: Entry, controls) {
       if (!lockConfigured(entry)) return base.show(entry, controls);
       const region = lockRegion(entry);
-      const anchor = anchors(entry.anchor ?? entry.id)[0];
+      const anchor = firstMatch('data-wconvert-optin', entry.anchor ?? entry.id);
       if (!anchor || !entry.template) return false;
       const content = region?.querySelector<HTMLElement>(`:scope > [${CONTENT}]`);
       const ownAnchor = region?.querySelector<HTMLElement>(':scope > [data-wconvert-optin]');
@@ -124,11 +124,11 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
             reveal('captured');
             store.remember(lockFamily(entry));
             try { controls.convert(); } finally {
-              if (!disposed && canLock && content) {
+              if (!disposed && canLock) {
                 // Join the success copy's column so nested panels supply their
                 // padding, gap and scoped styles (including narrow overrides).
                 const layout = root.querySelector('.wc-heading,.wc-text')?.closest<HTMLElement>('.wc-stack,.wc-panel,.wc-media') ?? root;
-                if (layout === root) layout.classList.add('wc-stack');
+                if (layout === root) layout.className += ' wc-stack';
                 const message = document.createElement('p');
                 message.className = 'wc-text';
                 message.textContent = labels()[0]; message.role = 'status'; message.tabIndex = -1;
