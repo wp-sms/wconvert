@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "wconvert-template-api",
   "main": "src/index.ts",
-  "compatibility_date": "2026-10-12",
+  "compatibility_date": "2026-10-01",
   "workers_dev": false,
   "preview_urls": false,
   "observability": {
@@ -24,5 +24,12 @@
     "NEXUS_ISSUER": "",
     "NEXUS_AUDIENCE": "",
     "NEXUS_ENVIRONMENT": ""
-  }
+  },
+  "account_id": "c1a1ad8e669eb8c31ce039ea78aa6ab9",
+  "routes": [
+    {
+      "pattern": "templates.wconvert.io",
+      "custom_domain": true
+    }
+  ]
 }

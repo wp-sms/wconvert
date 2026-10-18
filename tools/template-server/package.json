@@ -10,11 +10,19 @@
     "test": "npm run build && node --test test/*.test.mjs",
     "seed": "node scripts/seed-local.mjs",
     "verify": "node scripts/verify-local.mjs",
-    "test:wordpress": "node scripts/verify-wordpress.mjs"
+    "test:wordpress": "node scripts/verify-wordpress.mjs",
+    "publish": "node scripts/publish-remote.mjs",
+    "status": "node scripts/publish-remote.mjs --status",
+    "verify:remote": "node scripts/verify-remote.mjs",
+    "test:release": "npm run build && node scripts/verify-release.mjs"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "3.1152.0",
     "miniflare": "5.20261006.1-alpha",
     "typescript": "7.0.2",
     "wrangler": "4.149.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

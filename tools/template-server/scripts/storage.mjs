@@ -55,11 +55,13 @@ export function readPublicRelease(directory, retainedRelease) {
     }
     return origin;
   }
-  let origin;
+  let origin, retainedOrigin;
   for (const [key, bytes] of objects) {
     const retained = key.match(new RegExp(`^releases/(${digest})/manifest\\.json$`));
     if (!retained) continue;
     const releaseOrigin = validateRelease(bytes, retained[1]);
+    retainedOrigin ??= releaseOrigin;
+    check(releaseOrigin === retainedOrigin, 'Retained releases must use the same origin');
     if (retained[1] === pointer.release) origin = releaseOrigin;
   }
   objects.delete('manifest.json');

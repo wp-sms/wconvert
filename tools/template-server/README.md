@@ -1,6 +1,6 @@
 # WConvert Template Library
 
-This is the template API, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. One hosted environment uses Worker `wconvert-template-api` and private R2 buckets `wconvert-templates-public` and `wconvert-templates-private`; local development emulates those bindings without contacting Cloudflare. No R2 bucket, DNS record, Worker deployment, real Nexus connection or site setting is created by these commands.
+This is the template API, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. One hosted environment uses Worker `wconvert-template-api` and private R2 buckets `wconvert-templates-public` and `wconvert-templates-private`; local development emulates those bindings without contacting Cloudflare. Local commands do not create cloud resources or change site settings. The explicit remote publishing command below writes to the configured R2 buckets.
 
 The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates that binding on disk; later the same read handler can use a real private R2 bucket exposed only through the Worker.
 
@@ -32,7 +32,7 @@ npm run verify --prefix tools/template-server
 
 The service binds to `http://127.0.0.1:9454`. Open `/manifest.json` for the catalogue. The verifier follows its pages, checks exact hashes, downloads Free packs/images, checks public Free/Pro previews and confirms premium downloads are refused. For manual preview, take a `preview_url` from a catalogue page and replace only its origin with `http://127.0.0.1:9454`.
 
-`https://templates.example` remains the **metadata origin**, not a real host. The local service mirrors its paths. Do not configure this HTTP mirror in the plugin: the production reader deliberately requires HTTPS. The native local-release verifier remains the WordPress installation/offline check; hosted HTTPS-to-plugin acceptance is a later deployment check. No production URL is configured by this tool.
+`https://templates.example` remains the **metadata origin**, not a real host. The local service mirrors its paths. Do not configure this HTTP mirror in the plugin: the production reader deliberately requires HTTPS. The native local-release verifier remains an isolated fixture check; `npm run test:wordpress --prefix tools/template-server -- --remote CURRENT_RELEASE_ID` uses real WordPress HTTP requests to the configured HTTPS API and temporary installation storage. No production URL is configured by this tool.
 
 The current rehearsal serves four Free packs (16 setups), five public previews including the premium pack, and one Free image. The complete release still lists 22 setups; six premium setups require the Nexus configuration described below; no permissive authorizer is enabled by default. All 34 rendered preview screens/results were exercised through the service's actual CSP and device controls.
 
@@ -52,7 +52,7 @@ For a local rollback, choose a retained release in the same validated output dir
 npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release CURRENT_RELEASE_ID RETAINED_RELEASE_ID
 ```
 
-This switches the catalogue pointer; it does not rewrite installed templates or existing campaigns. The command only accesses local Wrangler storage. `scripts/storage.mjs` provides a tested R2-compatible conditional promotion operation, but no remote publishing credentials, upload command or public write endpoint is supplied.
+This switches the catalogue pointer; it does not rewrite installed templates or existing campaigns. The command only accesses local Wrangler storage. `scripts/storage.mjs` provides a tested R2-compatible conditional promotion operation, and the remote publishing CLI uses that same operation. There is no public write endpoint.
 
 ## Access and caching
 
@@ -108,13 +108,28 @@ No test responder ships in the Worker or plugin. The service remains closed unti
 real configuration is supplied. The original `verify` command still expects this
 unconfigured local service; it does not test a live licensed deployment.
 
-## When R2 is available
+## Remote publication
+
+The account, bucket names and HTTPS origin come from `wrangler.jsonc`. Build the release for that exact origin, outside the WordPress document root. The credential file must be an absolute path to a private regular file (mode 600), with `WCONVERT_R2_ACCESS_KEY_ID` and `WCONVERT_R2_SECRET_ACCESS_KEY`.
+
+```sh
+npm run status --prefix tools/template-server -- --credentials /absolute/publisher.env
+npm run publish --prefix tools/template-server -- --directory /absolute/release --expected CURRENT_RELEASE_ID
+npm run publish --prefix tools/template-server -- --directory /absolute/release --expected CURRENT_RELEASE_ID --apply --credentials /absolute/publisher.env
+```
+
+Use `--expected none` only for an empty remote catalogue. Without `--apply`, publication validates locally and makes no network request. For rollback add `--retained RETAINED_RELEASE_ID` to the same command. Private dependencies are uploaded first; public dependencies are checked before the conditional manifest replacement. An uncertain write is never retried automatically: inspect status first. No objects are deleted.
+
+After Worker deployment, run `npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID`. This read-only check expects Nexus to remain unconfigured, tests Free content and public previews, and requires premium requests to fail closed.
+
+## Hosted setup status
 
 Follow [the Cloudflare preparation checklist](CLOUDFLARE-SETUP.md). It lists the
 account/domain decisions, two private buckets, grant-record lifecycle rule, Nexus
-handoff, secrets and remaining hosted acceptance. Authenticated remote
-publishing and production infrastructure are separate work; no deployment was run.
+handoff, secrets and remaining hosted acceptance. The remote publisher uploaded and verified the first release on 18 October 2026. The Worker and custom domain are live. Free/public HTTPS acceptance and real WordPress installation/offline checks passed on 18 October 2026. Nexus remains disconnected.
 
 Local simulation is evidence of behaviour, not evidence of a deployed service. Wrangler's local administrative explorer is a development-only surface; keep the development server loopback-only.
 
 References: [R2 Workers API and conditional operations](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/), [local development data](https://developers.cloudflare.com/workers/local-development/local-data/), [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/). Versions are pinned in the separate lockfile; regenerate `Env` with `npm run types` after config changes.
+
+The hosted WordPress check does not change persistent site options or send a licence. It downloads Free packs through the shipping transport, verifies their images, confirms premium refusal, and simulates an outage after installation. The plugin default catalogue URL remains unset; deploying the service does not automatically enable it for all installations.

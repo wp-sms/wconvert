@@ -13,7 +13,7 @@ const origin = 'https://templates.example', nexus = 'https://nexus.example';
 const settings = { NEXUS_GRANT_URL: nexus + '/api/v1/wconvert/entitlements/grant', NEXUS_KEYS_URL: nexus + '/api/v1/wconvert/entitlements/keys', NEXUS_ISSUER: nexus, NEXUS_AUDIENCE: origin, NEXUS_ENVIRONMENT: 'staging', NEXUS_SERVICE_KEY: 'test-service-secret' };
 async function fixture(t) {
  const state = { calls: [], error: null, override: {}, key: 0, header: {}, outage: false };
- const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-12', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'], bindings: settings,
+ const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'], bindings: settings,
   outboundService: async request => {
    state.calls.push({ url: request.url, headers: Object.fromEntries(request.headers), body: request.method === 'POST' ? await request.json() : null });
    if (state.outage) return new Response('{}', { status: 503 });
