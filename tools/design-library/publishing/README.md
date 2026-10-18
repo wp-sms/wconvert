@@ -15,7 +15,7 @@ npm run templates:release:local -- \
   --expected none
 ```
 
-`templates.example` is only the future URL written into metadata; the command
+`templates.example` is only an example HTTPS origin written into metadata; the command
 never contacts it. Use a persistent, backed-up directory outside the WordPress
 public document root for retained work. `/tmp` is appropriate only for disposable
 rehearsals. The command refuses storage inside this site's public document root.
@@ -49,8 +49,8 @@ storage/
 ```
 
 Only `public/` is a potential static hosting root. Premium catalog addresses use
-`/downloads/<digest>.json`; a future API must authorize those requests and read
-private storage. Those paths do not function until that API is connected.
+`/downloads/<digest>.json`; the Worker authorizes those requests through Nexus before reading
+private storage. They return a refusal until Nexus is configured.
 
 For the next release, pass the current manifest's `release` value to `--expected`.
 That explicit comparison plus the local exclusive lock prevents accidental
@@ -63,7 +63,7 @@ not patch chains. No files are automatically pruned.
 A failed publication leaves the prior entry point in place. New but unreferenced
 objects can be reused on retry. A leftover `.publish.lock` after process death
 requires checking that no publisher is running before manually removing that
-lock; it is never silently stolen. Cloud adapters will need storage-specific
+lock; it is never silently stolen. The R2 publisher uses storage-specific
 conditional writes, not this local filesystem lock. Power-loss durability,
 backup restoration and distributed promotion are separate hosted checks.
 
@@ -113,12 +113,12 @@ wrong-plan/site and unavailable cases are distinguished. Premium responses are
 put in a URL or response. No fake authorizer or permissive default is deployed.
 
 The real host must supply the licence-manager adapter, bounded storage reads,
-request authentication, rate limiting and cache-safe HTTP handling. A public Worker read service is now prepared for local R2 simulation; the Nexus adapter is locally implemented, while real credentials and cloud hosting remain unconfigured. See [template API operations](../../template-server/README.md). Public Free/Pro preview generation, plugin preview links and Free raster media
+request authentication, rate limiting and cache-safe HTTP handling. The public Worker and authenticated R2 publisher are live and verified. The Nexus adapter is locally implemented, while real Nexus credentials remain unconfigured. See [template API operations](../../template-server/README.md). Public Free/Pro preview generation, plugin preview links and Free raster media
 installation are implemented locally. Website deployment and actual
 licence/site/staging/multisite acceptance still need the real infrastructure. Installed Pro presence remains a capability check, not server
 proof of a paid licence.
 
-Local Nexus integration resumed on 18 October. Keep production credentials and deployment unconfigured until the infrastructure handoff; see [the local service and tests](../../template-server/README.md).
+Nexus integration remains local on 18 October. Keep real Nexus credentials unconfigured until its handoff; see [the local service and tests](../../template-server/README.md).
 
 ### Raster images and public previews
 
@@ -128,11 +128,11 @@ Storage deduplicates `/assets/free/<hash>.<extension>` in the public area and `/
 
 Each selected pack also generates a content-addressed public `/previews/<hash>.html` showcase (maximum 2 MiB). It contains inert rendered screens, including result variants, rather than editable trees or the Pro renderer. Website and plugin can link to the same page. Changing previews need not copy unchanged pack JSON. Original artwork may be visible in rendered previews; only use redistributable preview-safe material. This is not DRM.
 
-The exporter validates through the shipping pack/catalog reader before publication. R2/Worker provisioning and the real licence manager remain separate deployment tasks. Local publishing never configures a production endpoint.
+The exporter validates through the shipping pack/catalog reader before publication. R2/Worker provisioning is complete; the real licence manager remains a separate deployment task. Local publishing never configures a production endpoint.
 
 ## Local Worker rehearsal
 
-The validated output can now be loaded into the loopback Worker in `tools/template-server`. Its R2 binding is simulated locally, so no Cloudflare account is required. Public catalogue, Free packs/images and public Free/Pro previews are served; premium downloads require Nexus configuration and stay closed without it. The operator CLI promotes only after dependency verification/read-back and uses conditional manifest writes, including retry and retained-release rollback. This does not configure the plugin: hosted HTTPS-to-plugin acceptance still needs a real host. Follow the [template API README](../../template-server/README.md); never serve the private directory.
+The validated output can now be loaded into the loopback Worker in `tools/template-server`. Its R2 binding is simulated locally, so no Cloudflare account is required. Public catalogue, Free packs/images and public Free/Pro previews are served; premium downloads require Nexus configuration and stay closed without it. The operator CLI promotes only after dependency verification/read-back and uses conditional manifest writes, including retry and retained-release rollback. This does not configure the plugin: hosted Free HTTPS-to-plugin acceptance passed on the configured host; the default plugin URL is still unset. Follow the [template API README](../../template-server/README.md); never serve the private directory.
 
 ### Initial hosted environment
 

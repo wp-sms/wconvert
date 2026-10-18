@@ -275,7 +275,7 @@ The local release contains 22 setups / 19 designs / five packs (four Free, one p
 
 ### Local staging preparation — 12 October 2026
 
-As of 18 October the Worker has separate public/private bindings and a Nexus-signed grant adapter, tested locally. No permissive licence adapter is shipped. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. Cloud provisioning, authenticated remote publishing, live HTTPS plugin acceptance, rate limits/backup operations and live premium entitlement acceptance remain outstanding. See [staging operations](../../tools/template-server/README.md).
+As of 18 October the Worker has separate public/private bindings and a Nexus-signed grant adapter, tested locally. No permissive licence adapter is shipped. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. The authenticated R2 publisher and live Worker were verified on 18 October: Free/public HTTPS delivery and disposable WordPress installation/offline acceptance passed. Rate limits/backup operations, plugin default endpoint enablement and live premium entitlement acceptance remain outstanding. See [staging operations](../../tools/template-server/README.md).
 
 ### Nexus grants — 18 October 2026
 
@@ -287,5 +287,4 @@ The plugin's SDK-backed adapter lives under `pro/src/License/` and is invoked on
 by explicit premium pack downloads. It pins the trusted HTTPS API origin apart
 from the editable catalogue setting. The build still gates installed features.
 See [the protocol and deployment checklist](../../tools/template-server/README.md).
-Cloud provisioning, real credentials, authenticated remote publishing and live
-HTTPS/Nexus acceptance remain outstanding.
+R2 publication and the live HTTPS Worker/Free WordPress path are now verified. Real Nexus credentials/licensed acceptance, launch operations and default plugin endpoint enablement remain outstanding. See [hosted verification](../reviews/template-cloud-publishing-2026-10-18.md).

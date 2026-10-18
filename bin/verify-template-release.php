@@ -65,14 +65,28 @@ $installed = new InstalledPacks($temp . '/packs', $validator, $assets);
 $catalog = new TemplateCatalog($options, $transport, $validator, $installed);
 try {
     $index = $catalog->refresh();
+    $verifiedPacks = [];
     foreach ($index['packs'] as $pack) {
+        if (($pack['access'] ?? 'free') === 'premium' && getenv('WCONVERT_VERIFY_PREMIUM_FIXTURES') !== '1') {
+            $before = $installed->packs();
+            try {
+                $catalog->preview($pack['id']);
+                throw new RuntimeException('Premium preview unexpectedly succeeded without authorization');
+            } catch (RuntimeException $error) {
+                if ($error->getMessage() !== 'Only public release fixtures are read by this verifier') throw $error;
+            }
+            if ($installed->packs() !== $before) throw new RuntimeException('Refused premium preview changed installed packs');
+            echo 'PASS premium fixture refused without authorization: ' . $pack['id'] . "\n";
+            continue;
+        }
         $preview = $catalog->preview($pack['id']);
         $catalog->install($pack['id'], $preview['digest']);
         if ($catalog->preview($pack['id'], true) !== $preview) throw new RuntimeException('Installed preview differs from inspected content');
         echo 'PASS native preview/install: ' . $pack['id'] . "\n";
+        $verifiedPacks[] = $pack;
     }
     $before = $installed->entries(); $transport->offline = true;
-    foreach ($index['packs'] as $pack) $catalog->preview($pack['id'], true);
+    foreach ($verifiedPacks as $pack) $catalog->preview($pack['id'], true);
     if ($installed->entries() !== $before) throw new RuntimeException('Offline content changed');
     echo 'PASS offline library: ' . count($before) . ' designs, ' . count($installed->playbooks()) . ' setups, ' . count($catalog->collections()) . " collections\n";
     $transport->offline = false;

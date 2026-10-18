@@ -11,7 +11,7 @@ const release = id => ({ id, manifest: manifest(id), objects: new Map([[`packs/$
 const first = 'a'.repeat(64), second = 'b'.repeat(64);
 
 test('actual Worker/R2 runtime: public routing, private refusal, caches and atomic promotion', async t => {
- const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-12', r2Buckets: ['PUBLIC_TEMPLATES'] }));
+ const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES'] }));
  t.after(() => mf.dispose());
  const bucket = await mf.getR2Bucket('PUBLIC_TEMPLATES');
  const fetch = (path, options) => mf.dispatchFetch('http://localhost' + path, options);
@@ -128,7 +128,7 @@ test('private staging validates pack/image closure before promotion and never mi
  assert.throws(()=>readPrivateRelease(root,release));
  writeFileSync(join(root,`private/assets/premium/${assetHash}.png`),image);
  const objects=readPrivateRelease(root,release); assert.equal(objects.size,2);
- const mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:readFileSync(new URL('../dist/index.js',import.meta.url),'utf8'),compatibilityDate:'2026-10-12',r2Buckets:['PUBLIC_TEMPLATES','PRIVATE_TEMPLATES']}));
+ const mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:readFileSync(new URL('../dist/index.js',import.meta.url),'utf8'),compatibilityDate:'2026-10-01',r2Buckets:['PUBLIC_TEMPLATES','PRIVATE_TEMPLATES']}));
  t.after(()=>mf.dispose());
  const bucket=await mf.getR2Bucket('PRIVATE_TEMPLATES');
  await stagePrivate(bucket,objects); await stagePrivate(bucket,objects);
