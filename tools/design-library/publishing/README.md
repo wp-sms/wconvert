@@ -15,7 +15,7 @@ npm run templates:release:local -- \
   --expected none
 ```
 
-`templates.example` is only the future URL written into metadata; the command
+`templates.example` is only an example HTTPS origin written into metadata; the command
 never contacts it. Use a persistent, backed-up directory outside the WordPress
 public document root for retained work. `/tmp` is appropriate only for disposable
 rehearsals. The command refuses storage inside this site's public document root.
@@ -49,8 +49,8 @@ storage/
 ```
 
 Only `public/` is a potential static hosting root. Premium catalog addresses use
-`/downloads/<digest>.json`; a future API must authorize those requests and read
-private storage. Those paths do not function until that API is connected.
+`/downloads/<digest>.json`; the Worker authorizes those requests through Nexus before reading
+private storage. They return a refusal until Nexus is configured.
 
 For the next release, pass the current manifest's `release` value to `--expected`.
 That explicit comparison plus the local exclusive lock prevents accidental
@@ -63,7 +63,7 @@ not patch chains. No files are automatically pruned.
 A failed publication leaves the prior entry point in place. New but unreferenced
 objects can be reused on retry. A leftover `.publish.lock` after process death
 requires checking that no publisher is running before manually removing that
-lock; it is never silently stolen. Cloud adapters will need storage-specific
+lock; it is never silently stolen. The R2 publisher uses storage-specific
 conditional writes, not this local filesystem lock. Power-loss durability,
 backup restoration and distributed promotion are separate hosted checks.
 

@@ -41,4 +41,18 @@ Screenshot: [corrected hosted toolbar](template-cloud-publishing-2026-10-18/prev
 
 Dashboard compatibility date correction: configuration and runtime fixtures now use `2026-10-01`. Type checks, all 27 tests, and the actual release through Workerd/R2 were rerun successfully with that date.
 
-Nexus remains intentionally disconnected; real licensed acceptance is deferred. The plugin default catalogue URL is unset. Request limits, backup restoration and final branch review/merge remain launch work. The operator confirmed bucket privacy/lifecycle and followed the Worker setup; the object-only token cannot independently audit dashboard settings or alternate Worker URLs. Rollback and concurrency were tested locally, not by disrupting the real catalogue.
+Nexus remains intentionally disconnected; real licensed acceptance is deferred. The plugin default catalogue URL is unset. Request limits, backup restoration and final branch merge remain launch work. The operator confirmed bucket privacy/lifecycle and followed the Worker setup; the object-only token cannot independently audit dashboard settings or alternate Worker URLs. Rollback and concurrency were tested locally, not by disrupting the real catalogue.
+
+## Pre-merge review and local regression checks
+
+Fixed review base: `7e06e95681ea5cbc9cabf036f3ccd06d6da8ae26` (includes the unrelated content-lock fix already on main).
+
+### Standards
+
+Independent review found no blocking violations. Addressed the two suggested refinements: explicit successful-PUT/corrupt-first-read-back tests for both buckets, and stale future-tense deployment prose. The new tests confirm the previous catalogue remains unchanged.
+
+### Spec
+
+Independent review found no blocking requirement gaps. One account/two buckets, validated immutable publication, conditional manifest-last promotion, retries/rollback and separation of publisher credentials from runtime are implemented. Nexus and plugin default enablement remain deliberately deferred.
+
+Local regression results: 4,473 JavaScript tests, 3,357 PHP tests / 19,106 assertions, 38 studio tests and 31 Worker/publisher/verifier tests passed. All six collection approvals passed their release gate. CI is explicitly skipped at the user's request; these are local results.

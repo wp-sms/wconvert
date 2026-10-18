@@ -2,7 +2,7 @@
 
 This is the template API, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. One hosted environment uses Worker `wconvert-template-api` and private R2 buckets `wconvert-templates-public` and `wconvert-templates-private`; local development emulates those bindings without contacting Cloudflare. Local commands do not create cloud resources or change site settings. The explicit remote publishing command below writes to the configured R2 buckets.
 
-The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates that binding on disk; later the same read handler can use a real private R2 bucket exposed only through the Worker.
+The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates those bindings on disk. The hosted Worker uses the same handler with the two real private R2 buckets.
 
 ## Rehearse locally
 

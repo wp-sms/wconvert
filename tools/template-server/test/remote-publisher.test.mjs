@@ -80,10 +80,31 @@ test('private upload failure never exposes a catalogue needing missing premium f
  assert.equal(await currentRelease(f.publicBucket),null);
 });
 
-test('changed immutable bytes and corrupt read-back block promotion',async t=>{
+test('changed existing immutable bytes block promotion',async t=>{
  const f=await fixture(t);await publishRemote(f.publicBucket,f.privateBucket,release(first),privateObjects,null);
  f.corrupt(`templates-public/packs/${hash(free)}.json`);
  await assert.rejects(publishRemote(f.publicBucket,f.privateBucket,release(second),privateObjects,first),/Immutable object changed/);
+ assert.equal(await currentRelease(f.publicBucket),first);
+});
+
+test('corrupt first read-back after a successful public PUT preserves the old manifest',async t=>{
+ const f=await fixture(t);await publishRemote(f.publicBucket,f.privateBucket,release(first),privateObjects,null);
+ const key=`templates-public/releases/${second}/manifest.json`;
+ f.corrupt(key);
+ await assert.rejects(publishRemote(f.publicBucket,f.privateBucket,release(second),privateObjects,first),/Read-back failed/);
+ assert(f.objects.has(key),'The PUT must have completed before the corrupt read-back');
+ assert.equal(f.requests.filter(r=>r.method==='PUT'&&r.key===key).length,1);
+ assert.equal(await currentRelease(f.publicBucket),first);
+});
+
+test('corrupt first read-back after a successful private PUT preserves the old manifest',async t=>{
+ const f=await fixture(t);await publishRemote(f.publicBucket,f.privateBucket,release(first),privateObjects,null);
+ const updated=Buffer.from('{"templates":[{"tier":"pro","name":"Updated"}]}');
+ const path=`packs/${hash(updated)}.json`, key=`templates-private/${path}`;
+ f.corrupt(key);
+ await assert.rejects(publishRemote(f.publicBucket,f.privateBucket,release(second),new Map([[path,updated]]),first),/Private read-back failed/);
+ assert(f.objects.has(key),'The private PUT must have completed before the corrupt read-back');
+ assert(!f.objects.has(`templates-public/releases/${second}/manifest.json`));
  assert.equal(await currentRelease(f.publicBucket),first);
 });
 
