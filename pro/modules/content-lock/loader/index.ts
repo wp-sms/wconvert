@@ -14,9 +14,9 @@ const CONTENT = 'data-wconvert-locked-content';
 type Entry = PayloadEntry & { content_lock?: { mode?: string }; campaign?: string; inline_placement?: unknown };
 export const lockConfigured = (entry: Entry) => entry.content_lock?.mode === 'hide';
 export const lockFamily = (entry: Entry) => entry.campaign ?? entry.anchor ?? entry.id;
-const anchors = (id: string) => [...document.querySelectorAll<HTMLElement>('[data-wconvert-optin]')].filter(node => node.getAttribute('data-wconvert-optin') === id);
+const firstMatch = (attribute: string, id: string) => [...document.querySelectorAll<HTMLElement>(`[${attribute}]`)].find(node => node.getAttribute(attribute) === id);
 export function lockRegion(entry: Entry): HTMLElement | undefined {
-  return [...document.querySelectorAll<HTMLElement>(`[${REGION}]`)].find(node => node.getAttribute(REGION) === lockFamily(entry));
+  return firstMatch(REGION, lockFamily(entry));
 }
 export function lockAvailable(entry: Entry, input: Decision): boolean {
   return entry.display_type === 'inline' && entry.inline_placement == null && !!entry.template
@@ -96,14 +96,15 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
     show(entry: Entry, controls) {
       if (!lockConfigured(entry)) return base.show(entry, controls);
       const region = lockRegion(entry);
-      const anchor = anchors(entry.anchor ?? entry.id)[0];
+      const anchor = firstMatch('data-wconvert-optin', entry.anchor ?? entry.id);
       if (!anchor || !entry.template) return false;
       const content = region?.querySelector<HTMLElement>(`:scope > [${CONTENT}]`);
       const ownAnchor = region?.querySelector<HTMLElement>(':scope > [data-wconvert-optin]');
       const validRegion = region && content && ownAnchor === anchor && !region.parentElement?.closest(`[${REGION}]`)
         && !content.querySelector(`[${REGION}],[data-wconvert-optin],form,iframe,video,audio,script`);
+      const selection = window.getSelection()?.anchorNode;
       const canLock = validRegion && !claimed && lockAvailable(entry, latest) && !content.contains(document.activeElement)
-        && !(window.getSelection()?.anchorNode && content.contains(window.getSelection()!.anchorNode));
+        && !(selection && content.contains(selection));
       if (region) region.dataset.wconvertLockState = !validRegion ? 'invalid' : claimed ? 'another' : 'fallback';
       if (ownAnchor === anchor && !canLock) return true;
       const reveal = (status: string) => { if (active?.entry.id === entry.id) open(status); };
@@ -118,21 +119,23 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
           onLeadAccepted: () => notifyCampaign(entry, 'capture'),
           onDismiss: () => controls.dismiss(),
           onCaptured() {
-            const focus = view.root?.getRootNode() as ShadowRoot;
-            const ownedFocus = !!focus.activeElement;
+            const root = view.root!;
+            const ownedFocus = (root.getRootNode() as ShadowRoot).activeElement;
             reveal('captured');
             store.remember(lockFamily(entry));
             try { controls.convert(); } finally {
-              if (!disposed) {
-                if (canLock && content && view.root) {
-                  const message = document.createElement('p');
-                  message.textContent = labels()[0]; message.setAttribute('role', 'status'); message.tabIndex = -1;
-                  view.root.append(message);
-                  const button = document.createElement('button'); button.type = 'button'; button.className = 'wc-button'; button.textContent = labels()[1];
-                  button.onclick = () => { content.tabIndex = -1; content.focus(); content.addEventListener('blur', () => content.removeAttribute('tabindex'), { once: true }); };
-                  view.root.append(button);
-                  if (ownedFocus) message.focus({ preventScroll: true });
-                }
+              if (!disposed && canLock) {
+                // Join the success copy's column so nested panels supply their
+                // padding, gap and scoped styles (including narrow overrides).
+                const layout = root.querySelector('.wc-heading,.wc-text')?.closest<HTMLElement>('.wc-stack,.wc-panel,.wc-media') ?? root;
+                if (layout === root) layout.className += ' wc-stack';
+                const message = document.createElement('p');
+                message.className = 'wc-text';
+                message.textContent = labels()[0]; message.role = 'status'; message.tabIndex = -1;
+                const button = document.createElement('button'); button.type = 'button'; button.className = 'wc-button'; button.textContent = labels()[1];
+                button.onclick = () => { content.tabIndex = -1; content.focus(); content.addEventListener('blur', () => content.removeAttribute('tabindex'), { once: true }); };
+                layout.append(message, button);
+                if (ownedFocus) message.focus({ preventScroll: true });
               }
             }
             notify();

@@ -20,9 +20,9 @@ function page() {
   document.body.innerHTML = `<script id="wconvert-payload" type="application/json" data-capture="/wp-json/wconvert/v1/capture">[]</script><div data-wconvert-content-lock="${campaign.id}"><div data-wconvert-optin="${campaign.id}"></div><div data-wconvert-locked-content><h2>Bonus</h2><a href="#download">Download</a></div></div>`;
   return document.querySelector<HTMLElement>('[data-wconvert-locked-content]')!;
 }
-function run() {
+function run(entry = campaign) {
   const beacon = { report: vi.fn(), flush: vi.fn(), stop: vi.fn() };
-  stop = start({ loader: createLoader(FREE_MODULES), entries: [campaign], presenter: proPresenter, beacon, store: { read: () => null, write() {} } });
+  stop = start({ loader: createLoader(FREE_MODULES), entries: [entry], presenter: proPresenter, beacon, store: { read: () => null, write() {} } });
   return beacon;
 }
 function formAccess() {
@@ -189,4 +189,35 @@ it('never hides focused content or nested content regions', () => {
   const content = page(); content.querySelector('a')!.focus(); run(); expect(content.hidden).toBe(false); stop!();
   const outer = page(); outer.append(outer.parentElement!.cloneNode(true)); run();
   for (const region of document.querySelectorAll<HTMLElement>('[data-wconvert-locked-content]')) expect(region.hidden).toBe(false);
+});
+
+// Exercise the real capture callback: rendering a success screen alone never adds these controls.
+it.each(['panel', 'stack', 'split', 'leaf'] as const)('keeps unlock feedback in the %s success layout', async layout => {
+  const form = formAccess();
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) })));
+  const heading = { type: 'heading', text: 'Your reading plan is ready.' };
+  const panel = { type: 'panel', tokens: { pad: '24px', gap: '20px', accent: '#8f4025', align: 'center' },
+    narrow: { pad: '16px', gap: '12px' },
+    children: [heading, { type: 'text', text: 'Enjoy the five small steps below.' }] };
+  const success = layout === 'panel' ? panel : layout === 'stack' ? { type: 'stack', children: panel.children }
+    : layout === 'split' ? { type: 'split', start: [{ type: 'media', children: [] }], end: [panel] } : heading;
+  const entry = displayEntry({ ...campaign, template: { tokens: { pad: '0px' }, tree: treeFixture({ steps: [
+    campaign.template!.tree.steps[0].content, success,
+  ] }) } });
+  const content = page(); run(entry);
+  const shadow = form().getRootNode() as ShadowRoot;
+  submit(form());
+  await vi.waitFor(() => expect(content.hidden).toBe(false));
+  const root = shadow.querySelector<HTMLElement>('.wc-root')!;
+  const container = root.querySelector('.wc-panel,.wc-stack') ?? root;
+  const message = root.querySelector<HTMLElement>('[role="status"]')!;
+  const button = [...root.querySelectorAll('button')].find(node => node.textContent === 'Continue to content')!;
+  expect(message.parentElement).toBe(container);
+  expect(button.parentElement).toBe(container);
+  expect(message).toHaveClass('wc-text');
+  expect(button).toHaveClass('wc-button');
+  expect(message.nextElementSibling).toBe(button);
+  if (layout === 'leaf') expect(root).toHaveClass('wc-stack');
+  button.click();
+  expect(document.activeElement).toBe(content);
 });

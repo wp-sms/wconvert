@@ -408,3 +408,47 @@ test('a saved divider is inert without Pro and its ordinary article remains read
   await expect(page.getByText('Public end of article.')).toBeVisible();
   await expect(page.locator('[data-wconvert-content-lock]')).toHaveCount(0);
 });
+
+for (const width of [960, 320]) test(`unlock feedback inherits success-panel styles at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await open(page, 'styled', '&theme=classic');
+  await expect(region(page)).toBeHidden();
+  await submit(page);
+  await expect(region(page)).toBeVisible();
+  const layout = await page.evaluate(() => {
+    const root = window.testShadows.map(shadow => shadow.querySelector('.wc-root')).find(node => node?.isConnected);
+    const panel = root.querySelector('.wc-panel');
+    const description = panel.querySelector('.wc-text');
+    const message = root.querySelector('[role="status"]');
+    const button = [...root.querySelectorAll('button')].find(node => node.textContent === 'Continue to content');
+    const rect = node => node.getBoundingClientRect();
+    return {
+      messageInPanel: message.parentElement === panel, buttonInPanel: button.parentElement === panel,
+      padding: getComputedStyle(panel).paddingLeft, gap: getComputedStyle(panel).gap,
+      messageInset: rect(message).left - rect(panel).left,
+      buttonInset: rect(button).left - rect(panel).left,
+      messageGap: rect(message).top - rect(description).bottom,
+      buttonGap: rect(button).top - rect(message).bottom,
+      bottomInset: rect(panel).bottom - rect(button).bottom,
+      messageMargin: getComputedStyle(message).margin,
+      messageAlign: getComputedStyle(message).textAlign,
+      messageSize: getComputedStyle(message).fontSize,
+      buttonSize: getComputedStyle(button).fontSize,
+      buttonBackground: getComputedStyle(button).backgroundColor,
+      overflow: document.documentElement.scrollWidth > innerWidth,
+    };
+  });
+  const padding = width === 320 ? 16 : 24;
+  const gap = width === 320 ? 12 : 20;
+  expect(layout).toEqual({
+    messageInPanel: true, buttonInPanel: true, padding: `${padding}px`, gap: `${gap}px`,
+    messageInset: padding, buttonInset: padding, messageGap: gap, buttonGap: gap, bottomInset: padding,
+    messageMargin: '0px', messageAlign: 'center', messageSize: '18px', buttonSize: '18px',
+    buttonBackground: 'rgb(143, 64, 37)', overflow: false,
+  });
+  await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('button')])
+    .find(button => button.textContent === 'Continue to content').focus());
+  await page.keyboard.press('Enter');
+  expect(await region(page).evaluate(node => document.activeElement === node)).toBe(true);
+  await page.screenshot({ path: `tools/visual-tests/out/content-lock/styled-${width}.png`, fullPage: true });
+});
