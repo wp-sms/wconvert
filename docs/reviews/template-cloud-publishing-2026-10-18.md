@@ -56,3 +56,5 @@ Independent review found no blocking violations. Addressed the two suggested ref
 Independent review found no blocking requirement gaps. One account/two buckets, validated immutable publication, conditional manifest-last promotion, retries/rollback and separation of publisher credentials from runtime are implemented. Nexus and plugin default enablement remain deliberately deferred.
 
 Local regression results: 4,473 JavaScript tests, 3,357 PHP tests / 19,106 assertions, 38 studio tests and 31 Worker/publisher/verifier tests passed. All six collection approvals passed their release gate. CI is explicitly skipped at the user's request; these are local results.
+
+Final pre-merge checks: `npm run build` and `bash bin/build.sh all` passed, producing `wconvert-v1.0.0.zip` and `wconvert-pro-v0.1.0.zip` with artifact contracts clean. The final hosted release and real HTTPS WordPress verifier both passed again. Both independent review axes have no unresolved blocking findings.
