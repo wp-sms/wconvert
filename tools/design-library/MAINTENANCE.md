@@ -138,7 +138,7 @@ For a release containing the bundled collections:
 3. Run `templates:collections:publish`, then `templates:collections:check`.
    Check the actual WordPress picker reads the regenerated collections.
 4. Build current assets, run required tests and `bash bin/build.sh all`. Confirm
-   the Free and all three Pro ZIPs, and update the current approval counts.
+   the Free and Pro ZIPs (the single Pro artifact in ADR 0146), and update the current approval counts.
 
 This is a local release checklist, not a CI requirement. State any out-of-scope
 stale reviews explicitly; passing the bundled-collection gate does not approve

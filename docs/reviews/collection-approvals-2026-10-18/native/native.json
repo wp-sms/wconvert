@@ -1,0 +1,914 @@
+[
+  {
+    "id": "edition-early-access",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "edition-early-access",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "sale-deadline",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": true,
+    "passed": true
+  },
+  {
+    "id": "sale-deadline",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": true,
+    "passed": true
+  },
+  {
+    "id": "first-order-receipt",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": true,
+    "copiedCode": true,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "first-order-receipt",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": true,
+    "copiedCode": true,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "lighting-collection",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "lighting-collection",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "homeware-care-notes",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "homeware-care-notes",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "restock-announcements",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "restock-announcements",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "specification-sheet",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "specification-sheet",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": false,
+    "simulatedFailureRetry": false,
+    "localLeadSaved": false,
+    "configuredResource": 200,
+    "actualCtaOpened": true,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "home-repair-quote",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "home-repair-quote",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "cleaning-quote",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "cleaning-quote",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "repair-assessment",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "repair-assessment",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "renovation-callback",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "renovation-callback",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "repair-advice-request",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "next"
+      },
+      {
+        "step": 1,
+        "action": "submit"
+      },
+      {
+        "step": 2,
+        "action": null
+      }
+    ],
+    "backChecked": true,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "repair-advice-request",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "next"
+      },
+      {
+        "step": 1,
+        "action": "submit"
+      },
+      {
+        "step": 2,
+        "action": null
+      }
+    ],
+    "backChecked": true,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "website-review-enquiry",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "website-review-enquiry",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "sunday-reading",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "sunday-reading",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "editorial-weekly",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "editorial-weekly",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": true,
+    "localResourceEmail": false,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "writing-checklist",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": true,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "writing-checklist",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": true,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "reading-notes-guide",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": true,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "reading-notes-guide",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": true,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "excerpt-window",
+    "width": 320,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": true,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  },
+  {
+    "id": "excerpt-window",
+    "width": 1280,
+    "states": [
+      {
+        "step": 0,
+        "action": "submit"
+      },
+      {
+        "step": 1,
+        "action": null
+      }
+    ],
+    "backChecked": false,
+    "consentChecked": false,
+    "localResourceEmail": true,
+    "validation": true,
+    "simulatedFailureRetry": true,
+    "localLeadSaved": true,
+    "configuredResource": 200,
+    "actualCtaOpened": false,
+    "couponChecked": false,
+    "copiedCode": false,
+    "countdownConfigured": false,
+    "passed": true
+  }
+]

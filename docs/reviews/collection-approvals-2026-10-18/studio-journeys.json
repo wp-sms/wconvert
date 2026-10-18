@@ -1,0 +1,210 @@
+[
+  {
+    "id": "edition-early-access",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "sale-deadline",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "first-order-receipt",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "lighting-collection",
+    "visited": [
+      "information"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "homeware-care-notes",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "restock-announcements",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "specification-sheet",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "home-repair-quote",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "cleaning-quote",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "repair-assessment",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "renovation-callback",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "repair-advice-request",
+    "visited": [
+      "request",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "website-review-enquiry",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "sunday-reading",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "editorial-weekly",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "writing-checklist",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "reading-notes-guide",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "excerpt-window",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "recommend-accessory",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "explore-compatible-extras",
+    "visited": [
+      "suggestions"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "add-useful-extras",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "basket-cross-sells",
+    "visited": [
+      "suggestions"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "coffee-taste-finder",
+    "visited": [
+      "taste",
+      "match"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "shopping-guidance",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  }
+]

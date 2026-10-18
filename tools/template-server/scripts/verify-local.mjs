@@ -14,7 +14,7 @@ for (const page of manifest.pages) {
   const preview = await fetch(mirror(pack.preview_url)); assert.equal(preview.status, 200); assert.match(preview.headers.get('content-security-policy'), /sandbox allow-scripts/);
   assert.equal(hash(Buffer.from(await preview.arrayBuffer())), new URL(pack.preview_url).pathname.split('/').pop().split('.')[0]); report.publicPreviews++;
   const download = await fetch(mirror(pack.url));
-  if (pack.access === 'premium') { assert.equal(download.status, 503); assert.equal(download.headers.get('cache-control'), 'no-store'); report.premiumRefusals++; continue; }
+  if (pack.access === 'premium') { assert.equal(download.status, 503); assert.equal(download.headers.get('cache-control'), 'private, no-store'); report.premiumRefusals++; continue; }
   assert.equal(download.status, 200); const bytes = Buffer.from(await download.arrayBuffer()); assert.equal(hash(bytes), pack.sha256);
   const data = JSON.parse(bytes); report.freePacks++; report.downloadedSetups += data.playbooks.length;
   for (const asset of data.assets ?? []) {

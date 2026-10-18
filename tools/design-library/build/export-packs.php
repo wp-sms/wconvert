@@ -25,7 +25,8 @@ $input = json_decode(stream_get_contents(STDIN), true, 64, JSON_THROW_ON_ERROR);
 if (($input['mode'] ?? '') === 'validate') {
     foreach ($input['packs'] as $pack) $validator->decode($pack['json']);
     // Exercise the complete shipping refresh path (including metadata, URLs and references).
-    $transport = new class($input['responses']) implements \WConvert\Template\Catalog\CatalogTransport, \WConvert\Template\Catalog\CatalogImageTransport {
+    $transport = new class($input['responses']) implements \WConvert\Template\Catalog\CatalogTransport, \WConvert\Template\Catalog\CatalogImageTransport, \WConvert\Template\Catalog\CatalogPackTransport {
+        public function pack(string $url, string $digest): string { return $this->get($url); }
         public function __construct(private array $responses) {}
         public function image(string $url, int $bytes): string { return base64_decode($this->responses[$url] ?? throw new RuntimeException('Missing image object'), true); }
         public function get(string $url): string { return $this->responses[$url] ?? throw new RuntimeException('Missing release object'); }

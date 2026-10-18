@@ -232,3 +232,10 @@ and would put a branch on the request path 0004 exists to protect.
   - *Nothing else. **The build stays the gate**: Nexus serves the ZIP matching
     the licence's tier, and no runtime check unlocks anything (ADR 0056).*
     *Corrected by ADR 0143 and [ADR 0146](0146-pro-is-one-tier.md): every plan gets the one Pro ZIP.*
+
+### New premium content downloads — 18 October 2026
+
+The SDK-backed template transport is another explicit admin reader, isolated
+under `pro/src/License/` alongside updates/support. Nexus authorizes delivery of
+new premium packs and images, never whether installed code or campaigns run.
+See the implemented amendment in [ADR 0112](0112-template-discovery-and-reviewed-collections.md#nexus-grants--18-october-2026).

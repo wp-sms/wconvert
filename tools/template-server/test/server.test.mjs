@@ -34,7 +34,7 @@ test('actual Worker/R2 runtime: public routing, private refusal, caches and atom
  await t.test('premium remains unavailable even with a tier claim', async () => {
   for (const path of [`/downloads/${digest}.json`, `/assets/premium/${digest}.png`]) {
    const response = await fetch(path, { headers: { Authorization: 'Bearer pretend', 'X-Plan': 'pro' } });
-   assert.equal(response.status, 503); assert.equal(response.headers.get('cache-control'), 'no-store');
+   assert.equal(response.status, 503); assert.equal(response.headers.get('cache-control'), 'private, no-store');
   }
  });
  await t.test('public previews and images, bounded stored content', async () => {
@@ -112,4 +112,27 @@ test('staging validates retained dependencies and preserves complete rollback re
   write(`releases/${first}/manifest.json`, current.manifest);
   assert.throws(() => readPublicRelease(root), /Invalid release identity/);
  } finally { rmSync(root, { recursive: true }); }
+});
+
+test('private staging validates pack/image closure before promotion and never mixes storage', async t => {
+ const { readPrivateRelease, stagePrivate } = await import('../scripts/storage.mjs');
+ const root=mkdtempSync(join(tmpdir(),'template-private-'));
+ t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const image=Buffer.from('fixture'), assetHash=hash(image);
+ const pack=Buffer.from(JSON.stringify({assets:[{access:'premium',mime:'image/png',sha256:assetHash,bytes:image.length}]}));
+ const packHash=hash(pack);
+ const page=Buffer.from(JSON.stringify({packs:[{access:'premium',url:`https://templates.example/downloads/${packHash}.json`,sha256:packHash}]}));
+ const release={objects:new Map([[`releases/${first}/page-1.json`,page]])};
+ mkdirSync(join(root,'private/packs'),{recursive:true}); mkdirSync(join(root,'private/assets/premium'),{recursive:true});
+ writeFileSync(join(root,`private/packs/${packHash}.json`),pack);
+ assert.throws(()=>readPrivateRelease(root,release));
+ writeFileSync(join(root,`private/assets/premium/${assetHash}.png`),image);
+ const objects=readPrivateRelease(root,release); assert.equal(objects.size,2);
+ const mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:readFileSync(new URL('../dist/index.js',import.meta.url),'utf8'),compatibilityDate:'2026-10-12',r2Buckets:['PUBLIC_TEMPLATES','PRIVATE_TEMPLATES']}));
+ t.after(()=>mf.dispose());
+ const bucket=await mf.getR2Bucket('PRIVATE_TEMPLATES');
+ await stagePrivate(bucket,objects); await stagePrivate(bucket,objects);
+ assert.equal(await (await mf.getR2Bucket('PUBLIC_TEMPLATES')).get(`packs/${packHash}.json`),null);
+ await bucket.put(`packs/${packHash}.json`,'changed'); await assert.rejects(stagePrivate(bucket,objects),/Immutable private object changed/);
+ writeFileSync(join(root,`private/assets/premium/${assetHash}.png`),'damaged'); assert.throws(()=>readPrivateRelease(root,release),/digest\/size mismatch/);
 });

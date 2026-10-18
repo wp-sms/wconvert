@@ -21,7 +21,7 @@ clickable prototype is the review gate: claude.ai/artifact/EovSgYnM27kRV686LKGgW
 
 ## What does not change
 
-**A licence never changes what Pro does.** The build is the gate (ADR 0015,
+**A licence never changes which installed Pro features run.** The build is the gate (ADR 0015,
 ADR 0056): a capability is present because it shipped in the ZIP. A licence buys
 updates and support. Every problem state on the License page says "Pro features
 keep working", and no code path outside `pro/src/License/` reads a licence —
@@ -174,3 +174,13 @@ fetch, which records it rather than throwing.
 - Expired customers still get free's updates from wp.org while Pro stays at its
   version. A max-core rule for that is a later decision.
 - WP-CLI (`wp wconvert license …`) is later.
+
+## Paid template downloads — 18 October 2026
+
+[ADR 0112](0112-template-discovery-and-reviewed-collections.md) now adds an explicit
+admin download reader under this same `pro/src/License/` boundary. It obtains the
+SDK key without checking cached validity, sends it only to a pinned Worker origin,
+and lets Nexus authorize new premium content. This extends updates/support
+entitlement to new template downloads; installed designs, images, campaigns and
+front-end capabilities remain independent of the licence. No SDK module gating
+is restored and no licence value is read by Free or on the visitor path.

@@ -1,0 +1,3 @@
+# Copy to .dev.vars only when credentials are ready. Never commit .dev.vars.
+# Keep secrets out of wrangler.jsonc, WordPress, catalogue files and logs.
+NEXUS_SERVICE_KEY=""
