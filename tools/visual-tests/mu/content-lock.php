@@ -21,6 +21,18 @@ add_action('init', static function (): void {
                 ['id' => 'received', 'name' => 'Received', 'kind' => 'acknowledgement', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'id' => 'n4', 'text' => 'Request received']]]],
             ]]],
         ];
+        if ($kind === 'styled') {
+            $config['template']['tokens'] = ['pad' => '0px', 'width' => '40rem', 'accent' => '#12505a'];
+            $config['template']['tree']['steps'][1]['content'] = [
+                'type' => 'panel',
+                'tokens' => ['pad' => '24px', 'gap' => '20px', 'accent' => '#8f4025', 'fg' => '#332c23', 'align' => 'center', 'text-size' => '18px'],
+                'narrow' => ['pad' => '16px', 'gap' => '12px'],
+                'children' => [
+                    ['type' => 'heading', 'id' => 'n4', 'text' => 'Your reading plan is ready.'],
+                    ['type' => 'text', 'id' => 'n5', 'text' => 'Enjoy the five small steps below.'],
+                ],
+            ];
+        }
         if ($kind === 'off' || $kind === 'divider-off') unset($config['content_lock']);
         $ids[$kind] = $repository->create('Content lock ' . $kind, 'collect_enquiries', $config)->id;
         update_option('wconvert_lock_fixtures', $ids);
