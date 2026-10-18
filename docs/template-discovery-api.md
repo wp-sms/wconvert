@@ -1,20 +1,19 @@
 # Template discovery API reader contract
 
 Implemented client boundary: `DiscoveryRelease`, `TemplateCatalog` and the
-existing explicit refresh/install endpoints. There is no default hosted service,
-background request, new paid entitlement or remote executable content.
+explicit refresh/install endpoints. Public discovery, Free packs and Free/Pro
+previews are anonymous. Pro premium pack/media downloads use the SDK credential
+only at a separately pinned HTTPS API origin; Nexus grants access to the exact
+immutable pack and its images. Installed campaigns keep working offline.
 
-Planning update, 1 October 2026: the
-[hosted delivery extension](plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--implementation-status)
-specifies public Free/Pro preview parity, private premium downloads through the
-existing licence manager, verified local media import and reuse of unchanged
-immutable files. R2 is recommended; no R2 bucket or Worker is provisioned. A
-Worker is optional if the existing backend can provide the download API. A local-directory
-publisher now exists; isolated image and authorization foundations are tested
-without cloud setup. They are not yet connected to live media/premium downloads. The protocol below
-is the implemented reader, not that future extension: assets, credentials,
-external demo URLs and cross-origin signed download fields are not implicitly
-accepted. Those require an explicitly versioned and tested contract.
+The local publisher, Worker/R2 adapter, signed-grant verifier and WordPress
+transport are implemented and tested locally. There is no default hosted URL,
+background download or remote executable content. Real R2, credentials, remote
+publishing and live HTTPS acceptance remain deployment work. The
+[setup guide](../tools/template-server/CLOUDFLARE-SETUP.md) describes one hosted
+**WConvert Template Library** environment; no separate staging environment is
+required before launch. Downloadable trees still reject arbitrary remote image
+URLs and executable content; raster assets use the verified manifest contract.
 
 ## Immutable release format
 
@@ -93,7 +92,7 @@ Both preferences remain scoped to the authenticated WordPress user and blog.
 
 A catalog row may supply `preview_url` on the catalog's own origin and `access: free|premium`. The plugin opens the generated public showcase without downloading/installing the editable pack. Showcase HTML renders every design screen/result variant, disables form actions, and supports desktop/mobile/RTL. Both tiers share the same preview generation path.
 
-Pack schema 2 adds capability `pack-images:1`, `assets`, and `image_bindings`. Example binding: `{ "template_id": "reading-slip", "node_id": "n99", "asset_id": "cover" }`. The asset descriptor contains `id`, `sha256`, `bytes`, `mime`, `width`, `height`, `access`. It never contains an arbitrary download URL. The client derives `/assets/free/<sha256>.<png|jpg|webp>` from the configured origin, verifies the complete required set, and substitutes stable local URLs only at read time. Stored JSON remains byte-identical to the inspected digest. Premium media downloads are refused until the licence adapter is connected. Existing schema-1 empty-asset packs remain compatible.
+Pack schema 2 adds capability `pack-images:1`, `assets`, and `image_bindings`. Example binding: `{ "template_id": "reading-slip", "node_id": "n99", "asset_id": "cover" }`. The asset descriptor contains `id`, `sha256`, `bytes`, `mime`, `width`, `height`, `access`. It never contains an arbitrary download URL. The client derives `/assets/free/<sha256>.<png|jpg|webp>` from the configured origin, verifies the complete required set, and substitutes stable local URLs only at read time. Stored JSON remains byte-identical to the inspected digest. Premium media use the explicit Pro transport and Nexus grants described in the [staging service](../tools/template-server/README.md); unconfigured services remain closed. Existing schema-1 empty-asset packs remain compatible.
 
 Picker responses may contain `country_suggestion: {code, timezone}` or null. Preferences include `country_suggestion_dismissed`, the named timezone the user dismissed. A timezone is only a suggestion for countries served; it is not visitor geolocation. No IP lookup, automatic market write or fixed-offset guess is used.
 
@@ -102,4 +101,19 @@ Picker responses may contain `country_suggestion: {code, timezone}` or null. Pre
 
 The local delivery plan now exports 22 setups, 19 designs and three complete editorial collections in five packs, including one private premium pack. The pack reader accepts declared `template-tree:3` routes and `paid-campaign-rules:1` for supported, tier-authorized targeting. Site-specific rule IDs and authored URLs remain forbidden. Existing immutable versions remain readable offline after an update.
 
-Public result previews show inert product samples where appropriate and hide absent optional destination links. Pack source JSON remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` is only an opt-in local verification transport; it is not part of the hosted contract, and cannot grant customers access. R2/Worker provisioning, the real licence adapter and staging authorization/rollback checks remain future work.
+Public result previews show inert product samples where appropriate and hide absent optional destination links. Pack source JSON remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` is only an opt-in local verification transport; it is not part of the hosted contract, and cannot grant customers access. R2/Worker provisioning, real credentials and live staging authorization/rollback checks remain future work. The local Nexus adapter is implemented and tested; see the [staging service](../tools/template-server/README.md).
+
+### Nexus download contract (18 October 2026)
+
+Public schema 2 discovery is unchanged. A premium row dispatches through
+`CatalogPackTransport` registered by Pro; Free cannot download premium source.
+The Pro adapter pins `WCONVERT_TEMPLATE_API_ORIGIN` independently of the catalogue
+option, posts the SDK key in `X-License-Key` to `/grants`, then uses the returned
+pass in Authorization headers for `/downloads/<pack-sha>.json` and its private
+images. It never sends credentials to public reads or arbitrary catalogue URLs.
+No stored licence status/plan is interpreted as server authorization.
+
+All installed-pack integrity and local-media rules remain unchanged. A refusal
+cannot install a partial pack or change a campaign. Expiry affects new downloads,
+not already imported content. This is locally implemented; production credentials
+and HTTPS staging acceptance remain pending.

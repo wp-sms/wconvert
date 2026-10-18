@@ -26,7 +26,8 @@ $options = new class($source) implements \WConvert\Storage\OptionStore {
     public function get(string $key, $default = null) { return $this->data[$key] ?? $default; }
     public function set(string $key, $value): void { $this->data[$key] = $value; }
 };
-$transport = new class($directory) implements CatalogTransport, CatalogImageTransport {
+$transport = new class($directory) implements CatalogTransport, CatalogImageTransport, \WConvert\Template\Catalog\CatalogPackTransport {
+    public function pack(string $url, string $digest): string { return $this->get($url); }
     public bool $offline = false;
     public int $imageDownloads = 0;
     /** @var array<string, string> Isolated update fixtures, never published. */

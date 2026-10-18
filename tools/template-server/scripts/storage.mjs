@@ -87,3 +87,45 @@ export async function promote(bucket, release, expected) {
   check(promoted, 'Concurrent publication won; prior manifest preserved');
   return { release: release.id, created, reused: release.objects.size - created };
 }
+
+/** Private source closure from the same validated release. Never exposed by public routes. */
+export function readPrivateRelease(directory, release) {
+  const objects = new Map(); let total = 0;
+  const read = (key, expected, size) => {
+    check(/^(packs\/[a-f0-9]{64}\.json|assets\/premium\/[a-f0-9]{64}\.(png|jpg|webp))$/.test(key), 'Invalid private object path');
+    const parts = key.split('/'); let path = resolve(directory, 'private');
+    check(!lstatSync(path).isSymbolicLink(), 'Symlinks are not allowed');
+    for (const part of parts) { path = join(path, part); check(!lstatSync(path).isSymbolicLink(), 'Symlinks are not allowed'); }
+    const stat = lstatSync(path); check(stat.isFile() && stat.size > 0 && stat.size <= (key.startsWith('packs/') ? 262144 : 5242880), 'Private file exceeds budget');
+    const bytes = readFileSync(path); check(hash(bytes) === expected && (size === undefined || bytes.length === size), `Private digest/size mismatch: ${key}`);
+    if (!objects.has(key)) { total += bytes.length; check(total <= 134217728 && objects.size < 2000, 'Private release exceeds rehearsal budget'); objects.set(key, bytes); }
+    return bytes;
+  };
+  for (const [key, bytes] of release.objects) {
+    if (!/^releases\/[^/]+\/page-\d+\.json$/.test(key)) continue;
+    for (const entry of JSON.parse(bytes).packs) {
+      if (entry.access !== 'premium') continue;
+      check(new URL(entry.url).pathname === `/downloads/${entry.sha256}.json`, 'Invalid premium download address');
+      const pack = JSON.parse(read(`packs/${entry.sha256}.json`, entry.sha256));
+      check(Array.isArray(pack.assets) && pack.assets.length <= 16, 'Invalid private asset manifest');
+      for (const asset of pack.assets) {
+        const ext = { 'image/png':'png', 'image/jpeg':'jpg', 'image/webp':'webp' }[asset.mime];
+        check(ext && ['free','premium'].includes(asset.access), 'Invalid private asset');
+        const path = `assets/${asset.access}/${asset.sha256}.${ext}`;
+        if (asset.access === 'premium') read(path, asset.sha256, asset.bytes);
+        else { const bytes = release.objects.get(path); check(bytes && hash(bytes) === asset.sha256 && bytes.length === asset.bytes, 'Missing Free asset used by premium pack'); }
+      }
+    }
+  }
+  return objects;
+}
+
+export async function stagePrivate(bucket, objects) {
+  for (const [key, bytes] of objects) {
+    const existing = await bucket.get(key);
+    if (existing) check(hash(Buffer.from(await existing.arrayBuffer())) === hash(bytes), `Immutable private object changed: ${key}`);
+    else await bucket.put(key, bytes, { onlyIf: { etagDoesNotMatch: '*' }, sha256: hash(bytes) });
+    const stored = await bucket.get(key);
+    check(stored && hash(Buffer.from(await stored.arrayBuffer())) === hash(bytes), `Private read-back failed: ${key}`);
+  }
+}

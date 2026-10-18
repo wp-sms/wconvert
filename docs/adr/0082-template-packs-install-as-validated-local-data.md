@@ -51,9 +51,10 @@ The build and reader share one bound. A 51-pack response is refused without
 replacing the cached index. This supplies bounded capacity for 600 design slots,
 not an assertion that 600 designs have been authored or reviewed. The only HTTP exception is the current site's host
 in WordPress's `local` environment. Pack URLs must share the configured origin.
-No licence, lead, campaign, cookie or site identifier is deliberately transmitted;
+For anonymous public discovery and Free downloads, no licence, lead, campaign, cookie or site identifier is deliberately transmitted;
 the service necessarily receives the server IP and requested URL. The user agent
 is a fixed catalog label, without the WordPress default site URL.
+**Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md), 18 October 2026:** explicit Pro premium downloads send the SDK licence key and canonical site to a separately pinned HTTPS Worker origin. Nexus grants access; neither credential reaches public catalogue requests or browser responses.
 
 Before any rendering or registration, reject unsupported schema/capabilities,
 unknown node keys/types/roles/tokens, invalid value types, duplicate block IDs,
@@ -96,8 +97,7 @@ Refresh, preview and install failures stay inside the pack view. Previously
 installed packs can be previewed and used without the service, even if the index
 changes or disappears. Corrupt local files are skipped so the bundled library
 remains usable. A release requiring unsupported capabilities is rejected before
-it can alter the local library. Paid pack fetching is not implemented, and no
-licence expiry check is added to installed functionality.
+it can alter the local library. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** paid pack fetching now uses the locally tested Nexus signed-grant adapter; real service configuration remains pending. No licence expiry check is added to installed functionality.
 
 
 Deleting WConvert also removes both catalog options and its owned flat archive
@@ -107,7 +107,7 @@ and fake WordPress/database functions.
 
 ## 2026-10-01 — verified raster pack installation
 
-Schema 2 adds `pack-images:1`, a hash/size/MIME/dimension/access manifest and separate `{template_id,node_id,asset_id}` bindings. Only normalized image leaves can bind. Free designs cannot reference premium assets. No remote/data URL is accepted in a downloadable tree. The client derives Free image paths from its configured catalog origin, stages and verifies the complete set, and commits the marker before registering the immutable pack. Runtime hydration uses verified local URLs; the archived JSON and digest are unchanged. Missing/corrupt images fail closed and can be repaired by explicit preview. Old media URLs are retained for existing campaigns; there is no automatic garbage collection. Premium image downloads remain closed pending the licence adapter.
+Schema 2 adds `pack-images:1`, a hash/size/MIME/dimension/access manifest and separate `{template_id,node_id,asset_id}` bindings. Only normalized image leaves can bind. Free designs cannot reference premium assets. No remote/data URL is accepted in a downloadable tree. The client derives Free image paths from its configured catalog origin, stages and verifies the complete set, and commits the marker before registering the immutable pack. Runtime hydration uses verified local URLs; the archived JSON and digest are unchanged. Missing/corrupt images fail closed and can be repaired by explicit preview. Old media URLs are retained for existing campaigns; there is no automatic garbage collection. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** premium images now use the same verified download pass and exact pack membership; missing service configuration fails closed.
 
 The image budget is 16 files, 5 MiB per file and 20 MiB per pack, PNG/JPEG/WebP only, up to 4096px per dimension. Installed set markers are bounded to 128; this is not an unlimited cache. Native verification uses `bin/verify-template-media.php` and the actual-release verifier `bin/verify-template-release.php`. The latter exercises the Homeware care pack, exact preview/install agreement, offline reads, a synthetic next-version update with image reuse, and retention of the original design/image references. Bundled SVG stays compact; the internal publisher accepts only an explicitly reviewed raster derivative bound to the source URI, raster and evidence hashes. Conversion is never implicit during a build.
 
@@ -118,4 +118,4 @@ The reader accepts explicitly declared `template-tree:3` with graph structure, r
 
 `paid-campaign-rules:1` permits supported rule shapes at the receiving install's actual tier. Rule definitions still come from the manifest, unknown parameters are rejected and authored page/product/element identifiers remain forbidden. Thus an Elite basket condition can survive pack import without being weakened to “everyone”; Free/Basic cannot import that condition. Export access classification includes rule tiers as well as design/Goal tiers. This is client compatibility, not a replacement for hosted licence authorization.
 
-The internal exporter supplies narrow filesystem adapters for its temporary validation archive, so the actual illustrated pack reader runs without WordPress. Native WordPress verification remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` explicitly allows the local verifier to read a private rehearsal pack; it creates no network entitlement path. Premium hosted downloads and premium media authorization remain closed pending the deferred licence adapter. *[ADR 0143](0143-license-page-and-updater.md) brought the licence SDK into Pro for updates and the License page only; it authorizes no download here, so these stay closed.*
+The internal exporter supplies narrow filesystem adapters for its temporary validation archive, so the actual illustrated pack reader runs without WordPress. Native WordPress verification remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` explicitly allows the local verifier to read a private rehearsal pack; it creates no network entitlement path. **Amended on 18 October by [ADR 0112](0112-template-discovery-and-reviewed-collections.md) and [ADR 0143](0143-license-page-and-updater.md):** Pro now uses the SDK key for explicit premium pack/media requests through the Nexus signed-grant adapter. Hosted deployment and real credentials remain pending; unconfigured service routes refuse access. Installed functionality remains independent of entitlement.

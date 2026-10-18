@@ -1,8 +1,8 @@
-# Template staging service
+# WConvert Template Library
 
-This is the internal delivery service, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. No R2 bucket, DNS record, Worker deployment, licence integration or site setting is created by these commands.
+This is the template API, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. One hosted environment uses Worker `wconvert-template-api` and private R2 buckets `wconvert-templates-public` and `wconvert-templates-private`; local development emulates those bindings without contacting Cloudflare. No R2 bucket, DNS record, Worker deployment, real Nexus connection or site setting is created by these commands.
 
-The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public objects through an R2 binding. Local development emulates that binding on disk; later the same read handler can use a real private R2 bucket exposed only through the Worker.
+The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates that binding on disk; later the same read handler can use a real private R2 bucket exposed only through the Worker.
 
 ## Rehearse locally
 
@@ -18,9 +18,9 @@ Build an approved release outside the WordPress document root, using a new direc
 
 ```sh
 npm run templates:release:local -- \
-  --directory /tmp/wconvert-template-staging \
+  --directory /tmp/wconvert-template-release \
   --origin https://templates.example --expected none
-npm run seed --prefix tools/template-server -- /tmp/wconvert-template-staging none
+npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release none
 npm run dev --prefix tools/template-server
 ```
 
@@ -32,43 +32,88 @@ npm run verify --prefix tools/template-server
 
 The service binds to `http://127.0.0.1:9454`. Open `/manifest.json` for the catalogue. The verifier follows its pages, checks exact hashes, downloads Free packs/images, checks public Free/Pro previews and confirms premium downloads are refused. For manual preview, take a `preview_url` from a catalogue page and replace only its origin with `http://127.0.0.1:9454`.
 
-`https://templates.example` remains the **metadata origin**, not a real host. The local service mirrors its paths. Do not configure this HTTP mirror in the plugin: the production reader deliberately requires HTTPS. The native local-release verifier remains the WordPress installation/offline check; HTTPS staging-to-plugin acceptance is a later deployment check. No production URL is configured by this tool.
+`https://templates.example` remains the **metadata origin**, not a real host. The local service mirrors its paths. Do not configure this HTTP mirror in the plugin: the production reader deliberately requires HTTPS. The native local-release verifier remains the WordPress installation/offline check; hosted HTTPS-to-plugin acceptance is a later deployment check. No production URL is configured by this tool.
 
-The current rehearsal serves four Free packs (16 setups), five public previews including the premium pack, and one Free image. The complete release still lists 22 setups; six premium setups cannot be downloaded here. All 34 rendered preview screens/results were exercised through the service's actual CSP and device controls.
+The current rehearsal serves four Free packs (16 setups), five public previews including the premium pack, and one Free image. The complete release still lists 22 setups; six premium setups require the Nexus configuration described below; no permissive authorizer is enabled by default. All 34 rendered preview screens/results were exercised through the service's actual CSP and device controls.
 
 ## Updating, retrying and rolling back
 
 The local release builder requires the previous release ID, preserves immutable pack versions and writes its manifest last. To load its next output into local R2, supply the ID currently returned by the running service:
 
 ```sh
-npm run seed --prefix tools/template-server -- /tmp/wconvert-template-staging CURRENT_RELEASE_ID
+npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release CURRENT_RELEASE_ID
 ```
 
-The seed tool validates the public dependency closure of every retained release before writing anything, including the pages, packs, previews and images needed for rollback. It refuses premium source in public packs, checks file sizes/hashes, writes immutable objects conditionally, reads every object back, then conditionally replaces `manifest.json`. An interrupted write leaves the old manifest in place. Concurrent publishers cannot both replace the same version. An identical retry reuses the existing objects. Nothing deletes old files.
+The seed tool validates the public and private dependency closures of every retained release before writing anything, including the pages, packs, previews and images needed for rollback. It refuses premium source in public packs, checks file sizes/hashes, writes immutable objects conditionally, reads every object back, then conditionally replaces `manifest.json`. An interrupted write leaves the old manifest in place. Concurrent publishers cannot both replace the same version. An identical retry reuses the existing objects. Nothing deletes old files.
 
 For a local rollback, choose a retained release in the same validated output directory:
 
 ```sh
-npm run seed --prefix tools/template-server -- /tmp/wconvert-template-staging CURRENT_RELEASE_ID RETAINED_RELEASE_ID
+npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release CURRENT_RELEASE_ID RETAINED_RELEASE_ID
 ```
 
 This switches the catalogue pointer; it does not rewrite installed templates or existing campaigns. The command only accesses local Wrangler storage. `scripts/storage.mjs` provides a tested R2-compatible conditional promotion operation, but no remote publishing credentials, upload command or public write endpoint is supplied.
 
 ## Access and caching
 
-- The Worker has **only a public-content bucket binding**. It cannot read a private pack or original image.
+- The Worker has separate public and private bucket bindings. Private files are served only after Nexus grant verification; bucket paths and temporary grant records have no public routes.
 - Catalogue, Free packs, public previews and Free images have explicit route patterns. Arbitrary file paths, queries and write methods are refused.
-- Premium pack/image routes return `503`, `no-store` and an explicit message that licence integration is pending. Client-supplied tokens or tier headers cannot enable them. No fake authorizer is shipped.
+- With missing Nexus configuration, Premium routes return `503` and `private, no-store`. Configured routes verify an Ed25519 Nexus pass on every GET/HEAD/retry, including a conditional request. No client tier header or fake authorizer enables access.
 - Immutable files have long-lived caches and ETags. The mutable manifest must revalidate. Missing/unavailable responses are not cached.
 - HTML demos use an isolated sandbox CSP, disabled sample forms, no external network resources and no referrer. Public previews are viewable demonstrations, not editable premium source or DRM.
 
+## Local Nexus integration (18 October 2026)
+
+`POST /grants` accepts only `{pack: <pack hash>, domain: <SDK canonical site>}`
+and an `X-License-Key` header. WordPress obtains the key through the existing Pro
+SDK, only during an explicit premium preview/install. The Worker loads the trusted
+immutable pack and computes SHA-256 over UTF-8 JSON of `[path, sha256, bytes]`
+tuples sorted by path, covering the pack and exact permitted images. Clients may
+not supply membership, permissions, product or audience.
+
+Nexus issues the signed pass. The Worker verifies EdDSA/type, issuer, audience,
+environment, protocol, WConvert store/item/permission, site, activation shape,
+resource digest and bounded lifetime. After verification it saves the signed
+subject/activation/resource context and public verification key under
+`grants/<sha256(pass)>.json` in private R2. No licence key or pass is stored there.
+This trusted record supplies expected claims on every subsequent private request;
+it also lets valid passes finish through Nexus/key-server outages. R2's strong
+read-after-write consistency avoids a just-issued pass being temporarily missing.
+The records are not a licence database. They never override Nexus decisions.
+Expiry is checked on every file, even while the record awaits lifecycle cleanup.
+
+Signing-key discovery is bounded to 32 KiB/5 seconds at the configured HTTPS
+endpoint, with a 60-second edge cache and at most one unknown-key refresh per
+30 seconds per edge cache. A newly rotated key during that interval may briefly
+return a retryable error. Redirects are never followed. Expired passes require a
+new Nexus decision; plugin downloads retry an expired pass once. Network failures,
+service configuration errors and Nexus outages fail closed; they never claim an
+expired licence. 429/503 Retry-After values suppress repeated plugin requests for
+the indicated bounded interval. Grant issuance and file delivery have separate backoff scopes, so an issuance outage does not interrupt already authorized files. Managed-key sites receive a manager-directed refusal without renewal/activation details. There is no sleeping PHP retry loop.
+
+The plugin uses an independently configured HTTPS origin constant
+`WCONVERT_TEMPLATE_API_ORIGIN` before sending any credential. Public catalogue,
+preview and Free reads never send credentials or call Nexus. Premium pack/images
+keep the existing digest/type/dimension checks and complete-set installation.
+Passes live only in the WordPress request's memory, never admin responses, URLs,
+catalogue options or logs. Installed content stays available offline.
+
+Run `npm test --prefix tools/template-server` for real Workerd/R2/WebCrypto tests
+with a test-only Nexus responder. `TemplateDownloadsTest` exercises the WordPress
+transport and SDK. `bin/verify-template-downloads.php` rehearses boot, real container
+wiring, premium pack/media installation and offline use in disposable WordPress.
+Run `npm run test:wordpress --prefix tools/template-server` for that disposable
+PHP 8.1 rehearsal (root Composer/Pro packages and npm dependencies are required).
+No test responder ships in the Worker or plugin. The service remains closed until
+real configuration is supplied. The original `verify` command still expects this
+unconfigured local service; it does not test a live licensed deployment.
+
 ## When R2 is available
 
-1. Create a staging bucket with public `r2.dev` access disabled. Confirm the account, bucket names and HTTPS API domain; the config's names are proposed names only.
-2. Configure a staging route and environment. Both `workers.dev` and preview deployment URLs are disabled by default. No production environment is defined.
-3. Add an authenticated operator-side publisher using the existing validated release and conditional promotion operation. Preserve immutable-version/access-scope checks across retained releases; the local filesystem builder currently supplies those checks. Do not add an unauthenticated upload route.
-4. Verify the live HTTPS catalogue and Free download/install/update/offline/rollback path in a disposable WordPress site. Exercise cache, storage outage, operational logging and restore from backup. Apply deployment-specific request limits before public launch.
-5. Connect the existing licence manager later, with its real product, activation, expiry and staging-site rules. Only then add private storage and enable premium download routes.
+Follow [the Cloudflare preparation checklist](CLOUDFLARE-SETUP.md). It lists the
+account/domain decisions, two private buckets, grant-record lifecycle rule, Nexus
+handoff, secrets and remaining hosted acceptance. Authenticated remote
+publishing and production infrastructure are separate work; no deployment was run.
 
 Local simulation is evidence of behaviour, not evidence of a deployed service. Wrangler's local administrative explorer is a development-only surface; keep the development server loopback-only.
 

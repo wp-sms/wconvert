@@ -1,3 +1,12 @@
+> **18 October deployment amendment:** Start with one hosted **WConvert Template Library**
+> environment, using the intended final address before launch. Worker:
+> `wconvert-template-api`; private buckets: `wconvert-templates-public` and
+> `wconvert-templates-private`. Local emulation remains isolated. References below
+> to a mandatory separate hosted staging rollout are superseded; add that environment
+> after customers depend on the service. The Nexus signed environment must still
+> match the actual Nexus connection. R2, credentials, remote publishing and live
+> acceptance remain deferred. See the [setup guide](../../tools/template-server/CLOUDFLARE-SETUP.md).
+
 # Template picker and featured collections implementation plan
 
 Status: Local picker implementation and prototype-parity audit completed on 30 September 2026. The full eight-slice programme is **not complete**. Local preferences and reviewed seed collections work; slices 5–8 remain partial or pending, and the initial studio does not simulate every proposed capability/locale/failure context. See the [requirement-by-requirement audit](../reviews/picker-plan-audit-2026-09-30.md), [coverage inventory](../reviews/picker-coverage-audit-2026-09-30.md), [ADR 0112](../adr/0112-template-discovery-and-reviewed-collections.md) and [initial validation](../reviews/template-picker-implementation-2026-09-30.md). No deployment or merge is included.
@@ -172,6 +181,14 @@ Current packs prohibit remote media and require empty asset lists. Supporting ar
 
 ## Hosted delivery extension — implementation status
 
+**18 October update:** Nexus v2.7.0 shipped signed grants. The local Worker adapter
+and SDK-backed WordPress download transport are now implemented, with independent
+API-origin pinning, private pack/image verification and offline installed content.
+See [the local service](../../tools/template-server/README.md) and
+[Cloudflare handoff](../../tools/template-server/CLOUDFLARE-SETUP.md). Real R2,
+credentials, remote publishing and live HTTPS acceptance remain outstanding.
+
+
 Local foundation implemented on 1 October: a repeatable schema-2 publisher,
 review-bound source export, native WordPress release verifier, isolated raster
 asset installer and host-neutral authorization boundary. The runnable workflow
@@ -317,7 +334,7 @@ backup restoration. Replacing the catalog never rewrites saved campaigns.
 | Build media importer and licence adapter | Yes | Foundations tested with local files/fake licence decisions; live transport, media references, provenance and pack commit wiring pending |
 | Website catalog/preview integration | Yes, locally | Same approved catalog/revisions, Free/Pro parity, all-screen demos, no real submissions |
 | Scale/accessibility/studio checks | Yes | Recorded 500-setup timings, keyboard/native zoom/screen-reader checks and dependency/locale/timezone/failure simulations |
-| Real licence-manager integration (deferred by user on 1 October) | Requires its API/spec and authorized test credentials | Actual validity, activation, revocation and staging/multisite behaviour; simulated checks alone are insufficient |
+| Nexus integration (local work resumed 18 October) | Worker and WordPress adapters implemented; real credentials pending | Local signed-grant and native WordPress tests pass. Actual Nexus validity, activation, revocation and staging/multisite acceptance still need live credentials |
 | Cloud deployment and delivery rehearsal | Requires storage/API configuration, domain and credentials | Private-access enforcement, caching, authorization, image integrity, interrupted release and rollback checks |
 | Public launch | Requires the previous hosted checks and release approval | Reviewed release, accountable owner and recovery procedure |
 

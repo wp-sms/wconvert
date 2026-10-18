@@ -24,7 +24,7 @@ and all prepared campaigns. The read-only PHP exporter loads repository classes 
 The studio contains **128 campaign setups using 75 designs**, drawn from a complete
 inventory of **107 designs**. Current editorial status is **24 approved setups,
 104 stale setup reviews and six approved collections**. The 24 approved setups
-cover every bundled collection dependency. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-12/README.md).
+cover every bundled collection dependency. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-18/README.md).
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks

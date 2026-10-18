@@ -1,4 +1,5 @@
-/** Public read service only. No private bucket binding or licence substitute. */
+import { premium, type NexusEnv } from './premium';
+/** Public reads stay independent of Nexus and private storage. */
 const HASH = '[a-f0-9]{64}';
 const PUBLIC = new RegExp(`^(manifest\\.json|packs/${HASH}\\.json|releases/${HASH}/(manifest|page-[1-9][0-9]?)\\.json|previews/${HASH}\\.html|assets/free/${HASH}\\.(png|jpg|webp))$`);
 const PREMIUM = new RegExp(`^/(downloads/${HASH}\\.json|assets/premium/${HASH}\\.(png|jpg|webp))$`);
@@ -9,12 +10,13 @@ function message(request: Request, status: number, error: string, headers = {}) 
   });
 }
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    if (!['GET', 'HEAD'].includes(request.method)) return message(request, 405, 'Read-only service', { Allow: 'GET, HEAD' });
+  async fetch(request: Request, env: NexusEnv): Promise<Response> {
     const url = new URL(request.url);
     // Never accept credentials or arbitrary storage keys from query parameters.
     if (url.search) return message(request, 400, 'Query parameters are not supported');
-    if (PREMIUM.test(url.pathname)) return message(request, 503, 'Premium downloads await licence integration', { 'Retry-After': '3600' });
+    if (url.pathname === '/grants') return request.method === 'POST' ? premium(request, env) : message(request, 405, 'Use POST', { Allow: 'POST' });
+    if (!['GET', 'HEAD'].includes(request.method)) return message(request, 405, 'Read-only service', { Allow: 'GET, HEAD' });
+    if (PREMIUM.test(url.pathname)) return premium(request, env);
     const key = url.pathname.slice(1);
     if (!PUBLIC.test(key)) return message(request, 404, 'Not found');
     try {

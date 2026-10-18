@@ -167,8 +167,9 @@ media or licensing support and do not relax the current reader/pack validators.
   repository. R2 is the recommended JSON/media store. As of 12 October, an isolated
   Worker read service exists under `tools/template-server` and runs against
   locally simulated R2; no cloud bucket or Worker deployment exists. The
-  service exposes public catalogue/Free files and refuses premium downloads.
-  Real licence-manager integration remains deferred. The licence
+  service exposes public catalogue/Free files. As of 18 October, locally tested
+  Nexus grant verification handles premium downloads; missing configuration still
+  refuses them. Real credentials and live staging acceptance remain deferred. The licence
   manager remains authoritative, with no duplicate licence database.
 - Give public Free and Pro previews equal quality on the website and in the
   plugin. Generate previews from the same approved revisions, with all-screen
@@ -274,4 +275,17 @@ The local release contains 22 setups / 19 designs / five packs (four Free, one p
 
 ### Local staging preparation — 12 October 2026
 
-The public Worker has no private bucket binding or permissive licence adapter. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. Cloud provisioning, authenticated remote publishing, live HTTPS plugin acceptance, rate limits/backup operations and real premium entitlement remain outstanding. See [staging operations](../../tools/template-server/README.md).
+As of 18 October the Worker has separate public/private bindings and a Nexus-signed grant adapter, tested locally. No permissive licence adapter is shipped. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. Cloud provisioning, authenticated remote publishing, live HTTPS plugin acceptance, rate limits/backup operations and live premium entitlement acceptance remain outstanding. See [staging operations](../../tools/template-server/README.md).
+
+### Nexus grants — 18 October 2026
+
+Nexus v2.7.0 is the entitlement authority. The local Worker verifies its signed
+short-lived grants and stores expected subject/resource context in private R2;
+all private reads reverify the signature, exact file membership and hard expiry.
+One-day lifecycle cleanup removes expired contexts. No customer key is stored.
+The plugin's SDK-backed adapter lives under `pro/src/License/` and is invoked only
+by explicit premium pack downloads. It pins the trusted HTTPS API origin apart
+from the editable catalogue setting. The build still gates installed features.
+See [the protocol and deployment checklist](../../tools/template-server/README.md).
+Cloud provisioning, real credentials, authenticated remote publishing and live
+HTTPS/Nexus acceptance remain outstanding.

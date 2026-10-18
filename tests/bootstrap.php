@@ -2490,3 +2490,16 @@ if (!function_exists('remove_accents')) {
         return $text;
     }
 }
+
+// Safe HTTP uses the same intercepted transport in units; WordPress supplies
+// actual SSRF protection in the native integration rehearsal.
+if (!function_exists('wp_safe_remote_request')) {
+    /** @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error */
+    function wp_safe_remote_request(string $url, array $args = []) { return wp_remote_request($url, $args); }
+}
+if (!function_exists('wp_safe_remote_get')) {
+    /** @param array<string, mixed> $args
+     * @return array<string, mixed>|WP_Error */
+    function wp_safe_remote_get(string $url, array $args = []) { return wp_safe_remote_request($url, ['method' => 'GET'] + $args); }
+}

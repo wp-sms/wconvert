@@ -55,7 +55,7 @@ final class LicenseFacts
     /**
      * Read what this request knows, without asking the store anything.
      *
-     * The key is decrypted here and only here: null means none is stored or
+     * For the licence UI, the key is decrypted here: null means none is stored or
      * it no longer decrypts (rotated salts, veronalabs/wp-premium-sdk#29), and
      * `getLicenseData()` — which fatals on exactly that — is never called.
      */

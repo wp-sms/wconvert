@@ -259,8 +259,9 @@ final class CoreServiceProvider implements ServiceProvider
             $uploads = wp_upload_dir(null, false);
             return new InstalledPacks($uploads['basedir'] . '/wconvert-template-packs', $c->resolve(PackValidator::class), new \WConvert\Template\Catalog\VerifiedAssets($uploads['basedir'] . '/wconvert-template-images', $uploads['baseurl'] . '/wconvert-template-images'));
         });
+        $container->register(\WConvert\Template\Catalog\CatalogTransport::class, static fn () => new WpCatalogTransport());
         $container->register(TemplateCatalog::class, static fn (ServiceContainer $c): TemplateCatalog => new TemplateCatalog(
-            $c->resolve(OptionStore::class), new WpCatalogTransport(), $c->resolve(PackValidator::class), $c->resolve(InstalledPacks::class)
+            $c->resolve(OptionStore::class), $c->resolve(\WConvert\Template\Catalog\CatalogTransport::class), $c->resolve(PackValidator::class), $c->resolve(InstalledPacks::class)
         ));
         $container->register(TemplateTransferController::class, static fn (ServiceContainer $c): TemplateTransferController => new TemplateTransferController(
             $c->resolve(PackValidator::class), $c->resolve(TemplateVocabulary::class), $c->resolve(TemplateLibrary::class),

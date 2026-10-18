@@ -1,0 +1,794 @@
+{
+  "reviewedAt": "2026-10-18T04:42:39.352Z",
+  "baseCommit": "8387a91d",
+  "setups": [
+    {
+      "id": "edition-early-access",
+      "revision": "399ff4fafc424bb6c53ea6135bdae2ed7cf5609b3756bd1ab0bf693fbf235bdc"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "1fd3efbb79b007fd89ec6408c5b8fb728ef9bacb9f93b4072e62ef5e145987c4"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "ac1124a6c41fac4d416bc3866c2726975f3f77eac937d8cbfe16a6338d53bb4e"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "b45b1c44f2bf4ba4a7f3b5054d35a683e5c3feed5fa64b74dfedf8151e4e7914"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "5140ea80f117db86ce02cd607b55b509673c68f49adba5869acbda03f61a06c8"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "d730edc7e4460e9c29fcea9f5d831f00fb3fdc20c739e350ae2b0f399b2707f7"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "29659b1e01d7701c6f22160f54892c89a01f6288a6eb92dadde9bc0535ec1005"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "c65f58d2bcac7f4c3abebc2e9c5df396b9872aad85d73a78f18115f49828a5d8"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "3703af5f4f751fb2d29e20ccde34880ae4616943092ff06aab705c58cceaeb5b"
+    },
+    {
+      "id": "repair-assessment",
+      "revision": "b52bd99c54f9e308413721e98f61942a35feef552bf02927c84e12b29f449d1e"
+    },
+    {
+      "id": "homeware-care-notes",
+      "revision": "22472ba79421d5af6d93ea2c4cc20fc556bcafb80ab7b66335669a05470b727f"
+    },
+    {
+      "id": "repair-advice-request",
+      "revision": "ec3f469ee70f29203026a64698affc515b062afab04fcec66c18684ee97533f9"
+    },
+    {
+      "id": "first-order-receipt",
+      "revision": "803bfc42c5cc1b14827da8b69c06d7d1f1f1674833afbac6e351cba14591607f"
+    },
+    {
+      "id": "reading-notes-guide",
+      "revision": "a40cbee0ab47482a902595b04d7cfe8b4a4e657fa298b1819b8218f4e9965d66"
+    },
+    {
+      "id": "website-review-enquiry",
+      "revision": "9c484d51839cdc489f6914a531f274f62cef2c6db7dc47a4f608a6485c31c7e8"
+    },
+    {
+      "id": "lighting-collection",
+      "revision": "75d9fb78c7fbb049f0e0f945dddc8b7f07c8a67a80638e98bc8bc4f0110337d9"
+    },
+    {
+      "id": "specification-sheet",
+      "revision": "738c4898852597d8be522fa9e9caacd93e412578aeda5db97f1722fff9c647ea"
+    },
+    {
+      "id": "excerpt-window",
+      "revision": "ae678a36f34f6409e56ac5761a47f88926f3f3f79f2c2be56da31750810c6216"
+    },
+    {
+      "id": "add-useful-extras",
+      "revision": "50871ac0c718571dacc1821ed364eb3c57007b8c88198c8b99ce9676bf406051"
+    },
+    {
+      "id": "recommend-accessory",
+      "revision": "4549aa5218e1b410b1fc2d5f35b2fd3acd9a1b98e3f08d37977b50d9741cbb0f"
+    },
+    {
+      "id": "shopping-guidance",
+      "revision": "9cb83275a73c180cee6c28f5364045a01c54212071931661899db03169473bea"
+    },
+    {
+      "id": "explore-compatible-extras",
+      "revision": "4bafcf433f06a8026b47ac7c6633f19ac6212309a402935b25cc7002d3e35e89"
+    },
+    {
+      "id": "basket-cross-sells",
+      "revision": "5f9fe30c1b8c7f63bba408e13586eb76ddee7b47de294fc2506fd3c3ceae2735"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "revision": "320c494f3262d426aa441e9142a75bbf81d371382abbbc053d39df362964692f"
+    }
+  ],
+  "collections": [
+    {
+      "id": "sale-planning",
+      "setups": [
+        "edition-early-access",
+        "sale-deadline",
+        "first-order-receipt",
+        "lighting-collection",
+        "homeware-care-notes"
+      ]
+    },
+    {
+      "id": "launch-a-collection",
+      "setups": [
+        "edition-early-access",
+        "restock-announcements",
+        "lighting-collection",
+        "specification-sheet"
+      ]
+    },
+    {
+      "id": "service-enquiries",
+      "setups": [
+        "home-repair-quote",
+        "cleaning-quote",
+        "repair-assessment",
+        "renovation-callback",
+        "repair-advice-request",
+        "website-review-enquiry"
+      ]
+    },
+    {
+      "id": "reader-relationships",
+      "setups": [
+        "sunday-reading",
+        "editorial-weekly",
+        "writing-checklist",
+        "reading-notes-guide",
+        "excerpt-window"
+      ]
+    },
+    {
+      "id": "black-friday-2026",
+      "setups": [
+        "edition-early-access",
+        "first-order-receipt",
+        "sale-deadline",
+        "homeware-care-notes"
+      ]
+    },
+    {
+      "id": "help-shoppers-choose",
+      "setups": [
+        "recommend-accessory",
+        "explore-compatible-extras",
+        "add-useful-extras",
+        "basket-cross-sells",
+        "coffee-taste-finder",
+        "shopping-guidance"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-add-useful-extras-desktop.png",
+      "sha256": "c29879797c93e346de0b00070941fcbb095c06133a03b29fbc1c92a900840145"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-add-useful-extras-phone.png",
+      "sha256": "46f064dfc349caab8bcb8cb352e0bb39f4288e6e0232560323a975363f897562"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-basket-cross-sells-desktop.png",
+      "sha256": "63deaa72491cc4c45a5f994c9dc2dd09f39a9537a3281dd5b3cad0fbe0e7ce00"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-basket-cross-sells-phone.png",
+      "sha256": "ab369286966bff85515adbf0309e6487ed4a84e7c8313bc34c4154d48c060797"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-bright-phone.png",
+      "sha256": "f251405991605925b5c5693511663e6b32741e0ef96aa3e7f014cff11a4d57eb"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-bright.png",
+      "sha256": "354a7d1757e043ba46b7d83337dacc823a4ad79a74cc483ef0555048d9b776d9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-desktop.png",
+      "sha256": "510094d11dc69da8d2ef7d9cb5acf876ce626c9e77524472b41aea676dd86029"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-empty-desktop.png",
+      "sha256": "65920c083c2de3b0f1f9c5edb2bef3478a552ed14db2c325f945525ec8b33485"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-empty-phone.png",
+      "sha256": "404cd5cd28b8ba007d072a95005d4d3e65ad085c5971ca33bcee98aa7b695063"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-phone.png",
+      "sha256": "be9e562cb99d3f011f796adfc57ac36062b11699d417c1d735e1af1cfd708686"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-smooth-phone.png",
+      "sha256": "3c31a0c30df6b77e032dd17bfbe049a5df8ed76913155da7fa1e61fc8f4fe60f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-smooth.png",
+      "sha256": "f5c6c133821e3df832dd8b63b9a1f063359f22b79ef55047bd2b943793d8a549"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-unsure-phone.png",
+      "sha256": "acccb0fb75d07019f824451e0b3975bd414469e712c83a60131ae43c594146ed"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-coffee-taste-finder-unsure.png",
+      "sha256": "a0d131cec5e21ed0c2c3094eab0c5f3d81fd3fdeb464ba91350d662dae75882a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-explore-compatible-extras-desktop.png",
+      "sha256": "6953c8d5f37c0e527dd8bc36278d7da72ffbf095a58eed6ad296d46dbcc071fe"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-explore-compatible-extras-phone.png",
+      "sha256": "912b555f27f6abb02608f2e4fc5d70b1b991286a1db233d22dbfc0d3dbff3384"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-recommend-accessory-desktop.png",
+      "sha256": "09d4341723f35952043723ab07da0d6b13a4e16d72c476f8bafaf7e31f7642c4"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-recommend-accessory-phone.png",
+      "sha256": "3bfab3835ef7cccd85e18e2bc28e40ee129bba0511d4c0f7e1492d69a98ae188"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-shopping-guidance-desktop.png",
+      "sha256": "097a88fc86707530b3e8d890ad52457532b2921ba4c07612e70cc4cd5ce613d4"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/october-live-shopping-guidance-phone.png",
+      "sha256": "9cef497f36d43bb779f19514db6cf29eacd63d0bf162dd0bd1d1a0334c659d7e"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/commerce/results.json",
+      "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/collection-1.png",
+      "sha256": "531459a68540584c0a0ea4ae982fe51e2682abdfa5cc3a445f00ea13f53b3c20"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/collection-2.png",
+      "sha256": "531459a68540584c0a0ea4ae982fe51e2682abdfa5cc3a445f00ea13f53b3c20"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/collection-3.png",
+      "sha256": "b75571bdba05bf9386d6ce39a703b445b281acedc2d34c9ebf53c8b3923620ea"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/collection-4.png",
+      "sha256": "3eb9c46c0d3363ee08b79ee383bf07f2da124a394251fd09f20f14bfad737db8"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/collection-5.png",
+      "sha256": "d919b6aef8bd8d4b15ee55c3fae0a7dcd1e4beeb9dc93ed0fde93c655ffbf852"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/collection-6.png",
+      "sha256": "d25d2a6519de063887aa789200f398e24457100b0dbee5aa4948f31790ba2f62"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+      "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/discovery/overview.png",
+      "sha256": "5e4a1de4bdcb9d53af3237ed5a894829da929515dc547a4de6cd4b5b93b73b79"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/cleaning-quote-1280-0.png",
+      "sha256": "ffdb95093f0e478f0dd2747d4df57accef7969ba8d1e18d9b017a63125198c5a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/cleaning-quote-1280-1.png",
+      "sha256": "fdd7cdbc43bae586d8f40de5a72944064f4d5ddbbf168891bfad2852e5114ae1"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/cleaning-quote-1280-retry.png",
+      "sha256": "faa96e81bf95c942e2886b143d8a150d7f62fc24884cbffa92c5ba9918f01ae9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/cleaning-quote-320-0.png",
+      "sha256": "a4be803a948134edd7ff82c483f7778a398f5d684b326c5594f8d38cfc246c0b"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/cleaning-quote-320-1.png",
+      "sha256": "4ef16138a6b1a06aff3569ce0778d49ecb0fd6ee3f072d943854a9a9914c873b"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/cleaning-quote-320-retry.png",
+      "sha256": "143cb50c0fda6fc7a318460bd72ddfcd2e3867ec6e3704fc625c91c65e307ea4"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/edition-early-access-1280-0.png",
+      "sha256": "f0d17340e409a0d7209b0c79c1595ff6d1c4f4a18e3c35aad496de33cc8f30a8"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/edition-early-access-1280-1.png",
+      "sha256": "782bea780f2a8810c938fc8255c8a5d4adf7161eb7a4c2bdb3fc30ea1642293c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/edition-early-access-1280-retry.png",
+      "sha256": "62eb97db29d7e8821459aa81ef18cc6e322ddf8a2291d10433a3a1dacf4bc6b4"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/edition-early-access-320-0.png",
+      "sha256": "0e9d21c50c2238de26f58f75e6a42e69d54fc83d822d9817998610175d14105d"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/edition-early-access-320-1.png",
+      "sha256": "06bc5babdd05f7e8ea43bbef8262dd955a741bc21b4f7edd0d3189e6820c1ec1"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/edition-early-access-320-retry.png",
+      "sha256": "95c35af84ff5635c1f90c99b5536d122db0f19181a8df9ce69fef4ff4d3add9b"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/editorial-weekly-1280-0.png",
+      "sha256": "9a136e4ddc8b6736fcb2e6b8d07a203d1a3add2d10daa19f3bcd380c8f5497b7"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/editorial-weekly-1280-1.png",
+      "sha256": "900d255b1b77e8baa84a0a33c200ae2d2a70c8d9f0c84fb78b1f9d85748a26e8"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/editorial-weekly-1280-retry.png",
+      "sha256": "d8d8a2d1471fcfee290d4540a9801ab7c57e46a62ec276905cc750d5bed8505c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/editorial-weekly-320-0.png",
+      "sha256": "0e5be202611f9fdc3b03ae23f9c6ffad39208322b0cf4c732c9190d8b2a09ebe"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/editorial-weekly-320-1.png",
+      "sha256": "3b0671916953667dd639330a5d6a01a1ff20ae79a8db912bf1236233eff81432"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/editorial-weekly-320-retry.png",
+      "sha256": "f5e845cc3381b0731b90010468c075cc9af7f1b4c662fbbe43cd19e541d64915"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/excerpt-window-1280-0.png",
+      "sha256": "7c37c6f79d0ba436d75e1e598a15ddedce02c083f7ff75678bb6c197a4617495"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/excerpt-window-1280-1.png",
+      "sha256": "7df3d78525195d2c6ff4737356a21d550127473702894d09182693e9f04d39c0"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/excerpt-window-1280-retry.png",
+      "sha256": "b668be65b8e82df9823b00f613886d90a19aea507ccb69b2fdbf644d706e0a00"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/excerpt-window-320-0.png",
+      "sha256": "2c9a2022b0c1e57287c5363734eee6afa02c3588ff36d45fa517247dff48818c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/excerpt-window-320-1.png",
+      "sha256": "698acb4e1c636e37a7d06bea1c4d3568917f2c0717a7b21935ff6308abd105a9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/excerpt-window-320-retry.png",
+      "sha256": "383899db7f32118392840bc2c078c8a86ddf2584589d18594e308f6a84ba6f9c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/first-order-receipt-1280-0.png",
+      "sha256": "726c819a68f90bd4fc2f05f3518e8d8741170696aa6931f4becf76a82a12e66a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/first-order-receipt-1280-copied.png",
+      "sha256": "06503a0c1a9eea58d8a36cb16e6e6217973d74d1460b745528284201efec8a04"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/first-order-receipt-320-0.png",
+      "sha256": "ccaf598ddce66192027a3dfdf28e47834e1543edc849690c43cdefd0ef55cfd4"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/first-order-receipt-320-copied.png",
+      "sha256": "a774c56a46505bd31c775da0abd903cba9975a8dab801cc3fc750f351923551a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/home-repair-quote-1280-0.png",
+      "sha256": "3e956d433e5d26ccffa060655b0eb67d2b965fc7bbc20d78e276c061198cb075"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/home-repair-quote-1280-1.png",
+      "sha256": "59d0ad4a49a8efd39ba551d87bf46b1efe5369d4e953c8672d47c286b1cb60c3"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/home-repair-quote-1280-retry.png",
+      "sha256": "a617bcd4b7df4b21cdc1a4ae652a6a9d3530936d8f57a81941a600e6954513aa"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/home-repair-quote-320-0.png",
+      "sha256": "01df08e95460d883f46dc343ff6ae0fb1e8c0c110d2b4a8473ebf49768d1e925"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/home-repair-quote-320-1.png",
+      "sha256": "4d0885f926ef0b3976e0626120ada9a901f58556298f8afe6297f7fd39c9531c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/home-repair-quote-320-retry.png",
+      "sha256": "254853991b8aaa8d02aa02951e73f5bf05959cc57c1ccf951be15d4682953139"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/homeware-care-notes-1280-0.png",
+      "sha256": "fdc95897e43c51c903993062960f035f7c15417e85d97f330c88acdf10968ab3"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/homeware-care-notes-1280-1.png",
+      "sha256": "0163801abe947e7cacb295c7a99bb639f7dbe0ee2cdc8da6df4de8635a1b8f03"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/homeware-care-notes-1280-retry.png",
+      "sha256": "ae6406b5778e6164ce8b1142441c2e2964428fde4b13401841338477b27151f1"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/homeware-care-notes-320-0.png",
+      "sha256": "6920872855177c24ccb9e0a27640632fb22363a9e8fadf4146975838817ef884"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/homeware-care-notes-320-1.png",
+      "sha256": "9efef7627f885a28bfb6740d0ec3d8e766477272b74dbbbcc728502cf25821e2"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/homeware-care-notes-320-retry.png",
+      "sha256": "52afd5cc222044e2ead9b0533180225d6d4f47a4ded92a2df26d18ef66862f36"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/lighting-collection-1280-0.png",
+      "sha256": "1fb1adaa6e8008ca263dd1d7b9877248a2949bbb50a7da923487802609df28da"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/lighting-collection-320-0.png",
+      "sha256": "cf6beea9e5f7bd56394b4b34a7e1c4c8aff9e2ffc570b34db2611ddba3401191"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/native.json",
+      "sha256": "5924e97e0a446d43d9128c64e8d439e11d9bd32d61013bc926a10fdb2e218605"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/reading-notes-guide-1280-0.png",
+      "sha256": "66f8db4ca664cf6868c5f56d92fc7458a2fdba76e3725a9b93d92192df14e54c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/reading-notes-guide-1280-1.png",
+      "sha256": "745309371cf173adc80736a94a37c44a0f531b91501c82f74b90a153715e5674"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/reading-notes-guide-1280-retry.png",
+      "sha256": "15ae6bebb6a883c42990e17b3bab4733956836fdc8b5cdda11615806ef8f59dc"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/reading-notes-guide-320-0.png",
+      "sha256": "20a73209bb9c989320408cc69ed92c5e03362ae83e839021f2f9debc1462759f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/reading-notes-guide-320-1.png",
+      "sha256": "e14b243e25ea2cfb017a53aafdc5dec94071c4a84d67a626c8ecce943ae24f27"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/reading-notes-guide-320-retry.png",
+      "sha256": "0e74416fb12d43521dacaf4cf7a944e2c17177d53b45085dafb8731bfd886f7c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-1280-0.png",
+      "sha256": "b5b3d2e5b6a9a6e723eaf93c7fc5f7c1dc4d9940c362c31cfe5d3e96112933c7"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-1280-1.png",
+      "sha256": "39d7e7acaf4b60e4a082fc87efafc0eb5e5c4e651edc200a58a0c35161c5c1d9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-1280-countries.png",
+      "sha256": "e97ce9b41b0b701f9962a8abc7f5570aeb5b5f7af47c59ced9ff82511dbf7b9c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-1280-retry.png",
+      "sha256": "bbfeb7dcbbc3845d3dd1d0bd700f59f9a8074de0858b552e50d15475f8ce582a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-320-0.png",
+      "sha256": "6a7c6a73c714c519917b06c44ed8c105212372f17381270e98c96a4f4d8f4793"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-320-1.png",
+      "sha256": "c58cef53c2df322b3a05edddcb16c62c846d5b96d8278dd1030e478b711e4481"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-320-countries.png",
+      "sha256": "12015441491b9551eb8cbffa1429c8104e511e7b3c335f3bb5419af95865af5b"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/renovation-callback-320-retry.png",
+      "sha256": "3d049db26a7c0a8e0acbe557d39954bb18affb7180f74a4a19e40c2151df27e9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-1280-0.png",
+      "sha256": "8c86a14a3427bc82a4d7d5ddd9d68d465e3ed95360c2473b785ff2d72b16b71e"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-1280-1.png",
+      "sha256": "7706bd149c4ae089ecf0e691890e5cf216e345d9a1275b50f46918e2fdfa501f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-1280-2.png",
+      "sha256": "4cd6f19707899055e4fa1cfb8897e2e1c149ca05739569420be73ae65db3bd6e"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-1280-retry.png",
+      "sha256": "4b06646982d0a1140f522e3c483ad748da943662429c694660b12d9296752168"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-320-0.png",
+      "sha256": "3d7632469bbefd0570e02a08750057e5e5aed13c39d1c4ec04678693cf645850"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-320-1.png",
+      "sha256": "efdaa4807cf63563860122332e9de04c76c96009ee334e61c7d344aa90a64041"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-320-2.png",
+      "sha256": "4715ed99b288ff2ec18efbbf624acb12397e4861e45d58e8321298a5709d92c6"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-advice-request-320-retry.png",
+      "sha256": "2d5efa77c9000e5f94da8357d3ca9010290f79b8f2dfbcf281763b7e097d1926"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-assessment-1280-0.png",
+      "sha256": "616d9dfec5115cdc8bdfa409bd76f37f63a31c8ada44e66b3bd7ff0db134f59f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-assessment-1280-1.png",
+      "sha256": "d476ea51a9b0147a0b2bb146550570698e1c73435f74cbe71169cee43c31b1f4"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-assessment-1280-retry.png",
+      "sha256": "5dc29cde2c6203b2432269dda5495ffe3fc31a37af271291919e0247d28e31f9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-assessment-320-0.png",
+      "sha256": "5bc7a10b0f7c8a512f35ca0ec740fe742793f44e8b91d890330602b2130a9fb2"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-assessment-320-1.png",
+      "sha256": "10e651b318bade1393dc1c34d9b8767f7de2ee3c7a469db0b6d5f8066c83476f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/repair-assessment-320-retry.png",
+      "sha256": "97dfb5c45785962bc6d633ee7e99c23bdad49636f9688109ffef89111fcf7b23"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/restock-announcements-1280-0.png",
+      "sha256": "80239b4cd4d7bcc06e02f2e0309fee32c475f1fe92d90307b341bf84c93beb8e"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/restock-announcements-1280-1.png",
+      "sha256": "2ab151829c9aad239e57c69bfc9cc1ec7fc88136f2135c60a41c270d727d9812"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/restock-announcements-1280-retry.png",
+      "sha256": "22b37f2d31b7c1f14795a95b732647161975151dbcc457d676c127a56719f528"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/restock-announcements-320-0.png",
+      "sha256": "b74fa2a681d7333bf094bb0381ed8851318dae0b554e4ebd96a34f1856cf37b7"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/restock-announcements-320-1.png",
+      "sha256": "7a1696f685d8e99583cbaaacffa6c86b20c2d6cfbd05c74a57c34a3e015992cc"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/restock-announcements-320-retry.png",
+      "sha256": "07f89b0d7b0267cc20ff6f529805053bc7a9be08dd2b9edc629e04b9409d9c4f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sale-deadline-1280-0.png",
+      "sha256": "b5956044a546222a451478b495b749b63e330d1e1b93f15bcc340ca3dbc51554"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sale-deadline-320-0.png",
+      "sha256": "a08dfd9fbf8ea75f25a4eca4756758f623cb7f76edc6045dce7362b23956a49a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/specification-sheet-1280-0.png",
+      "sha256": "0e76da510c793770fca47cd6917ce02844239252838803c5e1b20f616d4891a7"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/specification-sheet-320-0.png",
+      "sha256": "5459ba6afbceed077102f12adfd0fcabe82d23967918a0506e69c8ee7a709e57"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sunday-reading-1280-0.png",
+      "sha256": "ce3aca2c82c79ce4a3bd3e24d6085dad390d50b170207e537b743b24a606ea19"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sunday-reading-1280-1.png",
+      "sha256": "73b0dbde0889826630dbef5959bebb10f3a8f50de32e1740164f9b4a484b0b2a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sunday-reading-1280-retry.png",
+      "sha256": "673597b6e17a696951ab703619d796249f89652176f18fdc2b528bf0236b652c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sunday-reading-320-0.png",
+      "sha256": "5dc421106731d393f3268234881204474fff0db3d3614cef22dd7228f7ef383d"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sunday-reading-320-1.png",
+      "sha256": "49eeca0033e0e230f83325ef541aa228f0326f1d4562563af94a54a9d0fae360"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/sunday-reading-320-retry.png",
+      "sha256": "5beb4caa6087eb2ef2aac900c11c88a873748674275582444372a675f822fe3a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/website-review-enquiry-1280-0.png",
+      "sha256": "007fc9917dc35de5cef2d188d7ec1ca407e1edbf4ea4527eee9fc746e3abe4ca"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/website-review-enquiry-1280-1.png",
+      "sha256": "bf8f422ea39661c78712555dc952fc1a722313289f9a935b1f7aaf33031503ce"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/website-review-enquiry-1280-retry.png",
+      "sha256": "1d54817bd411f669fe5aaa626def343c77a436ff16aa8bc9637fcdda0b8e17d1"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/website-review-enquiry-320-0.png",
+      "sha256": "de089adc6af6112f59e45f200a35f003e2aabe13b6848c2c65be6e24b6336a51"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/website-review-enquiry-320-1.png",
+      "sha256": "f7d6f3bde9264544e92b22f4a8eed1993e375380e858a2a19c70051361ac2314"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/website-review-enquiry-320-retry.png",
+      "sha256": "584e2ad4172a4d7511af40c9ee70294ded75e8f172a026efd52fcf2b755b2302"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/writing-checklist-1280-0.png",
+      "sha256": "bf1259bdf7b06e7e815c6967ead4cccdba1f23724da232b8dcc45b1784f38ebf"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/writing-checklist-1280-1.png",
+      "sha256": "7b71577f0a958e2d617f85597390363436e2bf7559d9ca6c971ffe8e5be58b46"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/writing-checklist-1280-retry.png",
+      "sha256": "8c2c744b212376a3d545adc1e253c066fc6d4b75a083cef3c379668f9aa37c5c"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/writing-checklist-320-0.png",
+      "sha256": "bcd0fafc00dcef77a3a6608f424fe027732ffc33efaebb4c75158c1f954b8e3b"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/writing-checklist-320-1.png",
+      "sha256": "48f2e928b10fe1e474f416fe0cdfb62bc5aa6ba39401f0413379377f8b98f9a9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/native/writing-checklist-320-retry.png",
+      "sha256": "24fc9d30db03f7a8669e53bfe6aa62642bb737f839a847bc4673e809f4d8be9d"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-01.png",
+      "sha256": "1f920bf3e73b2491ec57463a08b447d52133434428f5b95e62b3da9f2fc9662f"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-02.png",
+      "sha256": "db5461e0b0876fbc04d3c811ab047ecb42764be7e09b7b0391b6883869859852"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-03.png",
+      "sha256": "5cdfd9b978c5c963850ae2ef08f3f38582cb682f4cae2cdda553a3e532202d49"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-04.png",
+      "sha256": "ae8f7f34529de25aec3ca5cdf7d5239f4102a9dda553330ff04f9ee6de2beceb"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-05.png",
+      "sha256": "37d8f7d2663db7bea48eb972fbe54470ee677a7544e8e567e1e815667964e7a5"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-06.png",
+      "sha256": "f181d98202ac84952533b4f3f33cf31d756d01295f8cf548d5bbc78e167073ed"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-07.png",
+      "sha256": "618cae439721f519f5c34d656ed1c70d99017439e8f76796721d59ffd8c42b72"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-08.png",
+      "sha256": "09680190ffc703372781a1c01d0ca37e4ebf63e54fa7f07cf9c0181982f7fd04"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-09.png",
+      "sha256": "239b547ac85ff82a1ebdb398dbb362dae2c3999bead1b352549ef087b6820e07"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-10.png",
+      "sha256": "169bbd973f169d73432de8e39e1dcfd1d789a71da9ce59dcde229dffac01a5ba"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-11.png",
+      "sha256": "227e45000c9a149c02200990c57a0f3d764aa80fc10bb67a3515b9a3542c2dac"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/campaigns-audit.json",
+      "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/designs-01.png",
+      "sha256": "23e5ec5c1628c53182b1f2404a1703a3003c3c5e9d9b709f7aa8526a40e075cc"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/stress/designs-audit.json",
+      "sha256": "2e29e37dbf0847f04d9823612e6791840585c0543e1a24997c93219ffe50fc2e"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/studio-journeys.json",
+      "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-01.png",
+      "sha256": "e25a46fa436cd15f9542c01dce7dddcd099e5a0aa4b0610f2daceb36075a6d1a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-02.png",
+      "sha256": "4e4140a75e68ad3a270751ca1505ce04cc17ac15ecb64f2b1d398c03d5664613"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-03.png",
+      "sha256": "a3e943b8404819581211864d103007f881493eadfc228b1986041c5a08b199a8"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-04.png",
+      "sha256": "86f86a3b09b4bdc522b4bd48f4a43a466873b32c208441734efe5c1c7291a462"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-05.png",
+      "sha256": "c2af3fa2b885db014c0b2b56755f34279d85d162293e8128b12a473d923af541"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-06.png",
+      "sha256": "f78f2a3f762687dd872ed55e80d4fa62f974b68f7262521f3bc387a23468a924"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-07.png",
+      "sha256": "d3dde15e502cf3b45094095db98ed4acceff2cbd47c537358d71d607d7b14f4b"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-08.png",
+      "sha256": "88a118d8c1be16d5e773ec612e1a3a863a80eddb9fd27e48abf0a01fd0f0e144"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-09.png",
+      "sha256": "adcd937063c365b291ba2c2a242fda7a4a23b0617e00d36054df67390dc8881a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-10.png",
+      "sha256": "a3b1e7fee2dc1773e0cf545e0267e198dd362cf59ffbae172a5ad03f775ea12a"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-11.png",
+      "sha256": "a55f3da1c051d76748ea585a3c16245325a06a3dc5d56ee4880f7e371eb6e6c7"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/campaigns-audit.json",
+      "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/designs-01.png",
+      "sha256": "ba4e4427756eb5694de6651014a503b0ca418b284dc844bc4c9caf5f7631b1ce"
+    },
+    {
+      "path": "docs/reviews/collection-approvals-2026-10-18/visual/designs-audit.json",
+      "sha256": "92e4bc659380689d27b7ac221e118e106b1abbca2d0ff68dfd484e82176728d5"
+    }
+  ]
+}

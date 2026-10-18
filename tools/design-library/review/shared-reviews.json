@@ -43921,6 +43921,1608 @@
         }
       },
       "record_id": "a7213bec56080691abde0e8d3a44b85e6a227379567119839cac9e8221e227f5"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "399ff4fafc424bb6c53ea6135bdae2ed7cf5609b3756bd1ab0bf693fbf235bdc",
+      "base_id": "b5116c6fa956fb857fa01491ff927f7bb374731d602c55f91b9a6b5a2154eb36",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "307e8d6f62b34df8e280aa403535fdeaf03958083386935f3a6c85a5a8f15438"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "1fd3efbb79b007fd89ec6408c5b8fb728ef9bacb9f93b4072e62ef5e145987c4",
+      "base_id": "757f881d4d08f9f83967301701aa0b23fe20e03e9cda052950ef7fc78862936d",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "806de998b0328c20709313e96f2d6e9c9c73a899d33964140650ddb3bfbf468b"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "ac1124a6c41fac4d416bc3866c2726975f3f77eac937d8cbfe16a6338d53bb4e",
+      "base_id": "52f2cdb8ae5739c2e9a8b31547a4ed8dee4cda6593d302c20fb14d4e2eaf2fd7",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "02921ca4ccbecbb7476f4fb87bc1ee973483c91f396367fa64d56299c2555137"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "b45b1c44f2bf4ba4a7f3b5054d35a683e5c3feed5fa64b74dfedf8151e4e7914",
+      "base_id": "bb077690f9f9f1395bdc107c5b65f03598d62cbb9c71a4f9fcefc0a17edbb2bd",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "14282b0a579907663d54ac21b5d853f9d86586320bb0fd4b14289b86a7219fe9"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "5140ea80f117db86ce02cd607b55b509673c68f49adba5869acbda03f61a06c8",
+      "base_id": "fecb96701ec9a2ca17f797c759fb8516dd62cd3c32ea62ea7c32f4f124d7220d",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "f62f66ff5b75be21325e04b4d3fa41aa683b66db0fc317bad97bf5ed6fd4fdd6"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "d730edc7e4460e9c29fcea9f5d831f00fb3fdc20c739e350ae2b0f399b2707f7",
+      "base_id": "e3be9041f47d49dd731fd75b256a14913ce414f751b459a5d5d99a3d343879f2",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "aff18b16db0d60afdfe300dc127877cbaaf15b44ebb825391b8f40ae107b9410"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "29659b1e01d7701c6f22160f54892c89a01f6288a6eb92dadde9bc0535ec1005",
+      "base_id": "f04efcd87f00a63ffbe177dbf83423b213bed9115bd8676987ebd9ec729749f9",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "04f73d5199c1c555b9c70bf8ee234663c2c105840cdec9b8b27035f050794ecd"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "c65f58d2bcac7f4c3abebc2e9c5df396b9872aad85d73a78f18115f49828a5d8",
+      "base_id": "6e35b27bc9646a2365588859571e940b52941ff0ced8773f60b773c29c55ad4f",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "c21de08252547090eb09b7d1fd8513d74732ec2a93f6a2c93a2689e2d0f4e37b"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "3703af5f4f751fb2d29e20ccde34880ae4616943092ff06aab705c58cceaeb5b",
+      "base_id": "0a92f383253752a2f27ace84452da2635255afd2ecf66bb755451fe370e77066",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "942283f0ed40a4a00956576f9f54ec8cfbb2084fcbf0e8b2d4b6ac2074e20127"
+    },
+    {
+      "id": "repair-assessment",
+      "revision": "b52bd99c54f9e308413721e98f61942a35feef552bf02927c84e12b29f449d1e",
+      "base_id": "c290d63e5f14447f4b16500e3ab3afe15a3f34d56a160443f0da3e6b47a50e95",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "0e3fce829ae2ee207312e291e6de36d8a773b03e4943e147790c2043d3ebbbbb"
+    },
+    {
+      "id": "homeware-care-notes",
+      "revision": "22472ba79421d5af6d93ea2c4cc20fc556bcafb80ab7b66335669a05470b727f",
+      "base_id": "a361353ca9a12738151d4357679b196cb2cd173a457a528c0e63b4d8f2d82c80",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "cecdfba53b4b3bb18d5644ef4b0ac824ce8de73a2402ab6375669847e56b03d0"
+    },
+    {
+      "id": "repair-advice-request",
+      "revision": "ec3f469ee70f29203026a64698affc515b062afab04fcec66c18684ee97533f9",
+      "base_id": "d8d36815cb01f548e5b202d47b0d976c0bc2cc4b1b13686833509f494849a28d",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "85158feaafba4de9c95ec446d7e78dc73393a7b2b73db3c66be40f5e311b37ce"
+    },
+    {
+      "id": "first-order-receipt",
+      "revision": "803bfc42c5cc1b14827da8b69c06d7d1f1f1674833afbac6e351cba14591607f",
+      "base_id": "3444f9d4b94835fc97293b1f7e1cf4b0274eee41da64aa48f11407b3c2d3afaa",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "73b61e26fb008f491e9c0d19a50a39b1303647fc88e5cfd7af7c305f5cc4a088"
+    },
+    {
+      "id": "reading-notes-guide",
+      "revision": "a40cbee0ab47482a902595b04d7cfe8b4a4e657fa298b1819b8218f4e9965d66",
+      "base_id": "27a7f0276fbc4443409e3723994c2bb474223376c59014a07930528b824a3266",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "8ff98c19506ecc20bb461557bceab285eb971f14de661e1790018f260183f321"
+    },
+    {
+      "id": "website-review-enquiry",
+      "revision": "9c484d51839cdc489f6914a531f274f62cef2c6db7dc47a4f608a6485c31c7e8",
+      "base_id": "e5543d5ef058b383d1e0e43b4c46daf7a455379c8bf68eafa8a621241b9bf42b",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "74b2dd107427ad333f6e78238b05f6647be60e53fc8a18de84658977923d454f"
+    },
+    {
+      "id": "lighting-collection",
+      "revision": "75d9fb78c7fbb049f0e0f945dddc8b7f07c8a67a80638e98bc8bc4f0110337d9",
+      "base_id": "2a147b190f2768b6c6b290c8d643e0158d0dcf094ab5b1dbeea7eadf1bd4173d",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "e48eb9c0c425b8e3f5541621a588a57ec8d60ef4bf4ec9d9a8c2dbfd119680d9"
+    },
+    {
+      "id": "specification-sheet",
+      "revision": "738c4898852597d8be522fa9e9caacd93e412578aeda5db97f1722fff9c647ea",
+      "base_id": "2d86de5b8862899ccddaea46eaa2d3f4a9cd784e9923a967bebb26d05576ca05",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "c6764a226de4b847d6d2bbb8367476abe8d9d128e250df626e03e8c8db3c0f23"
+    },
+    {
+      "id": "excerpt-window",
+      "revision": "ae678a36f34f6409e56ac5761a47f88926f3f3f79f2c2be56da31750810c6216",
+      "base_id": "fdad3c806c756fb39a2c856b3a97eecfdf917aa43a894788b02cf063d6fa4fcc",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "aaa988b5a6c6fd1314370705b5647bcb517942978d5944bbeb43598852df90dc"
+    },
+    {
+      "id": "add-useful-extras",
+      "revision": "50871ac0c718571dacc1821ed364eb3c57007b8c88198c8b99ce9676bf406051",
+      "base_id": "b0e71e93c113d716af9730c37513309ed7904a04419edea8dc92077b7069423a",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "1ff4eaa4c7538486db245acb3dacb6cb14c0a9ebee7d2bcc4c6bcadb3131dfa4"
+    },
+    {
+      "id": "recommend-accessory",
+      "revision": "4549aa5218e1b410b1fc2d5f35b2fd3acd9a1b98e3f08d37977b50d9741cbb0f",
+      "base_id": "bec16a830d6b01a0d2a69ff3b49b3369ffbf98f57115dabebb547fa3388fec47",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "9be72a39dc6745f65cebd59a98f8862edd28570de2912156955bb962d23cb776"
+    },
+    {
+      "id": "shopping-guidance",
+      "revision": "9cb83275a73c180cee6c28f5364045a01c54212071931661899db03169473bea",
+      "base_id": "50c2a5499f259b19ab2c78871f782b8dfdd12ac0e8679e4abef2200d33016f23",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "355d7513242c90ba640403a934f1c83ee27f12f9fa624ba19ccb39301cc461a7"
+    },
+    {
+      "id": "explore-compatible-extras",
+      "revision": "4bafcf433f06a8026b47ac7c6633f19ac6212309a402935b25cc7002d3e35e89",
+      "base_id": "2bd6cf0db60050fd0d52d887e1d52c1ec81fac1b646640dc14d41a66a10cc029",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "8b5efc75c6af186bf279e6a0064a4470fe824ab88733c2b97ed4362f121c7285"
+    },
+    {
+      "id": "basket-cross-sells",
+      "revision": "5f9fe30c1b8c7f63bba408e13586eb76ddee7b47de294fc2506fd3c3ceae2735",
+      "base_id": "72e971ac5dd21cd38af3611bf5c12bd67989815c659fe0d4185a45917382d581",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "20167c99b60fc816f2c0caacab59e1e5a793b5986c40d82bd4b870ba27db9240"
+    },
+    {
+      "id": "coffee-taste-finder",
+      "revision": "320c494f3262d426aa441e9142a75bbf81d371382abbbc053d39df362964692f",
+      "base_id": "26958ab6faaa99174f0a43220fb478736572345b1590b7643cc024dd85d80862",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+      "at": "2026-10-18T04:42:39.402Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            }
+          ]
+        }
+      },
+      "record_id": "37e478f52baa385ee1931b121207e0c0fed43d1a4c2154d4c51c6104795cbb26"
+    },
+    {
+      "id": "collection-sale-planning",
+      "revision": "1710dd1825ea833d3d62396cebea7b01b68b8ead69c57836a458b9d86fc1a0bc",
+      "base_id": "71424bfbe692a99a098b1a0d50a0af6d335f47eceb4b8bb20a6fdab9e12b9ee7",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+      "at": "2026-10-18T04:43:36.543Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        }
+      },
+      "record_id": "18253d194b687b153546563959e34b7ac857217e0b99f920ebe43b134897740a"
+    },
+    {
+      "id": "collection-launch-a-collection",
+      "revision": "b079e3340de00e601e522d407ddf9724dae6e448270663c52efb046c37dbeed2",
+      "base_id": "be0ca99327ef87b6905f40c5e15e4b885c593459d722e4923174bef91fdaec7e",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+      "at": "2026-10-18T04:43:36.544Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        }
+      },
+      "record_id": "944cbfd2417b5185698545e11db39d85303685a051009ef211dc3543283b6ac4"
+    },
+    {
+      "id": "collection-service-enquiries",
+      "revision": "f5615c3d67afc0e26e374e60ad9dcbc559a7da571050e02b3fe663010223b314",
+      "base_id": "eeef05424737388998b625f8c529f0f3e198eed0565224862155871c85a74125",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+      "at": "2026-10-18T04:43:36.544Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        }
+      },
+      "record_id": "c8ce6677b3a60c8920b55107d02b117486fa4cdf8371530616e594a9b5d76a80"
+    },
+    {
+      "id": "collection-reader-relationships",
+      "revision": "76b2fd51e0f3983d09faec23cc61b027504714edce42a7591fe422f608d3d2a1",
+      "base_id": "cde2ba2fd4467d71f33bfff47edda4e9177fd45971b42b145a1252a03142e4b6",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+      "at": "2026-10-18T04:43:36.544Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        }
+      },
+      "record_id": "0ae549e9b7fb5dc549ab8ed031d560993faec8e96260cb090b2139f4baa1e80e"
+    },
+    {
+      "id": "collection-black-friday-2026",
+      "revision": "50fb763081fa78c3c1d83e673775c400a253065789cb5a75bef41efea0a28937",
+      "base_id": "4d7c7d89ca6c79264a1876cb0c0f51729e48f5a26a8d1dabb918b64756dbf5f7",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+      "at": "2026-10-18T04:43:36.544Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        }
+      },
+      "record_id": "fe75eded909870f329ca9ed0286e14d8fccb20806c6661e4f3d5c78ff622ef7c"
+    },
+    {
+      "id": "collection-help-shoppers-choose",
+      "revision": "14b508cd237b1c2d4e998212e371cf9496dfb862ae6df2e6f382d14066d2e588",
+      "base_id": "a7213bec56080691abde0e8d3a44b85e6a227379567119839cac9e8221e227f5",
+      "decision": "approved",
+      "reviewer": "Codex — fresh bundled collection review",
+      "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+      "at": "2026-10-18T04:43:36.544Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+              "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+              "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+            },
+            {
+              "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+              "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+            }
+          ]
+        }
+      },
+      "record_id": "826b8fa9c163f8f11560c732d123bc634cb17b8426d789acd971d5a911d685d4"
     }
   ]
 }

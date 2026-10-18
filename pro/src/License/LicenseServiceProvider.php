@@ -10,7 +10,7 @@ use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 defined('ABSPATH') || exit;
 
 /**
- * The licence: updates and support, and nothing else (ADR 0015, ADR 0143).
+ * The licence: updates, support and explicit new premium downloads (ADR 0112/0143).
  *
  * Everything licence-shaped in either plugin lives under `pro/src/License/`,
  * and `NoLicenceOnTheFrontEndTest` holds it there. Nothing in here is asked
@@ -27,6 +27,10 @@ final class LicenseServiceProvider implements ServiceProvider
 
     public function register(ServiceContainer $container): void
     {
+        $container->register(\WConvert\Template\Catalog\CatalogTransport::class, static fn (ServiceContainer $c) => new TemplateDownloads(
+            $c->resolve(PremiumServiceProvider::class), new \WConvert\Template\Catalog\WpCatalogTransport(),
+            defined('WCONVERT_TEMPLATE_API_ORIGIN') ? (string) constant('WCONVERT_TEMPLATE_API_ORIGIN') : ''
+        ));
         $container->register(
             LicenseController::class,
             static fn (ServiceContainer $c): LicenseController => new LicenseController(

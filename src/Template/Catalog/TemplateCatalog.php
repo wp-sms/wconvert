@@ -156,7 +156,12 @@ final class TemplateCatalog
         PackValidator::check(is_array($cache) && ($cache['source'] ?? '') === $this->source(), __('Refresh the catalog before previewing this pack.', 'wconvert'));
         foreach ($cache['packs'] ?? [] as $entry) {
             if ($entry['id'] !== $id) continue;
-            $json = $this->transport->get($entry['url']);
+            if (($entry['access'] ?? 'free') === 'premium') {
+                PackValidator::check($this->transport instanceof CatalogPackTransport, __('WConvert Pro is needed to download this premium pack. Public previews are still available.', 'wconvert'));
+                $json = $this->transport->pack($entry['url'], $entry['sha256']);
+            } else {
+                $json = $this->transport->get($entry['url']);
+            }
             PackValidator::check(hash_equals($entry['sha256'], hash('sha256', $json)), __('The downloaded pack did not match the catalog. Refresh and try again.', 'wconvert'));
             $pack = $this->validator->decode($json);
             PackValidator::check($pack['id'] === $entry['id'] && $pack['version'] === $entry['version'], __('The downloaded pack has the wrong identity.', 'wconvert'));
@@ -168,8 +173,6 @@ final class TemplateCatalog
     /** @param array<string, mixed> $pack */
     private function prepareImages(array $pack): void
     {
-        // Premium delivery remains closed until the real licence adapter exists.
-        foreach ($pack['assets'] as $asset) PackValidator::check($asset['access'] === 'free', __('Premium image downloads are not connected yet.', 'wconvert'));
         $origin = wp_parse_url($this->source());
         $this->installed->prepareImages($pack, function (array $asset) use ($origin): string {
             if (!$this->transport instanceof CatalogImageTransport || !is_array($origin) || !isset($origin['scheme'], $origin['host'])) throw new \RuntimeException(__('Image installation is unavailable.', 'wconvert'));
