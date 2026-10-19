@@ -123,3 +123,16 @@ it('S10: a rate-limited key field opens again when the key is edited', async () 
   await userEvent.type(screen.getByLabelText('License key'), '1');
   expect(screen.getByRole('button', { name: 'Activate' })).not.toHaveAttribute('aria-disabled');
 });
+
+it('L5: a swapped key leaves the swap box empty and closed, not offering the new key for itself', async () => {
+  answer({ 'GET /wconvert/v1/license': expired, 'POST /wconvert/v1/license/replace': { ...expired, key: { masked: '••••CD34', source: 'manual' } } });
+  render(<LicensePage />);
+  await userEvent.click(await screen.findByText('Use a different key'));
+  await userEvent.type(screen.getByLabelText('New license key'), 'WCV-NEW-CD34');
+  await userEvent.click(within(screen.getByLabelText('New license key').closest('form')!).getByRole('button', { name: 'Activate' }));
+
+  expect(await screen.findByText('The new key is active')).toBeInTheDocument();
+  expect(screen.getByText('••••CD34')).toBeInTheDocument();
+  expect(screen.getByLabelText('New license key')).toHaveValue('');
+  expect(screen.getByText('Use a different key').closest('details')).not.toHaveAttribute('open');
+});
