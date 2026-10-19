@@ -93,7 +93,7 @@ prelaunch environment. Once customers depend on it, use a separate test
 configuration, storage and Nexus connection for risky changes. Never let local
 fixtures or staging credentials target live buckets.
 
-## What is still local
+## Verified service and remaining checks
 
 The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Real licensed WordPress acceptance also passed with WooCommerce. Default plugin catalogue URL and launch operations remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
 Local tests run the actual Worker/WebCrypto/R2 runtime with a test Nexus responder;
@@ -107,7 +107,7 @@ References: [Create R2 buckets](https://developers.cloudflare.com/r2/buckets/cre
 
 ## Before enabling premium downloads or launching
 
-Connect Nexus and test the real licence scenarios, configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
+Nexus is connected and the core live licence flow is verified. Complete the remaining real licence scenarios (whole-licence expiry/revocation and a premium image), configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
 
 
 ## Nexus dashboard connection — 19 October 2026
@@ -119,7 +119,9 @@ WooCommerce and natural pass expiry checks pass. The temporary test activation
 was removed afterward. See the [connection evidence](../../docs/reviews/nexus-worker-connection-2026-10-19.md).
 
 1. Open **Workers & Pages → wconvert-template-api → Edit code**.
-   Replace the entry module with the prepared `worker.js`, then **Deploy**.
+   Build the current checkout with `npm run build` from `tools/template-server`.
+   Replace the entry module with `dist/index.js` (omit its final source-map comment),
+   then **Deploy**. The previously prepared `worker.js` is a copy of that bundle.
    Keep compatibility date `2026-10-01` and both existing R2 bindings.
 2. Under **Settings → Variables and Secrets**, add the five Text values below.
 3. Add `NEXUS_SERVICE_KEY` as type **Secret**, pasting the server key directly

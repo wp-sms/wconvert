@@ -62,7 +62,7 @@ This switches the catalogue pointer; it does not rewrite installed templates or 
 - Immutable files have long-lived caches and ETags. The mutable manifest must revalidate. Missing/unavailable responses are not cached.
 - HTML demos use an isolated sandbox CSP, disabled sample forms, no external network resources and no referrer. Public previews are viewable demonstrations, not editable premium source or DRM.
 
-## Local Nexus integration (18 October 2026)
+## Nexus integration
 
 `POST /grants` accepts only `{pack: <pack hash>, domain: <SDK canonical site>}`
 and an `X-License-Key` header. WordPress obtains the key through the existing Pro
@@ -104,9 +104,10 @@ transport and SDK. `bin/verify-template-downloads.php` rehearses boot, real cont
 wiring, premium pack/media installation and offline use in disposable WordPress.
 Run `npm run test:wordpress --prefix tools/template-server` for that disposable
 PHP 8.1 rehearsal (root Composer/Pro packages and npm dependencies are required).
-No test responder ships in the Worker or plugin. The service remains closed until
-real configuration is supplied. The original `verify` command still expects this
-unconfigured local service; it does not test a live licensed deployment.
+No test responder ships in the Worker or plugin. A service without its Nexus
+secret remains closed. The original `verify` command expects an unconfigured
+local service; it does not test a live licensed deployment. The hosted service
+has its own secret, which is never copied into the local rehearsal.
 
 ## Remote publication
 
@@ -120,13 +121,23 @@ npm run publish --prefix tools/template-server -- --directory /absolute/release 
 
 Use `--expected none` only for an empty remote catalogue. Without `--apply`, publication validates locally and makes no network request. For rollback add `--retained RETAINED_RELEASE_ID` to the same command. Private dependencies are uploaded first; public dependencies are checked before the conditional manifest replacement. An uncertain write is never retried automatically: inspect status first. No objects are deleted.
 
-After Worker deployment, run `npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID`. This read-only check expects Nexus to remain unconfigured, tests Free content and public previews, and requires premium requests to fail closed.
+After deployment to the configured hosted service, run:
+
+```sh
+npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID --premium configured
+```
+
+This read-only check tests Free content and public previews and requires anonymous
+premium requests to return 401. It does not send a licence or prove successful
+licensed access. For a service without its Nexus secret, omit `--premium configured`
+to require the unconfigured 503 response instead. Neither mode accepts an anonymous
+successful premium download.
 
 ## Hosted setup status
 
 Follow [the Cloudflare preparation checklist](CLOUDFLARE-SETUP.md). It lists the
 account/domain decisions, two private buckets, grant-record lifecycle rule, Nexus
-handoff, secrets and remaining hosted acceptance. The remote publisher uploaded and verified the first release on 18 October 2026. The Worker and custom domain are live. Free/public HTTPS acceptance and real WordPress installation/offline checks passed on 18 October 2026. Nexus remains disconnected.
+handoff, secrets and remaining hosted acceptance. The remote publisher uploaded and verified the first release on 18 October 2026. The Worker and custom domain are live. Free/public HTTPS acceptance and real WordPress installation/offline checks passed on 18 October 2026. Nexus was connected on 19 October. Real licensed WordPress installation with WooCommerce, deactivated-site refusal and natural five-minute pass expiry passed. See the [connection evidence](../../docs/reviews/nexus-worker-connection-2026-10-19.md) for scope and limitations.
 
 Local simulation is evidence of behaviour, not evidence of a deployed service. Wrangler's local administrative explorer is a development-only surface; keep the development server loopback-only.
 

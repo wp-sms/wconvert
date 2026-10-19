@@ -84,3 +84,18 @@ The current premium pack contains zero image assets, so real premium image
 issuance/download is not claimed by this run. Local fixtures cover that path;
 real Free image delivery was checked separately. Whole-licence expiry/revocation
 was not induced, and no other site activation was changed.
+
+
+## Pre-merge review — 19 October 2026
+
+Separate standards and requirements reviewers found stale setup and ADR status
+statements, now corrected inline. The hosted verifier instructions now explicitly
+use `--premium configured`, and the dashboard guide explains rebuilding its
+bundle from the checkout. Both reviewers confirmed no outstanding findings after
+those corrections. No runtime change was needed during this review.
+
+The Worker type check/build and all 40 server tests passed again. Configured-mode
+live verification passed again for the published release (four Free packs,
+five previews, sixteen setups, one image, anonymous premium refusal). Prior real
+licensed WordPress and natural-expiry evidence above applies to the unchanged
+Worker code. CI is skipped by explicit operator instruction.
