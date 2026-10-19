@@ -282,6 +282,11 @@ As of 18 October the Worker has separate public/private bindings and a Nexus-sig
 Nexus v2.7.0 is the entitlement authority. The local Worker verifies its signed
 short-lived grants and stores expected subject/resource context in private R2;
 all private reads reverify the signature, exact file membership and hard expiry.
+The configured grant and public-key endpoints share an HTTPS API origin, which
+may differ from the exact signed issuer. The 19 October connection uses
+`my.wconvert.io` for both endpoints and pins `https://nexus.veronalabs.com` as
+issuer independently; redirects remain forbidden. The signed environment is
+`production`, regardless of the plugin’s prelaunch status.
 One-day lifecycle cleanup removes expired contexts. No customer key is stored.
 The plugin's SDK-backed adapter lives under `pro/src/License/` and is invoked only
 by explicit premium pack downloads. It pins the trusted HTTPS API origin apart

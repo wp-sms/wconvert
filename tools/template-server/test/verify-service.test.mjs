@@ -50,3 +50,17 @@ test('hosted verifier refuses wrong release, changed bytes, open premium and mis
     await assert.rejects(verifyService(origin, options));
   }
 });
+
+
+test('configured verification requires anonymous 401 and still rejects open or unavailable premium', async () => {
+ for (const status of [200, 401, 403, 503]) {
+  const { origin, options } = fixture((url, _options, result) => {
+   if (url.pathname.startsWith('/downloads/')) result.status = status;
+  });
+  const result = verifyService(origin, { ...options, premiumMode: 'configured' });
+  if (status === 401) assert.equal((await result).premiumRefusals, 1);
+  else await assert.rejects(result);
+ }
+ const { origin, options } = fixture();
+ await assert.rejects(verifyService(origin, { ...options, premiumMode: 'anything' }));
+});

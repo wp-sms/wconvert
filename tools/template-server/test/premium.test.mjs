@@ -11,16 +11,17 @@ const image = Buffer.from('private image fixture'), imageHash = hash(image);
 const pack = Buffer.from(JSON.stringify({ assets: [{ mime: 'image/png', access: 'premium', sha256: imageHash, bytes: image.length }] })), digest = hash(pack);
 const origin = 'https://templates.example', nexus = 'https://nexus.example';
 const settings = { NEXUS_GRANT_URL: nexus + '/api/v1/wconvert/entitlements/grant', NEXUS_KEYS_URL: nexus + '/api/v1/wconvert/entitlements/keys', NEXUS_ISSUER: nexus, NEXUS_AUDIENCE: origin, NEXUS_ENVIRONMENT: 'staging', NEXUS_SERVICE_KEY: 'test-service-secret' };
-async function fixture(t) {
+async function fixture(t, overrides = {}) {
+ const config = { ...settings, ...overrides };
  const state = { calls: [], error: null, override: {}, key: 0, header: {}, outage: false };
- const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'], bindings: settings,
+ const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'], bindings: config,
   outboundService: async request => {
    state.calls.push({ url: request.url, headers: Object.fromEntries(request.headers), body: request.method === 'POST' ? await request.json() : null });
    if (state.outage) return new Response('{}', { status: 503 });
-   if (state.rawResponse && request.url === settings.NEXUS_GRANT_URL) return state.rawResponse();
-   if (state.keysUnavailable && request.url === settings.NEXUS_KEYS_URL) return new Response('{}', { status: 503 });
-   if (request.url === settings.NEXUS_KEYS_URL) return Response.json({ keys: keys.map(k => k.jwk) });
-   assert.equal(request.url, settings.NEXUS_GRANT_URL); assert.equal(request.headers.get('Authorization'), 'Bearer test-service-secret'); assert.equal(request.headers.get('X-License-Key'), 'test-customer-secret');
+   if (state.rawResponse && request.url === config.NEXUS_GRANT_URL) return state.rawResponse();
+   if (state.keysUnavailable && request.url === config.NEXUS_KEYS_URL) return new Response('{}', { status: 503 });
+   if (request.url === config.NEXUS_KEYS_URL) return Response.json({ keys: keys.map(k => k.jwk) });
+   assert.equal(request.url, config.NEXUS_GRANT_URL); assert.equal(request.headers.get('Authorization'), 'Bearer test-service-secret'); assert.equal(request.headers.get('X-License-Key'), 'test-customer-secret');
    if (state.error) return Response.json({ success: false, error_code: state.error.code }, { status: state.error.status, headers: { 'Retry-After': '45' } });
    const body = state.calls.at(-1).body;
    const at = Math.floor(Date.now() / 1000);
@@ -141,4 +142,41 @@ test('Nexus malformed replies, redirects, oversized responses and missing keys f
  await cache.delete(settings.NEXUS_KEYS_URL);
  state.keysUnavailable=true;
  assert.equal((await issue()).status,503);
+});
+
+
+test('custom API hostname accepts the pinned issuer, never the API origin as issuer', async t => {
+ const api = 'https://my.wconvert.example';
+ const { state, issue, fetch } = await fixture(t, {
+  NEXUS_GRANT_URL: api + '/api/v1/wconvert/entitlements/grant',
+  NEXUS_KEYS_URL: api + '/api/v1/wconvert/entitlements/keys',
+ });
+ const response = await issue(); assert.equal(response.status, 200);
+ const { grant } = await response.json();
+ assert.equal((await fetch(`/downloads/${digest}.json`, { headers: { Authorization: `Bearer ${grant}` } })).status, 200);
+ assert.ok(state.calls.every(c => new URL(c.url).origin === api));
+ state.override = { iss: api };
+ assert.equal((await issue()).status, 503, 'API hostname is not the trusted signed issuer');
+ state.override = {};
+ state.rawResponse = () => new Response('{}', { status: 302, headers: { Location: nexus + '/grant' } });
+ assert.equal((await issue()).status, 503, 'even redirects to the issuer must not be followed');
+ assert.ok(state.calls.every(c => new URL(c.url).origin === api));
+});
+
+test('unsafe or mismatched configured endpoints never send credentials', async t => {
+ for (const overrides of [
+  { NEXUS_KEYS_URL: 'https://other.example/keys' },
+  { NEXUS_GRANT_URL: 'http://nexus.example/grant' },
+  { NEXUS_GRANT_URL: 'https://user:password@nexus.example/grant' },
+  { NEXUS_KEYS_URL: settings.NEXUS_KEYS_URL + '?key=value' },
+  { NEXUS_ISSUER: nexus + '#fragment' },
+  { NEXUS_AUDIENCE: 'http://templates.example' },
+ ]) {
+  await t.test(JSON.stringify(overrides), async sub => {
+   const { issue, state } = await fixture(sub, overrides);
+   const result = await issue(); assert.equal(result.status, 503);
+   assert.equal((await result.json()).error_code, 'service_not_configured');
+   assert.equal(state.calls.length, 0);
+  });
+ }
 });

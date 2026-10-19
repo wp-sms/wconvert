@@ -62,13 +62,13 @@ The default Wrangler configuration is the single hosted environment. **Do not us
 `--env staging`**; no such environment is configured. Local `wrangler dev`, tests
 and dry-run builds use emulated storage and do not upload files.
 
-For later deployments and the deferred Nexus connection:
+For deployments and the Nexus connection:
 
 - Authenticate Wrangler locally to the chosen account.
-- Fill `NEXUS_GRANT_URL`, `NEXUS_KEYS_URL`, `NEXUS_ISSUER`, `NEXUS_AUDIENCE`, and
-  `NEXUS_ENVIRONMENT` in `wrangler.jsonc`. The Worker custom domain and account configuration are already present. Keep `workers_dev` and preview URLs disabled.
+- The operator-provided Nexus endpoints, issuer, audience and the handoff’s
+  `production` environment are now set in `wrangler.jsonc`. The Worker custom domain and account configuration are already present. Keep `workers_dev` and preview URLs disabled.
 - Run `wrangler secret put NEXUS_SERVICE_KEY` from `tools/template-server`.
-  These are future operator instructions, not commands to run during local setup.
+  Keep the value out of source files and command arguments; the dashboard Secret field is an alternative.
 - Require HTTPS and configure request limits for `/grants` and private file
   requests before exposing the service. Nexus separately limits issuance.
   Redact Authorization/X-License-Key, request bodies and passes in infrastructure
@@ -108,3 +108,38 @@ References: [Create R2 buckets](https://developers.cloudflare.com/r2/buckets/cre
 ## Before enabling premium downloads or launching
 
 Connect Nexus and test the real licence scenarios, configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
+
+
+## Nexus dashboard connection — 19 October 2026
+
+The custom API hostname differs from the signed issuer. Deploy the updated Worker
+code as well as setting its variables; the previous build rejected that pairing.
+Local tests pass, but deployment and real licensed acceptance still require the
+operator’s dashboard action and a test licence with its activated site.
+
+1. Open **Workers & Pages → wconvert-template-api → Edit code**.
+   Replace the entry module with the prepared `worker.js`, then **Deploy**.
+   Keep compatibility date `2026-10-01` and both existing R2 bindings.
+2. Under **Settings → Variables and Secrets**, add the five Text values below.
+3. Add `NEXUS_SERVICE_KEY` as type **Secret**, pasting the server key directly
+   from Nexus. Save/deploy the settings. No key belongs in `worker.js`.
+
+| Text variable | Value |
+| --- | --- |
+| `NEXUS_GRANT_URL` | `https://my.wconvert.io/api/v1/wconvert/entitlements/grant` |
+| `NEXUS_KEYS_URL` | `https://my.wconvert.io/api/v1/wconvert/entitlements/keys` |
+| `NEXUS_ISSUER` | `https://nexus.veronalabs.com` |
+| `NEXUS_AUDIENCE` | `https://templates.wconvert.io` |
+| `NEXUS_ENVIRONMENT` | `production` |
+
+`templates:download` is already enforced in the Worker, together with store
+`wconvert` and item `wconvert-pro`. There is no collection variable to add.
+Grant and public-key URLs must share an API origin; the signed issuer is checked
+separately and must match exactly. The service key must be authorized for this
+collection in Nexus.
+
+After deployment, run `npm run verify:remote -- --expected RELEASE_ID --premium configured`
+from this directory. This checks public files and anonymous premium refusals; it
+does **not** prove that Nexus accepts the service key or that a licensed download
+works. Complete the real licence tests described above before claiming that.
+Without the secret, use the default verification mode (expected premium 503).
