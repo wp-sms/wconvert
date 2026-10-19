@@ -1,0 +1,230 @@
+{
+  "id": "availability-desk",
+  "name": "Availability desk",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f3f6f8",
+    "fg": "#223b52",
+    "muted": "#465a6c",
+    "accent": "#223b52",
+    "accent-fg": "#ffffff",
+    "border": "#778a99",
+    "input-bg": "#ffffff",
+    "heading-size": "1.75rem",
+    "heading-weight": "650",
+    "font": "system-ui, sans-serif",
+    "tracking": "-0.025em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "width": "42rem",
+    "radius": "0.75rem",
+    "pad": "0",
+    "gap": "0",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your availability",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "0"
+          },
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#223b52",
+                "fg": "#ffffff",
+                "muted": "#dde8f2",
+                "pad": "1.5rem",
+                "gap": "0.625rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "A little flexibility",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "Ask about an earlier appointment"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Leave your preference and a reply address. We can contact you if a suitable opening comes up."
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              },
+              "children": [
+                {
+                  "type": "split",
+                  "basis": "16rem",
+                  "ratio": 0.5,
+                  "tokens": {
+                    "gap": "1rem"
+                  },
+                  "start": [
+                    {
+                      "type": "field",
+                      "id": "n4",
+                      "name": "interest",
+                      "label": "When could you come? (optional)",
+                      "placeholder": "Choose a preference",
+                      "required": false,
+                      "options": [
+                        {
+                          "value": "weekday",
+                          "label": "Weekdays"
+                        },
+                        {
+                          "value": "weekend",
+                          "label": "Weekends"
+                        },
+                        {
+                          "value": "flexible",
+                          "label": "Either works"
+                        }
+                      ],
+                      "tokens": {
+                        "radius": "0.375rem"
+                      }
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "field",
+                      "id": "n5",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "radius": "0.375rem"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "consent",
+                  "id": "n6",
+                  "role": "consent_text",
+                  "text": "You may contact me about a suitable appointment.",
+                  "hidden": true
+                },
+                {
+                  "type": "button",
+                  "id": "n7",
+                  "role": "cta_label",
+                  "label": "Ask about an earlier time",
+                  "action": "submit",
+                  "submission": "primary",
+                  "tokens": {
+                    "radius": "0.375rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "This is an enquiry, not a booking or a guaranteed place.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Enquiry received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "1.75rem",
+            "gap": "0.875rem"
+          },
+          "narrow": {
+            "pad": "1.25rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n9",
+              "role": "eyebrow",
+              "text": "Your enquiry"
+            },
+            {
+              "type": "heading",
+              "id": "n10",
+              "role": "success_headline",
+              "text": "Preference received"
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "success_body",
+              "text": "Thank you. We have received your details and availability preference. Your appointment has not changed."
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "role": "close_label",
+              "label": "Close",
+              "action": "close",
+              "tokens": {
+                "radius": "0.375rem",
+                "accent": "#e2e9ef",
+                "accent-fg": "#223b52"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4",
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ]
+  }
+}

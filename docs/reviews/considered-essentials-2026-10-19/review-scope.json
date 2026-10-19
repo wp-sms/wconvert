@@ -1,0 +1,582 @@
+{
+  "schema": 1,
+  "base": "90cbe35ad9dff23f658d8025fafd79604e5f902c",
+  "mode": "affected-only",
+  "shared_changes": [],
+  "changed_designs": [
+    "name-and-email",
+    "quieter-frequency",
+    "availability-desk"
+  ],
+  "removed_designs": [],
+  "removed_setups": [],
+  "designs": [
+    {
+      "id": "availability-desk",
+      "screens": 2
+    },
+    {
+      "id": "name-and-email",
+      "screens": 2
+    },
+    {
+      "id": "quieter-frequency",
+      "screens": 2
+    }
+  ],
+  "setups": [
+    {
+      "id": "checklist-download",
+      "design": "name-and-email",
+      "format": "popup",
+      "output": "ce103406e0bc977eb293288c84b71a1d1f653e065ce8e12dde4014d156af8e08",
+      "in_studio": true,
+      "screens": [
+        {
+          "id": "s1",
+          "name": "Details",
+          "kind": "input",
+          "result": null
+        },
+        {
+          "id": "s2",
+          "name": "Received",
+          "kind": "acknowledgement",
+          "result": null
+        }
+      ],
+      "review": "review"
+    },
+    {
+      "id": "consultation-invitation",
+      "design": "name-and-email",
+      "format": "popup",
+      "output": "f92ef27438048a1e6f5a2e358092cf9ccd7e3a7e22ec8648795735a76259297b",
+      "in_studio": true,
+      "screens": [
+        {
+          "id": "s1",
+          "name": "Details",
+          "kind": "input",
+          "result": null
+        },
+        {
+          "id": "s2",
+          "name": "Received",
+          "kind": "acknowledgement",
+          "result": null
+        }
+      ],
+      "review": "review"
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "design": "availability-desk",
+      "format": "inline",
+      "output": "ce2d5d45e608ad9fa8a33491db739989f07e9b56b115b830c3b7c4064573510a",
+      "in_studio": true,
+      "screens": [
+        {
+          "id": "details",
+          "name": "Your availability",
+          "kind": "input",
+          "result": null
+        },
+        {
+          "id": "received",
+          "name": "Enquiry received",
+          "kind": "acknowledgement",
+          "result": null
+        }
+      ],
+      "review": "review"
+    },
+    {
+      "id": "equipment-return-checklist",
+      "design": "name-and-email",
+      "format": "popup",
+      "output": "7bec6ff35e3298265e06c795840cce19bbe4fb35d71a5517e44a53ca44ebd6ee",
+      "in_studio": true,
+      "screens": [
+        {
+          "id": "s1",
+          "name": "Details",
+          "kind": "input",
+          "result": null
+        },
+        {
+          "id": "s2",
+          "name": "Received",
+          "kind": "acknowledgement",
+          "result": null
+        }
+      ],
+      "review": "review"
+    },
+    {
+      "id": "gift-planning-guide",
+      "design": "name-and-email",
+      "format": "popup",
+      "output": "81fae68b23543b481e62e81b967fe5f3e55258b5d7d4010a1dbcb93862886246",
+      "in_studio": true,
+      "screens": [
+        {
+          "id": "s1",
+          "name": "Details",
+          "kind": "input",
+          "result": null
+        },
+        {
+          "id": "s2",
+          "name": "Received",
+          "kind": "acknowledgement",
+          "result": null
+        }
+      ],
+      "review": "stale"
+    },
+    {
+      "id": "maker-notes",
+      "design": "quieter-frequency",
+      "format": "popup",
+      "output": "0aafc4d50c4bfc43eca975957b61d58da38fc5b8b73c8b5fb95c3d3675ff5175",
+      "in_studio": true,
+      "screens": [
+        {
+          "id": "s1",
+          "name": "Details",
+          "kind": "input",
+          "result": null
+        },
+        {
+          "id": "s2",
+          "name": "Received",
+          "kind": "acknowledgement",
+          "result": null
+        }
+      ],
+      "review": "stale"
+    }
+  ],
+  "collections": [],
+  "unrelated_pending": [
+    {
+      "id": "studio-welcome",
+      "state": "stale"
+    },
+    {
+      "id": "journey-email-then-sms",
+      "state": "stale"
+    },
+    {
+      "id": "delivery-announcement",
+      "state": "stale"
+    },
+    {
+      "id": "fullscreen-announcement",
+      "state": "stale"
+    },
+    {
+      "id": "product-finder",
+      "state": "stale"
+    },
+    {
+      "id": "photography-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "consultation-corner",
+      "state": "stale"
+    },
+    {
+      "id": "project-planning-guide",
+      "state": "stale"
+    },
+    {
+      "id": "content-guide",
+      "state": "stale"
+    },
+    {
+      "id": "cart-straight-away",
+      "state": "stale"
+    },
+    {
+      "id": "cart-delivery-help",
+      "state": "stale"
+    },
+    {
+      "id": "drop-alerts",
+      "state": "stale"
+    },
+    {
+      "id": "product-care-guide",
+      "state": "stale"
+    },
+    {
+      "id": "wholesale-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "venue-visit-request",
+      "state": "stale"
+    },
+    {
+      "id": "course-advice-request",
+      "state": "stale"
+    },
+    {
+      "id": "maintenance-letter",
+      "state": "stale"
+    },
+    {
+      "id": "seasonal-service-link",
+      "state": "stale"
+    },
+    {
+      "id": "event-registration-link",
+      "state": "stale"
+    },
+    {
+      "id": "topic-reading-list",
+      "state": "stale"
+    },
+    {
+      "id": "new-arrivals-link",
+      "state": "stale"
+    },
+    {
+      "id": "restyling-notes",
+      "state": "stale"
+    },
+    {
+      "id": "sizing-guide",
+      "state": "stale"
+    },
+    {
+      "id": "launch-interest",
+      "state": "stale"
+    },
+    {
+      "id": "product-advice-request",
+      "state": "stale"
+    },
+    {
+      "id": "collection-discovery",
+      "state": "stale"
+    },
+    {
+      "id": "packaging-details",
+      "state": "stale"
+    },
+    {
+      "id": "landscaping-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "agency-project-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "tutoring-introduction",
+      "state": "stale"
+    },
+    {
+      "id": "fitness-introduction",
+      "state": "stale"
+    },
+    {
+      "id": "accounting-consultation",
+      "state": "stale"
+    },
+    {
+      "id": "service-text-updates",
+      "state": "stale"
+    },
+    {
+      "id": "project-readiness-guide",
+      "state": "stale"
+    },
+    {
+      "id": "related-essay",
+      "state": "stale"
+    },
+    {
+      "id": "membership-details",
+      "state": "stale"
+    },
+    {
+      "id": "headlines-optional-sms",
+      "state": "stale"
+    },
+    {
+      "id": "gift-finder",
+      "state": "stale"
+    },
+    {
+      "id": "space-fit-finder",
+      "state": "stale"
+    },
+    {
+      "id": "experience-kit-finder",
+      "state": "stale"
+    },
+    {
+      "id": "material-comparison",
+      "state": "stale"
+    },
+    {
+      "id": "sample-request",
+      "state": "stale"
+    },
+    {
+      "id": "bulk-gift-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "personalisation-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "collection-interest",
+      "state": "stale"
+    },
+    {
+      "id": "fit-checklist",
+      "state": "stale"
+    },
+    {
+      "id": "local-pickup-details",
+      "state": "stale"
+    },
+    {
+      "id": "basket-product-help",
+      "state": "stale"
+    },
+    {
+      "id": "return-policy-guide",
+      "state": "stale"
+    },
+    {
+      "id": "service-finder",
+      "state": "stale"
+    },
+    {
+      "id": "project-stage-finder",
+      "state": "stale"
+    },
+    {
+      "id": "service-area-check",
+      "state": "stale"
+    },
+    {
+      "id": "group-training-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "service-options-guide",
+      "state": "stale"
+    },
+    {
+      "id": "pre-visit-checklist",
+      "state": "stale"
+    },
+    {
+      "id": "service-open-day",
+      "state": "stale"
+    },
+    {
+      "id": "reading-path-finder",
+      "state": "stale"
+    },
+    {
+      "id": "reader-question",
+      "state": "stale"
+    },
+    {
+      "id": "series-start",
+      "state": "stale"
+    },
+    {
+      "id": "reader-format-choice",
+      "state": "stale"
+    },
+    {
+      "id": "gift-wrap-details",
+      "state": "stale"
+    },
+    {
+      "id": "dispatch-schedule",
+      "state": "stale"
+    },
+    {
+      "id": "showroom-information",
+      "state": "stale"
+    },
+    {
+      "id": "holiday-service-hours",
+      "state": "stale"
+    },
+    {
+      "id": "remote-consultation-details",
+      "state": "stale"
+    },
+    {
+      "id": "contributor-guidelines",
+      "state": "stale"
+    },
+    {
+      "id": "repair-workshop-news",
+      "state": "stale"
+    },
+    {
+      "id": "local-class-news",
+      "state": "stale"
+    },
+    {
+      "id": "spare-parts-advice",
+      "state": "stale"
+    },
+    {
+      "id": "assembly-guidance",
+      "state": "stale"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "access-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "language-support-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "reader-panel-interest",
+      "state": "stale"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "care-clinic-request",
+      "state": "stale"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "state": "stale"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "state": "stale"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "state": "stale"
+    },
+    {
+      "id": "maker-session-invitation",
+      "state": "stale"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "state": "stale"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "state": "stale"
+    },
+    {
+      "id": "writing-session-details",
+      "state": "stale"
+    },
+    {
+      "id": "furniture-fit-guide",
+      "state": "stale"
+    },
+    {
+      "id": "rereading-essay",
+      "state": "stale"
+    },
+    {
+      "id": "visiting-details",
+      "state": "stale"
+    },
+    {
+      "id": "opening-hours-signpost",
+      "state": "stale"
+    },
+    {
+      "id": "callback-slip",
+      "state": "stale"
+    },
+    {
+      "id": "event-calendar",
+      "state": "stale"
+    },
+    {
+      "id": "product-detail-sheet",
+      "state": "stale"
+    },
+    {
+      "id": "service-process-strip",
+      "state": "stale"
+    },
+    {
+      "id": "launch-index",
+      "state": "stale"
+    },
+    {
+      "id": "appointment-agenda",
+      "state": "stale"
+    },
+    {
+      "id": "accessible-visit-note",
+      "state": "stale"
+    },
+    {
+      "id": "returns-deadline-notice",
+      "state": "stale"
+    },
+    {
+      "id": "sms-message-preview",
+      "state": "stale"
+    },
+    {
+      "id": "service-fit-brief",
+      "state": "stale"
+    },
+    {
+      "id": "edition-sample-signup",
+      "state": "stale"
+    },
+    {
+      "id": "workspace-change-story",
+      "state": "stale"
+    }
+  ],
+  "widths": [
+    320,
+    390,
+    768,
+    1440
+  ],
+  "additional_checks": [
+    "Every screen/result at each width; LTR and RTL; normal and longer copy.",
+    "Inspect before/after any layout transition, not only fixed widths.",
+    "Required fields, invalid input, failure/retry, success and dismissal.",
+    "Mounted WordPress output with settled motion, scrolling and real local capture.",
+    "Fresh screenshots plus a composition judgement; automated measurements are not approval."
+  ],
+  "notice": "Planning only. Existing stale approvals remain stale; this report cannot approve or publish anything."
+}

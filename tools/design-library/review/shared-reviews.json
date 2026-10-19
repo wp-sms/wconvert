@@ -45641,6 +45641,600 @@
         }
       },
       "record_id": "0bd3cd9c969bcd17ce28b58b9703ab2ff847647666743d344a984830c1b32b3f"
+    },
+    {
+      "id": "maker-notes",
+      "revision": "deea75fee9538da5fc94b3458907eaab0e71b0485ee3eebe155adbf7ed05ccd4",
+      "base_id": "39652fdaac2b7049038ef3e8b9fa42010f4c0d43303a26c709554ba855e7877b",
+      "decision": "approved",
+      "reviewer": "Codex — considered essentials",
+      "note": "Solid plum surface, concise consent, aligned field/action and quiet receipt. No decorative standalone icons. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+      "at": "2026-10-19T12:13:43.005142+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+              "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-1440.png",
+              "sha256": "b5439e952bda9430a77d794f7ce63be3a787edb26a539ecfa6b4f7a2458ddc8d"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-320.png",
+              "sha256": "b3a0d13b075e73b28107e5f159c214444f0fa22bd2b493881b41902c1ffbf5f6"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-390.png",
+              "sha256": "1bd37e47d7f1b73fc61715c0a5857c5f00f1cdf3561433daf6c8c7eeb7191a0d"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-768.png",
+              "sha256": "2c5a50f80a2a680890a7e9a5679012a92dc32395c333442fc0b35a212e765d61"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-320-rtl-stress.png",
+              "sha256": "1cc1e59c2a93547b65d0e00b40c0463ff34d74902df9cc87d80b6416f8fab794"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+              "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+              "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-retry.png",
+              "sha256": "8aa2f0af56f892982d1fa36dc74544a332a081f0d14aa62010f0672a2100aba1"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+              "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+              "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-1280-input.png",
+              "sha256": "3ce5c5b86eb8ffedcd3393162aa0743279d45f1d9b52868526509c2e1dd2aeed"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-1280-success.png",
+              "sha256": "aa7d0acef214c918ccd2a4f2d11b508f4042550dc25227b6637a696a96f6d7d5"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-320-input.png",
+              "sha256": "b7496922b48dcc90e662adba50cc64fb977a8b1f7bd6f2d954bb26f2bcafd5d7"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-320-success.png",
+              "sha256": "b22dd15026dfedfd96c01300a2a28857b2f25ea6dc1e0947f0592cd1e3c94700"
+            }
+          ]
+        }
+      },
+      "record_id": "e988bc0109ef9bef5778ac8a2b93bf5e90313d4ff375c57bbed6b5d87613a05d"
+    },
+    {
+      "id": "gift-planning-guide",
+      "revision": "cb090cf52933a5bfe9a466708263efaa730fc6e55e8db572ddbd043f7e3cdfb8",
+      "base_id": "5ea3ffd7181babe1bdab6414ea9f6e9b18b471529e31570932dc4e7b338c8bad",
+      "decision": "approved",
+      "reviewer": "Codex — considered essentials",
+      "note": "Warm serif heading, clear introductory group, divider and compact form. Optional name is labelled; receipt does not claim email delivery. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+      "at": "2026-10-19T12:13:43.005347+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+              "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-1440.png",
+              "sha256": "88442a9d136a85a593155a34c5ded5824316fd0c3a1f8d27a4a4c2a50cda6318"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-320.png",
+              "sha256": "c21e81da1aa23c1055149e8af3f6cab1362822d1dc028f24e518bb1f3fc326c3"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-390.png",
+              "sha256": "2894504cb693ee5db22228cc65ce69d4dc669a60517af8d57a7ebfeafedbf340"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-768.png",
+              "sha256": "f31236bf67f600ccb986e086b0cb6de4cb3825915646649e4ddf73189261370f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-320-rtl-stress.png",
+              "sha256": "33cb98a82999d70cb9cac6f388cabc77094c4350eb3eba2184c34fa789c02931"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+              "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+              "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-retry.png",
+              "sha256": "dc573348b4a0b4a129ebe3da855cd86af98fcc62ecfbf41336bb18561233f430"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+              "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+              "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-1280-input.png",
+              "sha256": "d028a07c17d46d26e6d491110e4b3d2a39ea070ef8bd4d2623584724a67bbe57"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-1280-success.png",
+              "sha256": "e40af52c7e5ea5de1fb18601c5bedff439efa2f281e983c7fe3341d52212d669"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-320-input.png",
+              "sha256": "43352fee5791f59f17f1ffacff2d9829212d7da991091630fceb755195b2458b"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-320-success.png",
+              "sha256": "225a7aadf132eb3c5c587d9af4ef3d388b3910468d6fc2377bfacedde5311c67"
+            }
+          ]
+        }
+      },
+      "record_id": "1a871d787c126d90ae6db83b71f2daf991f447c6519ede65fda505d30ef056f3"
+    },
+    {
+      "id": "checklist-download",
+      "revision": "79cda6d7dc4a370d3f19525b085f93f7e5fb19b87add7b6ac2ab2906bc2c3c15",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — considered essentials",
+      "note": "Balanced guide typography and aligned name/email/action. Optional name now matches the actual requirement. Receipt only confirms the request. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+      "at": "2026-10-19T12:13:43.005394+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+              "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-1440.png",
+              "sha256": "30590afd3ec68175755c73ef94fe43922ae8a616af0e3f83092cb49b2d021b12"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-320.png",
+              "sha256": "eb71580f736417c80894e35102596b384397bb7c1f8031837c979ef8596dca64"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-390.png",
+              "sha256": "ed090884d24d4d49976d1e0b6f146d2249f6ed80649b34149705113887c6c54d"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-768.png",
+              "sha256": "bd2824496ab013a6142cf392bf884bcb1a54d674d8f736c57c52eef099c92d36"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-320-rtl-stress.png",
+              "sha256": "adcaf04195146cdb5712c3c6379e31e75a4407f33175b1fa1619b1f7bc33ca01"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+              "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+              "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-retry.png",
+              "sha256": "4a752e09bea14012f0e01eae067966937220450d1fb466804b4fc7abea4bab04"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+              "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+              "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-1280-input.png",
+              "sha256": "81ecbdddb29feb3e9ea52862b193751866e1c67b787ae7c6b81b155b5b22d6b0"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-1280-success.png",
+              "sha256": "42db84ab39a3d1b5dbc82fa0ccd974d411769c5e9febb11a1636f1024acf4698"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-320-input.png",
+              "sha256": "23e52fed74f5fd21f69791befff130a9e6e967bf927beca253c4abb6c5e39d49"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-320-success.png",
+              "sha256": "d3c80476e144da8217190703da812af499ebab8df3fc2b9f8af9ff2038795c8a"
+            }
+          ]
+        }
+      },
+      "record_id": "10abd2eb0091216237c6845289476f536aaee9b593b644ed4aaff63dbff63a20"
+    },
+    {
+      "id": "consultation-invitation",
+      "revision": "244036d618f71eb5835a807527046c0a6497667d08c8c96d9b466305d702acaa",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — considered essentials",
+      "note": "Readable service introduction, optional name and clear reply expectation. Receipt explicitly records a consultation request, not a booking. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+      "at": "2026-10-19T12:13:43.005438+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+              "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-1440.png",
+              "sha256": "4efb4c728b71954b700938f106ffd8efea28949c553fda16c14736981e9039f9"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-320.png",
+              "sha256": "f2a2736f4727d14e72981739ad2681a7ceaee4bf66316800c2694ea324323663"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-390.png",
+              "sha256": "3beff798b7291bd91f143217e309e0728e8c460d97e1b88a4932c18eee821a48"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-768.png",
+              "sha256": "01db4fde087d0657c44b1191730d4a153b4960610efbe38ac7c1f3f52650847a"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-320-rtl-stress.png",
+              "sha256": "5b8be43d4dea35a0a73c2180b3d264d5aabf7b8ee1cdd0d9e702fee2de97004b"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+              "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+              "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-retry.png",
+              "sha256": "986c7a284a52a166e12cb17f43b0dee123aab4c4ad646806111b3f15eccb5201"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+              "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+              "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-native-1280-input.png",
+              "sha256": "0350e0708b91fcb2861a6802c84523689ef927bce9ed802f19c50346c4cc65c8"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-native-1280-success.png",
+              "sha256": "8b9ef1f8f41d92cf630cd45e307aa122f5715aca2ca95307281ed64a884582b3"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-native-320-input.png",
+              "sha256": "31f33effb2351f3fbd413d29de888d90ed15e19bcfb483697b4e465a54eb97aa"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/consultation-invitation-native-320-success.png",
+              "sha256": "e232386ae8e5740c7e0897162ee123071c95513f2f90884a469291190d90b2c0"
+            }
+          ]
+        }
+      },
+      "record_id": "7c9bf637f82b8ee96332e9571a2d7ca8e47c5ded22e9905088c4a9e79fa0d0b7"
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "revision": "fc040fccbb10138f03dc7ad7e4837faff4901d06147194f5b817ac21b8f79e48",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — considered essentials",
+      "note": "Navy introduction and light response area. Optional availability and email align on desktop and stack before they become cramped. Secondary Close action on receipt. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+      "at": "2026-10-19T12:13:43.005485+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+              "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-1440.png",
+              "sha256": "a0bad8ee9c22477bb1997b2ed02b580769fb2620c64d55d553c995e3515e37df"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-320.png",
+              "sha256": "11373ac4d4b1a41956b6c2461f8710462b103e48a2bfd6b7788322b7ada6757b"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-390.png",
+              "sha256": "215b18f4f0e8ec116cdb4adb399336299f04cf89d1f3fc40ea8bb33cff0363c2"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-768.png",
+              "sha256": "9465115435e2d4989f618fb0f2bf0fb3e559affee438fb2c4a01ed89c4bb0ea8"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-320-rtl-stress.png",
+              "sha256": "729bb28484b4b0eee65c8b77f9f8680673478f2a0291732082eceb774c4fae99"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+              "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+              "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-retry.png",
+              "sha256": "7f5a0f3a523b006c2aea6f329ddd9a62543f61e87fdd98ee52796e67445a285e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+              "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+              "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-1280-input.png",
+              "sha256": "e3eff2f0f19e2faff2909d6e02e43da8779e2248cd8ae9cfbe6e45f8dc1cec6f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-1280-success.png",
+              "sha256": "3b8274d014269af09b615dda19495bdeba1d6ed26b58a7ab8cb8e903d1101fba"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-320-input.png",
+              "sha256": "288c0e7ddaca0f7ff359f6257ca5f8b1771383d05c08496f9221cc77c44f220f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-320-success.png",
+              "sha256": "179621e443c76ea6683a7a5e08c5004911061f3c2cba9e24e66f455e3153bd12"
+            }
+          ]
+        }
+      },
+      "record_id": "e1fe8a710f2d54e1bc03b143cf526dbddc23f26d2b0e3734804c8ae7fe47f2b6"
+    },
+    {
+      "id": "equipment-return-checklist",
+      "revision": "59577e25b48bcb98d81d35a01d3d9141120a4c3db5b9a94a3dffe6511eca5e1a",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — considered essentials",
+      "note": "Deliberate reuse of the guide design for a useful rental task. Phone CTA wraps within its button; receipt does not claim collection or return completion. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+      "at": "2026-10-19T12:13:43.005532+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+              "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-1440.png",
+              "sha256": "4766344b1cd90531933c47b553979957a0ff8f45966ff5524c672c3c476a9946"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-320.png",
+              "sha256": "4a9b9a18ce9eea7c1aaffc2a22dac532c74bf4f033abe06c605f7fb71b1fecd8"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-390.png",
+              "sha256": "2644250749a0bc601bf1a7c030195073cc93f6ff5f0b2e9a413df78be4319d66"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-768.png",
+              "sha256": "8faca770ace2e7e1c6de9d9db35c73fe8022fadc89eafe438c2fe6812ef32c90"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-320-rtl-stress.png",
+              "sha256": "1af350f46f92f552b52bcc46384be1df6454a3d6b130e8480827ea46414ffa8a"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+              "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+              "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-retry.png",
+              "sha256": "12a356c1c9c2e70dc3f046bc22e537c6b036f54d75158bbc61357500b8f40f91"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+              "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+              "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+              "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-1280-input.png",
+              "sha256": "72f3d8741002e15e904bfccf9ddd676159abd6423acf08fecdcb386581569203"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-1280-success.png",
+              "sha256": "5fe848f743479d0fa32e377bf3cc967555c829be342a819578a10106671cd575"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-320-input.png",
+              "sha256": "aea1e17773933257cad8502d03a4582c3f68b498f697e7f3e19bf1353b33b8cd"
+            },
+            {
+              "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-320-success.png",
+              "sha256": "5a46c333e8ff7306e4ecef14cea8a93fa3a2c5ab683ad64e4c3e4947b8945542"
+            }
+          ]
+        }
+      },
+      "record_id": "6ac344db6d2b85b2d9ff7f7c58187eb5213925d69c678dd1c6e0ed0ea1cc592f"
     }
   ]
 }

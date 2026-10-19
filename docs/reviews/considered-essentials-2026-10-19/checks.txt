@@ -1,0 +1,13 @@
+Local checks, 19 October 2026
+
+composer verify:templates: PASS, 108 designs
+composer verify:source: PASS
+composer test: PASS, 3382 tests / 19274 assertions
+npm test -- --maxWorkers=2: PASS, 254 files / 4479 tests, exit 0
+Earlier default-concurrency attempts had timing failures; the original failing file also passed alone (85 tests). No product code or test timeout was changed.
+npm run test:template-studio: PASS, 47 tests
+review proof: PASS, 6 setups / 72 screen-viewport records
+collections check: PASS, 6 of 6 approved collections, unchanged
+192 rendered cases: zero geometry, composition, text contrast or field-outline contrast failures; 160 shared 32px fine-pointer Close warnings documented in README.
+Native WordPress: all 6 setups submitted at desktop/phone; captured preference values confirmed. External delivery not tested.
+Named batch gate: PASS, 6/6 current approvals. 39 unrelated old design-version records reported separately; whole-library enforcement remains strict.

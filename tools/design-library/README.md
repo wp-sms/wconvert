@@ -13,7 +13,7 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 128 campaigns
+## Internal creation and review studio: 132 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
@@ -21,10 +21,11 @@ screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **128 campaign setups using 75 designs**, drawn from a complete
-inventory of **107 designs**. Current editorial status is **25 approved setups,
-103 stale setup reviews and six approved collections**. The 25 approved setups
-cover every bundled collection dependency. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-18/README.md).
+The studio contains **132 campaign setups using 76 designs**, drawn from a complete
+inventory of **108 designs**. Current editorial status is **31 approved setups,
+101 stale setup reviews and six approved collections**. The original 25 current
+approvals still cover every bundled collection dependency; six additional setups
+were reviewed in the considered-essentials batch. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-18/README.md).
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
@@ -572,3 +573,32 @@ saves actual-size screenshots. See [corrective review](../../docs/reviews/announ
 output directory. For the older-essentials visual/native runners,
 `WCONVERT_REVIEW_EVIDENCE` selects a new evidence directory so follow-up reviews
 do not overwrite earlier approval evidence.
+
+## Considered essentials and targeted review — 19 October 2026
+
+Open `out/pilot.html?batch=considered-essentials`. Two older designs have clearer
+typography, spacing and form grouping. Availability desk is a new inline layout;
+earlier-appointment enquiries and equipment-return checklists are two new useful
+setups. The latter deliberately reuses the guide design. Four existing setups
+and two new ones were checked across all twelve screens, four preview widths,
+RTL/long copy and mounted desktop/phone WordPress.
+
+Run `npm run templates:review:scope -- origin/main` before reviewing a change. It
+finds all registered dependent setups, including ones outside the curated studio,
+and separates unrelated stale reviews. Shared runtime changes still require a
+whole-library pass. Adding a template does not reset unrelated approvals.
+
+`npm run templates:review:proof -- docs/reviews/<batch-date>/proof.json` checks that
+the batch's current revisions have every screen/result at all four studio widths
+and desktop/phone WordPress captures. Missing or changed screenshots fail. It
+does not replace actually inspecting the pictures or testing the visitor journey.
+See [the workflow](MAINTENANCE.md#reusable-batch-verification) and
+[the complete evidence](../../docs/reviews/considered-essentials-2026-10-19/README.md).
+
+This batch adds no hosted pack and publishes nothing to R2. The library sources
+contain 108 designs / 155 registered setups. The existing six collection approvals
+remain current; the 101 unrelated stale setups are still a separate review backlog.
+There are also 39 older design-version records to reconcile during that backlog.
+The named batch gate now checks only its dependent designs and reports this debt;
+the unscoped whole-library gate still fails until all required reviews and design
+versions are current. Approval criteria and revision hashes were not relaxed.

@@ -25,7 +25,7 @@ return [
     'copy' => [
         'headline' => __('The forty-page guide, free', 'wconvert'),
         'body' => __('Everything we know about getting started, in one PDF.', 'wconvert'),
-        'name_label' => __('First name', 'wconvert'),
+        'name_label' => __('First name (optional)', 'wconvert'),
         'name_placeholder' => __('Alex', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),

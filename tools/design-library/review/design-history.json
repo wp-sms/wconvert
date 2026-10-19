@@ -634,6 +634,24 @@
           "date": "2026-10-12",
           "revision": "047c12f36fb216c71c58e4ca2a83ffbaf5ae92ea85db60b3efe24efc7d948b9e",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-19",
+          "revision": "a8ba9b0d9bbdaff44586bac47b958c09482019eba85ec47f87ccfa920149fbe4",
+          "note": "Separate introduction from the form and use a calmer editorial heading with consistent field spacing"
+        },
+        {
+          "version": 5,
+          "date": "2026-10-19",
+          "revision": "598e9d998089811f885ca1b9b57cb95c8e54c1383895adfee45c274be9313238",
+          "note": "Give narrow cards more useful text and field width while keeping consistent side padding"
+        },
+        {
+          "version": 6,
+          "date": "2026-10-19",
+          "revision": "f96e0a1b25eec1857e21f71d6ff9925b4fb32d30c54ec6d8e3863b7351c37053",
+          "note": "Keep optional consent with the fields before the primary action"
         }
       ]
     },
@@ -826,6 +844,12 @@
           "date": "2026-10-12",
           "revision": "a799dc4577c228e513b234d310c1b672dc2745080fbce23e08eaa927c21373ef",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-19",
+          "revision": "2f592e55983701add683a161e41250cb7527455ce5d170cf9e465b4078fe05f3",
+          "note": "Simplify the colour treatment, strengthen type hierarchy and group consent with the signup action"
         }
       ]
     },
@@ -2188,6 +2212,24 @@
           "date": "2026-10-12",
           "revision": "1dcbc42dd3bad99af8ef1420c84d0694a29b0a4ed8b927d23b7ee3238401d638",
           "note": "Full-library visual polish: readable supporting copy, responsive grouping and clear dismiss spacing; reviewed on phone and desktop."
+        }
+      ]
+    },
+    {
+      "id": "availability-desk",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-19",
+          "revision": "4ee744696ae1e71fc97bc660ad241884402dbb83bd64eed2b612159406bb49bc",
+          "note": "Add a compact inline availability enquiry with paired preference and reply fields"
+        },
+        {
+          "version": 2,
+          "date": "2026-10-19",
+          "revision": "d5630e20bb1fd933b1c5a8cf3d89554eadc414aecd6eb5698a0d1493aa4cbc87",
+          "note": "Align field and action corners and make the completion Close action secondary"
         }
       ]
     }

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "maker-notes",
+    "failure": true,
+    "retry": true
+  },
+  {
+    "id": "equipment-return-checklist",
+    "failure": true,
+    "retry": true
+  },
+  {
+    "id": "gift-planning-guide",
+    "failure": true,
+    "retry": true
+  },
+  {
+    "id": "checklist-download",
+    "failure": true,
+    "retry": true
+  },
+  {
+    "id": "consultation-invitation",
+    "failure": true,
+    "retry": true
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "failure": true,
+    "retry": true
+  }
+]

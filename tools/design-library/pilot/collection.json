@@ -669,7 +669,7 @@
         "Start after meaningful engagement; limit repeated interruption."
       ],
       "measure": "Accepted requests and completed follow-up, measured separately.",
-      "batch": "coverage",
+      "batch": "considered-essentials",
       "comparison": {
         "decision": "reuse_design",
         "against": [
@@ -773,7 +773,7 @@
         "Start after meaningful engagement; limit repeated interruption."
       ],
       "measure": "Accepted requests and completed follow-up, measured separately.",
-      "batch": "coverage",
+      "batch": "considered-essentials",
       "comparison": {
         "decision": "reuse_design",
         "against": [
@@ -3534,6 +3534,110 @@
         ],
         "reason": "An inline editorial introduction and one taste choice, followed by three category-filtered result variants."
       }
+    },
+    {
+      "id": "checklist-download",
+      "audience": "publishers",
+      "family": "Name and email",
+      "visitor_need": "Request a practical guide with an optional personal greeting.",
+      "difference": "Name is optional; the form makes the resource request explicit.",
+      "requirements": [
+        "A useful follow-up resource or monitored reply process",
+        "Relevant page placement and accurate merchant wording"
+      ],
+      "status": "review",
+      "source": "Original WConvert authoring; coverage inspection, 19 October 2026.",
+      "suggested_setup": [
+        "Use on the relevant guide, service or rental information page.",
+        "Review wording, follow-up destination and any existing booking or rental terms before publishing."
+      ],
+      "measure": "Accepted requests; delivery, bookings and returned items are separate outcomes.",
+      "batch": "considered-essentials",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "name-and-email"
+        ],
+        "reason": "Name is optional; the form makes the resource request explicit."
+      }
+    },
+    {
+      "id": "consultation-invitation",
+      "audience": "services",
+      "family": "Name and email",
+      "visitor_need": "Ask for an initial conversation without booking a time.",
+      "difference": "An optional name and required email keep a service enquiry simple.",
+      "requirements": [
+        "A useful follow-up resource or monitored reply process",
+        "Relevant page placement and accurate merchant wording"
+      ],
+      "status": "review",
+      "source": "Original WConvert authoring; coverage inspection, 19 October 2026.",
+      "suggested_setup": [
+        "Use on the relevant guide, service or rental information page.",
+        "Review wording, follow-up destination and any existing booking or rental terms before publishing."
+      ],
+      "measure": "Accepted requests; delivery, bookings and returned items are separate outcomes.",
+      "batch": "considered-essentials",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "name-and-email"
+        ],
+        "reason": "An optional name and required email keep a service enquiry simple."
+      }
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "audience": "services",
+      "family": "Availability desk",
+      "visitor_need": "Ask to hear about a suitable earlier appointment without changing a booking.",
+      "difference": "A compact service notice above paired preference and reply fields; no automatic waiting list or reservation.",
+      "requirements": [
+        "A useful follow-up resource or monitored reply process",
+        "Relevant page placement and accurate merchant wording"
+      ],
+      "status": "review",
+      "source": "Original WConvert authoring; coverage inspection, 19 October 2026.",
+      "suggested_setup": [
+        "Use on the relevant guide, service or rental information page.",
+        "Review wording, follow-up destination and any existing booking or rental terms before publishing."
+      ],
+      "measure": "Accepted requests; delivery, bookings and returned items are separate outcomes.",
+      "batch": "considered-essentials",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "preference-card"
+        ],
+        "reason": "A compact service notice above paired preference and reply fields; no automatic waiting list or reservation."
+      }
+    },
+    {
+      "id": "equipment-return-checklist",
+      "audience": "stores",
+      "family": "Name and email",
+      "visitor_need": "Prepare hired equipment for return without missing accessories or the handover instructions.",
+      "difference": "A specific checklist request, with delivery setup and the actual rental agreement kept separate.",
+      "requirements": [
+        "A useful follow-up resource or monitored reply process",
+        "Relevant page placement and accurate merchant wording"
+      ],
+      "status": "review",
+      "source": "Original WConvert authoring; coverage inspection, 19 October 2026.",
+      "suggested_setup": [
+        "Use on the relevant guide, service or rental information page.",
+        "Review wording, follow-up destination and any existing booking or rental terms before publishing."
+      ],
+      "measure": "Accepted requests; delivery, bookings and returned items are separate outcomes.",
+      "batch": "considered-essentials",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "name-and-email"
+        ],
+        "reason": "A specific checklist request, with delivery setup and the actual rental agreement kept separate."
+      }
     }
   ],
   "batches": [
@@ -3588,6 +3692,10 @@
     {
       "id": "older-essentials",
       "name": "Older essentials: planning guides and local announcements"
+    },
+    {
+      "id": "considered-essentials",
+      "name": "Considered essentials: clearer forms and useful follow-up"
     }
   ]
 }
