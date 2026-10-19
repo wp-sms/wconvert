@@ -143,4 +143,14 @@ Local simulation is evidence of behaviour, not evidence of a deployed service. W
 
 References: [R2 Workers API and conditional operations](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/), [local development data](https://developers.cloudflare.com/workers/local-development/local-data/), [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/). Versions are pinned in the separate lockfile; regenerate `Env` with `npm run types` after config changes.
 
-The hosted WordPress check does not change persistent site options or send a licence. It downloads Free packs through the shipping transport, verifies their images, confirms premium refusal, and simulates an outage after installation. The plugin default catalogue URL remains unset; deploying the service does not automatically enable it for all installations.
+The hosted WordPress check does not change persistent site options or send a licence. It downloads Free packs through the shipping transport, verifies their images, confirms premium refusal, and simulates an outage after installation. The plugin now defaults to `https://templates.wconvert.io/manifest.json` when the catalogue option is absent. The picker still fetches only on an explicit Check for packs action. An explicit empty option disables discovery, and custom sources remain supported. Pro uses a separately pinned trusted origin; catalogue overrides cannot redirect credentials. The native verifier starts without endpoint overrides.
+
+The 19 October illustrated release adds Fabric sample enquiries, with one protected PNG and no WooCommerce dependency. Six packs / 23 setups / 20 designs are published. Real licensed installation verifies the downloaded image and hydrates a local URL; installed previews work during a simulated outage. See [release acceptance](../../docs/reviews/hosted-picker-release-2026-10-19.md). Public customer distribution still needs published service terms/privacy links and the operational launch checks in the setup guide.
+
+To rehearse all local packs, including private images, without Nexus or network authorization:
+
+```sh
+WCONVERT_VERIFY_WOOCOMMERCE=/absolute/path/to/woocommerce WCONVERT_VERIFY_PREMIUM_FIXTURES=1 npm run test:wordpress --prefix tools/template-server -- /absolute/private/release-directory
+```
+
+The WooCommerce path supplies the real dependency needed by shopping-help; omit it for releases without product suggestions. This flag only enables explicit filesystem fixtures in the disposable verifier. It never enables production premium access. The check includes image hashes, local hydration, unchanged-image reuse and offline version snapshots.

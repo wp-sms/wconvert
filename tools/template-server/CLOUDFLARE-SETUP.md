@@ -95,7 +95,7 @@ fixtures or staging credentials target live buckets.
 
 ## Verified service and remaining checks
 
-The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Real licensed WordPress acceptance also passed with WooCommerce. Default plugin catalogue URL and launch operations remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
+The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Real licensed WordPress acceptance also passed with WooCommerce. The default plugin catalogue connection and the protected-image download/install path are verified. Launch operations remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
 Local tests run the actual Worker/WebCrypto/R2 runtime with a test Nexus responder;
 the remote WordPress verifier uses real HTTPS for Free installation and simulated failure only for the offline check. The separate Nexus WordPress tests intercept HTTP; the real WordPress → Worker → Nexus licensed route passed on 19 October using a disposable activated site and the actual premium pack.
 
@@ -107,7 +107,7 @@ References: [Create R2 buckets](https://developers.cloudflare.com/r2/buckets/cre
 
 ## Before enabling premium downloads or launching
 
-Nexus is connected and the core live licence flow is verified. Complete the remaining real licence scenarios (whole-licence expiry/revocation and a premium image), configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
+Nexus is connected and the core live licence flow is verified. Complete the remaining real licence scenarios (whole-licence expiry/revocation on dedicated disposable licences), publish and link the service terms/privacy notice before customer distribution, configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
 
 
 ## Nexus dashboard connection — 19 October 2026

@@ -22,8 +22,8 @@ screen at desktop and phone widths for visual review.
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
 The studio contains **128 campaign setups using 75 designs**, drawn from a complete
-inventory of **107 designs**. Current editorial status is **24 approved setups,
-104 stale setup reviews and six approved collections**. The 24 approved setups
+inventory of **107 designs**. Current editorial status is **25 approved setups,
+103 stale setup reviews and six approved collections**. The 25 approved setups
 cover every bundled collection dependency. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-18/README.md).
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
@@ -533,7 +533,7 @@ The current studio has **128 setups / 75 designs**, with **107 designs / 153 reg
 
 The standalone Prefill uses an explicit empty site destination; WordPress retains real shop/home defaults. Product result previews include inert sample cards, and optional empty result links stay hidden. Graph preview traversal comes from the shipping loader. Remote v3 graph packs and explicitly declared, tier-checked paid targeting rules are now accepted by the strict importer. New source-format compatibility does not silently approve older content.
 
-Six curated collections have current reviews for their 24 unique setups. **104 other studio approvals remain stale** and should be re-reviewed in focused batches. The current local release is 22 setups / 19 designs / five packs / three complete collections. The premium pack is a private local fixture, not a live premium download service. Hosting, licence authorization and real delivery remain deferred.
+Updated 19 October: six curated collections have current reviews for 25 unique setups. **103 other studio approvals remain stale** and should be re-reviewed in focused batches. The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
 
 Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.
 
@@ -556,7 +556,7 @@ sharing the standalone files (system fonts remain the offline fallback).
 
 The first older-library refresh revises Project notebook and Bar with a field across four existing setups. See `out/pilot.html?batch=older-essentials`. Numeric column proportions, phone typography, fine-print/field contrast, grouped form actions and acknowledgement layouts were checked in 128 responsive cases and eight native WordPress captures. Source counts remain 107 designs / 153 setups; studio counts remain 75 designs / 128 setups. At that checkpoint there were **28 current setup approvals and 100 stale older approvals**; the subsequent shared renderer change invalidated those approvals. See the current status above. Updating examples does not rewrite installed campaigns. See [review evidence](../../docs/reviews/older-essentials-2026-10-12.md).
 
-The separate [template staging service](../template-server/README.md) now serves the validated public release through a local Worker/R2 simulation on port 9454. It supports public Free/Pro previews, Free pack/image reads and tested conditional publication/rollback. The local catalogue remains 22 setups / 19 designs / five packs / three collections; six premium setups are advertised but downloading them stays disabled. Real R2/domain setup, authenticated remote publication and licence integration remain deferred. The plugin still requires HTTPS for actual remote discovery.
+The [WConvert Template Library service](../template-server/README.md) has a local Worker/R2 simulation on port 9454 and a live HTTPS deployment at templates.wconvert.io. Updated 19 October: six packs, 23 setups, 20 designs and three collections are published. Free downloads and public previews are anonymous; the two premium packs and their protected assets use Nexus grants. The picker defaults to the hosted source while keeping checks explicit. See the [hosted acceptance report](../../docs/reviews/hosted-picker-release-2026-10-19.md) for tested scenarios and launch tasks.
 
 ### Announcement composition follow-up — 12 October 2026
 

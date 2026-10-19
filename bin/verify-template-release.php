@@ -51,8 +51,10 @@ $transport = new class($directory) implements CatalogTransport, CatalogImageTran
     public function image(string $url, int $bytes): string {
         if ($this->offline) throw new RuntimeException('Offline image test');
         $key = parse_url($url, PHP_URL_PATH);
-        if (!is_string($key) || !preg_match('~^/assets/free/[a-f0-9]{64}\.(png|jpg|webp)$~D', $key)) throw new RuntimeException('Only public image fixtures are read');
-        $file = $this->directory . '/public' . $key;
+        if (!is_string($key) || !preg_match('~^/assets/(free|premium)/[a-f0-9]{64}\.(png|jpg|webp)$~D', $key, $match)) throw new RuntimeException('Only release image fixtures are read');
+        $premium = $match[1] === 'premium';
+        if ($premium && getenv('WCONVERT_VERIFY_PREMIUM_FIXTURES') !== '1') throw new RuntimeException('Only public image fixtures are read');
+        $file = $this->directory . ($premium ? '/private' : '/public') . $key;
         if (!is_file($file) || filesize($file) !== $bytes) throw new RuntimeException('Image size mismatch');
         $this->imageDownloads++;
         return (string) file_get_contents($file);

@@ -1,0 +1,4583 @@
+{
+  "summary": "32 rendered cases across 1 designs. 32 cases need attention (detached announcement forms, horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).",
+  "failures": [
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 514,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 644,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 299,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 514,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 644,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 299,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 506,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 169,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 583,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 246,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 506,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 169,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 583,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 246,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    }
+  ],
+  "cases": [
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 514,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 644,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 299,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 514,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 288,
+      "height": 644,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": true
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 299,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 506,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 169,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 583,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 246,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 506,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 169,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 358,
+      "height": 583,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 246,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric.",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery.",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 524,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 193,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Find the right fabric. — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Ask about samples before choosing your upholstery. Take a mo",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        },
+        {
+          "text": "What matters most? (optional)",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Email address *",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Ask about fabric samples and explore the details",
+          "ratio": 9.294328855383364,
+          "minimum": 4.5
+        },
+        {
+          "text": "We use your details to respond. Samples and postage are agre",
+          "ratio": 5.485341652931347,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: interest",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Input text: you@example.com",
+          "ratio": 11.614181969401564,
+          "minimum": 4.5
+        },
+        {
+          "text": "Field placeholder: you@example.com",
+          "ratio": 4.607518093747377,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [
+        {
+          "field": "interest",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        },
+        {
+          "field": "email",
+          "inside": [
+            255,
+            255,
+            255
+          ],
+          "outside": [
+            247,
+            243,
+            235
+          ],
+          "ring": [
+            118,
+            139,
+            142
+          ],
+          "ratio": 3.2413461285853185,
+          "minimum": 3
+        }
+      ],
+      "width": 416,
+      "height": 602,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": 16,
+      "minText": 14,
+      "scroll": false
+    },
+    {
+      "id": "sample-envelope",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 1,
+      "result": null,
+      "composition": [],
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Request received — a little more to explore together",
+          "ratio": 10.494077022994782,
+          "minimum": 3
+        },
+        {
+          "text": "Your fabric sample enquiry is received. No sample order or p",
+          "ratio": 10.494077022994782,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 416,
+      "height": 270,
+      "overflow": [],
+      "minControl": 32,
+      "inputSize": null,
+      "minText": 16,
+      "scroll": false
+    }
+  ]
+}

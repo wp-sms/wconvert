@@ -27,6 +27,26 @@ final class TemplateDownloadsTest extends TestCase
     protected function tearDown(): void { unset($GLOBALS['wconvertHttpReply']); $this->stopFakingNexus(); }
     private function transport(string $origin = self::ORIGIN): TemplateDownloads { return new TemplateDownloads($this->sdk, new WpCatalogTransport(), $origin); }
     private function url(): string { return self::ORIGIN . '/downloads/' . self::DIGEST . '.json'; }
+    public function testProviderUsesHostedOriginWithoutTrustingTheEditableCatalogueSource(): void
+    {
+        $container = (new \ReflectionClass(\WConvert\Container\ServiceContainer::class))->newInstanceWithoutConstructor();
+        (new \WConvert\Pro\License\LicenseServiceProvider())->register($container);
+        $container->register(\WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider::class, fn () => $this->sdk);
+        update_option(\WConvert\Template\Catalog\TemplateCatalog::SOURCE_OPTION, 'https://untrusted.example/manifest.json');
+        $http = $container->resolve(\WConvert\Template\Catalog\CatalogTransport::class);
+        self::assertInstanceOf(TemplateDownloads::class, $http);
+        self::assertCount(0, $this->requests, 'Resolving the default transport must not fetch');
+        try {
+            $http->pack('https://untrusted.example/downloads/' . self::DIGEST . '.json', self::DIGEST);
+            self::fail('Editable catalogue source became a trusted licence recipient');
+        } catch (\RuntimeException $error) {
+            self::assertStringContainsString('not configured', $error->getMessage());
+        }
+        self::assertCount(0, $this->requests);
+        self::assertSame('file', $http->pack('https://templates.wconvert.io/downloads/' . self::DIGEST . '.json', self::DIGEST));
+        self::assertSame('https://templates.wconvert.io/grants', $this->requests[0][0]);
+        self::assertSame('local-test-key', $this->requests[0][1]['headers']['X-License-Key']);
+    }
     public function testCredentialsOnlyGoToPinnedGrantEndpointAndPassIsReusedForImages(): void
     {
         $http = $this->transport();

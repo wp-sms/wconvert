@@ -57,6 +57,25 @@ final class TemplateCatalogTest extends TestCase
         ]]], JSON_THROW_ON_ERROR);
     }
 
+    public function testHostedDefaultAndExplicitOverridesDoNotFetchUntilRefresh(): void
+    {
+        $options = new FakeOptionStore();
+        $catalog = new TemplateCatalog($options, $this->http, $this->validator, $this->installed);
+        self::assertTrue(TemplateCatalog::configured($options));
+        self::assertSame(TemplateCatalog::DEFAULT_SOURCE, $catalog->status()['source']);
+        self::assertSame([], $this->http->requests);
+        $this->http->responses[TemplateCatalog::DEFAULT_SOURCE] = '{"schema":1,"packs":[]}';
+        $catalog->refresh();
+        self::assertSame([TemplateCatalog::DEFAULT_SOURCE], $this->http->requests);
+        $options->set(TemplateCatalog::SOURCE_OPTION, 'https://custom.example/catalog.json');
+        self::assertSame('https://custom.example/catalog.json', $catalog->status()['source']);
+        self::assertNull($catalog->status()['checked_at'], 'A different source must not reuse the hosted cache');
+        $options->set(TemplateCatalog::SOURCE_OPTION, '');
+        self::assertFalse(TemplateCatalog::configured($options));
+        self::assertFalse($catalog->status()['configured']);
+        self::assertSame([TemplateCatalog::DEFAULT_SOURCE], $this->http->requests);
+    }
+
     public function testCatalogCanGrowToFiftyPacksButRejectsAnOversizedIndex(): void
     {
         $this->serve($this->pack());
