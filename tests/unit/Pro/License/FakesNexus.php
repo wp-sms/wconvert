@@ -14,8 +14,9 @@ use WConvert\Pro\License\SdkConfig;
  * of hand-writing the option row. Every licence request is recorded in
  * `$nexusCalls` as [path, body]. Nothing else is answered.
  *
- * Set `$nexusLicense` before activating to shape what the store answers, and
- * `$nexusDown` to answer every call with a transport failure.
+ * Set `$nexusLicense` before activating to shape what the store answers,
+ * `$nexusDown` to answer every call with a transport failure, and
+ * `$nexusReplies` to replay an answer the real store gave.
  */
 trait FakesNexus
 {
@@ -29,6 +30,14 @@ trait FakesNexus
 
     /** @var array{code: string, status: int}|null The store refuses licence calls with this. */
     protected ?array $nexusRefusal = null;
+
+    /**
+     * Answers the store really gave, replayed verbatim — `/api/v1/license/activate`
+     * => {status, body}. A path named here wins over every other setting.
+     *
+     * @var array<string, array{status: int, body: array<string, mixed>}>
+     */
+    protected array $nexusReplies = [];
 
     /** @var list<array<string, mixed>> The signed-in account's licences, as Nexus formats them. */
     protected array $nexusAccountLicenses = [];
@@ -60,6 +69,10 @@ trait FakesNexus
 
             $body = json_decode((string) ($args['body'] ?? ''), true);
             $this->nexusCalls[] = [$path, is_array($body) ? $body : []];
+
+            if (isset($this->nexusReplies[$path])) {
+                return self::reply($this->nexusReplies[$path]['status'], $this->nexusReplies[$path]['body']);
+            }
 
             if ($this->nexusDown) {
                 return new \WP_Error('http_request_failed', 'cURL error 28: Operation timed out');
@@ -134,6 +147,7 @@ trait FakesNexus
         $this->nexusLicense = [];
         $this->nexusDown = false;
         $this->nexusRefusal = null;
+        $this->nexusReplies = [];
         $this->nexusAccountLicenses = [];
         $this->nexusAccountExpired = false;
     }

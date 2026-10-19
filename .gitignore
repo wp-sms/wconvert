@@ -13,3 +13,5 @@
 /packages/
 /pro/vendor/
 /pro/packages/
+
+/tools/nexus-test-keys/keys.local.json
