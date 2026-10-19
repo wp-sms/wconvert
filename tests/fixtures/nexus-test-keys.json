@@ -1,0 +1,1408 @@
+{
+  "_comment": "Nexus's real answers for the 13 WCTEST- keys (my.wconvert.io, product_slug wconvert), keys removed. activate and validate were asked for wconvert-fixture.example.com; refresh is the domain-less validate the SDK's refreshStatus() sends. Each seat taken was released straight after.",
+  "recorded_at": "2026-10-19T04:45:00+00:00",
+  "keys": [
+    {
+      "key": 1,
+      "situation": "One-time order, active",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:42:34+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "single-site",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7595,
+            "manage_url": "https://my.wconvert.io/account/licenses/7595",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7595/change-tier",
+            "sites": [
+              {
+                "id": 6874,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:34+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 1.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "single-site",
+          "expires_at": "2027-10-18T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7595,
+            "manage_url": "https://my.wconvert.io/account/licenses/7595",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7595/change-tier",
+            "sites": [
+              {
+                "id": 6874,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:34+00:00",
+                "last_check_at": "2026-10-19T04:42:35+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 1.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 0,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7595,
+            "manage_url": "https://my.wconvert.io/account/licenses/7595",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7595/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 2,
+      "situation": "All seats used",
+      "activate": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "activation_limit_reached",
+          "message": "Activation limit reached (1 site). Contact support if you need more.",
+          "error_code": "activation_limit_reached"
+        }
+      },
+      "validate": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "domain_not_allowed",
+          "message": "Domain not activated",
+          "error_code": "domain_not_allowed"
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7596,
+            "manage_url": "https://my.wconvert.io/account/licenses/7596",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7596/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 3,
+      "situation": "Expiring soon",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:42:45+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "single-site",
+            "expires_at": "2026-10-23T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2026-10-23T05:29:00+00:00",
+              "days_remaining": 4,
+              "state": "expiring_soon",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7597,
+            "manage_url": "https://my.wconvert.io/account/licenses/7597",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7597/change-tier",
+            "sites": [
+              {
+                "id": 6875,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:45+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 1.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "single-site",
+          "expires_at": "2026-10-23T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2026-10-23T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2026-10-23T05:29:00+00:00",
+              "days_remaining": 4,
+              "state": "expiring_soon",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7597,
+            "manage_url": "https://my.wconvert.io/account/licenses/7597",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7597/change-tier",
+            "sites": [
+              {
+                "id": 6875,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:45+00:00",
+                "last_check_at": "2026-10-19T04:42:46+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 1.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2026-10-23T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 0,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2026-10-23T05:29:00+00:00",
+              "days_remaining": 4,
+              "state": "expiring_soon",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7597,
+            "manage_url": "https://my.wconvert.io/account/licenses/7597",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7597/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 4,
+      "situation": "Expired",
+      "activate": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "license_expired",
+          "message": "License is expired",
+          "error_code": "license_expired"
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_expired",
+          "message": "License has expired",
+          "error_code": "license_expired",
+          "license": {
+            "status": "expired",
+            "expires_at": "2026-10-08T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 0,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_expired",
+          "message": "License has expired",
+          "error_code": "license_expired",
+          "license": {
+            "status": "expired",
+            "expires_at": "2026-10-08T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 0,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      }
+    },
+    {
+      "key": 5,
+      "situation": "Subscription active",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:42:23+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "5-sites",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7599,
+            "manage_url": "https://my.wconvert.io/account/licenses/7599",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7599/change-tier",
+            "sites": [
+              {
+                "id": 6873,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:23+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 2.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "5-sites",
+          "expires_at": "2027-10-18T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7599,
+            "manage_url": "https://my.wconvert.io/account/licenses/7599",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7599/change-tier",
+            "sites": [
+              {
+                "id": 6873,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:23+00:00",
+                "last_check_at": "2026-10-19T04:42:25+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 2.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 0,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7599,
+            "manage_url": "https://my.wconvert.io/account/licenses/7599",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7599/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 6,
+      "situation": "Payment failed, in 7-day grace",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:42:55+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "5-sites",
+            "expires_at": "2026-10-17T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "past_due",
+              "renews_at": "2026-10-17T05:29:00+00:00",
+              "days_remaining": -2,
+              "state": "payment_failed",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": "2026-10-24T05:29:00+00:00"
+            },
+            "license_id": 7600,
+            "manage_url": "https://my.wconvert.io/account/licenses/7600",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7600/change-tier",
+            "sites": [
+              {
+                "id": 6876,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:55+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 2.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "5-sites",
+          "expires_at": "2026-10-17T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2026-10-17T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "past_due",
+              "renews_at": "2026-10-17T05:29:00+00:00",
+              "days_remaining": -2,
+              "state": "payment_failed",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": "2026-10-24T05:29:00+00:00"
+            },
+            "license_id": 7600,
+            "manage_url": "https://my.wconvert.io/account/licenses/7600",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7600/change-tier",
+            "sites": [
+              {
+                "id": 6876,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:42:55+00:00",
+                "last_check_at": "2026-10-19T04:42:56+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 2.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2026-10-17T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 0,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "past_due",
+              "renews_at": "2026-10-17T05:29:00+00:00",
+              "days_remaining": -2,
+              "state": "payment_failed",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": "2026-10-24T05:29:00+00:00"
+            },
+            "license_id": 7600,
+            "manage_url": "https://my.wconvert.io/account/licenses/7600",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7600/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 7,
+      "situation": "Cancelled, runs to period end",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:43:00+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "5-sites",
+            "expires_at": "2026-12-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2026-12-18T05:29:00+00:00",
+              "days_remaining": 60,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7601,
+            "manage_url": "https://my.wconvert.io/account/licenses/7601",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7601/change-tier",
+            "sites": [
+              {
+                "id": 6877,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:00+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 2.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "5-sites",
+          "expires_at": "2026-12-18T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2026-12-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2026-12-18T05:29:00+00:00",
+              "days_remaining": 60,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7601,
+            "manage_url": "https://my.wconvert.io/account/licenses/7601",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7601/change-tier",
+            "sites": [
+              {
+                "id": 6877,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:00+00:00",
+                "last_check_at": "2026-10-19T04:43:02+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 2.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2026-12-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 0,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2026-12-18T05:29:00+00:00",
+              "days_remaining": 60,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7601,
+            "manage_url": "https://my.wconvert.io/account/licenses/7601",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7601/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 8,
+      "situation": "Subscription cancelled and ended",
+      "activate": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "license_expired",
+          "message": "License is expired",
+          "error_code": "license_expired"
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_expired",
+          "message": "License has expired",
+          "error_code": "license_expired",
+          "license": {
+            "status": "expired",
+            "expires_at": "2026-10-13T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 0,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_expired",
+          "message": "License has expired",
+          "error_code": "license_expired",
+          "license": {
+            "status": "expired",
+            "expires_at": "2026-10-13T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 0,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      }
+    },
+    {
+      "key": 9,
+      "situation": "Unlimited, subscription active",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:43:11+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "unlimited",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=unlimited&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7603,
+            "manage_url": "https://my.wconvert.io/account/licenses/7603",
+            "upgrade_url": null,
+            "sites": [
+              {
+                "id": 6878,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:11+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 3.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "unlimited",
+          "expires_at": "2027-10-18T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 1,
+            "tier_slug": "unlimited",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=unlimited&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7603,
+            "manage_url": "https://my.wconvert.io/account/licenses/7603",
+            "upgrade_url": null,
+            "sites": [
+              {
+                "id": 6878,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:11+00:00",
+                "last_check_at": "2026-10-19T04:43:12+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 3.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 0,
+            "tier_slug": "unlimited",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=unlimited&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7603,
+            "manage_url": "https://my.wconvert.io/account/licenses/7603",
+            "upgrade_url": null,
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 10,
+      "situation": "Suspended by admin",
+      "activate": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "license_suspended",
+          "message": "License is suspended",
+          "error_code": "license_suspended"
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_suspended",
+          "message": "License is suspended",
+          "error_code": "license_suspended",
+          "license": {
+            "status": "suspended",
+            "expires_at": "2027-04-18T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 0,
+            "tier_slug": "unlimited",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_suspended",
+          "message": "License is suspended",
+          "error_code": "license_suspended",
+          "license": {
+            "status": "suspended",
+            "expires_at": "2027-04-18T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 0,
+            "tier_slug": "unlimited",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      }
+    },
+    {
+      "key": 11,
+      "situation": "Order refunded",
+      "activate": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "license_suspended",
+          "message": "License is suspended",
+          "error_code": "license_suspended"
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_suspended",
+          "message": "License is suspended",
+          "error_code": "license_suspended",
+          "license": {
+            "status": "suspended",
+            "expires_at": "2027-10-15T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 0,
+            "tier_slug": "unlimited",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": false,
+          "error": "license_suspended",
+          "message": "License is suspended",
+          "error_code": "license_suspended",
+          "license": {
+            "status": "suspended",
+            "expires_at": "2027-10-15T05:29:00+00:00",
+            "max_activations": 0,
+            "activation_count": 0,
+            "tier_slug": "unlimited",
+            "catalog_item": "wconvert-pro"
+          }
+        }
+      }
+    },
+    {
+      "key": 12,
+      "situation": "Customer with two licences (1 of 2)",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:43:26+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "single-site",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7606,
+            "manage_url": "https://my.wconvert.io/account/licenses/7606",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7606/change-tier",
+            "sites": [
+              {
+                "id": 6879,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:26+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 4.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "single-site",
+          "expires_at": "2027-10-18T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 1,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7606,
+            "manage_url": "https://my.wconvert.io/account/licenses/7606",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7606/change-tier",
+            "sites": [
+              {
+                "id": 6879,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:26+00:00",
+                "last_check_at": "2026-10-19T04:43:27+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 4.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 1,
+            "activation_count": 0,
+            "tier_slug": "single-site",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": null,
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=single-site&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7606,
+            "manage_url": "https://my.wconvert.io/account/licenses/7606",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7606/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    },
+    {
+      "key": 13,
+      "situation": "Customer with two licences (2 of 2)",
+      "activate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "License activated successfully",
+          "activation": {
+            "domain": "wconvert-fixture.example.com",
+            "site_url": "https://wconvert-fixture.example.com",
+            "activated_at": "2026-10-19T04:43:54+00:00",
+            "last_check_at": null
+          },
+          "license": {
+            "status": "active",
+            "tier_slug": "5-sites",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7607,
+            "manage_url": "https://my.wconvert.io/account/licenses/7607",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7607/change-tier",
+            "sites": [
+              {
+                "id": 6880,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:54+00:00",
+                "last_check_at": null
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 4.",
+              "email": "n***@gmail.com"
+            }
+          },
+          "tier_slug": "5-sites",
+          "expires_at": "2027-10-18T05:29:00+00:00",
+          "products": [
+            {
+              "slug": "wconvert-pro",
+              "name": "WConvert Pro"
+            }
+          ]
+        }
+      },
+      "validate": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 1,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7607,
+            "manage_url": "https://my.wconvert.io/account/licenses/7607",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7607/change-tier",
+            "sites": [
+              {
+                "id": 6880,
+                "domain": "wconvert-fixture.example.com",
+                "site_url": "https://wconvert-fixture.example.com",
+                "is_counted": true,
+                "activated_at": "2026-10-19T04:43:54+00:00",
+                "last_check_at": "2026-10-19T04:43:55+00:00"
+              }
+            ],
+            "site": {
+              "active": true,
+              "is_counted": true
+            },
+            "buyer": {
+              "name": "WConvert 4.",
+              "email": "n***@gmail.com"
+            }
+          }
+        }
+      },
+      "refresh": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "license": {
+            "status": "active",
+            "expires_at": "2027-10-18T05:29:00+00:00",
+            "max_activations": 5,
+            "activation_count": 0,
+            "tier_slug": "5-sites",
+            "catalog_item": "wconvert-pro",
+            "renewal": {
+              "subscription_status": "active",
+              "renews_at": "2027-10-18T05:29:00+00:00",
+              "days_remaining": 364,
+              "state": "active",
+              "renew_url": "https://my.wconvert.io/checkout/wconvert-pro?tier=5-sites&renewal=1",
+              "offer": null,
+              "is_trial": false,
+              "trial_ends_at": null,
+              "auto_renews": false,
+              "grace_ends_at": null
+            },
+            "license_id": 7607,
+            "manage_url": "https://my.wconvert.io/account/licenses/7607",
+            "upgrade_url": "https://my.wconvert.io/account/licenses/7607/change-tier",
+            "sites": null,
+            "site": null,
+            "buyer": null
+          }
+        }
+      }
+    }
+  ]
+}
