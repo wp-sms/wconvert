@@ -237,7 +237,8 @@ export function LicensePage() {
       ) : (
         <div className="wconvert-license-grid">
           <SitesCard license={data} busy={busy} onRemove={removeOne} result={sitesResult} headingRef={sitesHeading} />
-          <KeyCard license={data} busy={busy} onReplace={(key) => replace(key, 'replace')} replaceError={errorFor('replace')} onRemove={removeHere} />
+          {/* A new key starts the card over: the swap box closes, empty. */}
+          <KeyCard key={data.key.masked ?? ''} license={data} busy={busy} onReplace={(key) => replace(key, 'replace')} replaceError={errorFor('replace')} onRemove={removeHere} />
         </div>
       )}
       {dialog}
