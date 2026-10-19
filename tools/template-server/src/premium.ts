@@ -75,7 +75,9 @@ function configured(env: NexusEnv) {
   for (const value of [env.NEXUS_GRANT_URL, env.NEXUS_KEYS_URL, env.NEXUS_ISSUER, env.NEXUS_AUDIENCE]) {
     const url = new URL(value); requireThat(url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash, 503, 'service_not_configured');
   }
-  requireThat(new URL(env.NEXUS_GRANT_URL).origin === new URL(env.NEXUS_ISSUER).origin && new URL(env.NEXUS_KEYS_URL).origin === new URL(env.NEXUS_ISSUER).origin, 503, 'service_not_configured');
+  // A custom API hostname can differ from the stable signed issuer. Both API
+  // endpoints must share their explicitly configured origin; verify() still pins iss.
+  requireThat(new URL(env.NEXUS_GRANT_URL).origin === new URL(env.NEXUS_KEYS_URL).origin, 503, 'service_not_configured');
 }
 async function issue(request: Request, env: NexusEnv) {
   requireThat(request.headers.get('Content-Type')?.split(';')[0] === 'application/json', 400, 'invalid_request');

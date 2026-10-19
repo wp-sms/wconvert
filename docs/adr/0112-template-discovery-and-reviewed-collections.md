@@ -160,17 +160,18 @@ registered in the plugin or exposed over HTTP. See the
 ### Hosted extension boundaries — 1 October 2026
 
 The [implementation plan](../plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--implementation-status)
-now specifies the following future boundaries. These do not describe shipped
-media or licensing support and do not relax the current reader/pack validators.
+originally specified the following future boundaries. Updated below through
+19 October as hosted media and licensing support were verified; these boundaries
+do not relax the reader/pack validators.
 
 - Keep source, collection membership, provenance and review history in the
   repository. R2 is the recommended JSON/media store. As of 12 October, an isolated
   Worker read service exists under `tools/template-server` and runs against
-  locally simulated R2; no cloud bucket or Worker deployment exists. The
-  service exposes public catalogue/Free files. As of 18 October, locally tested
-  Nexus grant verification handles premium downloads; missing configuration still
-  refuses them. Real credentials and live staging acceptance remain deferred. The licence
-  manager remains authoritative, with no duplicate licence database.
+  locally simulated R2. Updated 19 October: both buckets and the Worker are now
+  deployed. Public catalogue/Free files and real licensed premium installation
+  have passed hosted acceptance; missing configuration still refuses premium
+  downloads. See [Nexus grants](#nexus-grants--18-october-2026) and its evidence
+  below. The licence manager remains authoritative, with no duplicate licence database.
 - Give public Free and Pro previews equal quality on the website and in the
   plugin. Generate previews from the same approved revisions, with all-screen
   and device inspection. Protect premium importable packages and original media;
@@ -239,7 +240,7 @@ Named WordPress timezones can suggest a country using the timezone database. Sug
 
 Custom occasions now select an available stage in reviewed evergreen planning collections. The inclusive occasion end remains distinct from campaign scheduling. *Amended by [ADR 0149](0149-an-occasion-groups-campaigns.md): it is converted once, as a prefill, when a campaign is created inside the occasion — `ends_at` is the day after the inclusive end, 00:00.* HTTP sites use a shared getRandomValues-based authoring ID helper. The journey tester excludes genuinely hidden consent from submitted answers; it neither invents consent nor accepts unresolved references.
 
-Raster pack installation is implemented in ADR 0082. The local publisher exports reviewed source raster bytes only with recorded redistribution rights. Public HTML previews contain inert rendered design screens, including result variants, and no importable template tree. Free and Pro use the same generation path and desktop/mobile/RTL controls. Catalog cards offer the same public preview URL for website and plugin use. Hosting and premium entitlement are still deferred; no default remote endpoint is introduced.
+Raster pack installation is implemented in ADR 0082. The local publisher exports reviewed source raster bytes only with recorded redistribution rights. Public HTML previews contain inert rendered design screens, including result variants, and no importable template tree. Free and Pro use the same generation path and desktop/mobile/RTL controls. Catalog cards offer the same public preview URL for website and plugin use. Updated 19 October: hosting and live premium entitlement are verified as described in [Nexus grants](#nexus-grants--18-october-2026); no default remote endpoint is introduced.
 
 
 ## 2026-10-01 — stable approvals and first illustrated release
@@ -271,20 +272,25 @@ The studio now prepares 128 setups using 75 designs; the full source inventory c
 
 Six curated collections depend on 24 currently approved setup snapshots. The other 104 studio approvals remain stale, visible as such; refreshing compatibility does not rubber-stamp them. Changed upstream note references are renewed only after review. Runtime collection seeds are regenerated from exact approved revisions.
 
-The local release contains 22 setups / 19 designs / five packs (four Free, one premium) / three complete collections, plus the existing reviewed raster artwork. Changed pack bytes receive new versions. Premium source JSON stays private and its public preview is inert, using the same preview path as Free. Native installation/offline/update checks are rehearsals; no hosted service, default endpoint, licence connection, CI or external delivery is enabled. See the October commerce review and release evidence in `docs/reviews`.
+The local release contains 22 setups / 19 designs / five packs (four Free, one premium) / three complete collections, plus the existing reviewed raster artwork. Changed pack bytes receive new versions. Premium source JSON stays private and its public preview is inert, using the same preview path as Free. The original native installation/offline/update checks were rehearsals. Updated 19 October: the hosted service and Nexus connection are now live and real WordPress installation/offline checks passed; the plugin default endpoint, CI and external campaign delivery remain disabled. See [Nexus grants](#nexus-grants--18-october-2026) below. See the October commerce review and release evidence in `docs/reviews`.
 
 ### Local staging preparation — 12 October 2026
 
-As of 18 October the Worker has separate public/private bindings and a Nexus-signed grant adapter, tested locally. No permissive licence adapter is shipped. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. The authenticated R2 publisher and live Worker were verified on 18 October: Free/public HTTPS delivery and disposable WordPress installation/offline acceptance passed. Rate limits/backup operations, plugin default endpoint enablement and live premium entitlement acceptance remain outstanding. See [staging operations](../../tools/template-server/README.md).
+As of 18 October the Worker has separate public/private bindings and a Nexus-signed grant adapter, tested locally. No permissive licence adapter is shipped. The local seed CLI reads validated public release output, verifies dependencies, reuses immutable objects and conditionally promotes the manifest after read-back. Workerd/R2 runtime checks cover failure preservation, competing publishers and rollback. This is a loopback HTTP mirror of HTTPS metadata, not a configured plugin endpoint. The authenticated R2 publisher and live Worker were verified on 18 October: Free/public HTTPS delivery and disposable WordPress installation/offline acceptance passed. Updated 19 October: real licensed premium installation, deactivated-site refusal and pass expiry also passed; see [Nexus grants](#nexus-grants--18-october-2026). Rate limits/backup operations, the remaining licence/image scenarios and plugin default endpoint enablement remain outstanding. See [service operations](../../tools/template-server/README.md).
 
 ### Nexus grants — 18 October 2026
 
 Nexus v2.7.0 is the entitlement authority. The local Worker verifies its signed
 short-lived grants and stores expected subject/resource context in private R2;
 all private reads reverify the signature, exact file membership and hard expiry.
+The configured grant and public-key endpoints share an HTTPS API origin, which
+may differ from the exact signed issuer. The 19 October connection uses
+`my.wconvert.io` for both endpoints and pins `https://nexus.veronalabs.com` as
+issuer independently; redirects remain forbidden. The signed environment is
+`production`, regardless of the plugin’s prelaunch status.
 One-day lifecycle cleanup removes expired contexts. No customer key is stored.
 The plugin's SDK-backed adapter lives under `pro/src/License/` and is invoked only
 by explicit premium pack downloads. It pins the trusted HTTPS API origin apart
 from the editable catalogue setting. The build still gates installed features.
 See [the protocol and deployment checklist](../../tools/template-server/README.md).
-R2 publication and the live HTTPS Worker/Free WordPress path are now verified. Real Nexus credentials/licensed acceptance, launch operations and default plugin endpoint enablement remain outstanding. See [hosted verification](../reviews/template-cloud-publishing-2026-10-18.md).
+R2 publication and the live HTTPS Worker/Free WordPress path are now verified. On 19 October the operator deployed the Nexus connection; live invalid-licence issuance and anonymous premium refusal checks passed. Real licensed WordPress installation with WooCommerce, deactivated-site refusal and natural pass expiry subsequently passed on 19 October. Launch operations and default plugin endpoint enablement remain outstanding. See [connection evidence](../reviews/nexus-worker-connection-2026-10-19.md). See [hosted verification](../reviews/template-cloud-publishing-2026-10-18.md).

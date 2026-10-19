@@ -19,11 +19,11 @@
     }
   ],
   "vars": {
-    "NEXUS_GRANT_URL": "",
-    "NEXUS_KEYS_URL": "",
-    "NEXUS_ISSUER": "",
-    "NEXUS_AUDIENCE": "",
-    "NEXUS_ENVIRONMENT": ""
+    "NEXUS_GRANT_URL": "https://my.wconvert.io/api/v1/wconvert/entitlements/grant",
+    "NEXUS_KEYS_URL": "https://my.wconvert.io/api/v1/wconvert/entitlements/keys",
+    "NEXUS_ISSUER": "https://nexus.veronalabs.com",
+    "NEXUS_AUDIENCE": "https://templates.wconvert.io",
+    "NEXUS_ENVIRONMENT": "production"
   },
   "account_id": "c1a1ad8e669eb8c31ce039ea78aa6ab9",
   "routes": [

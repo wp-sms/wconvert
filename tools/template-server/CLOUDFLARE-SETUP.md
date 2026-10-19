@@ -4,7 +4,7 @@ We will start with **one hosted environment**, using its intended final name.
 WConvert is prelaunch, so this environment can be tested before customers depend
 on it. Local development remains isolated in Wrangler's on-disk emulator. A
 separate staging environment can be added later when changes need testing without
-affecting a live customer service. On 18 October 2026 the two existing R2 buckets were successfully populated and verified through the scoped publisher credentials. The operator deployed the Worker and domain; live HTTPS and disposable WordPress acceptance passed. Nexus remains pending.
+affecting a live customer service. On 18 October 2026 the two existing R2 buckets were successfully populated and verified through the scoped publisher credentials. The operator deployed the Worker and domain; live HTTPS and disposable WordPress acceptance passed. Nexus was connected by the operator on 19 October; live refusal checks and real licensed WordPress acceptance pass.
 
 ## Names to use
 
@@ -62,13 +62,13 @@ The default Wrangler configuration is the single hosted environment. **Do not us
 `--env staging`**; no such environment is configured. Local `wrangler dev`, tests
 and dry-run builds use emulated storage and do not upload files.
 
-For later deployments and the deferred Nexus connection:
+For deployments and the Nexus connection:
 
 - Authenticate Wrangler locally to the chosen account.
-- Fill `NEXUS_GRANT_URL`, `NEXUS_KEYS_URL`, `NEXUS_ISSUER`, `NEXUS_AUDIENCE`, and
-  `NEXUS_ENVIRONMENT` in `wrangler.jsonc`. The Worker custom domain and account configuration are already present. Keep `workers_dev` and preview URLs disabled.
+- The operator-provided Nexus endpoints, issuer, audience and the handoff’s
+  `production` environment are now set in `wrangler.jsonc`. The Worker custom domain and account configuration are already present. Keep `workers_dev` and preview URLs disabled.
 - Run `wrangler secret put NEXUS_SERVICE_KEY` from `tools/template-server`.
-  These are future operator instructions, not commands to run during local setup.
+  Keep the value out of source files and command arguments; the dashboard Secret field is an alternative.
 - Require HTTPS and configure request limits for `/grants` and private file
   requests before exposing the service. Nexus separately limits issuance.
   Redact Authorization/X-License-Key, request bodies and passes in infrastructure
@@ -93,11 +93,11 @@ prelaunch environment. Once customers depend on it, use a separate test
 configuration, storage and Nexus connection for risky changes. Never let local
 fixtures or staging credentials target live buckets.
 
-## What is still local
+## Verified service and remaining checks
 
-The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. Real Nexus connection, default plugin catalogue URL and live licensed acceptance remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
+The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Real licensed WordPress acceptance also passed with WooCommerce. Default plugin catalogue URL and launch operations remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
 Local tests run the actual Worker/WebCrypto/R2 runtime with a test Nexus responder;
-the remote WordPress verifier uses real HTTPS for Free installation and simulated failure only for the offline check. The separate Nexus WordPress tests intercept HTTP; the real WordPress → Worker → Nexus licensed route has not been exercised.
+the remote WordPress verifier uses real HTTPS for Free installation and simulated failure only for the offline check. The separate Nexus WordPress tests intercept HTTP; the real WordPress → Worker → Nexus licensed route passed on 19 October using a disposable activated site and the actual premium pack.
 
 References: [Create R2 buckets](https://developers.cloudflare.com/r2/buckets/create-buckets/),
 [Worker bindings](https://developers.cloudflare.com/r2/api/workers/workers-api-usage/),
@@ -107,4 +107,42 @@ References: [Create R2 buckets](https://developers.cloudflare.com/r2/buckets/cre
 
 ## Before enabling premium downloads or launching
 
-Connect Nexus and test the real licence scenarios, configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
+Nexus is connected and the core live licence flow is verified. Complete the remaining real licence scenarios (whole-licence expiry/revocation and a premium image), configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
+
+
+## Nexus dashboard connection — 19 October 2026
+
+The custom API hostname differs from the signed issuer. Deploy the updated Worker
+code as well as setting its variables; the previous build rejected that pairing.
+The operator confirmed dashboard deployment on 19 October. Live Free installation, premium refusals, real licensed installation with
+WooCommerce and natural pass expiry checks pass. The temporary test activation
+was removed afterward. See the [connection evidence](../../docs/reviews/nexus-worker-connection-2026-10-19.md).
+
+1. Open **Workers & Pages → wconvert-template-api → Edit code**.
+   Build the current checkout with `npm run build` from `tools/template-server`.
+   Replace the entry module with `dist/index.js` (omit its final source-map comment),
+   then **Deploy**. The previously prepared `worker.js` is a copy of that bundle.
+   Keep compatibility date `2026-10-01` and both existing R2 bindings.
+2. Under **Settings → Variables and Secrets**, add the five Text values below.
+3. Add `NEXUS_SERVICE_KEY` as type **Secret**, pasting the server key directly
+   from Nexus. Save/deploy the settings. No key belongs in `worker.js`.
+
+| Text variable | Value |
+| --- | --- |
+| `NEXUS_GRANT_URL` | `https://my.wconvert.io/api/v1/wconvert/entitlements/grant` |
+| `NEXUS_KEYS_URL` | `https://my.wconvert.io/api/v1/wconvert/entitlements/keys` |
+| `NEXUS_ISSUER` | `https://nexus.veronalabs.com` |
+| `NEXUS_AUDIENCE` | `https://templates.wconvert.io` |
+| `NEXUS_ENVIRONMENT` | `production` |
+
+`templates:download` is already enforced in the Worker, together with store
+`wconvert` and item `wconvert-pro`. There is no collection variable to add.
+Grant and public-key URLs must share an API origin; the signed issuer is checked
+separately and must match exactly. The service key must be authorized for this
+collection in Nexus.
+
+After deployment, run `npm run verify:remote -- --expected RELEASE_ID --premium configured`
+from this directory. This checks public files and anonymous premium refusals; it
+does **not** prove that Nexus accepts the service key or that a licensed download
+works. Complete the real licence tests described above before claiming that.
+Without the secret, use the default verification mode (expected premium 503).

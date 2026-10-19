@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { hash } from './storage.mjs';
 
 /** Read-only acceptance against local emulation or the configured HTTPS service. */
-export async function verifyService(base, { expected, metadataOrigin, fetcher = fetch } = {}) {
+export async function verifyService(base, { expected, metadataOrigin, premiumMode = 'unconfigured', fetcher = fetch } = {}) {
+  assert(['unconfigured', 'configured'].includes(premiumMode), 'Unknown premium verification mode');
   base = new URL(base);
   const local = ['localhost','127.0.0.1'].includes(base.hostname);
   assert(local || base.protocol === 'https:', 'HTTPS required');
@@ -48,7 +49,7 @@ export async function verifyService(base, { expected, metadataOrigin, fetcher = 
       const path=mirror(pack.url);assert.match(pack.sha256,/^[a-f0-9]{64}$/);
       if(pack.access==='premium'){
         assert.equal(path,`/downloads/${pack.sha256}.json`);const result=await request(path,16384);
-        assert.equal(result.response.status,503,'Premium must remain closed until Nexus is connected');assert.equal(result.response.headers.get('cache-control'),'private, no-store');report.premiumRefusals++;continue;
+        assert.equal(result.response.status,premiumMode === 'configured' ? 401 : 503,'Anonymous premium downloads must be refused in the expected configuration');assert.equal(result.response.headers.get('cache-control'),'private, no-store');report.premiumRefusals++;continue;
       }
       assert.equal(pack.access,'free');assert.equal(path,`/packs/${pack.sha256}.json`);
       const content=JSON.parse((await immutable(path,pack.sha256,262144)).bytes);assert(content.templates.every(t=>t.tier==='free'));
