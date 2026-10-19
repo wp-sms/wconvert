@@ -14,8 +14,9 @@ use WConvert\Pro\License\SdkConfig;
  * of hand-writing the option row. Every licence request is recorded in
  * `$nexusCalls` as [path, body]. Nothing else is answered.
  *
- * Set `$nexusLicense` before activating to shape what the store answers, and
- * `$nexusDown` to answer every call with a transport failure.
+ * Set `$nexusLicense` before activating to shape what the store answers,
+ * `$nexusDown` to answer every call with a transport failure, and
+ * `$nexusReplies` to replay an answer the real store gave.
  */
 trait FakesNexus
 {

@@ -22,11 +22,16 @@ use WConvert\Pro\License\LicenseState;
  * "Today" is when the answers were recorded.
  */
 #[CoversClass(LicenseState::class)]
+#[CoversClass(LicenseFacts::class)]
 final class RecordedNexusTest extends TestCase
 {
     use FakesNexus;
 
     private const NOW = 1792385100; // 2026-10-19 04:45:00 UTC
+
+    private const ACTIVATE = '/api/v1/license/activate';
+
+    private const VALIDATE = '/api/v1/license/validate';
 
     protected function setUp(): void
     {
@@ -57,7 +62,7 @@ final class RecordedNexusTest extends TestCase
         $this->assertSame('activation_limit_reached', $this->refusedActivation(2));
     }
 
-    /** Key 3: four days left on a licence renewed by hand is amber, with the store's renewal link. */
+    /** Key 3: four days and some hours left on a licence renewed by hand is amber, with the store's renewal link. */
     public function testALicenceEndingThisWeekIsExpiring(): void
     {
         $payload = $this->activate(3);
@@ -84,8 +89,7 @@ final class RecordedNexusTest extends TestCase
             $this->assertSame('expired', $payload['state'], "key $key");
             $this->assertSame('license_expired', $payload['error_code']);
             $this->assertFalse($this->updatesAllowed());
-            $this->stopFakingNexus();
-            $this->fakeNexus();
+            $this->startOver();
         }
     }
 
@@ -155,8 +159,7 @@ final class RecordedNexusTest extends TestCase
             $this->assertSame('disabled', $payload['state'], "key $key");
             $this->assertSame('license_suspended', $payload['error_code']);
             $this->assertFalse($this->updatesAllowed());
-            $this->stopFakingNexus();
-            $this->fakeNexus();
+            $this->startOver();
         }
     }
 
@@ -164,8 +167,7 @@ final class RecordedNexusTest extends TestCase
     public function testOneCustomersTwoLicencesAreEachTheirOwnPlan(): void
     {
         $first = $this->activate(12);
-        $this->stopFakingNexus();
-        $this->fakeNexus();
+        $this->startOver();
         $second = $this->activate(13);
 
         $this->assertSame([1, 5], [$first['plan']['max'], $second['plan']['max']]);
@@ -175,7 +177,7 @@ final class RecordedNexusTest extends TestCase
     /** The store's error code for a key it would not activate; nothing is stored. */
     private function refusedActivation(int $key): string
     {
-        $this->replay($key, 'activate', 'validate');
+        $this->replay($key);
 
         try {
             $this->activateLicenseHere();
@@ -197,7 +199,7 @@ final class RecordedNexusTest extends TestCase
     private function refreshedTo(int $key): array
     {
         $this->activate(1);
-        $this->nexusReplies['/api/v1/license/validate'] = self::recorded($key)['refresh'];
+        $this->nexusReplies[self::VALIDATE] = self::recorded($key)['refresh'];
 
         $this->assertTrue($this->freshSdk()->licenseManager()->refreshStatus(), 'the store answered');
 
@@ -206,7 +208,7 @@ final class RecordedNexusTest extends TestCase
 
     private function updatesAllowed(): bool
     {
-        return in_array($this->state()['state'], LicenseState::NO_UPDATES, true) === false;
+        return LicenseState::updatesAllowed($this->facts());
     }
 
     /**
@@ -216,40 +218,52 @@ final class RecordedNexusTest extends TestCase
      */
     private function activate(int $key): array
     {
-        $this->replay($key, 'activate', 'validate');
+        $this->replay($key);
         $this->activateLicenseHere();
 
         return $this->state();
     }
 
-    private function replay(int $key, string $activate, string $validate): void
+    private function replay(int $key): void
     {
         $recorded = self::recorded($key);
         $this->nexusReplies = [
-            '/api/v1/license/activate' => $recorded[$activate],
-            '/api/v1/license/validate' => $recorded[$validate],
+            self::ACTIVATE => $recorded['activate'],
+            self::VALIDATE => $recorded['validate'],
         ];
+    }
+
+    /** A site with no licence and a store that has said nothing yet. */
+    private function startOver(): void
+    {
+        $this->stopFakingNexus();
+        $this->fakeNexus();
     }
 
     /** @return array<string, mixed> */
     private function state(): array
     {
+        return LicenseState::payload($this->facts());
+    }
+
+    private function facts(): LicenseFacts
+    {
         $sdk = $this->freshSdk();
 
-        return LicenseState::payload(new LicenseFacts(
+        return new LicenseFacts(
             license: $sdk->store()->get('license'),
             key: $sdk->licenseManager()->getLicenseKey(),
             now: self::NOW,
             installed: '1.0.0',
             here: Request::normaliseDomain(Request::currentDomain()),
             domainChange: $sdk->licenseManager()->domainChange(),
-        ));
+        );
     }
 
     /** @return array<string, array{status: int, body: array<string, mixed>}> */
     private static function recorded(int $key): array
     {
-        $fixture = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/fixtures/nexus-test-keys.json'), true);
+        $fixture = json_decode((string) file_get_contents(WCONVERT_DIR . 'tests/fixtures/nexus-test-keys.json'), true);
 
         return $fixture['keys'][$key - 1];
     }

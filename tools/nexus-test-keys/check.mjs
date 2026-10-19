@@ -9,14 +9,19 @@
 // tools/nexus-test-keys/keys.local.json (git ignores it): ["WCTEST-…", …].
 import { readFileSync } from 'node:fs';
 
-const here = new URL('.', import.meta.url);
-const fixture = JSON.parse(readFileSync(new URL('../../tests/fixtures/nexus-test-keys.json', here), 'utf8'));
+const dir = new URL('.', import.meta.url);
+const fixture = JSON.parse(readFileSync(new URL('../../tests/fixtures/nexus-test-keys.json', dir), 'utf8'));
 let keys;
 
 try {
-  keys = JSON.parse(readFileSync(new URL('keys.local.json', here), 'utf8'));
+  keys = JSON.parse(readFileSync(new URL('keys.local.json', dir), 'utf8'));
 } catch {
   console.error('No tools/nexus-test-keys/keys.local.json: a JSON list of the thirteen keys, in order.');
+  process.exit(2);
+}
+
+if (!Array.isArray(keys) || keys.length !== fixture.keys.length) {
+  console.error(`keys.local.json holds ${Array.isArray(keys) ? keys.length : 'no list of'} keys; the fixture records ${fixture.keys.length}.`);
   process.exit(2);
 }
 
@@ -38,6 +43,7 @@ for (const [index, recorded] of fixture.keys.entries()) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ license_key: keys[index], product_slug: 'wconvert', domain: '' }),
+    signal: AbortSignal.timeout(15_000),
   });
 
   if (response.status === 429) {
@@ -45,7 +51,14 @@ for (const [index, recorded] of fixture.keys.entries()) {
     process.exit(2);
   }
 
-  const now = summary(await response.json());
+  const body = await response.json().catch(() => null);
+
+  if (body === null) {
+    console.error(`The store answered key ${recorded.key} with HTTP ${response.status} and no JSON.`);
+    process.exit(2);
+  }
+
+  const now = summary(body);
   const then = summary(recorded.refresh.body);
   const same = JSON.stringify(now) === JSON.stringify(then) && response.status === recorded.refresh.status;
 
