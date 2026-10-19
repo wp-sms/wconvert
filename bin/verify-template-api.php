@@ -8,17 +8,16 @@ use WConvert\Template\Catalog\TemplateCatalog;
 use WConvert\Template\Catalog\VerifiedAssets;
 use WConvert\Template\Catalog\WpCatalogTransport;
 
-if (!defined('WCONVERT_VERSION') || !defined('WCONVERT_TEMPLATE_API_ORIGIN')) throw new RuntimeException('Boot the disposable WordPress verifier first');
+if (!defined('WCONVERT_VERSION')) throw new RuntimeException('Boot the disposable WordPress verifier first');
 $expected = getenv('WCONVERT_EXPECTED_RELEASE');
 if (!is_string($expected) || !preg_match('/^[a-f0-9]{64}$/D', $expected)) throw new RuntimeException('Expected release required');
-$source = WCONVERT_TEMPLATE_API_ORIGIN . '/manifest.json';
+$source = TemplateCatalog::DEFAULT_SOURCE;
 $transport = new WpCatalogTransport();
 $manifest = json_decode($transport->get($source), true, 24, JSON_THROW_ON_ERROR);
 if (($manifest['release'] ?? '') !== $expected) throw new RuntimeException('Unexpected hosted release');
-$options = new class($source) implements \WConvert\Storage\OptionStore {
+$options = new class implements \WConvert\Storage\OptionStore {
     /** @var array<string, mixed> */
-    private array $values;
-    public function __construct(string $source) { $this->values = [TemplateCatalog::SOURCE_OPTION => $source]; }
+    private array $values = [];
     public function get(string $key, $default = null) { return $this->values[$key] ?? $default; }
     public function set(string $key, $value): void { $this->values[$key] = $value; }
 };
@@ -29,7 +28,7 @@ $installed = new InstalledPacks($temp . '/packs', $validator, $assets);
 $catalog = new TemplateCatalog($options, $transport, $validator, $installed);
 $traffic = new class { public bool $offline = false; public int $requests = 0; };
 $guard = static function ($result, $args, $url) use ($traffic) {
-    if (!str_starts_with($url, WCONVERT_TEMPLATE_API_ORIGIN . '/')) return new WP_Error('unexpected_host', 'Verification only permits the configured API');
+    if (!str_starts_with($url, TemplateCatalog::DEFAULT_ORIGIN . '/')) return new WP_Error('unexpected_host', 'Verification only permits the configured API');
     foreach ($args['headers'] ?? [] as $name => $value) {
         if (in_array(strtolower((string) $name), ['authorization', 'x-license-key', 'cookie'], true)) throw new RuntimeException('Public request included credentials');
     }
@@ -39,6 +38,7 @@ $guard = static function ($result, $args, $url) use ($traffic) {
 };
 add_filter('pre_http_request', $guard, 10, 3);
 try {
+    if (!$catalog->status()['configured'] || $catalog->status()['source'] !== $source || $traffic->requests !== 0) throw new RuntimeException('Default configuration fetched early or requires manual setup');
     $index = $catalog->refresh(); $previews = []; $refused = 0;
     foreach ($index['packs'] as $pack) {
         if (($pack['access'] ?? 'free') === 'premium') {

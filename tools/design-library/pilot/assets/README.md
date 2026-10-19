@@ -17,3 +17,7 @@ The illustration depicts a terracotta pot, cream vase and green cup. It illustra
 ## Workspace diagrams · 2 October 2026
 
 `workspace-before.svg` and `workspace-after.svg` are original WConvert top-down geometric drawings, under the repository GPL-2.0-or-later licence. They show two arrangements of one fictional room, with the same perimeter, door and window. They contain only shapes, no external resources, scripts, fonts, trademarks or customer photographs. Project pair embeds those exact SVG bytes without the trailing newline. The visible copy and image alt text label the example as fictional; it is not proof of completed work, safety, accessibility or performance. Captions remain useful with images hidden. No raster derivative or hosted asset release is included.
+
+## Fabric swatches · 19 October 2026
+
+`fabric-swatches.svg` is extracted unchanged from Sample envelope. The original WConvert geometric illustration is GPL-2.0-or-later, with no third-party resources or fonts. `fabric-swatches.png` is its reviewed, one-time 1440 × 264 resvg-js export. The publishing plan binds source URI, derivative and provenance report hashes; it marks the downloadable asset premium. The public inert preview embeds the artwork, while editable packs and original asset downloads require a valid grant. Installed copies live locally and remain usable offline. The swatches are illustrative; merchants should replace them if their fabrics differ.

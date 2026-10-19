@@ -1,0 +1,10 @@
+PASS native preview/install: fabric-sample-enquiries
+PASS native preview/install: homeware-care
+PASS native preview/install: publishers-starts
+PASS native preview/install: services-starts
+PASS native preview/install: shopping-help
+PASS native preview/install: stores-starts
+PASS offline library: 20 designs, 23 setups, 3 collections
+PASS illustrated update/offline: homeware-care; unchanged artwork reused, original snapshot retained
+PASS illustrated update/offline: fabric-sample-enquiries; unchanged artwork reused, original snapshot retained
+WordPress 7.1.3 / PHP 8.1.34; no site settings or campaigns changed.

@@ -55,9 +55,7 @@ paid installs keep their wording. The admin uses `unlessFree()`; PHP asks
 admin entry. Free falls back to the plug icon. 0029(b) allowed them; they were
 never rendered on free, so carrying them was cost without use.
 
-**Template packs hide until a catalog is configured.** No catalog is configured
-by default, so the picker's Template packs tab and the goal screen's Browse
-template packs button appear only when `TemplateCatalog::configured()` is true.
+**Template packs hide until a catalog is configured.** Amended 19 October by [ADR 0112](0112-template-discovery-and-reviewed-collections.md): the hosted library is now the default source. An explicit empty override still hides remote discovery; the picker and goal screen use the same `TemplateCatalog::configured()` seam. Opening the surface reads local state, and checking for packs remains explicit.
 A premium pack's "Pro" badge never renders on free.
 
 **Two zeros free cannot earn are not drawn.** Analytics hides the cart-return

@@ -1,0 +1,2 @@
+PASS real licensed WordPress install: 1 premium pack, 1 designs, 1 setups; one protected image verified and stored locally; no WooCommerce or endpoint override; SDK identity, credential placement and offline installed preview passed.
+WordPress 7.1.3; PHP 8.1.34

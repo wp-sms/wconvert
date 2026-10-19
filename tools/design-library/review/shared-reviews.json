@@ -45523,6 +45523,124 @@
         }
       },
       "record_id": "826b8fa9c163f8f11560c732d123bc634cb17b8426d789acd971d5a911d685d4"
+    },
+    {
+      "id": "upholstery-samples",
+      "revision": "086a9b725b596f9874dcdbaee310cee822b9e91bb767a04570775de883c677c9",
+      "base_id": "9aaab2a2d6660d4e9cf6eb3fe1a6873af504d95a2b0b12bd72593b275f42aa9f",
+      "decision": "approved",
+      "reviewer": "Codex — fabric sample pack review",
+      "note": "Reviewed current input and acknowledgement, narrow/RTL/long-copy output, validation and failure/retry, and two real native local captures. Source unchanged; hosted derivative reviewed separately.",
+      "at": "2026-10-19T11:17:32.040Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/fabric-sample-review-2026-10-19.md",
+              "sha256": "d0a8b874876c5c4c5e62a411d8a122790808ab2848665e949a42556e9c68184b"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/desktop.png",
+              "sha256": "d02c1b632eba5f43d44de323a612fdba887d858d5fa47eb354c80b1ebc3f1ed7"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/phone-320.png",
+              "sha256": "fb4bbf66e1f418466000cf1848171098cf99033559f728516ee96be5e8a08276"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/long-copy-320.png",
+              "sha256": "fcdf9d1ca06e39d5360f1a06e3c7b3ac97f4148534ec50e472a98e683430bd10"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/measurements.json",
+              "sha256": "d579c8397790d5ca550b037390456b5b1fbf162580fd60b5611ecb77a11f2b20"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/fabric-sample-review-2026-10-19.md",
+              "sha256": "d0a8b874876c5c4c5e62a411d8a122790808ab2848665e949a42556e9c68184b"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/fabric-sample-review-2026-10-19.md",
+              "sha256": "d0a8b874876c5c4c5e62a411d8a122790808ab2848665e949a42556e9c68184b"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/native-results.json",
+              "sha256": "bc79878c20a4522df76fadf5329d7f0991d35c8792fdf4df020308539c745ea2"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/wordpress-320.png",
+              "sha256": "5defbe0c05cb7fb36738e1ffc1e9d92cdee7ce5ebffdb6cbb5764ef5150a6a5e"
+            },
+            {
+              "path": "docs/reviews/fabric-samples-2026-10-19/wordpress-success-320.png",
+              "sha256": "7ae89bed2572bace7cd4a4d402d626608ac679d6e21d264c2cc4bc2ff9aa7c3c"
+            }
+          ]
+        }
+      },
+      "record_id": "16a0fd82049df1eddff0d801a6c658fe7352e166a6ee69455ce6284112eddb22"
+    },
+    {
+      "id": "collection-help-shoppers-choose",
+      "revision": "37620cf31983457d582940a33800dba86489044b07caa8c287190388b2d4de21",
+      "base_id": "826b8fa9c163f8f11560c732d123bc634cb17b8426d789acd971d5a911d685d4",
+      "decision": "approved",
+      "reviewer": "Codex — illustrated collection review",
+      "note": "Seven useful alternatives; six unchanged current approvals plus the freshly reviewed sample enquiry. Checked membership, hashes, stage, audience and honest setup requirements.",
+      "at": "2026-10-19T11:18:21.721Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/fabric-collection-review-2026-10-19.md",
+              "sha256": "d78e44bc9209dd64d3c2e292f047c4b09f04176a429bdd1d6c080e86adf3d2f6"
+            },
+            {
+              "path": "docs/reviews/fabric-sample-review-2026-10-19.md",
+              "sha256": "d0a8b874876c5c4c5e62a411d8a122790808ab2848665e949a42556e9c68184b"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/fabric-collection-review-2026-10-19.md",
+              "sha256": "d78e44bc9209dd64d3c2e292f047c4b09f04176a429bdd1d6c080e86adf3d2f6"
+            },
+            {
+              "path": "docs/reviews/fabric-sample-review-2026-10-19.md",
+              "sha256": "d0a8b874876c5c4c5e62a411d8a122790808ab2848665e949a42556e9c68184b"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/fabric-collection-review-2026-10-19.md",
+              "sha256": "d78e44bc9209dd64d3c2e292f047c4b09f04176a429bdd1d6c080e86adf3d2f6"
+            },
+            {
+              "path": "docs/reviews/fabric-sample-review-2026-10-19.md",
+              "sha256": "d0a8b874876c5c4c5e62a411d8a122790808ab2848665e949a42556e9c68184b"
+            }
+          ]
+        }
+      },
+      "record_id": "0bd3cd9c969bcd17ce28b58b9703ab2ff847647666743d344a984830c1b32b3f"
     }
   ]
 }

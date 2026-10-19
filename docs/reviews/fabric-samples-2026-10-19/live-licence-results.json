@@ -1,0 +1,66 @@
+[
+  {
+    "name": "before activation",
+    "status": 403,
+    "error": "domain_not_allowed"
+  },
+  {
+    "name": "test site activation",
+    "status": 200,
+    "success": true,
+    "error": null
+  },
+  {
+    "name": "signed premium pass",
+    "status": 200,
+    "error": null,
+    "expiresIn": 300
+  },
+  {
+    "name": "premium pack download",
+    "status": 200,
+    "hashVerified": true,
+    "templates": 1,
+    "setups": 1,
+    "assets": 1
+  },
+  {
+    "name": "pack image download",
+    "access": "premium",
+    "hashVerified": true
+  },
+  {
+    "name": "protected image boundaries",
+    "anonymousGet": 401,
+    "anonymousHead": 401,
+    "authorizedHead": 200,
+    "publicAlias": 404,
+    "unrelatedImage": 403
+  },
+  {
+    "name": "authorized HEAD",
+    "status": 200
+  },
+  {
+    "name": "different resource rejected",
+    "status": 403
+  },
+  {
+    "name": "unactivated site",
+    "status": 403,
+    "error": "domain_not_allowed"
+  },
+  {
+    "name": "expiry test waiting",
+    "seconds": 298
+  },
+  {
+    "name": "expired live pass refused",
+    "status": 401,
+    "error": "invalid_grant"
+  },
+  {
+    "name": "expired image pass refused",
+    "status": 401
+  }
+]

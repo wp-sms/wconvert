@@ -12,6 +12,9 @@ final class TemplateCatalog
     // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
     public const CACHE_OPTION = 'wconvert_template_catalog_cache';
     public const SOURCE_OPTION = 'wconvert_template_catalog_url';
+    /** Trusted download origin is independent of an administrator's catalogue override. */
+    public const DEFAULT_ORIGIN = 'https://templates.wconvert.io';
+    public const DEFAULT_SOURCE = self::DEFAULT_ORIGIN . '/manifest.json';
     /** Fifty focused packs of up to twelve setups can cover a 500-campaign library. */
     public const MAX_PACKS = 50;
 
@@ -184,9 +187,8 @@ final class TemplateCatalog
     }
 
     /**
-     * Whether this site has a catalog to offer at all. No catalog is configured
-     * by default, so the admin hides Template packs rather than open a screen
-     * that can only say so.
+     * The hosted library is available by default. An explicit empty source disables
+     * remote discovery; checking availability never makes a network request.
      */
     public static function configured(OptionStore $options): bool
     {
@@ -200,7 +202,7 @@ final class TemplateCatalog
 
     private static function sourceIn(OptionStore $options): string
     {
-        $value = $options->get(self::SOURCE_OPTION, '');
+        $value = $options->get(self::SOURCE_OPTION, self::DEFAULT_SOURCE);
         return is_string($value) ? $value : '';
     }
     // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped

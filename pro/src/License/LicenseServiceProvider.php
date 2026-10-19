@@ -29,7 +29,7 @@ final class LicenseServiceProvider implements ServiceProvider
     {
         $container->register(\WConvert\Template\Catalog\CatalogTransport::class, static fn (ServiceContainer $c) => new TemplateDownloads(
             $c->resolve(PremiumServiceProvider::class), new \WConvert\Template\Catalog\WpCatalogTransport(),
-            defined('WCONVERT_TEMPLATE_API_ORIGIN') ? (string) constant('WCONVERT_TEMPLATE_API_ORIGIN') : ''
+            defined('WCONVERT_TEMPLATE_API_ORIGIN') ? (string) constant('WCONVERT_TEMPLATE_API_ORIGIN') : \WConvert\Template\Catalog\TemplateCatalog::DEFAULT_ORIGIN
         ));
         $container->register(
             LicenseController::class,

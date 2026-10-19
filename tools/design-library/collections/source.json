@@ -220,7 +220,7 @@
     {
       "id": "help-shoppers-choose",
       "name": "Help shoppers choose",
-      "description": "Useful accessories, optional basket extras and a short product finder. Choose the help your shop needs.",
+      "description": "Useful accessories, optional basket extras, a short product finder and fabric sample enquiries. Choose the help your shop needs.",
       "cover": "launch",
       "business_types": [
         "stores"
@@ -263,6 +263,12 @@
           "stage": "any",
           "setup_hash": "7b09af0ee424de83700161b7f73623a461069c1a59638b456d7d52397fab9e9d",
           "design_hash": "7b3219d5a9f76005dc5d29da3d553ec9aa99cbbdb3be79337e8388b5fd851dbe"
+        },
+        {
+          "setup_id": "upholstery-samples",
+          "stage": "any",
+          "setup_hash": "1baf4a7cf3acd9f125bc85b33be25f28ac16af331c309ccd3eb8f0111845217a",
+          "design_hash": "e9c38c705f2e3d462e5d2dd426cb0e2df535c9e5b7e890c98f292760bd6e966e"
         }
       ]
     }

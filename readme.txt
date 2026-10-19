@@ -219,21 +219,26 @@ Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or
 WConvert works without an account or any external service, and nothing below is
 contacted unless an administrator turns it on. There are two optional services.
 
-**Template catalog.** The bundled design library works offline. If a site
-operator configures a template catalog, administrators can explicitly check it,
-preview a pack and install its designs in the editor. WConvert makes no
-background catalog requests, and the pack screen identifies the configured
-service before use. No catalog is configured by default; a deployed service must
-publish its own terms and privacy notice before it is offered as a default.
+**Template catalog.** The bundled design library works offline. Administrators
+can choose Template packs and explicitly check the WConvert Template Library at
+https://templates.wconvert.io, preview a pack and install its designs. The service
+address is supplied by default; no background catalog requests run. Opening the
+picker reads local state only. An operator can override the catalog address or
+disable remote discovery with an explicit empty address.
 
-A catalog request retrieves JSON template data and, for packs that include
-them, the pack's images. Each image must be a PNG, JPEG or WebP file of at most
-5 MB whose size and SHA-256 checksum match the pack's manifest; anything else is
-rejected, and accepted images are stored under `wp-content/uploads/` so
-installed designs keep working offline. No executable code or fonts are ever
-downloaded. WConvert does not send campaigns, leads or licence details; the
-service receives the web server's IP address and the requested URL as part of
-normal HTTP traffic.
+A catalog request retrieves JSON template data and, for illustrated packs,
+PNG/JPEG/WebP images. Image size and SHA-256 checksum must match the manifest;
+accepted images are stored under `wp-content/uploads/` so installed designs keep
+working offline. No executable code or fonts are downloaded. Free requests send
+no licence key. WConvert Pro sends its licence key and activated site identity to
+the trusted template service only for an explicit premium preview/install. The
+service asks Nexus to authorize a short-lived pass for that pack and its images.
+It does not receive campaigns, leads or visitor form answers. Normal HTTP traffic
+also exposes the web server's IP address and requested URL. Changing the catalog
+address does not change the trusted recipient for licence credentials.
+
+Prelaunch note: the operator must publish and link the template service's terms
+and privacy notice before distributing this default connection to customers.
 
 **Bot verification.** Hidden-field checks and submission limits are built in.
 In Settings → Spam protection, administrators may enable one verification

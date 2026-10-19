@@ -9,7 +9,7 @@ was silently dropped.
 
 **Your designs / Template packs** share the existing picker. **Amended by
 [ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):** the Template
-packs tab appears only once a catalog service is configured. Opening it reads
+packs tab appears only once a catalog service is configured. **Amended 19 October by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** the hosted service is the default configuration, with explicit empty/custom overrides retained. Opening it reads
 local state only. Checking the catalog, previewing a new pack and installing are
 explicit, authenticated administrator requests. The notice explains which
 service is contacted. Installing changes the library; the existing content-choice
@@ -118,4 +118,4 @@ The reader accepts explicitly declared `template-tree:3` with graph structure, r
 
 `paid-campaign-rules:1` permits supported rule shapes at the receiving install's actual tier. Rule definitions still come from the manifest, unknown parameters are rejected and authored page/product/element identifiers remain forbidden. Thus an Elite basket condition can survive pack import without being weakened to “everyone”; Free/Basic cannot import that condition. Export access classification includes rule tiers as well as design/Goal tiers. This is client compatibility, not a replacement for hosted licence authorization.
 
-The internal exporter supplies narrow filesystem adapters for its temporary validation archive, so the actual illustrated pack reader runs without WordPress. Native WordPress verification remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` explicitly allows the local verifier to read a private rehearsal pack; it creates no network entitlement path. **Amended on 18 October by [ADR 0112](0112-template-discovery-and-reviewed-collections.md) and [ADR 0143](0143-license-page-and-updater.md):** Pro now uses the SDK key for explicit premium pack/media requests through the Nexus signed-grant adapter. Hosted deployment and real credentials remain pending; unconfigured service routes refuse access. Installed functionality remains independent of entitlement.
+The internal exporter supplies narrow filesystem adapters for its temporary validation archive, so the actual illustrated pack reader runs without WordPress. Native WordPress verification remains separate. `WCONVERT_VERIFY_PREMIUM_FIXTURES=1` explicitly allows the local verifier to read a private rehearsal pack; it creates no network entitlement path. **Amended on 18 October by [ADR 0112](0112-template-discovery-and-reviewed-collections.md) and [ADR 0143](0143-license-page-and-updater.md):** Pro now uses the SDK key for explicit premium pack/media requests through the Nexus signed-grant adapter. Updated 19 October: hosted Nexus authorization and a protected image install are verified; unconfigured service routes still refuse access. Installed functionality remains independent of entitlement.
