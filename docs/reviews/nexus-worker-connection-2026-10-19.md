@@ -49,9 +49,38 @@ reference removed. Keep existing R2 bindings and compatibility date 2026-10-01.
   carried `Cache-Control: private, no-store`.
 - Live public keys: HTTP 200, one public Ed25519 signing key.
 
-Still required: a real authorized test licence and its activated site to verify
-successful signed issuance, premium pack/image installation and expiry. Actual
-expired/revoked/inactive-site licence cases also remain untested live; local
-fixtures cover these failure branches. Dashboard variables, exact secret value,
-lifecycle and edge rules cannot be audited via these public probes. No real
-licensed end-to-end success is claimed. The branch remains unmerged.
+Subsequent licensed acceptance is recorded below. Dashboard variables, exact
+secret value, lifecycle and edge rules cannot be audited via public probes.
+The branch remains unmerged.
+
+## Real test licence acceptance — 19 October 2026
+
+The operator supplied a test licence and authorized setting up a test site.
+The licence value and raw signed passes are omitted from this record and Git.
+
+- `wconvert-template-test.local` initially received 403 `domain_not_allowed`.
+- Activated only that disposable site using the existing Nexus activation API:
+  HTTP 200. The actual user’s local site was not changed.
+- Worker issuance returned HTTP 200 with a 300-second pass. Issuer, audience,
+  environment and site matched the configured connection.
+- Downloaded the actual premium `shopping-help` pack and verified its SHA-256:
+  six designs and six setups. Authorized HEAD returned 200; attempting a
+  different pack with the same pass returned 403.
+- An unactivated reserved test domain returned 403 `domain_not_allowed`.
+- Disposable WordPress 7.1.3 / PHP 8.1.34 first correctly refused installation
+  because this pack requires WooCommerce. With the real locally installed
+  WooCommerce plugin loaded, the real Pro transport installed all six designs
+  and six setups via live HTTPS. No successful HTTP response was mocked.
+- Checked the SDK’s normalized site identity, licence placement only on grant
+  requests, Bearer pass on file requests, no licence in admin preview/status,
+  and installed preview availability with networking disabled.
+- Removed the temporary Nexus activation after testing: HTTP 200. Fresh grant
+  issuance for the removed site then returned 403 `domain_not_allowed`.
+
+- Waited for the real 300-second pass to expire naturally. A subsequent premium
+  download returned HTTP 401 `invalid_grant`.
+
+The current premium pack contains zero image assets, so real premium image
+issuance/download is not claimed by this run. Local fixtures cover that path;
+real Free image delivery was checked separately. Whole-licence expiry/revocation
+was not induced, and no other site activation was changed.
