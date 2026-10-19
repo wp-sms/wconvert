@@ -4,7 +4,7 @@ We will start with **one hosted environment**, using its intended final name.
 WConvert is prelaunch, so this environment can be tested before customers depend
 on it. Local development remains isolated in Wrangler's on-disk emulator. A
 separate staging environment can be added later when changes need testing without
-affecting a live customer service. On 18 October 2026 the two existing R2 buckets were successfully populated and verified through the scoped publisher credentials. The operator deployed the Worker and domain; live HTTPS and disposable WordPress acceptance passed. Nexus remains pending.
+affecting a live customer service. On 18 October 2026 the two existing R2 buckets were successfully populated and verified through the scoped publisher credentials. The operator deployed the Worker and domain; live HTTPS and disposable WordPress acceptance passed. Nexus was connected by the operator on 19 October; live refusal checks pass, with successful licensed acceptance still pending.
 
 ## Names to use
 
@@ -95,7 +95,7 @@ fixtures or staging credentials target live buckets.
 
 ## What is still local
 
-The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. Real Nexus connection, default plugin catalogue URL and live licensed acceptance remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
+The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Default plugin catalogue URL and successful live licensed acceptance remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
 Local tests run the actual Worker/WebCrypto/R2 runtime with a test Nexus responder;
 the remote WordPress verifier uses real HTTPS for Free installation and simulated failure only for the offline check. The separate Nexus WordPress tests intercept HTTP; the real WordPress → Worker → Nexus licensed route has not been exercised.
 
@@ -114,8 +114,9 @@ Connect Nexus and test the real licence scenarios, configure edge request limits
 
 The custom API hostname differs from the signed issuer. Deploy the updated Worker
 code as well as setting its variables; the previous build rejected that pairing.
-Local tests pass, but deployment and real licensed acceptance still require the
-operator’s dashboard action and a test licence with its activated site.
+The operator confirmed dashboard deployment on 19 October. Live Free installation
+and premium refusal checks pass. Successful licensed acceptance still requires a
+test licence with its activated site. See the [connection evidence](../../docs/reviews/nexus-worker-connection-2026-10-19.md).
 
 1. Open **Workers & Pages → wconvert-template-api → Edit code**.
    Replace the entry module with the prepared `worker.js`, then **Deploy**.

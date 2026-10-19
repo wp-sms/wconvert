@@ -1,7 +1,8 @@
 # Nexus custom-host connection — 19 October 2026
 
-Prepared on `codex/nexus-worker-connection`. Dashboard deployment is pending;
-Cloudflare CLI authentication is unavailable and the operator chose dashboard steps.
+Prepared on `codex/nexus-worker-connection`. The operator confirmed dashboard
+deployment on 19 October; subsequent live verification results are recorded below.
+Cloudflare CLI authentication remains unavailable.
 
 The grant and key endpoints now use the supplied `my.wconvert.io` host, while
 signature verification continues to pin issuer `https://nexus.veronalabs.com`,
@@ -30,7 +31,27 @@ The dashboard artifact is generated from the tested dry-run build at
 `~/.local/share/wconvert/template-library-deploy/worker.js` with its source-map
 reference removed. Keep existing R2 bindings and compatibility date 2026-10-01.
 
-Still required: deploy this code, set variables and the Worker secret, rerun remote
-verification with `--premium configured`, and perform real licensed acceptance
-using an authorized test licence and activated site. No real service-key validity
-or licensed end-to-end success is claimed by these checks.
+## After operator deployment
+
+- Remote verifier with `--premium configured`: passed for the same release;
+  four Free packs, sixteen setups, five public previews and one image. Anonymous
+  premium downloads now return 401 rather than unconfigured 503.
+- Disposable WordPress against real HTTPS: all four Free packs installed;
+  thirteen designs, sixteen setups, one verified image. Offline recovery passed.
+  WordPress 7.1.3 / PHP 8.1.34; no persistent site settings or campaigns changed.
+- A deliberately invalid customer licence sent to the Worker for a real premium
+  pack returned Nexus's `401 invalid_key`. In this code path the Worker loads and
+  verifies the private pack before calling Nexus; service-authentication errors
+  would instead become 503. This exercises live issuance refusal, not success.
+- Missing licence: 401 invalid_key. Forged pass, anonymous premium HEAD and
+  anonymous premium image: 401 invalid_grant (HEAD has no body). Malformed request
+  and client-provided resource list: 400 invalid_request. All seven responses
+  carried `Cache-Control: private, no-store`.
+- Live public keys: HTTP 200, one public Ed25519 signing key.
+
+Still required: a real authorized test licence and its activated site to verify
+successful signed issuance, premium pack/image installation and expiry. Actual
+expired/revoked/inactive-site licence cases also remain untested live; local
+fixtures cover these failure branches. Dashboard variables, exact secret value,
+lifecycle and edge rules cannot be audited via these public probes. No real
+licensed end-to-end success is claimed. The branch remains unmerged.
