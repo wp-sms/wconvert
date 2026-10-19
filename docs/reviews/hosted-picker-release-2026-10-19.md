@@ -30,3 +30,21 @@ Your `wconvert.local` browser session had expired. UI verification therefore use
 ## Before customer launch
 
 The connection and illustrated download path work. Still required: publish/link service terms and privacy notice, configure/verify edge limits and bucket/lifecycle settings with an account administrator, rehearse backup restoration, and test whole-licence expiry/revocation using dedicated disposable licences. Current operator-only upload credentials cannot audit those account settings. External campaign email/SMS delivery and CI were skipped as requested. Physical-device testing and conversion performance are not claimed. Code changes are on a branch; this task does not merge them.
+
+## PR #299 merge review — 19 October 2026
+
+Separate spec and standards reviewers inspected `7f679a1e` against `a163fa51`.
+Neither found a blocking implementation issue. The standards review requested the
+release ZIP check and identified ambiguous historical rehearsal counts in the server
+README; those counts are now explicitly historical.
+
+Fresh merge checks passed: full PHP (3,370 tests / 19,182 assertions), studio
+(38 tests), six current collection approvals, live public service verification
+(four Free packs, six previews, two premium refusals), and disposable WordPress
+7.1.3 / PHP 8.1.34 installation from the default HTTPS source, including image
+verification and offline recovery. The native desktop and 320px screenshots were
+inspected again. `bash bin/build.sh all` completed successfully: both Free and Pro
+ZIPs passed their artifact contracts. The earlier full JavaScript and licensed
+acceptance results above remain applicable; this review changes documentation only.
+CI is intentionally skipped at the user's request. This merge review does not
+remove the customer-launch tasks listed above or claim they have been tested.

@@ -34,7 +34,7 @@ The service binds to `http://127.0.0.1:9454`. Open `/manifest.json` for the cata
 
 `https://templates.example` remains the **metadata origin**, not a real host. The local service mirrors its paths. Do not configure this HTTP mirror in the plugin: the production reader deliberately requires HTTPS. The native local-release verifier remains an isolated fixture check; `npm run test:wordpress --prefix tools/template-server -- --remote CURRENT_RELEASE_ID` uses real WordPress HTTP requests to the configured HTTPS API and temporary installation storage. No production URL is configured by this tool.
 
-The current rehearsal serves four Free packs (16 setups), five public previews including the premium pack, and one Free image. The complete release still lists 22 setups; six premium setups require the Nexus configuration described below; no permissive authorizer is enabled by default. All 34 rendered preview screens/results were exercised through the service's actual CSP and device controls.
+The earlier five-pack rehearsal served four Free packs (16 setups), five public previews including one premium pack, and one Free image. That release listed 22 setups; all 34 rendered preview screens/results were exercised through the service's actual CSP and device controls. The 19 October illustrated release now contains six packs and 23 setups; see the hosted release section below for its current evidence. Premium downloads require the Nexus configuration described below; no permissive authorizer is enabled by default.
 
 ## Updating, retrying and rolling back
 
