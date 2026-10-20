@@ -58,9 +58,34 @@ service key locally when ready.
 
 Set the Worker runtime compatibility date to `2026-10-01`, matching the supported date confirmed in the dashboard and our tested Wrangler configuration.
 
-The default Wrangler configuration is the single hosted environment. **Do not use
-`--env staging`**; no such environment is configured. Local `wrangler dev`, tests
-and dry-run builds use emulated storage and do not upload files.
+The top-level Wrangler configuration is production. `env.staging` is a second,
+fully separate environment: Worker `wconvert-template-api-staging`, buckets
+`wconvert-templates-public-staging` / `wconvert-templates-private-staging`, its own
+rate-limit counters, and the address `templates-staging.wconvert.io`. Local
+`wrangler dev`, tests and dry-run builds use emulated storage and upload nothing.
+
+### Deploying (from Git only)
+
+`.github/workflows/template-service.yml` deploys the Worker. A merge to `main`
+that touches `tools/template-server/**` deploys **staging**; production is
+deployed only by running that workflow by hand with `environment: production`.
+Do not paste code into the dashboard: the live service must be a commit on
+`main`. A deploy changes Worker code only. Catalogue data still goes out through
+`npm run publish`.
+
+One-time operator setup:
+
+1. Create the two staging buckets with direct public access disabled, and give
+   the staging private bucket the same one-day `grants/` lifecycle rule.
+2. Create a Cloudflare API token with **Workers Scripts: Edit**, **Workers Routes:
+   Edit** (zone `wconvert.io`) and **Account Settings: Read**.
+3. In GitHub → Settings → Environments, create `template-service-staging` and
+   `template-service-production`. Add the token as `CLOUDFLARE_API_TOKEN` to each.
+   Add a reviewer rule on production if you want one; the workflow needs no change.
+4. Staging premium answers `503 service_not_configured` until Nexus is connected
+   for the audience `https://templates-staging.wconvert.io` and
+   `wrangler secret put NEXUS_SERVICE_KEY --env staging` is run. Free routes and
+   publication work without it.
 
 For deployments and the Nexus connection:
 
