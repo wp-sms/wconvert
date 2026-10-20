@@ -95,7 +95,7 @@ test('signed but wrong claims, algorithms and lifetimes cannot issue access', as
  state.header = {}; state.key = 1; assert.equal((await issue()).status,200,'rotated published key accepted');
 });
 test('public access never calls Nexus; clients cannot supply resource sets or credentials in URLs', async t => {
- const { state, mf, fetch, issue } = await fixture(t);
+ const { state, fetch, issue } = await fixture(t);
  assert.equal((await fetch(`/v3/assets/${freeImage.sha256}.png`)).status,200); assert.equal(state.calls.length,0);
  assert.equal((await issue({ domain:'shop.example', designs:[digest], setups:[], files:['anything'] })).status,400);
  assert.equal((await fetch('/v3/grants?key=secret',{method:'POST'})).status,400);

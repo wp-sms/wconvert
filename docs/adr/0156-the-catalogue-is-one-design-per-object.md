@@ -120,6 +120,23 @@ creation with the design pinned and only the Goals it can serve; asks for
 consent where the design is not cached; says "no longer available" with close
 alternatives for an unknown id. Nothing installs on page load.
 
+**15. Automated checks, never a new human gate.** Approval stays agent review;
+these only refuse what is objectively wrong or make review cheaper:
+
+- **Approval follows rendered output**, not renderer bytes
+  (`build/rendered-identity.mjs`). `templates:visual-diff` renders each
+  campaign whose renderer moved with both renderers at two widths and carries
+  only the pixel-identical ones forward by a record that says so.
+- **Review records are one file each**, chained by `base_id`; a fork from two
+  branches is refused on read instead of the later merge silently winning.
+- **Near-duplicates** — structure, palette and a thumbnail difference hash all
+  agreeing — are refused unless `publishing/near-duplicates.json` gives a reason.
+- **Contrast** is measured against the pixels behind each text, pictures
+  included (WCAG AA), and a **copy lint** refuses placeholders, doubled words,
+  stray spacing and unbalanced brackets.
+- Per-design browser work is **cached** by the design, renderer and step code,
+  so a publish renders only what changed.
+
 ## Consequences
 
 - `InstalledPacks`, `DiscoveryRelease`, `LockedTemplates`, `locked.json`, the

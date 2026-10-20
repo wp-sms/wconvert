@@ -16,7 +16,8 @@ export function canonical(value) {
 
 /** What a revision commits to: every byte that ships, except the revision itself. */
 export function contentHash(object) {
-  const { revision, ...rest } = object;
+  const rest = { ...object };
+  delete rest.revision;
   return hash(canonical(rest));
 }
 

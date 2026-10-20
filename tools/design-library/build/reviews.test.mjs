@@ -56,7 +56,7 @@ test('unreviewed entries stay pending and record tampering fails closed', t => {
 });
 
 test('the record store is one file per decision, and a fork in a chain is refused', async () => {
-  const { mkdtempSync, rmSync, mkdirSync, writeFileSync } = await import('node:fs');
+  const { mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
   const { join } = await import('node:path');
   const { tmpdir } = await import('node:os');
   const { createHash } = await import('node:crypto');
