@@ -41,7 +41,49 @@
     "website-review-enquiry",
     "weeknight-recipe-sample",
     "workshop-programme",
-    "writing-checklist"
+    "writing-checklist",
+    "project-planning-guide",
+    "cart-straight-away",
+    "cart-delivery-help",
+    "product-care-guide",
+    "wholesale-enquiry",
+    "venue-visit-request",
+    "course-advice-request",
+    "maintenance-letter",
+    "seasonal-service-link",
+    "event-registration-link",
+    "topic-reading-list",
+    "gift-planning-guide",
+    "collection-discovery",
+    "packaging-details",
+    "agency-project-enquiry",
+    "tutoring-introduction",
+    "fitness-introduction",
+    "membership-details",
+    "material-comparison",
+    "sample-request",
+    "bulk-gift-enquiry",
+    "personalisation-enquiry",
+    "fit-checklist",
+    "return-policy-guide",
+    "group-training-enquiry",
+    "service-options-guide",
+    "pre-visit-checklist",
+    "reader-question",
+    "series-start",
+    "reader-format-choice",
+    "trade-account-enquiry",
+    "access-enquiry",
+    "equipment-hire-enquiry",
+    "reader-panel-interest",
+    "product-demo-enquiry",
+    "venue-hire-checklist",
+    "contributor-pitch-checklist",
+    "furniture-fit-guide",
+    "opening-hours-signpost",
+    "edition-sample-signup",
+    "checklist-download",
+    "consultation-invitation"
   ],
   "bundled_only": [
     {
@@ -95,6 +137,54 @@
     {
       "setup": "weekend-observations",
       "reason": "Design weekend-broadsheet: Update required: this design uses an unknown setting."
+    },
+    {
+      "setup": "photography-enquiry",
+      "reason": "Design portrait-frame: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    },
+    {
+      "setup": "consultation-corner",
+      "reason": "Design slide-in-photo: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    },
+    {
+      "setup": "new-arrivals-link",
+      "reason": "Design photo-offer: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    },
+    {
+      "setup": "sizing-guide",
+      "reason": "Design inline-split: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    },
+    {
+      "setup": "local-pickup-details",
+      "reason": "Design bar-announcement: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "service-area-check",
+      "reason": "Design bar-announcement: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "gift-wrap-details",
+      "reason": "Design bar-announcement: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "dispatch-schedule",
+      "reason": "Design bar-announcement: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "showroom-information",
+      "reason": "Design bar-announcement: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "contributor-guidelines",
+      "reason": "Design bar-announcement: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "maker-session-invitation",
+      "reason": "Design journey-offer-first: Pack consent must start hidden."
+    },
+    {
+      "setup": "writing-session-details",
+      "reason": "Design session-card: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     }
   ],
   "designs": [],

@@ -1,0 +1,47 @@
+{
+  "id": "project-readiness-guide",
+  "revision": "4fbf79cbca305280ee97eac8648606435cbb24702045b561c32e744d3cd745fe",
+  "base_id": "7ee0f310e3565b8a69ba50ab36cebbe1ce624e2610b78baff83a9c3b0e8fa4ad",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "At 320 the stacked layout gives the form two competing headlines ('Before the visit.' then 'Prepare for a useful conversation.'). It also prints 'One resource email. No newsletter signup.' twice. The acknowledgement repeats 'Request received' as both eyebrow and headline, and never says the checklist will arrive by email.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-readiness-guide-320.png",
+          "sha256": "1f8debaac514bffcad3d7c0240aa19c9902f59498d43d97de53f6ee17c3a0c7c"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-readiness-guide-1440.png",
+          "sha256": "b9f08b4d49c17bc424eb2111e3052947d28b49420eca5dec378bf80cc84e4e9a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "14880c0d0a73e4b2b3193abebf1fe68e0a671376de5e48d5750dd7add9edd242"
+}

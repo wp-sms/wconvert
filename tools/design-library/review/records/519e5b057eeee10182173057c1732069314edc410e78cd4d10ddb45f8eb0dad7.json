@@ -1,0 +1,47 @@
+{
+  "id": "consultation-corner",
+  "revision": "5218a5bf90a45eb612b78da6a3dac592209f31d68ff62a63ae006dc3b1e10248",
+  "base_id": "871d2902a2e28a0a3f582164f5c64cb5fee76783bc75a71e937d3f8fbb845a75",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "The compact corner card asks for one email to request a conversation and leaves the page visible at both widths. The acknowledgement says plainly that no appointment is booked.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/consultation-corner-320.png",
+          "sha256": "8e14e587563a4bcc3c7eec0f577560202250547976f09beb2a7b1f73e6dc4eff"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/consultation-corner-1440.png",
+          "sha256": "bf78d7119864b86e4aa3926e789c8ae5157f36b3af0cdd8a3d591eafc27fcfa5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "519e5b057eeee10182173057c1732069314edc410e78cd4d10ddb45f8eb0dad7"
+}

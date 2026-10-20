@@ -1,0 +1,47 @@
+{
+  "id": "bulk-gift-enquiry",
+  "revision": "119c1c9973f5c5492cd352f4d764b6b9d29ed977b64956a2d6af0e24d2700cd5",
+  "base_id": "c3d7831ed9542422a458fc31e52f09152abead13b8cdcb6ab8768003910f8411",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "An optional quantity range plus email, with one clear 'Discuss a group order' button. The acknowledgement honestly lists quantity, availability, pricing and timing as still to confirm. The four-line headline makes it tall on a phone, but it holds together.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/bulk-gift-enquiry-320.png",
+          "sha256": "6a192f5900f990324c9269fe01d8f1ba6d827cf0337fee808d014b587f65a5f0"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/bulk-gift-enquiry-1440.png",
+          "sha256": "91f7091de4d8308741a0ff14b8f1602731eea014b42c81e26927d6e4abf182a4"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "4d21886faaa0b701badd8b28c703b127a03b3b4e2701f3cd26896ae1287ec27c"
+}

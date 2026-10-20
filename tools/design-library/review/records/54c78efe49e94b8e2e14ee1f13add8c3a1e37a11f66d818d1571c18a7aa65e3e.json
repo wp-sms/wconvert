@@ -1,0 +1,47 @@
+{
+  "id": "drop-alerts",
+  "revision": "c4d316a297e9b5a8b8315084d2ea319e17c2855f55f7a71f67b4b01122ed6646",
+  "base_id": "a1228f867553e11f5139b39f3c175f24e3f856f68e08e0aa446dd7a2250e35eb",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Details screen: the 'Send me new-release text alerts' consent checkbox sits below the 'Request release texts' button and repeats its meaning. A visitor taps the button before seeing the consent. Move consent above the button, or merge the wording so there is one clear ask.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/drop-alerts-320.png",
+          "sha256": "72a50bea2e6e929955925215b888b481711939940d47ed94f84ea984ad91d13d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/drop-alerts-1440.png",
+          "sha256": "6b1d3688e1e7668bf498bf8e07fdc63b38c949d4feec9dc0f7fb857078ee0e43"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "54c78efe49e94b8e2e14ee1f13add8c3a1e37a11f66d818d1571c18a7aa65e3e"
+}

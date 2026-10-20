@@ -1,0 +1,47 @@
+{
+  "id": "visiting-details",
+  "revision": "d1e7a79897bc9c9d885fc6e86fbac0ff0f87f8a2d0c0f230063d3b370c211f64",
+  "base_id": "67ee7a66fc5aae3be36162ccd509e44dfca6aa41856eb072876a33b578b92136",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Information screen: the WHERE/WHEN inset holds instructions ('Check the areas we serve.', 'See current hours…') rather than any place or time, so the structured note carries no information. The footnote 'An enquiry does not reserve a visit.' refers to an enquiry this slide-in does not offer.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/visiting-details-320.png",
+          "sha256": "421612426f22ac7c387a363add6e0240eadc72159e54b6f854ada44d29beddeb"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/visiting-details-1440.png",
+          "sha256": "3a612777d9957fb0b305d7421bcb6bbdd9315d1f24d748016638eb4ed318e106"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "ff2d79d82342bf263a24140e52e3658c5426d48eb6a459e069c4b6212162bb01"
+}

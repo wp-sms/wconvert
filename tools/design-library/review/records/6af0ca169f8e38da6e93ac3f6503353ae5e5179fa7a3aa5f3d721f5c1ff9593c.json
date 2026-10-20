@@ -1,0 +1,47 @@
+{
+  "id": "service-options-guide",
+  "revision": "41bc0fdd28c0b7ba71ade3841dbd753f353bcbcef3118df00e7f2adf3f71afdd",
+  "base_id": "06a34e973a2fa6bed322675d0b417c32709d0d33a6e1b31ce82f23391fc6c847",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Two packages (Planning session, Project support) with aligned inclusions on desktop and a clean stack at 320, then one 'Explore the service details' button. One small wording slip: the footer says 'An enquiry does not confirm…' although this block takes no enquiry.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-options-guide-320.png",
+          "sha256": "dda6913e45ad19ae7591158d591207453c3e5644aaebec003ee976e8b54bee46"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-options-guide-1440.png",
+          "sha256": "28221b71332871ae8cfac283a4b0a522c0d6a6371000e714da3c859a9a80ac49"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "6af0ca169f8e38da6e93ac3f6503353ae5e5179fa7a3aa5f3d721f5c1ff9593c"
+}

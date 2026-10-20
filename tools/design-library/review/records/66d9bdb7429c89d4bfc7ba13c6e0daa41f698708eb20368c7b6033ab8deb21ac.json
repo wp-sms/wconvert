@@ -1,0 +1,47 @@
+{
+  "id": "pre-visit-checklist",
+  "revision": "8461378518093f2772227166c6b6cde048aebd8c22b15aaeecf31ed927f2f6f3",
+  "base_id": "f52b90fc3c4125f3cfe2c2196e8aa61f3dc6ffe88674d18605cb6275fc83b20f",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Three concrete preparation steps, then one email ask with 'One resource email. No newsletter signup.' It requests no sensitive records, and the acknowledgement says only that the checklist request was received. The button wraps to two lines on a phone but is not cramped.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/pre-visit-checklist-320.png",
+          "sha256": "bebf564051ba12940e957d2c76f1e859ebc709a8815bb249ae229060aa4bec48"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/pre-visit-checklist-1440.png",
+          "sha256": "00a27e45939465334d1060bbef61dff0774c784a32a676d55ad6994dbce5b312"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "66d9bdb7429c89d4bfc7ba13c6e0daa41f698708eb20368c7b6033ab8deb21ac"
+}

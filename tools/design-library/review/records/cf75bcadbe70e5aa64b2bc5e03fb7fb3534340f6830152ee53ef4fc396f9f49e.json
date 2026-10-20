@@ -1,0 +1,47 @@
+{
+  "id": "product-care-guide",
+  "revision": "82fe7831a88bf57776059a43ea1b7ef727c92cf821e18c484bcfb37fd1759868",
+  "base_id": "d075d061ffc0f33c609581fbe88e0158a09c600fe0d7c3e5a5505158e7fb9a42",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "The three previewed topics (wash, dry, store) make the reward concrete, 'One guide email. No newsletter signup.' sets expectations, and the acknowledgement only confirms the request. Clean at both widths.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/product-care-guide-320.png",
+          "sha256": "7f38563b4f856e6eb20525d7cee885e13edc9e2ec5f1cc25a25a4ce632fe683d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/product-care-guide-1440.png",
+          "sha256": "3ab99b9c245f55e11ebd00396f0238d628291c707ca4f920a66499228309cc52"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "cf75bcadbe70e5aa64b2bc5e03fb7fb3534340f6830152ee53ef4fc396f9f49e"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "service-text-updates",
+  "revision": "13f422dd09c3eb8c300758a7e929995bc9baab7f181fcaad56398b6691b8754f",
+  "base_id": "22539aada92a176405bf644ea8b328ac0c51d3d0162c28afdbe2d1dbe965bf5b",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Form screen: the SMS consent checkbox sits below the 'Request service texts' button, so visitors meet the submit before the consent it depends on; move it above the button. On desktop the headline also breaks as 'By / text.'",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-text-updates-320.png",
+          "sha256": "ecea988fc4e0483a7df83a7d851fa364990df8d1b548915989a019032b3ef2da"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-text-updates-1440.png",
+          "sha256": "ecb3abd7406b99ee730ac42e6cae6f4b20a9fb182455204e2c5bd2f2f81d4a91"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "07b9c710ccfdccd046b27c013c88e4dcc9a963f72f085cf3278689fda66c23fb"
+}

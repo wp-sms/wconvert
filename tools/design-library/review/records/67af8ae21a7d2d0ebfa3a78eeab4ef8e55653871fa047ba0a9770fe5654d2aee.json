@@ -1,0 +1,47 @@
+{
+  "id": "fitness-introduction",
+  "revision": "eae7eaf11ca676a98f4aeb9e9ccb740e93145652f762bd34ac847b39ae993155",
+  "base_id": "8dd10a8e1a99bda918309f977067a38ac5b2df9733474b68c7ec4fe440d43c2d",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "It asks for one mobile number to request an introductory call. The form says 'No appointment is confirmed' and the acknowledgement claims nothing more. It asks for no health details.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/fitness-introduction-320.png",
+          "sha256": "18978a7368585a0a1c4e36974cf95e6e9beb997e8a9663250e5d1093e46658ff"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/fitness-introduction-1440.png",
+          "sha256": "811c41fe502b793e5ed30d7b05a26478e52d47daf5b147b8c01012b87148dbd3"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "67af8ae21a7d2d0ebfa3a78eeab4ef8e55653871fa047ba0a9770fe5654d2aee"
+}

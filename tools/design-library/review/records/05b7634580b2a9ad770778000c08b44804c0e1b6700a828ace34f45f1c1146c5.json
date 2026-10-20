@@ -1,0 +1,47 @@
+{
+  "id": "venue-hire-checklist",
+  "revision": "17d6c17d63cd315a06a2a5b4d8e61f18b296a37feeb0f5698d6faac12856a4a3",
+  "base_id": "fec7fcd4b3c41ce494c7e119db4ca3f5de5ad94a230f14cb75d7ab42ab3a68f3",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Three specific checks (needs, access, timing), one email ask and 'One checklist email. No newsletter signup.' It uses the same design as pre-visit-checklist with different copy, which is fine for a setup. The acknowledgement says only that the checklist request was received.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/venue-hire-checklist-320.png",
+          "sha256": "479684e6b6a3c2b809399106a1dbe5c711a06693b1241501f722cc05bc12305e"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/venue-hire-checklist-1440.png",
+          "sha256": "8da218c53841e9a26c447561842559a2208e6f56ede8159196b1e03d5a63ea77"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "05b7634580b2a9ad770778000c08b44804c0e1b6700a828ace34f45f1c1146c5"
+}

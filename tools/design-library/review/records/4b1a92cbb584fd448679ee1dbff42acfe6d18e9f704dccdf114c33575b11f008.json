@@ -1,0 +1,47 @@
+{
+  "id": "delivery-announcement",
+  "revision": "9fde50007274c9f1a3aec1fd30b8be1bed08208e399b2cfe636f6bbf626a875f",
+  "base_id": "fbfb96ec6493de194812baa04bbc40c3c3b5fe83860d78b0399bde475fb4d48f",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Offer bar: the setup is meant to explain delivery terms, but the only action is 'Explore the shop'. That sends the visitor away from the terms, and the bar gives only the £40 threshold. The sibling pickup bar's 'See pickup details' shows what the action should be, for example 'See delivery details' linking to the delivery policy.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/delivery-announcement-320.png",
+          "sha256": "4ac22a7e852a1ccffba06b0ab1ee3cf464e4ae9fc61bffa455eb1f48b6a9659a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/delivery-announcement-1440.png",
+          "sha256": "1da2d627b4c470264d6abad8e4c776d6e85b9375a991440d4216e9083ffa638f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "4b1a92cbb584fd448679ee1dbff42acfe6d18e9f704dccdf114c33575b11f008"
+}

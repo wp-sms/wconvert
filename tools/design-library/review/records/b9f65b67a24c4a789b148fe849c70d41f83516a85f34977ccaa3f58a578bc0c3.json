@@ -1,0 +1,47 @@
+{
+  "id": "care-clinic-request",
+  "revision": "4b5118b0fe1d14c3f508aebfcb9a767a945381c09a32cb6a03627faaf6a9b6a6",
+  "base_id": "502c45ae0661ae8d55a25f907d2dd39c328d656d82ffc3e6c35d7790678b5c4f",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Acknowledgement says 'We have received your request and the topic you selected', but 'Which kind of care?' is optional, so the claim is false when nothing was chosen. The headline 'Give it a little attention.' also never mentions a clinic or session.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/care-clinic-request-320.png",
+          "sha256": "27aacf9b04a25f97f455a003b9bdd57ac6b550c88034d041cb87a5178047ce8d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/care-clinic-request-1440.png",
+          "sha256": "ab0838d92038d7cffe79312cef323231d10fb65368f4d1b1e0079cd7f4d10031"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "b9f65b67a24c4a789b148fe849c70d41f83516a85f34977ccaa3f58a578bc0c3"
+}

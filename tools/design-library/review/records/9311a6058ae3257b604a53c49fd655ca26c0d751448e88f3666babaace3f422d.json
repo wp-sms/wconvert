@@ -1,0 +1,47 @@
+{
+  "id": "series-start",
+  "revision": "8fadcf481009811427c13c055fd8c7d5f25ce270ab88a5f135739c2acdeff31f",
+  "base_id": "0e908c6d782abbe67cedcf1cdd863b69fae35ffd931ca55813f01abbfc3b1411",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "A minimal corner nudge, 'New to this series?' with a 'Read part one' button, which is exactly the contextual navigation the brief asks for. It covers nothing at either width.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/series-start-320.png",
+          "sha256": "096ce69ab16ddd04db628284d9e4021d673e5c1b0280034e8ae0bdfe68982e11"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/series-start-1440.png",
+          "sha256": "d5f5165e82e3fc424e987866c5caee31dd9f423de435e565097f89865aa9934f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "9311a6058ae3257b604a53c49fd655ca26c0d751448e88f3666babaace3f422d"
+}

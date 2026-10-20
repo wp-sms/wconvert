@@ -1,0 +1,47 @@
+{
+  "id": "project-stage-finder",
+  "revision": "c0f19906d111ec44eba1d649940c8752fc1c7f6df2c4250071bb36f985b44b05",
+  "base_id": "4ab712dd480f53c36934e51ec4de1a9c2c5e649813f0e38885b0a0e5c7537f03",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Your next step screen: the result says 'Read the guidance and choose the help that feels useful to you' but shows no guidance and no link. Its only action is 'Choose another stage', so the popup's promise of a clear next step ends at a dead end. The result needs real guidance text and an action, such as a link to the consultation or estimate page.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-stage-finder-320.png",
+          "sha256": "3261ee60c74a21d12205ecaed254245fc92c0d9be8c85b768b1d566874f07960"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-stage-finder-1440.png",
+          "sha256": "f1eee3a33862a3f31aacf63facad3efbd1ecd34694207b14cff5ccd62d2df4e6"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "25e37e1867c1257acf8ee9e78673ad8e867988ec4619844fb730cfa0c7a2b93b"
+}

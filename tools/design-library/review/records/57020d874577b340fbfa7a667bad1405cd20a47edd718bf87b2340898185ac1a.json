@@ -1,0 +1,47 @@
+{
+  "id": "sizing-guide",
+  "revision": "6c4837f23285a12390f5d14c4982efc24e8eb3ac6e1bd430518f28545ad4c349",
+  "base_id": "e1b90f9b3daf2f7ff06b4c610f863424ae927bbbd1c27b5a6108ec8ab5aaec3c",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "There is one ask, email for this collection's measuring guide, and the reward is specific (steps plus a size chart, 'One resource email. No newsletter signup.'). The acknowledgement says only that the request was received and claims no delivery.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/sizing-guide-320.png",
+          "sha256": "4c9f3d0df08a62fa4c2a4178a8262c9221dd1f8a7b92c3e5002886590e14dea4"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/sizing-guide-1440.png",
+          "sha256": "cb2117e5e928832fab41411c090d744680c471ab9a0b7142336517c1b0b04351"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "57020d874577b340fbfa7a667bad1405cd20a47edd718bf87b2340898185ac1a"
+}

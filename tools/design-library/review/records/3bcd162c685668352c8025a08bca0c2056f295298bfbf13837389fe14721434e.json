@@ -1,0 +1,47 @@
+{
+  "id": "product-finder",
+  "revision": "9b8ee3693973d64094da00002d4d69afb8b488a2ffd6cde71749b738c9df9b99",
+  "base_id": "dad999fda48710934dd9541fd4aa4d263a81211847123107b56c490b0068518e",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "On the real site, with no matching products the result says \"browse the shop\" with no link: a dead end. (The studio-only sample note is not shown to visitors.)",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/product-finder-320.png",
+          "sha256": "b5282145363ffb1e7d7585e846cc25ac1764877bee10b7046e5bc24a0dfc05e9"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/product-finder-1440.png",
+          "sha256": "21738bd1826d7a080fff6caa831d124d7e1c9fcc525f6e44fbe5f12faab380b3"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "3bcd162c685668352c8025a08bca0c2056f295298bfbf13837389fe14721434e"
+}

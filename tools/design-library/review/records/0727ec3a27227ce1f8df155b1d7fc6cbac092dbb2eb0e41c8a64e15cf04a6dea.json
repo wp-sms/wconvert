@@ -1,0 +1,47 @@
+{
+  "id": "local-pickup-details",
+  "revision": "a2962edcc670e20d2acd215827a487eea8d9042d630c49d297e3de78baa97e11",
+  "base_id": "594713f4ed1b14e8bdda09392d02022e1bdef685383bf53986360218d2b1b489",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "A true one-line bar: Pickup chip, 'Collect from our shop.' and 'See pickup details'. It makes no delivery claim and stays compact on a phone.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/local-pickup-details-320.png",
+          "sha256": "733a5bbc6e627b0a039f5d515497f701e42762e5309eeb3057fce2ab22af0bc0"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/local-pickup-details-1440.png",
+          "sha256": "54d0ccd5828a1787d6e968fbfc1da63b7ad0f3775b3d18b70a7aa73a6c876667"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "0727ec3a27227ce1f8df155b1d7fc6cbac092dbb2eb0e41c8a64e15cf04a6dea"
+}

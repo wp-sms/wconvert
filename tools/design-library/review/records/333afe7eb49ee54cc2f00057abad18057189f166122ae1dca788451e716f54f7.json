@@ -1,0 +1,47 @@
+{
+  "id": "furniture-fit-guide",
+  "revision": "bbbb7232db389d473990f83c340fdd9ff5b441ce5729ea86dc15beff3d6e4619",
+  "base_id": "c9605aae9cffc731912e4c0adba85177bcaeba9b7d7a6fbc3d6f40a4af320819",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "'Not sure it will fit?' plus one subline and a compact 'See the measuring guide' button: one line of intent on desktop and a short stack on phone. There is no badge, so it is genuinely different from bar-announcement.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/furniture-fit-guide-320.png",
+          "sha256": "f94f03c1cc76ae592679bd90686afb3f97739de15a87967d9a07da0f43b68edf"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/furniture-fit-guide-1440.png",
+          "sha256": "a198d8c65ec633384132716607304dfc4959d4f9bed2c9b51e33a17a0bcc9b4f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "333afe7eb49ee54cc2f00057abad18057189f166122ae1dca788451e716f54f7"
+}

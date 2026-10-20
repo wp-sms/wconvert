@@ -1,0 +1,47 @@
+{
+  "id": "edition-sample-signup",
+  "revision": "622a266a77bce6149a9bd28b475cefe4fe15d194925c4ba62bc28148c13c6491",
+  "base_id": "4432117b420928e4ae35627ea3a6082cc98d1489771f4bb802654ba65d4385fa",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "The real sample passage comes first, followed by one email ask with the consent checkbox above the button. The acknowledgement claims no subscription. The unsubscribe line appears twice (checkbox and footnote), which is redundant but harmless.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/edition-sample-signup-320.png",
+          "sha256": "e233f969017025ec5aa0fe1434e845ffc15173bfbbd16f188afb6240b00a850d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/edition-sample-signup-1440.png",
+          "sha256": "0f4a33a6ad4c31d2769442170ec4b34f427fbf7a14cfa7d0ea8f4717ecdd74b2"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "7295d4b0a5f5c5425a42f02c55a273f5e6ee17be2348ef829d07ec1047e0b529"
+}

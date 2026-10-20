@@ -1,0 +1,47 @@
+{
+  "id": "landscaping-enquiry",
+  "revision": "4f3484c07f72e519207e402255af42c664080fad3a7037db6e0d9e4d461289d3",
+  "base_id": "19fcdae2b152b4f6b59b46d5bf8942c79b0fd1cd0a2b9f237a6c36fa9cacde47",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Contact-details step: a centred 'Back' text button sits between the helper text and the primary 'Send my garden enquiry'. It reads as stranded and inverts the action hierarchy at both widths. Place Back after, or beside, the primary action.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/landscaping-enquiry-320.png",
+          "sha256": "7205244c1511059860faaa65b03c25d06d6b850235b4fed2985f29405ffa933d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/landscaping-enquiry-1440.png",
+          "sha256": "8297eff5c699605309df97fe0ad8c9ef93beabe68cc07227b3abb724c42da438"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "46eef96ec9599c38be5e3e77045bb0299ba34ee19694636e0595f35ba4c1e09f"
+}

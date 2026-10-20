@@ -1,0 +1,47 @@
+{
+  "id": "membership-details",
+  "revision": "0f9d19af1ad2c639eafbfcf5d598d097ff2af61c1627bb35a945d864baeef603",
+  "base_id": "994f301a8c22d220344f49b51ed0f021721fbaf269583f614ffe0a76125664cc",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Three concrete benefits and one 'Explore membership' link, with pricing and terms deferred honestly to the membership page. Minor: on desktop the bordered benefit tiles look slightly like input fields.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/membership-details-320.png",
+          "sha256": "a251ef745928cd7491dd9b8066325d2629fd1e19cb0c6c8498485b42a7943476"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/membership-details-1440.png",
+          "sha256": "d47752907ffb3b23c795d64b33f9d26632c0fcb839bbd34fdd85c00cf9917b2f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "0bf789af13d78d8cb4d7b9c1fa2939c4f4a4cda8af7d9bea0d65ae8cd581c706"
+}

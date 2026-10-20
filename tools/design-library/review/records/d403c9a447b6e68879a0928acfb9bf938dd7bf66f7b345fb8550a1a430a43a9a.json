@@ -1,0 +1,47 @@
+{
+  "id": "writing-session-details",
+  "revision": "aeccc51d5c67f1ebf53a5a1391757adf80a790c6cd5f027a43ee2bb64a105979",
+  "base_id": "c173f3a926f6004d6e2932ec2efdab6b8bc16bad17e5355d0a415b99ada0e258",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Notebook illustration, a clear line about format/who/how, and one content-width link; compact corner slide-in at both widths. Visibly different from slide-in-nudge's dark text-only card.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/writing-session-details-320.png",
+          "sha256": "e8911508629a2f9969389310f57222c0023498c6ee4c9aafdeff7934eb967fa6"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/writing-session-details-1440.png",
+          "sha256": "105a00a2756f821d86bed8c16a5087aa244a979d20d94e3ae76c43e28ab3e267"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "d403c9a447b6e68879a0928acfb9bf938dd7bf66f7b345fb8550a1a430a43a9a"
+}
