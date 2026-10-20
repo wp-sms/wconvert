@@ -129,7 +129,7 @@ final class TemplateCatalog
             'enabled' => self::enabled($this->options), 'consent' => $this->consent(), 'source' => $this->source(),
             'checked_at' => $cache['checked_at'] ?? null, 'release' => $cache['release'] ?? null,
             // A newer major lives at another address; this reader only says so.
-            'update_required' => ($cache['latest_major'] ?? CatalogIndex::MAJOR) > CatalogIndex::MAJOR,
+            'update_required' => ($cache['latest_major'] ?? CatalogIndex::MAJOR) > CatalogIndex::MAJOR || ($cache['files']['truncated'] ?? false) === true,
             'skipped' => $index['skipped'], 'taxonomy' => $index['taxonomy'], 'withdrawn' => $cache['withdrawn'] ?? [],
             'designs' => $designs, 'setups' => $setups,
         ];
@@ -445,7 +445,7 @@ final class TemplateCatalog
             PackValidator::check($answer !== null, __('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
         }
         $pointer = CatalogIndex::pointer($answer['body']);
-        $files = ['release' => $pointer['release'], 'pages' => [], 'popularity' => null, 'i18n' => null];
+        $files = ['release' => $pointer['release'], 'pages' => [], 'popularity' => null, 'i18n' => null, 'truncated' => false];
         $known = $sameSource && ($cache['release'] ?? null) === $pointer['release'] ? $this->indexFiles($cache) : null;
         if ($known !== null) {
             $files = $known;
@@ -454,8 +454,10 @@ final class TemplateCatalog
             $bytes = 0;
             foreach ($release['pages'] as $sha) {
                 $page = $this->indexObject('index/', $sha, $started);
+                // A library grown past this reader's budget costs the pages
+                // beyond it, never the ones before: keep what fits and say so.
+                if ($bytes + strlen($page) > CatalogIndex::MAX_INDEX_BYTES) { $files['truncated'] = true; break; }
                 $bytes += strlen($page);
-                PackValidator::check($bytes <= CatalogIndex::MAX_INDEX_BYTES, __('This catalog is larger than this version of WConvert can read. Update WConvert.', 'wconvert'));
                 CatalogIndex::page($page, $this->facets());
                 $files['pages'][] = $sha;
             }

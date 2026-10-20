@@ -1,0 +1,2096 @@
+{
+  "schema": 1,
+  "_note": "Authored catalogue words for each design (ADR 0156): description, slug, industries, occasions, style, colour, family, aliases. Industries, occasions, style and colour were seeded from names, setups, collections and tokens on 2026-10-20 and need review; descriptions are written by the design author. Labels live in taxonomy, never in the plugin.",
+  "taxonomy": {
+    "industry": [
+      {
+        "id": "food-drink",
+        "label": "Food & drink"
+      },
+      {
+        "id": "books-publishing",
+        "label": "Books & publishing"
+      },
+      {
+        "id": "fashion",
+        "label": "Fashion"
+      },
+      {
+        "id": "home-garden",
+        "label": "Home & garden"
+      },
+      {
+        "id": "arts-events",
+        "label": "Arts & events"
+      },
+      {
+        "id": "travel-places",
+        "label": "Travel & places"
+      },
+      {
+        "id": "professional-services",
+        "label": "Professional services"
+      },
+      {
+        "id": "retail",
+        "label": "Retail"
+      },
+      {
+        "id": "general",
+        "label": "Any business"
+      }
+    ],
+    "occasion": [
+      {
+        "id": "black-friday",
+        "label": "Black Friday"
+      },
+      {
+        "id": "christmas",
+        "label": "Christmas & gifting"
+      },
+      {
+        "id": "summer",
+        "label": "Summer"
+      },
+      {
+        "id": "launch",
+        "label": "Launch"
+      },
+      {
+        "id": "sale",
+        "label": "Sale"
+      },
+      {
+        "id": "evergreen",
+        "label": "Any time"
+      }
+    ],
+    "style": [
+      {
+        "id": "editorial",
+        "label": "Editorial"
+      },
+      {
+        "id": "crisp",
+        "label": "Crisp"
+      },
+      {
+        "id": "soft",
+        "label": "Soft"
+      },
+      {
+        "id": "minimal",
+        "label": "Minimal"
+      }
+    ],
+    "colour": [
+      {
+        "id": "warm",
+        "label": "Warm"
+      },
+      {
+        "id": "cool",
+        "label": "Cool"
+      },
+      {
+        "id": "green",
+        "label": "Green"
+      },
+      {
+        "id": "neutral",
+        "label": "Neutral"
+      },
+      {
+        "id": "light",
+        "label": "Light"
+      },
+      {
+        "id": "dark",
+        "label": "Dark"
+      }
+    ]
+  },
+  "designs": {
+    "accessory-workbench": {
+      "slug": "accessory-workbench",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "after-hours": {
+      "slug": "after-hours",
+      "industries": [
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "agenda-card": {
+      "slug": "agenda-card",
+      "industries": [
+        "books-publishing",
+        "arts-events",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "appointment-agenda": {
+      "slug": "appointment-agenda",
+      "industries": [
+        "home-garden",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "appointment-note": {
+      "slug": "appointment-note",
+      "industries": [
+        "books-publishing",
+        "travel-places",
+        "professional-services"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "availability-desk": {
+      "slug": "availability-desk",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "availability-note": {
+      "slug": "availability-note",
+      "industries": [
+        "travel-places",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bar-announcement": {
+      "slug": "bar-announcement",
+      "industries": [
+        "books-publishing",
+        "home-garden",
+        "travel-places"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "bar-code": {
+      "slug": "bar-code",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "bar-countdown": {
+      "slug": "bar-countdown",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale",
+        "black-friday"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "bar-email-capture": {
+      "slug": "bar-email-capture",
+      "industries": [
+        "arts-events",
+        "professional-services",
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "basket-companion": {
+      "slug": "basket-companion",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "benefit-grid": {
+      "slug": "benefit-grid",
+      "industries": [
+        "books-publishing",
+        "fashion",
+        "home-garden"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bloom-postcard": {
+      "slug": "bloom-postcard",
+      "industries": [
+        "home-garden",
+        "arts-events",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "bold-ask": {
+      "slug": "bold-ask",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "callback-notes": {
+      "slug": "callback-notes",
+      "industries": [
+        "books-publishing",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "callback-slip": {
+      "slug": "callback-slip",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cart-accessories": {
+      "slug": "cart-accessories",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cart-additions": {
+      "slug": "cart-additions",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "centred-card": {
+      "slug": "centred-card",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "citrus-sunrise": {
+      "slug": "citrus-sunrise",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "summer"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "code-reveal": {
+      "slug": "code-reveal",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "coffee-finder-board": {
+      "slug": "coffee-finder-board",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "collection-poster": {
+      "slug": "collection-poster",
+      "industries": [
+        "home-garden",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "colour-atlas": {
+      "slug": "colour-atlas",
+      "industries": [
+        "books-publishing",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "conversation-note": {
+      "slug": "conversation-note",
+      "industries": [
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cream-coupon": {
+      "slug": "cream-coupon",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "deadline-panel": {
+      "slug": "deadline-panel",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "edition-pass": {
+      "slug": "edition-pass",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "launch",
+        "black-friday"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "event-calendar": {
+      "slug": "event-calendar",
+      "industries": [
+        "arts-events",
+        "travel-places",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "excerpt-window": {
+      "slug": "excerpt-window",
+      "industries": [
+        "books-publishing",
+        "retail"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "exhibition-wall": {
+      "slug": "exhibition-wall",
+      "industries": [
+        "home-garden",
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "fieldwork": {
+      "slug": "fieldwork",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "flash-offer": {
+      "slug": "flash-offer",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "fullscreen-editorial": {
+      "slug": "fullscreen-editorial",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "fullscreen-poster": {
+      "slug": "fullscreen-poster",
+      "industries": [
+        "professional-services",
+        "retail"
+      ],
+      "occasions": [
+        "summer"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "fullscreen-split": {
+      "slug": "fullscreen-split",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "gift-edit": {
+      "slug": "gift-edit",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "gift-orbit": {
+      "slug": "gift-orbit",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "christmas"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "ink-split": {
+      "slug": "ink-split",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-bar": {
+      "slug": "inline-bar",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-benefits": {
+      "slug": "inline-benefits",
+      "industries": [
+        "fashion"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-cart-nudge": {
+      "slug": "inline-cart-nudge",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-choice": {
+      "slug": "inline-choice",
+      "industries": [
+        "books-publishing",
+        "professional-services",
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-code-strip": {
+      "slug": "inline-code-strip",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-cta": {
+      "slug": "inline-cta",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-phone": {
+      "slug": "inline-phone",
+      "industries": [
+        "fashion",
+        "arts-events",
+        "professional-services"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-quiet": {
+      "slug": "inline-quiet",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-rule": {
+      "slug": "inline-rule",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-signpost": {
+      "slug": "inline-signpost",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-split": {
+      "slug": "inline-split",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "inline-tinted": {
+      "slug": "inline-tinted",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "journey-content-guide": {
+      "slug": "journey-content-guide",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "journey-email-only": {
+      "slug": "journey-email-only",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "journey-email-then-sms": {
+      "slug": "journey-email-then-sms",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "launch",
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "journey-enquiry": {
+      "slug": "journey-enquiry",
+      "industries": [
+        "home-garden",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "journey-offer-first": {
+      "slug": "journey-offer-first",
+      "industries": [
+        "arts-events"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "journey-product-finder": {
+      "slug": "journey-product-finder",
+      "industries": [
+        "home-garden",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "journey-service-enquiry": {
+      "slug": "journey-service-enquiry",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "kit-workbench": {
+      "slug": "kit-workbench",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "launch-checklist": {
+      "slug": "launch-checklist",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "launch",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "launch-index": {
+      "slug": "launch-index",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "ledger-card": {
+      "slug": "ledger-card",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "makers-index": {
+      "slug": "makers-index",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "margin-note": {
+      "slug": "margin-note",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "material-pair": {
+      "slug": "material-pair",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "measurement-map": {
+      "slug": "measurement-map",
+      "industries": [
+        "fashion"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "message-sample": {
+      "slug": "message-sample",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "name-and-email": {
+      "slug": "name-and-email",
+      "industries": [
+        "arts-events",
+        "professional-services",
+        "retail"
+      ],
+      "occasions": [
+        "christmas",
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "night-observatory": {
+      "slug": "night-observatory",
+      "industries": [
+        "books-publishing",
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "number-invitation": {
+      "slug": "number-invitation",
+      "industries": [
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "offer-panel": {
+      "slug": "offer-panel",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "offer-receipt": {
+      "slug": "offer-receipt",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "sale",
+        "black-friday"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "photo-offer": {
+      "slug": "photo-offer",
+      "industries": [
+        "travel-places",
+        "retail"
+      ],
+      "occasions": [
+        "launch",
+        "sale"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "photo-wash": {
+      "slug": "photo-wash",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "popup-editorial": {
+      "slug": "popup-editorial",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "popup-flash": {
+      "slug": "popup-flash",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "popup-two-column": {
+      "slug": "popup-two-column",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "portrait-frame": {
+      "slug": "portrait-frame",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "preference-card": {
+      "slug": "preference-card",
+      "industries": [
+        "books-publishing",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "product-detail-sheet": {
+      "slug": "product-detail-sheet",
+      "industries": [
+        "home-garden",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "product-shelf": {
+      "slug": "product-shelf",
+      "industries": [
+        "books-publishing",
+        "home-garden",
+        "retail"
+      ],
+      "occasions": [
+        "black-friday"
+      ],
+      "style": [
+        "editorial",
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "programme-board": {
+      "slug": "programme-board",
+      "industries": [
+        "arts-events",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "project-notebook": {
+      "slug": "project-notebook",
+      "industries": [
+        "books-publishing",
+        "travel-places",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "project-pair": {
+      "slug": "project-pair",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "project-route": {
+      "slug": "project-route",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "project-workboard": {
+      "slug": "project-workboard",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "punched-ticket": {
+      "slug": "punched-ticket",
+      "industries": [
+        "arts-events"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "neutral"
+      ]
+    },
+    "quieter-frequency": {
+      "slug": "quieter-frequency",
+      "industries": [
+        "books-publishing",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "reader-review": {
+      "slug": "reader-review",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "reading-cover": {
+      "slug": "reading-cover",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "reading-desk": {
+      "slug": "reading-desk",
+      "industries": [
+        "books-publishing",
+        "home-garden"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "reading-path": {
+      "slug": "reading-path",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "reading-slip": {
+      "slug": "reading-slip",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "recipe-clipping": {
+      "slug": "recipe-clipping",
+      "industries": [
+        "food-drink",
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "request-folio": {
+      "slug": "request-folio",
+      "industries": [
+        "home-garden",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "resource-index": {
+      "slug": "resource-index",
+      "industries": [
+        "books-publishing",
+        "fashion",
+        "travel-places"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "room-checklist": {
+      "slug": "room-checklist",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "sample-envelope": {
+      "slug": "sample-envelope",
+      "industries": [
+        "fashion",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "scope-sheet": {
+      "slug": "scope-sheet",
+      "industries": [
+        "fashion",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "service-directory": {
+      "slug": "service-directory",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "service-docket": {
+      "slug": "service-docket",
+      "industries": [
+        "home-garden",
+        "professional-services",
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "service-ledger": {
+      "slug": "service-ledger",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "service-process-strip": {
+      "slug": "service-process-strip",
+      "industries": [
+        "travel-places",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "service-summary": {
+      "slug": "service-summary",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "session-card": {
+      "slug": "session-card",
+      "industries": [
+        "books-publishing",
+        "arts-events"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "slide-in-benefits": {
+      "slug": "slide-in-benefits",
+      "industries": [
+        "fashion"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "slide-in-code": {
+      "slug": "slide-in-code",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "slide-in-nudge": {
+      "slug": "slide-in-nudge",
+      "industries": [
+        "travel-places",
+        "professional-services"
+      ],
+      "occasions": [
+        "summer"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "slide-in-photo": {
+      "slug": "slide-in-photo",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "slide-in-question": {
+      "slug": "slide-in-question",
+      "industries": [
+        "books-publishing",
+        "travel-places",
+        "professional-services"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "space-planner": {
+      "slug": "space-planner",
+      "industries": [
+        "fashion",
+        "home-garden",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "specification-sheet": {
+      "slug": "specification-sheet",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "split-hero": {
+      "slug": "split-hero",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "split-notice": {
+      "slug": "split-notice",
+      "industries": [
+        "fashion",
+        "home-garden",
+        "retail"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "stacked-signup": {
+      "slug": "stacked-signup",
+      "industries": [
+        "professional-services"
+      ],
+      "occasions": [
+        "launch",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "studio-window": {
+      "slug": "studio-window",
+      "industries": [
+        "home-garden",
+        "arts-events",
+        "retail"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "summer-archive": {
+      "slug": "summer-archive",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "summer",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "sunday-marginalia": {
+      "slug": "sunday-marginalia",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "supper-menu": {
+      "slug": "supper-menu",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "trail-window": {
+      "slug": "trail-window",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "summer"
+      ],
+      "style": [
+        "editorial",
+        "soft"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "useful-guide": {
+      "slug": "useful-guide",
+      "industries": [
+        "books-publishing",
+        "fashion"
+      ],
+      "occasions": [
+        "sale"
+      ],
+      "style": [
+        "editorial",
+        "crisp"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
+    "weekend-broadsheet": {
+      "slug": "weekend-broadsheet",
+      "industries": [
+        "books-publishing"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "wide-banner": {
+      "slug": "wide-banner",
+      "industries": [
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    }
+  }
+}

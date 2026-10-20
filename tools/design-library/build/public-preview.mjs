@@ -3,7 +3,7 @@ import { previewController } from './preview-controls.mjs';
 import { createHash } from 'node:crypto';
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-/** Build inert rendered screens, never publish editable trees or the premium renderer. */
+/** Build inert rendered screens, never publish editable trees, original premium images or the premium renderer. */
 export function publicPreview(pack, renderer, media = [], { designId, embed = false, designOnly = false } = {}) {
   if (designOnly && !designId) throw new Error('Design-only v1 requires one explicit design');
   const dom = new JSDOM('<!doctype html><body></body>', { runScripts: 'outside-only' });
@@ -13,9 +13,12 @@ export function publicPreview(pack, renderer, media = [], { designId, embed = fa
     pack = structuredClone(pack);
     for (const binding of pack.image_bindings ?? []) {
       const asset = pack.assets.find(item => item.id === binding.asset_id);
-      const bytes = media.find(item => item.id === binding.asset_id)?.bytes;
-      if (!asset || !Buffer.isBuffer(bytes) || createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw new Error('Public preview needs verified image bytes');
-      const walk = node => { if (node.id === binding.node_id) node.src = `data:${asset.mime};base64,${bytes.toString('base64')}`; for (const key of ['children','start','end']) for (const child of node[key] ?? []) walk(child); };
+      const item = media.find(candidate => candidate.id === binding.asset_id), bytes = item?.bytes;
+      // A premium picture arrives already downscaled (`verified: false`), so it
+      // cannot match the original's digest; every other image must.
+      if (!asset || !Buffer.isBuffer(bytes) || (item.verified !== false && createHash('sha256').update(bytes).digest('hex') !== asset.sha256)) throw new Error('Public preview needs verified image bytes');
+      if (asset.access === 'premium' && item.verified !== false) throw new Error('A public preview never embeds an original premium image');
+      const walk = node => { if (node.id === binding.node_id) node.src = `data:${item.mime ?? asset.mime};base64,${bytes.toString('base64')}`; for (const key of ['children','start','end']) for (const child of node[key] ?? []) walk(child); };
       for (const step of pack.templates.find(item => item.id === binding.template_id).tree.steps) walk(step.content);
     }
     const screens = [];

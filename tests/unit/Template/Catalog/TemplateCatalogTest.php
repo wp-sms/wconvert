@@ -374,6 +374,33 @@ final class TemplateCatalogTest extends TestCase
         self::assertSame([], $this->http->requests);
     }
 
+    public function testAnIndexPastTheBudgetKeepsThePagesThatFit(): void
+    {
+        for ($i = 0; $i < 3; $i++) $this->service->design(self::FREE_DESIGN, 'page-' . $i, 1, [], ['name' => str_repeat('n', 100)]);
+        $this->service->designsPerPage = 1;
+        $this->service->publish();
+        $release = json_decode($this->http->responses[CatalogFixture::BASE . 'releases/' . json_decode($this->http->responses[CatalogFixture::SOURCE], true)['release'] . '.json'], true);
+        // Pad the last page past the reader's whole budget.
+        $last = CatalogFixture::BASE . 'index/' . end($release['pages']) . '.json';
+        $page = json_decode($this->http->responses[$last], true);
+        $page['padding'] = str_repeat('x', \WConvert\Template\Catalog\CatalogIndex::MAX_INDEX_BYTES);
+        unset($this->http->responses[$last]);
+        $json = json_encode($page, JSON_THROW_ON_ERROR);
+        $release['pages'][2] = hash('sha256', $json);
+        $this->http->responses[CatalogFixture::BASE . 'index/' . $release['pages'][2] . '.json'] = $json;
+        $releaseJson = json_encode($release, JSON_THROW_ON_ERROR);
+        $this->http->responses[CatalogFixture::BASE . 'releases/' . hash('sha256', $releaseJson) . '.json'] = $releaseJson;
+        $this->http->responses[CatalogFixture::SOURCE] = json_encode(['schema' => 3, 'minor' => 0, 'release' => hash('sha256', $releaseJson)], JSON_THROW_ON_ERROR);
+        $transport = new class ($this->http->responses) extends FakeCatalogTransport {
+            /** @param array<string, string> $responses */
+            public function __construct(array $responses) { $this->responses = $responses; }
+            public function get(string $url, int $limit = 262144): string { return parent::get($url, PHP_INT_MAX); }
+        };
+        $status = $this->catalog(Tier::Free, $transport)->refresh();
+        self::assertSame(['page-0', 'page-1'], array_column($status['designs'], 'id'));
+        self::assertTrue($status['update_required']);
+    }
+
     public function testAHigherMajorSaysUpdateWithoutLosingTheCurrentLibrary(): void
     {
         $this->service->design(self::FREE_DESIGN, 'reading');

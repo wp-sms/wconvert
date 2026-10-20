@@ -71,6 +71,12 @@ esac
 # production assets or publish a collection, and introduces no CI workflow.
 (cd "$REPO_ROOT" && npm run templates:collections:check)
 
+# Each bundled design ships with its catalogue revision (ADR 0156), and the
+# highest revision wins across bundled, installed and hosted copies. A ZIP
+# whose revisions.json disagrees with the registry would let a stale bundled
+# copy outrank a newer download, so it is refused here.
+(cd "$REPO_ROOT" && npm run templates:revisions:check)
+
 for tool in php zip; do
     command -v "$tool" >/dev/null 2>&1 || {
         echo "required command not found: $tool" >&2
