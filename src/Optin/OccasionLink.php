@@ -39,6 +39,7 @@ final class OccasionLink
         if ($value === $stored) {
             return null;
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- never shown: callers catch the type and answer with their own message.
         throw new InvalidOccasion(is_string($value) ? $value : get_debug_type($value));
     }
 
