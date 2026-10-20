@@ -237,8 +237,8 @@ It does not receive campaigns, leads or visitor form answers. Normal HTTP traffi
 also exposes the web server's IP address and requested URL. Changing the catalog
 address does not change the trusted recipient for licence credentials.
 
-Prelaunch note: the operator must publish and link the template service's terms
-and privacy notice before distributing this default connection to customers.
+Service terms: https://wconvert.io/terms/
+Privacy policy: https://wconvert.io/privacy/
 
 **Bot verification.** Hidden-field checks and submission limits are built in.
 In Settings → Spam protection, administrators may enable one verification

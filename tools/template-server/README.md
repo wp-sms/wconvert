@@ -1,5 +1,8 @@
 # WConvert Template Library
 
+For the release-linked public design catalogue, focused embeds, real thumbnails,
+website integration and migration order, see [the public gallery contract](GALLERY-CONTRACT.md).
+
 This is the template API, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. One hosted environment uses Worker `wconvert-template-api` and private R2 buckets `wconvert-templates-public` and `wconvert-templates-private`; local development emulates those bindings without contacting Cloudflare. Local commands do not create cloud resources or change site settings. The explicit remote publishing command below writes to the configured R2 buckets.
 
 The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates those bindings on disk. The hosted Worker uses the same handler with the two real private R2 buckets.
@@ -145,7 +148,57 @@ References: [R2 Workers API and conditional operations](https://developers.cloud
 
 The hosted WordPress check does not change persistent site options or send a licence. It downloads Free packs through the shipping transport, verifies their images, confirms premium refusal, and simulates an outage after installation. The plugin now defaults to `https://templates.wconvert.io/manifest.json` when the catalogue option is absent. The picker still fetches only on an explicit Check for packs action. An explicit empty option disables discovery, and custom sources remain supported. Pro uses a separately pinned trusted origin; catalogue overrides cannot redirect credentials. The native verifier starts without endpoint overrides.
 
-The 19 October illustrated release adds Fabric sample enquiries, with one protected PNG and no WooCommerce dependency. Six packs / 23 setups / 20 designs are published. Real licensed installation verifies the downloaded image and hydrates a local URL; installed previews work during a simulated outage. See [release acceptance](../../docs/reviews/hosted-picker-release-2026-10-19.md). Public customer distribution still needs published service terms/privacy links and the operational launch checks in the setup guide.
+The 19 October illustrated release adds Fabric sample enquiries, with one protected PNG and no WooCommerce dependency. Six packs / 23 setups / 20 designs are published. Real licensed installation verifies the downloaded image and hydrates a local URL; installed previews work during a simulated outage. See [release acceptance](../../docs/reviews/hosted-picker-release-2026-10-19.md). Service disclosures are published at [privacy](https://wconvert.io/privacy/) and [terms](https://wconvert.io/terms/). See the [setup guide](CLOUDFLARE-SETUP.md) for operational checks and remaining licence scenarios.
+
+## Request limits and recovery
+
+The Worker uses separate Cloudflare rate limiter bindings: `GRANT_RATE_LIMITER`
+allows 30 POST `/grants` requests per 60 seconds, and `DOWNLOAD_RATE_LIMITER`
+allows 300 private GET/HEAD requests per 60 seconds. Private JSON and premium
+images share the download counter. Keys use Cloudflare's connecting IP; shared
+hosting can share a quota. Limits are approximate per Cloudflare location, not a
+global quota. Public discovery, Free packs and previews use neither counter.
+Exhausted counters return 429 with `Retry-After: 60` and `private, no-store`;
+missing or failing bindings return 503. Nexus retains its own issuance limits.
+See [Cloudflare rate limiter semantics](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
+
+Run a bounded live probe explicitly, then wait at least 65 seconds after its last
+request before checking recovery:
+
+```sh
+npm run verify:limits --prefix tools/template-server -- --phase burst
+npm run verify:limits --prefix tools/template-server -- --phase recovery
+```
+
+The probe sends no licences, passes or valid grant bodies and does not call
+Nexus. It temporarily consumes the probe IP's private-service limits.
+
+Create an exclusive backup outside the web root using the existing private R2
+publishing credentials. The parent directory must exist; never commit snapshots:
+
+```sh
+npm run backup --prefix tools/template-server -- \
+  --credentials /private/template-publisher.env \
+  --directory /private/backups/new-snapshot
+npm run rehearse:recovery --prefix tools/template-server -- \
+  /private/backups/new-snapshot
+```
+
+Backup reads the current pointer and every retained release's public/private
+dependencies, verifies hashes and sizes, and refuses a pointer change during
+capture. Files use mode 0600, directories 0700. Temporary grants, passes,
+licences, Worker secrets, Cloudflare settings and Nexus data are excluded.
+Rehearsal restores into fresh local Workerd/R2, verifies the service, checks
+private bytes and isolation, rolls back each retained version and restores the
+current pointer. It never writes production.
+
+For a real recovery, provision the Worker/bindings and restore its separately
+managed secret first. Use the existing remote publisher with the backup as its
+release directory and its normal expected-current-release guard. Verify private
+and public objects before promoting the manifest, then run remote and licensed
+WordPress acceptance. The local rehearsal does not prove account failover,
+secret recovery or Nexus recovery. Keep a separately protected off-machine copy
+for disaster recovery; the launch rehearsal only created a local snapshot.
 
 To rehearse all local packs, including private images, without Nexus or network authorization:
 

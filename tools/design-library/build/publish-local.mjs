@@ -8,6 +8,7 @@ import { buildCollections, checkRuntimeCollections } from './collections.mjs';
 import { reviewQueue } from './reviews.mjs';
 import { publicPreview } from './public-preview.mjs';
 import { artworkExports } from './artwork.mjs';
+import { galleryArtwork } from './design-gallery.mjs';
 import { buildRelease, publishRelease, sha256 } from './publisher.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
@@ -51,7 +52,8 @@ const collections = plan.collections.map(id => {
     return { ...reference, stage: item.stage };
   }) };
 });
-const release = buildRelease({ origin: values.origin, packs, collections });
+await galleryArtwork(packs, renderer);
+const release = buildRelease({ origin: values.origin, packs, collections, designs: true });
 const responses = Object.fromEntries(release.objects.map(object => [`${new URL(values.origin).origin}/${object.scope === 'private' ? object.key.replace('packs/', 'downloads/') : object.key}`, object.bytes.toString(object.key.startsWith('assets/') ? 'base64' : 'utf8')]));
 responses[`${new URL(values.origin).origin}/manifest.json`] = release.manifest;
 const empty = mkdtempSync(join(tmpdir(), 'wconvert-release-validation-'));

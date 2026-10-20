@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync, openSync, closeSync, existsSync, lstatSync, fsyncSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
+import { designCatalogue } from './design-catalogue.mjs';
 
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 export const jsonBytes = value => JSON.stringify(value, null, 2) + '\n';
@@ -9,7 +10,7 @@ const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value
 const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,59}$/.test(value);
 
 /** Compile already reviewed packs. The CLI separately validates with the shipping PHP reader. */
-export function buildRelease({ origin, packs, collections }) {
+export function buildRelease({ origin, packs, collections, designs = false }) {
   const url = new URL(origin);
   check(url.protocol === 'https:' && !url.username && !url.password && !url.search && !url.hash && url.pathname === '/', 'Use an HTTPS service origin without a path or credentials');
   origin = url.origin;
@@ -52,7 +53,13 @@ export function buildRelease({ origin, packs, collections }) {
       check(pack && pack.hash === item.pack_digest && pack.ids.has(item.setup_id), 'Missing or stale collection setup reference');
     }
   }
-  const id = sha256(jsonBytes({ packs: rows, collections: ordered }));
+  const gallery = designs ? designCatalogue(packs, rows, origin, objects) : undefined;
+  const id = sha256(jsonBytes({ packs: rows, collections: ordered, ...(gallery ? { designs: gallery } : {}) }));
+  if (gallery) {
+    const bytes = Buffer.from(jsonBytes({ schema: 1, release: id, designs: gallery }));
+    check(bytes.length <= 262144, 'Public design catalogue exceeds budget');
+    objects.push({ scope: 'public', key: `releases/${id}/designs.json`, bytes, sha256: sha256(bytes) });
+  }
   const pages = []; let page = { schema: 2, release: id, packs: [], collections: [] };
   const finishPage = () => {
     const bytes = Buffer.from(jsonBytes(page)), key = `releases/${id}/page-${pages.length + 1}.json`, hash = sha256(bytes);
@@ -81,7 +88,7 @@ export function publishRelease(directory, release, expectedRelease, { beforeWrit
   const lock = join(root, '.publish.lock'); let handle;
   try { handle = openSync(lock, 'wx', 0o600); } catch { throw new Error('Another publication is active; inspect the lock before retrying'); }
   const pathFor = (scope, key) => {
-    check(['public', 'private'].includes(scope) && /^(packs\/[a-f0-9]{64}\.json|releases\/[a-f0-9]{64}\/(page-[0-9]+|manifest)\.json|previews\/[a-f0-9]{64}\.html|assets\/(free|premium)\/[a-f0-9]{64}\.(png|jpg|webp))$/.test(key), 'Invalid object key');
+    check(['public', 'private'].includes(scope) && /^(packs\/[a-f0-9]{64}\.json|releases\/[a-f0-9]{64}\/(page-[0-9]+|manifest|designs)\.json|previews\/[a-f0-9]{64}\.html|thumbnails\/[a-f0-9]{64}\.jpg|assets\/(free|premium)\/[a-f0-9]{64}\.(png|jpg|webp))$/.test(key), 'Invalid object key');
     const path = join(root, scope, key);
     for (let parent = dirname(path); parent !== root; parent = dirname(parent)) {
       if (existsSync(parent)) check(!lstatSync(parent).isSymbolicLink(), 'Storage cannot contain symlinks');

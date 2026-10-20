@@ -1,0 +1,55 @@
+✔ backup includes all retained dependencies, protects local files, excludes grants, and refuses overwrite (58.048833ms)
+✔ missing or corrupt private backup dependencies fail before creating the destination (1.321458ms)
+✔ a publication during backup invalidates the snapshot (0.989416ms)
+✔ Nexus passes authorize an exact pack and images, including HEAD and retries (944.938417ms)
+✔ licence, activation, service and availability failures stay distinct (505.671708ms)
+✔ signed but wrong claims, algorithms and lifetimes cannot issue access (610.467042ms)
+✔ public access never calls Nexus; clients cannot supply resource sets or credentials in URLs (320.7235ms)
+✔ expiry is enforced on each file; context loss and storage outages never grant access (431.348666ms)
+✔ unknown signing key refresh is bounded, rotations and outage fail safely (423.415209ms)
+✔ malformed and oversized requests are bounded and never call Nexus (312.342708ms)
+✔ Nexus malformed replies, redirects, oversized responses and missing keys fail closed (371.387708ms)
+✔ custom API hostname accepts the pinned issuer, never the API origin as issuer (369.228125ms)
+▶ unsafe or mismatched configured endpoints never send credentials
+  ✔ {"NEXUS_KEYS_URL":"https://other.example/keys"} (276.685166ms)
+  ✔ {"NEXUS_GRANT_URL":"http://nexus.example/grant"} (309.122917ms)
+  ✔ {"NEXUS_GRANT_URL":"https://user:password@nexus.example/grant"} (319.105542ms)
+  ✔ {"NEXUS_KEYS_URL":"https://nexus.example/api/v1/wconvert/entitlements/keys?key=value"} (329.544584ms)
+  ✔ {"NEXUS_ISSUER":"https://nexus.example#fragment"} (316.13375ms)
+  ✔ {"NEXUS_AUDIENCE":"http://templates.example"} (323.240208ms)
+✔ unsafe or mismatched configured endpoints never send credentials (1875.707ms)
+✔ actual edge bindings count grants separately from private GET/HEAD/retries and isolate IPs (710.7515ms)
+✔ missing rate bindings fail closed for premium while public remains available (417.485375ms)
+✔ S3 wire contract: initial publication, unchanged retry, update and retained rollback (352.934209ms)
+✔ S3 concurrent publishers cannot both change the same manifest (93.366667ms)
+✔ stale expected release refuses before any private or public upload (45.7155ms)
+✔ interrupted dependency uploads preserve catalogue and can be resumed (72.070625ms)
+✔ private upload failure never exposes a catalogue needing missing premium files (6.830667ms)
+✔ changed existing immutable bytes block promotion (73.215ms)
+✔ corrupt first read-back after a successful public PUT preserves the old manifest (52.276667ms)
+✔ corrupt first read-back after a successful private PUT preserves the old manifest (41.014208ms)
+✔ lost promotion response is reported as uncertain, never blindly retried (56.78175ms)
+✔ bounded reads, missing bucket/access errors and scope restrictions fail closed (1.289958ms)
+▶ actual Worker/R2 runtime: public routing, private refusal, caches and atomic promotion
+  ✔ no catalogue before seeding (33.071208ms)
+  ✔ promotion, retry and reuse (324.676959ms)
+  ✔ GET, HEAD, ETag, cache and strict routing (63.528708ms)
+  ✔ premium remains unavailable even with a tier claim (5.292584ms)
+  ✔ public previews and images, bounded stored content (55.646042ms)
+  ✔ failed write never changes the entry point (77.786417ms)
+  ✔ concurrent publishers cannot both win; rollback reuses immutable bytes (240.093792ms)
+✔ actual Worker/R2 runtime: public routing, private refusal, caches and atomic promotion (1338.468542ms)
+✔ local input rejects changed bytes and premium source in public storage (2.050292ms)
+✔ staging validates retained dependencies and preserves complete rollback releases (20.666042ms)
+✔ private staging validates pack/image closure before promotion and never mixes storage (556.867667ms)
+✔ hosted verifier checks hashes with negotiated GET and identity HEAD (30.268375ms)
+✔ hosted verifier refuses wrong release, changed bytes, open premium and missing sandbox (20.991125ms)
+✔ configured verification requires anonymous 401 and still rejects open or unavailable premium (24.611042ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6908.75325

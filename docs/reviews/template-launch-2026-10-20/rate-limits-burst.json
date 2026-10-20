@@ -1,0 +1,62 @@
+{
+  "started": "2026-10-20T05:42:02.167Z",
+  "origin": "https://templates.wconvert.io",
+  "phase": "burst",
+  "grants": {
+    "sent": 40,
+    "statuses": {
+      "400": 33,
+      "429": 7
+    },
+    "elapsedMs": 7514,
+    "locations": [
+      "ARN"
+    ],
+    "blocked": {
+      "status": 429,
+      "ray": "a4d5b2ae1ec1f3bd-ARN",
+      "retryAfter": "60",
+      "contentType": "application/json",
+      "cacheControl": "private, no-store"
+    }
+  },
+  "privateDuringGrantBlock": {
+    "status": 401,
+    "ray": "a4d5b2b50877f3bd-ARN",
+    "retryAfter": null,
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  },
+  "files": {
+    "sent": 310,
+    "statuses": {
+      "401": 301,
+      "429": 9
+    },
+    "elapsedMs": 7947,
+    "locations": [
+      "ARN"
+    ],
+    "blocked": {
+      "status": 429,
+      "ray": "a4d5b2eaeabcf3bd-ARN",
+      "retryAfter": "60",
+      "contentType": "application/json",
+      "cacheControl": "private, no-store"
+    }
+  },
+  "imageDuringFileBlock": {
+    "status": 429,
+    "ray": "a4d5b2ec2c8df3bd-ARN",
+    "retryAfter": "60",
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  },
+  "publicAfter": {
+    "status": 200,
+    "ray": "a4d5b2ed7e33f3bd-ARN",
+    "retryAfter": null,
+    "contentType": "application/json; charset=utf-8",
+    "cacheControl": "no-cache, must-revalidate"
+  }
+}

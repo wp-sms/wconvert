@@ -1,12 +1,12 @@
-import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { hash } from './storage.mjs';
 
 const HASH = '[a-f0-9]{64}';
 const keys = {
-  public: new RegExp(`^(manifest\\.json|packs/${HASH}\\.json|releases/${HASH}/(manifest|page-[1-9][0-9]?)\\.json|previews/${HASH}\\.html|assets/free/${HASH}\\.(png|jpg|webp))$`),
+  public: new RegExp(`^(manifest\\.json|packs/${HASH}\\.json|releases/${HASH}/(manifest|designs|page-[1-9][0-9]?)\\.json|previews/${HASH}\\.html|thumbnails/${HASH}\\.jpg|assets/free/${HASH}\\.(png|jpg|webp))$`),
   private: new RegExp(`^(packs/${HASH}\\.json|assets/premium/${HASH}\\.(png|jpg|webp))$`),
 };
-const budget = key => key.startsWith('assets/') ? 5242880 : key.startsWith('previews/') ? 2097152 : 262144;
+const budget = key => (key.startsWith('assets/') || key.startsWith('thumbnails/')) ? 5242880 : key.startsWith('previews/') ? 2097152 : 262144;
 const etag = value => {
   if (typeof value !== 'string' || !/^"[a-f0-9-]+"$/i.test(value)) throw Error('R2 returned an invalid object validator');
   return value.slice(1, -1);
@@ -31,6 +31,27 @@ export class R2Storage {
     this.client = client; this.bucket = bucket; this.scope = scope;
   }
   checkKey(key) { if (!keys[this.scope].test(key)) throw Error('Object path is outside this publishing scope'); }
+  async retainedReleases() {
+    if (this.scope !== 'public') throw Error('Only public release manifests may be listed');
+    const ids = new Set(); let cursor; let count = 0;
+    do {
+      let result;
+      try {
+        result = await this.client.send(new ListObjectsV2Command({
+          Bucket: this.bucket, Prefix: 'releases/', ContinuationToken: cursor, MaxKeys: 1000,
+        }), { abortSignal: AbortSignal.timeout(60000) });
+      } catch { throw Error('R2 release listing failed; no provider response was logged'); }
+      for (const object of result.Contents ?? []) {
+        if (++count > 2000) throw Error('Release listing exceeds backup budget');
+        const match = object.Key?.match(/^releases\/([a-f0-9]{64})\/manifest\.json$/);
+        if (match) ids.add(match[1]);
+      }
+      const next = result.IsTruncated ? result.NextContinuationToken : undefined;
+      if (result.IsTruncated && (!next || next === cursor)) throw Error('Invalid release listing cursor');
+      cursor = next;
+    } while (cursor);
+    return [...ids].sort();
+  }
   async get(key) {
     this.checkKey(key);
     let result;

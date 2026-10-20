@@ -1,10 +1,11 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, lstatSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { legacyReleaseId, validateDesignCatalogue } from './design-catalogue.mjs';
 export const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const check = (ok, reason) => { if (!ok) throw Error(reason); };
 const digest = '[a-f0-9]{64}';
-const allowed = new RegExp(`^(packs/${digest}\\.json|releases/${digest}/(manifest|page-[1-9][0-9]?)\\.json|previews/${digest}\\.html|assets/free/${digest}\\.(png|jpg|webp))$`);
+const allowed = new RegExp(`^(packs/${digest}\\.json|releases/${digest}/(manifest|designs|page-[1-9][0-9]?)\\.json|previews/${digest}\\.html|thumbnails/${digest}\\.jpg|assets/free/${digest}\\.(png|jpg|webp))$`);
 
 /** Read a trusted, previously validated publisher output, never its private sibling. */
 export function readPublicRelease(directory, retainedRelease) {
@@ -16,7 +17,7 @@ export function readPublicRelease(directory, retainedRelease) {
       check(!stat.isSymbolicLink(), 'Symlinks are not allowed');
       if (stat.isDirectory()) { visit(file, key + '/'); continue; }
       check(stat.isFile() && (key === 'manifest.json' || allowed.test(key)), `Unexpected public file: ${key}`);
-      const limit = key.startsWith('assets/') ? 5242880 : key.startsWith('previews/') ? 2097152 : 262144;
+      const limit = (key.startsWith('assets/') || key.startsWith('thumbnails/')) ? 5242880 : key.startsWith('previews/') ? 2097152 : 262144;
       total += stat.size; check(stat.size > 0 && stat.size <= limit && total <= 134217728 && objects.size < 2000, 'Public release exceeds local rehearsal budget');
       const bytes = readFileSync(file);
       if (!key.startsWith('releases/') && key !== 'manifest.json') check(key.split('/').pop().split('.')[0] === hash(bytes), `Digest mismatch: ${key}`);
@@ -38,12 +39,14 @@ export function readPublicRelease(directory, retainedRelease) {
     const pointer = JSON.parse(bytes);
     check(pointer.schema === 2 && new RegExp(`^${digest}$`).test(pointer.release) && pointer.release === expectedId, 'Invalid release identity');
     let origin;
+    const releasePacks = [], releaseCollections = [];
     const localKey = value => { const u = new URL(value); check(u.protocol === 'https:' && !u.username && !u.password && !u.search && !u.hash, 'Invalid published URL'); origin ??= u.origin; check(u.origin === origin, 'Mixed release origins'); return u.pathname.slice(1); };
     const verified = (key, sha) => { const bytes = objects.get(key); check(bytes && hash(bytes) === sha, `Missing or changed dependency: ${key}`); return bytes; };
     check(Array.isArray(pointer.pages) && pointer.pages.length > 0 && pointer.pages.length <= 16, 'Invalid pages');
     for (const page of pointer.pages) {
       const key = localKey(page.url); check(key.startsWith(`releases/${pointer.release}/page-`), 'Wrong release page');
       const data = JSON.parse(verified(key, page.sha256)); check(data.release === pointer.release, 'Page identity mismatch');
+      releasePacks.push(...data.packs); releaseCollections.push(...(data.collections ?? []));
       for (const pack of data.packs) {
         if (pack.preview_url) { const preview = localKey(pack.preview_url); verified(preview, preview.split('/').pop().split('.')[0]); }
         const key = localKey(pack.url);
@@ -52,6 +55,12 @@ export function readPublicRelease(directory, retainedRelease) {
         const data = JSON.parse(verified(key, pack.sha256));
         for (const asset of data.assets ?? []) verified(`assets/free/${asset.sha256}.${{ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[asset.mime]}`, asset.sha256);
       }
+    }
+    if (legacyReleaseId(releasePacks, releaseCollections) !== pointer.release) {
+      const bytes = objects.get(`releases/${pointer.release}/designs.json`);
+      check(bytes, 'Missing design catalogue dependency');
+      const dependencies = validateDesignCatalogue(JSON.parse(bytes), { id: pointer.release, packs: releasePacks, collections: releaseCollections, origin });
+      for (const [key, sha] of dependencies) verified(key, sha);
     }
     return origin;
   }

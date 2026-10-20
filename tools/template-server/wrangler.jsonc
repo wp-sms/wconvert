@@ -8,6 +8,18 @@
   "observability": {
     "enabled": true
   },
+  "ratelimits": [
+    {
+      "name": "GRANT_RATE_LIMITER",
+      "namespace_id": "202610201",
+      "simple": { "limit": 30, "period": 60 }
+    },
+    {
+      "name": "DOWNLOAD_RATE_LIMITER",
+      "namespace_id": "202610202",
+      "simple": { "limit": 300, "period": 60 }
+    }
+  ],
   "r2_buckets": [
     {
       "binding": "PUBLIC_TEMPLATES",
@@ -19,6 +31,7 @@
     }
   ],
   "vars": {
+    "PREVIEW_EMBED_ORIGINS": "https://wconvert.io https://www.wconvert.io",
     "NEXUS_GRANT_URL": "https://my.wconvert.io/api/v1/wconvert/entitlements/grant",
     "NEXUS_KEYS_URL": "https://my.wconvert.io/api/v1/wconvert/entitlements/keys",
     "NEXUS_ISSUER": "https://nexus.veronalabs.com",

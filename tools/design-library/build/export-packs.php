@@ -94,6 +94,17 @@ foreach ($definition['setups'] as $id) {
     if ($assets) $pack['image_bindings'] = $bindings;
     $json = json_encode($pack, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
     try { $validator->decode($json); } catch (RuntimeException $error) { throw new RuntimeException($definition['id'] . ': ' . $error->getMessage()); }
-    $output[] = ['access' => $paid ? 'premium' : 'free', 'json' => $json, 'media' => array_values($media)];
+    // Public facts come from the same capability predicates used by the installer.
+    // Every source resolved above belongs to a shipped Free or Pro template directory.
+    $publicMetadata = [];
+    foreach ($templates as $template) {
+        $publicMetadata[$template['id']] = [
+            'bundled' => true, 'bundle_tier' => $template['tier'],
+            'prerequisites' => ['plugins' => \WConvert\Template\CommerceSupport::used($template['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($template['tree'])
+                || array_filter($template['tree']['steps'], static fn (array $step): bool => ($step['products_required'] ?? false) === true
+                    || (bool) array_filter($step['results'] ?? [], static fn (array $result): bool => isset($result['product_filter']) || !empty($result['product_ids']))) ? ['woocommerce'] : []],
+        ];
+    }
+    $output[] = ['access' => $paid ? 'premium' : 'free', 'json' => $json, 'media' => array_values($media), 'public_metadata' => $publicMetadata];
 }
 echo json_encode($output, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
