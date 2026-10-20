@@ -206,6 +206,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The exporter and studio run the shipping PHP reader.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - run: composer install --no-progress
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -216,11 +225,15 @@ jobs:
 
       - run: npm ci
 
-      - name: Design library
-        run: npm run test:template-studio
-
+      # Some studio tests import the Worker's operator scripts.
       - run: npm ci
         working-directory: tools/template-server
+
+      # Thumbnails, previews and the contrast check render in Chromium.
+      - run: npx playwright install --with-deps chromium
+
+      - name: Design library
+        run: bash tools/design-library/build.sh renderer && npm run test:template-studio
 
       - name: Worker
         working-directory: tools/template-server

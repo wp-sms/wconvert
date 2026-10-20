@@ -121,7 +121,8 @@ async function main() {
   const target = cloudTarget(), client = r2Client(target.account);
   try {
     const report = await backupRemote(new R2Storage(client, target.publicBucket, 'public'), new R2Storage(client, target.privateBucket, 'private'), values.directory, target.origin);
-    const { files, ...summary } = report;
+    const summary = { ...report };
+    delete summary.files;
     console.log(JSON.stringify({ ...summary, directory: values.directory, remoteReadOnly: true }, null, 2));
   } finally { client.destroy(); }
 }

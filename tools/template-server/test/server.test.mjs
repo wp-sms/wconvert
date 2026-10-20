@@ -62,7 +62,7 @@ test('actual Worker/R2 runtime: public routing, private refusal, caches and atom
  });
 });
 
-test('design catalogue discovery is additive; embedding origins are exact and fail closed', async t => {
+test('design catalogue discovery is additive; embedding origins are exact and fail closed', async () => {
  for (const [configured, allowed] of [
   ['https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev', true],
   ['https://dev.wconvert-website.pages.dev', true],
