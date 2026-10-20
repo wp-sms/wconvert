@@ -1,5 +1,5 @@
 <?php
-/** Configured examples for collection approval. Disposable loopback WordPress only. */
+/** Configured examples of any studio setup, for its automated checks (setup-checks.mjs). Disposable loopback WordPress only. */
 add_filter('pre_wp_mail', static function ($result, array $mail) {
     if (!defined('WCONVERT_DS_SECRET') || !in_array(wp_parse_url(home_url(), PHP_URL_HOST), ['127.0.0.1', 'localhost'], true)) return $result;
     $outbox = get_option('wconvert_collection_review_outbox', []);
@@ -11,10 +11,10 @@ add_action('template_redirect', static function (): void {
     if (!isset($_GET['wconvert_collection_approval'])) return;
     if (!defined('WCONVERT_DS_SECRET') || !in_array(wp_parse_url(home_url(), PHP_URL_HOST), ['127.0.0.1', 'localhost'], true)) wp_die('Disposable review site required.');
     try {
-        $source = json_decode(file_get_contents(WCONVERT_DIR . 'tools/design-library/collections/source.json'), true);
-        $ids = array_unique(array_column(array_merge(...array_column($source['collections'], 'items')), 'setup_id'));
+        $studio = json_decode(file_get_contents(WCONVERT_DIR . 'tools/design-library/pilot/collection.json'), true);
+        $ids = array_column($studio['entries'], 'id');
         $id = sanitize_key($_GET['wconvert_collection_approval']);
-        if (!in_array($id, $ids, true)) wp_die('Unknown collection setup.');
+        if (!in_array($id, $ids, true)) wp_die('Unknown studio setup.');
         if (isset($_GET['outbox'])) {
             if (class_exists('ActionScheduler_QueueRunner')) ActionScheduler_QueueRunner::instance()->run();
             wp_send_json(get_option('wconvert_collection_review_outbox', []));
