@@ -22,13 +22,15 @@ screen at desktop and phone widths for visual review.
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
 The studio contains **132 campaign setups using 76 designs**, drawn from a complete
-inventory of **108 designs**. After the shared control correction on 20 October,
-all **132 setup reviews are stale** under the existing renderer revision check.
-The preceding checkpoint had 31 current setup approvals and six approved
-collections; that is historical, not approval of this renderer. The focused
-[control review](../../docs/reviews/shared-control-icons-2026-10-20/README.md)
-checks close buttons and selectors across the inventory without renewing editorial
-approvals or publishing collections.
+inventory of **108 designs**. Updated 20 October: **40 setup approvals are current
+and 92 remain stale**, with nine approved curated collections. The hosted delivery
+plan contains 35 setups / 32 designs / eight packs / six complete collections.
+The latest selection adds twelve previously unhosted studio setups using twelve
+different designs; it does not inflate the source-design count. See the
+[hosted practical review](../../docs/reviews/hosted-practical-2026-10-20/review.md)
+and its per-screen screenshot ledger. The earlier shared-control review and PR300
+approval refresh remain separately recorded; unrelated stale setups were not
+approved as part of this delivery selection.
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
@@ -537,7 +539,7 @@ The current studio has **128 setups / 75 designs**, with **107 designs / 153 reg
 
 The standalone Prefill uses an explicit empty site destination; WordPress retains real shop/home defaults. Product result previews include inert sample cards, and optional empty result links stay hidden. Graph preview traversal comes from the shipping loader. Remote v3 graph packs and explicitly declared, tier-checked paid targeting rules are now accepted by the strict importer. New source-format compatibility does not silently approve older content.
 
-Updated 20 October: six curated collections have current reviews. **31 setup approvals are current and 101 remain stale** after the shared control-icon refresh; the latter should be re-reviewed in focused batches. See [fresh approval evidence](../../docs/reviews/pr300-approvals-2026-10-20/README.md). The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
+At the PR300 checkpoint, six curated collections had current reviews and **31 setup approvals were current / 101 stale**. The newer hosted practical selection raises these to nine collections and **40 current / 92 stale**. See [fresh approval evidence](../../docs/reviews/pr300-approvals-2026-10-20/README.md). That hosted release contained 23 setups / 20 designs / six packs / three complete collections; see the current delivery plan above. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
 
 Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.
 

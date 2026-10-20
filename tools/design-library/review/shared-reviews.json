@@ -50254,6 +50254,1491 @@
         }
       },
       "record_id": "97b37bd6570c7accecb17d82e7c386eba717b1383a8447de7ded272cf8083af7"
+    },
+    {
+      "id": "maker-notes",
+      "revision": "8858d8b479e95555b49d36ae18d6d3b71767d1e95cd33d59f1f2c5f1c2927ed1",
+      "base_id": "9c154b337b84f18250feb611c0e3015d4c5a09f3585cba5259164b18dd665997",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.078Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "40c713ad9ddd5254602c298650675bc2ebce2ec002dbd4c8aa30481a78e16d20"
+    },
+    {
+      "id": "callback-slip",
+      "revision": "fc8bee05fe89aada3be58e1ff79495470fbf91d30594fd8678c62fbbcf65cad9",
+      "base_id": "7614ee427ff0992fdd02490411327a59661bc43043551d36c043dc0d30d77560",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "8d367868e1f0cbc15ada70877fe5d6cdbf53b17e42b08d7326bd05b6ad272ca9"
+    },
+    {
+      "id": "event-calendar",
+      "revision": "b6f666e0ea51084f3d7744feba15d2a806209c791ef985e99e9defb6ae274ad8",
+      "base_id": "34215e61a340f51701c636a30b263abefc5a798f495e4cd065c5ebfa97809cf9",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "2557772345434c7c2eb78cad1eed20071d05a1a1a52931c666cfeff8849ea702"
+    },
+    {
+      "id": "product-detail-sheet",
+      "revision": "a03db8599a53eed4a4db67753415cc613139897604468fca3c44ddf99b473434",
+      "base_id": "85a606162185fb9bde266bcb4009c7d145be8b17f5899265787559ac579d98b5",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "ade07f9397b0b18ed96a2d00199604fc019f8851a0d78d0e9a246998c57e6b6f"
+    },
+    {
+      "id": "service-process-strip",
+      "revision": "f9ce4ed6e025c39600ffcb7f8104d8e052bcd84d15aa55088665776e16fc7f6a",
+      "base_id": "577c642664dc989e6e0090d932fd6180b453d9de90f8567e880983345f035fa9",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "862b347010d716929d9cf47bf71ce4e8c791ffddb7cb9459598a4bd11ace3b0c"
+    },
+    {
+      "id": "launch-index",
+      "revision": "06600f62e346824f0f0a99e592da94fabbba6c669e71e96075ebc4a8eb66b0d4",
+      "base_id": "a3c8cf5dcf27d0db3ba8b3e7bf79735e6870350afa3a0cd3c7579c605d7e23c2",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "048a704e33f9910f603a9ecf7aa07120076f259081243d49138d9a3da4d5a536"
+    },
+    {
+      "id": "appointment-agenda",
+      "revision": "4daeb59fbe76fc305e656923a3288adede1025521a0326947944a7e6caf8dc6d",
+      "base_id": "5b9d3c4b941b02db7bf59f96af2fdea5572796f1895a95beff2f385f4dcb47a8",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "df3cb0919e3f9d9c2b20741002c1b7d85b11f432518ceb61680a43b1e4fa108b"
+    },
+    {
+      "id": "accessible-visit-note",
+      "revision": "560daaf9c626976e0dc8c9b73ec3edd16753f8996ebe4a62819e037b33cd752f",
+      "base_id": "71357cce956607bd60db8379682e5d16540060452ab8e5d16da8741b7c6ff67f",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "826a12e7b5a307eea87e093e1aa212add9be332ea301e61c4b227254247023c3"
+    },
+    {
+      "id": "sms-message-preview",
+      "revision": "59be64d82d927eb8568ba370366a49dfb9e794efcb905377e166f3d1d984b3a1",
+      "base_id": "693d124c35ae39af001dd58c065ac21b58ebd6bd62f7c8ef401760f5b247fb18",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "8824546f90aab7734b21b45af46665ebd44efc998164058081866ed6320702ce"
+    },
+    {
+      "id": "service-fit-brief",
+      "revision": "52bc6f33a0940429aaa149ccefbbb9436dcfb6fddae6b622b67c6767b56e1fb1",
+      "base_id": "99720402cd0bb7c58f9a5b29d7d5953460125ee59375f3ea69a32357766e5376",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "6cac4ffc13b97e05c4dbb194e2e66034df0177149a38611e23464f14651af37d"
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "revision": "9d549f6f9bc7e6c8b0d391d8e731f94afb82420519162b75f79cfb25ffb24047",
+      "base_id": "eddc4f9a0e505ad6226f28cbb0f6dd12198da66a7cba43ce8e4fd335b2c6cad5",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "42ebbb01163fc7060e22a48c4633e6a901f56d0bbdd844ecea41107dd77e6faa"
+    },
+    {
+      "id": "equipment-return-checklist",
+      "revision": "b6db710fc681e9110505975baeb4f99b65685002b6d2c1aa6253224c9fc2d946",
+      "base_id": "34b10f5e0ccd95007604bcd1fd494636abb6c82b3ba0dcd73b5680bd8d424acd",
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical selection",
+      "note": "Fresh visual, simulated failure/retry and native WordPress review of every selected screen. See the report and hashed proof ledger. Merchant destinations, facts and external providers still need configuration.",
+      "at": "2026-10-20T07:11:04.079Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/layout.json",
+              "sha256": "2add43660595637b9c630dd0d51e00d0c20443da62cd89f5432fb294059fabba"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-results.json",
+              "sha256": "dfd3248f023018413eaa176f77d78322e403da4a72159cf3578ae61f4725bc0c"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/simulated-journeys.json",
+              "sha256": "f847bdd8d14adae37554aca7b2ec8d7845b981b877c3c8b6ecd319bdacf78bdf"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/native-links.json",
+              "sha256": "e4ef551615abcdc8c2ece560b0bfa35a4677ff069a216fffaad3d245f1268700"
+            }
+          ]
+        }
+      },
+      "record_id": "62ed8f504b7e51830a0ea2c8ac1fb7f7d6a132051a58fb43d627ca5fd9bf79d0"
+    },
+    {
+      "id": "collection-prepare-a-visit",
+      "revision": "2393b0337ec0d4aa442c5c9b5a6f84b892ece48d96036627f402a5523cb96b85",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical collections",
+      "note": "Grouping and Free/Pro contexts reviewed; all member screens and native WordPress paths reviewed with current evidence.",
+      "at": "2026-10-20T07:12:09.931Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        }
+      },
+      "record_id": "4e5d1f673ab6d80b325368d591ebcde935c326381f3b38ab84a68b8ff12a6c72"
+    },
+    {
+      "id": "collection-useful-store-details",
+      "revision": "e5fced14dd688d0efd05ef3f1ede299b5c37305c7a5a04a8f603629fa6a0eb22",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical collections",
+      "note": "Grouping and Free/Pro contexts reviewed; all member screens and native WordPress paths reviewed with current evidence.",
+      "at": "2026-10-20T07:12:09.932Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        }
+      },
+      "record_id": "b25d52b3970156580d9191d90fba9b8df1afcdc41caa2bd3c678ebe8279a1a2c"
+    },
+    {
+      "id": "collection-explain-the-service",
+      "revision": "b155e9ec5de10526d398b95c6927eb224e78725b87c0cd5734b4893bfca23d58",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — hosted practical collections",
+      "note": "Grouping and Free/Pro contexts reviewed; all member screens and native WordPress paths reviewed with current evidence.",
+      "at": "2026-10-20T07:12:09.932Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+              "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+              "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+              "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+              "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+              "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+            },
+            {
+              "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+              "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+            }
+          ]
+        }
+      },
+      "record_id": "5e737d20a36db90bebfe99e531185b21bd0dd1009c13ef994ff404617a4a3d12"
     }
   ]
 }

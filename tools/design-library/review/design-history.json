@@ -2110,6 +2110,12 @@
           "date": "2026-10-02",
           "revision": "ee74547daf206b6deebebeb55ff394684c632bb8112326d3120fb0535a2f511c",
           "note": "Keep the acknowledgement focused on receipt of the request."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-20",
+          "revision": "c3e26156e0bde3201f43d741b13965b7fc8a75bdc48e814dcedae445d1f30630",
+          "note": "Keep base consent hidden; SMS campaign privacy guidance enables it before capture, matching the hosted pack contract."
         }
       ]
     },

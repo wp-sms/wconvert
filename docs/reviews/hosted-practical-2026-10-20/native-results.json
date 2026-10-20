@@ -1,0 +1,314 @@
+[
+  {
+    "id": "callback-slip",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nYour call request is received.\n\nThank you. The repair and a suitable time still need to be discussed."
+  },
+  {
+    "id": "maker-notes",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "THANK YOU\n\nRequest received\n\nThank you. We have received your request.\n\nYou can unsubscribe at any time."
+  },
+  {
+    "id": "maker-notes",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "THANK YOU\n\nRequest received\n\nThank you. We have received your request.\n\nYou can unsubscribe at any time."
+  },
+  {
+    "id": "callback-slip",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nYour call request is received.\n\nThank you. The repair and a suitable time still need to be discussed."
+  },
+  {
+    "id": "event-calendar",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "View event details"
+      }
+    ]
+  },
+  {
+    "id": "event-calendar",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "View event details"
+      }
+    ]
+  },
+  {
+    "id": "product-detail-sheet",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "View lamp details"
+      }
+    ]
+  },
+  {
+    "id": "product-detail-sheet",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "View lamp details"
+      }
+    ]
+  },
+  {
+    "id": "service-process-strip",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nRestoration enquiry received\n\nThank you. The next conversation can cover the piece, photographs and a possible assessment. No work is booked."
+  },
+  {
+    "id": "service-process-strip",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nRestoration enquiry received\n\nThank you. The next conversation can cover the piece, photographs and a possible assessment. No work is booked."
+  },
+  {
+    "id": "launch-index",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "Explore the collection"
+      }
+    ]
+  },
+  {
+    "id": "launch-index",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "Explore the collection"
+      }
+    ]
+  },
+  {
+    "id": "appointment-agenda",
+    "width": 1280,
+    "viewport": {
+      "width": 1280,
+      "overflow": false
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nConsultation enquiry received\n\nThank you. The format, any fee and a suitable time still need to be agreed.",
+    "note": "Submission completed after the initial browser wait deadline; final visible success verified."
+  },
+  {
+    "id": "appointment-agenda",
+    "width": 320,
+    "viewport": {
+      "width": 320,
+      "overflow": false
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nConsultation enquiry received\n\nThank you. The format, any fee and a suitable time still need to be agreed.",
+    "note": "Submission completed after the initial browser wait deadline; final visible success verified."
+  },
+  {
+    "id": "accessible-visit-note",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "Read arrival and access details"
+      }
+    ]
+  },
+  {
+    "id": "accessible-visit-note",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": false,
+    "links": [
+      {
+        "href": "http://127.0.0.1:9463/",
+        "label": "Read arrival and access details"
+      }
+    ]
+  },
+  {
+    "id": "sms-message-preview",
+    "width": 1280,
+    "viewport": {
+      "width": 1280,
+      "overflow": false
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": false,
+    "acknowledgement": "REQUEST RECEIVED\n\nYour text request is received.\n\nThank you. We have received your request for collection texts.",
+    "note": "Submission completed after the initial browser wait deadline; final visible success verified."
+  },
+  {
+    "id": "service-fit-brief",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nYour enquiry is received.\n\nThank you. The next conversation can confirm which pages to review, the price and timing. No work is booked."
+  },
+  {
+    "id": "service-fit-brief",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nYour enquiry is received.\n\nThank you. The next conversation can confirm which pages to review, the price and timing. No work is booked."
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "YOUR ENQUIRY\n\nEnquiry received\n\nThank you. We have received your details and any availability preference you selected. Your existing booking has not changed.\n\nClose"
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "YOUR ENQUIRY\n\nEnquiry received\n\nThank you. We have received your details and any availability preference you selected. Your existing booking has not changed.\n\nClose"
+  },
+  {
+    "id": "equipment-return-checklist",
+    "width": 1280,
+    "viewport": {
+      "overflow": false,
+      "width": 1280
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "Checklist request received\n\nThank you. We have received your request. This does not book a collection or confirm that equipment has been returned."
+  },
+  {
+    "id": "equipment-return-checklist",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "invalidBlocked": true,
+    "acknowledgement": "Checklist request received\n\nThank you. We have received your request. This does not book a collection or confirm that equipment has been returned."
+  },
+  {
+    "id": "sms-message-preview",
+    "width": 320,
+    "viewport": {
+      "overflow": false,
+      "width": 320
+    },
+    "submitted": true,
+    "emptyBlocked": true,
+    "acknowledgement": "REQUEST RECEIVED\n\nYour text request is received.\n\nThank you. We have received your request for collection texts."
+  }
+]

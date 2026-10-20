@@ -31,7 +31,9 @@ setup membership and selected editorial collections. Each collection member must
 exist in the release. An existing pack ID/version cannot acquire different bytes
 or change access scope; bump that pack's version when changing its contents.
 
-The current compatible release has **22 setups, 19 designs, 4 Free packs, 1 premium pack and 3 collections**. Stores is 1.1.1, publishers 1.1.2, services 1.0.1 and Homeware care 1.0.1. Patch versions preserve immutable older exports after plugin capability/note changes. Homeware care retains the original reviewed 1920 × 500 illustration. Shopping help 1.0.0 adds six commerce setups, with real merchant product/category configuration required.
+The current delivery plan has **35 setups, 32 designs, 5 Free packs, 3 premium packs and 6 collections**. The two newest packs are Useful everyday campaigns (nine Free setups) and Helpful bars and corner prompts (three Pro setups). Three new collections group them around visits, useful store details and explaining a service. See [review evidence](../../../docs/reviews/hosted-practical-2026-10-20/review.md). The original six pack snapshots remain byte-identical.
+
+Homeware care, the fabric-sample pack and the new product-detail setup include reviewed portable artwork. Images are installed locally and remain available offline; their provenance and derivative hashes are pinned in the publishing plan.
 The sale bar's site-specific link and lighting's unconverted SVG remain explicitly
 deferred. They stay in the bundled library; incomplete collections are not exported.
 
@@ -50,7 +52,7 @@ storage/
 
 Only `public/` is a potential static hosting root. Premium catalog addresses use
 `/downloads/<digest>.json`; the Worker authorizes those requests through Nexus before reading
-private storage. They return a refusal until Nexus is configured.
+private storage. Nexus is configured on the live service; anonymous premium downloads remain refused. Local premium fixture tests do not authorize hosted downloads.
 
 For the next release, pass the current manifest's `release` value to `--expected`.
 That explicit comparison plus the local exclusive lock prevents accidental

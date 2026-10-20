@@ -1,0 +1,34 @@
+
+> test:release
+> npm run build && node scripts/verify-release.mjs /Users/navidkashani/.local/share/wconvert/template-library
+
+
+> build
+> wrangler deploy --dry-run --outdir dist
+
+
+ ⛅️ wrangler 4.149.0
+────────────────────
+Total Upload: 14.94 KiB / gzip: 4.81 KiB
+Your Worker has access to the following bindings:
+Binding                                                                 Resource                  
+env.PUBLIC_TEMPLATES (wconvert-templates-public)                        R2 Bucket                 
+env.PRIVATE_TEMPLATES (wconvert-templates-private)                      R2 Bucket                 
+env.NEXUS_GRANT_URL ("https://my.wconvert.io/api/v1/wconver...")        Environment Variable      
+env.NEXUS_KEYS_URL ("https://my.wconvert.io/api/v1/wconver...")         Environment Variable      
+env.NEXUS_ISSUER ("https://nexus.veronalabs.com")                       Environment Variable      
+env.NEXUS_AUDIENCE ("https://templates.wconvert.io")                    Environment Variable      
+env.NEXUS_ENVIRONMENT ("production")                                    Environment Variable      
+
+--dry-run: exiting now.
+{
+  "release": "3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7",
+  "freePacks": 5,
+  "premiumRefusals": 3,
+  "publicPreviews": 8,
+  "images": 2,
+  "downloadedSetups": 25,
+  "metadataOrigin": "https://templates.wconvert.io",
+  "localOnly": true,
+  "transport": "Workerd/R2 emulation; no hosted requests"
+}

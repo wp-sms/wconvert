@@ -21,3 +21,7 @@ The illustration depicts a terracotta pot, cream vase and green cup. It illustra
 ## Fabric swatches · 19 October 2026
 
 `fabric-swatches.svg` is extracted unchanged from Sample envelope. The original WConvert geometric illustration is GPL-2.0-or-later, with no third-party resources or fonts. `fabric-swatches.png` is its reviewed, one-time 1440 × 264 resvg-js export. The publishing plan binds source URI, derivative and provenance report hashes; it marks the downloadable asset premium. The public inert preview embeds the artwork, while editable packs and original asset downloads require a valid grant. Installed copies live locally and remain usable offline. The swatches are illustrative; merchants should replace them if their fabrics differ.
+
+## Task lamp downloadable derivative · 20 October 2026
+
+`task-lamp.png` is the separately reviewed 960 × 800 resvg-js export of the unchanged original SVG. It ships as a Free asset in Useful everyday campaigns. Source URI, PNG and provenance evidence are pinned in the publishing plan. It remains fictional sample artwork; replace its facts and picture together. See `docs/reviews/hosted-practical-2026-10-20/task-lamp-export.md`.

@@ -1,0 +1,46 @@
+{
+  "id": "prepare-a-visit",
+  "name": "Help visitors plan a visit",
+  "description": "Show event and arrival details, explain the consultation or invite a callback. Choose the relevant starting point; these are alternatives, not an automatic sequence.",
+  "cover": "services",
+  "business_types": [
+    "services"
+  ],
+  "markets": [],
+  "priority": 40,
+  "items": [
+    {
+      "setup_id": "event-calendar",
+      "stage": "any",
+      "setup_hash": "5a5a82c59f432bb57c20afc71592238bbcaa3110a80a4f4cae5d797e2d85774b",
+      "design_hash": "e444642b1b293eba712888298b4e7d7377bd912e438ebd54591d8345fa9ced53"
+    },
+    {
+      "setup_id": "accessible-visit-note",
+      "stage": "any",
+      "setup_hash": "8bedd8afd3553bb583b45c0ed41522241daf1766504d395b9d0c6de51f9ef69d",
+      "design_hash": "ea3f4be04e19cb28c0273dae3ebeb5015178a18db44d98d55968578c334682f9"
+    },
+    {
+      "setup_id": "earlier-appointment-enquiry",
+      "stage": "any",
+      "setup_hash": "eaa7854e5db0f48d00e0a17bf461a3a17538d7629f299a8fe4090a5072297839",
+      "design_hash": "700e20d55988b44f67fa535c05522dc9136a8b7e80211c57de38522c42e77e1e"
+    },
+    {
+      "setup_id": "appointment-agenda",
+      "stage": "any",
+      "setup_hash": "6416dc654801dce10cfd613fced965bd3a0b1ea491d331145ddc7a3fb22be5aa",
+      "design_hash": "75f9ab05d4028bc0116d1c2e9401ddfa0f1867e30f31a73a17a2571e82128448"
+    },
+    {
+      "setup_id": "callback-slip",
+      "stage": "any",
+      "setup_hash": "3f7a71036fa0bd4e5536fcfd1357266385bb09802b15731e2977c0c3775cc69d",
+      "design_hash": "fdee297b413173b94940049ebee5e55e9833dab9c2d144d263c8b070d13f52e5"
+    }
+  ],
+  "dependencies_current": true,
+  "revision": "2393b0337ec0d4aa442c5c9b5a6f84b892ece48d96036627f402a5523cb96b85",
+  "status": "published"
+}

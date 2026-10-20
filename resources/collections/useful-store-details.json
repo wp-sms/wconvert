@@ -1,0 +1,46 @@
+{
+  "id": "useful-store-details",
+  "name": "Help shoppers feel informed",
+  "description": "Explain a product, announce a collection, share useful maker updates or help a customer prepare a return. Review product facts, destinations and delivery before publishing.",
+  "cover": "launch",
+  "business_types": [
+    "stores"
+  ],
+  "markets": [],
+  "priority": 40,
+  "items": [
+    {
+      "setup_id": "product-detail-sheet",
+      "stage": "any",
+      "setup_hash": "f5d96079645ffc8af7db687f3e3b11b26e6da335ef7b6e7b6f639375502602e1",
+      "design_hash": "983864d603866d6c206b9da393e120f0aa7964b587fdbd6545d7d608738793d9"
+    },
+    {
+      "setup_id": "launch-index",
+      "stage": "any",
+      "setup_hash": "3b5358d7540716a40dfe2510b9154bbe891ab32ead8c445a210711519db58a3c",
+      "design_hash": "db76e68675fa8699760cf2a336c8e1f73b0f5952b53423f23a2e567e24878a16"
+    },
+    {
+      "setup_id": "maker-notes",
+      "stage": "any",
+      "setup_hash": "2addd4c3e320755be8613ebce967f6f3acf76dbf701533155d435535e05de460",
+      "design_hash": "84c64d295d1195857658787f7e68db46a0cc69830ddde9d10ba751ad8c7c0b4d"
+    },
+    {
+      "setup_id": "equipment-return-checklist",
+      "stage": "any",
+      "setup_hash": "355aceb2a5374b74a535a1436aaa3a08b0f54f1b6b68e2a03bfefcb5b0fe4710",
+      "design_hash": "7cbf3f30f4c59ce5b718ede8ea5bfbdd1c2ddefae617d9ba1e3fa53026f57ccd"
+    },
+    {
+      "setup_id": "sms-message-preview",
+      "stage": "any",
+      "setup_hash": "acff541aec29bf771aa329aec815d79a8424b313d46a171c8d188200a4e1d5b3",
+      "design_hash": "5a795723969b39b9a43e4d41150b177cce98dc1f463232a0ad1ba5811b5e0ceb"
+    }
+  ],
+  "dependencies_current": true,
+  "revision": "e5fced14dd688d0efd05ef3f1ede299b5c37305c7a5a04a8f603629fa6a0eb22",
+  "status": "published"
+}

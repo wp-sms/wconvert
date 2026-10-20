@@ -1,0 +1,28 @@
+{
+  "id": "explain-the-service",
+  "name": "Explain a service before an enquiry",
+  "description": "Show the process or separate included work from work agreed later. An enquiry starts a conversation; it does not book or quote a job.",
+  "cover": "services",
+  "business_types": [
+    "services"
+  ],
+  "markets": [],
+  "priority": 40,
+  "items": [
+    {
+      "setup_id": "service-process-strip",
+      "stage": "any",
+      "setup_hash": "0f63235856b7a73e1645096df88762ce1360d051a9eb0ae97d467a05c303865a",
+      "design_hash": "2e3bd3ccb2773d254b0c366cb91f93c7aa3fb998f0e3add9e4d0403fdabd0be7"
+    },
+    {
+      "setup_id": "service-fit-brief",
+      "stage": "any",
+      "setup_hash": "aa093ae23b17ca73c580a974ea9f1614a0c2473311ed5d49456bf277f62425b8",
+      "design_hash": "a0711e013569b987f3c12ee6637c86d8ff62b551a237420993ef240f9a0761c3"
+    }
+  ],
+  "dependencies_current": true,
+  "revision": "b155e9ec5de10526d398b95c6927eb224e78725b87c0cd5734b4893bfca23d58",
+  "status": "published"
+}
