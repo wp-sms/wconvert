@@ -1,0 +1,47 @@
+{
+  "id": "translation-project-enquiry",
+  "revision": "84c039ee4fadbaea2846f60940f20e6aa540113f4559c76d36b1d851b5c18f93",
+  "base_id": "6857df7e58701f514f77c7548190547ccf1b698e646ce7001a39622fcd1d2027",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Acknowledgement says 'received your request and the topic you selected' after an optional 'What kind of material?' field. That's wrong when it's skipped, and 'topic' doesn't match the field. The form itself is fine.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/translation-project-enquiry-320.png",
+          "sha256": "edbb5c430b0c6c965844de352a3b4e7d479cfb5f6252f32547510c2bbccce1bb"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/translation-project-enquiry-1440.png",
+          "sha256": "76149a14e85c4d11b5eac6fe17991d90c49bbfe2040078af7016c4b6297ec7b9"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "c9eee0a84aa3ce71353aecf80c508e2827ef7f556cb4fe30a2eb89dfab181dc0"
+}

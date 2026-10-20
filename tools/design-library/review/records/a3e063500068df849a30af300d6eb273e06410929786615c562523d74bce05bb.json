@@ -1,0 +1,47 @@
+{
+  "id": "equipment-hire-enquiry",
+  "revision": "3d069b2f5ebab48a94ec28c984c160e9f4dab61684968621c8b507b430e4f9d2",
+  "base_id": "7517191e20cca05ea791cd239b201ddc3dc210dda9e71af7c7cee21e453682a6",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "'The right kit for the job.' asks for an optional hire type plus email, and says dates and requirements will be discussed. 'Arrangements still need to be agreed' fits here and implies no reservation. The slide-in stays compact on desktop.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/equipment-hire-enquiry-320.png",
+          "sha256": "3593c7f2222459980ec6a91af14c6088fef5ae9046398d9b1e2ba9c29a6988d5"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/equipment-hire-enquiry-1440.png",
+          "sha256": "36089b61613076692e132403276fd6169b5e8d6eed45f0397af28aae7cd67374"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "a3e063500068df849a30af300d6eb273e06410929786615c562523d74bce05bb"
+}

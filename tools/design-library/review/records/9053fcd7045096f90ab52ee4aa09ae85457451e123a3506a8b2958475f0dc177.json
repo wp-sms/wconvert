@@ -1,0 +1,47 @@
+{
+  "id": "wholesale-enquiry",
+  "revision": "cb75cd42eecee28d07783552a0ffad23bcda9f304a7aeabdd0e20f80d0a20572",
+  "base_id": "9aef54935c0b285680be778afb06e5ab367f2f5a1e6229bd2661e70b271df82c",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Dark trade panel plus a short form: optional name, email and optional request type. Pricing and eligibility are deferred, and the acknowledgement states no trade account is opened or approved. The phone stack is tidy, and desktop splits panel and form well.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/wholesale-enquiry-320.png",
+          "sha256": "598f28af91c14680bbd16c2d678adf09ceb0742f2f3569caace1aef93c7ef198"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/wholesale-enquiry-1440.png",
+          "sha256": "2ba744b20e58444ff3f042df08c3931c7069d654b8675387b5062d588fce2e68"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "9053fcd7045096f90ab52ee4aa09ae85457451e123a3506a8b2958475f0dc177"
+}

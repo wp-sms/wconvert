@@ -1,0 +1,47 @@
+{
+  "id": "course-advice-request",
+  "revision": "c6b053075305239d62edf45f0b4d1d86ad7ced44981b73d4e9df2ba45047013b",
+  "base_id": "862d288b0cc7155cc9aba8614468e620b66301e50cc8abbaf1fec09a69433173",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "There is one clear ask (email, plus an optional experience level). The footnote 'No enrollment or payment is made here' and the acknowledgement's 'no course place is reserved' are honest. Hierarchy holds at both widths.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/course-advice-request-320.png",
+          "sha256": "ce6e73e903d818bfb2d5bca4483a57980b1555e8f003ee73bf8f90f9489448ab"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/course-advice-request-1440.png",
+          "sha256": "bd04285df699c7110b5b080288ada81b97fe294eb62be241c0caf9cd55d88e47"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "5305e7005106cf673c7a1fd0da071fad3a29a816519f251184d8eec1dab46a39"
+}

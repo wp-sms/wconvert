@@ -1,0 +1,47 @@
+{
+  "id": "project-planning-guide",
+  "revision": "1baaa2fb04f4d95dc2d8bf10b817baaf6d12acf2cfcccd6451aee2862636f3f3",
+  "base_id": "5e68dd02ca3dc973436bd42c659ac0500b40cf391f56be3c81fef41f7704761c",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "The '07 Decisions before you renovate' notebook cover matches the 'seven-point checklist' copy, and the one email field is the only ask. The acknowledgement says only 'request received', with no claim that anything was delivered. The cover stacks cleanly above the form at 320.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-planning-guide-320.png",
+          "sha256": "ba243d7cbb85cdbd756862874c0aa3cedc759fd5e1b5d81021112047f800ad4b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-planning-guide-1440.png",
+          "sha256": "687e763f91557b5ca560286182fdab3d1f5e92350498bf874760e6dac2e0367a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "25779d61c4bc25ca339ed16ac49d879a4b975e5784bb4bc9d8204829cec1c060"
+}

@@ -47,6 +47,11 @@ try{
   page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>{window.reviewRoots=[];const attach=Element.prototype.attachShadow;Element.prototype.attachShadow=function(o){const r=attach.call(this,o);window.reviewRoots.push(r);return r;};});
   page.on('response',async r=>{if(r.url()===endpoint&&r.request().method()==='POST')captures.push({status:r.status(),body:await r.json()});});
+  // A setup shown only to shoppers with items in their cart needs one there first.
+  if(JSON.stringify(entries.find(entry=>entry.id===id).config).includes('cart_has_items')){
+   const fixture=await (await context.request.get(`${base}/?wconvert_commerce_fixture=1&json=1`)).json();
+   await page.goto(`${base}/?add-to-cart=${fixture.products[0]}`);
+  }
   await page.goto(`${base}/?wconvert_collection_approval=${id}`);
   await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-root')));
   if(id==='sale-deadline')await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&/\d/.test(r.querySelector('.wc-countdown')?.textContent||'')));

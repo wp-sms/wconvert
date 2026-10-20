@@ -1,0 +1,47 @@
+{
+  "id": "topic-reading-list",
+  "revision": "f29c3351aa183061ab90134ccc5ccef27f512a7a0a7dabff1e40d1e90c02c6e6",
+  "base_id": "79f0de0cea754c6f92c6d62cdfa25d0435ab539b17bdaa7105b49cba3199ada7",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "The optional subject, email and consent sit above the button in a sensible order. The acknowledgement thanks the visitor for requesting the weekly list without claiming a subscription. Minor: 'You can unsubscribe at any time' under the button repeats the checkbox text.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/topic-reading-list-320.png",
+          "sha256": "e135b3cd8700705704781a715540efb6a4f210aaf645045d17a682d9f6893ab1"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/topic-reading-list-1440.png",
+          "sha256": "3556c20ca57cfe193544bfb6bcc552d2444601b25da39ef21fba202d81076462"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "0d6d7ecbfef96529caace67e41e99f41f2ab76ff84f64cb99a5af24019bb9d9d"
+}

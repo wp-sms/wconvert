@@ -1,0 +1,47 @@
+{
+  "id": "reader-question",
+  "revision": "1eb8237bf58bcb14dee9e03fc56e884e89a0d0b4079ca3aa211ae8d0c2e97891",
+  "base_id": "57eb219f56041ffdf3a10ac22587d258b64bfe4c0a7e1838f8767cbb2fbd4f86",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Topic choice and email with no long-message field, as the brief asks. The acknowledgement honestly says nothing was posted publicly. The CTA wraps to two lines at 320 but stays balanced.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/reader-question-320.png",
+          "sha256": "37cdcc6b009447b521a029bfa33d9745f2c7bfe192cfa0c9e134acb4742bc985"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/reader-question-1440.png",
+          "sha256": "17bfd93ba10865aa4f2db5651a24e63280987d28fac45c58e49cafd7043a0482"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "9bbae6854e14328db21cf8daebe011e1df50f785d0a1d2718ac33e934c498510"
+}

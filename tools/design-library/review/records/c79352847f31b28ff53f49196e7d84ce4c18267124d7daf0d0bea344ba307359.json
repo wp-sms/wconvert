@@ -1,0 +1,47 @@
+{
+  "id": "agency-project-enquiry",
+  "revision": "029170c94fff5cd4ae62682a6abea4d57e8718e09443d481bd9c5ec4ceb7eba1",
+  "base_id": "6d33c67e6671340fae0e597a9d5daaf4bfc43fa811b1ca37372ba1abd3ca77c1",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Short first-contact form (optional name, email, optional project type) matches the brief's 'don't over-qualify up front'. It stacks cleanly at 320 and the acknowledgement claims only receipt.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/agency-project-enquiry-320.png",
+          "sha256": "cfaf7736ebb0d0f31344a9eefee3bc62971e0e18903a6b1f2373d98021ee2e87"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/agency-project-enquiry-1440.png",
+          "sha256": "03b2bd7557305ca2d3be12e699b8b71de6cb8a9efcacfc163f5129b36d826c9a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "c79352847f31b28ff53f49196e7d84ce4c18267124d7daf0d0bea344ba307359"
+}

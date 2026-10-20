@@ -1,0 +1,47 @@
+{
+  "id": "launch-interest",
+  "revision": "e0978cf7586d53f5c3e7d85884c73d9316ee9556c6915ec3a7b1d8036fb86a17",
+  "base_id": "f9ecce443ccf2647f2c2561569f4c50a9e1e973149305fb9983cd0d4b6bd6934",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Details screen: the consent checkbox comes after the 'Request launch news' button on both widths. The acknowledgement is generic ('We have received your request.'). On desktop its check mark is left-aligned while the heading is centred. Put consent above the button and make the acknowledgement name the launch news.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/launch-interest-320.png",
+          "sha256": "4f1a4a7342ba17a22d8210dbb08ff39cadea7cf79c04f5463d8d5e62d7d6c8b1"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/launch-interest-1440.png",
+          "sha256": "58652588ad50725ab40b8888b16ad8af2ee2243dc9ff1fd9acdb5dd3634c7fea"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "a75d84e781fdae479a630cce2512fd813b966c2bd40b33e5584831c3119b4560"
+}

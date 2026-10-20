@@ -1,0 +1,47 @@
+{
+  "id": "cart-delivery-help",
+  "revision": "b814f69e97a59bd3583c90f53ca1611fd2e2187f88967a8923f9814a1d11b450",
+  "base_id": "47821e2dae1bc56827d80a7df719cbe9c8a9f6a538690e5c339c711b66b9d531",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "One honest instruction: review the basket, then enter an address at checkout to see the options, with a single 'Review my basket' button. On desktop it sits neatly in one row. On phone 'decide' wraps alone onto the second headline line, which is only cosmetic.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/cart-delivery-help-320.png",
+          "sha256": "a56bf851efa199a6a18f447ea42abc7f3311c5dddefe42e2f35d8f6105a57083"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/cart-delivery-help-1440.png",
+          "sha256": "eba2642e80233e21327b63b44b4b529499d8c480f022bde72933dbe6b3d43cea"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "2738d27248f84a7a4b923c5881721eccea41f5850bfbbef690beb5e08ffbfef6"
+}

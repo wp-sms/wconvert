@@ -1,0 +1,47 @@
+{
+  "id": "event-registration-link",
+  "revision": "f0c1c66c4fb563c191b7e71fedc9845535d48a735be3de6f14762f9fee3bd365",
+  "base_id": "35612e3158b829d301f8526f775e2ae3a8412954c0a167b3037d081bc6829e8d",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "A clear three-part agenda and one 'View dates and register' button, with a line saying registration happens on the event page, so it pretends no ticketing. The 'An online conversation' eyebrow undersells a writing workshop and the agenda rows are generic, but the merchant can edit both.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/event-registration-link-320.png",
+          "sha256": "54add148c7b184d75d0783e84bed9d0069162726b616d1fedd1840fbf6b692ca"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/event-registration-link-1440.png",
+          "sha256": "5c99fc8d9190cdd51a1ac892580bac3743a5e5ff558031018e4371eedd0e3206"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "cdc21f3450f1bc9246f028bbc3a2f6ec3429ccc8dd6f6aa306d75697fb44f018"
+}

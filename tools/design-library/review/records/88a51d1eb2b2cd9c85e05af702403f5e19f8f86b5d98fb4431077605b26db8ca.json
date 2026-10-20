@@ -1,0 +1,47 @@
+{
+  "id": "basket-product-help",
+  "revision": "eb6528208f67402459b73dacaabe1e6fa5113c810091836d745abb67d6ba65a2",
+  "base_id": "3a998868ec34302615edbd1e302006397de0bc2817eab26c781fc65438c8b067",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "Details screen: there is nowhere to type the actual question, only an optional 'What would help?' dropdown, and the copy admits 'We will reply and ask which item you are considering'. A visitor stuck at the basket cannot state their problem. The headline 'One detail before you decide?' is awkward. Add a short question or product field.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/basket-product-help-320.png",
+          "sha256": "6a36408b503babfbd554a262a238a5aa548dbe20795c8fc68652770abafa772d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/basket-product-help-1440.png",
+          "sha256": "b14b5e86256244451b016756a8b1020d21d618315df0ab1aa43e7332402eb60b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "88a51d1eb2b2cd9c85e05af702403f5e19f8f86b5d98fb4431077605b26db8ca"
+}

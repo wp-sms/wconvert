@@ -1,0 +1,47 @@
+{
+  "id": "dispatch-schedule",
+  "revision": "c0dcb71caca9a68e44ca43298713a13fb238de309dbf22977809817df2399e99",
+  "base_id": "756107dfa3aa9ea569b0d90560f06cea3812dfd4dc8f34ea6c35d2011f2debc3",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "One-line bar on desktop ('Dispatch · Know when your order can leave. · Check dispatch days'). The wording says 'leave', not 'arrive', so it never implies delivery. It stacks compactly at 320.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/dispatch-schedule-320.png",
+          "sha256": "bcdfd0b0d2c48faee36520a0b41d969bc5613c3623debc69b26d66b60eb60d01"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/dispatch-schedule-1440.png",
+          "sha256": "d753668cd46ef681383692134edfaf9d382b13348955386c984e25a406442ae4"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "f01d11973d666f0b05e944b3124ba122b0b2bdf612b282e59b75903986c3804b"
+}

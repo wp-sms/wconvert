@@ -1,0 +1,47 @@
+{
+  "id": "experience-kit-finder",
+  "revision": "bcc246b241ad15a81e784ea7b4f015ceb6040dec5d6b0190dc41887d87d4ff88",
+  "base_id": "2574fe087a62afd85327876ba1fb865f6393fb04f414ac1d6b4602afcb4c4e17",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "The result is a generic \"Explore the growing collection\" that ignores the answers, with no link onward. (The studio-only sample note is not shown to visitors.)",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/experience-kit-finder-320.png",
+          "sha256": "51e5b434ecf5fc89973b3a74020f9bb12be429900768d09d949fc5ec291d29ba"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/experience-kit-finder-1440.png",
+          "sha256": "395f9c96fe4eafc8fbc4ea24ac648517f44fc8d0bfcc3c3962d6f85362e97878"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "feae38470143f0f683b52686bf471c40fe286eea25b82e8a57c7ac6b5eddc3fe"
+}

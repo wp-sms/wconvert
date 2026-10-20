@@ -1,0 +1,47 @@
+{
+  "id": "maintenance-letter",
+  "revision": "a7572444bbdb91dd9a214fc4f5d9a609afd4fe670f3d5cb9c98bdb562b57cc28",
+  "base_id": "848edadc46a4fae15f1fccfb38a8f72b2a284556a44dfb58719831cd1c5b21a9",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Clear monthly-note promise with a separate consent box. The two-panel desktop layout stacks cleanly on phone, and 'Your request is received' is honest. Distinct from preference-card: there's no category choice, just one recurring note.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/maintenance-letter-320.png",
+          "sha256": "574b0341e37e40098f637c14b587d3bfc2cff647e7465a8382af6daf2950402a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/maintenance-letter-1440.png",
+          "sha256": "752ade39b4ab2642c9bfd4b9c46181a05e286a011c298154c635465abb40eb1f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "ac9a2b1ac76ec5f59f9fb5b66c9941f1eb33e8606d10d1a771547e94357c5df6"
+}

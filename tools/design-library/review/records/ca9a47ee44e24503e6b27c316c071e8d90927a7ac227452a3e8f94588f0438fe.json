@@ -1,0 +1,47 @@
+{
+  "id": "spare-parts-advice",
+  "revision": "8d38f58de5a449a3e2fca0b005db0f867a3ee16b7036d12070a8565b3a093930",
+  "base_id": "ac90960706f958794e014a2e270901b8e742eabd066bfd750b484134d1b58ce7",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "'Which part? (optional)' has the placeholder 'Choose a topic', and the acknowledgement 'Arrangements still need to be agreed' is generic text borrowed from a booking setup. It doesn't say the follow-up will ask for a model number or photos. At 320 the slide-in is 505px and scrolls, so it covers most of the product page.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/spare-parts-advice-320.png",
+          "sha256": "84332ab30610c3a244b8c433ba8a8c6676cacfbda6c70b01f6368b90aff890ba"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/spare-parts-advice-1440.png",
+          "sha256": "72d055746644c1c6a05f0fb99395f11c91b0167e9d64de5cae2f0b9d3341b300"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "ca9a47ee44e24503e6b27c316c071e8d90927a7ac227452a3e8f94588f0438fe"
+}

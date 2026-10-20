@@ -1,0 +1,47 @@
+{
+  "id": "service-area-check",
+  "revision": "3e5d1dc2083deb8d685b152a38f7373dfa0afed492f3daaf7503cddcfecf3f1b",
+  "base_id": "e2f01937e4e6cde7948474a188fd51cc64acd813e68e2e0ee266b955ed916cce",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "The bar is one line on desktop: 'Do we cover your area?' plus a 'Check service areas' link. It does not pretend to validate postcodes. At 320 it stacks into three short lines (188px), which is acceptable for a dismissible bar.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-area-check-320.png",
+          "sha256": "737866e353505bda72c673fe8a19d721577dda708e6e3571d432b1633ee000c3"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-area-check-1440.png",
+          "sha256": "6fda8925b656d60e2cc25c69709831d9acae83c205fab378d6064fcadc7ebe6c"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "a56f03510503e2a5f54c3a7606ff7088f17800b76c802a19677d3742bdc3d03b"
+}

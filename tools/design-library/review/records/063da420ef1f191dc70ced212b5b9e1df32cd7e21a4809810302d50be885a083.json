@@ -1,0 +1,47 @@
+{
+  "id": "returns-deadline-notice",
+  "revision": "196c76fbe92942ac9351d8fa371e5dee13e6b00cf75014ff03cd205c3438a80e",
+  "base_id": "791e607733bf50e32fe7133f4114bfa3ec3b71bc40e4cd88e3fc1a9e8704a5fd",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "The bar has no visible surface: near-white on the page, with the eyebrow, headline and 'Read returns policy' all as bare text. At 1440 it renders 1120px wide, not edge to edge. On a light theme it would be indistinguishable from header content, and the CTA does not read as an action.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/returns-deadline-notice-320.png",
+          "sha256": "7f5b1f923055e5838ae44fab6fcbecc756e2f5bd0e358f2b09483af8ff32f9cd"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/returns-deadline-notice-1440.png",
+          "sha256": "4dfec41bdea98259d4a8c4c51962843b344af9c1928d8bdab6fa75f61045bc39"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "063da420ef1f191dc70ced212b5b9e1df32cd7e21a4809810302d50be885a083"
+}

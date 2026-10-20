@@ -1,0 +1,47 @@
+{
+  "id": "restyling-notes",
+  "revision": "8f3726d4b03c150419450d0029a04c31fe7702910294ff11824bf437821f5fbb",
+  "base_id": "56ee8dcd0f52a85e312067323c697632dfd85b3ddb1f081a5a2b9d9b706abddd",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "The form screen says 'unsubscribe anytime' twice: in the consent checkbox, then again as the footer line under the button. The acknowledgement ('Request received. Thank you. We have received your request.') is boilerplate and never mentions the monthly room-ideas email the visitor just asked for.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/restyling-notes-320.png",
+          "sha256": "e46b13c99e36c3814ccc38076d713d2d9bfb5d14344c4a944b8d15d178a017a2"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/restyling-notes-1440.png",
+          "sha256": "bcd732d58c926119e7ddcfd34bf2d82daeb4e6c2c6ac9184290b75b99d6abbe9"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "8211b49544e2ff20253b322b30e9545161935825b0bd6b1afea5c108658def1c"
+}

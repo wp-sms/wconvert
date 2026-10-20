@@ -1,0 +1,47 @@
+{
+  "id": "seasonal-service-link",
+  "revision": "ff83d7150439b5c28e13d2de71106d3442b292a88292ce752ebd1dfdb3aae925",
+  "base_id": "830ca55d2cfc63b33b32062e1f3f558a8f555ab508ef3ca1316e1ca2e70a1a87",
+  "decision": "approved",
+  "reviewer": "Claude (backlog review)",
+  "note": "Compact dark slide-in with a 'Get the garden ready for spring' headline and one 'View spring services' button. It covers little of the page at either width and captures nothing. It is thin (no line on coverage or availability), but it is not misleading.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/seasonal-service-link-320.png",
+          "sha256": "d0f25abb90dd9812099ed8e0541459a9d2298b71126f0527fb2347cf746c9658"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/seasonal-service-link-1440.png",
+          "sha256": "4f947b102619cf366b90d727909b8d4b82cd3f4e3604d0c1b586db4e9dad02f4"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "372ad57f254afd0f207e06aae73b8c8ebcd971eef92debdef85b39cf69b5826e"
+}

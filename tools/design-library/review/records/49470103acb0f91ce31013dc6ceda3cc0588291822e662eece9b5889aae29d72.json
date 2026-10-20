@@ -1,0 +1,47 @@
+{
+  "id": "collection-interest",
+  "revision": "3678569a06552bc10084847d5d7dd1cda6b24df7d50c74b37bf0c5187ad28e13",
+  "base_id": "9f9a00ea1b5e2c371ed2ce79d3733a25135071a788f52d743281cd916b50772a",
+  "decision": "revise",
+  "reviewer": "Claude (backlog review)",
+  "note": "The whole pitch is choosing a collection, yet 'Which collection?' is optional, and the acknowledgement says 'Collection preference received' even when none was chosen, which isn't honest. Phone headline also breaks awkwardly ('News for / your corner of / home.'), and 'unsubscribe anytime' appears twice.",
+  "at": "2026-10-20T17:39:21.765Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/collection-interest-320.png",
+          "sha256": "c26f5f8a3ce40ce2c4db86f2750bc88f1b9b754080153478d0dcd7a8bf300e4a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/collection-interest-1440.png",
+          "sha256": "ad933f7f321084bb136c320da88edf688d9c9d3797ea96f33cddd94f129eb626"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "49470103acb0f91ce31013dc6ceda3cc0588291822e662eece9b5889aae29d72"
+}
