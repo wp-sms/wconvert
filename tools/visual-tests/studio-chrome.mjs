@@ -58,8 +58,17 @@ try {
       if (measurement.controls.length) assert.deepEqual([...new Set(measurement.controls)], [width < 600 ? 44 : 32]);
       await page.screenshot({ path: `${out}/${route.split('.')[0]}-${width}.png` });
     }
+    // A status tile filters the rows, shows as pressed and survives a reload through the URL.
     await page.goto(base + '/pilot.html?batch=commerce-refresh');
-    await page.getByRole('button', { name: 'Explore campaign' }).first().click();
+    await page.locator('.tile[data-status="approved"]').click();
+    assert.equal(await page.locator('.tile[data-status="approved"]').getAttribute('aria-pressed'), 'true');
+    assert.match(page.url(), /status=approved/);
+    assert.equal(await page.locator('#rows .row').count(), Number(await page.locator('.tile[data-status="approved"] strong').textContent()));
+    await page.goto(page.url());
+    assert.equal(await page.locator('.tile[data-status="approved"]').getAttribute('aria-pressed'), 'true');
+    const opener = page.locator('#rows .row-name').first();
+    const name = await opener.textContent();
+    await opener.click();
     const dialog = page.locator('#detail');
     await dialog.waitFor({ state: 'visible' });
     assert.equal((await page.locator('#detail-meta').textContent()).includes('undefined'), false);
@@ -79,7 +88,7 @@ try {
     await page.screenshot({ path: `${out}/dialog-${width}.png` });
     await page.keyboard.press('Escape');
     assert.equal(await dialog.isVisible(), false);
-    assert.match(await page.evaluate(() => document.activeElement.textContent), /Explore campaign/);
+    assert.equal(await page.evaluate(() => document.activeElement.textContent), name, 'focus returns to the row that opened the detail');
     assert.deepEqual(errors, []);
     report.push({ width, dialogScrollAndEscape: true, errors });
     await page.close();

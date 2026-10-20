@@ -53,10 +53,16 @@ fi
 STEPS=("$@")
 
 if [[ ${#STEPS[@]} -eq 0 ]]; then
-  STEPS=(vocabulary prose renderer designs sheet bench gallery review library-review pilot proof roadmap)
+  STEPS=(vocabulary prose renderer designs sheet bench gallery review library-review pilot proof roadmap clean)
 fi
 
 mkdir -p "$HERE/out/previews"
+
+# `http://127.0.0.1:9452/` opens the studio rather than a directory listing.
+cat > "$HERE/out/index.html" <<'HTML'
+<!doctype html><meta charset="utf-8"><title>WConvert · Template studio</title>
+<meta http-equiv="refresh" content="0; url=pilot.html"><a href="pilot.html">Open the template studio</a>
+HTML
 
 ran() { printf '\n\033[1m%s\033[0m\n' "$1"; }
 
@@ -143,8 +149,15 @@ for step in "${STEPS[@]}"; do
       node "$HERE/build/roadmap.mjs"
       ;;
 
+    clean)
+      # Old one-off pages pile up here and read as part of the studio. Last,
+      # so it never removes a page another step is about to rewrite.
+      ran "Removing pages no generator writes"
+      node "$HERE/build/clean.mjs"
+      ;;
+
     *)
-      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review starting-points pilot proof roadmap)" >&2
+      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review starting-points pilot proof roadmap clean)" >&2
       exit 2
       ;;
   esac
