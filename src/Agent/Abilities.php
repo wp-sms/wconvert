@@ -75,6 +75,8 @@ final class Abilities
 
     public static function registerCategory(): void
     {
+        // The Abilities API arrived in WordPress 6.9; this plugin supports 6.8.
+        if (!function_exists('wp_register_ability_category')) return;
         wp_register_ability_category(self::CATEGORY, [
             'label' => __('WConvert campaigns', 'wconvert'),
             'description' => __('Read WConvert campaigns, occasions, designs and stats; make draft campaigns; publish or pause them when the site allows it.', 'wconvert'),
@@ -83,6 +85,7 @@ final class Abilities
 
     public static function register(Ability $ability): void
     {
+        if (!function_exists('wp_register_ability')) return;
         $definition = $ability->definition();
         wp_register_ability($ability->name(), [
             'label' => $definition['label'],

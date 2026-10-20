@@ -85,6 +85,7 @@ final class OccasionStore
             $before = array_column($current['items'], 'id');
             $after = array_column($items, 'id');
             if (array_intersect(array_diff($after, $before), $current['retired']) !== []) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a validation message for an administrator, caught upstream and returned as a WP_Error that the admin renders as text.
                 throw new \InvalidArgumentException(__('That occasion was deleted. Add it as a new occasion.', 'wconvert'));
             }
             $retired = array_slice(array_values(array_unique([...$current['retired'], ...array_diff($before, $after)])), -self::RETIRED);
