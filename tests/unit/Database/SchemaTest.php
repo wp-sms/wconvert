@@ -27,7 +27,7 @@ use WConvert\Database\Schema;
  * **The indexes, per table, against a signed-off budget.** This file used to
  * assert that `wconvert_leads` shipped two and no more, which held that one
  * table's line and quietly exempted every table added after it — and an index
- * is schema, so an index needs a yes (CLAUDE.md, Database changes). The budget
+ * is schema, so an index needs a yes (AGENTS.md, Database changes). The budget
  * below is now a MAP, and {@see self::testEveryTableInTheDdlHasASignedOffIndexBudget()}
  * fails on a table that is not in it. A new table therefore cannot be added
  * without someone writing down how many indexes it was allowed.

@@ -328,5 +328,5 @@ composer verify:source      # no Pro tree in the free tree
 `npm test` can print a green summary and **still exit 1**: an unhandled error
 in a `requestAnimationFrame` or a timer is reported below it.
 
-And per `CLAUDE.md`: **verify on a real WordPress.** A green suite is not a
+And per `AGENTS.md`: **verify on a real WordPress.** A green suite is not a
 booting plugin. Use the Playground one-liner in `README.md`.

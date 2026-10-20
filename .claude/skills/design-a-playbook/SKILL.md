@@ -217,5 +217,5 @@ composer test    # BundledPlaybooksTest walks the real library; PlaybookRegistra
 `BundledPlaybooksTest` registers every bundled entry, so a refusal is a red
 build rather than a missing card.
 
-And per `CLAUDE.md`: **verify on a real WordPress** — walk the goal-first flow
+And per `AGENTS.md`: **verify on a real WordPress** — walk the goal-first flow
 to step 2 and check the new card reads well beside its neighbours.
