@@ -113,7 +113,8 @@ if (($input['mode'] ?? '') === 'designs') {
         $id = $request['id'];
         try {
             $template = json_decode((string) file_get_contents(source($root, 'design', $id)), true, 48, JSON_THROW_ON_ERROR);
-            $template['tree']['v'] ??= 2;
+            // The wire says a flow with `graph` and `v` is the vocabulary (ADR 0156).
+            $template['tree']['v'] = \WConvert\Template\TemplateTree::VERSION;
             [$template, $assets, $bindings, $media] = images($template, $input);
             $meta = DesignObject::meta($request['meta'] ?? []);
             $object = ['schema' => 3, 'minor' => DesignObject::MINOR, 'id' => $id, 'revision' => $request['revision'], 'name' => $template['name'],

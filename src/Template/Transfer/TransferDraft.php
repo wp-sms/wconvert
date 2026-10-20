@@ -25,8 +25,7 @@ final class TransferDraft
             $copy = SlotRoles::copyFrom($mine['tree'], $vocabulary);
             $template['tree'] = MerchantsOwn::writeInto(SlotRoles::bind($vocabulary->withoutCopy($template['tree']), $copy, $vocabulary), MerchantsOwn::changedIn($mine['tree'], $original['tree'] ?? []));
             // Content binding predates graph journeys; routing belongs to the incoming design.
-            if (($incoming['tree']['v'] ?? null) === 3) {
-                $template['tree']['v'] = 3;
+            if (is_array($incoming['tree'] ?? null) && \WConvert\Template\TemplateTree::isGraph($incoming['tree'])) {
                 $template['tree']['graph'] = $incoming['tree']['graph'];
             }
             $pictures = PictureTransfer::prepare($mine, $original ?? ['tree' => ['steps' => []], 'tokens' => []], $template);

@@ -26,7 +26,8 @@ final class CaptureJourney
     {
         $steps = $tree['steps'] ?? [];
         $submissions = $tree['submissions'] ?? [];
-        if (($tree['v'] ?? null) !== 2 || !is_array($steps) || !array_is_list($steps)
+        // A flow with a graph is GraphCaptureContract's, never a linear journey.
+        if (($tree['v'] ?? null) !== 2 || TemplateTree::isGraph($tree) || !is_array($steps) || !array_is_list($steps)
             || !is_array($submissions) || !array_is_list($submissions) || count($steps) < 1
             || count($steps) > 7 || count($submissions) > 2) {
             return 'flow';

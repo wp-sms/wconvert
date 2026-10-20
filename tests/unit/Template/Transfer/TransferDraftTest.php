@@ -74,7 +74,7 @@ final class TransferDraftTest extends TestCase
         $incoming = ['name' => 'Enquiry', 'tree' => $tree, 'tokens' => [], 'display_type' => 'popup'];
         $config = ['template' => $incoming, 'display_type' => 'popup'];
         $prepared = TransferDraft::prepare($incoming, $config, true, null, $vocabulary)['patch']['template']['tree'];
-        self::assertSame(3, $prepared['v']);
+        self::assertSame(2, $prepared['v']);
         self::assertSame($tree['graph'], $prepared['graph']);
         self::assertNull(GraphCaptureContract::issue($prepared, 'collect_enquiries'));
         TransferDraft::validate(['template' => ['tree' => $prepared, 'tokens' => []], 'display_type' => 'popup'], 'Enquiry', new PackValidator(TemplateManifest::load(), $vocabulary, Tier::Pro));

@@ -3,6 +3,8 @@
 Accepted 2026-09-30. Implements picker A inside the existing plugin. No CI or
 real email/SMS delivery is part of this local implementation.
 
+> **Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md).** The schema 2 discovery release, pack rows and pack-pinned collection items are replaced by the v3 catalogue: per-design objects, collections that list design and setup ids, a mutable pointer with a `withdrawn` list, and "Template packs" replaced by hosted cards in the picker and Online setups in creation. Favourites now follow `registered:<design id>` across every copy.
+
 ## One preparation and editing path
 
 Goal-first creation browses a metadata-only Playbook index. Cards are grouped by
@@ -134,7 +136,7 @@ receive published JSON plus translated labels. Runtime bundled collections also
 verify referenced source hashes. The studio reads public authored data, not
 customer accounts, campaign records or Leads.
 
-The configured optional catalog additionally accepts a schema 2 immutable
+*Superseded by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): the reader accepts only the v3 pointer at `/v3/manifest.json`.* The configured optional catalog additionally accepts a schema 2 immutable
 manifest and bounded, same-origin pages pinned by SHA-256. All pages and exact
 pack references validate before replacing the local cache. Normal discovery
 uses local installed/cached data; refresh remains explicit. Schema 1 catalogs

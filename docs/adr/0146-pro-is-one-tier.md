@@ -41,7 +41,7 @@ next, so it goes.
    each read `Tier::tryFrom(...) ?? Tier::Free`, so removing the `Basic` and
    `Elite` cases without re-tagging would have turned every premium rule and
    design into a free one, silently. `tests/unit/Support/TierSlugsAreRealTest.php`
-   now fails on any `tier` in the rule manifest, `locked.json`, either design
+   now fails on any `tier` in the rule manifest, `locked.json` (removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md)), either design
    library or the integration fixtures that is not a `Tier` case. No tier is
    stored in Optin data, so nothing saved migrates.
 

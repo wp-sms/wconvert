@@ -23,7 +23,7 @@ Everything here is cheap today and expensive once free 0.1.0 is on wp.org.
 [`Availability::of()`](../../src/Support/Availability.php) took a three-valued
 question and could only be handed a two-valued answer. Adding a rung after
 launch is not an enum case: it is every `tier:` value in the rule manifest, in
-`locked.json` and on every [[Goal]] — which are **saved records on live
+`locked.json` (removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md)) and on every [[Goal]] — which are **saved records on live
 installs** — plus every upsell card that currently says the word "Pro" in a
 string. [ADR 0015](0015-enforcement-is-by-non-registration.md) always described
 the accessor as *"headroom for a future tier ladder"*; it was a boolean, so the

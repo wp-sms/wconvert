@@ -278,6 +278,10 @@ third-party ones. Under configuration they are properties of the one renderer.
   to let go stale. What changed is when a real card renders: `TemplateCard`
   mounts its preview only while near the viewport, because forty on one screen
   is forty closed shadow roots nobody has scrolled to.*
+  *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): a hosted design has no tree on this site until it is
+  installed, so its card is a **server thumbnail** — WebP at 1× and 2×, made by
+  the publisher from the shipping renderer and keyed by its bytes, so a new
+  render is a new file rather than a stale one. Local cards still render live.*
   *Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): until a
   fullscreen design's public preview exists, its Free card says "Included in
   Pro" with no link. Pro previews share the shipping fullscreen content surface;

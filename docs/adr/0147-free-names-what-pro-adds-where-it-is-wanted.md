@@ -57,7 +57,7 @@ runtime. It fails on `main` as of `aeef6f95`.
 1. **Free installs only.** A Pro install supplies every member (ADR 0146).
 2. **Only for people who can act on it:** the user can `install_plugins`. A
    multisite site admin, or a client given `manage_options`, sees none.
-3. **Text, never a control.** One plain line at the end of a list: no
+3. **Text, never a control.** *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md) for one surface: in the design picker a Pro design may be a locked image card (a picture and a link, still never a control), under rules 1, 2 and 7.* One plain line at the end of a list: no
    padlock, no greyed item, nothing selectable, no modal, no badge or count,
    never blocking a task.
 4. **At most one visible at a time.** A menu's hint exists while its menu is

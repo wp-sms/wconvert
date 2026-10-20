@@ -315,8 +315,7 @@ final class TemplateVocabulary
         }
 
         $storedTree = TemplateTree::stamped(['steps' => $normalized, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
-        if (($tree['v'] ?? null) === 3) {
-            $storedTree['v'] = 3;
+        if (TemplateTree::isGraph($tree)) {
             $storedTree['graph'] = self::graph($tree['graph'] ?? null);
         }
         self::remapJourneyReferences($storedTree, $ids);
@@ -365,8 +364,7 @@ final class TemplateVocabulary
         }
 
         $storedTree = TemplateTree::stamped(['steps' => $stripped, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
-        if (($tree['v'] ?? null) === 3) {
-            $storedTree['v'] = 3;
+        if (TemplateTree::isGraph($tree)) {
             $storedTree['graph'] = self::graph($tree['graph'] ?? null);
         }
         return $storedTree;

@@ -1106,9 +1106,11 @@ already running on it.
 > tightening a choice list would silently rewrite designs already running. So
 > every tree this plugin builds is stamped `v` — the same escape hatch the
 > browser record's `wcv1` has and the server side did not, which
-> [[Storage Consent]] already says out loud. Nothing reads it yet; the first
-> reader is whichever release first has to narrow something. See
-> `WConvert\Template\TemplateTree::VERSION`.
+> [[Storage Consent]] already says out loud. `v` is the vocabulary version and
+> only that: a flow is said by its `graph`, and the hosted catalogue reads `v`
+> to know which vocabulary a design needs. `v: 3` once meant "has a graph" and
+> is still read that way, so the next vocabulary version is 4. See
+> `WConvert\Template\TemplateTree::VERSION` and [ADR 0156](docs/adr/0156-the-catalogue-is-one-design-per-object.md).
 
 A Template declares its slots as [[Slot Role]]s, which is what lets a [[Playbook]]
 carry copy without being bound to one design.
@@ -1155,25 +1157,54 @@ reads arrives in the panel wearing a raw text box, so where a shape cannot be
 inferred the manifest enumerates it
 ([ADR 0054](docs/adr/0054-every-control-has-the-shape-of-its-value.md)).
 
-### Template pack
+### Hosted library
 
-A versioned collection of downloadable designs, installed explicitly from a
-configured catalog. The format supports Free popup/inline designs and Pro
-question journeys where Pro registered them (`JourneySupport`,
-[ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). It supplies no renderer code,
-site-local destinations, product IDs, or links. Installed
-versions remain local and retain source baselines; updates affect the library
-for future choices, never existing Optin snapshots. Browsing and installation
-live in the design picker and the Goal-first creation flow. Packs may also carry
-validated Playbooks: their wording and rules enter the existing Prefill path;
-installing one creates no Optin. See [ADR 0082](docs/adr/0082-template-packs-install-as-validated-local-data.md)
-and [ADR 0083](docs/adr/0083-installed-packs-supply-campaign-starting-points.md).
+The online catalogue at `templates.wconvert.io`, read **one design at a time**:
+each design and each setup is its own immutable object, listed in a compact
+index under a mutable pointer ([ADR 0156](docs/adr/0156-the-catalogue-is-one-design-per-object.md),
+wire contract in `docs/template-discovery-api.md`). It supplies no renderer
+code, site-local destinations, product IDs or links. Nothing is fetched until
+an administrator allows it — once, in the picker or in Settings — and a site
+can switch it off entirely (`WCONVERT_TEMPLATE_CATALOG`). Installing a design
+or a setup is an explicit action; installed copies are local, keep working
+offline, and never change an existing Optin's snapshot. Not to be confused with
+a [[Collection]], which is a list, or a former *template pack*, which no longer
+exists.
+
+### Design revision
+
+The integer that says which copy of a [[Template]] this is. Bundled, installed
+and hosted copies of one design share a design id; **the highest revision is the
+one new campaigns are offered**, and every lower one stays resolvable for the
+Optins that took it. Revisions come from a content-hash registry in the
+publishing tools and only increase; an id is never reused, and a renamed design
+keeps its old id as an *alias*.
+
+### Withdrawal
+
+The catalogue saying a design should no longer be offered — over image or
+content rights, quality, or a defect. A withdrawn design leaves the picker and
+cannot be installed; an Optin already using it keeps its copy and is told.
+Nothing is ever removed from a site remotely.
+
+### Design family
+
+Hand-drawn siblings of one design across formats (a popup and its bar), sharing
+a `family` id in the catalogue so they can be shown together. A grouping, not a
+variant: each member is its own design with its own revision.
+
+### Catalogue words
+
+The authored description, slug, industries, occasions, style and colour of a
+design, written in the publishing layer and searched in the picker. Distinct
+from facets, which are derived from the tree ([ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md)) —
+a facet says what a design does, a catalogue word says who it is for.
 
 ### Collection
 
-A reviewed discovery list of [[Playbook]]s, shown as campaign setups. It is not a
-[[Template pack]]: one setup can appear in several Collections without another
-installation or another design. Matching setup and canonical design counts are
+A reviewed discovery list of [[Playbook]]s and designs, shown as campaign setups.
+It is a list, not a delivery: one setup can appear in several Collections
+without another installation or another design ([ADR 0156](docs/adr/0156-the-catalogue-is-one-design-per-object.md)). Matching setup and canonical design counts are
 shown separately. Optional before/during/after stages and event date windows
 help merchants plan; they never schedule or publish an [[Optin]]. The internal
 repository studio prepares public authored collections, not customer data.
@@ -1214,7 +1245,8 @@ server. See [ADR 0154](docs/adr/0154-agents-act-through-wordpress-abilities.md).
 Saved canonical design identities, hidden Collections, event participation and
 market choices, held in user meta scoped to the current site. They are personal
 library preferences; Site occasions are shared by site administrators. Favorites
-survive a pack version update while exact source baselines retain immutable IDs.
+follow a design id across [[Design revision]]s while exact source baselines
+retain immutable template IDs.
 
 ### Quick pick
 

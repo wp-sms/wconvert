@@ -130,7 +130,7 @@ final class TemplateVocabularyTest extends TestCase
         $tree['graph']['edges'][0]['onclick'] = 'not-a-route-setting';
         $normalized = self::normalize(['tree' => $tree])['tree'];
         if (!isset($normalized['graph'])) { self::fail('A version 3 journey must retain its graph.'); }
-        self::assertSame(3, $normalized['v']);
+        self::assertSame(2, $normalized['v']);
         self::assertSame('interests', $normalized['graph']['entry']);
         self::assertSame(array_column($fixture['graph']['edges'], 'id'), array_column($normalized['graph']['edges'], 'id'));
         self::assertArrayNotHasKey('onclick', $normalized['graph']['edges'][0]);

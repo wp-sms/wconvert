@@ -49,7 +49,7 @@ final class PackValidator
             'tier' => $tier->value, 'tree' => $design['tree'] ?? [], 'tokens' => $design['tokens'] ?? []];
         $reader = new self($this->manifest, $this->vocabulary, $this->installedTier, true);
         $pack = $reader->decode(json_encode(['schema' => 1, 'id' => 'transfer', 'version' => '1.0.0', 'name' => 'Transfer', 'description' => '',
-            'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => $design['tree']['v'] ?? TemplateTree::VERSION, 'capabilities' => self::CAPABILITIES],
+            'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => TemplateTree::VERSION, 'capabilities' => self::CAPABILITIES],
             'assets' => [], 'templates' => [$entry]], JSON_THROW_ON_ERROR));
         return array_intersect_key($pack['templates'][0], array_flip(['name', 'display_type', 'tree', 'tokens']));
     }
@@ -131,11 +131,14 @@ final class PackValidator
                 self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
             }
-            $this->keys($tree, ($tree['v'] ?? null) === 3 ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
-            self::check(($tree['v'] ?? null) === TemplateTree::VERSION || (($tree['v'] ?? null) === 3), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
-            self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $tree['v'] === 3 ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
-            self::check($tree['v'] <= $requires['tree'], __('This pack understates its design vocabulary.', 'wconvert'));
-            $requiredCapabilities[] = 'template-tree:' . $tree['v'];
+            $graph = TemplateTree::isGraph($tree);
+            $this->keys($tree, $graph ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
+            // `v` is the vocabulary (2); 3 is the earlier spelling of a flow (ADR 0156).
+            self::check(in_array($tree['v'] ?? null, [TemplateTree::VERSION, 3], true), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
+            self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
+            self::check(TemplateTree::VERSION <= $requires['tree'], __('This pack understates its design vocabulary.', 'wconvert'));
+            // The capability names flows by their old version number; it is a name, not a version.
+            $requiredCapabilities[] = $graph ? 'template-tree:3' : 'template-tree:2';
             $nodeIds = [];
             $count = 0;
             foreach ($tree['steps'] as $step) {
@@ -185,7 +188,6 @@ final class PackValidator
             }
             self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This design needs a usable email or phone capture form.', 'wconvert'));
             $acts = ConvertingAct::offeredIn($tree);
-            $graph = $tree['v'] === 3;
             if ($graph) {
                 self::check(is_array($tree['graph'] ?? null), __('This design has no lines between screens.', 'wconvert'));
                 $this->keys($tree['graph'], ['entry', 'edges']);

@@ -889,7 +889,7 @@ final class OptinRepository
         // that incomplete draft remains valid and never changes the live set.
         // Graphs and filtered results need the same capture/publication boundary as REST.
         // The legacy form validator intentionally accepts only version 2.
-        $checkJourney = ($optin->config['template']['tree']['v'] ?? null) === 3;
+        $checkJourney = is_array($optin->config['template']['tree'] ?? null) && \WConvert\Template\TemplateTree::isGraph($optin->config['template']['tree']);
         foreach ($optin->config['template']['tree']['steps'] ?? [] as $screen) foreach ($screen['results'] ?? [] as $result) {
             if (array_key_exists('product_filter', $result) || array_key_exists('product_action', $result)) $checkJourney = true;
         }
