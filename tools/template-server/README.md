@@ -115,11 +115,7 @@ switches the pointer; it does not touch installed designs or existing Optins.
 - Previews carry a sandbox CSP with no network and `frame-ancestors` from
   `PREVIEW_EMBED_ORIGINS`. Other responses are `default-src 'none';
   frame-ancestors 'none'`, `nosniff`, `no-referrer`.
-- **Temporary:** the v2 public read-only routes (`/manifest.json`, `/packs/…`,
-  `/releases/<sha>/(manifest|designs|page-N).json`, `/previews/…`,
-  `/thumbnails/…`, `/assets/free/…`) are still served for the live website
-  until it migrates. The v2 premium routes are gone. See
-  [the gallery contract](GALLERY-CONTRACT.md#migration-from-v2).
+- The v2 routes are gone, public and premium alike; a v2 object left in a bucket is never served.
 
 ## Premium grants
 

@@ -149,8 +149,8 @@ these only refuse what is objectively wrong or make review cheaper:
   with no rights record or an out-of-vocabulary setting are `bundled_only`:
   shown on the website from the bundled source, not downloadable, until the
   reason is fixed.
-- The v2 public routes stay readable until the website reads v3 detail pages;
-  v2 premium routes are gone.
+- The v2 public routes stayed readable until the website read v3 detail pages
+  (wconvert-website PR 4, 20 October); since then every v2 route is gone.
 - Accepted residual risk, recorded by the owner: approval stays agent review;
   quality and AI image rights rest on that review, and production publish
   keys live on the dev machine. Only automated checks were added.

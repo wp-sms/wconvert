@@ -3,13 +3,9 @@ import { rateLimit, clientIp } from './rate-limit';
 /** Public reads stay independent of Nexus and private storage. Bucket keys are the URL paths. */
 const HASH = '[a-f0-9]{64}';
 const PUBLIC = new RegExp(`^v3/(manifest\\.json|(releases|index|designs|setups)/${HASH}\\.json|assets/${HASH}\\.(png|jpg|webp)|thumbs/${HASH}(@2x)?\\.webp|og/${HASH}\\.jpg|previews/${HASH}\\.html)$`);
-// TEMPORARY: the live website still reads catalogue v2 until it migrates to v3.
-// These routes are read-only, serve whatever v2 objects remain in the bucket and
-// get no new data. Delete this pattern (and its tests) once the website is on v3.
-const LEGACY = new RegExp(`^(manifest\\.json|packs/${HASH}\\.json|releases/${HASH}/(manifest|designs|page-[1-9][0-9]?)\\.json|previews/${HASH}\\.html|thumbnails/${HASH}\\.jpg|assets/free/${HASH}\\.(png|jpg|webp))$`);
 const PREMIUM = new RegExp(`^/v3/premium/((designs|setups)/${HASH}\\.json|assets/${HASH}\\.(png|jpg|webp))$`);
 const DESIGN = new RegExp(`^/v3/(premium/)?designs/(${HASH})\\.json$`);
-const POINTERS = new Set(['v3/manifest.json', 'manifest.json']);
+const POINTER = 'v3/manifest.json';
 const TYPES: Record<string, string> = { json: 'application/json; charset=utf-8', html: 'text/html; charset=utf-8', png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp' };
 const NO_STORE = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 function embeddingOrigins(value: string | undefined): string {
@@ -41,7 +37,7 @@ function count(request: Request, path: string, env: Env) {
 }
 function limits(key: string) {
   // Nothing but the object kind decides the cap; a mislabelled object is refused.
-  if (POINTERS.has(key)) return key === 'manifest.json' ? 262144 : 65536;
+  if (key === POINTER) return 65536;
   if (key.endsWith('.html')) return 2097152;
   return key.endsWith('.json') ? 262144 : 5242880;
 }
@@ -67,7 +63,7 @@ export default {
       ]) ?? premium(request, env);
     }
     const key = url.pathname.slice(1);
-    if (!PUBLIC.test(key) && !LEGACY.test(key)) return message(request, 404, 'Not found');
+    if (!PUBLIC.test(key)) return message(request, 404, 'Not found');
     try {
       const object = await env.PUBLIC_TEMPLATES.get(key);
       if (!object) return message(request, 404, 'Not found');
@@ -78,7 +74,7 @@ export default {
       const html = key.endsWith('.html');
       const headers = new Headers({
         'Content-Type': TYPES[key.split('.').pop()!], 'X-Content-Type-Options': 'nosniff',
-        'Cache-Control': POINTERS.has(key) ? 'no-cache, must-revalidate' : 'public, max-age=31536000, immutable',
+        'Cache-Control': key === POINTER ? 'no-cache, must-revalidate' : 'public, max-age=31536000, immutable',
         ETag: object.httpEtag, 'Referrer-Policy': 'no-referrer',
         'Content-Security-Policy': html
           ? `sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'; frame-ancestors ${embeddingOrigins(env.PREVIEW_EMBED_ORIGINS)}`
