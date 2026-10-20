@@ -107,6 +107,7 @@
 # Its readme.txt, changelog.txt and license.txt stay.
 /vendor/woocommerce/action-scheduler/AGENTS.md
 /vendor/woocommerce/action-scheduler/CLAUDE.md
+/AGENTS.md
 /vendor/woocommerce/action-scheduler/README.md
 /vendor/woocommerce/action-scheduler/lib/cron-expression/README.md
 
@@ -128,6 +129,7 @@
 /CONTEXT.md
 /docs
 /.claude
+/.agents
 # Contributor notes that sit beside shipped runtime data. Anchored, one by one:
 # a bare `README.md` would reach every vendor package's too.
 /resources/playbooks/README.md

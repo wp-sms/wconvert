@@ -8,6 +8,7 @@ name: CI
 #   changes ── one dorny/paths-filter run, the only place the filters live
 #     ├── PHP tests        php-tests.yml
 #     ├── Frontend tests   frontend-tests.yml
+#     ├── Template service tools/template-server + tools/design-library suites
 #     └── Required checks ──── always runs, aggregates needs.*.result
 #
 # This mirrors WSMS's ci.yml, including WHY it has this shape. A workflow
@@ -121,6 +122,7 @@ jobs:
     outputs:
       php: ${{ steps.filter.outputs.php }}
       js: ${{ steps.filter.outputs.js }}
+      service: ${{ steps.filter.outputs.service }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -171,6 +173,12 @@ jobs:
               - 'tiers.json'
               - '.github/workflows/frontend-tests.yml'
               - '.github/workflows/ci.yml'
+            service:
+              - 'tools/template-server/**'
+              - 'tools/design-library/**'
+              - 'resources/templates/**'
+              - 'resources/collections/**'
+              - '.github/workflows/ci.yml'
 
   php-tests:
     name: 'PHP tests'
@@ -185,6 +193,57 @@ jobs:
     uses: ./.github/workflows/frontend-tests.yml
 
   # ---------------------------------------------------------------------------
+  # THE HOSTED CATALOGUE. The Worker and the publisher that feeds it are not in
+  # the plugin ZIP, so neither suite above reaches them; this is the only place
+  # a pull request proves them. Two `node --test` runs and a Wrangler dry-run.
+  # ---------------------------------------------------------------------------
+  template-service:
+    name: 'Template service'
+    needs: changes
+    if: needs.changes.outputs.service == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # The exporter and studio run the shipping PHP reader.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - run: composer install --no-progress
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            tools/template-server/package-lock.json
+
+      - run: npm ci
+
+      # Some studio tests import the Worker's operator scripts.
+      - run: npm ci
+        working-directory: tools/template-server
+
+      # Thumbnails, previews and the contrast check render in Chromium.
+      - run: npx playwright install --with-deps chromium
+
+      - name: Design library
+        run: bash tools/design-library/build.sh renderer && npm run test:template-studio
+
+      # Bundled revision files must match the registry (ADR 0156).
+      - name: Catalogue revisions
+        run: npm run templates:revisions:check
+
+      - name: Worker
+        working-directory: tools/template-server
+        run: npm run check && npm test
+
+  # ---------------------------------------------------------------------------
   # THE GATE. The one check to require in branch protection.
   #
   # `if: always()` is the whole point — it reports whatever happened upstream,
@@ -197,7 +256,7 @@ jobs:
   required-checks:
     name: 'Required checks'
     if: always()
-    needs: [source-contract, loader-contract, changes, php-tests, frontend-tests]
+    needs: [source-contract, loader-contract, changes, php-tests, frontend-tests, template-service]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

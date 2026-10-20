@@ -98,6 +98,34 @@ supported date confirmed in the dashboard and the tested Wrangler configuration.
 Local `wrangler dev`, tests and dry-run builds use emulated storage and upload
 nothing.
 
+### Deploying (from Git only)
+
+Keep `wrangler.jsonc` plain JSON, with no comments: the publish, verify and test
+scripts read it with `JSON.parse`.
+
+`.github/workflows/template-service.yml` deploys the Worker. A merge to `main`
+that touches `tools/template-server/**` deploys **staging**; production is
+deployed only by running that workflow by hand with `environment: production`.
+Do not paste code into the dashboard: the live service must be a commit on
+`main`. A deploy changes Worker code only. Catalogue data still goes out through
+`npm run publish`.
+
+One-time operator setup:
+
+1. Create the two staging buckets with direct public access disabled, and give
+   the staging private bucket the same one-day `grants/` lifecycle rule.
+2. Create a Cloudflare API token with **Workers Scripts: Edit**, **Workers Routes:
+   Edit** (zone `wconvert.io`) and **Account Settings: Read**.
+3. In GitHub → Settings → Environments, create `template-service-staging` and
+   `template-service-production`. Add the token as `CLOUDFLARE_API_TOKEN` to each.
+   Add a reviewer rule on production if you want one; the workflow needs no change.
+4. Staging premium answers `503 service_not_configured` until Nexus is connected
+   for the audience `https://templates-staging.wconvert.io` and
+   `wrangler secret put NEXUS_SERVICE_KEY --env staging` is run. Free routes and
+   publication work without it.
+
+For deployments and the Nexus connection:
+
 - Authenticate Wrangler locally to the account.
 - The Nexus endpoints, issuer, audiences and the `production` environment claim
   are set in `wrangler.jsonc` for both environments. Keep `workers_dev` and
