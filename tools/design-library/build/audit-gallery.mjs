@@ -14,7 +14,8 @@ const entries = read(resolve(root, 'tools/design-library/out/pilot.json'));
 const reviews = reviewQueue(read(resolve(root, 'tools/design-library/review/shared-reviews.json')), entries, root);
 const approved = entries.filter(entry => reviews.find(review => review.id === entry.id)?.state === 'approved');
 const bundled = globSync(['resources/templates/library/*.json', 'pro/modules/*/templates/*.json'], { cwd: root }).map(file => read(resolve(root, file)));
-const liveIds = new Set(live.catalogue.designs.map(design => design.id));
+const liveDesigns = [...live.catalogue.designs, ...(live.catalogue.extensions?.bundled_designs ?? [])];
+const liveIds = new Set(liveDesigns.map(design => design.id));
 const missing = bundled.filter(design => !liveIds.has(design.id)).map(design => ({
   id: design.id, format: design.display_type, tier: design.tier,
   approved_setups: approved.filter(entry => entry.template_id === design.id).map(entry => entry.id),
@@ -37,7 +38,7 @@ const report = {
   observed_at: new Date().toISOString(), source_directory: root,
   source_commit: execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
   source_clean: execFileSync('git', ['-C', root, 'status', '--porcelain'], { encoding: 'utf8' }).trim() === '',
-  live: { release: live.manifest.release, designs: liveIds.size, packs: packs.length, formats: counts(live.catalogue.designs) },
+  live: { release: live.manifest.release, designs: liveIds.size, packs: packs.length, formats: counts(liveDesigns) },
   source: { bundled_designs: bundled.length, formats: counts(bundled), approved_setups: approved.length,
     missing_designs: missing.length, approved_missing_designs: missingApproved.length },
   candidate: { release: release.id, designs: all.length, pack_designs: candidate.designs.length,
