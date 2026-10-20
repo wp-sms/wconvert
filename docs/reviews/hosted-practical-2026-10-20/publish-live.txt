@@ -1,0 +1,15 @@
+
+> publish
+> node scripts/publish-remote.mjs --directory /Users/navidkashani/.local/share/wconvert/template-library --expected 359f655d63d6c070eed1266a7a0fc43a57d80ebb8270745f0920c814051172bb --credentials /Users/navidkashani/.config/wconvert/template-publisher.env --apply
+
+{
+  "account": "c1a1ad8e669eb8c31ce039ea78aa6ab9",
+  "origin": "https://templates.wconvert.io",
+  "publicBucket": "wconvert-templates-public",
+  "privateBucket": "wconvert-templates-private",
+  "release": "3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7",
+  "created": 6,
+  "reused": 30,
+  "privateObjects": 4,
+  "dryRun": false
+}

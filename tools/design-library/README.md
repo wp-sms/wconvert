@@ -23,8 +23,8 @@ and all prepared campaigns. The read-only PHP exporter loads repository classes 
 
 The studio contains **132 campaign setups using 76 designs**, drawn from a complete
 inventory of **108 designs**. Updated 20 October: **40 setup approvals are current
-and 92 remain stale**, with nine approved curated collections. The hosted delivery
-plan contains 35 setups / 32 designs / eight packs / six complete collections.
+and 92 remain stale**, with nine approved curated collections. The hosted library now serves 35 setups / 32 designs / eight packs / six complete
+collections, published and verified over HTTPS on 20 October.
 The latest selection adds twelve previously unhosted studio setups using twelve
 different designs; it does not inflate the source-design count. See the
 [hosted practical review](../../docs/reviews/hosted-practical-2026-10-20/review.md)
