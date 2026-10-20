@@ -2,8 +2,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { artworkExports } from './artwork.mjs';
-import { assignRevisions, bundledDesigns, bundledRevisionFiles, exportObjects, metadataFor, readJson, retireMissing, writeJson } from './catalogue.mjs';
+import { assignRevisions, bundledRevisionFiles, exportObjects, metadataFor, readJson, retireMissing, writeJson } from './catalogue.mjs';
 import { writeFileSync } from 'node:fs';
+import { designSources } from './sources.mjs';
 
 /**
  * Number every exportable design and every planned setup (ADR 0156).
@@ -11,23 +12,25 @@ import { writeFileSync } from 'node:fs';
  *   npm run templates:revisions            write the registry and both bundled revision files
  *   npm run templates:revisions -- --check fail if either is stale (CI)
  *
- * A design whose source cannot be exported yet (an unconverted SVG, a
- * site-specific link) is left unnumbered; it is still bundled.
+ * Hosted designs are numbered like bundled ones; only the two bundled
+ * revision files leave them out (ADR 0157). A design whose source cannot be
+ * exported yet (an unconverted SVG, a site-specific link) is left unnumbered;
+ * it is still bundled.
  */
 export function computeRevisions(root, implementationRoot = root) {
   const plan = readJson(root, 'tools/design-library/publishing/catalog.json');
   if (plan.schema !== 2) throw new Error('Unsupported delivery plan');
   const metadata = readJson(root, 'tools/design-library/publishing/designs.json');
   const registry = readJson(root, 'tools/design-library/publishing/revisions.json');
-  const bundled = bundledDesigns(root);
+  const authored = designSources(root);
   const exported = exportObjects(root, implementationRoot, {
-    designs: [...bundled.keys()].sort().map(id => ({ id, revision: 1, ...metadataFor(metadata, id) })),
+    designs: [...authored.keys()].sort().map(id => ({ id, revision: 1, ...metadataFor(metadata, id) })),
     setups: plan.setups.map(id => ({ id, revision: 1 })),
     raster_sources: artworkExports(root, plan.artwork_exports), image_rights: plan.image_rights,
   });
   const blocking = exported.failures.filter(failure => failure.kind === 'setup');
   if (blocking.length) throw new Error('Planned setups cannot be exported:\n' + blocking.map(f => `  ${f.id}: ${f.reason}`).join('\n'));
-  const numbered = assignRevisions(retireMissing(registry, { designs: new Set(bundled.keys()), setups: new Set(plan.setups) }), exported);
+  const numbered = assignRevisions(retireMissing(registry, { designs: new Set(authored.keys()), setups: new Set(plan.setups) }), exported);
   return { ...numbered, failures: exported.failures, files: bundledRevisionFiles(root, numbered.registry) };
 }
 

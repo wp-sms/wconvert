@@ -1,13 +1,12 @@
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
+import { designDirectories } from './sources.mjs';
 import { resolve, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 
 /** Discover every module; a malformed source must fail the review build. */
 export function readDesigns(root) {
-  const directories = ['resources/templates/library', ...readdirSync(resolve(root, 'pro/modules'), { withFileTypes: true })
-    .filter(entry => entry.isDirectory()).map(entry => `pro/modules/${entry.name}/templates`)];
   const ids = new Set();
-  return directories.filter(dir => existsSync(resolve(root, dir))).flatMap(dir =>
+  return designDirectories(root).map(({ dir }) => dir).flatMap(dir =>
     readdirSync(resolve(root, dir)).filter(name => name.endsWith('.json')).sort().map(name => {
       const path = resolve(root, dir, name);
       const design = JSON.parse(readFileSync(path, 'utf8'));

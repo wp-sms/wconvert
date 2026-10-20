@@ -31,6 +31,7 @@ import { studioPage } from './studio-theme.mjs';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { designDirectories } from './sources.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
@@ -70,12 +71,7 @@ writeFileSync(resolve(OUT, 'bench.html'), page);
  * an editor for ONE design at a time, and 40 trees in the page would be 40
  * trees downloaded to look at one.
  */
-const entries = [
-  resolve(PLUGIN, 'resources/templates/library'),
-  ...readdirSync(resolve(PLUGIN, 'pro/modules'), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => resolve(PLUGIN, 'pro/modules', entry.name, 'templates')),
-].flatMap((library) => {
+const entries = designDirectories(PLUGIN).map(({ dir }) => resolve(PLUGIN, dir)).flatMap((library) => {
   try {
     return readdirSync(library)
       .filter((file) => file.endsWith('.json'))

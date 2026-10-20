@@ -1167,9 +1167,11 @@ code, site-local destinations, product IDs or links. Nothing is fetched until
 an administrator allows it — once, in the picker or in Settings — and a site
 can switch it off entirely (`WCONVERT_TEMPLATE_CATALOG`). Installing a design
 or a setup is an explicit action; installed copies are local, keep working
-offline, and never change an existing Optin's snapshot. Not to be confused with
-a [[Collection]], which is a list, or a former *template pack*, which no longer
-exists.
+offline, and never change an existing Optin's snapshot. Some Free designs exist
+only here: authored in the repository but bundled in neither ZIP, so a Free
+site offers them to install ([ADR 0157](docs/adr/0157-free-designs-may-be-served-without-being-bundled.md)).
+Not to be confused with a [[Collection]], which is a list, or a former
+*template pack*, which no longer exists.
 
 ### Design revision
 

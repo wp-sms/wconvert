@@ -1,0 +1,49 @@
+# 0157: Free designs may be served without being bundled
+
+Date: 2026-10-20. Status: accepted.
+
+Amends [0156](0156-the-catalogue-is-one-design-per-object.md) §5.
+
+## Context
+
+Until now a design was authored in one of two places, and the place decided
+the ZIP: `resources/templates/library/` ships in Free, `pro/modules/*/templates/`
+in Pro. The catalogue (0156) already serves Free designs as their own objects,
+and a Free site already shows one it does not bundle as `install`, then
+`ready` (0156 §1, §6). What was missing was somewhere to author such a design.
+
+The Free ZIP is read by wp.org reviewers and downloaded by every site, so each
+bundled design costs every site its bytes whether or not it is ever used.
+
+## Decision
+
+**A third source, `tools/design-library/hosted/templates/`, holds Free designs
+the catalogue alone serves.** `/tools` is in `.distignore`, so nothing there
+reaches either ZIP. A hosted design must declare `tier: free`; Pro designs keep
+their module folders.
+
+**One registry names every source.** `tools/design-library/build/sources.mjs`
+lists the folders and what delivers each (`free`, `pro`, `hosted`). Every
+review and publishing tool reads it instead of keeping its own list. The PHP
+exporter, the pilot and `bin/verify-templates.php` add the same folder. One id
+authored in two folders is refused, so copying a hosted design into a bundled
+folder fails instead of shipping it twice.
+
+**A hosted design is numbered, exported and reviewed like a bundled one.** It
+has a revision in `publishing/revisions.json`, a history record, a rights
+record for each image, catalogue words, and the same near-duplicate, contrast,
+copy, literal-colour and per-design byte checks. The byte budget measures it
+as installed, with each picture bound to a local URL (`PackImages::hydrate`).
+It is listed in **neither** bundled `revisions.json`, because neither ZIP
+carries it.
+
+## Consequences
+
+- Free can grow its gallery without growing the ZIP. A Free site sees these
+  designs only through the catalogue, so they are not available offline or when
+  the catalogue cannot be reached.
+- The Free ZIP's root allowlist in `bin/verify-artifact-contract.sh` already
+  fails an artifact that carries `tools/`; a test now pins that for the hosted
+  folder.
+- A hosted design is still authored and reviewed in this repository; the
+  template server only publishes what the release build exported.

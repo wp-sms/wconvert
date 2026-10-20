@@ -1,6 +1,7 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { designSource, designSources } from './sources.mjs';
 
 const LITERAL = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?)\(/i;
 const BASELINE = 'tools/design-library/publishing/colour-baseline.json';
@@ -25,9 +26,7 @@ export function literalColours(design) {
 }
 
 function sourceOf(root, id) {
-  const files = [resolve(root, 'resources/templates/library', id + '.json'),
-    ...readdirSync(resolve(root, 'pro/modules')).map(module => resolve(root, 'pro/modules', module, 'templates', id + '.json'))].filter(existsSync);
-  return JSON.parse(readFileSync(files[0], 'utf8'));
+  return JSON.parse(readFileSync(designSource(root, id), 'utf8'));
 }
 
 export function literalColourReport(root, ids) {
@@ -39,8 +38,7 @@ export function literalColourReport(root, ids) {
 // `node catalogue-lint.mjs --record` lowers (never raises) the baseline to today's counts.
 if (process.argv[1] === fileURLToPath(import.meta.url) && process.argv.includes('--record')) {
   const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
-  const ids = [...readdirSync(resolve(root, 'resources/templates/library')), ...readdirSync(resolve(root, 'pro/modules')).flatMap(module => existsSync(resolve(root, 'pro/modules', module, 'templates')) ? readdirSync(resolve(root, 'pro/modules', module, 'templates')) : [])]
-    .filter(file => file.endsWith('.json')).map(file => file.slice(0, -5)).sort();
+  const ids = [...designSources(root).keys()].sort();
   const previous = existsSync(resolve(root, BASELINE)) ? JSON.parse(readFileSync(resolve(root, BASELINE), 'utf8')).designs : null;
   const designs = {};
   for (const id of ids) {

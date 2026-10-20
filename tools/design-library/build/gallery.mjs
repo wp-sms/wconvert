@@ -23,6 +23,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { containerCss } from './containers.mjs';
+import { designDirectories } from './sources.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
@@ -31,13 +32,8 @@ const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
 const template = studioPage(readFileSync(resolve(HERE, '../gallery/gallery.html'), 'utf8'), 'gallery');
 const renderer = readFileSync(resolve(OUT, 'renderer.iife.js'), 'utf8');
 
-/** Free's one library, and every Pro module that keeps designs (ADR 0056). */
-const libraries = [
-  resolve(PLUGIN, 'resources/templates/library'),
-  ...readdirSync(resolve(PLUGIN, 'pro/modules'), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => resolve(PLUGIN, 'pro/modules', entry.name, 'templates')),
-];
+/** Every folder designs are authored in: Free, each Pro module, hosted (sources.mjs). */
+const libraries = designDirectories(PLUGIN).map(({ dir }) => resolve(PLUGIN, dir));
 
 const designs = libraries
   .flatMap((library) => {

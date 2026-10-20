@@ -52,7 +52,9 @@ function source(string $root, string $kind, string $id): string
 {
     if (!PackValidator::identifier($id)) throw new RuntimeException('Invalid identity: ' . $id);
     $files = $kind === 'design'
-        ? array_merge(glob($root . '/resources/templates/library/' . $id . '.json') ?: [], glob($root . '/pro/modules/*/templates/' . $id . '.json') ?: [])
+        // Free, every Pro module, and designs the catalogue alone serves (ADR 0157).
+        ? array_merge(glob($root . '/resources/templates/library/' . $id . '.json') ?: [], glob($root . '/pro/modules/*/templates/' . $id . '.json') ?: [],
+            glob($root . '/tools/design-library/hosted/templates/' . $id . '.json') ?: [])
         : array_merge(glob($root . '/resources/playbooks/' . $id . '.php') ?: [], glob($root . '/pro/modules/*/playbooks/' . $id . '.php') ?: []);
     if (count($files) !== 1) throw new RuntimeException('Missing or ambiguous ' . $kind . ': ' . $id);
     return $files[0];
