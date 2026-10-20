@@ -1,3 +1,4 @@
+import { controlIcon } from './stroke-icon';
 import type { Template } from './types';
 import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS, mountedStyles } from './css';
 import { COUNTDOWN_SLOT, render } from './render';
@@ -533,7 +534,7 @@ export function closeButton(onClick: () => void): HTMLElement {
 
   button.type = 'button';
   button.className = 'wc-close';
-  button.textContent = '×';
+  button.append(controlIcon('close'));
   button.setAttribute('aria-label', 'Close');
   button.addEventListener('click', onClick);
 

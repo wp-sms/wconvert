@@ -55,7 +55,8 @@
     "build:revenue": "vite build -c vite.config.revenue.mjs",
     "templates:audit:library": "bash tools/design-library/build.sh renderer library-review pilot && node tools/visual-tests/library-polish.mjs audit && WCONVERT_REVIEW_LONG_COPY=1 node tools/visual-tests/library-polish.mjs audit && node tools/visual-tests/template-studio-refresh.mjs all tools/design-library/out/library-journeys.json",
     "templates:review:scope": "npm run templates:pilot && node tools/design-library/build/plan-review.mjs",
-    "templates:review:proof": "npm run templates:pilot && node tools/design-library/build/check-review-proof.mjs"
+    "templates:review:proof": "npm run templates:pilot && node tools/design-library/build/check-review-proof.mjs",
+    "templates:controls:proof": "npm run templates:pilot && node tools/design-library/build/control-proof.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

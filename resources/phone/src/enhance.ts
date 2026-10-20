@@ -1,3 +1,4 @@
+import { controlIcon } from '@renderer/stroke-icon';
 import { PhoneInput } from 'lite-phone-input/vanilla';
 import styles from 'lite-phone-input/styles?inline';
 
@@ -52,6 +53,8 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
       visible.__r = () => { phone.setValue(''); phone.setCountry(country); visible.dataset.e164 = ''; };
       const observer = new MutationObserver(() => phone.setOptions({ disabled: visible.readOnly }));
       observer.observe(visible, { attributes: true, attributeFilter: ['readonly'] });
+      // The library ships a tiny text triangle; use the renderer's chevron.
+      mount.querySelector('.lpi__arrow')?.replaceChildren(controlIcon('chevron'));
       const triggerLabel = () => {
         const selected = phone.getCountry();
         const localName = typeof Intl.DisplayNames === 'function'
@@ -110,7 +113,7 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
   }
   if (originals.length === 0) { portal.remove(); return undefined; }
   const style = document.createElement('style');
-  style.textContent = `${styles}\n.wc-phone .lpi{--lpi-bg:var(--wc-input-bg,var(--wc-bg,#fff));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb);--lpi-border-radius:var(--wc-radius,.5rem);--lpi-input-height:2.9rem;font:inherit}.wc-phone .lpi__input.wc-input{inline-size:0;box-shadow:none;border:0;border-radius:0;background:transparent;padding:0 var(--lpi-spacing,8px);font:inherit;direction:ltr}.wc-phone-portal .lpi__dropdown{min-width:min(280px,calc(100vw - 2rem));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb)}.wc-phone-portal .lpi__dropdown--above:not(.lpi__dropdown--fullscreen){top:auto!important;bottom:var(--wc-phone-anchor-bottom)!important}.wc-phone .lpi__input[aria-invalid]{outline:2px solid #b91c1c}`;
+  style.textContent = `${styles}\n.wc-phone .lpi__arrow{display:flex;align-items:center;opacity:1;font-size:inherit}.wc-phone .lpi{--lpi-bg:var(--wc-input-bg,var(--wc-bg,#fff));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb);--lpi-border-radius:var(--wc-radius,.5rem);--lpi-input-height:2.9rem;font:inherit}.wc-phone .lpi__input.wc-input{inline-size:0;box-shadow:none;border:0;border-radius:0;background:transparent;padding:0 var(--lpi-spacing,8px);font:inherit;direction:ltr}.wc-phone-portal .lpi__dropdown{min-width:min(280px,calc(100vw - 2rem));--lpi-text-color:var(--wc-fg,#111827);--lpi-border-color:var(--wc-border,#e5e7eb)}.wc-phone-portal .lpi__dropdown--above:not(.lpi__dropdown--fullscreen){top:auto!important;bottom:var(--wc-phone-anchor-bottom)!important}.wc-phone .lpi__input[aria-invalid]{outline:2px solid #b91c1c}`;
   shadow.appendChild(style);
   const cleanup = () => {
     for (const { input, mount, phone, observer, disconnectLive, hint } of originals) {

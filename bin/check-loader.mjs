@@ -12,8 +12,8 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 14768 B; Pro 27712 B
-//      (ADR 0139, amended; ADR 0146; ADR 0152), per build. It blocks rather than warns,
+//   1. THE BYTE BUDGET, HARD. gzip -9 on Node 22: Free 14896 B; Pro 27872 B
+//      (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155), per build. It blocks rather than warns,
 //      and there is no second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -94,12 +94,13 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
 // ADR 0124: Node 22 gzip normalization, +32 B; Free asset is byte-identical.
 // ADR 0139 amendment (2026-10-12, approved by Mostafa): +96 B, measured on Node 22.
 // ADR 0152 (approved by the user): +48 B for the code block's apply link, measured on Node 22.
-const FREE_BYTE_BUDGET = 14768;
+// ADR 0155: +128 B Free / +160 B Pro for font-independent shared controls.
+const FREE_BYTE_BUDGET = 14896;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
 // ADR 0139: user-approved +32 B for "is not" and the cart bridge's known().
 // ADR 0139 amendment (2026-10-12, approved by Mostafa): +64 B, measured on Node 22.
 // ADR 0146: Pro is one tier, so this is the old top rung's budget, unchanged.
-const PRO_BYTE_BUDGET = 27712;
+const PRO_BYTE_BUDGET = 27872;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

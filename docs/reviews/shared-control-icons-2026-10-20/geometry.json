@@ -1,0 +1,1588 @@
+{
+  "entries": 263,
+  "cases": 4192,
+  "close": 2760,
+  "select": 408,
+  "phone": 128,
+  "failures": [],
+  "coverage": [
+    {
+      "id": "agenda-card",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "appointment-agenda",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "appointment-note",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "availability-desk",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "benefit-grid",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "bold-ask",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "callback-notes",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "centred-card",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "code-reveal",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "collection-poster",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "cream-coupon",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "deadline-panel",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "edition-pass",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "event-calendar",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "excerpt-window",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "fieldwork",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "flash-offer",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "ink-split",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-bar",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-benefits",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "inline-choice",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "inline-cta",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "inline-phone",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-quiet",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-rule",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-split",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-tinted",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "journey-email-only",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "journey-email-then-sms",
+      "source": "design",
+      "cases": 24,
+      "selects": 0
+    },
+    {
+      "id": "journey-enquiry",
+      "source": "design",
+      "cases": 24,
+      "selects": 8
+    },
+    {
+      "id": "journey-offer-first",
+      "source": "design",
+      "cases": 24,
+      "selects": 0
+    },
+    {
+      "id": "launch-checklist",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "ledger-card",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "makers-index",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "material-pair",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "message-sample",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "name-and-email",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "number-invitation",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "offer-panel",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "offer-receipt",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "photo-offer",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "photo-wash",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "portrait-frame",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "preference-card",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "product-detail-sheet",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "product-shelf",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "project-notebook",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "project-pair",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "punched-ticket",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "quieter-frequency",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "reader-review",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "reading-cover",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "reading-desk",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "reading-slip",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "request-folio",
+      "source": "design",
+      "cases": 24,
+      "selects": 8
+    },
+    {
+      "id": "resource-index",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "scope-sheet",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "service-docket",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "service-ledger",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "service-process-strip",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "service-summary",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "specification-sheet",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "split-hero",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "stacked-signup",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "studio-window",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "summer-archive",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "sunday-marginalia",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "useful-guide",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "wide-banner",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "accessory-workbench",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "basket-companion",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "cart-accessories",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "cart-additions",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "availability-note",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "bar-announcement",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "bar-code",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "bar-countdown",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "bar-email-capture",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "callback-slip",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "fullscreen-editorial",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "fullscreen-poster",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "fullscreen-split",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-cart-nudge",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "inline-code-strip",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "inline-signpost",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "launch-index",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "margin-note",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "popup-editorial",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "popup-flash",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "popup-two-column",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "sample-envelope",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "session-card",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "slide-in-benefits",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "slide-in-code",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "slide-in-nudge",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "slide-in-photo",
+      "source": "design",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "slide-in-question",
+      "source": "design",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "split-notice",
+      "source": "design",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "coffee-finder-board",
+      "source": "design",
+      "cases": 32,
+      "selects": 0
+    },
+    {
+      "id": "gift-edit",
+      "source": "design",
+      "cases": 56,
+      "selects": 0
+    },
+    {
+      "id": "journey-content-guide",
+      "source": "design",
+      "cases": 40,
+      "selects": 0
+    },
+    {
+      "id": "journey-product-finder",
+      "source": "design",
+      "cases": 40,
+      "selects": 0
+    },
+    {
+      "id": "journey-service-enquiry",
+      "source": "design",
+      "cases": 32,
+      "selects": 0
+    },
+    {
+      "id": "kit-workbench",
+      "source": "design",
+      "cases": 48,
+      "selects": 0
+    },
+    {
+      "id": "project-route",
+      "source": "design",
+      "cases": 40,
+      "selects": 0
+    },
+    {
+      "id": "reading-path",
+      "source": "design",
+      "cases": 56,
+      "selects": 0
+    },
+    {
+      "id": "service-directory",
+      "source": "design",
+      "cases": 48,
+      "selects": 0
+    },
+    {
+      "id": "space-planner",
+      "source": "design",
+      "cases": 48,
+      "selects": 0
+    },
+    {
+      "id": "access-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "accessible-visit-note",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "accounting-consultation",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "add-useful-extras",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "agency-project-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "announcement-bar",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "appointment-agenda",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "article-end-newsletter",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "assembly-guidance",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "basket-cross-sells",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "basket-product-help",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "bulk-gift-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "callback-slip",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "care-clinic-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "cart-after-a-while",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "cart-delivery-help",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "cart-on-the-way-out",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "cart-straight-away",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "category-promotion",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "checklist-download",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "cleaning-quote",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "coffee-taste-finder",
+      "source": "setup",
+      "cases": 32,
+      "selects": 0
+    },
+    {
+      "id": "collection-discovery",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "collection-interest",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "consultation-corner",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "consultation-invitation",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "content-guide",
+      "source": "setup",
+      "cases": 40,
+      "selects": 0
+    },
+    {
+      "id": "content-upgrade",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "contributor-guidelines",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "coupon-ticket",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "course-advice-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "delivery-announcement",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "dispatch-schedule",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "drop-alerts",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "edition-early-access",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "edition-sample-signup",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "editorial-weekly",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "equipment-return-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "event-calendar",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "event-registration-link",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "excerpt-window",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "experience-kit-finder",
+      "source": "setup",
+      "cases": 48,
+      "selects": 0
+    },
+    {
+      "id": "explore-compatible-extras",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "first-order-receipt",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "fit-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "fitness-introduction",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "fullscreen-announcement",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "fullscreen-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "fullscreen-newsletter",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "furniture-fit-guide",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "gift-finder",
+      "source": "setup",
+      "cases": 56,
+      "selects": 0
+    },
+    {
+      "id": "gift-message-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "gift-planning-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "gift-wrap-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "group-training-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "guide-download",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "headlines-optional-sms",
+      "source": "setup",
+      "cases": 24,
+      "selects": 0
+    },
+    {
+      "id": "holiday-service-hours",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "home-repair-quote",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "homeware-care-notes",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "journey-email-only",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "journey-email-then-sms",
+      "source": "setup",
+      "cases": 24,
+      "selects": 0
+    },
+    {
+      "id": "journey-enquiry",
+      "source": "setup",
+      "cases": 24,
+      "selects": 8
+    },
+    {
+      "id": "journey-offer-first",
+      "source": "setup",
+      "cases": 24,
+      "selects": 0
+    },
+    {
+      "id": "landscaping-enquiry",
+      "source": "setup",
+      "cases": 24,
+      "selects": 8
+    },
+    {
+      "id": "language-support-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "launch-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "launch-index",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "launch-interest",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "lighting-collection",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "local-class-news",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "local-pickup-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "maintenance-letter",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "maker-notes",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "maker-session-invitation",
+      "source": "setup",
+      "cases": 24,
+      "selects": 0
+    },
+    {
+      "id": "material-comparison",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "membership-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "new-arrivals-link",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "one-line-invite",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "opening-hours-signpost",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "packaging-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "personalisation-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "photography-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "pre-visit-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "product-advice-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "product-care-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "product-demo-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "product-detail-sheet",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "product-finder",
+      "source": "setup",
+      "cases": 40,
+      "selects": 0
+    },
+    {
+      "id": "project-planning-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "project-readiness-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "project-stage-finder",
+      "source": "setup",
+      "cases": 40,
+      "selects": 0
+    },
+    {
+      "id": "read-to-the-end",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "reader-format-choice",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "reader-panel-interest",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "reader-question",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "reading-notes-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "reading-path-finder",
+      "source": "setup",
+      "cases": 56,
+      "selects": 0
+    },
+    {
+      "id": "reading-recommendation",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "recommend-accessory",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "related-essay",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "remote-consultation-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "renovation-callback",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "repair-advice-request",
+      "source": "setup",
+      "cases": 24,
+      "selects": 8
+    },
+    {
+      "id": "repair-assessment",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "repair-workshop-news",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "request-a-callback",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "request-a-quote",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "rereading-essay",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "restock-announcements",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "restyling-notes",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "return-policy-guide",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "returns-deadline-notice",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "sale-announcement",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "sale-deadline",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "sample-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "seasonal-service-link",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "series-start",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "service-area-check",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "service-enquiry",
+      "source": "setup",
+      "cases": 32,
+      "selects": 0
+    },
+    {
+      "id": "service-finder",
+      "source": "setup",
+      "cases": 48,
+      "selects": 0
+    },
+    {
+      "id": "service-fit-brief",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "service-open-day",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "service-options-guide",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "service-process-strip",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "service-text-updates",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "shopping-guidance",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "showroom-information",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "sizing-guide",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "sms-message-preview",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "space-fit-finder",
+      "source": "setup",
+      "cases": 48,
+      "selects": 0
+    },
+    {
+      "id": "spare-parts-advice",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "specification-sheet",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "studio-welcome",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "sunday-reading",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "topic-reading-list",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "trade-account-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "translation-project-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "tutoring-introduction",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "upholstery-samples",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "venue-hire-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "venue-visit-request",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "vip-early-access",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "visiting-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "website-review-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "welcome-discount",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "wholesale-enquiry",
+      "source": "setup",
+      "cases": 16,
+      "selects": 8
+    },
+    {
+      "id": "workspace-change-story",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    },
+    {
+      "id": "writing-checklist",
+      "source": "setup",
+      "cases": 16,
+      "selects": 0
+    },
+    {
+      "id": "writing-session-details",
+      "source": "setup",
+      "cases": 8,
+      "selects": 0
+    }
+  ]
+}

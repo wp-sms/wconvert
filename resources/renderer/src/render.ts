@@ -1,3 +1,4 @@
+import { controlIcon, strokeIcon } from './stroke-icon';
 import type {
   BadgeNode,
   ButtonNode,
@@ -600,24 +601,7 @@ export const GLYPHS: Readonly<Record<string, string>> = {
 
 /** One `<svg>` around one path, with no attribute the caller can influence. */
 function glyph(name: string, className: string): SVGElement {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '2');
-  svg.setAttribute('stroke-linecap', 'round');
-  svg.setAttribute('stroke-linejoin', 'round');
-  // An icon is never the only thing that says something, so it is hidden from
-  // assistive technology rather than given a name the merchant did not write.
-  // A tick beside "Free shipping" read out as "check, Free shipping" is noise.
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('class', className);
-  path.setAttribute('d', GLYPHS[name] ?? '');
-  svg.append(path);
-
-  return svg;
+  return strokeIcon(GLYPHS[name] ?? '', className);
 }
 
 /**
@@ -994,7 +978,13 @@ function field(node: FieldNode): HTMLElement | null {
   }
 
   const wrapper = wrap('div', 'wc-field', label);
-  wrapper.append(input);
+  if (input instanceof HTMLSelectElement) {
+    const control = wrap('div', 'wc-select', input);
+    control.append(controlIcon('chevron'));
+    wrapper.append(control);
+  } else {
+    wrapper.append(input);
+  }
   if (name === 'phone') {
     const hint = document.createElement('small');
     hint.className = 'wc-phone-fallback';

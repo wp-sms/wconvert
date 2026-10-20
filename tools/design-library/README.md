@@ -22,10 +22,13 @@ screen at desktop and phone widths for visual review.
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
 The studio contains **132 campaign setups using 76 designs**, drawn from a complete
-inventory of **108 designs**. Current editorial status is **31 approved setups,
-101 stale setup reviews and six approved collections**. The original 25 current
-approvals still cover every bundled collection dependency; six additional setups
-were reviewed in the considered-essentials batch. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-18/README.md).
+inventory of **108 designs**. After the shared control correction on 20 October,
+all **132 setup reviews are stale** under the existing renderer revision check.
+The preceding checkpoint had 31 current setup approvals and six approved
+collections; that is historical, not approval of this renderer. The focused
+[control review](../../docs/reviews/shared-control-icons-2026-10-20/README.md)
+checks close buttons and selectors across the inventory without renewing editorial
+approvals or publishing collections.
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
@@ -602,3 +605,13 @@ There are also 39 older design-version records to reconcile during that backlog.
 The named batch gate now checks only its dependent designs and reports this debt;
 the unscoped whole-library gate still fails until all required reviews and design
 versions are current. Approval criteria and revision hashes were not relaxed.
+
+### Shared visitor controls
+
+Run `npm run templates:controls:proof`, serve `out/`, open
+`control-proof.html` and select **Run checks**. This discovers every current design
+and registered setup (not a saved inventory), renders every screen/result at
+320/390/768/1440px in both directions, and checks the actual close-icon centre,
+select-chevron centre/size/text clearance, and phone country arrow. Save the
+resulting JSON with fresh desktop/phone screenshots. It complements visual review;
+it cannot approve campaigns or bypass the publication gate.

@@ -1,0 +1,20 @@
+{
+  "docs/reviews/shared-control-icons-2026-10-20/availability-desktop.png": "73082e42edb6fe9cd65ce3ee2dada5ded4d83d5525288cf342dbeee173c1cc52",
+  "docs/reviews/shared-control-icons-2026-10-20/close-received.png": "4bc1f4f37aa473e0e7f99e16da9392f3e7474b98c263c881e7f0e3d22eebc370",
+  "docs/reviews/shared-control-icons-2026-10-20/availability-phone.png": "e52a49f0516c8205e87e5b3297446945a4d25fd8a1eb3be65214bb275b68879b",
+  "docs/reviews/shared-control-icons-2026-10-20/close-phone.png": "0ab2f4c31105d2fc68f9e306e8eaaf62f561adfff9ced23ceeff2e8e0c64cf66",
+  "docs/reviews/shared-control-icons-2026-10-20/close-desktop.png": "41b34118ccf9a7f55c6bc5f67d56563eed5c2883887442cfde60198fd129ccf3",
+  "docs/reviews/shared-control-icons-2026-10-20/phone-desktop.png": "d6aaf30161ad054a96f3a35a285026bba52fa7d1cc1587ef95c16a2b30efc875",
+  "docs/reviews/shared-control-icons-2026-10-20/close-detail.png": "d007f53aa2259062a1d72ac8eac15ab25503899b701b8f44c9e9866eb09e33bd",
+  "docs/reviews/shared-control-icons-2026-10-20/phone-phone.png": "4bfc885232b88209881ef618342d2200564b415c4be76f1f300b5fe5d7950eb3",
+  "docs/reviews/shared-control-icons-2026-10-20/availability-phone-received.png": "08df5cb21c765975d1c276744a0c820554c243fa1e24878130c4e9e782712c21",
+  "docs/reviews/shared-control-icons-2026-10-20/availability-phone-rtl.png": "53277b80c39199f3cb4bc952bb46f61db3544902b76749d7b3730da60919fec4",
+  "docs/reviews/shared-control-icons-2026-10-20/geometry.json": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047",
+  "tools/design-library/out/renderer.iife.js": "5c92ecc573e1508a1689eea5486e5739b7573b28685fcb7a25eadfa3b9b1e262",
+  "resources/renderer/src/css.ts": "075648c26df09de9638c776f71f9c44db60ff6eb47eefd92fe9a4fc98c5315a5",
+  "resources/renderer/src/render.ts": "08222e70d703f9709409053b5114446f9120d839996dad9aef4fe8df00cd6175",
+  "resources/renderer/src/mount.ts": "7be528c2aa73c04ebf4818505c8ea034fa875e726d47c0d083973c6b712fecaf",
+  "resources/renderer/src/stroke-icon.ts": "5a406b83d109972229c796ec7a2bb32aa030e79628c46f7044a94f490bfba93c",
+  "resources/phone/src/enhance.ts": "cedc5c9bfde7c87aede9519c06e2cfed9812bb35e17ac478f3ec7645641f0ed9",
+  "tools/design-library/build/control-proof.mjs": "046ba2f77491200c3bb45e8dca0d88eabf1b837bc46799e41cb123fc932c5f70"
+}

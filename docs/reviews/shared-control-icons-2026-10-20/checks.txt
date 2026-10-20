@@ -1,0 +1,29 @@
+20 October 2026 — shared control correction
+
+PASS npm test -- --maxWorkers=2: 255 files, 4482 tests (115.49 seconds)
+PASS npm run test:template-studio: 47 tests
+PASS npm run typecheck
+PASS targeted ESLint (renderer, phone adapter, control tests, proof generator)
+PASS vendor/bin/phpunit --filter LoaderContractTest: 15 tests, 25 assertions
+PASS composer verify:source
+PASS Free/Pro loader, phone and Free/Pro admin builds
+PASS final browser control proof: 4192 cases, 2760 close buttons, 408 selects,
+     128 phone country selectors, zero findings
+PASS WordPress capture: selected weekdays persisted; acknowledgement reached
+PASS close click/Enter, including post-submit screen; phone country change
+
+EXPECTED RELEASE BLOCK: templates collection check refuses stale reviews.
+No editorial approvals were rewritten. Current curated setup state: 132 stale.
+No CI, merge, hosted upload, provider delivery or physical-device test.
+
+Node 22.23.2 gzip-9 budgets:
+==> check-loader: /Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert
+  ✓ free loader: 14852 B gzipped (budget 14896 B)
+  ✓ pro loader: 27840 B gzipped (budget 27872 B)
+  ✓ free loader: scanned for 13 premium identifier(s)
+  ✓ free loader: scanned for 7 module marker(s)
+  ! free loader: destinations, premium-triggers, spam-filters declare no marker and were not scanned for
+  ✓ loader contract clean
+  ✓ phone feature: 14936 B gzipped (budget 16384 B)
+  ✓ free phone page: 29788 B gzipped (combined ceiling 30720 B)
+  ✓ pro phone page: 42776 B gzipped (combined ceiling 43008 B)
