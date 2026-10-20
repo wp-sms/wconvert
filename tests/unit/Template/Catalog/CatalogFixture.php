@@ -106,7 +106,7 @@ final class CatalogFixture
             'taxonomy' => ['industry' => [['id' => 'food', 'label' => 'Food & drink']]]], JSON_THROW_ON_ERROR);
         $releaseSha = hash('sha256', $release);
         $this->http->responses[self::BASE . 'releases/' . $releaseSha . '.json'] = $release;
-        $pointer = ['schema' => 3, 'minor' => 0, 'release' => $releaseSha, 'withdrawn' => $this->withdrawn] + $this->extraPointer;
+        $pointer = array_replace(['schema' => 3, 'minor' => 0, 'release' => $releaseSha, 'withdrawn' => $this->withdrawn], $this->extraPointer);
         if ($this->popularity !== null) $pointer['popularity'] = $this->serveIndex(json_encode(['schema' => 3, 'downloads' => $this->popularity], JSON_THROW_ON_ERROR));
         $this->http->responses[self::SOURCE] = json_encode($pointer, JSON_THROW_ON_ERROR);
         $this->http->etags[self::SOURCE] = '"' . hash('crc32b', $this->http->responses[self::SOURCE]) . '"';

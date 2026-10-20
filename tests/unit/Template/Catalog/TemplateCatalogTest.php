@@ -426,6 +426,42 @@ final class TemplateCatalogTest extends TestCase
         self::assertSame(['reading'], array_column($status['designs'], 'id'));
     }
 
+    /**
+     * The reader that ships in free-v1 meets a release written later (ADR 0156):
+     * minor 1, keys it has never heard of at every tolerant level, a design that
+     * uses vocabulary it lacks, one that needs a newer plugin, and a new plan
+     * word. It must keep every design it can read and say "update" about the
+     * rest, one design at a time. Run this file against the free-v1 tag to
+     * prove the shipped reader, not only today's.
+     */
+    public function testAReleaseFromALaterMinorDegradesOneDesignAtATime(): void
+    {
+        $this->service->extraPointer = ['minor' => 1, 'mirrors' => ['https://eu.example/v3/'], 'signature' => 'future'];
+        $this->service->design(self::FREE_DESIGN, 'today', 1, ['minor' => 1, 'licence_note' => 'x', 'meta' => ['mood' => ['calm'], 'description' => 'A slip.']],
+            ['badges' => ['new'], 'requires' => ['plugin' => '1.0.0', 'capabilities' => ['capture-journey:1', 'template-tree:2'], 'php' => '8.1']]);
+        $future = $this->service->design(self::FREE_DESIGN, 'new-node', 1, [], ['requires' => ['plugin' => '1.3.0', 'capabilities' => ['template-tree:2', 'carousel:1']]]);
+        $tree = $future['object']['tree'];
+        $tree['steps'][0]['content']['children'][] = ['type' => 'carousel', 'id' => 'n90'];
+        $this->service->designs[1]['object']['tree'] = $tree;
+        $this->service->designs[1]['object']['requires'] = ['plugin' => '1.3.0', 'tree' => 2, 'capabilities' => ['template-tree:2', 'carousel:1']];
+        $this->service->design(self::FREE_DESIGN, 'premium-plus', 1, [], ['tier' => 'elite']);
+        $this->service->collections = [['id' => 'later', 'revision' => str_repeat('a', 64), 'name' => 'Later', 'description' => 'From a later minor.',
+            'cover' => 'spring', 'priority' => 1, 'business_types' => ['stores', 'clinics'], 'markets' => [], 'layout' => 'carousel',
+            'items' => [['design' => 'today', 'stage' => 'any', 'weight' => 3], ['playlist' => 'x']]]];
+        $this->service->publish();
+        $catalog = $this->catalog();
+        $status = $catalog->refresh();
+        $cards = array_column($status['designs'], null, 'id');
+        self::assertSame('install', $cards['today']['state']);
+        self::assertSame('update_plugin', $cards['new-node']['state'], 'New vocabulary says update, never drops the library');
+        self::assertSame('update_plugin', $cards['premium-plus']['state'], 'An unknown plan is unsupported, never free');
+        self::assertFalse($status['update_required'], 'A higher minor is read, not refused');
+        $catalog->install('today', $this->service->sha('today'));
+        self::assertSame(['description' => 'A slip.'], $this->archive()->designs()[0]['meta']);
+        try { $catalog->install('new-node', $this->service->sha('new-node')); self::fail('Installed a design this reader cannot read'); }
+        catch (\RuntimeException $error) { self::assertStringContainsString('cannot be used on this site', $error->getMessage()); }
+    }
+
     public function testATwoThousandDesignIndexFitsTheBudgetAndReadsQuickly(): void
     {
         for ($i = 0; $i < 2000; $i++) {
