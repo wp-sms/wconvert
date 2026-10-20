@@ -68,16 +68,16 @@ export async function backupRemote(publicBucket, privateBucket, directory) {
 }
 
 async function main() {
-  const { values } = parseArgs({ options: { directory: { type: 'string' }, credentials: { type: 'string' }, env: { type: 'string' } } });
+  const { values } = parseArgs({ options: { directory: { type: 'string' }, credentials: { type: 'string' } } });
   assert(values.directory && isAbsolute(values.directory), 'Supply --directory /new/private/backup');
   assert(values.credentials, 'Supply --credentials /private/publisher.env');
   loadCredentials(values.credentials);
-  const target = cloudTarget(undefined, values.env), client = r2Client(target.account);
+  const target = cloudTarget(), client = r2Client(target.account);
   try {
     const report = await backupRemote(new R2Storage(client, target.publicBucket, 'public'), new R2Storage(client, target.privateBucket, 'private'), values.directory);
     const summary = { ...report };
     delete summary.files;
-    console.log(JSON.stringify({ ...summary, environment: target.environment, origin: target.origin, directory: values.directory, remoteReadOnly: true }, null, 2));
+    console.log(JSON.stringify({ ...summary, origin: target.origin, directory: values.directory, remoteReadOnly: true }, null, 2));
   } finally { client.destroy(); }
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

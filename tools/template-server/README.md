@@ -8,9 +8,8 @@ directory is excluded from plugin packages with the rest of `tools/`.
 
 It runs locally without a Cloudflare account. Production is Worker
 `wconvert-template-api` with R2 buckets `wconvert-templates-public` and
-`wconvert-templates-private`; `env.staging` in `wrangler.jsonc` is a separate
-Worker with its own buckets, counters and dataset (see
-[CLOUDFLARE-SETUP.md](CLOUDFLARE-SETUP.md)). Local commands create no cloud
+`wconvert-templates-private`, the one hosted service while WConvert is
+prelaunch (see [CLOUDFLARE-SETUP.md](CLOUDFLARE-SETUP.md)). Local commands create no cloud
 resources. Only the explicit remote commands below write to R2.
 
 The publisher (`tools/design-library/build/publisher.mjs`, run through
@@ -166,17 +165,16 @@ storage, cache or grant work: `blobs: [sha, 'free'|'premium']`, `doubles: [1]`,
 missing or failing binding never changes the response. HEAD requests, other
 agents and other paths are not counted, so the operator verifiers never count.
 
-The datasets are `wconvert_design_downloads` (production) and
-`wconvert_design_downloads_staging` (staging).
+The dataset is `wconvert_design_downloads`.
 
 ### Popularity sidecar
 
 ```sh
 npm run popularity --prefix tools/template-server -- \
-  --credentials /absolute/analytics.env --output /absolute/new-popularity.json [--env staging]
+  --credentials /absolute/analytics.env --output /absolute/new-popularity.json
 ```
 
-This queries the Analytics Engine SQL API for the environment's dataset:
+This queries the Analytics Engine SQL API for the dataset:
 
 ```sql
 SELECT blob1 AS sha, SUM(_sample_interval) AS downloads FROM <dataset>
@@ -193,8 +191,7 @@ Analytics. Publish the result with `--popularity` (below).
 
 ## Remote publication
 
-The account, buckets, dataset and HTTPS origin come from `wrangler.jsonc`;
-`--env staging` selects `env.staging`. The R2 credentials file is a private
+The account, buckets, dataset and HTTPS origin come from `wrangler.jsonc`. The R2 credentials file is a private
 regular file (mode 600) with `WCONVERT_R2_ACCESS_KEY_ID` and
 `WCONVERT_R2_SECRET_ACCESS_KEY`.
 
@@ -238,7 +235,7 @@ npm run publish --prefix tools/template-server -- --expected CURRENT_RELEASE_ID 
 After publishing to a deployed service:
 
 ```sh
-npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID --premium configured [--env staging]
+npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID --premium configured
 ```
 
 This read-only check walks the public closure over HTTPS and requires anonymous
@@ -272,8 +269,8 @@ reach with it). Wait at least 65 seconds after its last request before checking
 recovery:
 
 ```sh
-npm run verify:limits --prefix tools/template-server -- --phase burst [--env staging]
-npm run verify:limits --prefix tools/template-server -- --phase recovery [--env staging]
+npm run verify:limits --prefix tools/template-server -- --phase burst
+npm run verify:limits --prefix tools/template-server -- --phase recovery
 ```
 
 It sends a well-formed batch with no licence and a made-up pass: no Nexus call,
@@ -283,7 +280,7 @@ no credential. It temporarily consumes the probe IP's premium allowance.
 
 ```sh
 npm run backup --prefix tools/template-server -- \
-  --credentials /private/template-publisher.env --directory /private/backups/new-snapshot [--env staging]
+  --credentials /private/template-publisher.env --directory /private/backups/new-snapshot
 npm run rehearse:recovery --prefix tools/template-server -- /private/backups/new-snapshot
 ```
 

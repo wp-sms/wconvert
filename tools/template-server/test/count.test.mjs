@@ -66,7 +66,6 @@ test('actual runtime: the bound dataset accepts the point and the download still
   assert.equal(response.status, 200); assert.deepEqual(Buffer.from(await response.arrayBuffer()), design.bytes);
 });
 
-test('wrangler binds the dataset in both environments', () => {
+test('wrangler binds the dataset', () => {
   assert.deepEqual(config.analytics_engine_datasets, [{ binding: 'DOWNLOADS', dataset: 'wconvert_design_downloads' }]);
-  assert.deepEqual(config.env.staging.analytics_engine_datasets, [{ binding: 'DOWNLOADS', dataset: 'wconvert_design_downloads_staging' }]);
 });

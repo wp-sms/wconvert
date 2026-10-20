@@ -6,9 +6,9 @@ import { cloudTarget } from './cloud-config.mjs';
 // Explicit, bounded live probe. Sends no credentials and never calls Nexus.
 // Probes the per-site counters only: the per-IP ceilings (600 grants, 6000
 // files a minute) are too high to reach with a bounded probe.
-const { values } = parseArgs({ options: { phase: { type: 'string' }, env: { type: 'string' } } });
+const { values } = parseArgs({ options: { phase: { type: 'string' } } });
 assert(['burst', 'recovery'].includes(values.phase), 'Use --phase burst or --phase recovery (after the mitigation duration)');
-const { origin } = cloudTarget(undefined, values.env);
+const { origin } = cloudTarget();
 const download = `/v3/premium/designs/${'0'.repeat(64)}.json`;
 const asset = `/v3/premium/assets/${'0'.repeat(64)}.png`;
 // A well-formed but unissued pass: counted per pass, refused 401 with no Nexus call.

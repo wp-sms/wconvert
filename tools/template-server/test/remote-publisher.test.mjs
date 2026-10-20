@@ -144,22 +144,16 @@ test('bounded reads, missing bucket/access errors and scope restrictions fail cl
  assert.throws(() => r2Client('a'.repeat(32), {}), /Missing R2/);
 });
 
-test('cloud target: production, an explicit staging environment, and no shared buckets', () => {
- const buckets = suffix => [{ binding: 'PUBLIC_TEMPLATES', bucket_name: `templates-public${suffix}` }, { binding: 'PRIVATE_TEMPLATES', bucket_name: `templates-private${suffix}` }];
- const staging = { routes: [{ pattern: 'staging.templates.example', custom_domain: true }], r2_buckets: buckets('-staging'), analytics_engine_datasets: [{ binding: 'DOWNLOADS', dataset: 'downloads_staging' }] };
- const config = { account_id: 'a'.repeat(32), routes: [{ pattern: 'templates.example', custom_domain: true }], r2_buckets: buckets(''),
-  analytics_engine_datasets: [{ binding: 'DOWNLOADS', dataset: 'downloads' }], workers_dev: false, preview_urls: false, env: { staging } };
- assert.deepEqual(cloudTarget(config), { environment: 'production', account: 'a'.repeat(32), origin: 'https://templates.example', publicBucket: 'templates-public', privateBucket: 'templates-private', dataset: 'downloads' });
- assert.deepEqual(cloudTarget(config, 'staging'), { environment: 'staging', account: 'a'.repeat(32), origin: 'https://staging.templates.example', publicBucket: 'templates-public-staging', privateBucket: 'templates-private-staging', dataset: 'downloads_staging' });
- assert.throws(() => cloudTarget(config, 'production'), /--env staging/);
- assert.throws(() => cloudTarget({ ...config, env: undefined }, 'staging'), /no env.staging/);
- assert.throws(() => cloudTarget({ ...config, env: { staging: { ...staging, r2_buckets: buckets('') } } }, 'staging'), /Configure/);
- assert.throws(() => cloudTarget({ ...config, env: { staging: { ...staging, routes: undefined } } }, 'staging'), /Configure/, 'routes are not inherited');
+test('cloud target: one account, origin, dataset and two distinct buckets', () => {
+ const config = { account_id: 'a'.repeat(32), routes: [{ pattern: 'templates.example', custom_domain: true }],
+  r2_buckets: [{ binding: 'PUBLIC_TEMPLATES', bucket_name: 'templates-public' }, { binding: 'PRIVATE_TEMPLATES', bucket_name: 'templates-private' }],
+  analytics_engine_datasets: [{ binding: 'DOWNLOADS', dataset: 'downloads' }], workers_dev: false, preview_urls: false };
+ assert.deepEqual(cloudTarget(config), { account: 'a'.repeat(32), origin: 'https://templates.example', publicBucket: 'templates-public', privateBucket: 'templates-private', dataset: 'downloads' });
  assert.throws(() => cloudTarget({ ...config, workers_dev: true }), /Configure/);
  assert.throws(() => cloudTarget({ ...config, analytics_engine_datasets: [] }), /Configure/);
  assert.throws(() => cloudTarget({ ...config, r2_buckets: config.r2_buckets.map(b => ({ ...b, bucket_name: 'same-bucket' })) }), /Configure/);
- const live = cloudTarget(undefined, 'staging');
- assert.equal(live.origin, 'https://templates-staging.wconvert.io'); assert.equal(live.dataset, 'wconvert_design_downloads_staging');
+ const live = cloudTarget();
+ assert.equal(live.origin, 'https://templates.wconvert.io'); assert.equal(live.dataset, 'wconvert_design_downloads');
 });
 
 test('the publish guard refuses to drop a live design unless the new pointer withdraws it', async t => {
@@ -227,8 +221,8 @@ test('CLI arguments: withdrawal syntax, modes and a local-only dry run', async t
  assert.equal(dry.dryRun, true); assert.equal(dry.release, first); assert.equal(dry.publicObjects, A.public.size); assert.equal(dry.privateObjects, A.private.size);
  assert.deepEqual(dry.withdraw, [{ id: 'night-owl', reason: 'quality' }]);
  const file = join(root, 'popularity.json'); writeFileSync(file, json({ schema: 3, generated: '2026-10-20', downloads: {} }));
- const pointerOnly = await main(['--expected', first, '--popularity', file, '--env', 'staging']);
- assert.equal(pointerOnly.environment, 'staging'); assert.equal(pointerOnly.popularity.length, 64); assert.equal(pointerOnly.publicObjects, 0);
+ const pointerOnly = await main(['--expected', first, '--popularity', file]);
+ assert.equal(pointerOnly.popularity.length, 64); assert.equal(pointerOnly.publicObjects, 0);
  await assert.rejects(main(['--withdraw', 'night-owl:quality']), /--expected/);
  await assert.rejects(main(['--expected', first]), /--withdraw/);
  await assert.rejects(main(['--expected', first, '--retained', first, '--withdraw', 'night-owl:quality']), /--directory/);

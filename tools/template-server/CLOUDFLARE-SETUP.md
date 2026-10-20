@@ -1,33 +1,29 @@
 # Set up WConvert Template Library
 
-Production is the top level of `wrangler.jsonc`; `env.staging` is a second,
-fully separate environment. Local development stays in Wrangler's on-disk
-emulator. On 18 October 2026 the two production R2 buckets were populated and
+There is one hosted service, `templates.wconvert.io`, while WConvert is
+prelaunch; there is no staging copy. Local development stays in Wrangler's
+on-disk emulator. On 18 October 2026 the two production R2 buckets were populated and
 verified through the scoped publisher credentials; the operator deployed the
 Worker and domain, and live HTTPS and disposable WordPress acceptance passed.
 Nexus was connected on 19 October; live refusal checks and real licensed
 WordPress acceptance passed. All of that was catalogue v2. **Catalogue v3 (this
-directory) is not yet deployed or published to either environment.**
+directory) is not yet deployed or published.**
 
 ## Names to use
 
-| Purpose | Production | Staging (`--env staging`) |
-| --- | --- | --- |
-| Cloudflare Worker | `wconvert-template-api` | `wconvert-template-api-staging` |
-| Free files and public previews bucket | `wconvert-templates-public` | `wconvert-templates-public-staging` |
-| Premium files and temporary passes bucket | `wconvert-templates-private` | `wconvert-templates-private-staging` |
-| HTTPS address | `templates.wconvert.io` | `templates-staging.wconvert.io` |
-| Analytics Engine dataset (`DOWNLOADS`) | `wconvert_design_downloads` | `wconvert_design_downloads_staging` |
-| Rate-limit namespaces | `202610211`–`202610214` | `202610221`–`202610224` |
-| Nexus audience | `https://templates.wconvert.io` | `https://templates-staging.wconvert.io` |
+| Purpose | Name |
+| --- | --- |
+| Cloudflare Worker | `wconvert-template-api` |
+| Free files and public previews bucket | `wconvert-templates-public` |
+| Premium files and temporary passes bucket | `wconvert-templates-private` |
+| HTTPS address | `templates.wconvert.io` |
+| Analytics Engine dataset (`DOWNLOADS`) | `wconvert_design_downloads` |
+| Rate-limit namespaces | `202610211`–`202610214` |
+| Nexus audience | `https://templates.wconvert.io` |
 
-“Public” describes what the Worker may serve anonymously. **All buckets stay
+“Public” describes what the Worker may serve anonymously. **Both buckets stay
 private**: disable Public Development URL/r2.dev and attach no bucket custom
 domains. Only the Worker serves files.
-
-Wrangler does not inherit bindings, vars or routes into an environment, so
-`env.staging` repeats every one of them. `scripts/cloud-config.mjs` refuses a
-staging section that reuses a production bucket or omits its route or dataset.
 
 ## Current setup and remaining work
 
@@ -40,10 +36,10 @@ The R2 publisher credentials are in the operator-only file
 `~/.config/wconvert/template-publisher.env`, outside this repository. Never copy
 them into the Worker. See the README for publication commands.
 
-Before v3 goes live, in each environment:
+Before v3 goes live:
 
-1. **Deploy the v3 Worker with Wrangler** from this directory:
-   `npx wrangler deploy` or `npx wrangler deploy --env staging`. The four rate
+1. **Deploy the v3 Worker from Git** (*Deploying*, below), or by hand with
+   `npx wrangler deploy` from this directory. The four rate
    limiters and the `DOWNLOADS` dataset are declared in `wrangler.jsonc`; a
    dashboard paste of `dist/index.js` does not create them, and a Worker
    without them refuses every premium request (503, fail closed) and counts
@@ -58,16 +54,6 @@ Before v3 goes live, in each environment:
 4. **Publish the first v3 release** with `npm run publish -- --expected none`
    (the v3 pointer `v3/manifest.json` does not exist yet, even where v2 data
    does), then run `npm run verify:remote`.
-
-Staging also needs, once: the two staging buckets with direct public access
-disabled and the same one-day `grants/` lifecycle rule on the private one; the
-`templates-staging.wconvert.io` custom domain in the `wconvert.io` zone; and, for
-premium, a Nexus download connection for the audience
-`https://templates-staging.wconvert.io` plus
-`wrangler secret put NEXUS_SERVICE_KEY --env staging`. Until then staging
-premium routes answer `503 service_not_configured`; Free routes and publication
-work without it. None of this has been provisioned by the code in this
-directory.
 
 ## Setup sequence (production R2 and Worker steps completed for v2)
 
@@ -104,34 +90,27 @@ Keep `wrangler.jsonc` plain JSON, with no comments: the publish, verify and test
 scripts read it with `JSON.parse`.
 
 `.github/workflows/template-service.yml` deploys the Worker. A merge to `main`
-that touches `tools/template-server/**` deploys **staging**; production is
-deployed only by running that workflow by hand with `environment: production`.
-Do not paste code into the dashboard: the live service must be a commit on
-`main`. A deploy changes Worker code only. Catalogue data still goes out through
-`npm run publish`.
+that touches `tools/template-server/**` deploys `templates.wconvert.io` after
+its tests pass; the workflow can also be run by hand. Do not paste code into
+the dashboard: the live service must be a commit on `main`, and the next deploy
+overwrites a pasted one. A deploy changes Worker code only. Catalogue data
+still goes out through `npm run publish`.
 
 One-time operator setup:
 
-1. Create the two staging buckets with direct public access disabled, and give
-   the staging private bucket the same one-day `grants/` lifecycle rule.
-2. Create a Cloudflare API token with **Workers Scripts: Edit**, **Workers Routes:
+1. Create a Cloudflare API token with **Workers Scripts: Edit**, **Workers Routes:
    Edit** (zone `wconvert.io`) and **Account Settings: Read**.
-3. In GitHub → Settings → Environments, create `template-service-staging` and
-   `template-service-production`. Add the token as `CLOUDFLARE_API_TOKEN` to each.
-   Add a reviewer rule on production if you want one; the workflow needs no change.
-4. Staging premium answers `503 service_not_configured` until Nexus is connected
-   for the audience `https://templates-staging.wconvert.io` and
-   `wrangler secret put NEXUS_SERVICE_KEY --env staging` is run. Free routes and
-   publication work without it.
+2. In GitHub → Settings → Environments, create `template-service` and add the
+   token as `CLOUDFLARE_API_TOKEN`. Add a reviewer rule there if you want a
+   deploy to wait for approval; the workflow needs no change.
 
 For deployments and the Nexus connection:
 
 - Authenticate Wrangler locally to the account.
-- The Nexus endpoints, issuer, audiences and the `production` environment claim
-  are set in `wrangler.jsonc` for both environments. Keep `workers_dev` and
+- The Nexus endpoints, issuer, audience and the `production` environment claim
+  are set in `wrangler.jsonc`. Keep `workers_dev` and
   preview URLs disabled.
-- Run `wrangler secret put NEXUS_SERVICE_KEY` (add `--env staging` for staging)
-  from `tools/template-server`. Keep the value out of source files and command
+- Run `wrangler secret put NEXUS_SERVICE_KEY` from `tools/template-server`. Keep the value out of source files and command
   arguments.
 - Rate limits for `/v3/grants` and premium files are Worker bindings (README,
   *Request limits*). Nexus separately limits issuance. Redact Authorization,
@@ -219,13 +198,13 @@ Nexus accepts the service key or that a licensed download works.
 
 ### Website gallery configuration
 
-`PREVIEW_EMBED_ORIGINS` is, for production:
+`PREVIEW_EMBED_ORIGINS` is:
 
 ```text
 https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev
 ```
 
-and for staging `https://dev.wconvert-website.pages.dev` only. Use exact origins
+Use exact origins
 without paths or trailing slashes; other Pages branches and localhost stay
 blocked. Remote publication refuses a release that drops a live design id
 unless the new pointer withdraws it (`--withdraw ID:REASON`); `--expected` still

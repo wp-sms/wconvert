@@ -127,9 +127,9 @@ export async function main(args = process.argv.slice(2)) {
   const { values } = parseArgs({ args, options: {
     withdraw: { type: 'string', multiple: true, default: [] }, reinstate: { type: 'string', multiple: true, default: [] },
     popularity: { type: 'string' }, directory: { type: 'string' }, expected: { type: 'string' }, retained: { type: 'string' },
-    apply: { type: 'boolean', default: false }, status: { type: 'boolean', default: false }, credentials: { type: 'string' }, env: { type: 'string' },
+    apply: { type: 'boolean', default: false }, status: { type: 'boolean', default: false }, credentials: { type: 'string' },
   } });
-  const target = cloudTarget(undefined, values.env);
+  const target = cloudTarget();
   const pointerOnly = values.withdraw.length || values.reinstate.length || values.popularity;
   if (values.status && (values.directory || values.expected || values.retained || values.apply || pointerOnly)) throw Error('--status cannot be combined with publication options');
   let release, privateObjects = new Map(), expected;

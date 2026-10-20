@@ -22,9 +22,9 @@ const pointer = JSON.stringify({ schema: 3, minor: 0, release: 'a'.repeat(64), w
 const batch = domain => JSON.stringify({ domain, designs: ['a'.repeat(64)], setups: [] });
 const file = `/v3/premium/designs/${'a'.repeat(64)}.json`, image = `/v3/premium/assets/${'b'.repeat(64)}.png`;
 
-test('wrangler declares all four counters, with distinct namespaces, in both environments', () => {
+test('wrangler declares all four counters, with distinct namespaces', () => {
   const ids = [];
-  for (const section of [config, config.env.staging]) {
+  for (const section of [config]) {
     const named = Object.fromEntries(section.ratelimits.map(item => [item.name, item.simple]));
     assert.deepEqual(named, {
       GRANT_RATE_LIMITER: { limit: 30, period: 60 }, GRANT_IP_RATE_LIMITER: { limit: 600, period: 60 },
@@ -32,7 +32,7 @@ test('wrangler declares all four counters, with distinct namespaces, in both env
     });
     ids.push(...section.ratelimits.map(item => item.namespace_id));
   }
-  assert.equal(new Set(ids).size, 8);
+  assert.equal(new Set(ids).size, 4);
 });
 
 test('grants count per site behind one shared IP, under a looser per-IP ceiling', async t => {

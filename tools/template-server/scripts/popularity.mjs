@@ -61,15 +61,15 @@ export function popularity(downloads, ids, generated = new Date().toISOString().
 }
 
 async function main() {
-  const { values } = parseArgs({ options: { credentials: { type: 'string' }, output: { type: 'string' }, env: { type: 'string' } } });
+  const { values } = parseArgs({ options: { credentials: { type: 'string' }, output: { type: 'string' } } });
   if (!values.output || !isAbsolute(values.output)) throw Error('Supply --output /absolute/new-popularity.json');
   loadCredentials(values.credentials);
-  const target = cloudTarget(undefined, values.env);
+  const target = cloudTarget();
   const downloads = await queryDownloads({ account: target.account, dataset: target.dataset, token: process.env.WCONVERT_ANALYTICS_API_TOKEN });
   const { release, ids } = await liveIndex(target.origin);
   const result = popularity(downloads, ids);
   writeFileSync(values.output, result.bytes, { flag: 'wx', mode: 0o644 });
-  console.log(JSON.stringify({ environment: target.environment, dataset: target.dataset, release, output: values.output, sha256: hash(result.bytes),
+  console.log(JSON.stringify({ dataset: target.dataset, release, output: values.output, sha256: hash(result.bytes),
     digests: downloads.size, designs: result.designs, unmappedDownloads: result.unmapped,
     next: `npm run publish -- --expected ${release} --popularity ${values.output} --apply --credentials …` }, null, 2));
 }
