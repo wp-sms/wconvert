@@ -1,0 +1,63 @@
+{
+  "id": "landscaping-enquiry",
+  "revision": "9a3f5d6dbbc5093b331f299af6dec443d7772f98c8e7c74ac01eac0c8ec71617",
+  "base_id": "75ed1d0ebbfcf799705049cee08c6359501666ad3f113537fde2cbea6ba312fa",
+  "decision": "approved",
+  "reviewer": "Codex — four design directions review",
+  "note": "Only the derived nearest-design list changed. Existing design/Playbook sources compared byte-for-byte with the prior reviewed commit; renderer and brief unchanged. Prior visual/journey evidence retained, with fresh whole-library layout/native checks and explicit comparison review.",
+  "at": "2026-09-28T16:24:38.145Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    }
+  },
+  "record_id": "e488e41e278a3d0fdfd910be8438cd8b426dffc79d1963eec57d107000ed95ba"
+}

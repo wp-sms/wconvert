@@ -8,7 +8,9 @@ import fixture from '../fixtures/journey-paths.json';
 it('migrates independent follow-ups without changing any visitor path', () => {
   const legacy: TemplateTree = { v: 2, steps: fixture.steps as TemplateScreen[], submissions: [] };
   const upgraded = upgradeToGraph(legacy);
-  expect(upgraded.v).toBe(3);
+  // A flow is said by graph; v stays the vocabulary version (ADR 0156).
+  expect(upgraded.v).toBe(2);
+  expect(upgraded.graph).toBeDefined();
   expect(upgraded.graph?.entry).toBe('interests');
   expect(upgraded.steps.every(screen => !screen.paths)).toBe(true);
   for (const example of fixture.cases) {

@@ -1058,7 +1058,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <AdminDialogBody className="wconvert-campaign-detail__body">
             {/* The list's Details body, read live from this draft (ADR 0138); the editor's own sections follow it. */}
             <CampaignSummary
-              notes={[suspended, publishedAt !== null && (dirty || unpublishedChanges) ? __('The previous version is still published. Review & publish to replace it.', 'wconvert') : null].filter((note): note is string => !!note)}
+              notes={[suspended, publishedAt !== null && (dirty || unpublishedChanges) ? __('The previous version is still published. Review & publish to replace it.', 'wconvert') : null,
+                withdrawnNote(templateId === undefined ? undefined : gallery.withdrawn?.[templateId])].filter((note): note is string => !!note)}
               goal={goalEntry}
               goalId={goal ?? ''}
               goalAction={goals.status === 'ready' && offerableGoals(goals.data, 'creation_flow', goal ?? '').length > 1 && (
@@ -1123,7 +1124,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         open={browsing}
         onOpenChange={setBrowsing}
         onClosed={() => browse.current?.focus()}
-        onCatalogInstalled={catalogConfigured() ? async () => { setGallery(await listTemplates()); } : undefined}
+        onLibraryChanged={catalogConfigured() ? async () => { setGallery(await listTemplates()); } : undefined}
         index={gallery}
         trees={trees}
         displayType={displayTypeOf(config, templates)}
@@ -1300,4 +1301,15 @@ function entryFor(
 /** A tab's mark for something that blocks publishing; the words are its description. */
 function AttentionDot() {
   return <span className="wconvert-tab-attention" aria-hidden="true" />;
+}
+
+/**
+ * A design the library withdrew (ADR 0156). The campaign keeps its copy —
+ * nothing is ever removed from a site remotely — so this only says so, and why.
+ */
+function withdrawnNote(reason: string | undefined): string | null {
+  if (reason === undefined) return null;
+  if (reason === 'rights') return __('This campaign’s design was withdrawn from the WConvert library over image or content rights. Your campaign keeps its copy; choose another design to replace it.', 'wconvert');
+  if (reason === 'broken') return __('This campaign’s design was withdrawn from the WConvert library because of a problem with it. Your campaign keeps its copy; choose another design to replace it.', 'wconvert');
+  return __('This campaign’s design was withdrawn from the WConvert library. Your campaign keeps its copy and keeps working.', 'wconvert');
 }

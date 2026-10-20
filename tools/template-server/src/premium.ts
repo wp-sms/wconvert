@@ -1,3 +1,4 @@
+import { limit, clientIp } from './rate-limit';
 /** Nexus is the authority. R2 holds only short-lived, verified download contexts. */
 const HEX = /^[a-f0-9]{64}$/;
 const encoder = new TextEncoder();
@@ -79,26 +80,47 @@ function configured(env: NexusEnv) {
   // endpoints must share their explicitly configured origin; verify() still pins iss.
   requireThat(new URL(env.NEXUS_GRANT_URL).origin === new URL(env.NEXUS_KEYS_URL).origin, 503, 'service_not_configured');
 }
+const EXTENSIONS: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+/** One batch: designs and setups by digest, each a premium object, plus the premium images designs bind. */
+async function files(env: NexusEnv, designs: string[], setups: string[]): Promise<File[]> {
+  const list = new Map<string, File>();
+  for (const [kind, digests] of [['designs', designs], ['setups', setups]] as const) {
+    for (const digest of digests) {
+      const bytes = await stored(env.PRIVATE_TEMPLATES, `v3/${kind}/${digest}.json`, 262144);
+      requireThat(await sha256(bytes) === digest, 503, 'storage_unavailable');
+      list.set(`/v3/premium/${kind}/${digest}.json`, { path: `/v3/premium/${kind}/${digest}.json`, sha256: digest, bytes: bytes.length });
+      if (kind === 'setups') continue;
+      let assets: unknown;
+      try { assets = JSON.parse(new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes)).assets; } catch { throw new Refusal(503, 'storage_unavailable'); }
+      requireThat(Array.isArray(assets) && assets.length <= 50, 503, 'storage_unavailable');
+      for (const asset of assets) {
+        const ext = EXTENSIONS[asset?.mime];
+        requireThat(ext && typeof asset.sha256 === 'string' && HEX.test(asset.sha256) && ['free', 'premium'].includes(asset.access) && Number.isInteger(asset.bytes) && asset.bytes > 0 && asset.bytes <= 5242880, 503, 'storage_unavailable');
+        // A Free image is public at /v3/assets/ and needs no pass.
+        if (asset.access === 'premium') list.set(`/v3/premium/assets/${asset.sha256}.${ext}`, { path: `/v3/premium/assets/${asset.sha256}.${ext}`, sha256: asset.sha256, bytes: asset.bytes });
+      }
+    }
+  }
+  // Bounds the grant context, which every file request reads back (256 KiB).
+  requireThat(list.size <= 1000, 400, 'invalid_request');
+  return [...list.values()].sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
+}
 async function issue(request: Request, env: NexusEnv) {
   requireThat(request.headers.get('Content-Type')?.split(';')[0] === 'application/json', 400, 'invalid_request');
   let input;
-  try { input = await jsonResponse(request, 4096); } catch (error) { if (error instanceof Refusal) throw error; throw new Refusal(400, 'invalid_request'); }
-  requireThat(input && Object.keys(input).sort().join(',') === 'domain,pack' && typeof input.pack === 'string' && HEX.test(input.pack)
+  try { input = await jsonResponse(request, 8192); } catch (error) { if (error instanceof Refusal) throw error; throw new Refusal(400, 'invalid_request'); }
+  const digests = (value: unknown): value is string[] => Array.isArray(value) && value.every(item => typeof item === 'string' && HEX.test(item));
+  requireThat(input && typeof input === 'object' && Object.keys(input).sort().join(',') === 'designs,domain,setups' && digests(input.designs) && digests(input.setups)
     && typeof input.domain === 'string' && input.domain.length > 0 && input.domain.length <= 253 && !/[\s?#@]/.test(input.domain), 400, 'invalid_request');
+  const all = [...input.designs, ...input.setups];
+  requireThat(all.length >= 1 && all.length <= 50 && new Set(all).size === all.length, 400, 'invalid_request');
+  // IP plus site: shared hosting puts many sites behind one address.
+  const outcome = await limit(env.GRANT_RATE_LIMITER, `wconvert:grants:${clientIp(request)}:${await sha256(encoder.encode(input.domain.toLowerCase()))}`);
+  if (outcome !== 'ok') throw outcome === 'limited' ? new Refusal(429, 'rate_limited', 60) : new Refusal(503, 'rate_limit_unavailable', 60);
   const license = request.headers.get('X-License-Key');
   requireThat(license && license.length <= 1024, 401, 'invalid_key');
-  const bytes = await stored(env.PRIVATE_TEMPLATES, `packs/${input.pack}.json`, 262144);
-  requireThat(await sha256(bytes) === input.pack, 503, 'storage_unavailable');
-  const pack = JSON.parse(new TextDecoder().decode(bytes));
-  requireThat(Array.isArray(pack.assets) && pack.assets.length <= 16, 503, 'storage_unavailable');
-  const files: File[] = [{ path: `/downloads/${input.pack}.json`, sha256: input.pack, bytes: bytes.length }];
-  for (const asset of pack.assets) {
-    const ext = ({ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' } as Record<string, string>)[asset.mime];
-    requireThat(ext && typeof asset.sha256 === 'string' && HEX.test(asset.sha256) && ['free', 'premium'].includes(asset.access) && Number.isInteger(asset.bytes) && asset.bytes > 0 && asset.bytes <= 5242880, 503, 'storage_unavailable');
-    files.push({ path: `/assets/${asset.access}/${asset.sha256}.${ext}`, sha256: asset.sha256, bytes: asset.bytes });
-  }
-  files.sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
-  const digest = await sha256(encoder.encode(JSON.stringify(files.map(f => [f.path, f.sha256, f.bytes]))));
+  const list = await files(env, input.designs, input.setups);
+  const digest = await sha256(encoder.encode(JSON.stringify(list.map(f => [f.path, f.sha256, f.bytes]))));
   const response = await fetch(env.NEXUS_GRANT_URL, { method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(5000),
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.NEXUS_SERVICE_KEY}`, 'X-License-Key': license },
     body: JSON.stringify({ domain: input.domain, permission: 'templates:download', resource_digest: digest }) });
@@ -114,35 +136,37 @@ async function issue(request: Request, env: NexusEnv) {
   const claims = await verify(body.grant, key, env);
   // The SDK sends its canonical domain. Nexus must authorize that exact installation.
   requireThat(claims.site === input.domain && claims.resource_digest === digest, 503, 'verification_unavailable');
-  const context: Context = { claims, key, files };
+  const context: Context = { claims, key, files: list };
   // Strong read-after-write storage avoids eventual-consistency failures on the next file.
   // A one-day R2 lifecycle rule removes expired contexts; exp is enforced at every read.
   await env.PRIVATE_TEMPLATES.put(`grants/${await sha256(encoder.encode(body.grant))}.json`, JSON.stringify(context));
   return new Response(JSON.stringify({ grant: body.grant, expires_in: claims.exp - now() }), { headers: noStore });
 }
+/** The pass, if the request carries a well-formed one. */
+export const bearer = (request: Request) => request.headers.get('Authorization')?.match(/^Bearer ([A-Za-z0-9_.-]{1,8192})$/)?.[1];
 async function download(request: Request, env: NexusEnv) {
-  const token = request.headers.get('Authorization')?.match(/^Bearer ([A-Za-z0-9_.-]{1,8192})$/)?.[1];
+  const token = bearer(request);
   requireThat(token);
   const key = `grants/${await sha256(encoder.encode(token))}.json`;
   let bytes: Uint8Array<ArrayBuffer>;
-  try { bytes = await stored(env.PRIVATE_TEMPLATES, key, 32768); } catch (e) { if (e instanceof Refusal && e.status === 404) throw new Refusal(401, 'invalid_grant'); throw e; }
+  try { bytes = await stored(env.PRIVATE_TEMPLATES, key, 262144); } catch (e) { if (e instanceof Refusal && e.status === 404) throw new Refusal(401, 'invalid_grant'); throw e; }
   const context: Context = JSON.parse(new TextDecoder().decode(bytes));
   const claims = await verify(token, context.key, env);
   for (const name of ['site', 'activation_id', 'resource_digest', 'exp', 'jti'] as const) requireThat(claims[name] === context.claims[name]);
   const path = new URL(request.url).pathname;
   const file = context.files.find(f => f.path === path); requireThat(file, 403, 'resource_not_allowed');
-  const objectKey = path.startsWith('/downloads/') ? path.slice(1).replace('downloads/', 'packs/') : path.slice(1);
-  const content = await stored(env.PRIVATE_TEMPLATES, objectKey, Math.min(file.bytes, 5242880));
+  // /v3/premium/designs/<sha>.json is private key v3/designs/<sha>.json.
+  const content = await stored(env.PRIVATE_TEMPLATES, 'v3/' + path.slice('/v3/premium/'.length), Math.min(file.bytes, 5242880));
   requireThat(content.length === file.bytes && await sha256(content) === file.sha256, 503, 'storage_unavailable');
   requireThat(claims.exp > now());
   const type = path.endsWith('.json') ? 'application/json' : path.endsWith('.png') ? 'image/png' : path.endsWith('.jpg') ? 'image/jpeg' : 'image/webp';
   return new Response(request.method === 'HEAD' ? null : content, { headers: { ...noStore, 'Content-Type': type, 'Content-Length': String(content.length) } });
 }
 export async function premium(request: Request, env: NexusEnv): Promise<Response> {
-  try { configured(env); return await (new URL(request.url).pathname === '/grants' ? issue(request, env) : download(request, env)); }
+  try { configured(env); return await (new URL(request.url).pathname === '/v3/grants' ? issue(request, env) : download(request, env)); }
   catch (error) {
     const known = error instanceof Refusal;
-    const invalidIssuance = known && error.code === 'invalid_grant' && new URL(request.url).pathname === '/grants';
+    const invalidIssuance = known && error.code === 'invalid_grant' && new URL(request.url).pathname === '/v3/grants';
     const status = known && !invalidIssuance ? error.status : 503;
     return new Response(request.method === 'HEAD' ? null : JSON.stringify({ error_code: known && !invalidIssuance ? error.code : 'verification_unavailable' }), {
       status, headers: { ...noStore, ...(known && error.retry ? { 'Retry-After': String(error.retry) } : status === 503 ? { 'Retry-After': '30' } : {}) },

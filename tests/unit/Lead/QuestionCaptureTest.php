@@ -91,7 +91,7 @@ final class QuestionCaptureTest extends TestCase
     {
         $template = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true, 512, JSON_THROW_ON_ERROR);
         $tree = $template['tree'];
-        $tree['v'] = 3;
+        $tree['v'] = 2;
         $tree['steps'] = [$tree['steps'][2], $tree['steps'][3], $tree['steps'][1], $tree['steps'][0]];
         $tree['graph'] = ['entry' => 'service', 'edges' => [
             ['id' => 'start', 'from' => 'service', 'to' => 'repair', 'kind' => 'default'],

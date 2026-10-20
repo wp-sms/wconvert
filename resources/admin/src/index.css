@@ -1912,6 +1912,76 @@ body:has(#wconvert-admin) #wpbody-content {
   background: var(--surface);
 }
 
+/*
+ * A hosted design's card (ADR 0156, amending ADR 0010): there is no tree on
+ * this site yet, so the server's thumbnail stands where the render would.
+ * Contained, never cropped, on the same surface the render sits on.
+ */
+.wconvert-gallery__absent:has(> .wconvert-gallery__thumbnail) {
+  padding: 0.75rem;
+}
+
+.wconvert-gallery__thumbnail {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  max-block-size: 16rem;
+  object-fit: contain;
+  border-radius: calc(var(--radius) - 2px);
+}
+
+/* The one-time question before any online design loads. */
+.wconvert-library-consent {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1.25rem 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.wconvert-library-consent__icon {
+  flex: none;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  color: var(--muted-foreground);
+}
+
+.wconvert-library-consent__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-inline-size: 0;
+}
+
+.wconvert-online-setups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wconvert-online-setups__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem 0;
+  border-block-end: 1px solid var(--border);
+}
+
+.wconvert-online-setups__row > :first-child {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+}
+
+@media (max-width: 600px) {
+  .wconvert-library-consent { margin-inline: 1rem; }
+}
+
 .wconvert-facets {
   display: flex;
   flex-wrap: wrap;

@@ -422,9 +422,5 @@ final class PayloadBudgetTest extends TestCase
 
             $this->assertStringNotContainsString((string) $entry['name'], $rendered, $id . ' reached the page');
         }
-
-        foreach ($library->locked() as $id => $entry) {
-            $this->assertStringNotContainsString((string) $entry['name'], $rendered, $id . ' reached the page');
-        }
     }
 }

@@ -63,6 +63,7 @@ final class ProTemplates implements TemplateSource
      * no longer even the same shape.
      */
     public const PATH = 'modules/*/templates';
+    public const REVISIONS = 'resources/templates/revisions.json';
 
     public function __construct(
         private readonly string $pluginDir = WCONVERT_PRO_DIR,
@@ -90,6 +91,6 @@ final class ProTemplates implements TemplateSource
             }
         }
 
-        return $entries;
+        return \WConvert\Template\BundledRevisions::stamp($entries, \WConvert\Template\BundledRevisions::read(rtrim($this->pluginDir, '/') . '/' . self::REVISIONS));
     }
 }

@@ -1,0 +1,39 @@
+{
+  "id": "cleaning-quote",
+  "revision": "75247c74757f9a4fb44eb091a7620d54ab5e6edc8b4a99ae4f610d8443f3cacb",
+  "base_id": "8ef7c5ff7c0e3dcbc6c3a5b19a8aa34c46c7e990bd3c147e8bd4af0ca3ba10be",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Retain the previous visual review after identical markup for every screen and identical responsive styles; full journey tests and real WordPress commerce checks pass.",
+  "at": "2026-10-04T06:03:29.997Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    }
+  },
+  "record_id": "b68f53a51bbaa8ceaf73477870e8dcb32cd4c29fd714ecb43de863b5fc9cc78b"
+}

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
-import { hash, readPublicRelease, readPrivateRelease } from './storage.mjs';
+import { hash, readPublicRelease, readPrivateRelease, POINTER } from './storage.mjs';
 import { publishRemote } from './publish-remote.mjs';
 import { verifyService } from './verify-service.mjs';
 
@@ -10,16 +10,17 @@ const directory = process.argv[2];
 assert(directory && process.argv.length === 3, 'Supply one backup directory');
 const started = Date.now();
 const snapshot = JSON.parse(readFileSync(resolve(directory, 'backup.json'), 'utf8'));
-assert.equal(snapshot.schema, 1);
-const release = readPublicRelease(directory), privateObjects = readPrivateRelease(directory, release);
-assert.equal(snapshot.release, release.id); assert.equal(snapshot.origin, release.origin);
+assert.equal(snapshot.schema, 3);
+const release = await readPublicRelease(directory), privateObjects = await readPrivateRelease(directory, release);
+assert.equal(snapshot.release, release.id);
 const files = new Map([
-  ['public/manifest.json', release.manifest],
+  [`public/${POINTER}`, release.pointer],
   ...[...release.objects].map(([key, bytes]) => [`public/${key}`, bytes]),
   ...[...privateObjects].map(([key, bytes]) => [`private/${key}`, bytes]),
 ]);
 assert.equal(snapshot.files.length, files.size);
 const seen = new Set();
+// The inventory is the only record of a 2x thumbnail's digest: check every file by it.
 for (const file of snapshot.files) {
   assert(!seen.has(file.path)); seen.add(file.path);
   const bytes = files.get(file.path);
@@ -29,45 +30,37 @@ for (const file of snapshot.files) {
 const mf = new Miniflare(convertV4MiniflareOptions({
   modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'),
   compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'],
-  ratelimits: {
-    GRANT_RATE_LIMITER: { namespace_id: '202610201', simple: { limit: 30, period: 60 } },
-    DOWNLOAD_RATE_LIMITER: { namespace_id: '202610202', simple: { limit: 300, period: 60 } },
-  },
 }));
 try {
   const pub = await mf.getR2Bucket('PUBLIC_TEMPLATES'), priv = await mf.getR2Bucket('PRIVATE_TEMPLATES');
   const restore = await publishRemote(pub, priv, release, privateObjects, null);
-  const verify = expected => verifyService(release.origin, {
-    expected, metadataOrigin: release.origin, fetcher: (url, options) => mf.dispatchFetch(url.href, options),
-  });
+  const verify = expected => verifyService('http://localhost', { expected, fetcher: (url, options) => mf.dispatchFetch(url.href, options) });
   const service = { ...await verify(release.id), localOnly: true };
   // Verify private bytes directly; never introduce an authorization bypass.
   for (const [key, bytes] of privateObjects) {
     assert(Buffer.from(await (await priv.get(key)).arrayBuffer()).equals(bytes));
     assert.equal(await pub.get(key), null, 'Private source must not appear in public storage');
   }
-  const retained = [...release.objects.keys()].filter(key => /^releases\/[a-f0-9]{64}\/manifest\.json$/.test(key)).map(key => key.split('/')[1]).sort();
-  assert.deepEqual([...snapshot.retained].sort(), retained);
-  const packIds = id => {
-    const manifest = JSON.parse(release.objects.get(`releases/${id}/manifest.json`));
-    return manifest.pages.flatMap(page => JSON.parse(release.objects.get(new URL(page.url).pathname.slice(1))).packs.map(pack => pack.id));
-  };
-  // Only this isolated rehearsal acknowledges removals automatically. The remote
-  // CLI always requires the operator to name each intentional removal.
-  const acknowledgements = [];
-  const removals = (from, to) => {
-    const next = new Set(packIds(to));
-    const ids = packIds(from).filter(id => !next.has(id)).sort();
-    acknowledgements.push({ from, to, removedPacks: ids });
-    return ids;
+  assert.deepEqual([...snapshot.retained].sort(), release.releases);
+  const designIds = id => new Set([...release.closures.get(id).designs.keys()]);
+  // Only this isolated rehearsal withdraws dropped designs automatically, and
+  // reinstates them on the way back. The remote CLI makes the operator name each.
+  const acknowledgements = [], withdrawn = new Set();
+  const changes = (from, to) => {
+    const next = designIds(to), dropped = [...designIds(from)].filter(id => !next.has(id)).sort();
+    const restored = [...next].filter(id => withdrawn.has(id)).sort();
+    acknowledgements.push({ from, to, withdrawn: dropped, reinstated: restored });
+    for (const id of restored) withdrawn.delete(id);
+    for (const id of dropped) withdrawn.add(id);
+    return { withdraw: dropped.map(id => ({ id, reason: 'other' })), reinstate: restored.map(id => ({ id })) };
   };
   let current = release.id; const rollbacks = [];
-  for (const id of retained.filter(id => id !== release.id)) {
-    const prior = readPublicRelease(directory, id);
-    await publishRemote(pub, priv, prior, readPrivateRelease(directory, prior), current, removals(current, id));
+  for (const id of release.releases.filter(id => id !== release.id)) {
+    const prior = await readPublicRelease(directory, id);
+    await publishRemote(pub, priv, prior, await readPrivateRelease(directory, prior), current, changes(current, id));
     await verify(id); rollbacks.push(id); current = id;
   }
-  if (current !== release.id) await publishRemote(pub, priv, release, privateObjects, current, removals(current, release.id));
+  if (current !== release.id) await publishRemote(pub, priv, release, privateObjects, current, changes(current, release.id));
   await verify(release.id);
   assert.equal((await priv.list({ prefix: 'grants/' })).objects.length, 0);
   console.log(JSON.stringify({

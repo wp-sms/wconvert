@@ -117,6 +117,8 @@ deliberately withholds trees, so it would have nothing to read.
    *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): the file
    still ships, but a free install's `/templates` index leaves it out. Only a
    paid install, missing a higher rung, is sent these cards.*
+   *Removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): `locked.json` is gone. A design this install did not get
+   is a hosted catalogue entry, and its card is the server's thumbnail.*
 3. **Fetched free entries** — `wp_remote_get` against a WConvert-hosted index,
    transient-cached, degrading to (1) on any failure. **Implemented and amended by
    [ADR 0082](0082-template-packs-install-as-validated-local-data.md):** explicit
@@ -136,6 +138,8 @@ what will make the fetched source deliver **content and never capability**
 structurally rather than by intention.
 
 ## A premium design is a card, never a disabled control
+
+> **Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md).** The card now carries an image — the server's thumbnail, loaded with no referrer — because a hosted design has no tree here to render. It is drawn on a free install only inside the picker and only where `ProHints::shown()`, as a picture, the plan's name and a link: still never a disabled control. Facets on a hosted card are derived by the publisher, not authored.
 
 [#7](https://github.com/navidkashani/wconvert/issues/7) states it: *"if the free
 ZIP ships exit-intent code and refuses to run it, that is trialware"*. So free
@@ -163,7 +167,9 @@ never shown an advertisement for what they bought, and that falls out of the id
 rather than out of something somebody has to remember.
 
 `bin/verify-artifact-contract.sh` gained check **(e)**: no `tier: pro` entry in
-the free ZIP, and no `tree` anywhere in `locked.json`.
+the free ZIP, and no `tree` anywhere in `locked.json`. *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): the
+second half went with the file; (e) now also requires `since.json` and
+`revisions.json`.*
 
 ## Choosing a design is its own surface
 

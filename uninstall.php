@@ -81,9 +81,10 @@ $wconvertOptions = [
     'wconvert_destination_health',
     // Destination\DeliveryFailures::OPTION
     'wconvert_delivery_failures',
-    // Template\Catalog\TemplateCatalog::{CACHE_OPTION,SOURCE_OPTION}
+    // Template\Catalog\TemplateCatalog::{CACHE_OPTION,SOURCE_OPTION,CONSENT_OPTION}
     'wconvert_template_catalog_cache',
     'wconvert_template_catalog_url',
+    'wconvert_template_library_consent',
     'wconvert_picker_occasions',
     // Optin\PhoneCountry::OPTION — the phone field's default country.
     'wconvert_phone_default_country',
@@ -118,8 +119,15 @@ $wconvertRemoveOwned = static function (string $directory, string $pattern): voi
 };
 $wconvertUploads = wp_upload_dir(null, false);
 
-// Template\Catalog\InstalledPacks — content-addressed JSON and staged .pack-* files.
-$wconvertRemoveOwned($wconvertUploads['basedir'] . '/wconvert-template-packs', '/^(?:[a-f0-9]{64}\.json|\.pack-[A-Za-z0-9]+)$/D');
+// Template\Catalog\DesignArchive — keyed-hash JSON under designs/, setups/,
+// index/ and cache/, with staged .object-* and .cache-* files.
+$wconvertArchive = $wconvertUploads['basedir'] . '/wconvert-templates';
+if (!is_link($wconvertArchive)) {
+    foreach (['designs', 'setups', 'index', 'cache'] as $wconvertKind) {
+        $wconvertRemoveOwned($wconvertArchive . '/' . $wconvertKind, '/^(?:[a-f0-9]{64}\.json|\.(?:object|cache)-[A-Za-z0-9]+)$/D');
+    }
+    $wconvertRemoveOwned($wconvertArchive, '/^$/D');
+}
 
 // Template\Catalog\VerifiedAssets — images by digest under free/ and premium/,
 // a marker per pack under sets/, and the install lock.

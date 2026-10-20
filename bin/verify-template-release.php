@@ -1,135 +1,100 @@
 <?php
-/** Read-only WordPress boot, isolated catalog options and disposable file archive.
- * WCONVERT_WP_BOOTSTRAP=/path/to/wp-load.php WCONVERT_RELEASE_DIRECTORY=/private/release php bin/verify-template-release.php
- * Never changes site settings/campaigns or sends a provider message.
+/**
+ * A local catalogue v3 release, read by the shipping reader inside a real
+ * WordPress (ADR 0156, docs/template-discovery-api.md).
+ *
+ *   WCONVERT_WP_BOOTSTRAP=/path/to/wp-load.php \
+ *   WCONVERT_RELEASE_DIRECTORY=/private/release \
+ *   php bin/verify-template-release.php
+ *
+ * Read-only for the site: isolated options in memory, a disposable archive and
+ * image store in the temp directory, the site's real salts, uploads helpers and
+ * HTTP-free transport over the release directory. Premium objects are read
+ * from private/ as Pro's transport would after a pass; no licence is checked.
+ * Never changes site settings or campaigns.
  */
 declare(strict_types=1);
-use WConvert\Template\Catalog\CatalogTransport;
+
 use WConvert\Template\Catalog\CatalogImageTransport;
-use WConvert\Template\Catalog\InstalledPacks;
+use WConvert\Template\Catalog\CatalogPremiumTransport;
+use WConvert\Template\Catalog\CatalogTransport;
+use WConvert\Template\Catalog\DesignArchive;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\TemplateCatalog;
 use WConvert\Template\Catalog\VerifiedAssets;
+use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateManifest;
+use WConvert\Template\TemplateVocabulary;
 
 $bootstrap = getenv('WCONVERT_WP_BOOTSTRAP');
 if (!defined('ABSPATH') && is_string($bootstrap) && is_file($bootstrap)) require $bootstrap;
 if (!defined('WCONVERT_VERSION')) throw new RuntimeException('Boot a WordPress site with WConvert active.');
 $directory = getenv('WCONVERT_RELEASE_DIRECTORY');
-if (!is_string($directory) || !is_dir($directory)) throw new RuntimeException('A local release directory is required.');
-$manifest = json_decode((string) file_get_contents($directory . '/public/manifest.json'), true, 24, JSON_THROW_ON_ERROR);
-$origin = parse_url($manifest['pages'][0]['url']);
-if (!is_array($origin) || !isset($origin['scheme'], $origin['host'])) throw new RuntimeException('Invalid release origin.');
-$source = $origin['scheme'] . '://' . $origin['host'] . (isset($origin['port']) ? ':' . $origin['port'] : '') . '/manifest.json';
-$options = new class($source) implements \WConvert\Storage\OptionStore {
+if (!is_string($directory) || !is_file($directory . '/public/v3/manifest.json')) throw new RuntimeException('A local v3 release directory is required.');
+$base = 'https://release.invalid/v3/';
+
+$options = new class($base) implements \WConvert\Storage\OptionStore {
     /** @var array<string, mixed> */ private array $data;
-    public function __construct(string $source) { $this->data = [TemplateCatalog::SOURCE_OPTION => $source]; }
+    public function __construct(string $base) { $this->data = [TemplateCatalog::SOURCE_OPTION => $base . 'manifest.json', TemplateCatalog::CONSENT_OPTION => 'yes']; }
     public function get(string $key, $default = null) { return $this->data[$key] ?? $default; }
     public function set(string $key, $value): void { $this->data[$key] = $value; }
 };
-$transport = new class($directory) implements CatalogTransport, CatalogImageTransport, \WConvert\Template\Catalog\CatalogPackTransport {
-    public function pack(string $url, string $digest): string { return $this->get($url); }
+$transport = new class($directory, $base) implements CatalogTransport, CatalogImageTransport, CatalogPremiumTransport {
+    /** @var list<string> */ public array $requests = [];
     public bool $offline = false;
-    public int $imageDownloads = 0;
-    /** @var array<string, string> Isolated update fixtures, never published. */
-    public array $fixtures = [];
-    public function __construct(private string $directory) {}
-    public function get(string $url): string {
-        if ($this->offline) throw new RuntimeException('Offline test');
-        $key = parse_url($url, PHP_URL_PATH);
-        if (isset($this->fixtures[$key])) return $this->fixtures[$key];
-        // Explicit offline rehearsal only, not a production entitlement adapter.
-        if (getenv('WCONVERT_VERIFY_PREMIUM_FIXTURES') === '1' && is_string($key) && preg_match('~^/downloads/([a-f0-9]{64})\.json$~D', $key, $match)) {
-            $bytes = file_get_contents($this->directory . '/private/packs/' . $match[1] . '.json');
-            if ($bytes === false) throw new RuntimeException('Missing private rehearsal fixture');
-            return $bytes;
-        }
-        if (!is_string($key) || !preg_match('~^/(manifest\.json|packs/[a-f0-9]{64}\.json|releases/[a-f0-9]{64}/page-[0-9]+\.json)$~D', $key)) throw new RuntimeException('Only public release fixtures are read by this verifier');
-        $bytes = file_get_contents($this->directory . '/public' . $key);
-        if ($bytes === false) throw new RuntimeException('Missing release fixture');
+    public function __construct(private string $directory, private string $base) {}
+    public function get(string $url, int $limit = PackValidator::MAX_BYTES, int $timeout = CatalogTransport::TIMEOUT): string { return $this->read('public', $url, $limit); }
+    /** @return array{body: string, etag: string|null} */
+    public function revalidate(string $url, ?string $etag): array { return ['body' => $this->read('public', $url, 65536), 'etag' => null]; }
+    public function image(string $url, int $bytes): string { return $this->read('public', $url, $bytes); }
+    public function authorize(array $designs, array $setups): void {}
+    public function premium(string $path, int $limit): string { return $this->read('private', $this->base . substr($path, strlen('premium/')), $limit); }
+    private function read(string $scope, string $url, int $limit): string
+    {
+        if ($this->offline) throw new RuntimeException('Offline');
+        $this->requests[] = $url;
+        if (!str_starts_with($url, $this->base)) throw new RuntimeException('Unexpected address ' . $url);
+        $file = $this->directory . '/' . $scope . '/v3/' . substr($url, strlen($this->base));
+        $bytes = is_file($file) ? (string) file_get_contents($file) : throw new RuntimeException('Missing ' . $url);
+        if (strlen($bytes) > $limit) throw new RuntimeException('Oversized ' . $url);
         return $bytes;
     }
-    public function image(string $url, int $bytes): string {
-        if ($this->offline) throw new RuntimeException('Offline image test');
-        $key = parse_url($url, PHP_URL_PATH);
-        if (!is_string($key) || !preg_match('~^/assets/(free|premium)/[a-f0-9]{64}\.(png|jpg|webp)$~D', $key, $match)) throw new RuntimeException('Only release image fixtures are read');
-        $premium = $match[1] === 'premium';
-        if ($premium && getenv('WCONVERT_VERIFY_PREMIUM_FIXTURES') !== '1') throw new RuntimeException('Only public image fixtures are read');
-        $file = $this->directory . ($premium ? '/private' : '/public') . $key;
-        if (!is_file($file) || filesize($file) !== $bytes) throw new RuntimeException('Image size mismatch');
-        $this->imageDownloads++;
-        return (string) file_get_contents($file);
-    }
 };
-$temp = sys_get_temp_dir() . '/wconvert-native-release-' . bin2hex(random_bytes(8));
+
+$temp = rtrim(get_temp_dir(), '/') . '/wconvert-release-check-' . bin2hex(random_bytes(6));
+// The site's own plan and plugins: a design this site cannot run is reported, not installed.
+$tier = (new \WConvert\Support\WpProPresence())->installedTier();
 $validator = PackValidator::shipping();
-$assets = new VerifiedAssets($temp . '/images', home_url('/verification-images'));
-$installed = new InstalledPacks($temp . '/packs', $validator, $assets);
-$catalog = new TemplateCatalog($options, $transport, $validator, $installed);
+$assets = new VerifiedAssets($temp . '/images', 'https://site.invalid/images');
+$archive = static fn (): DesignArchive => new DesignArchive($temp . '/templates', $validator, wp_salt('auth'), $assets, 'release-check');
+$catalog = static fn () => new TemplateCatalog($options, $transport, $validator, $archive(), $tier, null, static fn (): array => ['woocommerce' => class_exists('WooCommerce')], null, TemplateVocabulary::fromManifest()->facets());
+$report = ['tier' => $tier->value, 'woocommerce' => class_exists('WooCommerce'), 'release' => null, 'designs' => 0, 'setups' => 0, 'images' => 0, 'skipped' => [], 'offline_designs' => 0, 'keyed_names' => true];
 try {
-    $index = $catalog->refresh();
-    $verifiedPacks = [];
-    foreach ($index['packs'] as $pack) {
-        if (($pack['access'] ?? 'free') === 'premium' && getenv('WCONVERT_VERIFY_PREMIUM_FIXTURES') !== '1') {
-            $before = $installed->packs();
-            try {
-                $catalog->preview($pack['id']);
-                throw new RuntimeException('Premium preview unexpectedly succeeded without authorization');
-            } catch (RuntimeException $error) {
-                if ($error->getMessage() !== 'Only public release fixtures are read by this verifier') throw $error;
-            }
-            if ($installed->packs() !== $before) throw new RuntimeException('Refused premium preview changed installed packs');
-            echo 'PASS premium fixture refused without authorization: ' . $pack['id'] . "\n";
-            continue;
-        }
-        $preview = $catalog->preview($pack['id']);
-        $catalog->install($pack['id'], $preview['digest']);
-        if ($catalog->preview($pack['id'], true) !== $preview) throw new RuntimeException('Installed preview differs from inspected content');
-        echo 'PASS native preview/install: ' . $pack['id'] . "\n";
-        $verifiedPacks[] = $pack;
+    $status = $catalog()->refresh();
+    $report['release'] = $status['release'];
+    foreach ($status['designs'] as $design) {
+        // `ready` is a design this site already bundles at that revision.
+        if (!in_array($design['state'], ['install', 'ready'], true)) { $report['skipped'][$design['state']][] = $design['id']; continue; }
+        $catalog()->install($design['id'], $design['sha256']);
+        $report['designs']++;
     }
-    $before = $installed->entries(); $transport->offline = true;
-    foreach ($verifiedPacks as $pack) $catalog->preview($pack['id'], true);
-    if ($installed->entries() !== $before) throw new RuntimeException('Offline content changed');
-    echo 'PASS offline library: ' . count($before) . ' designs, ' . count($installed->playbooks()) . ' setups, ' . count($catalog->collections()) . " collections\n";
-    $transport->offline = false;
-    foreach ($installed->packs() as $pack) {
-        if ($pack['assets'] === []) continue;
-        $raw = (string) file_get_contents($temp . '/packs/' . $pack['digest'] . '.json');
-        if (hash('sha256', $raw) !== $pack['digest']) throw new RuntimeException('Archived bytes changed');
-        $savedDesign = $catalog->preview($pack['id'], true)['templates'][0];
-        // Exercise a copy-only update of the real illustrated pack. The synthetic
-        // next version exists only in this isolated transport and temporary archive.
-        $updated = json_decode($raw, true, 64, JSON_THROW_ON_ERROR);
-        $version = explode('.', $updated['version']); $version[2] = (string) ((int) $version[2] + 1);
-        $updated['version'] = implode('.', $version);
-        $updated['description'] .= ' Local update rehearsal.';
-        $json = json_encode($updated, JSON_THROW_ON_ERROR);
-        $digest = hash('sha256', $json);
-        $address = '/packs/' . $digest . '.json';
-        $base = substr($source, 0, -strlen('/manifest.json'));
-        $transport->fixtures = ['/manifest.json' => json_encode(['schema' => 1, 'packs' => [[
-            ...array_intersect_key($updated, array_flip(['id', 'name', 'version', 'description'])),
-            'url' => $base . $address, 'sha256' => $digest,
-        ]]], JSON_THROW_ON_ERROR), $address => $json];
-        $downloads = $transport->imageDownloads;
-        $status = $catalog->refresh();
-        if ($status['packs'][0]['state'] !== 'update') throw new RuntimeException('New version not offered as an update');
-        $preview = $catalog->preview($pack['id']);
-        $catalog->install($pack['id'], $preview['digest']);
-        if ($transport->imageDownloads !== $downloads) throw new RuntimeException('Unchanged artwork downloaded again');
-        if (file_get_contents($temp . '/packs/' . $pack['digest'] . '.json') !== $raw) throw new RuntimeException('Update replaced old snapshot');
-        $transport->offline = true;
-        $reopened = new InstalledPacks($temp . '/packs', $validator, $assets);
-        $old = array_values(array_filter($reopened->entries(), static fn (array $entry): bool => $entry['id'] === $savedDesign['id']));
-        if (count($old) !== 1 || $old[0]['tree'] !== $savedDesign['tree'] || $old[0]['catalog_current'] !== false) throw new RuntimeException('Old design or its local image changed');
-        if ($catalog->preview($pack['id'], true) !== $preview) throw new RuntimeException('Updated offline preview changed');
-        foreach ($pack['assets'] as $asset) {
-            if (hash_file('sha256', $temp . '/images/' . VerifiedAssets::key($asset)) !== $asset['sha256']) throw new RuntimeException('Artwork changed');
-        }
-        echo 'PASS illustrated update/offline: ' . $pack['id'] . "; unchanged artwork reused, original snapshot retained\n";
-        $transport->offline = false;
+    foreach ($status['setups'] as $setup) {
+        if (!in_array($setup['state'], ['install', 'ready'], true)) { $report['skipped']['setup:' . $setup['state']][] = $setup['id']; continue; }
+        $catalog()->installSetup($setup['id'], $setup['sha256']);
+        $report['setups']++;
     }
-    echo 'WordPress ' . get_bloginfo('version') . ' / PHP ' . PHP_VERSION . "; no site settings or campaigns changed.\n";
+    // GLOB_BRACE is not portable (it is missing on some builds, Playground's among them).
+    $report['images'] = count(array_filter(glob($temp . '/images/*/*') ?: [], static fn (string $file): bool => (bool) preg_match('/\.(png|jpg|webp)$/', $file)));
+    foreach (glob($temp . '/templates/*/*.json') ?: [] as $file) {
+        foreach ($transport->requests as $url) if (str_contains($url, '/' . substr(basename($file), 0, 64))) $report['keyed_names'] = false;
+    }
+    // Offline: everything installed still registers, with no request at all.
+    $transport->offline = true;
+    $library = TemplateLibrary::from(TemplateVocabulary::fromManifest(), $archive());
+    $report['offline_designs'] = count($library->all());
+    if ($report['offline_designs'] < $report['designs']) throw new RuntimeException('Installed designs did not survive going offline');
+    if (count($archive()->playbooks()) !== $report['setups']) throw new RuntimeException('Installed setups did not survive going offline');
+    echo wp_json_encode($report + ['result' => 'pass'], JSON_PRETTY_PRINT), "\n";
 } finally {
     if (is_dir($temp)) {
         $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($temp, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);

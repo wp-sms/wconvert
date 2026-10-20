@@ -1,0 +1,91 @@
+{
+  "id": "website-review-enquiry",
+  "revision": "445d03b024a9932dadbd6fa488ebc1055f9d709a4758e8925a67e56e04f5c5c1",
+  "base_id": "2035754b914afd132643f369a17dbd290fe1ad9bfb9219360c72dbd8e77f2b80",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-10.webp",
+          "sha256": "d7633198564b22bd4674a77c8f3e46716d379fc8abd2c01b66f4bbf118cc29fb"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-10.webp",
+          "sha256": "c57314ba405bc67955a08c6c4f08ef36d2f96c2aa1364fd2b3c38348abfadc2d"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/website-review-enquiry-1280-0.webp",
+          "sha256": "6578c5d67a20dbc0f72a6dce8906dfa800a641109d3dffdad79e347f6b3e7725"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/website-review-enquiry-1280-1.webp",
+          "sha256": "b9aaea377710cad018a7626872bcbbfcf3a38e0a97f9f393bb32e2ef129f7eaf"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/website-review-enquiry-1280-retry.webp",
+          "sha256": "576b7b9fa6cb746129a97670455d75ea99a629b4d488a73f02cc73c6e577961c"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/website-review-enquiry-320-0.webp",
+          "sha256": "0f2da48cc7eb41c1830a17c47fd8ae7a90e5417ed547d57bd33be8f15d1c6584"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/website-review-enquiry-320-1.webp",
+          "sha256": "a352c662e2a641081661a81c35632ee89ce08aa8e0edccb5ec5120ad4839b322"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/website-review-enquiry-320-retry.webp",
+          "sha256": "98a8b76d115c317ad8746bb9b20514268bc5485dc73717cbbd87950c0e7b3cd9"
+        }
+      ]
+    }
+  },
+  "record_id": "e5543d5ef058b383d1e0e43b4c46daf7a455379c8bf68eafa8a621241b9bf42b"
+}

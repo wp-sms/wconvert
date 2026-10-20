@@ -4,11 +4,17 @@ import { connect } from 'node:http2';
 import { cloudTarget } from './cloud-config.mjs';
 
 // Explicit, bounded live probe. Sends no credentials and never calls Nexus.
+// Probes the per-site counters only: the per-IP ceilings (600 grants, 6000
+// files a minute) are too high to reach with a bounded probe.
 const { values } = parseArgs({ options: { phase: { type: 'string' } } });
 assert(['burst', 'recovery'].includes(values.phase), 'Use --phase burst or --phase recovery (after the mitigation duration)');
 const { origin } = cloudTarget();
-const download = `/downloads/${'0'.repeat(64)}.json`;
-const asset = `/assets/premium/${'0'.repeat(64)}.png`;
+const download = `/v3/premium/designs/${'0'.repeat(64)}.json`;
+const asset = `/v3/premium/assets/${'0'.repeat(64)}.png`;
+// A well-formed but unissued pass: counted per pass, refused 401 with no Nexus call.
+const pass = 'probe.probe.probe';
+// A well-formed batch with no licence: counted per site, refused 401 before any storage or Nexus call.
+const batch = JSON.stringify({ domain: 'rate-limit-probe.invalid', designs: ['0'.repeat(64)], setups: [] });
 // Keep one HTTP/2 connection to avoid dispersing a short probe across edge
 // machines before the provider's eventually consistent counters synchronize.
 const connection = connect(origin);
@@ -18,7 +24,7 @@ function request(path, method = 'GET') {
   return new Promise((resolve, reject) => {
     const stream = connection.request({
       ':method': method, ':path': path,
-      ...(method === 'POST' ? { 'content-type': 'application/json' } : {}),
+      ...(method === 'POST' ? { 'content-type': 'application/json' } : { authorization: `Bearer ${pass}` }),
     });
     let result;
     stream.setTimeout(15000, () => stream.destroy(new Error('Probe request timed out')));
@@ -33,16 +39,16 @@ function request(path, method = 'GET') {
     stream.on('data', () => {}); // Drain the small response to reuse the connection.
     stream.on('error', reject);
     stream.on('end', () => result ? resolve(result) : reject(new Error('Missing probe response')));
-    stream.end(method === 'POST' ? '{}' : undefined);
+    stream.end(method === 'POST' ? batch : undefined);
   });
 }
 try {
 const started = new Date().toISOString();
-const publicBefore = await request('/manifest.json');
+const publicBefore = await request('/v3/manifest.json');
 assert.equal(publicBefore.status, 200, 'Public catalogue unavailable before the probe');
 if (values.phase === 'recovery') {
-  const grants = await request('/grants', 'POST'), file = await request(download), image = await request(asset, 'HEAD');
-  assert.equal(grants.status, 400); assert.equal(file.status, 401); assert.equal(image.status, 401);
+  const grants = await request('/v3/grants', 'POST'), file = await request(download), image = await request(asset, 'HEAD');
+  assert.equal(grants.status, 401); assert.equal(file.status, 401); assert.equal(image.status, 401);
   console.log(JSON.stringify({ started, origin, phase: 'recovery', publicBefore, grants, file, image }, null, 2));
 } else {
   async function burst(path, method, ceiling) {
@@ -54,16 +60,16 @@ if (values.phase === 'recovery') {
         statuses[result.status] = (statuses[result.status] ?? 0) + 1;
         if (result.ray) rays.add(result.ray.split('-').pop());
         if (result.status === 429) blocked = result;
-        assert([400, 401, 429].includes(result.status), `Unexpected status ${result.status}; stop and inspect`);
+        assert([401, 429].includes(result.status), `Unexpected status ${result.status}; stop and inspect`);
       }
     }
     return { sent, statuses, elapsedMs: Date.now() - start, locations: [...rays], blocked: blocked ?? null };
   }
-  const grants = await burst('/grants', 'POST', 80);
+  const grants = await burst('/v3/grants', 'POST', 80);
   const privateDuringGrantBlock = await request(download);
-  const files = await burst(download, 'GET', 450);
+  const files = await burst(download, 'GET', 1200);
   const imageDuringFileBlock = await request(asset, 'HEAD');
-  const publicAfter = await request('/manifest.json');
+  const publicAfter = await request('/v3/manifest.json');
   const report = { started, origin, phase: 'burst', grants, privateDuringGrantBlock, files, imageDuringFileBlock, publicAfter };
   console.log(JSON.stringify(report, null, 2));
   assert(grants.blocked && files.blocked, 'No 429 observed within the bounded probe; limits are NOT verified');
@@ -72,7 +78,7 @@ if (values.phase === 'recovery') {
     assert.equal(blocked.cacheControl, 'private, no-store', 'Throttle responses must not be cached');
   }
   assert.equal(privateDuringGrantBlock.status, 401, 'Grant limit must not block private file requests');
-  assert.equal(imageDuringFileBlock.status, 429, 'Private image route must share the private file rule');
+  assert.equal(imageDuringFileBlock.status, 429, 'Every file under one pass must share its counter');
   assert.equal(publicAfter.status, 200, 'Public catalogue must stay available during throttling');
 }
 } finally { connection.close(); }

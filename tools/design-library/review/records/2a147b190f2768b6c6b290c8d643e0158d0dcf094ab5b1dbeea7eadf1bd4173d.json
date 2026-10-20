@@ -1,0 +1,75 @@
+{
+  "id": "lighting-collection",
+  "revision": "84353d61f5d8a4e159fb8ea63628cd76e82042e929e752ea575806681dcb7947",
+  "base_id": "5be2f72c8fa419a3739c11dbaac1beafcf08ada03207c02ef94cd628310c91b4",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.883Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-06.webp",
+          "sha256": "53eb987b4aa9791ba45375d2ec959637b4a349d3dfc8c41495742047bd96ad5a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-06.webp",
+          "sha256": "a3da93fe2681333f9a6eccb5f15aa6a32d81ebe0dacf3744fd19ce5a6fa470e8"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/lighting-collection-1280-0.webp",
+          "sha256": "364832e5f9194834ba700d8623092a196b97870280b164023671f5464de2551a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/lighting-collection-320-0.webp",
+          "sha256": "ebd3b6ae764debc1a01e8a8e84f89ab112a5f181015f7315beb2809661776a13"
+        }
+      ]
+    }
+  },
+  "record_id": "2a147b190f2768b6c6b290c8d643e0158d0dcf094ab5b1dbeea7eadf1bd4173d"
+}

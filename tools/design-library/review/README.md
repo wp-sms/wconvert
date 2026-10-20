@@ -1,8 +1,15 @@
 # Shared editorial reviews
 
-The internal studio now reads `shared-reviews.json`. Reviewers share this file
-and its evidence through the normal Git branch/PR workflow; this is not a hosted
+The internal studio reads the shared review store in `records/`: **one JSON file
+per decision**, named by its digest (ADR 0156). Reviewers share those files and
+their evidence through the normal Git branch/PR workflow; this is not a hosted
 multi-user service. Browser edits are drafts until imported and committed.
+
+Each record names the decision it was made over (`base_id`), so a campaign's
+records form one chain. Two branches that both decide over the same earlier
+review merge in Git without a conflict and are then **refused on read**, naming
+both records: rebuild, read both and record one decision over the later. A
+record whose bytes no longer match its name is refused the same way.
 
 1. Build with `npm run templates:pilot` and inspect the prepared campaign.
    Run `npm run templates:review:scope -- origin/main` to identify all affected
@@ -27,16 +34,16 @@ multi-user service. Browser edits are drafts until imported and committed.
    Import rebuilds the actual campaigns before validation. The gate rebuilds again
    and exits nonzero for missing, stale or revision-requested approvals. Omit
    `coverage` to check every campaign. This workflow runs locally, without CI.
-6. Commit the evidence and shared review records together. Rebuild the studio on
+6. Commit the evidence and the new record files together. Rebuild the studio on
    another checkout to see the decisions.
 
 Campaign content and renderer revisions bind decisions to the reviewed output. Derived similarity neighbours and fingerprints are excluded, so expanding the library does not invalidate an unchanged campaign. Evidence
 content is hashed too: a changed or missing file invalidates the approval. Import
-validates the complete export before atomically replacing the store, keeps prior
-records, rejects stale exports and conflicts, and is idempotent for an identical
-export. Concurrent local imports are serialized. A process crash can leave
-`shared-reviews.json.lock`; remove that empty directory only after checking no
-import process remains.
+validates the complete export before writing, adds one new file per decision and
+never rewrites an existing one, rejects stale exports and conflicts, and is
+idempotent for an identical export. Concurrent local imports are serialized. A
+process crash can leave `records.lock`; remove that empty directory only after
+checking no import process remains.
 
 On a conflict, rebuild, read the current shared decision, and use **Use shared
 version** to discard the outdated local draft before making a new decision.

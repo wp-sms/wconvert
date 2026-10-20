@@ -1,0 +1,39 @@
+{
+  "id": "collection-reader-relationships",
+  "revision": "f7633ab864363a881d46fe45f17071b6277530429949256f5371e2ad4f1464ec",
+  "base_id": "0d2bffb902f60a540c80c0fee8af7201d9a4a25c55380aed9d3f56329c044ac4",
+  "decision": "approved",
+  "reviewer": "Codex — recommendation release regression",
+  "note": "Unchanged collection membership and copy; all dependencies renewed through the recorded renderer regression review.",
+  "at": "2026-10-05T08:21:11.439Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    }
+  },
+  "record_id": "8e900b8b3730256667e6b87861489081f4de315cc25c8d59c3e7b67936a87dd0"
+}

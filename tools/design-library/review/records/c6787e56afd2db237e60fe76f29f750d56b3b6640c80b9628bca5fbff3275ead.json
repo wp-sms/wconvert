@@ -1,0 +1,55 @@
+{
+  "id": "repair-workshop-news",
+  "revision": "8a07332bbd0362bf8eecc486356d022ed0e00bb00cb7d3be34b423b3ed443584",
+  "base_id": "1e80512b48fc944ff322a6caeb2c022517df8fd1ef1e09663ecb732832bf9bc6",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed final input and acknowledgement screens, four-width RTL/long-copy audit, failure/retry and real local WordPress captures. Revisions of existing designs; no external delivery.",
+  "at": "2026-10-12T05:33:42.864Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12.md",
+          "sha256": "25fdadc2392fad84c1917f5b06cca4dd5d99199d1546eb98a5dd11ff72b23121"
+        },
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12-audit.json",
+          "sha256": "24740294718c88090c8f715657de2c1ea92619aa5c575c48295f2e2689b4ceec"
+        },
+        {
+          "path": "docs/reviews/older-essentials-repair-workshop-news.png",
+          "sha256": "bc44d9e42342f5b9f208c9ea6e32c69d3a1140e6856a2770a5884637bdccdf81"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12-journeys.json",
+          "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12-live.json",
+          "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+        },
+        {
+          "path": "docs/reviews/older-live-repair-workshop-news-320-details.png",
+          "sha256": "30ae1edb7bea1f1ead5390a6db29f09a372d0ffecd394bee27c4fea53c429168"
+        },
+        {
+          "path": "docs/reviews/older-live-repair-workshop-news-320-received.png",
+          "sha256": "d7d483e172928db420170410db65de83eb3a1b74d1072445cb606dda454c4526"
+        }
+      ]
+    }
+  },
+  "record_id": "c6787e56afd2db237e60fe76f29f750d56b3b6640c80b9628bca5fbff3275ead"
+}

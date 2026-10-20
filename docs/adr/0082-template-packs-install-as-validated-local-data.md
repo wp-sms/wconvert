@@ -5,6 +5,8 @@ persistent archive. ADR 0043's normalizer was not a complete remote boundary:
 known token names still accepted arbitrary scalar values and unknown structure
 was silently dropped.
 
+> **Superseded in format by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md).** Packs are gone: each design and setup is its own content-addressed object, read through a tolerant envelope around the strict validator this ADR introduced, which is unchanged. The limits below (50 packs, 12 designs, 128 archive files and image sets) no longer exist; archive files are named by a keyed hash, not the public digest.
+
 ## The first complete slice
 
 **Your designs / Template packs** share the existing picker. **Amended by
@@ -45,7 +47,7 @@ no IDs; leaf IDs must be unique. An index pins its exact
 bytes with SHA-256; install rechecks the digest the merchant previewed.
 
 WordPress safe HTTP handles requests, with a 15-second timeout, 256 KiB response
-cap, no redirects and HTTPS. The index accepts at most 50 packs (raised from
+cap, no redirects and HTTPS. *(Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): per object; the index is up to 16 pages and 1 MiB.)* The index accepts at most 50 packs (raised from
 20 for library expansion on 2026-09-28); the per-pack limit remains 12 designs.
 The build and reader share one bound. A 51-pack response is refused without
 replacing the cached index. This supplies bounded capacity for 600 design slots,
@@ -82,7 +84,7 @@ redesign.*
 
 Validated pack bytes are atomically renamed from a temporary file into
 `uploads/wconvert-template-packs/<sha256>.json`. Data is decoded, never included
-or evaluated. The archive is capped at 128 files and is not autoloaded. No table
+or evaluated. The archive is capped at 128 files and is not autoloaded. *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): no cap; files live under `uploads/wconvert-templates/` named by `HMAC(digest, site secret)`, and a validated cache file replaces per-request re-validation.* No table
 or column is introduced. The catalog index uses a non-autoloaded WordPress option;
 a failed refresh retains the previous index.
 
@@ -109,12 +111,12 @@ and fake WordPress/database functions.
 
 Schema 2 adds `pack-images:1`, a hash/size/MIME/dimension/access manifest and separate `{template_id,node_id,asset_id}` bindings. Only normalized image leaves can bind. Free designs cannot reference premium assets. No remote/data URL is accepted in a downloadable tree. The client derives Free image paths from its configured catalog origin, stages and verifies the complete set, and commits the marker before registering the immutable pack. Runtime hydration uses verified local URLs; the archived JSON and digest are unchanged. Missing/corrupt images fail closed and can be repaired by explicit preview. Old media URLs are retained for existing campaigns; there is no automatic garbage collection. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** premium images now use the same verified download pass and exact pack membership; missing service configuration fails closed.
 
-The image budget is 16 files, 5 MiB per file and 20 MiB per pack, PNG/JPEG/WebP only, up to 4096px per dimension. Installed set markers are bounded to 128; this is not an unlimited cache. Native verification uses `bin/verify-template-media.php` and the actual-release verifier `bin/verify-template-release.php`. The latter exercises the Homeware care pack, exact preview/install agreement, offline reads, a synthetic next-version update with image reuse, and retention of the original design/image references. Bundled SVG stays compact; the internal publisher accepts only an explicitly reviewed raster derivative bound to the source URI, raster and evidence hashes. Conversion is never implicit during a build.
+The image budget is 16 files, 5 MiB per file and 20 MiB per pack, PNG/JPEG/WebP only, up to 4096px per dimension. Installed set markers are bounded to 128; this is not an unlimited cache. *Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): the bound is removed; images are still never deleted.* Native verification uses `bin/verify-template-media.php` and the actual-release verifier `bin/verify-template-release.php`. The latter exercises the Homeware care pack, exact preview/install agreement, offline reads, a synthetic next-version update with image reuse, and retention of the original design/image references. Bundled SVG stays compact; the internal publisher accepts only an explicitly reviewed raster derivative bound to the source URI, raster and evidence hashes. Conversion is never implicit during a build.
 
 
 ## 2026-10-12 — current flow and commerce pack compatibility
 
-The reader accepts explicitly declared `template-tree:3` with graph structure, reference validation and the shipping GraphCaptureContract. The remote screen budget remains seven (portable merchant files retain their separate 256-screen v3 allowance); node/depth/byte limits are unchanged. Installed v3 designs use that graph contract during library registration instead of being silently rejected as linear journeys. A regression installs, updates and reopens an archive offline, preserving original route/style baselines. Malformed routes, unknown graph keys and authored URLs still fail.
+The reader accepts explicitly declared `template-tree:3` *(renamed `template-flow:1`, declared beside `template-tree:2`, by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md))* with graph structure, reference validation and the shipping GraphCaptureContract. The remote screen budget remains seven (portable merchant files retain their separate 256-screen v3 allowance); node/depth/byte limits are unchanged. Installed v3 designs use that graph contract during library registration instead of being silently rejected as linear journeys. A regression installs, updates and reopens an archive offline, preserving original route/style baselines. Malformed routes, unknown graph keys and authored URLs still fail.
 
 `paid-campaign-rules:1` permits supported rule shapes at the receiving install's actual tier. Rule definitions still come from the manifest, unknown parameters are rejected and authored page/product/element identifiers remain forbidden. Thus an Elite basket condition can survive pack import without being weakened to “everyone”; Free/Basic cannot import that condition. Export access classification includes rule tiers as well as design/Goal tiers. This is client compatibility, not a replacement for hosted licence authorization.
 

@@ -1,0 +1,43 @@
+{
+  "id": "home-repair-quote",
+  "revision": "d149c9d81f4020a173909a446ee50e5e05351f9a13d365911e25377fc33d1d77",
+  "base_id": "1b7f60ce0101cc12e2a0bbc1be6ac5904e03a52e47bf87ff4c6a0bc9c5ca9566",
+  "decision": "approved",
+  "reviewer": "Codex — local follow-through",
+  "note": "Verified prior renderer-bound revision matches exactly when restoring the old nearest-design list. Source, setup and renderer are unchanged. Re-inspected all 768/320px screens; prior journey/WordPress evidence retained. See template-local-progress-2026-10-01.md.",
+  "at": "2026-10-01T06:01:59.798Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/home-repair-quote-recheck-2026-10-01.jpg",
+          "sha256": "31140b66fd74478c4fb2dd654e065fec35721d624d619f8cdb2d21b0596d4cf8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        }
+      ]
+    }
+  },
+  "record_id": "36f9ef7f809ba927da14d3902c8132a1098eaf654d09209a1bf02accaca66c86"
+}

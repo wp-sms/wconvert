@@ -1047,17 +1047,15 @@ describe('the note about a Goal every design refuses', () => {
  * and the library switch out of the way.
  */
 it('names the inspected design in the dialog header', async () => {
-  render(<TemplatePickerDialog open onOpenChange={vi.fn()} onCatalogInstalled={vi.fn()} index={{ templates: ENTRIES, labels: LABELS, facets: FACETS }} trees={TREES}
+  render(<TemplatePickerDialog open onOpenChange={vi.fn()} onLibraryChanged={vi.fn()} index={{ templates: ENTRIES, labels: LABELS, facets: FACETS }} trees={TREES}
     displayType="popup" chosen="centred-card" fit={ANY} busy={false} onChoose={vi.fn()} onNear={vi.fn()} />);
   const dialog = await screen.findByRole('dialog', { name: 'Browse designs' });
-  expect(within(dialog).getByRole('group', { name: 'Library source' })).toBeInTheDocument();
   await userEvent.click(within(dialog).getAllByRole('button', { name: 'Preview design' })[0]);
   const title = within(dialog).getByRole('heading', { name: 'Centred card' });
   expect(dialog).toHaveAccessibleName('Centred card');
   await waitFor(() => expect(title).toHaveFocus());
   expect(dialog).toHaveAccessibleDescription('Popup · Collects Email address');
   expect(within(dialog).getAllByText('Current design').length).toBeGreaterThan(0);
-  expect(within(dialog).queryByRole('group', { name: 'Library source' })).toBeNull();
   expect(within(dialog).queryByText(/Preview with (your|sample) content/)).toBeNull();
   await userEvent.click(within(dialog).getByRole('button', { name: 'Back to designs' }));
   expect(dialog).toHaveAccessibleName('Browse designs');

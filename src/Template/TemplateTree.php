@@ -77,12 +77,27 @@ final class TemplateTree
      * for it to be. It costs a key and a default; retrofitting it after thirty
      * designs are in the wild costs a guess about what each one meant.
      *
-     * **Nothing reads it yet, and that is correct.** A version with no
-     * migration behind it is not dead weight — it is the fact a migration
-     * would need and cannot reconstruct. The first reader is whichever release
-     * first has to narrow something.
+     * **It is the vocabulary's version and nothing else** (ADR 0156). It
+     * once doubled as the flow flag — `v: 3` meant "this tree has a graph" —
+     * which left no number for the day the vocabulary itself narrows. A flow
+     * is now said by the `graph` key alone ({@see self::isGraph()}). The
+     * next vocabulary version is still **4, never 3**, so a tree left over
+     * from that spelling can never be mistaken for a newer vocabulary. The hosted catalogue reads `v` as the
+     * vocabulary a design needs, so a reader built today can say "update"
+     * about a tree written for a later one.
      */
     public const VERSION = 2;
+
+    /**
+     * Whether this tree is a flow with a graph of lines between screens.
+     *
+     *
+     * @param mixed $tree
+     */
+    public static function isGraph($tree): bool
+    {
+        return is_array($tree) && is_array($tree['graph'] ?? null);
+    }
 
     /**
      * The same tree, stamped with the vocabulary version that produced it.

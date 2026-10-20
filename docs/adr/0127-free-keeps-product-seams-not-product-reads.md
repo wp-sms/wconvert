@@ -31,7 +31,7 @@ Moving them would break the downgrade and import cases. `ProductHealth` keeps
 the `wconvert_check_products` seam and reads no catalog itself: the journeys
 module answers for quiz results only when nothing else has (priority 20),
 cart-recovery for recommendations and cart buttons (priority 10). `locked.json` stays, because Pro reads free's copy for higher-rung
-upsells.
+upsells. *(Corrected by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): `locked.json` is deleted; locked cards come from the hosted index.)*
 
 **Product UI is gated on the capability, not the tier.** One predicate per
 side — `CommerceSupport::productModuleActive()` and `productModuleActive()` —
@@ -56,7 +56,7 @@ admin entry. Free falls back to the plug icon. 0029(b) allowed them; they were
 never rendered on free, so carrying them was cost without use.
 
 **Template packs hide until a catalog is configured.** Amended 19 October by [ADR 0112](0112-template-discovery-and-reviewed-collections.md): the hosted library is now the default source. An explicit empty override still hides remote discovery; the picker and goal screen use the same `TemplateCatalog::configured()` seam. Opening the surface reads local state, and checking for packs remains explicit.
-A premium pack's "Pro" badge never renders on free.
+A premium pack's "Pro" badge never renders on free. **Amended by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md):** there are no packs; the hosted library is asked for only after a consent card, and a Pro design reaches free only as a locked image card inside the picker.
 
 **Two zeros free cannot earn are not drawn.** Analytics hides the cart-return
 and basket-addition cards where the cart module is absent and nothing was

@@ -1,0 +1,39 @@
+{
+  "id": "collection-black-friday-2026",
+  "revision": "d9ba9288b774e3c2748db08e57b0ef51e5a7113ef9b2b534e99a248294c7fc39",
+  "base_id": "0f25ba8f46707af6afa32bff08e8b9f87246f59df2e34a7bd2ad91b8a091e1d7",
+  "decision": "approved",
+  "reviewer": "Codex — recommendation release regression",
+  "note": "Unchanged collection membership and copy; all dependencies renewed through the recorded renderer regression review.",
+  "at": "2026-10-05T08:21:11.439Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    }
+  },
+  "record_id": "4fc7993c95b782ad7bcd7964e54f03287b0dd16ad0ffeee0c94d5657a1225faf"
+}

@@ -1,0 +1,79 @@
+{
+  "id": "new-arrivals-link",
+  "revision": "ac10325b72a8bc18d2797a7471f522112bbeeecb49d685a0b858d0097ed53118",
+  "base_id": "c1d9ad0760502e261cf69105f4281b92f4d84432c924db2fc79480a5f0eb0160",
+  "decision": "approved",
+  "reviewer": "Codex — visual-variety local review",
+  "note": "Comparison-only refresh: source design, Playbook and brief verified unchanged against HEAD. Prior visual/journey evidence retained; nearest-design metadata and fresh full-library layout/native checks reviewed. No claim of new manual visual inspection.",
+  "at": "2026-09-28T18:32:50.364888+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+          "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+          "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+          "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        }
+      ]
+    }
+  },
+  "record_id": "8e863dee119f61a5c34d212cfd8c7f5daa594a7520917a1a1fb669a4784afd6e"
+}

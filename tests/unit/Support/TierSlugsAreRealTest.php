@@ -29,7 +29,6 @@ final class TierSlugsAreRealTest extends TestCase
 
     private const SOURCES = [
         'resources/rules/manifest.json',
-        'resources/templates/locked.json',
         'resources/templates/library/*.json',
         'pro/modules/*/templates/*.json',
         'tools/integration-preview/fixtures/*.json',

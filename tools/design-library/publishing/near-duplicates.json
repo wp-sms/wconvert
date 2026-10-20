@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "_note": "Pairs the near-duplicate gate (build/near-duplicates.mjs) lets through, each with its reason. Add a pair only when two designs are deliberately alike, such as a family; otherwise change one of them.",
+  "pairs": [
+    {
+      "a": "cart-accessories",
+      "b": "cart-additions",
+      "reason": "Both published before the gate existed (2026-10-20). Structure 94%, identical palette and identical card thumbnails: consolidate them or make them visibly different at the next visual audit, then remove this entry."
+    }
+  ]
+}

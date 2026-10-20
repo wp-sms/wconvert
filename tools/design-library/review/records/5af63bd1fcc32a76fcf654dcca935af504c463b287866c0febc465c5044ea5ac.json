@@ -1,0 +1,111 @@
+{
+  "id": "service-options-guide",
+  "revision": "51c7620e6f1a266dbe109abd43768eeec71d3848c31d7e776c387ff89c716178",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — decision-support batch review",
+  "note": "All prepared screens and result variants reviewed at desktop and 320px; 1272-case width/direction audit passes. Applicable required-field, failure/retry, branch and acknowledgement checks pass. Real WordPress publication, capture, saved values and configured destinations verified. Editorial candidate only; merchant configuration, public marketing previews and external delivery remain outside this approval.",
+  "at": "2026-09-28T14:19:21.665Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        }
+      ]
+    }
+  },
+  "record_id": "5af63bd1fcc32a76fcf654dcca935af504c463b287866c0febc465c5044ea5ac"
+}

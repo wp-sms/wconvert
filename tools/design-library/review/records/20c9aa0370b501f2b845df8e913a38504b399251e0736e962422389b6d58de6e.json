@@ -1,0 +1,71 @@
+{
+  "id": "coffee-taste-finder",
+  "revision": "7b4bb5c5edbe15099bb68b1746ef95ecc32bcb0c28db01becb26207bfb171cb0",
+  "base_id": "9e92ebe700666702b79f886f6266e21a5e2c8e7676999ad01d9c7adea77c210b",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Final optional-result-link parity review; all three product result alternatives checked again.",
+  "at": "2026-10-12T04:31:32.040Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+          "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+        },
+        {
+          "path": "docs/reviews/october-coffee-taste-finder-1-wide.png",
+          "sha256": "5a8a9605b097f64992630a2a1513f56cd3643f8e21036ed7cdef7787867e89ef"
+        },
+        {
+          "path": "docs/reviews/october-coffee-taste-finder-1-phone.png",
+          "sha256": "150c1409eed91da525feb5d00a2d1eda53fbe0e972212a3c0d8f4588181b18a2"
+        },
+        {
+          "path": "docs/reviews/october-coffee-taste-finder-2-wide.png",
+          "sha256": "5e7215245e6017975390025b792c8814d3587d17eeeff556369f30c191f02215"
+        },
+        {
+          "path": "docs/reviews/october-coffee-taste-finder-2-phone.png",
+          "sha256": "c9d63120f8b7953f86f910c23d75ea265b3a27957c2ceade73cce3437f6bb96d"
+        },
+        {
+          "path": "docs/reviews/october-coffee-taste-finder-3-wide.png",
+          "sha256": "c5442646148221dea8785fd2d05be213abd425f2ae30ffcb154a58c676be69a5"
+        },
+        {
+          "path": "docs/reviews/october-coffee-taste-finder-3-phone.png",
+          "sha256": "5ef59cb79d5f1b9f1af5bd884da707f9bdb91e8bbb4e7d7acad79cf5fb7e6513"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+          "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-live.json",
+          "sha256": "55b1eb2d0e3baf4f926ebceff552e3964340972574ea50aeca738c5034aea514"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-wordpress.json",
+          "sha256": "9e2307e726017c5ebd8fa7a80ad47f7673aeba6153b288f234d65e2710892f74"
+        }
+      ]
+    }
+  },
+  "record_id": "20c9aa0370b501f2b845df8e913a38504b399251e0736e962422389b6d58de6e"
+}

@@ -17,7 +17,7 @@ final class JourneyCaptureTest extends TestCase
     private static function tree(): array
     {
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true)['tree'];
-        $tree['v'] = 3;
+        $tree['v'] = 2;
         $tree['steps'][0]['content']['children'][] = [
             'type' => 'question', 'id' => 'q_optional', 'label' => 'Your interest?', 'answer_type' => 'single',
             'required' => false, 'options' => [['value' => 'garden', 'label' => 'Garden'], ['value' => 'home', 'label' => 'Home']],

@@ -1,0 +1,55 @@
+{
+  "id": "reading-notes-guide",
+  "revision": "65d3532d0ed85a6dc885e0b145a73fbb592192ab67790a1878e9e6db9c499997",
+  "base_id": "b0d8d2bdd2157c6933d95ea0a649e2297a875e2273d78cfbb9be58a848370899",
+  "decision": "approved",
+  "reviewer": "Codex — content equivalence review",
+  "note": "Renew unchanged approval under content-only revision identity. Previous renderer, campaign content and evidence verified exactly; no new visual inspection claimed. See stable-approvals report.",
+  "at": "2026-10-01T06:28:22.667Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/reading-notes-guide-recheck-2026-10-01.jpg",
+          "sha256": "1b459185b0d2bbe25743b9f0a42cbc04f51561cb852c55f9b82cce9b568d4b0c"
+        },
+        {
+          "path": "docs/reviews/template-stable-approvals-2026-10-01.md",
+          "sha256": "27cd3ee5d87baedf490444ec1365e347779cf5af3d82fabf976ca52bc6236031"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/template-stable-approvals-2026-10-01.md",
+          "sha256": "27cd3ee5d87baedf490444ec1365e347779cf5af3d82fabf976ca52bc6236031"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/template-stable-approvals-2026-10-01.md",
+          "sha256": "27cd3ee5d87baedf490444ec1365e347779cf5af3d82fabf976ca52bc6236031"
+        }
+      ]
+    }
+  },
+  "record_id": "d0e5dbf9ad55bc8e5a89ffb28ac9e0951f1558bd98e7071358e5ff9565517b2a"
+}

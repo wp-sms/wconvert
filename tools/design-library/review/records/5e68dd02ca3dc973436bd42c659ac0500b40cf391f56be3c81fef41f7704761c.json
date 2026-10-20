@@ -1,0 +1,55 @@
+{
+  "id": "project-planning-guide",
+  "revision": "dd9a8be5b234dd5ca0eccc3d424c03c9fbb86a3ce374dc6c41b555f32a55e1c0",
+  "base_id": "e6b48443d5972a959e76a10c8a52389747afe404d98890c20bdfa01847e3568e",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed final input and acknowledgement screens, four-width RTL/long-copy audit, failure/retry and real local WordPress captures. Revisions of existing designs; no external delivery.",
+  "at": "2026-10-12T05:33:42.863Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12.md",
+          "sha256": "25fdadc2392fad84c1917f5b06cca4dd5d99199d1546eb98a5dd11ff72b23121"
+        },
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12-audit.json",
+          "sha256": "24740294718c88090c8f715657de2c1ea92619aa5c575c48295f2e2689b4ceec"
+        },
+        {
+          "path": "docs/reviews/older-essentials-project-planning-guide.png",
+          "sha256": "2f3c7e8a12022542d4f6b8d2b977ab8d4def5aad0633b79c820256fa0eb0944d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12-journeys.json",
+          "sha256": "69c968c67e58dee6d2bc81250546d70fc50093f74658e5eecf96c95215f0782c"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/older-essentials-2026-10-12-live.json",
+          "sha256": "e6742dfe4423459c1ac86650bdfeea4c856dd6428953c0d0ad5e2dcee224b640"
+        },
+        {
+          "path": "docs/reviews/older-live-project-planning-guide-320-details.png",
+          "sha256": "2a1cb5065518ae0d678c66b7be795ba4f321421c80220016c9b6ddfa49e8352f"
+        },
+        {
+          "path": "docs/reviews/older-live-project-planning-guide-320-received.png",
+          "sha256": "eefca3723a2d4d7494d8b682d861886b69f03665cffeeb5b2e44033b6b9c940c"
+        }
+      ]
+    }
+  },
+  "record_id": "5e68dd02ca3dc973436bd42c659ac0500b40cf391f56be3c81fef41f7704761c"
+}

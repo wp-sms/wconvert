@@ -1,0 +1,87 @@
+{
+  "id": "venue-visit-request",
+  "revision": "a2c0d6db3bb346657254b8bbbc9df164c7e57b0ae9c31af02c4cb9bf0edcaa48",
+  "base_id": "a0bbe6bda85da96517cbfdc74d0501f3b9c9b6d24b6d64a8a46dced1e36cfeb9",
+  "decision": "approved",
+  "reviewer": "Codex — editorial refinement review",
+  "note": "Only nearest-design comparison metadata changed. Source and campaign configuration unchanged. Re-inspected every screen at desktop/320px; prior journey evidence retained, local WordPress verifier rerun. No new native browser walkthrough claimed. External delivery skipped.",
+  "at": "2026-09-28T14:47:38.805326+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    }
+  },
+  "record_id": "a86206181be31b1d72738ec87d7fd20bb913ebd5c6badeb4f3afccfe9f9d95ba"
+}

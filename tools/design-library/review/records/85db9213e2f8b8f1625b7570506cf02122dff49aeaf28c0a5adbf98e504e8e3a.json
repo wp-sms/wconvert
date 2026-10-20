@@ -1,0 +1,51 @@
+{
+  "id": "membership-details",
+  "revision": "8a13798dced863afd159d5447623ea19b885a2f5c1cc35aaf08eacb093b5dc37",
+  "base_id": "19383dc643cad9692e77edd9fe0cec2d3f28d2f6c5bbc4a32b5b314fdb4e64a1",
+  "decision": "approved",
+  "reviewer": "Codex — editorial refinement review",
+  "note": "Revised actual composition reviewed at desktop, 320px and RTL; maker failure/retry and real WordPress capture or membership link verified. External delivery skipped.",
+  "at": "2026-09-28T14:47:38.805326+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    }
+  },
+  "record_id": "85db9213e2f8b8f1625b7570506cf02122dff49aeaf28c0a5adbf98e504e8e3a"
+}

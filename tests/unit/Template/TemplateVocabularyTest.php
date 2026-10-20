@@ -126,11 +126,11 @@ final class TemplateVocabularyTest extends TestCase
     public function testGraphDraftKeepsStableEdgesAndPriorityWithoutUnknownKeys(): void
     {
         $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph.json'), true);
-        $tree = ['v' => 3, 'steps' => $fixture['steps'], 'submissions' => [], 'graph' => $fixture['graph']];
+        $tree = ['v' => 2, 'steps' => $fixture['steps'], 'submissions' => [], 'graph' => $fixture['graph']];
         $tree['graph']['edges'][0]['onclick'] = 'not-a-route-setting';
         $normalized = self::normalize(['tree' => $tree])['tree'];
         if (!isset($normalized['graph'])) { self::fail('A version 3 journey must retain its graph.'); }
-        self::assertSame(3, $normalized['v']);
+        self::assertSame(2, $normalized['v']);
         self::assertSame('interests', $normalized['graph']['entry']);
         self::assertSame(array_column($fixture['graph']['edges'], 'id'), array_column($normalized['graph']['edges'], 'id'));
         self::assertArrayNotHasKey('onclick', $normalized['graph']['edges'][0]);

@@ -1,0 +1,99 @@
+{
+  "id": "thoughtful-gift-direction",
+  "revision": "503f8acc7f63ce50be77f5efa0e1f64791b7ac38a3be581c907bdb4accfb66bb",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — expressive directions",
+  "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+  "at": "2026-10-20T08:32:55.078Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/review.md",
+          "sha256": "525fa3cd6b7a7609cb50d218ffc4db454a6edb4dde273785819a8702bf6663d9"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/proof.json",
+          "sha256": "3cbb564eb2620dbface85f8f843fde5bbfad4db5e4617a4db85f4f7ececa9ff8"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/layout.json",
+          "sha256": "7ee45391c3025d59b14626f41d3631da0d39b89633fa977c100005423cffc2c4"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/native-results.json",
+          "sha256": "d6b8dc46c563658cf5fc2a1a01cf6ce9049c4bea734a74a60b8659937d2f3944"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/simulated-journeys.json",
+          "sha256": "dc825e2fba8583c6f5c7a79d94c5f4cbdda21a482a789e5c9083b0e1483b1822"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/native-links.json",
+          "sha256": "35a998aa8a13affc777159d902127674252295270c08b0ad8de05220f7ffd055"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/review.md",
+          "sha256": "525fa3cd6b7a7609cb50d218ffc4db454a6edb4dde273785819a8702bf6663d9"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/proof.json",
+          "sha256": "3cbb564eb2620dbface85f8f843fde5bbfad4db5e4617a4db85f4f7ececa9ff8"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/layout.json",
+          "sha256": "7ee45391c3025d59b14626f41d3631da0d39b89633fa977c100005423cffc2c4"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/native-results.json",
+          "sha256": "d6b8dc46c563658cf5fc2a1a01cf6ce9049c4bea734a74a60b8659937d2f3944"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/simulated-journeys.json",
+          "sha256": "dc825e2fba8583c6f5c7a79d94c5f4cbdda21a482a789e5c9083b0e1483b1822"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/native-links.json",
+          "sha256": "35a998aa8a13affc777159d902127674252295270c08b0ad8de05220f7ffd055"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/review.md",
+          "sha256": "525fa3cd6b7a7609cb50d218ffc4db454a6edb4dde273785819a8702bf6663d9"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/proof.json",
+          "sha256": "3cbb564eb2620dbface85f8f843fde5bbfad4db5e4617a4db85f4f7ececa9ff8"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/layout.json",
+          "sha256": "7ee45391c3025d59b14626f41d3631da0d39b89633fa977c100005423cffc2c4"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/native-results.json",
+          "sha256": "d6b8dc46c563658cf5fc2a1a01cf6ce9049c4bea734a74a60b8659937d2f3944"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/simulated-journeys.json",
+          "sha256": "dc825e2fba8583c6f5c7a79d94c5f4cbdda21a482a789e5c9083b0e1483b1822"
+        },
+        {
+          "path": "docs/reviews/expressive-directions-2026-10-20/native-links.json",
+          "sha256": "35a998aa8a13affc777159d902127674252295270c08b0ad8de05220f7ffd055"
+        }
+      ]
+    }
+  },
+  "record_id": "7c96c4102a1daef6e84b877f405aa818674d697ae90ff7ca10ccc06e836d1733"
+}

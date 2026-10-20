@@ -5,20 +5,22 @@ use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Container\PremiumServiceProvider;
 use WConvert\Pro\Deps\VeronaLabs\WpPremiumSdk\Support\Request;
 use WConvert\Template\Catalog\CatalogTransport;
 use WConvert\Template\Catalog\CatalogImageTransport;
-use WConvert\Template\Catalog\CatalogPackTransport;
+use WConvert\Template\Catalog\CatalogPremiumTransport;
 use WConvert\Template\Catalog\WpCatalogTransport;
 use WConvert\Template\Catalog\PackValidator;
+use WConvert\Template\Catalog\TemplateCatalog;
 use WConvert\Template\Catalog\VerifiedAssets;
 
 defined('ABSPATH') || exit;
 
 /** Explicit admin downloads only. Nexus decides access, never local plan/status flags. */
-final class TemplateDownloads implements CatalogTransport, CatalogImageTransport, CatalogPackTransport
+final class TemplateDownloads implements CatalogTransport, CatalogImageTransport, CatalogPremiumTransport
 {
     // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- plain admin errors rendered as text.
     private string $grant = '';
-    private string $digest = '';
     private int $expires = 0;
+    /** @var array{designs: list<string>, setups: list<string>} */
+    private array $batch = ['designs' => [], 'setups' => []];
 
     public function __construct(
         private readonly PremiumServiceProvider $sdk,
@@ -26,25 +28,32 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
         private readonly string $origin,
     ) {}
 
-    public function get(string $url): string { return $this->public->get($url); }
+    public function get(string $url, int $limit = PackValidator::MAX_BYTES, int $timeout = CatalogTransport::TIMEOUT): string { return $this->public->get($url, $limit, $timeout); }
 
-    public function pack(string $url, string $digest): string
+    public function revalidate(string $url, ?string $etag): ?array { return $this->public->revalidate($url, $etag); }
+
+    public function image(string $url, int $bytes): string { return $this->public->image($url, $bytes); }
+
+    /**
+     * One pass for the whole batch (ADR 0156): a setup with its design, or up
+     * to fifty designs. Each install is still its own explicit authorization.
+     */
+    public function authorize(array $designs, array $setups): void
     {
-        $this->assertUrl($url);
-        PackValidator::check(preg_match('/^[a-f0-9]{64}$/D', $digest) === 1 && $url === $this->origin . '/downloads/' . $digest . '.json', __('Invalid premium pack address.', 'wconvert-pro'));
-        // Each preview/install is an explicit authorization, including updates.
-        $this->digest = $digest;
+        $designs = array_values(array_unique($designs)); $setups = array_values(array_unique($setups));
+        PackValidator::check(count($designs) + count($setups) > 0 && count($designs) + count($setups) <= TemplateCatalog::MAX_BATCH
+            && count(preg_grep('/^[a-f0-9]{64}$/D', array_merge($designs, $setups)) ?: []) === count($designs) + count($setups), __('Invalid premium design request.', 'wconvert-pro'));
+        $this->batch = ['designs' => $designs, 'setups' => $setups];
         $this->grant = '';
-        return $this->download($url, PackValidator::MAX_BYTES);
+        $this->pass();
     }
 
-    public function image(string $url, int $bytes): string
+    public function premium(string $path, int $limit): string
     {
-        if (!str_contains($url, '/assets/premium/')) return $this->public->image($url, $bytes);
-        $this->assertUrl($url);
-        PackValidator::check($this->digest !== '' && preg_match('#^/assets/premium/[a-f0-9]{64}\.(png|jpg|webp)$#D', (string) wp_parse_url($url, PHP_URL_PATH)) === 1
-            && $bytes > 0 && $bytes <= VerifiedAssets::MAX_BYTES, __('Invalid premium image request. Preview the pack again.', 'wconvert-pro'));
-        return $this->download($url, $bytes);
+        PackValidator::check($this->batch['designs'] !== [] || $this->batch['setups'] !== [], __('Invalid premium design request. Preview the design again.', 'wconvert-pro'));
+        PackValidator::check(preg_match('#^premium/(?:(?:designs|setups)/[a-f0-9]{64}\.json|assets/[a-f0-9]{64}\.(?:png|jpg|webp))$#D', $path) === 1
+            && $limit > 0 && $limit <= VerifiedAssets::MAX_BYTES, __('Invalid premium design request. Preview the design again.', 'wconvert-pro'));
+        return $this->download($this->origin . '/v3/' . $path, $limit);
     }
 
     private function assertUrl(string $url): void
@@ -57,15 +66,15 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
             __('Premium template downloads are not configured for this catalog. Installed designs are still available.', 'wconvert-pro'));
     }
 
-    private function authorize(): void
+    private function pass(): void
     {
         $key = $this->sdk->keySource()->provided()['key'] ?? $this->sdk->licenseManager()->getLicenseKey();
         PackValidator::check(is_string($key) && $key !== '', __('Connect your WConvert Pro licence in Settings → License to download premium templates.', 'wconvert-pro'));
         $domain = Request::normaliseDomain(Request::currentDomain());
-        $body = $this->request($this->origin . '/grants', 16384, [
+        $body = $this->request($this->origin . '/v3/grants', 16384, [
             'method' => 'POST',
             'headers' => ['Content-Type' => 'application/json', 'X-License-Key' => $key],
-            'body' => wp_json_encode(['domain' => $domain, 'pack' => $this->digest]),
+            'body' => wp_json_encode(['domain' => $domain] + $this->batch),
         ]);
         $data = json_decode($body, true);
         PackValidator::check(is_array($data) && is_string($data['grant'] ?? null) && strlen($data['grant']) <= 8192
@@ -78,14 +87,14 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
 
     private function download(string $url, int $limit): string
     {
-        if ($this->grant === '' || $this->expires <= time()) $this->authorize();
+        if ($this->grant === '' || $this->expires <= time()) $this->pass();
         try {
             return $this->request($url, $limit, ['method' => 'GET', 'headers' => ['Authorization' => 'Bearer ' . $this->grant]]);
         } catch (\RuntimeException $error) {
             // One fresh pass if expiry occurs between files. No loops on refusals/outages.
             if ($error->getCode() !== 401) throw $error;
             $this->grant = '';
-            $this->authorize();
+            $this->pass();
             return $this->request($url, $limit, ['method' => 'GET', 'headers' => ['Authorization' => 'Bearer ' . $this->grant]]);
         }
     }
@@ -121,8 +130,8 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
             'license_expired' => __('Renew your WConvert Pro licence to download new premium templates. Installed designs still work.', 'wconvert-pro'),
             'key_disabled', 'license_suspended', 'license_revoked' => __('This licence cannot download premium templates. Check Settings → License or contact support. Installed designs still work.', 'wconvert-pro'),
             'domain_not_allowed' => __('Activate this website in Settings → License before downloading premium templates.', 'wconvert-pro'),
-            'invalid_grant' => __('Template access expired. Preview the pack again.', 'wconvert-pro'),
-            'not_found' => __('This template file is no longer available. Refresh the catalog and try again.', 'wconvert-pro'),
+            'invalid_grant' => __('Template access expired. Preview the design again.', 'wconvert-pro'),
+            'not_found' => __('This template file is no longer available. Refresh the library and try again.', 'wconvert-pro'),
             default => __('Template access could not be verified. Try again later. Installed designs are still available.', 'wconvert-pro'),
         };
         throw new \RuntimeException($message, $code === 'invalid_grant' && $status === 401 ? 401 : 0);

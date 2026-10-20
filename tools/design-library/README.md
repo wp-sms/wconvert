@@ -331,10 +331,8 @@ shows one design at a time.
   with `!important` — and there is no stylesheet to lift. It asserts itself
   against their source and **throws** when they move. A design captured in a
   container it is not actually served in is a design judged against a lie.
-- **`locked.json` stubs are skipped by the capture.** They are metadata for
-  designs a free tree does not hold, so there is nothing to draw; a stub
-  reaching the sheet would render an empty card, which reads as a broken design
-  rather than an absent one.
+- **Every captured design has a tree.** Free no longer bundles locked stubs
+  (ADR 0156); a Pro design's free-side card is the publisher's thumbnail.
 
 ## Why Playwright is not in `devDependencies`
 

@@ -1,0 +1,91 @@
+{
+  "id": "home-repair-quote",
+  "revision": "719142d894fa3d6f789493ec7e443e013ec5b160d6ae850805a1f24d88a7a7a7",
+  "base_id": "2d4cff43317fd2bf94b7b55da709a07656f849175ebbdd0970bffd0f08f7cfdb",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.881Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-05.webp",
+          "sha256": "647c3901083695d419bd35eb4d9b8a23ba2983c19b27b37cf0a736f160ea327e"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-05.webp",
+          "sha256": "c347dfbcbf6e952083a4a8248a28caf2303719ae4bf96a8b6a145e513332a330"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/home-repair-quote-1280-0.webp",
+          "sha256": "f747319625e40f8a9a786dc865ec8ac0087b598d43d4801c26ac8cc8a4e3f414"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/home-repair-quote-1280-1.webp",
+          "sha256": "4d5a4447c27b549874884235a1c9577cda6c25a5e97bd925a05441699f86e878"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/home-repair-quote-1280-retry.webp",
+          "sha256": "4eaf22b98796af8c105f3f35c2fae5f684de7db14cfc2431c2e100039d2e5da2"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/home-repair-quote-320-0.webp",
+          "sha256": "007310093ef063c4614669295c94c9fd278f7c38c77852c14ec7b3e20cb6426d"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/home-repair-quote-320-1.webp",
+          "sha256": "787c3f8b3b27e11c31dc60adb2405d662bc93ac846d5f5c53f1fd85f4f07fff2"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/home-repair-quote-320-retry.webp",
+          "sha256": "d17e1882e929e1aa776ca7b3ef9bafcf5455ddbbbef420a72706aa5be4670508"
+        }
+      ]
+    }
+  },
+  "record_id": "757f881d4d08f9f83967301701aa0b23fe20e03e9cda052950ef7fc78862936d"
+}

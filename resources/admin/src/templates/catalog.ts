@@ -1,34 +1,62 @@
 import apiFetch from '@wordpress/api-fetch';
 import type { TemplateEntry } from './api';
 
-export interface CatalogPack {
-  preview_url?: string;
-  access?: 'free' | 'premium';
+/**
+ * The hosted template library (ADR 0156), through the plugin's own routes.
+ * Reading status never touches the network; every write is an explicit
+ * administrator action.
+ */
+export type CatalogState = 'unavailable' | 'locked' | 'update_plugin' | 'install' | 'ready';
+export type CatalogConsent = 'unanswered' | 'yes' | 'no';
+
+export interface CatalogDesign {
   id: string;
+  revision: number;
+  sha256: string;
   name: string;
-  description: string;
-  version: string;
-  installed_version: string | null;
-  state: 'available' | 'update' | 'installed';
+  format: string;
+  tier: string;
+  family: string | null;
+  slug: string;
+  tags: string[];
+  thumbnail: { '1x': string; '2x': string } | null;
+  popularity: number | null;
+  local_revision: number | null;
+  state: CatalogState;
 }
+
+export interface CatalogSetup {
+  id: string;
+  revision: number;
+  sha256: string;
+  name: string;
+  goal: string;
+  tier: string;
+  design: { id: string; revision: number };
+  state: CatalogState;
+}
+
+export interface CatalogTerm { id: string; label: string }
+
 export interface CatalogStatus {
-  configured: boolean;
-  source: string;
+  enabled: boolean;
+  consent: CatalogConsent;
   checked_at: string | null;
-  packs: CatalogPack[];
+  update_required: boolean;
+  skipped: number;
+  taxonomy: Record<string, CatalogTerm[]>;
+  designs: CatalogDesign[];
+  setups: CatalogSetup[];
 }
-export interface PackPreview {
-  id: string;
-  name: string;
-  version: string;
-  digest: string;
-  templates: TemplateEntry[];
-  starting_points?: { id: string; name: string; goal: string; goal_label: string; template_id: string }[];
-}
+
 const path = '/wconvert/v1/template-catalog';
 export const catalogStatus = () => apiFetch<CatalogStatus>({ path });
-export const refreshCatalog = () => apiFetch<CatalogStatus>({ path: `${path}/refresh`, method: 'POST' });
-export const previewPack = (id: string, installed: boolean) =>
-  apiFetch<PackPreview>({ path: `${path}/preview`, method: 'POST', data: { id, installed } });
-export const installPack = (id: string, digest: string) =>
-  apiFetch<CatalogStatus>({ path: `${path}/install`, method: 'POST', data: { id, digest } });
+/** `ifStale` is what opening the picker sends: nothing happens inside twelve hours or without consent. */
+export const refreshCatalog = (ifStale = false) => apiFetch<CatalogStatus>({ path: `${path}/refresh`, method: 'POST', data: { if_stale: ifStale } });
+export const setCatalogConsent = (allowed: boolean) => apiFetch<CatalogStatus>({ path: `${path}/consent`, method: 'POST', data: { allowed } });
+export const previewDesign = (id: string) =>
+  apiFetch<{ id: string; revision: number; sha256: string; name: string; template: TemplateEntry }>({ path: `${path}/preview`, method: 'POST', data: { id } });
+export const installDesign = (id: string, sha256: string) =>
+  apiFetch<{ template_id: string; status: CatalogStatus }>({ path: `${path}/install`, method: 'POST', data: { id, sha256 } });
+export const installSetup = (id: string, sha256: string) =>
+  apiFetch<{ playbook_id: string; template_id: string; status: CatalogStatus }>({ path: `${path}/setup`, method: 'POST', data: { id, sha256 } });

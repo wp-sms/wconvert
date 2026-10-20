@@ -1,0 +1,63 @@
+{
+  "id": "homeware-care-notes",
+  "revision": "e9d1ef522d673c769bc85de4de0ca90e99e13e283708417beb01de3da023f978",
+  "base_id": "a5647f24608b093a30d4c08b27aa842bc13699b70bb28ccd0179eb6878147c1c",
+  "decision": "approved",
+  "reviewer": "Codex — native WordPress and rendered-screen review",
+  "note": "Every screen reviewed on desktop/phone and RTL; published disposable campaign checked with fictional submissions or a matching destination. Homeware retains its unchanged bundled SVG; its exact raster derivative was separately reviewed. Local outbox only, no external delivery.",
+  "at": "2026-10-01T06:36:06.423Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        },
+        {
+          "path": "docs/reviews/template-collection-layout-round2-2026-10-01.txt",
+          "sha256": "df9f2f13b602af8b81613e5bfd6539c60a13283c57360c25f0ac3ff574988ead"
+        },
+        {
+          "path": "docs/reviews/homeware-real-2026-10-01.png",
+          "sha256": "fd43b6274b5b9fd2e8b667a180868458756f3f1b8f5f776dc372b21f8e04848d"
+        },
+        {
+          "path": "docs/reviews/homeware-phone-2026-10-01.png",
+          "sha256": "74fa6c61999a369c705c96bed844e7a323dce76b58a42e9e0238b1ee55c06e2a"
+        },
+        {
+          "path": "docs/reviews/homeware-ack-phone-2026-10-01.png",
+          "sha256": "631efaa86fde910ec1f68a3719b527f568f9537479e6b533f50e3d2e8a24d351"
+        },
+        {
+          "path": "docs/reviews/homeware-rtl-proof-2026-10-01.png",
+          "sha256": "166d149d941110a2e1ca2442cd3cbe76e289e2d556e1af8c93ada3dc4e63f910"
+        },
+        {
+          "path": "docs/reviews/homeware-artwork-export-2026-10-01.md",
+          "sha256": "2d12b2427955034e9d55691648f22a7d714f7f4717d7d1c0c41ee61e4c62fa30"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    }
+  },
+  "record_id": "077400965645bc75d9c12324e803842c035b0c6ab72af63f003f087d46fa6866"
+}

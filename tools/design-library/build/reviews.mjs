@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, realpathSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
 
 export const reviewStages = ['visual', 'journey', 'wordpress'];
@@ -16,6 +16,58 @@ export function evidenceFile(root, path) {
 }
 
 export function emptyReviews() { return { schema: 1, records: [] }; }
+
+/** One file per record, named by its digest, so parallel reviews never edit the same file. */
+export const RECORDS = 'tools/design-library/review/records';
+
+/**
+ * The shared review store, read from its record files (ADR 0156, Phase 5).
+ *
+ * Each record names the record it was decided over in `base_id`, so the records
+ * of one campaign form a single chain from `base_id: null`. Two reviews written
+ * on different branches over the same base are a **fork**: both files merge in
+ * Git without a textual conflict, and this refuses them, so the reviewers
+ * reconcile instead of the later one silently winning.
+ */
+export function loadReviews(root) {
+  const folder = resolve(root, RECORDS);
+  const byBase = new Map(), ids = new Set();
+  for (const file of existsSync(folder) ? readdirSync(folder).filter(name => name.endsWith('.json')).sort() : []) {
+    const record = JSON.parse(readFileSync(resolve(folder, file), 'utf8'));
+    const { record_id, ...body } = record;
+    if (file !== `${record_id}.json` || record_id !== digest(JSON.stringify(body))) throw new Error(`Review record ${file} does not match its contents`);
+    const key = `${record.id}\u0000${record.base_id ?? ''}`;
+    if (byBase.has(key)) throw new Error(`Review conflict: ${record.id} has two decisions over the same earlier review (${byBase.get(key).record_id.slice(0, 12)}, ${record_id.slice(0, 12)}). Rebuild, read both and record one decision over the later.`);
+    byBase.set(key, record); ids.add(record.id);
+  }
+  const records = [];
+  for (const id of [...ids].sort()) {
+    let base = '', record;
+    while ((record = byBase.get(`${id}\u0000${base}`))) { records.push(record); byBase.delete(`${id}\u0000${base}`); base = record.record_id; }
+  }
+  if (byBase.size) throw new Error(`Review records out of chain: ${[...byBase.values()].map(record => `${record.id}@${record.record_id.slice(0, 12)}`).join(', ')}`);
+  const store = { schema: 1, records };
+  validateStore(store);
+  return store;
+}
+
+/** Write the records `next` adds over `previous`, each atomically and never over an existing file. */
+export function writeReviews(root, previous, next) {
+  const folder = resolve(root, RECORDS);
+  mkdirSync(folder, { recursive: true });
+  const known = new Set(previous.records.map(record => record.record_id));
+  let written = 0;
+  for (const record of next.records) {
+    if (known.has(record.record_id)) continue;
+    const target = resolve(folder, `${record.record_id}.json`), temporary = `${target}.${process.pid}.tmp`;
+    try {
+      writeFileSync(temporary, JSON.stringify(record, null, 2) + '\n', { flag: 'wx' });
+      if (existsSync(target)) throw new Error(`Review record already exists: ${record.record_id}`);
+      renameSync(temporary, target); written++;
+    } finally { rmSync(temporary, { force: true }); }
+  }
+  return written;
+}
 export function latestReview(store, id) { return store.records.findLast(record => record.id === id) ?? null; }
 
 export function validateStore(store) {

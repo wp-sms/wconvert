@@ -1,0 +1,39 @@
+{
+  "id": "collection-black-friday-2026",
+  "revision": "03afc67766c8c97c657275d46fa142dc52626445b6dbb7b9c99e4f484397e828",
+  "base_id": "1887f6a071f2faf221753e639735a0278865945da31e7f9832f20f303535aaf5",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Refresh renderer-bound references after the unchanged-output comparison and final CI follow-up tests; collection metadata and design content are unchanged.",
+  "at": "2026-10-04T06:35:29.333Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+        }
+      ]
+    }
+  },
+  "record_id": "0f25ba8f46707af6afa32bff08e8b9f87246f59df2e34a7bd2ad91b8a091e1d7"
+}

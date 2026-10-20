@@ -139,7 +139,8 @@ final class DraftAbilitiesTest extends TestCase
         self::assertSame([], $this->site->optins->summaries());
     }
 
-    public function testAProDesignOnFreeNamesPro(): void
+    /** Free no longer bundles a card for each Pro design (ADR 0156), so it names none. */
+    public function testAProDesignOnFreeIsADesignThisSiteDoesNotHave(): void
     {
         $this->site->close();
         $this->site = new AgentSite(Tier::Free);
@@ -148,7 +149,7 @@ final class DraftAbilitiesTest extends TestCase
         $refused = $this->site->call('wconvert/create-campaign', self::countdownBar());
 
         self::assertInstanceOf(WP_Error::class, $refused);
-        self::assertSame('That design needs WConvert Pro, which this site does not have. Pick one from wconvert/find-designs, which lists only designs this site can run.', $refused->get_error_message());
+        self::assertSame('That design is not on this site. Use a design_id from wconvert/find-designs.', $refused->get_error_message());
     }
 
     /** A live campaign's edit is a draft edit: what visitors see does not move. */

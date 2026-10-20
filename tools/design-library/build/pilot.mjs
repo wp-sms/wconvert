@@ -6,8 +6,9 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { readDesigns, analyseDesigns } from './inventory.mjs';
 import { validateBriefs, coverage } from './briefs.mjs';
-import { reviewQueue } from './reviews.mjs';
+import { loadReviews, reviewQueue } from './reviews.mjs';
 import { campaignRevision } from './revision.mjs';
+import { renderedIdentities } from './rendered-identity.mjs';
 import { maintenanceReport, editorialFindings } from './maintenance.mjs';
 import { validateBacklog } from './backlog.mjs';
 
@@ -21,14 +22,15 @@ const renderer = readFileSync(resolve(out, 'renderer.iife.js'), 'utf8');
 const rendererRevision = createHash('sha256').update(renderer).digest('hex');
 const collection = JSON.parse(readFileSync(resolve(root, 'tools/design-library/pilot/collection.json'), 'utf8'));
 validateBriefs(collection, entries, designs);
+const rendered = renderedIdentities(renderer, entries);
 for (const entry of entries) {
   const design = inventory.find(item => item.id === entry.template_id);
   if (!design || !entry.visitor_need || !entry.difference || !entry.requirements.length || !entry.suggested_setup?.length || !entry.measure) throw new Error(`Incomplete brief: ${entry.id}`);
   entry.nearest = design.nearest;
   entry.fingerprint = design.fingerprint;
-  entry.revision = campaignRevision(entry, rendererRevision);
+  entry.revision = campaignRevision(entry, rendered.get(entry.id));
 }
-const sharedReviews = JSON.parse(readFileSync(resolve(root, 'tools/design-library/review/shared-reviews.json'), 'utf8'));
+const sharedReviews = loadReviews(root);
 const queue = reviewQueue(sharedReviews, entries, root);
 writeFileSync(resolve(out, 'review-queue.json'), JSON.stringify(queue, null, 2) + '\n');
 const backlog = JSON.parse(readFileSync(resolve(root, 'tools/design-library/pilot/next-batch.json'), 'utf8'));

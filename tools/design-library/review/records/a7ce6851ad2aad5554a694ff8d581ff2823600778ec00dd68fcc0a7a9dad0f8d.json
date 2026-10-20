@@ -1,0 +1,75 @@
+{
+  "id": "maker-session-invitation",
+  "revision": "5c5697c61a5419e3de7e028c6449913319911bc95354f3717c8ecfd1f23f5e70",
+  "base_id": "07cdf4937e418cbedd0089e20c4b1fad861a53c6a77f145d77a4195573015d8c",
+  "decision": "approved",
+  "reviewer": "Codex — four design directions review",
+  "note": "Final rendered desktop/phone and RTL screens inspected; applicable navigation, required fields, failure/retry and acknowledgements verified. Native WordPress publication, capture and configured information links verified. External provider delivery skipped; no conversion-performance claim.",
+  "at": "2026-09-28T16:24:38.145Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28/four-directions.png",
+          "sha256": "bf0ac513ca8e9f18a370faa2406a9a14142863ea2d3189ff0e1a13256804d249"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28/sheet-0.png",
+          "sha256": "595b2c8fb029f8197aa874cb07d344bfc29eb41073e4f11ed64b473ac162bd75"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28/sheet-1.png",
+          "sha256": "402acd56e25b6439ff267d3a653d0c34426927b2c00cc0db024635d224cc51db"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28/sheet-2.png",
+          "sha256": "5f1ecf16097615f0d70d4d4e491aabe984c6c009505daae03da79da0f2c90722"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28/sheet-3.png",
+          "sha256": "43443875abd387f5d95d3cd4749bd5754a8eb7c88e72641175a0fccaedb39815"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28/sheet-4.png",
+          "sha256": "2ec679e2b45ed3382cea2a4012d217a4598673f5a4bec9109c21e8beebc0a372"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        }
+      ]
+    }
+  },
+  "record_id": "a7ce6851ad2aad5554a694ff8d581ff2823600778ec00dd68fcc0a7a9dad0f8d"
+}

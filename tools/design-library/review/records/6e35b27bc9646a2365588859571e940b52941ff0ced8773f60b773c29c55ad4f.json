@@ -1,0 +1,91 @@
+{
+  "id": "editorial-weekly",
+  "revision": "8424de73265a1a8731257eb6a71a25111926ab9eca2b708f149e86ee0cb4e731",
+  "base_id": "69f8a65a82ab56c89cbd0b88132ca6eba38017f8d4ff6ae469a0ec9117cf6c5e",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-03.webp",
+          "sha256": "205ce25c8297d644420c4b497a2b40a938a1edc47a2e523fd2f7652c55b30c84"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-03.webp",
+          "sha256": "b140e8a21295718af6e60ae37407fd81fe7d302dcf50c1145e2070b1f2de1159"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/editorial-weekly-1280-0.webp",
+          "sha256": "533affdfb79ee442ccdd50d832eafd192db6bc7c56ffc259b25c06644ef5f565"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/editorial-weekly-1280-1.webp",
+          "sha256": "f0b442234a7499acd1f275361202bdb96451fa66a8e8c321e6963be01a707f2a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/editorial-weekly-1280-retry.webp",
+          "sha256": "9f054f8053daf611e0f6c00f8ec833a5e0ba2ead513c8b1ab5b0959c6742991c"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/editorial-weekly-320-0.webp",
+          "sha256": "3045c009a7679420d34ee504bcbc204fe3d503e04dfbd0cc9e36232bdf89868e"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/editorial-weekly-320-1.webp",
+          "sha256": "2bf10a96d57ff5fe03dabaf8d48c4c046ae6e6155c9163311dfe914fa8cf0ce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/editorial-weekly-320-retry.webp",
+          "sha256": "32aacd6e4d718b8106b5b2b5aaa36cddfab0eee42b4ccf18a3b9b0eb84042dca"
+        }
+      ]
+    }
+  },
+  "record_id": "6e35b27bc9646a2365588859571e940b52941ff0ced8773f60b773c29c55ad4f"
+}

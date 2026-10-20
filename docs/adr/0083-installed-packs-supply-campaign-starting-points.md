@@ -1,5 +1,11 @@
 # Installed packs supply campaign starting points
 
+> **Superseded in form by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md).**
+> Packs are gone. A campaign starting point is now a hosted **setup**: its own
+> immutable object that pins one design revision and installs that design with
+> it, joining the same PlaybookLibrary and Prefill this ADR describes. The
+> twelve-per-pack limit and `campaign-starts:1` no longer exist.
+
 ADR 0082 installed designs but left campaign wording and rules in bundled
 Playbooks. Installing a collection could not add a complete starting point to
 the existing goal-first creation flow.

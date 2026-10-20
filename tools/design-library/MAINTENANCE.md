@@ -185,9 +185,22 @@ The next-batch sketches are not working templates and never enter design counts.
 ## Finish review before calling a release ready
 
 After a shared renderer or prepared-campaign change, rebuild the review queue.
-A renderer change can invalidate every setup approval, even when most designs
-look unchanged. A setup approval change also changes its dependent collection
-revision. Old visual evidence is not a substitute for inspecting the new output.
+An approval follows the campaign's **rendered output**, not the renderer's
+bytes (ADR 0156, `build/rendered-identity.mjs`): a renderer change that draws
+the same markup and stylesheet leaves approvals current, and one that draws
+something different stales the campaigns it touched. Then run
+
+```bash
+npm run templates:visual-diff -- --base origin/main          # report
+npm run templates:visual-diff -- --base origin/main --apply  # carry the pixel-identical ones
+```
+
+It renders every screen of each campaign that was current under the base
+renderer with both renderers, at 1200 and 375 px, in one browser. Pixel-identical
+campaigns are carried by a new record that says so; every other one is listed
+and needs a real review. Nothing that was not current under the base is carried.
+A setup approval change also changes its dependent collection revision. Old
+visual evidence is not a substitute for inspecting the new output.
 
 For a release containing the bundled collections:
 

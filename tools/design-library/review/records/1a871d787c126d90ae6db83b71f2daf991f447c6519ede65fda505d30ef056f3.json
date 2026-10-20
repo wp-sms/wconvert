@@ -1,0 +1,99 @@
+{
+  "id": "gift-planning-guide",
+  "revision": "cb090cf52933a5bfe9a466708263efaa730fc6e55e8db572ddbd043f7e3cdfb8",
+  "base_id": "5ea3ffd7181babe1bdab6414ea9f6e9b18b471529e31570932dc4e7b338c8bad",
+  "decision": "approved",
+  "reviewer": "Codex — considered essentials",
+  "note": "Warm serif heading, clear introductory group, divider and compact form. Optional name is labelled; receipt does not claim email delivery. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+  "at": "2026-10-19T12:13:43.005347+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+          "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-1440.png",
+          "sha256": "88442a9d136a85a593155a34c5ded5824316fd0c3a1f8d27a4a4c2a50cda6318"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-320.png",
+          "sha256": "c21e81da1aa23c1055149e8af3f6cab1362822d1dc028f24e518bb1f3fc326c3"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-390.png",
+          "sha256": "2894504cb693ee5db22228cc65ce69d4dc669a60517af8d57a7ebfeafedbf340"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-768.png",
+          "sha256": "f31236bf67f600ccb986e086b0cb6de4cb3825915646649e4ddf73189261370f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-320-rtl-stress.png",
+          "sha256": "33cb98a82999d70cb9cac6f388cabc77094c4350eb3eba2184c34fa789c02931"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+          "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+          "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-retry.png",
+          "sha256": "dc573348b4a0b4a129ebe3da855cd86af98fcc62ecfbf41336bb18561233f430"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+          "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+          "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-1280-input.png",
+          "sha256": "d028a07c17d46d26e6d491110e4b3d2a39ea070ef8bd4d2623584724a67bbe57"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-1280-success.png",
+          "sha256": "e40af52c7e5ea5de1fb18601c5bedff439efa2f281e983c7fe3341d52212d669"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-320-input.png",
+          "sha256": "43352fee5791f59f17f1ffacff2d9829212d7da991091630fceb755195b2458b"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/gift-planning-guide-native-320-success.png",
+          "sha256": "225a7aadf132eb3c5c587d9af4ef3d388b3910468d6fc2377bfacedde5311c67"
+        }
+      ]
+    }
+  },
+  "record_id": "1a871d787c126d90ae6db83b71f2daf991f447c6519ede65fda505d30ef056f3"
+}

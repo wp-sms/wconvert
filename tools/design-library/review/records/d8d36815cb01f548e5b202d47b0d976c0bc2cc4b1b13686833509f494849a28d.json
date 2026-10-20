@@ -1,0 +1,107 @@
+{
+  "id": "repair-advice-request",
+  "revision": "5d56b1ee8921480f97498d9f6c3c0e047a84c9d0cae49bc7963f60dd322cfdf5",
+  "base_id": "9f3433bfac8332c174ac8602b6fdf0cacbaf516c3db6357de0514ce3612f1ce8",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-07.webp",
+          "sha256": "0af1af808e264f4e3ba47de2029a4116d0e9c66ca9c9bda7350d21f72de2be6a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-07.webp",
+          "sha256": "3558f8cf9bbead0a90fc69e9d236303fc506c01ae8e95614567be1230088ff9b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-08.webp",
+          "sha256": "3d3dc61d535ffeca89445759e27497580767a7ea2ecace5f37739c8cd249cdba"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-08.webp",
+          "sha256": "ca5da2b36f444b2dc0df40036d928e7ea6567dffe460b69855647e6f68d0ed63"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-1280-0.webp",
+          "sha256": "fe459bbba3bcbbda2e7c1668ecc47e5109d42ed291daca39778ca94a97cbc6b9"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-1280-1.webp",
+          "sha256": "672e3ca893f2afd63d028b17f670526afb432b82a93c659a933a8231f9284877"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-1280-2.webp",
+          "sha256": "a3ba9cf3a76c37e7405537c7a4e0b6d0ea6f7c4faefa1d4f921213cd44132a14"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-1280-retry.webp",
+          "sha256": "fcf3cb7b02c9a681a8d3927a4e73f86cc661b3188016994c805326f3dc6c2f81"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-320-0.webp",
+          "sha256": "f1e8733eff5db0ca748555e70cc4d09bfac214107182716b007b20f65ea20333"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-320-1.webp",
+          "sha256": "27f260e367475ff117e03f98591e48891094eed56a0cc429bdb02ca08eb64ea6"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-320-2.webp",
+          "sha256": "8f45fad3ab105e06ad96dba9ead90371ea07dcdd2b9701b6471d6ec42e1303a5"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-advice-request-320-retry.webp",
+          "sha256": "e75a2bd8c87b3c510568d0b6924cc322485dc4be925501936d943c4c079f5b8a"
+        }
+      ]
+    }
+  },
+  "record_id": "d8d36815cb01f548e5b202d47b0d976c0bc2cc4b1b13686833509f494849a28d"
+}

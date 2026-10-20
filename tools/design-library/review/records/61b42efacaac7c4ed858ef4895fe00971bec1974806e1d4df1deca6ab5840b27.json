@@ -1,0 +1,95 @@
+{
+  "id": "reading-notes-guide",
+  "revision": "64f0ebd3789c94b8cda36a6a19481a29a249e120fea48b386d67b646776471e2",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — visual-variety local review",
+  "note": "New composition reviewed on every screen at desktop/phone and RTL; final real WordPress journeys, destinations, layout and contrast checks recorded. No external delivery or release approval.",
+  "at": "2026-09-28T18:32:50.365877+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+          "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+          "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/reading-notes-guide-0-ltr.png",
+          "sha256": "b438212cb89a13d5e3950e3d975dab815ecf289c009c183799848ccbdb5a553f"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/reading-notes-guide-0-rtl.png",
+          "sha256": "20c09c0a33e3583dd58464b4a7a715da828981bf46d2c46875dd0d719b2d8868"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/reading-notes-guide-1-ltr.png",
+          "sha256": "8c6ea1f5964233399f398d8a09848fb32b2e190909296d28f5ef2943ba157660"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/reading-notes-guide-1-rtl.png",
+          "sha256": "e064cf9a649eae8c252e940568268ffb0fe1f399ea7bde1e57d7d5fc9ac45edd"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-eight.jpg",
+          "sha256": "389d957e1aad26a53655b64111509142775e5b8ae8e052c5c7eb979e5fec6d46"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/studio-retry-preserves-details.png",
+          "sha256": "46027ed4baa746f81c3b95237dd09316f652ce82ca3deeda985435444e805409"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+          "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        }
+      ]
+    }
+  },
+  "record_id": "61b42efacaac7c4ed858ef4895fe00971bec1974806e1d4df1deca6ab5840b27"
+}

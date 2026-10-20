@@ -1,0 +1,91 @@
+{
+  "id": "reading-notes-guide",
+  "revision": "5d77840b54d3994a2d88559d01643c9d4ea8ddfeee6b89b4ac2df73bbb89e7bc",
+  "base_id": "8b4d7b8bbe8c5d9cf2441d8d1d28abf13c0a80ce30c17dd28d366b372f287000",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-06.webp",
+          "sha256": "53eb987b4aa9791ba45375d2ec959637b4a349d3dfc8c41495742047bd96ad5a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-06.webp",
+          "sha256": "a3da93fe2681333f9a6eccb5f15aa6a32d81ebe0dacf3744fd19ce5a6fa470e8"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/reading-notes-guide-1280-0.webp",
+          "sha256": "a83995e44a6e5919efe8b2f17a545915c7539bd2e69f8efddf216aebee4123e2"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/reading-notes-guide-1280-1.webp",
+          "sha256": "45cce30afc84cd51a98e95af8212df895c8659a3c4b8d90d860bb6b1bf5cf0f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/reading-notes-guide-1280-retry.webp",
+          "sha256": "439d6015b7a379dcb76e5f8a8a5ad9e5b678e701a58e5adcfb87b200700450b5"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/reading-notes-guide-320-0.webp",
+          "sha256": "2986f0b37e5cd27718d2157ac2b25552bd967437641bc42b85deba4fe3eb7fa9"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/reading-notes-guide-320-1.webp",
+          "sha256": "4e7052671a0c9b8c6d2d2bcc0e55ae93605f9cf013f82206c850ab0160d02810"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/reading-notes-guide-320-retry.webp",
+          "sha256": "02c483df9c9fd5b911f2032e7783d12ccf899bc209bff68632e682e56fc55979"
+        }
+      ]
+    }
+  },
+  "record_id": "27a7f0276fbc4443409e3723994c2bb474223376c59014a07930528b824a3266"
+}

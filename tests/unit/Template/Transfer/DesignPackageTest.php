@@ -86,7 +86,7 @@ final class DesignPackageTest extends TestCase
         $tree = \WConvert\Template\TemplateVocabulary::fromManifest()->normalize(['tree' => $tree])['tree'];
         $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Pro);
         $design = $validator->portable(['name' => 'Journey', 'display_type' => 'popup', 'tree' => $tree, 'tokens' => []]);
-        self::assertSame(3, $design['tree']['v']);
+        self::assertSame(2, $design['tree']['v']);
         self::assertSame($tree['graph'] ?? null, $design['tree']['graph']);
         $this->expectException(\RuntimeException::class);
         PackValidator::shipping()->portable($design);
@@ -95,7 +95,7 @@ final class DesignPackageTest extends TestCase
     public function testTwoSubmissionsAndVisibleConsentSurviveGraphImport(): void
     {
         $design = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true);
-        $design['tree']['v'] = 3;
+        $design['tree']['v'] = 2;
         $design['tree']['graph'] = ['entry' => 'email', 'edges' => [
             ['id' => 'first', 'from' => 'email', 'to' => 'sms', 'kind' => 'default'],
             ['id' => 'last', 'from' => 'sms', 'to' => 'received', 'kind' => 'default'],

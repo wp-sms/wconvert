@@ -41,7 +41,7 @@ next, so it goes.
    each read `Tier::tryFrom(...) ?? Tier::Free`, so removing the `Basic` and
    `Elite` cases without re-tagging would have turned every premium rule and
    design into a free one, silently. `tests/unit/Support/TierSlugsAreRealTest.php`
-   now fails on any `tier` in the rule manifest, `locked.json`, either design
+   now fails on any `tier` in the rule manifest, `locked.json` (removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md)), either design
    library or the integration fixtures that is not a `Tier` case. No tier is
    stored in Optin data, so nothing saved migrates.
 
@@ -83,7 +83,7 @@ next, so it goes.
   rung before adding a premium screen" — is deleted. There is one Pro, so a
   premium screen belongs in the one Pro admin bundle.
 - **Seven approved campaign setups and three collections were carried forward**
-  in `tools/design-library/review/shared-reviews.json`, because their design
+  in `tools/design-library/review/shared-reviews.json` (now one file per record in `review/records/`, [ADR 0156](0156-the-catalogue-is-one-design-per-object.md)), because their design
   files' bytes changed: the only difference was the tier slug. The records are
   attributed to the carry-forward and point at the approvals they replace.
 - Splitting Pro again later is a real change: a new enum case, new data, new

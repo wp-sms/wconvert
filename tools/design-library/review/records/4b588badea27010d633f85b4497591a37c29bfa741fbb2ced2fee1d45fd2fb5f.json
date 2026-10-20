@@ -1,0 +1,63 @@
+{
+  "id": "collection-reader-relationships",
+  "revision": "cd8c92310fd7f556a820a771bbb4c743737e9faacea0e1d0b84eb1c2d143e976",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex local review",
+  "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+  "at": "2026-09-30T08:02:14.028Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        }
+      ]
+    }
+  },
+  "record_id": "4b588badea27010d633f85b4497591a37c29bfa741fbb2ced2fee1d45fd2fb5f"
+}

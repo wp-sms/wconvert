@@ -11,13 +11,29 @@
   "ratelimits": [
     {
       "name": "GRANT_RATE_LIMITER",
-      "namespace_id": "202610201",
+      "namespace_id": "202610211",
       "simple": { "limit": 30, "period": 60 }
     },
     {
+      "name": "GRANT_IP_RATE_LIMITER",
+      "namespace_id": "202610212",
+      "simple": { "limit": 600, "period": 60 }
+    },
+    {
       "name": "DOWNLOAD_RATE_LIMITER",
-      "namespace_id": "202610202",
-      "simple": { "limit": 300, "period": 60 }
+      "namespace_id": "202610213",
+      "simple": { "limit": 1000, "period": 60 }
+    },
+    {
+      "name": "DOWNLOAD_IP_RATE_LIMITER",
+      "namespace_id": "202610214",
+      "simple": { "limit": 6000, "period": 60 }
+    }
+  ],
+  "analytics_engine_datasets": [
+    {
+      "binding": "DOWNLOADS",
+      "dataset": "wconvert_design_downloads"
     }
   ],
   "r2_buckets": [

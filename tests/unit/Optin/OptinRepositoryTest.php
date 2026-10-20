@@ -31,6 +31,25 @@ final class OptinRepositoryTest extends TestCase
         $this->assertSame('grow_email_list', $this->repository->find($parent->id)?->goal);
     }
 
+    /**
+     * Archive cleanup keeps every design and setup any row still names (ADR
+     * 0156): a draft's and a published copy's, a trashed campaign's and an
+     * A/B variant's, because each can come back.
+     */
+    public function testDesignReferencesNameEveryRowsDraftAndPublishedCopy(): void
+    {
+        $rows = [
+            ['id' => 'draft', 'status' => 'draft', 'parent_id' => null, 'config' => '{"template_id":"design-2-supper","playbook_id":"setup-1-supper"}', 'published_config' => null],
+            ['id' => 'live', 'status' => 'published', 'parent_id' => null, 'config' => '{"template_id":"design-3-reading"}', 'published_config' => '{"template_id":"design-2-reading"}'],
+            ['id' => 'trash', 'status' => 'trash', 'parent_id' => null, 'config' => '{"template_id":"design-1-old"}', 'published_config' => null],
+            ['id' => 'variant', 'status' => 'draft', 'parent_id' => 'live', 'config' => '{"template_id":"design-4-variant"}', 'published_config' => '{"template_id":""}'],
+        ];
+        foreach ($rows as $row) $this->db->insert('wconvert_optins', $row);
+        $found = $this->repository->designReferences();
+        sort($found);
+        $this->assertSame(['design-1-old', 'design-2-reading', 'design-2-supper', 'design-3-reading', 'design-4-variant', 'setup-1-supper'], $found);
+    }
+
     private FakeConnection $db;
 
     private FakeOptionStore $options;
@@ -133,7 +152,7 @@ final class OptinRepositoryTest extends TestCase
             $edges[] = ['id' => 'next_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'default'];
             if (isset($screen['when'])) $edges[] = ['id' => 'hidden_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'hidden'];
         }
-        $tree['v'] = 3;
+        $tree['v'] = 2;
         $tree['graph'] = ['entry' => $tree['steps'][0]['id'], 'edges' => $edges];
         $template['tree'] = $tree;
         $config = ['template' => $template, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];

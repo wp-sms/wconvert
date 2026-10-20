@@ -139,7 +139,7 @@ final class CaptureJourneyTest extends TestCase
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
         $tree = $template['tree'];
-        $tree['v'] = 3;
+        $tree['v'] = 2;
         $tree['steps'] = [$tree['steps'][2], $tree['steps'][3], $tree['steps'][0], $tree['steps'][1]];
         $tree['graph'] = ['entry' => 'interests', 'edges' => [
             ['id' => 'a', 'from' => 'interests', 'to' => 'guide', 'kind' => 'default'],

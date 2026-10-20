@@ -179,6 +179,33 @@ final class OptinRepository
         return $this->find($id);
     }
 
+    /**
+     * Every design and setup id any row still names (ADR 0156): `config` and
+     * `published_config`, on drafts, published, trashed and A/B variant rows
+     * alike. The template archive keeps every revision listed here.
+     *
+     * Bare `JSON_EXTRACT` for the reason {@see self::SUMMARY_COLUMNS} gives,
+     * unquoted here in PHP.
+     *
+     * @return list<string>
+     */
+    public function designReferences(): array
+    {
+        $rows = $this->db->results(
+            Connection::TABLE_OPTINS,
+            'SELECT JSON_EXTRACT(config, \'$.template_id\') AS a, JSON_EXTRACT(published_config, \'$.template_id\') AS b, '
+                . 'JSON_EXTRACT(config, \'$.playbook_id\') AS c, JSON_EXTRACT(published_config, \'$.playbook_id\') AS d FROM %i'
+        );
+        $ids = [];
+        foreach ($rows as $row) {
+            foreach (['a', 'b', 'c', 'd'] as $column) {
+                $value = is_string($row[$column] ?? null) ? json_decode($row[$column], true) : null;
+                if (is_string($value) && $value !== '') $ids[$value] = true;
+            }
+        }
+        return array_keys($ids);
+    }
+
     public function find(string $id): ?Optin
     {
         $row = $this->db->row(
@@ -862,7 +889,7 @@ final class OptinRepository
         // that incomplete draft remains valid and never changes the live set.
         // Graphs and filtered results need the same capture/publication boundary as REST.
         // The legacy form validator intentionally accepts only version 2.
-        $checkJourney = ($optin->config['template']['tree']['v'] ?? null) === 3;
+        $checkJourney = is_array($optin->config['template']['tree'] ?? null) && \WConvert\Template\TemplateTree::isGraph($optin->config['template']['tree']);
         foreach ($optin->config['template']['tree']['steps'] ?? [] as $screen) foreach ($screen['results'] ?? [] as $result) {
             if (array_key_exists('product_filter', $result) || array_key_exists('product_action', $result)) $checkJourney = true;
         }

@@ -14,6 +14,7 @@
     "publish": "node scripts/publish-remote.mjs",
     "status": "node scripts/publish-remote.mjs --status",
     "backup": "node scripts/backup-remote.mjs",
+    "popularity": "node scripts/popularity.mjs",
     "rehearse:recovery": "npm run build && node scripts/rehearse-recovery.mjs",
     "verify:limits": "node scripts/verify-rate-limits.mjs",
     "verify:remote": "node scripts/verify-remote.mjs",

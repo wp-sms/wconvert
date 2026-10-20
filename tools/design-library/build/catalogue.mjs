@@ -1,0 +1,130 @@
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { resolve, basename } from 'node:path';
+
+const hash = value => createHash('sha256').update(value).digest('hex');
+const check = (condition, message) => { if (!condition) throw new Error(message); };
+const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,59}$/.test(value);
+
+/** Key-sorted JSON, so a revision follows content rather than key order. */
+export function canonical(value) {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  if (value && typeof value === 'object') return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonical(value[key])}`).join(',')}}`;
+  return JSON.stringify(value);
+}
+
+/** What a revision commits to: every byte that ships, except the revision itself. */
+export function contentHash(object) {
+  const rest = { ...object };
+  delete rest.revision;
+  return hash(canonical(rest));
+}
+
+/**
+ * Number every exported design and setup (ADR 0156).
+ *
+ * The registry in `publishing/revisions.json` is the memory: a design keeps
+ * its revision while its content hash is unchanged and gets the next integer
+ * the moment anything that ships changes. An id is never reused — a retired
+ * id can only come back as an alias. A setup pins its design's revision, so a
+ * design change is a setup change too.
+ */
+export function assignRevisions(registry, exported) {
+  check(registry?.schema === 1, 'Unsupported revision registry');
+  const next = { schema: 1, designs: { ...registry.designs }, setups: { ...registry.setups }, retired: [...(registry.retired ?? [])] };
+  const changed = [];
+  // `added` orders the index oldest-first, so a reader that outgrows its
+  // budget loses the newest designs rather than the ones it already showed.
+  let added = Math.max(0, ...Object.values(next.designs).map(record => record.added ?? 0), ...Object.values(next.setups).map(record => record.added ?? 0));
+  const number = (kind, object) => {
+    check(!next.retired.includes(object.id), `${object.id} is a retired id and cannot be reused; publish it as a new id with an alias`);
+    const content = contentHash(object), record = next[kind][object.id];
+    const revision = !record ? 1 : record.content === content ? record.revision : record.revision + 1;
+    if (!record || record.content !== content) changed.push(`${kind}:${object.id}@${revision}`);
+    next[kind][object.id] = { revision, content, added: record?.added ?? ++added };
+    return revision;
+  };
+  const designs = exported.designs.map(design => {
+    const object = JSON.parse(design.json);
+    object.revision = 0;
+    const revision = number('designs', object);
+    object.revision = revision;
+    return { ...design, revision, added: next.designs[design.id].added, json: JSON.stringify(object), entry: { ...design.entry, revision } };
+  });
+  const byId = new Map(designs.map(design => [design.id, design.revision]));
+  const setups = exported.setups.map(setup => {
+    const object = JSON.parse(setup.json);
+    object.design.revision = byId.get(object.design.id);
+    object.revision = 0;
+    const revision = number('setups', object);
+    object.revision = revision;
+    return { ...setup, revision, added: next.setups[setup.id].added, json: JSON.stringify(object), entry: { ...setup.entry, revision, design: object.design } };
+  });
+  return { registry: next, designs, setups, changed };
+}
+
+/** Retire every registered id whose source is gone, so it can never be reused. */
+export function retireMissing(registry, present) {
+  const next = structuredClone(registry);
+  for (const kind of ['designs', 'setups']) {
+    for (const id of Object.keys(next[kind])) {
+      if (present[kind].has(id)) continue;
+      delete next[kind][id];
+      if (!next.retired.includes(id)) next.retired.push(id);
+    }
+  }
+  next.retired.sort();
+  return next;
+}
+
+/** Every bundled design id and the folder it ships from. */
+export function bundledDesigns(root) {
+  const free = readdirSync(resolve(root, 'resources/templates/library')).filter(file => file.endsWith('.json')).map(file => [basename(file, '.json'), 'free']);
+  const pro = readdirSync(resolve(root, 'pro/modules')).flatMap(module => {
+    const folder = resolve(root, 'pro/modules', module, 'templates');
+    return existsSync(folder) ? readdirSync(folder).filter(file => file.endsWith('.json')).map(file => [basename(file, '.json'), 'pro']) : [];
+  });
+  return new Map([...free, ...pro]);
+}
+
+/** The bundled revision files each ZIP reads (BundledRevisions). */
+export function bundledRevisionFiles(root, registry) {
+  const files = { 'resources/templates/revisions.json': {}, 'pro/resources/templates/revisions.json': {} };
+  for (const [id, where] of [...bundledDesigns(root)].sort(([a], [b]) => a.localeCompare(b))) {
+    const revision = registry.designs[id]?.revision;
+    if (revision) files[where === 'free' ? 'resources/templates/revisions.json' : 'pro/resources/templates/revisions.json'][id] = revision;
+  }
+  return Object.fromEntries(Object.entries(files).map(([path, designs]) => [path, JSON.stringify({ _note: 'Generated by npm run templates:revisions. Catalogue revision of each bundled design (ADR 0156).', designs }, null, 2) + '\n']));
+}
+
+/** Run the PHP exporter (`export-designs.php`) over trusted repository sources. */
+export function exportObjects(root, implementationRoot, input) {
+  return JSON.parse(execFileSync('php', [resolve(implementationRoot, 'tools/design-library/build/export-designs.php'), root], {
+    input: JSON.stringify({ mode: 'designs', ...input }), encoding: 'utf8', maxBuffer: 256 * 1024 * 1024,
+  }));
+}
+
+/**
+ * The authored catalogue words for one design, from `publishing/designs.json`.
+ * Only the keys the reader keeps (`DesignObject::meta`).
+ */
+export function metadataFor(metadata, id) {
+  const record = metadata.designs?.[id] ?? {};
+  const meta = {};
+  for (const key of ['description', 'slug']) if (typeof record[key] === 'string' && record[key].trim()) meta[key] = record[key];
+  for (const key of ['industries', 'occasions', 'style', 'colour']) {
+    if (!Array.isArray(record[key])) continue;
+    for (const term of record[key]) check(metadata.taxonomy?.[{ industries: 'industry', occasions: 'occasion', style: 'style', colour: 'colour' }[key]]?.some(entry => entry.id === term), `${id}: "${term}" is not in the ${key} taxonomy`);
+    meta[key] = [...record[key]];
+  }
+  return { meta, family: identifier(record.family) ? record.family : undefined, aliases: Array.isArray(record.aliases) ? record.aliases : [] };
+}
+
+export function readJson(root, path) {
+  return JSON.parse(readFileSync(resolve(root, path), 'utf8'));
+}
+
+export function writeJson(root, path, value) {
+  writeFileSync(resolve(root, path), JSON.stringify(value, null, 2) + '\n');
+}

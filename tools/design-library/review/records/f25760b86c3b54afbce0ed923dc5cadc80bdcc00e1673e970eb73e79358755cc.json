@@ -1,0 +1,63 @@
+{
+  "id": "collection-reader-relationships",
+  "revision": "9799e334c7cf1c912cb43b6ecd87bd4e9bf4cca800288034e4bd7a90d707ed54",
+  "base_id": "9275ae12c1bec000a45339b437b6e4f1b899909626688b63f3b65078fda33522",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Refresh sole changed member: workbook split ratio. Metadata and four unchanged current setup approvals retained; checked collection proof.",
+  "at": "2026-10-02T14:14:04.487Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-collection.md",
+          "sha256": "3a6ab7df957bafdad353ff5a5adbbb22a4850dcf068a1be354cfeaa243c31053"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-reader-collection.png",
+          "sha256": "713fa6d0f1bf17e57ddc488512f84809a736fa0fd63db79a6e90bcd4c0d1ae35"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+          "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-collection.md",
+          "sha256": "3a6ab7df957bafdad353ff5a5adbbb22a4850dcf068a1be354cfeaa243c31053"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-reader-collection.png",
+          "sha256": "713fa6d0f1bf17e57ddc488512f84809a736fa0fd63db79a6e90bcd4c0d1ae35"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+          "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-collection.md",
+          "sha256": "3a6ab7df957bafdad353ff5a5adbbb22a4850dcf068a1be354cfeaa243c31053"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-reader-collection.png",
+          "sha256": "713fa6d0f1bf17e57ddc488512f84809a736fa0fd63db79a6e90bcd4c0d1ae35"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+          "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+        }
+      ]
+    }
+  },
+  "record_id": "f25760b86c3b54afbce0ed923dc5cadc80bdcc00e1673e970eb73e79358755cc"
+}

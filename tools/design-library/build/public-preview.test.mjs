@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { publicPreview } from './public-preview.mjs';
+import { createHash } from 'node:crypto';
 const renderer = readFileSync(new URL('../out/renderer.iife.js', import.meta.url), 'utf8');
 test('public Free and Pro previews contain every inert screen without editable trees or renderer code', () => {
   const entry = JSON.parse(readFileSync(new URL('../../../resources/templates/library/excerpt-window.json', import.meta.url)));
@@ -58,4 +59,17 @@ test('design-only v1 omits chrome and applies screen/device fragments without re
   assert.equal(sample.dataset.device, 'desktop');
   assert.doesNotMatch(markup, /postMessage|window\.parent|WConvertRenderer/);
   dom.window.close();
+});
+
+test('a public preview never embeds an original premium image, only a downscaled copy', () => {
+  const entry = JSON.parse(readFileSync(new URL('../../../resources/templates/library/excerpt-window.json', import.meta.url)));
+  entry.tree.steps[0].content.start.push({ type: 'image', id: 'n90', src: '', alt: 'Pixel' });
+  const original = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA1sAAAAASUVORK5CYII=', 'base64');
+  const asset = { id: 'pixel', sha256: createHash('sha256').update(original).digest('hex'), mime: 'image/png', bytes: original.length, width: 1, height: 1, access: 'premium' };
+  const pack = { name: 'Pro', description: '', version: 'r1', assets: [asset], image_bindings: [{ template_id: entry.id, node_id: 'n90', asset_id: 'pixel' }], templates: [{ ...entry, tier: 'pro' }] };
+  assert.throws(() => publicPreview(pack, renderer, [{ id: 'pixel', bytes: original }]), /never embeds an original premium image/);
+  const small = Buffer.from('small-webp');
+  const markup = publicPreview(pack, renderer, [{ id: 'pixel', bytes: small, mime: 'image/webp', verified: false }], { designId: entry.id });
+  assert.match(markup, new RegExp('data:image/webp;base64,' + small.toString('base64')));
+  assert.doesNotMatch(markup, new RegExp(original.toString('base64').slice(0, 24)));
 });

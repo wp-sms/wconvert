@@ -164,7 +164,8 @@ final class ArtifactContractTest extends TestCase
             // The tier file, which is free's and ships in free's ZIP: the admin
             // renders every upsell card's tier name from it (ADR 0056).
             'tiers.json' => self::TIERS_FILE,
-            'resources/templates/locked.json' => "{\"designs\":[]}\n",
+            'resources/templates/since.json' => "{\"node:text\":\"1.0.0\"}\n",
+            'resources/templates/revisions.json' => "{\"designs\":{}}\n",
             'resources/playbooks/welcome.php' => "<?php\nreturn [];\n",
             // What rebuilds the bundles above from the sources above. The
             // repository is private, so a reviewer's only route to
@@ -374,23 +375,6 @@ final class ArtifactContractTest extends TestCase
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-    }
-
-    /**
-     * **The trialware shape arriving through the file written to prevent it.**
-     * `locked.json` carries the CARD — a name, its facets, a link to a live
-     * preview on wconvert.io — and never the design. A tree in it is a premium
-     * design in the free ZIP by another route.
-     */
-    public function testFailsWhenTheLockedMetadataCarriesADesign(): void
-    {
-        $result = $this->verify($this->stagedFree([
-            'resources/templates/locked.json' =>
-                "{\"designs\":[{\"id\":\"slide-in-card\",\"tree\":{\"steps\":[]}}]}\n",
-        ]));
-
-        $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('locked.json', $result['output']);
     }
 
     /** Fail-closed: a library that was not inspected is not a library that passed. */

@@ -1,0 +1,39 @@
+{
+  "id": "restyling-notes",
+  "revision": "973a9e13edebc1b6360a80da18252214be35abb58b1f0e3e292d6bcb6cb72c57",
+  "base_id": "d5bac1a222bd21955b23e861a70142e3def5980d83959f256a48bf768807c49f",
+  "decision": "approved",
+  "reviewer": "Codex — six-design refinement review",
+  "note": "All source/dependent screens inspected; corrected 176-case source and 176-case dependent matrices pass. Native WordPress checks confirm validation, capture/retry, saved values or configured destination as applicable. No external delivery or conversion-lift claim.",
+  "at": "2026-09-29T01:30:05.465Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    }
+  },
+  "record_id": "8284d9130b8ac0bcc6c86d0c1b84c86c821f9d674b1114eef58da0365a68ae29"
+}

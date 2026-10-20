@@ -1,0 +1,47 @@
+{
+  "id": "maintenance-letter",
+  "revision": "46d419873603e1f00d1d9c7b23e9f51de6382ea21eb4e2fb3c79ec74ae7180fe",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+  "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+  "at": "2026-09-28T13:12:39.653Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    }
+  },
+  "record_id": "d31282c1b2edc49474842f0e00526bf1c0b54736e3afe6710601ee5c7501581a"
+}

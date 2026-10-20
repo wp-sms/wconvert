@@ -246,24 +246,23 @@ answers for the cards on screen. A card mounts its live render only while it is
 near the viewport and takes it down again, which is what makes a library ten
 times this size affordable without a virtualization library.
 
-A design declares its `tier`. Free ships free designs and, in
-`resources/templates/locked.json`, the **card** for a premium one — a name, its
-facets and a link to a live preview on wconvert.io, with no tree and no image
-at all. Shipping the design and refusing the save is trialware
+A design declares its `tier`. Free ships free designs only. A premium design
+reaches free solely as a **locked image card** from the hosted index — a server
+thumbnail, its plan's name and a link to wconvert.io, with no tree
+([ADR 0156](docs/adr/0156-the-catalogue-is-one-design-per-object.md)). Shipping
+the design and refusing the save is trialware
 ([#7](https://github.com/wp-sms/wconvert/issues/7)), so
-`bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or
-a `tree` in `locked.json`, inside the free artifact — and refuses a **Pro**
-artifact that carries no premium design at all, which is the same rule read from
-the other end.
+`bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry
+inside the free artifact — and refuses a **Pro** artifact that carries no
+premium design at all, which is the same rule read from the other end.
 
 **Pro's designs live under `pro/resources/templates/library/`** and are
 registered through the same `TemplateSource` seam, from
-`ProServiceProvider::register()`. That registration is also what makes the
-upsell disappear: `TemplateLibrary::locked()` drops a stub whose id a real entry
-already holds, so *"a paying customer is never shown an advertisement for what
-they bought"* ([ADR 0026](docs/adr/0026-a-goal-the-site-cannot-serve-is-hidden.md))
-falls out of the id rather than out of a tier check. `LockedTemplates` is
-composed **last**, which is what makes that true.
+`ProServiceProvider::register()`. A hosted design is `locked` only when the
+installed plan is below its tier, so *"a paying customer is never shown an
+advertisement for what they bought"*
+([ADR 0026](docs/adr/0026-a-goal-the-site-cannot-serve-is-hidden.md)) holds
+per design.
 
 ```bash
 tests/js/renderer-manifest-parity.test.ts      # the renderer against the manifest

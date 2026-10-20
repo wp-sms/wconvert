@@ -103,7 +103,8 @@ shown to somebody who has just handed over an email address.
 ## The decision
 
 **Remove `popup-spin-to-win` from `locked.json`**, and record in that file that
-it was withdrawn and where the argument lives — because the file is bundled
+it was withdrawn *(the file itself was removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md); a design is now
+withdrawn through the catalogue pointer's `withdrawn` list)* and where the argument lives — because the file is bundled
 advertising, and an advertisement for a design nobody can ever be given is a
 worse defect than one fewer card. The public design page at
 `wconvert.io/designs/spin-to-win/` retires with it; a `preview_url` is the

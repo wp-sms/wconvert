@@ -77,12 +77,11 @@ use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rest\TemplateCatalogController;
 use WConvert\Rest\TemplateTransferController;
-use WConvert\Template\Catalog\InstalledPacks;
+use WConvert\Template\Catalog\DesignArchive;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\TemplateCatalog;
 use WConvert\Template\Catalog\WpCatalogTransport;
 use WConvert\Template\BundledTemplates;
-use WConvert\Template\LockedTemplates;
 use WConvert\Rest\ThemeController;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\Degradation;
@@ -237,8 +236,7 @@ final class CoreServiceProvider implements ServiceProvider
                     static fn (): TemplateLibrary => TemplateLibrary::from(
                         $vocabulary,
                         new BundledTemplates(WCONVERT_DIR),
-                        new LockedTemplates(WCONVERT_DIR),
-                        $c->resolve(InstalledPacks::class)
+                        $c->resolve(DesignArchive::class)
                     )
                 );
             }
@@ -255,13 +253,40 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
         $container->register(PackValidator::class, static fn (): PackValidator => PackValidator::shipping());
-        $container->register(InstalledPacks::class, static function (ServiceContainer $c): InstalledPacks {
+        $container->register(DesignArchive::class, static function (ServiceContainer $c): DesignArchive {
             $uploads = wp_upload_dir(null, false);
-            return new InstalledPacks($uploads['basedir'] . '/wconvert-template-packs', $c->resolve(PackValidator::class), new \WConvert\Template\Catalog\VerifiedAssets($uploads['basedir'] . '/wconvert-template-images', $uploads['baseurl'] . '/wconvert-template-images'));
+            // Everything that can change what validation says. Deactivating Pro
+            // or WooCommerce, or updating WConvert, is a different key and so
+            // a fresh validation, never a cache another configuration filled.
+            $fingerprint = static fn (): string => hash('sha256', (string) wp_json_encode([(new \WConvert\Support\WpProPresence())->installedTier()->value,
+                \WConvert\Template\JourneySupport::active(), \WConvert\Template\CommerceSupport::active(), WCONVERT_VERSION,
+                (string) md5_file(WCONVERT_DIR . \WConvert\Template\TemplateManifest::PATH), (string) md5_file(WCONVERT_DIR . \WConvert\Template\Catalog\VocabularySince::PATH)]));
+            return new DesignArchive(
+                $uploads['basedir'] . '/wconvert-templates',
+                $c->resolve(PackValidator::class),
+                wp_salt('auth'),
+                new \WConvert\Template\Catalog\VerifiedAssets($uploads['basedir'] . '/wconvert-template-images', $uploads['baseurl'] . '/wconvert-template-images'),
+                $fingerprint,
+                [],
+                static fn (): array => $c->resolve(OptinRepository::class)->designReferences(),
+            );
         });
         $container->register(\WConvert\Template\Catalog\CatalogTransport::class, static fn () => new WpCatalogTransport());
         $container->register(TemplateCatalog::class, static fn (ServiceContainer $c): TemplateCatalog => new TemplateCatalog(
-            $c->resolve(OptionStore::class), $c->resolve(\WConvert\Template\Catalog\CatalogTransport::class), $c->resolve(PackValidator::class), $c->resolve(InstalledPacks::class)
+            $c->resolve(OptionStore::class), $c->resolve(\WConvert\Template\Catalog\CatalogTransport::class), $c->resolve(PackValidator::class), $c->resolve(DesignArchive::class),
+            (new \WConvert\Support\WpProPresence())->installedTier(),
+            static function () use ($c): array {
+                $revisions = [];
+                foreach ($c->resolve(TemplateLibrary::class)->all() as $entry) {
+                    $id = substr((string) $entry['design_key'], strlen('registered:'));
+                    $revisions[$id] = max($revisions[$id] ?? 0, (int) $entry['revision']);
+                }
+                return $revisions;
+            },
+            static fn (): array => ['woocommerce' => class_exists('WooCommerce')],
+            null,
+            static fn (): array => $c->resolve(TemplateVocabulary::class)->facets(),
+            static fn (): string => determine_locale(),
         ));
         $container->register(TemplateTransferController::class, static fn (ServiceContainer $c): TemplateTransferController => new TemplateTransferController(
             $c->resolve(PackValidator::class), $c->resolve(TemplateVocabulary::class), $c->resolve(TemplateLibrary::class),
@@ -416,7 +441,7 @@ final class CoreServiceProvider implements ServiceProvider
                     $c->resolve(TemplateVocabulary::class),
                     $c->resolve(RuleVocabulary::class),
                     WCONVERT_DIR,
-                    $c->resolve(InstalledPacks::class)->playbooks()
+                    $c->resolve(DesignArchive::class)->playbooks()
                 )
             )
         );
@@ -706,7 +731,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(TemplateLibrary::class),
                 $c->resolve(TemplateVocabulary::class),
                 $c->resolve(ProPresence::class),
-                $c->resolve(PrivacyGuidance::class)
+                $c->resolve(PrivacyGuidance::class),
+                $c->resolve(TemplateCatalog::class)
             )
         );
 

@@ -1,0 +1,107 @@
+{
+  "id": "upholstery-samples",
+  "revision": "91571c9007eea202f2f795a5af65d357e187b6f3b41ae3304276ec84ba406275",
+  "base_id": "613b2ff2da60644b5ce535373118ab1044910e80cc409c560bd1ae9ce3398092",
+  "decision": "approved",
+  "reviewer": "Codex — six-design refinement review",
+  "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+  "at": "2026-09-29T01:30:05.465Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+          "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+          "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-0-ltr.png",
+          "sha256": "30061563f58fff0171332285704bb6b6d62feef241005aac17234ab939021057"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-0-rtl.png",
+          "sha256": "fdbba33ac2ec5116784f7a34cc61ec0cdebe6cba2511913b0b8df279925b3b82"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-1-ltr.png",
+          "sha256": "e2cd815a17b41409640fefc2bb7765e8040688c817fb7fe15d9b5478796808e2"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-1-rtl.png",
+          "sha256": "1b74127fbfeb5fb10513244542ca275daa36a834b6a1f6a8ad19f3fe4e9e94e4"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-eight.jpg",
+          "sha256": "389d957e1aad26a53655b64111509142775e5b8ae8e052c5c7eb979e5fec6d46"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/studio-retry-preserves-details.png",
+          "sha256": "46027ed4baa746f81c3b95237dd09316f652ce82ca3deeda985435444e805409"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+          "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    }
+  },
+  "record_id": "d085012361bab0c84248721ad11bf88afba395ecb8ba56f8dceddd7473eceacd"
+}

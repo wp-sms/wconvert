@@ -1,0 +1,99 @@
+{
+  "id": "equipment-return-checklist",
+  "revision": "59577e25b48bcb98d81d35a01d3d9141120a4c3db5b9a94a3dffe6511eca5e1a",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — considered essentials",
+  "note": "Deliberate reuse of the guide design for a useful rental task. Phone CTA wraps within its button; receipt does not claim collection or return completion. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+  "at": "2026-10-19T12:13:43.005532+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+          "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-1440.png",
+          "sha256": "4766344b1cd90531933c47b553979957a0ff8f45966ff5524c672c3c476a9946"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-320.png",
+          "sha256": "4a9b9a18ce9eea7c1aaffc2a22dac532c74bf4f033abe06c605f7fb71b1fecd8"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-390.png",
+          "sha256": "2644250749a0bc601bf1a7c030195073cc93f6ff5f0b2e9a413df78be4319d66"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-768.png",
+          "sha256": "8faca770ace2e7e1c6de9d9db35c73fe8022fadc89eafe438c2fe6812ef32c90"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-320-rtl-stress.png",
+          "sha256": "1af350f46f92f552b52bcc46384be1df6454a3d6b130e8480827ea46414ffa8a"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+          "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+          "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-retry.png",
+          "sha256": "12a356c1c9c2e70dc3f046bc22e537c6b036f54d75158bbc61357500b8f40f91"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+          "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+          "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-1280-input.png",
+          "sha256": "72f3d8741002e15e904bfccf9ddd676159abd6423acf08fecdcb386581569203"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-1280-success.png",
+          "sha256": "5fe848f743479d0fa32e377bf3cc967555c829be342a819578a10106671cd575"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-320-input.png",
+          "sha256": "aea1e17773933257cad8502d03a4582c3f68b498f697e7f3e19bf1353b33b8cd"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/equipment-return-checklist-native-320-success.png",
+          "sha256": "5a46c333e8ff7306e4ecef14cea8a93fa3a2c5ab683ad64e4c3e4947b8945542"
+        }
+      ]
+    }
+  },
+  "record_id": "6ac344db6d2b85b2d9ff7f7c58187eb5213925d69c678dd1c6e0ed0ea1cc592f"
+}

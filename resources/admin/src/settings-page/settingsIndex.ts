@@ -77,6 +77,7 @@ export function settingsIndex(): SettingEntry[] {
     { key: 'export-csv', group: 'data', label: __('Download submissions as CSV', 'wconvert'), terms: __('export csv download leads spreadsheet', 'wconvert'), find: [setting('export-csv')] },
     { key: 'export-personal-data', group: 'data', label: __('Export personal data', 'wconvert'), terms: __('gdpr request access subject', 'wconvert'), find: [setting('export-personal-data')] },
     { key: 'erase-personal-data', group: 'data', label: __('Erase personal data', 'wconvert'), terms: __('gdpr delete forget request right to be forgotten', 'wconvert'), find: [setting('erase-personal-data')] },
+    { key: 'template-library', group: 'data', label: __('Online template library', 'wconvert'), terms: __('templates designs library online cloudflare download gallery consent', 'wconvert'), find: [setting('template-library')] },
     { key: 'privacy-guidance', group: 'data', label: __('Privacy guidance in the editor', 'wconvert'), terms: __('privacy notice consent campaign editor', 'wconvert'), find: [setting('privacy-guidance')] },
 
     { key: 'analytics-enabled', group: 'integrations', pro: true, label: __('Enable analytics integration', 'wconvert'), terms: __('ga4 google analytics gtm plausible tracking events', 'wconvert'), find: [analyticsOn] },

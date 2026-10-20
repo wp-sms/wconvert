@@ -106,7 +106,7 @@ final class GraphCaptureContractTest extends TestCase
             unset($screen['paths']);
         }
         unset($screen);
-        $tree['v'] = 3;
+        $tree['v'] = 2;
         $tree['graph'] = ['entry' => $tree['steps'][0]['id'], 'edges' => $edges];
         return $tree;
     }

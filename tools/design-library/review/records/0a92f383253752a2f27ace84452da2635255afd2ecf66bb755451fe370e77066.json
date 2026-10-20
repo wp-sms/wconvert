@@ -1,0 +1,91 @@
+{
+  "id": "writing-checklist",
+  "revision": "747552d3bc9aa97bb6b1150c9e8bf250f99fa71949998b0ce68d07976ea2440b",
+  "base_id": "83ed6bf9775a450b8eac8f8cba53628c0ad488d289d58f1dcdb586addf9d0c69",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-11.webp",
+          "sha256": "e175729e37c6cb584d4a396e3543e012291d3dbbb9000a646903e6271fb43baa"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-11.webp",
+          "sha256": "cb4ce2f91c58daf5477a611e2a8c06105adff3f4ac53c3be50e20f7c78edd1f4"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/writing-checklist-1280-0.webp",
+          "sha256": "fb7194515531088131a297dead194f9dc58661d1d2b3f0a2311a65939479f330"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/writing-checklist-1280-1.webp",
+          "sha256": "0798e5b37cd25fe2733c18932d950483ca5141edc26185f3a66d734e89eba06e"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/writing-checklist-1280-retry.webp",
+          "sha256": "6039c2962d819dc4f37b7c6889c8e8c0c1312640ad42771dcbe5090af38d9ec4"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/writing-checklist-320-0.webp",
+          "sha256": "04bcf55e0991e3cb53b1558ba82a38b1f0455afc0152d200c4a1e68f3f0d7fd8"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/writing-checklist-320-1.webp",
+          "sha256": "38a41469359e74081643f5e5ff71f0392bfb50b493001a8d0bbd09ed9c1c9b8e"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/writing-checklist-320-retry.webp",
+          "sha256": "e2aba8197a6d6ad83feb131ef398d5314b2349f47eb9826daf9ca25f13b82125"
+        }
+      ]
+    }
+  },
+  "record_id": "0a92f383253752a2f27ace84452da2635255afd2ecf66bb755451fe370e77066"
+}

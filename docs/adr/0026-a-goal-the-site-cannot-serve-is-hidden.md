@@ -112,7 +112,8 @@ widened audience trades a missing feature for a factually false one.
   The **upsell metadata stays bundled**, which is the half worth restating here:
   `resources/templates/locked.json` carries a premium design's name, its facets
   and a link to a live preview on wconvert.io, and free ships it rather than
-  fetching it. What free does **not** ship is the design — shipping the tree and
+  fetching it. *Superseded by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): the file is gone; a Pro design's card is a
+  hosted catalogue entry, fetched only after the administrator allows it.* What free does **not** ship is the design — shipping the tree and
   refusing the save is trialware
   ([#7](https://github.com/navidkashani/wconvert/issues/7)) and rendering a real
   control `disabled` is what Guideline 9 fires on, so a locked card is a link and

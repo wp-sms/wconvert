@@ -23,7 +23,8 @@ export function graphFromOrderedJourney(tree: TemplateTree): JourneyGraph {
 export function upgradeToGraph(tree: TemplateTree): TemplateTree {
   if (tree.graph) return tree;
   const graph = graphFromOrderedJourney(tree);
-  return { ...tree, v: 3, graph, steps: tree.steps.map(screen => { const next = { ...screen }; delete next.paths; return next; }) };
+  // A flow is said by `graph`; `v` stays the vocabulary version (ADR 0156).
+  return { ...tree, v: 2, graph, steps: tree.steps.map(screen => { const next = { ...screen }; delete next.paths; return next; }) };
 }
 
 /** Storage order is deliberately irrelevant to graph navigation. */

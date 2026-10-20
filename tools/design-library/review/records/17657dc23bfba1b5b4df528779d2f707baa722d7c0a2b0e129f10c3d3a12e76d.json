@@ -1,0 +1,171 @@
+{
+  "id": "personalisation-enquiry",
+  "revision": "36c4cd96c2cc30ac036f475b8b83a1c05402e42250dd0b813a06c607b5b08ff0",
+  "base_id": "4682be2a563e5cc659be80be74692d2169a727dd5e5fce9a235a4063ae03c318",
+  "decision": "approved",
+  "reviewer": "Codex — full library cleanup",
+  "note": "Final source screens/default results inspected at phone and desktop sizes, real Playbook prefills checked, native disposable capture suite passed. Prior branch-specific journey evidence remains valid: field/submission IDs and question logic are unchanged. No real delivery tested.",
+  "at": "2026-09-29T02:19:39.172Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/manifest.json",
+          "sha256": "706aabb2c9f20b86881b81b661ca817a919cc8d258d02baf431cf8a00d39ee27"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/after.json",
+          "sha256": "52edf1571f834bfbe9827986cda6ea44ded28ccf2ae5f34d7ca977eb63ee9398"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/registered-setups.json",
+          "sha256": "a7b1bd46e86139264355e335e976681daab32de18ef6ca5dcc19085ee72009ba"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/snapshot-check.json",
+          "sha256": "02eff79b2787a36649b60bbe6aef78960595652466bfc4ff42672591d4519d4f"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    }
+  },
+  "record_id": "17657dc23bfba1b5b4df528779d2f707baa722d7c0a2b0e129f10c3d3a12e76d"
+}

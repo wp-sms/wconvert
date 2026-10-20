@@ -1,0 +1,155 @@
+{
+  "id": "upholstery-samples",
+  "revision": "58fc8ced65c1e45026b61af7354e524ccc7cc5cbd70e514f43695ad648cc1da9",
+  "base_id": "d085012361bab0c84248721ad11bf88afba395ecb8ba56f8dceddd7473eceacd",
+  "decision": "approved",
+  "reviewer": "Codex — full library cleanup",
+  "note": "Final source screens/default results inspected at phone and desktop sizes, real Playbook prefills checked, native disposable capture suite passed. Prior branch-specific journey evidence remains valid: field/submission IDs and question logic are unchanged. No real delivery tested.",
+  "at": "2026-09-29T02:19:39.172Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+          "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+          "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-0-ltr.png",
+          "sha256": "30061563f58fff0171332285704bb6b6d62feef241005aac17234ab939021057"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-0-rtl.png",
+          "sha256": "fdbba33ac2ec5116784f7a34cc61ec0cdebe6cba2511913b0b8df279925b3b82"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-1-ltr.png",
+          "sha256": "e2cd815a17b41409640fefc2bb7765e8040688c817fb7fe15d9b5478796808e2"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-1-rtl.png",
+          "sha256": "1b74127fbfeb5fb10513244542ca275daa36a834b6a1f6a8ad19f3fe4e9e94e4"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-eight.jpg",
+          "sha256": "389d957e1aad26a53655b64111509142775e5b8ae8e052c5c7eb979e5fec6d46"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/manifest.json",
+          "sha256": "706aabb2c9f20b86881b81b661ca817a919cc8d258d02baf431cf8a00d39ee27"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/after.json",
+          "sha256": "52edf1571f834bfbe9827986cda6ea44ded28ccf2ae5f34d7ca977eb63ee9398"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/registered-setups.json",
+          "sha256": "a7b1bd46e86139264355e335e976681daab32de18ef6ca5dcc19085ee72009ba"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/studio-retry-preserves-details.png",
+          "sha256": "46027ed4baa746f81c3b95237dd09316f652ce82ca3deeda985435444e805409"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+          "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/snapshot-check.json",
+          "sha256": "02eff79b2787a36649b60bbe6aef78960595652466bfc4ff42672591d4519d4f"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    }
+  },
+  "record_id": "9aaab2a2d6660d4e9cf6eb3fe1a6873af504d95a2b0b12bd72593b275f42aa9f"
+}

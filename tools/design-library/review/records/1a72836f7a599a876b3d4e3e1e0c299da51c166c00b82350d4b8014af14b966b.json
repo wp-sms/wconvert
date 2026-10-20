@@ -1,0 +1,51 @@
+{
+  "id": "collection-help-shoppers-choose",
+  "revision": "5df6ba9dc46c0447c8ac803b33fa8436ee5a65cc9c0e9dd389355b08c3985311",
+  "base_id": "175b54de810a5db979a1b73e51f0b16e7b5e1fbf7b2fc022d98f0d8470c5df93",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Refresh the exact coffee setup dependency after final optional-link parity review; collection membership and filtering are unchanged.",
+  "at": "2026-10-12T04:31:33.094Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+          "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+          "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+          "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+          "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-result-followup.md",
+          "sha256": "5a693e7d513a7f234475125f6ccf4c3c9762f72e05219a35fe98b95149373f71"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+          "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+        }
+      ]
+    }
+  },
+  "record_id": "1a72836f7a599a876b3d4e3e1e0c299da51c166c00b82350d4b8014af14b966b"
+}

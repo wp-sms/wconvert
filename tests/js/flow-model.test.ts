@@ -57,7 +57,7 @@ const rule = ([question, operator, ...values]: [string, 'is' | 'includes_any', .
 const word = (value: string) => value[0].toUpperCase() + value.slice(1);
 /** A graph from a few lines of shorthand: each screen, then `from>to`, `from>to?answer` or `from~to` (skip). */
 function build(screens: Spec[], links: string[]): TemplateTree {
-  return { v: 3, submissions: [], steps: screens.map(spec => ({ id: spec.id, name: word(spec.id), kind: spec.kind ?? 'input',
+  return { v: 2, submissions: [], steps: screens.map(spec => ({ id: spec.id, name: word(spec.id), kind: spec.kind ?? 'input',
     content: { type: 'stack', children: [
       ...(spec.ask ? [{ type: 'question', id: `q_${spec.id}`, label: word(spec.id), answer_type: spec.ask[0], options: spec.ask.slice(1).map(value => ({ value, label: word(value) })) }] : []),
       ...(spec.submit ? [{ type: 'button', action: 'submit', submission: 'lead', label: 'Send' }] : []),

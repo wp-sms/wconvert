@@ -13,6 +13,8 @@ import { SpamProtection } from './SpamProtection';
 import { SitePhoneCountry } from './SitePhoneCountry';
 import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
+import { LibrarySettings } from '../templates/LibraryConsent';
+import { catalogConfigured } from '../settings';
 import { PrivacyGuidanceSettings } from '../privacy/PrivacyGuidanceSettings';
 import { Destinations } from '../destinations/Destinations';
 import { AgentSettings } from '../agents/AgentSettings';
@@ -207,7 +209,8 @@ function VisitorExperienceSettings({ onEditingStateChange }: { onEditingStateCha
  * toggle most sites set once.
  */
 function DataPrivacySettings({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing }) {
-  const [retention, guidance] = usePairedEditing(onEditingStateChange);
+  const [retention, rest] = usePairedEditing(onEditingStateChange);
+  const [guidance, library] = usePairedEditing(rest);
 
   return (
     <div className="flex flex-col gap-4">
@@ -252,6 +255,7 @@ function DataPrivacySettings({ onEditingStateChange }: { onEditingStateChange?: 
         </RegionBody>
       </Region>
       <PrivacyGuidanceSettings onEditingStateChange={guidance} />
+      {catalogConfigured() && <LibrarySettings onEditingStateChange={library} />}
     </div>
   );
 }

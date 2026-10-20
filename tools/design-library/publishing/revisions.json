@@ -1,0 +1,663 @@
+{
+  "schema": 1,
+  "designs": {
+    "accessory-workbench": {
+      "revision": 1,
+      "content": "aa4e4fe12b6250770eb168b2ff0633cc06bf9c7347d2fd5c597a3aca170297d5",
+      "added": 1
+    },
+    "agenda-card": {
+      "revision": 1,
+      "content": "ea9a23852f1f26d956f58da5ce00f05ff00e23d8b75df8b3ded0d2afdffbc694",
+      "added": 2
+    },
+    "appointment-agenda": {
+      "revision": 1,
+      "content": "b81e90f7bf5211ca1d28d9dece494a5be7fbdcb6f1eb270ace724b8b3e15dfdf",
+      "added": 3
+    },
+    "appointment-note": {
+      "revision": 1,
+      "content": "d1610b9522903d10c47e6f70a96ef373ccc4154d7310e116156bad30d0837c9f",
+      "added": 4
+    },
+    "availability-desk": {
+      "revision": 1,
+      "content": "b7a505e552004fe6da326a8aade5c5ddf47c881efcd596c56a93b763905fdf69",
+      "added": 5
+    },
+    "availability-note": {
+      "revision": 1,
+      "content": "821764d7f9a1a24b6644add9115d7a51f3af3575105eb23ff75c16b946d66e50",
+      "added": 6
+    },
+    "bar-code": {
+      "revision": 1,
+      "content": "91385e9b068d6cfb9a6b4024421b2ffeb7ae55c705123bba04b4b9c30c2b7519",
+      "added": 7
+    },
+    "basket-companion": {
+      "revision": 1,
+      "content": "c7861d141598ac0832f777e43e045a43d7e591cc43fd69387786596421aa73a2",
+      "added": 8
+    },
+    "benefit-grid": {
+      "revision": 1,
+      "content": "bf3fa05a9200d1a9f3134ab03e25c5a583020c18816009bf99c13f0192881fa2",
+      "added": 9
+    },
+    "bold-ask": {
+      "revision": 1,
+      "content": "a342f081c20f2a8c2173e685f44b696172432bfc2139b97b7d051e270ab3c378",
+      "added": 10
+    },
+    "callback-notes": {
+      "revision": 1,
+      "content": "661b90471ea993d0eacdc6cda4727936d28bff03933c01694db912abd67633d0",
+      "added": 11
+    },
+    "callback-slip": {
+      "revision": 1,
+      "content": "48fa5e5ae0349bc5c0d12c8b1f6c6221d4225bf84daa615904d592c85b77c983",
+      "added": 12
+    },
+    "cart-accessories": {
+      "revision": 1,
+      "content": "dd33053ab967b978c351a7518563617653519c23eac5ff0aa80858876be074b1",
+      "added": 13
+    },
+    "cart-additions": {
+      "revision": 1,
+      "content": "02994f25ec0be7fa6522694b04f61bc27fbaeae9e12ddc2355c68576d5f4050c",
+      "added": 14
+    },
+    "centred-card": {
+      "revision": 1,
+      "content": "e7f146701004cd581256838b35492688fd7a206ef3398fc0bec2e40a2e8927eb",
+      "added": 15
+    },
+    "code-reveal": {
+      "revision": 1,
+      "content": "8a4fa079b5c665d2a2393c7d5c189a8c941165aab4e2cd6b615c2110a5dfa20b",
+      "added": 16
+    },
+    "coffee-finder-board": {
+      "revision": 1,
+      "content": "d45fc6de35d70dad37708f69f47b49688dc5c424479c619af3e1b66c417e8e74",
+      "added": 17
+    },
+    "conversation-note": {
+      "revision": 1,
+      "content": "688dc629e875f22d3b8e4c3dbf9b01708fc7773a980c42fd7f1b0153305417bd",
+      "added": 18
+    },
+    "cream-coupon": {
+      "revision": 1,
+      "content": "f811ee029d2e21300d7997d1db0affc626b7af65c1c21477b00630baadd02421",
+      "added": 19
+    },
+    "deadline-panel": {
+      "revision": 1,
+      "content": "fae9bdb53b78a60371005b1fe381f5103c87eeb4e278bb19cb5e42d909c8fcea",
+      "added": 20
+    },
+    "edition-pass": {
+      "revision": 1,
+      "content": "3b1ad667e821c0611ffbfc12c3e044f0bd8a20740d6613f6577fe530b97c0cf2",
+      "added": 21
+    },
+    "event-calendar": {
+      "revision": 1,
+      "content": "02580ed5fd2abf6b362993d5ad10e15e80097d6c27cd843e1c99bd4bcc024b2f",
+      "added": 22
+    },
+    "excerpt-window": {
+      "revision": 1,
+      "content": "4194ca41291e8cdfda8bd4a974f0076c5c5533035a520e8fdac73ac5d2f096dd",
+      "added": 23
+    },
+    "fieldwork": {
+      "revision": 1,
+      "content": "e3aa5ee0a3a1c29f7415bb94e080080c78110c96b9ac2cb1d8cd033c44d7d495",
+      "added": 24
+    },
+    "flash-offer": {
+      "revision": 1,
+      "content": "3491b6a78bb95559602768e90fde570248050acfc82b41b80295297470b3effa",
+      "added": 25
+    },
+    "fullscreen-editorial": {
+      "revision": 1,
+      "content": "4790e06c0440258c5ae21d6dc88a691a9695f05872aadaa8ae8bb5c6783fff17",
+      "added": 26
+    },
+    "fullscreen-split": {
+      "revision": 1,
+      "content": "0eb4d76645fa8f3cae8551502478d35f6817963a5ec6feb777a0387ba58eb136",
+      "added": 27
+    },
+    "gift-edit": {
+      "revision": 1,
+      "content": "16cce03129724650a7308df72ddeca4b7c3ca81fd8cd94a52b5830ac3641de83",
+      "added": 28
+    },
+    "ink-split": {
+      "revision": 1,
+      "content": "ae9d4e1685c83344059f6c381bf0c0066843fee5430248db35d79849fc5b6126",
+      "added": 29
+    },
+    "inline-bar": {
+      "revision": 1,
+      "content": "5bc8c67b759b97758805ff49d70673ac825e100596fee3a2b82cc1834bb4f5de",
+      "added": 30
+    },
+    "inline-benefits": {
+      "revision": 1,
+      "content": "46206eb2132ec149331253952487fe77b949ec52c22342b4cf26f7bb20adda71",
+      "added": 31
+    },
+    "inline-cart-nudge": {
+      "revision": 1,
+      "content": "1929b003534d03b94d3177286c48e467f401fa43af4eda388284aba42d745dd1",
+      "added": 32
+    },
+    "inline-choice": {
+      "revision": 1,
+      "content": "5b5dc89632b93d3d935f1fe93b68f85300612ce7c02fa91bb4139a076c0d1008",
+      "added": 33
+    },
+    "inline-code-strip": {
+      "revision": 1,
+      "content": "c6e0b799c577ca44866fe71ea1004a27d80479008a47cf5d099f7bdfa7eadd32",
+      "added": 34
+    },
+    "inline-cta": {
+      "revision": 1,
+      "content": "784b42ae2145b0acd5e37250b6b085b0660cbcfcf8200141b54e11f49649a63c",
+      "added": 35
+    },
+    "inline-phone": {
+      "revision": 1,
+      "content": "cda71fa78fe0ca85acf08ca02daee2363fcd7ccb86048b12217d70371307157e",
+      "added": 36
+    },
+    "inline-quiet": {
+      "revision": 1,
+      "content": "e139ef1990d3884757ca0ea1fea53371a0e35f5f2182b01daf4d423a5747b1bc",
+      "added": 37
+    },
+    "inline-rule": {
+      "revision": 1,
+      "content": "1c0407a6a28950925f238feabdfaefa43fb9ba5e0604f0888a8aa7bd0e44d9f5",
+      "added": 38
+    },
+    "inline-signpost": {
+      "revision": 1,
+      "content": "f6c2061505ade8c64370bcfbb2666c44686f36e91ec7c150910e056e6139a229",
+      "added": 39
+    },
+    "inline-tinted": {
+      "revision": 1,
+      "content": "98cdec875a2134c9f6fe2036d642ffde7f64da3bdc59be9e77a1654a91ded7ae",
+      "added": 40
+    },
+    "journey-enquiry": {
+      "revision": 1,
+      "content": "7c0e38734c8480cd152936156878d8674c18ed8372d9cf9c2890155cebd52036",
+      "added": 41
+    },
+    "journey-product-finder": {
+      "revision": 1,
+      "content": "979300339804e0405f66fcc9a8c6b913cba40bd93163703a3649baf261bc8bfc",
+      "added": 42
+    },
+    "journey-service-enquiry": {
+      "revision": 1,
+      "content": "0d60738feb2c17e3f67af9d34a50be44d3c704f89f8961d5dc5bd1cabb50b07b",
+      "added": 43
+    },
+    "kit-workbench": {
+      "revision": 1,
+      "content": "ccc5cd704813e5077ffe96dc8cac1f3da4189d76ca9cc93a9aaf531a26d32aef",
+      "added": 44
+    },
+    "launch-checklist": {
+      "revision": 1,
+      "content": "fa7d3e169c057e47c5c10969cd4f919b48c24389d7a73c81bafb7c63260a4662",
+      "added": 45
+    },
+    "launch-index": {
+      "revision": 1,
+      "content": "ce3af753a71fa4621cd03dc833e1cddad87ddde8b3b10dc0261dd96b03c77eba",
+      "added": 46
+    },
+    "ledger-card": {
+      "revision": 1,
+      "content": "c1fccb3913a7e919beed5ffa5f5e4c64fb49311981cdf613dd9c8c4357bc3126",
+      "added": 47
+    },
+    "margin-note": {
+      "revision": 1,
+      "content": "7ac623e0496ac0e293761667f9fae5ea8b9d5e8d571550db5ae04e099ed536fb",
+      "added": 48
+    },
+    "material-pair": {
+      "revision": 1,
+      "content": "5b6bf92462b31e6bb451b11eae32dab844a7d64ce6d58ce2fc4af0314109130a",
+      "added": 49
+    },
+    "message-sample": {
+      "revision": 1,
+      "content": "4ec6337f5551df12668701e1d07aeecb6df52d5794a83b541df9ff2bb020a19d",
+      "added": 50
+    },
+    "name-and-email": {
+      "revision": 1,
+      "content": "e4b85ab81d2138082833149607f2ecb5c678f031609a98bcb0bd3433f015d2c4",
+      "added": 51
+    },
+    "offer-panel": {
+      "revision": 1,
+      "content": "4a4f71e26edd9029bab1c682e1dd15fecc380800edce132a5cef7fe891eb266b",
+      "added": 52
+    },
+    "offer-receipt": {
+      "revision": 1,
+      "content": "c529068e67dedef9d2b89939bac4f53e4f926d074e30f350541a769454ba84ac",
+      "added": 53
+    },
+    "photo-wash": {
+      "revision": 1,
+      "content": "c619d1a5620448d0c1831a5ab67079254b4e1480b1a4b202fa0b5710c3a7f9a4",
+      "added": 54
+    },
+    "popup-flash": {
+      "revision": 1,
+      "content": "3716a45d9a5d59122a77a689617b3d22f6bc8f8e2753a0d0bc4f0e0d84cb42d4",
+      "added": 55
+    },
+    "preference-card": {
+      "revision": 1,
+      "content": "0cd6014a63652dd7b4c084b32c8cd0644e542da42a046f662f411d70fbc525e0",
+      "added": 56
+    },
+    "product-detail-sheet": {
+      "revision": 1,
+      "content": "a5f0fa30ab345bd18d3900a80da9a4b4d6ac6001f4e771bcfdb355d9758a8298",
+      "added": 57
+    },
+    "product-shelf": {
+      "revision": 1,
+      "content": "cc07c4c0407db1cbcfb9476f7701d124caee9f97411d1f3b8d6412e534738bd5",
+      "added": 58
+    },
+    "programme-board": {
+      "revision": 1,
+      "content": "7a13b7badc27a6dadcfcf249ef78e70242057f7a935b4ea59825af93206983f5",
+      "added": 59
+    },
+    "project-notebook": {
+      "revision": 1,
+      "content": "b2daa1eebbdb001bbe34fa71c5ec670e01846f69163864544a37a894d20570d6",
+      "added": 60
+    },
+    "project-route": {
+      "revision": 1,
+      "content": "d495e8fb6a4d1c89be3317ea047b0418064b3c05f12ae09a9b39e3d3cb6dea8e",
+      "added": 61
+    },
+    "punched-ticket": {
+      "revision": 1,
+      "content": "8066dd307b4aeaf3bf7265e4af21a8ce2e849c44a23f4774cf3268a0570b218b",
+      "added": 62
+    },
+    "quieter-frequency": {
+      "revision": 1,
+      "content": "e48f5415303dd801e6f8a7c08e533df8af3bb072e7a885b6a434332288ae7a21",
+      "added": 63
+    },
+    "reading-cover": {
+      "revision": 1,
+      "content": "6104f376a7a91737b964f8074a65bae6e6734eba10f46d0f30c6bd4d6b9ac01c",
+      "added": 64
+    },
+    "reading-desk": {
+      "revision": 1,
+      "content": "2d49c8c6cc6b68e72f582a4ee2bb72d0b12377e11c474ae24b2f3988f0457d4d",
+      "added": 65
+    },
+    "reading-path": {
+      "revision": 1,
+      "content": "4a75fa5070c519a30f3b3def84803d9a1bb4a9c2dcf84295d9d4edc711ec89f1",
+      "added": 66
+    },
+    "reading-slip": {
+      "revision": 1,
+      "content": "df25289154476807c807d1fcc9afb91602a8ac356f9a813c3e2e6baf2581d6c7",
+      "added": 67
+    },
+    "recipe-clipping": {
+      "revision": 1,
+      "content": "add9d5f3bc309f213b8d87393bb8c58e4ef3f8c7eb962420732e0a756931e62d",
+      "added": 68
+    },
+    "request-folio": {
+      "revision": 1,
+      "content": "41b351ed022db6e12f7374ef94aa5bb1de88ac9ff1f838dbeb154f60af1488fe",
+      "added": 69
+    },
+    "resource-index": {
+      "revision": 1,
+      "content": "8dc004e36ce7bfe9037d2ac292c4e3d11770b9f00e09e33b07914f9d15e8a1b7",
+      "added": 70
+    },
+    "room-checklist": {
+      "revision": 1,
+      "content": "87cc65e0c1d1bbbfce198fd87f95af8e3570fd74e1acbd3f9cb3c595907a6b87",
+      "added": 71
+    },
+    "sample-envelope": {
+      "revision": 1,
+      "content": "701892dc59632476d62f2d747bc969a05893fb4a01e7bcf338f4963ef1bab6d6",
+      "added": 72
+    },
+    "scope-sheet": {
+      "revision": 1,
+      "content": "735a75f4a19e306aca9fdce5111717dda1afd0ed87eb8db5349e490fde7ae6db",
+      "added": 73
+    },
+    "service-directory": {
+      "revision": 1,
+      "content": "8f9c4964ecbbbd8405bca46e12ef7dd5857c253af5a9bc4f5ebc31b66cd53f60",
+      "added": 74
+    },
+    "service-docket": {
+      "revision": 1,
+      "content": "dacf278afd418bf189a4cf85fcc774d6554a207829e6afb3a63b82ab3121f922",
+      "added": 75
+    },
+    "service-ledger": {
+      "revision": 1,
+      "content": "ef99fd441088cdbc917ecb15f56c6beb2d6038557b0e1db276fd8adb5efa180a",
+      "added": 76
+    },
+    "service-process-strip": {
+      "revision": 1,
+      "content": "946dd3f6c1ec97028c9905376251d81feaae5c600c3d68ec255dd0c627bbedb3",
+      "added": 77
+    },
+    "service-summary": {
+      "revision": 1,
+      "content": "5e5412239208a7c8da0e24cbccb24726ec73bd3d7acc782bd44e0ba5c2f4bfbd",
+      "added": 78
+    },
+    "slide-in-benefits": {
+      "revision": 1,
+      "content": "ac08c0f403bc6fc99fbe71911e445d9bb7cca1d4ebe04b025cb17421c9fdfb8d",
+      "added": 79
+    },
+    "slide-in-code": {
+      "revision": 1,
+      "content": "1d33e55f521985b83717dc0ea9604f0a2f7b61239a5ded804b29b903f837aaef",
+      "added": 80
+    },
+    "slide-in-nudge": {
+      "revision": 1,
+      "content": "6200d1ff1edd469bd62ccac39c9c8e4212cf68af7d21e76eaa46b1ab71102c2e",
+      "added": 81
+    },
+    "slide-in-question": {
+      "revision": 1,
+      "content": "a56107a683d2a1adab4938b987640e45fe7d89c33fb0d3d032c9801ea1d816eb",
+      "added": 82
+    },
+    "space-planner": {
+      "revision": 1,
+      "content": "0c758ee77f4aab3e7e457c0add984b5f3e5246c875fd1aae94a0e5d0dad6b762",
+      "added": 83
+    },
+    "specification-sheet": {
+      "revision": 1,
+      "content": "9e5eaef99e7b7ee00ff6b064bb7200d78418a8fe6fdce701a5b2838e4e045b02",
+      "added": 84
+    },
+    "split-notice": {
+      "revision": 1,
+      "content": "00fc8862cfb47b11766af1458d6bce5053e157e926990642fe88cf02bedaa13a",
+      "added": 85
+    },
+    "stacked-signup": {
+      "revision": 1,
+      "content": "d6fcaa809039b2b2efa4bdea941ac6ffa8c52bee8f54143b4df850adc6b75a30",
+      "added": 86
+    },
+    "summer-archive": {
+      "revision": 1,
+      "content": "1d0e4159c687b35a9591fa0ee33277f434c760b42d9a1db9cd191e625d0a9f14",
+      "added": 87
+    },
+    "sunday-marginalia": {
+      "revision": 1,
+      "content": "fc585f282ef39db1bcab310a158b6f8f71ced899dbd81a64849e8fd203ceb520",
+      "added": 88
+    },
+    "supper-menu": {
+      "revision": 1,
+      "content": "8305a9fe88bd19208acb5e9730c710efd1a535b710432291e9a023d8df60420f",
+      "added": 89
+    },
+    "useful-guide": {
+      "revision": 1,
+      "content": "972734d15579275dc5f07621a08d76d53169706492720deee6a3a45e64d6ae7c",
+      "added": 90
+    },
+    "wide-banner": {
+      "revision": 1,
+      "content": "7a8486b00b22a5dace580c902ba3b1ea02a31a747479d8067de113b418fe221f",
+      "added": 91
+    }
+  },
+  "setups": {
+    "accessible-visit-note": {
+      "revision": 1,
+      "content": "cc4933e894e93fccb5d6af3389b6caf4527d72134027f34defebe32680434e01",
+      "added": 92
+    },
+    "add-useful-extras": {
+      "revision": 1,
+      "content": "9505207c27c5d9fec4b3dd4c0631bf13c55384228d0d60a87270e693fa4b2695",
+      "added": 93
+    },
+    "appointment-agenda": {
+      "revision": 1,
+      "content": "0d001d9248ae8b2a86a3c534cbe44d963f63c615ac1294698592223ba28abc48",
+      "added": 94
+    },
+    "basket-cross-sells": {
+      "revision": 1,
+      "content": "589c71f045d7450fa64ab2cd1a984f39b00e0f891897339657844e244eb99006",
+      "added": 95
+    },
+    "callback-slip": {
+      "revision": 1,
+      "content": "7cf700e4a1bb1b2a5897cc3a3dc8ceaacc2d201aeb093e667990f628ef410e3e",
+      "added": 96
+    },
+    "cleaning-quote": {
+      "revision": 1,
+      "content": "a67eb3a964c44965ddb8b8dab18646eb20aea441079ef235ec48eada3b8c3e45",
+      "added": 97
+    },
+    "coffee-taste-finder": {
+      "revision": 1,
+      "content": "53ae091e4b1b5e4aa846d96acc23d0860be971c8cc0200e2b7017a41ca7e8501",
+      "added": 98
+    },
+    "earlier-appointment-enquiry": {
+      "revision": 1,
+      "content": "a1cafa9fc62e5e3f4a8cbfe2038d882ea18105ed2e6f8c5f38aeb0a6213261c9",
+      "added": 99
+    },
+    "edition-early-access": {
+      "revision": 1,
+      "content": "c1d8214f74585e301bdf087f4ebcba03c10ed5288984168aead743e0b07ea152",
+      "added": 100
+    },
+    "editorial-weekly": {
+      "revision": 1,
+      "content": "7aca6055cc7ba7490eb6f13df5b8d19ebf56454540f4c2e385308c2e79f56cb4",
+      "added": 101
+    },
+    "equipment-return-checklist": {
+      "revision": 1,
+      "content": "f74307e118eab71d684848f90afada43afd57d88a76fea8be498ac5c75f31e01",
+      "added": 102
+    },
+    "event-calendar": {
+      "revision": 1,
+      "content": "2645ed289bb31050c9b4da428cc0e1987d3bc297018290d7af9517a2d735a2f1",
+      "added": 103
+    },
+    "excerpt-window": {
+      "revision": 1,
+      "content": "6f98e94a108c1996d249fc87cd97865f0e7bd23adb148ee73932db594ec4a192",
+      "added": 104
+    },
+    "explore-compatible-extras": {
+      "revision": 1,
+      "content": "56f4dcdb42520fd9fdef2c9f231ebcee7eabd8e4ce5d023a9752c2572aaac06b",
+      "added": 105
+    },
+    "first-order-receipt": {
+      "revision": 1,
+      "content": "541eeea7fb2562c96003491dfc1d2733079e9c908bbb204e9d514f56ac8e7e13",
+      "added": 106
+    },
+    "home-repair-quote": {
+      "revision": 1,
+      "content": "3f7a1d1b0436ed212f8496850f0d9bb0a47e528df6f585baf99fec9f49b8c3e9",
+      "added": 107
+    },
+    "homeware-care-notes": {
+      "revision": 1,
+      "content": "c0703de4ffd94a20e961df9685971fc16a1724b1f834fdde9437ca3302ab7a6a",
+      "added": 108
+    },
+    "launch-index": {
+      "revision": 1,
+      "content": "471bcf667cac0ad82492af02f14c9916c225da3569ce50bb22dbbc1eac9092f9",
+      "added": 109
+    },
+    "maker-notes": {
+      "revision": 1,
+      "content": "7a92dee313c692b93b609ff994255ce0a7088a90c822eb505afef711caa3b512",
+      "added": 110
+    },
+    "product-detail-sheet": {
+      "revision": 1,
+      "content": "7c02664ba415f5eedc8ac0156d0cbac3f8a44fb04d29204d09a24b3d55895344",
+      "added": 111
+    },
+    "reading-notes-guide": {
+      "revision": 1,
+      "content": "b6413741b5244c93d3dbdbcbf351b51e438a71335d388c8ca95c69448c8ca0c5",
+      "added": 112
+    },
+    "recommend-accessory": {
+      "revision": 1,
+      "content": "55a85930e990abf5aa2fcf22cc451838c07e1e2d3081fb8db341be19cb5f6744",
+      "added": 113
+    },
+    "renovation-callback": {
+      "revision": 1,
+      "content": "c67a05b8aa4c048492f8929dbaaf3e529e23de3e4e511f3f03afcebb809b88e5",
+      "added": 114
+    },
+    "repair-advice-request": {
+      "revision": 1,
+      "content": "13dcef507e6e932828900bbbe87056c92d0160e6c3543c95198bac19a020fc77",
+      "added": 115
+    },
+    "repair-assessment": {
+      "revision": 1,
+      "content": "febd2775f8ba4e8c3ccb76848d0afc42f6922e5dd6dcdd9660551a6a0a1a16fd",
+      "added": 116
+    },
+    "restock-announcements": {
+      "revision": 1,
+      "content": "a1049e1d3e21b373a6ba35d557b149c3c8889667fe245acf6c2ed338760873cd",
+      "added": 117
+    },
+    "room-planning-worksheet": {
+      "revision": 1,
+      "content": "d60ef443fc3a22f48c803917789898255bafcc16862687b6f1e19ff207485ea9",
+      "added": 118
+    },
+    "service-fit-brief": {
+      "revision": 1,
+      "content": "76a650875382d62f309581438b9f09578d7e8769318659577cfb6756728c5a42",
+      "added": 119
+    },
+    "service-process-strip": {
+      "revision": 1,
+      "content": "a52d9f31be44a5815e975c5fa98e3f34b34a13f8192683999a389821cf2c59f5",
+      "added": 120
+    },
+    "shopping-guidance": {
+      "revision": 1,
+      "content": "3ffb9c4ac222c990c2973e5621c740c2cf78c33525012c577d8ab23e4287fafe",
+      "added": 121
+    },
+    "sms-message-preview": {
+      "revision": 1,
+      "content": "cfac56301850050bc591855876673d925b5fd4f07cfb9e496f56d1a15870eade",
+      "added": 122
+    },
+    "specification-sheet": {
+      "revision": 1,
+      "content": "dd4dd9b90d78addbefad211d27ae0fd22982c48adeb0f4ef867adb52c440bc54",
+      "added": 123
+    },
+    "studio-conversation": {
+      "revision": 1,
+      "content": "b55e0bf34e9bd6be521c41f60415e55c471e015372e7f4debd75a4523bdd5214",
+      "added": 124
+    },
+    "sunday-reading": {
+      "revision": 1,
+      "content": "c1d6eb0f0ab2860111ac9cc2442d0e599cf9aec5024f154ec04562f953c7b962",
+      "added": 125
+    },
+    "supper-evening-menu": {
+      "revision": 1,
+      "content": "69dc7d8b04f70c5e148b26e5f04a7542cc81f517c0b9debf8383e01f29b5994d",
+      "added": 126
+    },
+    "upholstery-samples": {
+      "revision": 1,
+      "content": "bddc5da2746e3950498a6711b7a8c0352e1fd6cbe140e6170ee851b97d69d3b6",
+      "added": 127
+    },
+    "website-review-enquiry": {
+      "revision": 1,
+      "content": "cea72645bdc913cd636f9c74da9d3669b08d157ccedfaf898a5c99a3d475bc05",
+      "added": 128
+    },
+    "weeknight-recipe-sample": {
+      "revision": 1,
+      "content": "afdc64919c30702c1215fe3c2f778772180f448e0bfbc601bb947abccca36f94",
+      "added": 129
+    },
+    "workshop-programme": {
+      "revision": 1,
+      "content": "5a8ed857cf60356197e769e858029462cdfcf395af07ed37e1931f35a760d0aa",
+      "added": 130
+    },
+    "writing-checklist": {
+      "revision": 1,
+      "content": "3c5da47e0ac2e8c57d4cc25f4d0018a32e7daa82ea7958e0b15bfa5fea707cb8",
+      "added": 131
+    }
+  },
+  "retired": []
+}

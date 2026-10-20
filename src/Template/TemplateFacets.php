@@ -128,10 +128,11 @@ final class TemplateFacets
      * THE ONE PLACE A FACET IS WRITTEN RATHER THAN READ, AND IT HAS TO BE.
      * ========================================================================
      * Every facet is derived precisely so it cannot drift from the design it
-     * describes — and {@see LockedTemplates} is the entry that has no design to
-     * read, because shipping premium trees in the free ZIP and refusing the
-     * save is trialware (issue #7). So `locked.json` writes them down beside the
-     * name.
+     * describes — and a hosted index entry ({@see Catalog\CatalogIndex}) has no
+     * design to read until it is installed, and a locked Pro one never does on
+     * free, because shipping premium trees to free and refusing the save is
+     * trialware (issue #7). So the publisher writes them into the entry
+     * (ADR 0156).
      *
      * The exception is kept from becoming a hole by **normalising against the
      * manifest**: a stub claiming a `shape` no layout declares would draw a chip

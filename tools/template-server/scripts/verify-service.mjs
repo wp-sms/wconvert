@@ -1,12 +1,16 @@
 import assert from 'node:assert/strict';
-import { hash } from './storage.mjs';
-import { legacyReleaseId, validateDesignCatalogue } from './design-catalogue.mjs';
+import { hash, budget, releaseClosure, validatePointer, validatePopularity, POINTER } from './storage.mjs';
 
-/** Read-only acceptance against local emulation or the configured HTTPS service. */
-export async function verifyService(base, { expected, metadataOrigin, premiumMode = 'unconfigured', fetcher = fetch } = {}) {
+const TYPES = { json: 'application/json; charset=utf-8', html: 'text/html; charset=utf-8', png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp' };
+
+/**
+ * Read-only acceptance against local emulation or the configured HTTPS service.
+ * Sends no credentials, and no plugin user agent: these reads are never counted.
+ */
+export async function verifyService(base, { expected, premiumMode = 'unconfigured', fetcher = fetch } = {}) {
   assert(['unconfigured', 'configured'].includes(premiumMode), 'Unknown premium verification mode');
   base = new URL(base);
-  const local = ['localhost','127.0.0.1'].includes(base.hostname);
+  const local = ['localhost', '127.0.0.1'].includes(base.hostname);
   assert(local || base.protocol === 'https:', 'HTTPS required');
   assert(!base.username && !base.password && !base.search && !base.hash && base.pathname === '/', 'Use a plain service origin');
   async function request(path, limit, options = {}) {
@@ -16,70 +20,65 @@ export async function verifyService(base, { expected, metadataOrigin, premiumMod
       const reader = response.body.getReader();
       try {
         while (true) {
-          const {done,value} = await reader.read(); if(done) break;
+          const { done, value } = await reader.read(); if (done) break;
           size += value.length; assert(size <= limit, 'Response exceeds verification budget'); chunks.push(Buffer.from(value));
         }
-      } catch(error) { await reader.cancel(); throw error; }
+      } catch (error) { await reader.cancel(); throw error; }
       finally { reader.releaseLock(); }
     }
     return { response, bytes: Buffer.concat(chunks) };
   }
-  const initial = await request('/manifest.json',262144); assert.equal(initial.response.status,200);
-  assert.match(initial.response.headers.get('cache-control'), /must-revalidate/);
-  const manifest=JSON.parse(initial.bytes);assert.equal(manifest.schema,2);assert.match(manifest.release,/^[a-f0-9]{64}$/);
-  if(expected) assert.equal(manifest.release,expected,'The served release differs from the requested release');
-  assert(Array.isArray(manifest.pages)&&manifest.pages.length>0&&manifest.pages.length<=16);
-  const mirror=value=>{const u=new URL(value);assert.equal(u.protocol,'https:');assert(!u.username&&!u.password&&!u.search&&!u.hash);metadataOrigin??=u.origin;assert.equal(u.origin,metadataOrigin);if(!local)assert.equal(u.origin,base.origin);return u.pathname;};
-  const report={release:manifest.release,freePacks:0,premiumRefusals:0,publicPreviews:0,images:0,downloadedSetups:0,metadataOrigin:'',localOnly:local};
-  const immutable=async(path,sha,limit)=>{
-    const {response,bytes}=await request(path,limit);assert.equal(response.status,200);assert.equal(hash(bytes),sha);assert.match(response.headers.get('cache-control'),/immutable/);
+  const initial = await request('/' + POINTER, 65536);
+  assert.equal(initial.response.status, 200);
+  assert.match(initial.response.headers.get('cache-control'), /no-cache, must-revalidate/);
+  const tag = initial.response.headers.get('etag'); assert(tag, 'The pointer needs an ETag');
+  assert.equal((await request('/' + POINTER, 0, { headers: { 'If-None-Match': tag } })).response.status, 304, 'The pointer must revalidate with 304');
+  const pointer = validatePointer(initial.bytes);
+  if (expected) assert.equal(pointer.release, expected, 'The served release differs from the requested release');
+  const served = new Map();
+  // Missing is null; anything served must be immutable, typed and byte-exact.
+  async function read(scope, key) {
+    if (scope === 'private') return null;
+    if (served.has(key)) return served.get(key);
+    const { response, bytes } = await request('/' + key, budget(key));
+    if (response.status === 404) { served.set(key, null); return null; }
+    assert.equal(response.status, 200, key);
+    assert.match(response.headers.get('cache-control'), /immutable/, key);
+    assert.equal(response.headers.get('content-type'), TYPES[key.split('.').pop()], key);
+    if (key.endsWith('.html')) assert.match(response.headers.get('content-security-policy') ?? '', /sandbox allow-scripts/, key);
     // Cloudflare may omit Content-Length for compressed responses. Request the
     // identity representation for the byte-count check; GET above still checks
     // the hash of the normally negotiated (decompressed) response.
-    const head=await request(path,0,{method:'HEAD',headers:{'Accept-Encoding':'identity'}});assert.equal(head.response.status,200);assert.equal(Number(head.response.headers.get('content-length')),bytes.length);
-    const cached=await request(path,0,{headers:{'If-None-Match':response.headers.get('etag')}});assert.equal(cached.response.status,304);
-    return {response,bytes};
-  };
-  const releasePacks = [], releaseCollections = [];
-  for(const page of manifest.pages){
-    const pagePath=mirror(page.url);assert.match(pagePath,new RegExp(`^/releases/${manifest.release}/page-[1-9][0-9]?\\.json$`));
-    const data=JSON.parse((await immutable(pagePath,page.sha256,262144)).bytes);assert.equal(data.release,manifest.release);assert(Array.isArray(data.packs)&&data.packs.length<=50);
-    releasePacks.push(...data.packs); releaseCollections.push(...(data.collections ?? []));
-    for(const pack of data.packs){
-      const previewPath=mirror(pack.preview_url);assert.match(previewPath,/^\/previews\/[a-f0-9]{64}\.html$/);
-      const preview=await immutable(previewPath,previewPath.split('/').pop().split('.')[0],2097152);
-      assert.match(preview.response.headers.get('content-security-policy'),/sandbox allow-scripts/);report.publicPreviews++;
-      const path=mirror(pack.url);assert.match(pack.sha256,/^[a-f0-9]{64}$/);
-      if(pack.access==='premium'){
-        assert.equal(path,`/downloads/${pack.sha256}.json`);const result=await request(path,16384);
-        assert.equal(result.response.status,premiumMode === 'configured' ? 401 : 503,'Anonymous premium downloads must be refused in the expected configuration');assert.equal(result.response.headers.get('cache-control'),'private, no-store');report.premiumRefusals++;continue;
-      }
-      assert.equal(pack.access,'free');assert.equal(path,`/packs/${pack.sha256}.json`);
-      const content=JSON.parse((await immutable(path,pack.sha256,262144)).bytes);assert(content.templates.every(t=>t.tier==='free'));
-      report.freePacks++;report.downloadedSetups+=content.playbooks.length;assert((content.assets??[]).length<=16);
-      for(const asset of content.assets??[]){
-        assert.equal(asset.access,'free');assert.match(asset.sha256,/^[a-f0-9]{64}$/);
-        const ext={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[asset.mime];assert(ext);
-        const image=await immutable(`/assets/free/${asset.sha256}.${ext}`,asset.sha256,5242880);assert.equal(image.bytes.length,asset.bytes);assert.equal(image.response.headers.get('content-type'),asset.mime);report.images++;
-      }
+    const head = await request('/' + key, 0, { method: 'HEAD', headers: { 'Accept-Encoding': 'identity' } });
+    assert.equal(head.response.status, 200); assert.equal(Number(head.response.headers.get('content-length')), bytes.length, key);
+    assert.equal((await request('/' + key, 0, { headers: { 'If-None-Match': response.headers.get('etag') } })).response.status, 304, key);
+    served.set(key, bytes);
+    return bytes;
+  }
+  const closure = await releaseClosure(pointer.release, read, { withPrivate: false });
+  if (pointer.popularity) validatePopularity(await read('public', `v3/index/${pointer.popularity}.json`) ?? assert.fail('Missing popularity sidecar'));
+  const report = { release: pointer.release, designs: closure.designs.size, setups: closure.setups.size, freeDesigns: 0, premiumRefusals: 0,
+    images: 0, thumbnails: 0, previews: 0, og: 0, details: closure.details.length, withdrawn: pointer.withdrawn.length, localOnly: local };
+  for (const key of closure.objects.keys()) {
+    if (key.startsWith('public/v3/assets/')) report.images++;
+    else if (key.startsWith('public/v3/thumbs/')) report.thumbnails++;
+    else if (key.startsWith('public/v3/previews/')) report.previews++;
+    else if (key.startsWith('public/v3/og/')) report.og++;
+  }
+  // Premium objects are refused anonymously in the expected configuration.
+  for (const [kind, entries] of [['designs', closure.designs], ['setups', closure.setups]]) {
+    for (const entry of entries.values()) {
+      if (entry.tier === 'free') { if (kind === 'designs') report.freeDesigns++; continue; }
+      const { response } = await request(`/v3/premium/${kind}/${entry.sha256}.json`, 16384);
+      assert.equal(response.status, premiumMode === 'configured' ? 401 : 503, 'Anonymous premium downloads must be refused in the expected configuration');
+      assert.equal(response.headers.get('cache-control'), 'private, no-store');
+      report.premiumRefusals++;
     }
   }
-  if (legacyReleaseId(releasePacks, releaseCollections) !== manifest.release) {
-    const path = `/releases/${manifest.release}/designs.json`;
-    const { response, bytes } = await request(path, 262144); assert.equal(response.status, 200);
-    assert.match(initial.response.headers.get('link') ?? '', /rel="describedby"/);
-    const catalogue = JSON.parse(bytes);
-    const dependencies = validateDesignCatalogue(catalogue, { id: manifest.release, packs: releasePacks, collections: releaseCollections, origin: metadataOrigin });
-    for (const [key, sha] of dependencies) await immutable('/' + key, sha, key.startsWith('thumbnails/') ? 5242880 : 2097152);
-    const all = [...catalogue.designs, ...(catalogue.extensions?.bundled_designs ?? [])];
-    report.designs = all.length;
-    report.bundledOnlyDesigns = catalogue.extensions?.bundled_designs.length ?? 0;
-    report.galleryCollections = catalogue.extensions?.collections.length ?? 0;
-    report.formats = [...new Set(all.map(design => design.format))].sort();
-    report.thumbnails = all.filter(design => design.thumbnail).length;
+  for (const path of ['/v3/premium/designs/x.json', '/grants/x.json', `/downloads/${'0'.repeat(64)}.json`, '/v3/grants', '/v3/manifest.json?key=not-a-credential']) {
+    const denied = await request(path, 16384);
+    assert([400, 404, 405].includes(denied.response.status), path); assert.match(denied.response.headers.get('cache-control'), /no-store/);
   }
-  for(const path of ['/private/packs/x.json','/grants/x.json','/manifest.json?key=not-a-credential']){
-    const denied=await request(path,16384);assert([400,404].includes(denied.response.status));assert.match(denied.response.headers.get('cache-control'),/no-store/);
-  }
-  report.metadataOrigin=metadataOrigin;return report;
+  report.pointerSha256 = hash(initial.bytes);
+  return report;
 }

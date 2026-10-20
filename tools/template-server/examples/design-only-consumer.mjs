@@ -1,10 +1,12 @@
 /**
- * Website-owned controls. Pass a validated build-time design from either public
- * array. reviewedSnapshotUrl must come from the website's reviewed snapshot
- * manifest, matched to this design revision; never derive it from a remote URL.
+ * Website-owned controls over one v3 detail row (GALLERY-CONTRACT.md): its
+ * `name`, `screens` and the `design_only` preview digest, served at
+ * `<base>previews/<digest>.html` where `base` is the catalogue's `/v3/` folder.
+ * reviewedSnapshotUrl must come from the website's reviewed snapshot manifest,
+ * matched to this design revision; never derive it from a remote URL.
  * serviceAvailable is decided by a same-origin website health/fetch layer.
  */
-export function mountDesignPreview(container, design, { serviceAvailable = false, reviewedSnapshotUrl } = {}) {
+export function mountDesignPreview(container, design, { base, serviceAvailable = false, reviewedSnapshotUrl } = {}) {
   const doc = container.ownerDocument;
   let screen = design.screens[0]?.id, device = 'desktop';
   const heading = doc.createElement('h2'); heading.textContent = design.name;
@@ -28,15 +30,15 @@ export function mountDesignPreview(container, design, { serviceAvailable = false
     desktop.setAttribute('aria-pressed', String(device === 'desktop'));
     mobile.setAttribute('aria-pressed', String(device === 'mobile'));
     const selected = design.screens.find(item => item.id === screen);
-    const capable = design.preview_status === 'available' && design.design_only_embed?.version === 1 && selected?.design_only_embed_url;
-    const supplied = serviceAvailable && capable ? selected.design_only_embed_url : reviewedSnapshotUrl;
+    const capable = Boolean(base && /^[a-f0-9]{64}$/.test(design.design_only ?? '') && selected);
+    const supplied = serviceAvailable && capable ? `${base}previews/${design.design_only}.html#screen=${encodeURIComponent(selected.id)}` : reviewedSnapshotUrl;
     select.disabled = desktop.disabled = mobile.disabled = !(serviceAvailable && capable);
     frame.hidden = !supplied; message.hidden = Boolean(supplied);
     message.textContent = supplied ? '' : 'This design’s preview is being prepared.';
     if (!supplied) { frame.removeAttribute('src'); return; }
     const url = new URL(supplied, doc.baseURI);
     if (serviceAvailable && capable) {
-      // Use the supplied per-screen URL; URLSearchParams preserves slash IDs.
+      // The design-only fragment protocol; URLSearchParams preserves slash IDs.
       const params = new URLSearchParams(url.hash.slice(1)); params.set('device', device); url.hash = params.toString();
       frame.src = url.href;
     } else {

@@ -52,13 +52,13 @@ final class CaptureContract
         $template = self::template($config, $goal, $policyUrl);
         $tree = $template['tree'] ?? [];
         if (CommerceSupport::used($tree)) {
-            if (($tree['v'] ?? null) === 3 || !CommerceSupport::active()) return 'commerce_products';
+            if (TemplateTree::isGraph($tree) || !CommerceSupport::active()) return 'commerce_products';
             foreach ($tree['steps'] as $screen) foreach (CaptureJourney::nodes($screen['content'] ?? []) as $node) {
                 if (($node['type'] ?? '') === 'products' && (($node['context'] ?? 'cart') === 'product' || array_key_exists('main_product_id', $node)) && (!is_int($node['main_product_id'] ?? null) || $node['main_product_id'] < 1)) return 'commerce_products';
                 if (($node['type'] ?? '') === 'products' && ($node['source'] ?? 'selected') !== 'cross_sells' && empty($node['product_ids'])) return 'commerce_products';
             }
         }
-        if (($tree['v'] ?? null) === 3) {
+        if (TemplateTree::isGraph($tree)) {
             if (($issue = GraphCaptureContract::issue($tree, $goal)) !== null) { return $issue; }
         } else {
             if (($issue = CaptureJourney::issue($tree)) !== null) { return $issue; }

@@ -1,142 +1,136 @@
 {
-  "schema": 1,
-  "packs": [
+  "schema": 2,
+  "_note": "The delivery plan (ADR 0156): which reviewed setups are published, with the exact design revision each pins; which collections; which designs are withdrawn. Every design a published setup uses is published. Deferred setups stay bundled only. bundled_only setups are shown on the website from the bundled source but are not downloadable until the reason is resolved.",
+  "setups": [
+    "accessible-visit-note",
+    "add-useful-extras",
+    "appointment-agenda",
+    "basket-cross-sells",
+    "callback-slip",
+    "cleaning-quote",
+    "coffee-taste-finder",
+    "earlier-appointment-enquiry",
+    "edition-early-access",
+    "editorial-weekly",
+    "equipment-return-checklist",
+    "event-calendar",
+    "excerpt-window",
+    "explore-compatible-extras",
+    "first-order-receipt",
+    "home-repair-quote",
+    "homeware-care-notes",
+    "launch-index",
+    "maker-notes",
+    "product-detail-sheet",
+    "reading-notes-guide",
+    "recommend-accessory",
+    "renovation-callback",
+    "repair-advice-request",
+    "repair-assessment",
+    "restock-announcements",
+    "room-planning-worksheet",
+    "service-fit-brief",
+    "service-process-strip",
+    "shopping-guidance",
+    "sms-message-preview",
+    "specification-sheet",
+    "studio-conversation",
+    "sunday-reading",
+    "supper-evening-menu",
+    "upholstery-samples",
+    "website-review-enquiry",
+    "weeknight-recipe-sample",
+    "workshop-programme",
+    "writing-checklist"
+  ],
+  "bundled_only": [
     {
-      "id": "stores-starts",
-      "name": "Stores starting points",
-      "description": "Reviewed campaign starting points for stores.",
-      "version": "1.1.2",
-      "setups": [
-        "edition-early-access",
-        "first-order-receipt",
-        "restock-announcements",
-        "specification-sheet"
-      ]
+      "setup": "ceramics-open-studio",
+      "reason": "Design exhibition-wall: Record the image kind (original, ai-generated or licensed), source, redistribution rights and reviewer before export."
     },
     {
-      "id": "services-starts",
-      "name": "Services starting points",
-      "description": "Reviewed campaign starting points for services.",
-      "version": "1.0.2",
-      "setups": [
-        "cleaning-quote",
-        "home-repair-quote",
-        "renovation-callback",
-        "repair-advice-request",
-        "repair-assessment",
-        "website-review-enquiry"
-      ]
+      "setup": "colour-collection-notes",
+      "reason": "Design colour-atlas: Update required: this design uses an unknown setting."
     },
     {
-      "id": "publishers-starts",
-      "name": "Publishers starting points",
-      "description": "Reviewed campaign starting points for publishers.",
-      "version": "1.1.3",
-      "setups": [
-        "editorial-weekly",
-        "reading-notes-guide",
-        "sunday-reading",
-        "writing-checklist",
-        "excerpt-window"
-      ]
+      "setup": "custom-project-start",
+      "reason": "Design project-workboard: Update required: this design uses an unknown setting."
     },
     {
-      "id": "homeware-care",
-      "name": "Care for handmade homeware",
-      "description": "An illustrated starting point for useful monthly homeware care notes.",
-      "version": "1.0.2",
-      "setups": [
-        "homeware-care-notes"
-      ]
+      "setup": "flower-workshop-invitation",
+      "reason": "Design bloom-postcard: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     },
     {
-      "id": "shopping-help",
-      "name": "Helpful shopping journeys",
-      "description": "Reviewed product accessories, basket extras and a coffee finder. Requires matching Pro capabilities and this shop’s WooCommerce product choices.",
-      "version": "1.0.1",
-      "setups": [
-        "recommend-accessory",
-        "explore-compatible-extras",
-        "add-useful-extras",
-        "basket-cross-sells",
-        "coffee-taste-finder",
-        "shopping-guidance"
-      ]
+      "setup": "garment-fit-guide",
+      "reason": "Design measurement-map: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     },
     {
-      "id": "fabric-sample-enquiries",
-      "name": "Fabric sample enquiries",
-      "description": "An illustrated slide-in for upholstery sample enquiries. Optional material preference and a clear acknowledgement; samples and postage are agreed separately. Requires Pro, without WooCommerce.",
-      "version": "1.0.0",
-      "setups": [
-        "upholstery-samples"
-      ]
+      "setup": "lighting-collection",
+      "reason": "Design collection-poster: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     },
     {
-      "id": "practical-essentials",
-      "name": "Useful everyday campaigns",
-      "description": "Nine distinct designs for clear product facts, workshop details, useful updates and thoughtful service enquiries. Includes every acknowledgement and practical setup guidance.",
-      "version": "1.0.0",
-      "setups": [
-        "maker-notes",
-        "earlier-appointment-enquiry",
-        "equipment-return-checklist",
-        "event-calendar",
-        "product-detail-sheet",
-        "service-process-strip",
-        "appointment-agenda",
-        "sms-message-preview",
-        "service-fit-brief"
-      ]
+      "setup": "listening-night-invitation",
+      "reason": "Design after-hours: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     },
     {
-      "id": "helpful-prompts",
-      "name": "Helpful bars and corner prompts",
-      "description": "Three focused prompts: a repair callback, arrival and access information, and a collection announcement. Requires Pro; no WooCommerce dependency.",
-      "version": "1.0.0",
-      "setups": [
-        "callback-slip",
-        "launch-index",
-        "accessible-visit-note"
-      ]
+      "setup": "night-sky-letter",
+      "reason": "Design night-observatory: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    },
+    {
+      "setup": "sale-deadline",
+      "reason": "Design bar-countdown: Pack links and pictures must be supplied by the site owner."
+    },
+    {
+      "setup": "seasonal-sunshine",
+      "reason": "Design citrus-sunrise: Record the image kind (original, ai-generated or licensed), source, redistribution rights and reviewer before export."
+    },
+    {
+      "setup": "slower-outdoor-guide",
+      "reason": "Design trail-window: Record the image kind (original, ai-generated or licensed), source, redistribution rights and reviewer before export."
+    },
+    {
+      "setup": "thoughtful-gift-direction",
+      "reason": "Design gift-orbit: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    },
+    {
+      "setup": "weekend-observations",
+      "reason": "Design weekend-broadsheet: Update required: this design uses an unknown setting."
     }
   ],
+  "designs": [],
   "collections": [
     "service-enquiries",
     "reader-relationships",
     "help-shoppers-choose",
     "prepare-a-visit",
     "useful-store-details",
-    "explain-the-service"
+    "explain-the-service",
+    "sale-planning",
+    "launch-a-collection",
+    "black-friday-2026"
   ],
-  "deferred": [
-    {
-      "setup": "sale-deadline",
-      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
-    },
-    {
-      "setup": "lighting-collection",
-      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
-    }
-  ],
+  "withdrawn": [],
   "image_rights": {
     "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152": {
       "redistribution": true,
       "source": "Original WConvert homeware-shelf.svg, extracted unchanged from product-shelf; GPL-2.0-or-later. Raster export: homeware-shelf.png. See pilot/assets/README.md.",
       "reviewedBy": "Codex — source/provenance review, 2026-10-01",
-      "access": "free"
+      "access": "free",
+      "kind": "original"
     },
     "606cf8ea1082395085f26566efff4285b3191e7b688f7498be38299463d1ccd6": {
       "redistribution": true,
       "source": "Original WConvert fabric-swatches.svg, extracted unchanged from sample-envelope; GPL-2.0-or-later. Reviewed raster export: fabric-swatches.png. See pilot/assets/README.md.",
       "reviewedBy": "Codex — source/provenance review, 2026-10-19",
-      "access": "premium"
+      "access": "premium",
+      "kind": "original"
     },
     "bc39288923f8b6c4f321c7d0d3acc4b9c0ba781b105ce04b3e2792bcd85c4df3": {
       "redistribution": true,
       "source": "Original WConvert task-lamp.svg; GPL-2.0-or-later. Reviewed 960 × 800 raster export; see pilot/assets/README.md.",
       "reviewedBy": "Codex — provenance and raster review, 2026-10-20",
-      "access": "free"
+      "access": "free",
+      "kind": "original"
     }
   },
   "artwork_exports": {

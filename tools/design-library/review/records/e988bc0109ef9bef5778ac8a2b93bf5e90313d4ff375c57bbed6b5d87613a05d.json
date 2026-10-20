@@ -1,0 +1,99 @@
+{
+  "id": "maker-notes",
+  "revision": "deea75fee9538da5fc94b3458907eaab0e71b0485ee3eebe155adbf7ed05ccd4",
+  "base_id": "39652fdaac2b7049038ef3e8b9fa42010f4c0d43303a26c709554ba855e7877b",
+  "decision": "approved",
+  "reviewer": "Codex — considered essentials",
+  "note": "Solid plum surface, concise consent, aligned field/action and quiet receipt. No decorative standalone icons. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+  "at": "2026-10-19T12:13:43.005142+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+          "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-1440.png",
+          "sha256": "b5439e952bda9430a77d794f7ce63be3a787edb26a539ecfa6b4f7a2458ddc8d"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-320.png",
+          "sha256": "b3a0d13b075e73b28107e5f159c214444f0fa22bd2b493881b41902c1ffbf5f6"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-390.png",
+          "sha256": "1bd37e47d7f1b73fc61715c0a5857c5f00f1cdf3561433daf6c8c7eeb7191a0d"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-768.png",
+          "sha256": "2c5a50f80a2a680890a7e9a5679012a92dc32395c333442fc0b35a212e765d61"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-320-rtl-stress.png",
+          "sha256": "1cc1e59c2a93547b65d0e00b40c0463ff34d74902df9cc87d80b6416f8fab794"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+          "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+          "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-retry.png",
+          "sha256": "8aa2f0af56f892982d1fa36dc74544a332a081f0d14aa62010f0672a2100aba1"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+          "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+          "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-1280-input.png",
+          "sha256": "3ce5c5b86eb8ffedcd3393162aa0743279d45f1d9b52868526509c2e1dd2aeed"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-1280-success.png",
+          "sha256": "aa7d0acef214c918ccd2a4f2d11b508f4042550dc25227b6637a696a96f6d7d5"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-320-input.png",
+          "sha256": "b7496922b48dcc90e662adba50cc64fb977a8b1f7bd6f2d954bb26f2bcafd5d7"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/maker-notes-native-320-success.png",
+          "sha256": "b22dd15026dfedfd96c01300a2a28857b2f25ea6dc1e0947f0592cd1e3c94700"
+        }
+      ]
+    }
+  },
+  "record_id": "e988bc0109ef9bef5778ac8a2b93bf5e90313d4ff375c57bbed6b5d87613a05d"
+}

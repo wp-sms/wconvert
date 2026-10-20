@@ -18,7 +18,7 @@ import { ruleTypes } from './support/rule-types';
  * the Goal.** Browsing reads only. Customize creates a draft and opens the editor directly.
  */
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn(), previewPlaybooks: vi.fn() }));
-const catalog = vi.hoisted(() => ({ catalogStatus: vi.fn(), previewPack: vi.fn(), installPack: vi.fn(), refreshCatalog: vi.fn() }));
+const catalog = vi.hoisted(() => ({ catalogStatus: vi.fn(), refreshCatalog: vi.fn(), setCatalogConsent: vi.fn(), installSetup: vi.fn(), installDesign: vi.fn(), previewDesign: vi.fn() }));
 vi.mock('../../resources/admin/src/templates/catalog', () => catalog);
 const picker = vi.hoisted(() => ({ pickerData: vi.fn(), savePreferences: vi.fn(), saveOccasions: vi.fn() }));
 vi.mock('../../resources/admin/src/discovery/api', () => picker);
@@ -557,7 +557,7 @@ it('clears a previous search when switching goals', async () => {
   expect(await screen.findByRole('button', { name: /Setup details for/ })).toBeVisible();
 });
 
-it('offers no template packs while no catalog is configured', async () => {
+it('offers no online setups while the library is switched off', async () => {
   render(<GoalScreen onCreated={vi.fn()} />);
   await pickGoal();
   await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
@@ -566,32 +566,37 @@ it('offers no template packs while no catalog is configured', async () => {
   expect(catalog.catalogStatus).not.toHaveBeenCalled();
 });
 
-it('installs a pack from creation, then returns to its starting points without creating a draft', async () => {
-  const pack = { id: 'store', name: 'Store collection', description: 'Store starts', version: '1.1.0', installed_version: null, state: 'available' };
-  const status = { configured: true, source: 'https://example.org/catalog', checked_at: null, packs: [pack] };
+it('adds an online setup for the chosen goal without creating a draft (ADR 0156)', async () => {
+  const setup = { id: 'welcome-online', revision: 1, sha256: 'a'.repeat(64), name: 'Welcome discount online', goal: GOALS[0].id, tier: 'free', design: { id: 'reading-slip', revision: 1 }, state: 'install' };
+  const status = { enabled: true, consent: 'yes', checked_at: null, update_required: false, skipped: 0, taxonomy: {}, designs: [{ id: 'reading-slip', format: 'popup' }], setups: [setup] };
   window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
   onTestFinished(() => { delete window.wconvertAdmin; });
   catalog.catalogStatus.mockResolvedValue(status);
-  catalog.previewPack.mockResolvedValue({ id: 'store', name: pack.name, version: pack.version, digest: 'abc', templates: [{ ...PLAYBOOK.template, id: 'pack-design', name: 'Welcome design', display_type: 'popup' }], starting_points: [{ id: 'pack-start', name: 'Welcome discount', goal: GOALS[0].id, goal_label: GOALS[0].label, template_id: 'pack-design' }] });
-  catalog.installPack.mockResolvedValue({ ...status, packs: [{ ...pack, installed_version: '1.1.0', state: 'installed' }] });
-  goals.listPlaybooks.mockResolvedValueOnce([PLAYBOOK]).mockResolvedValue([{ ...PLAYBOOK, id: 'pack-start', collection: { id: 'store', name: pack.name, version: pack.version } }]);
+  catalog.refreshCatalog.mockResolvedValue(status);
+  catalog.installSetup.mockResolvedValue({ playbook_id: 'setup-1-welcome-online', template_id: 'design-1-reading-slip', status: { ...status, setups: [{ ...setup, state: 'ready' }] } });
+  goals.listPlaybooks.mockResolvedValueOnce([PLAYBOOK]).mockResolvedValue([PLAYBOOK, { ...PLAYBOOK, id: 'setup-1-welcome-online', name: 'Welcome discount online' }]);
   render(<GoalScreen onCreated={vi.fn()} />);
   await pickGoal();
-  await userEvent.type(screen.getByRole('searchbox'), 'nothing matches');
   await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
-  await userEvent.click(await screen.findByRole('menuitem', { name: 'Template packs' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Preview Store collection' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Install pack' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Choose a campaign setup' }));
-  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-  expect(screen.getByRole('combobox', { name: 'Source' })).toHaveValue('store');
-  // The filter it set lives under More filters, which opens so focus can land on it.
-  expect(screen.getByRole('combobox', { name: 'Source' })).toBeVisible();
-  expect(screen.getByRole('combobox', { name: 'Source' })).toHaveFocus();
-  expect(screen.getByRole('searchbox')).toHaveValue('');
-  await screen.findByRole('button', { name: /Setup details for/ });
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Online setups' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Add to my setups' }));
+  expect(catalog.installSetup).toHaveBeenCalledWith('welcome-online', 'a'.repeat(64));
+  expect(await screen.findByText('In your library')).toBeInTheDocument();
+  await waitFor(() => expect(goals.listPlaybooks).toHaveBeenCalledTimes(2));
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
+});
+it('asks before the online library is used from creation', async () => {
+  window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
+  onTestFinished(() => { delete window.wconvertAdmin; });
+  catalog.catalogStatus.mockResolvedValue({ enabled: true, consent: 'unanswered', checked_at: null, update_required: false, skipped: 0, taxonomy: {}, designs: [], setups: [] });
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Online setups' }));
+  expect(await screen.findByRole('heading', { name: 'See more designs from the WConvert library?' })).toBeInTheDocument();
+  expect(catalog.refreshCatalog).not.toHaveBeenCalled();
 });
 it('combines business and format filters without writing a draft', async () => {
   goals.listPlaybooks.mockResolvedValue([

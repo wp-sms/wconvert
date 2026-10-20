@@ -72,7 +72,7 @@ it('keeps typed details when failure is toggled, then accepts a retry without se
 
 it('starts a graph test at its entry screen and resets to that entry', async () => {
   const user = userEvent.setup();
-  const template = { tree: { v: 3, steps: graphFixture.steps, graph: graphFixture.graph, submissions: [] }, tokens: {} } as unknown as Template;
+  const template = { tree: { v: 2, steps: graphFixture.steps, graph: graphFixture.graph, submissions: [] }, tokens: {} } as unknown as Template;
   render(<JourneyTest template={template} onEdit={() => {}} />);
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
   expect(screen.getByText('One enquiry').closest('li')).toHaveAttribute('data-current', 'false');

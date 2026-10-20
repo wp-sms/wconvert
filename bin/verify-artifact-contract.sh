@@ -405,7 +405,8 @@ if [ "$tier" = "free" ]; then
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
     require_file resources/phone/countries.json "WConvert\\Optin\\PhoneCountry reads it" || true
     require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\BundledTemplates::PATH reads it" || true
-    require_file resources/templates/locked.json "WConvert\\Template\\LockedTemplates::PATH reads it" || true
+    require_file resources/templates/since.json "WConvert\\Template\\Catalog\\VocabularySince::PATH reads it" || true
+    require_file resources/templates/revisions.json "WConvert\\Template\\BundledTemplates::REVISIONS reads it" || true
     # The block's metadata, which is runtime data in the strictest sense:
     # WConvert\Frontend\InlineOptinBlock points register_block_type() at the
     # DIRECTORY, so WordPress reads this file on every request. It is also the
@@ -435,19 +436,15 @@ verdict
 # newest place that rule can be broken, because a design is a JSON file that
 # looks harmless in a diff.
 #
-# Two halves, and they fail differently:
-#
-#   1. A bundled entry declaring anything but `tier: free`. That is a premium
-#      DESIGN in the free artifact, whatever the admin then does with it.
-#   2. A `tree` anywhere in locked.json. That file exists precisely to carry
-#      the CARD and not the design — a name, its facets and a link to a live
-#      preview on wconvert.io — so a tree in it is the trialware shape
-#      arriving through the file written to prevent it.
+# A bundled entry declaring anything but `tier: free` is a premium DESIGN in
+# the free artifact, whatever the admin then does with it. Free no longer ships
+# a card for each Pro design either: those are hosted catalogue entries, drawn
+# from a server thumbnail (ADR 0156), so there is no bundled file to inspect.
 #
 # Grepped rather than parsed, deliberately. A shell program that decoded JSON
 # would need a decoder in the release environment, and what is being looked for
 # is a literal key: `"tier": "pro"` cannot appear in a free entry for any
-# reason, and neither can `"tree"` in locked.json.
+# reason.
 section
 
 # tiers.json is free's file and is not in Pro's ZIP, so it is read from the
@@ -507,14 +504,6 @@ if [ "$tier" = "free" ]; then
         fail "resources/templates/library/ is missing — the design library was not inspected"
     fi
 
-    if [ -r "$TREE/resources/templates/locked.json" ]; then
-        if grep -Eq '"tree"[[:space:]]*:' "$TREE/resources/templates/locked.json"; then
-            fail "resources/templates/locked.json carries a tree — locked designs ship as metadata, never as designs"
-        fi
-    else
-        fail "resources/templates/locked.json is missing — the locked metadata was not inspected"
-    fi
-
     if section_clean; then
         pass "no premium design in the free artifact"
     fi
@@ -531,7 +520,7 @@ else
     # designs are the whole of what a customer bought a `floating_bar` for, and
     # a build that staged `resources/` without `pro/resources/` produces a ZIP
     # that installs, activates, replaces the loader and shows the customer the
-    # same locked upsell cards free shows — with nothing anywhere saying why.
+    # none of the designs it paid for — with nothing anywhere saying why.
     # That is precisely the state this ticket found the product in.
     # A MODULE'S directory, not one fixed library path (ADR 0056). Pro's
     # designs belong to the modules that use them, so this is asked of every
@@ -570,7 +559,7 @@ verdict
 # per-rung one: every module tiers.json names is in the ZIP, and nothing in the
 # ZIP's modules/ is one tiers.json does not name. The first half is the failure
 # a customer meets — a Pro ZIP missing `display-types` installs, activates,
-# replaces the loader, and shows the same locked upsell cards free shows. The
+# replaces the loader, and shows none of Pro's designs. The
 # second is a module nobody declared, which nothing else checks.
 #
 # Free has no modules and asserts nothing here: check (c) already refuses any

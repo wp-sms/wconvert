@@ -19,7 +19,8 @@ const screenIds = (tree: TemplateTree, answers: Answers) => {
 };
 
 it.each(fixtures)('$total-screen fixture is complete and stays within the per-route question limit', ({ total, tree, maxQuestions }) => {
-  expect(tree.v).toBe(3);
+  expect(tree.v).toBe(2);
+  expect(tree.graph).toBeDefined();
   expect(tree.steps).toHaveLength(total);
   expect(journeyReadinessIssues(tree)).toEqual([]);
   expect(journeyBoundaryIssues(tree, 'submit')).toEqual([]);
