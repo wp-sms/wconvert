@@ -36,7 +36,7 @@ a usable Optin must not require rebuilding its layout.
    `pro/modules/display-types/templates/`; paid question designs go in
    `pro/modules/journeys/templates/`. The `id` must be unique across all modules.
    Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
-   preserve that id when reordering it. Author `tree.v: 2` for linear submissions. Use supported `v: 3` only for a journey that needs the graph contract; preserve stable screen IDs and validate every reachable route with the shipping capture contract. Do not author derived facets.
+   preserve that id when reordering it. Author `tree.v: 2` — `v` is the vocabulary version, and nothing else. A journey that needs the graph contract adds a `graph`; never write `v: 3` (ADR 0156: it is the old spelling of a flow, read but never written, and the next vocabulary version is 4). Preserve stable screen IDs and validate every reachable route with the shipping capture contract. Do not author derived facets.
    PHP mints missing ids on newly added draft leaves; that fallback is not a
    reason to renumber shipped leaves and lose translation identity (ADR 0010).
 3. **`composer verify:templates`.** Not optional — see below.
@@ -60,7 +60,9 @@ a usable Optin must not require rebuilding its layout.
    the rebuilt local studio when changing Bar with a field or its filled setups.
 6. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
    conversion heuristics. Walk all eleven.
-7. **Iterate**, then `composer test && npm test`.
+7. **Write its catalogue words** in `tools/design-library/publishing/designs.json`
+   (see *Publishing* below) — not in the design file.
+8. **Iterate**, then `composer test && npm test`.
 
 The [Design Bench](../../../tools/design-library/README.md) is the interactive
 half of steps 4–5: paste the tree in, drive every token live, switch container,
@@ -158,21 +160,56 @@ declaration. Do not add a check for it, and do not file a design under a Goal.
 describe. `TemplateFacetsTest` walks the real library, so a new design is
 covered the day it lands.
 
-**The one exception is `locked.json`**, which has no tree to read — that is
-where a Pro design's facets are *written*, and it is the only place a facet is
-written anywhere.
+There is no exception any more: `locked.json` is gone (ADR 0156). A hosted
+card with no tree on this site carries facets the **publisher derived** from the
+tree with the same `TemplateFacets`, so nobody writes a facet anywhere.
 
-## A Pro design costs two more things
+## A Pro design costs nothing extra in the free ZIP
 
-1. **A metadata-only stub** in `resources/templates/locked.json` — never a
-   `tree`, ever. Shipping premium trees in the free ZIP and refusing the save
-   is trialware ([#7](https://github.com/navidkashani/wconvert/issues/7)).
-   `bin/verify-artifact-contract.sh` enforces it.
-2. **A live page before adding a preview link.** `preview_url` may point to
-   `https://wconvert.io/designs/<slug>/` only after that page is published.
-   Until then, omit it: the card says *Included in Pro* (ADR 0098, as extended
-   to the practical library). Never fabricate a URL or ship the paid tree in
-   Free. Website preview publication remains a separate release task.
+Free ships no card for it. A Pro design reaches a free site only as a hosted
+catalogue entry: the publisher renders its thumbnail, and the picker shows it
+locked with a link to its page on wconvert.io (ADR 0156). Never put a Pro tree,
+or anything that names one, in `resources/`.
+
+## Publishing: words, families, images and revisions
+
+Every design is published as its own object with its own **revision**
+(ADR 0156, `docs/template-discovery-api.md`). What that asks of an author:
+
+- **Catalogue words** go in `tools/design-library/publishing/designs.json`, keyed
+  by design id: `description` (one honest sentence a merchant would search for,
+  shown on the website), optional `slug`, and `industries`, `occasions`,
+  `style`, `colour` — ids from that file's `taxonomy`, never free text. Add a
+  taxonomy term there (with its label) when none fits; the plugin needs no
+  release for it. Seeded values from 2026-10-20 are marked for review: correct
+  them when you touch a design.
+- **Family.** Hand-drawn siblings of one design across formats share
+  `"family": "<id>"` in the same file. Each sibling is still its own design.
+- **Ids are permanent.** Never reuse one, never rename one in place: a new id
+  that replaces an old one lists it in `aliases`. A design that is gone is
+  retired by `npm run templates:revisions` and its id can never come back.
+- **Images need a rights record** in `publishing/catalog.json` → `image_rights`,
+  keyed by the raster's SHA-256: `kind` (`original`, `ai-generated` or
+  `licensed` — then `licence` too), `source`, `redistribution: true`,
+  `reviewedBy`, `access`. Bundled designs included. A design with an image and
+  no record cannot be exported; it stays `bundled_only`.
+- **Colour lives in the top-level tokens.** A literal colour in a node's
+  `tokens` or `narrow` bag is counted against
+  `publishing/colour-baseline.json`; a new design starts at zero and an
+  existing one may only go down, so a future Brand setting can restyle it.
+- **Revisions are computed, not written.** After any change that ships, run
+  `npm run templates:revisions` and commit `publishing/revisions.json` with both
+  generated `revisions.json` files; `templates:revisions:check` fails the build
+  otherwise. Never put `revision` in the design file — it would change the bytes
+  every approval is pinned to.
+- **Publishing is a plan entry.** Add the setup to `publishing/catalog.json`
+  `setups` once it is approved; `npm run templates:release:local` exports it,
+  renders its thumbnails and previews, and runs the shipping PHP reader over
+  the whole release. A design that cannot be exported yet goes in
+  `bundled_only` with the exporter's reason.
+- **Undo is a new revision**, or a `withdrawn` row with a reason (`rights`,
+  `quality`, `broken`, `other`) — never a deleted design. A release that drops
+  a live design without withdrawing it is refused.
 
 ## What cannot be imported, and why there is no mapper
 
@@ -275,6 +312,7 @@ so `clamp()` widths, asymmetric `pad`, arbitrary radii, gradients through
 
 ```bash
 composer verify:templates   # every entry survives registration intact
+npm run templates:revisions:check   # revisions and both bundled revision files current
 composer test               # TemplateFacetsTest, TemplateLibraryTest, ProLibraryTest
 npm test                    # renderer-manifest-parity, builder-gallery — READ THE EXIT CODE
 composer verify:source      # no Pro tree in the free tree
