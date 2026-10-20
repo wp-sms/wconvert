@@ -7,6 +7,9 @@ and the discovery schema of [0112](0112-template-discovery-and-reviewed-collecti
 Amends [0010](0010-templates-are-configuration-not-documents.md),
 [0015](0015-enforcement-is-by-non-registration.md),
 [0043](0043-the-library-is-indexed-and-its-facets-are-derived.md),
+[0083](0083-installed-packs-supply-campaign-starting-points.md),
+[0127](0127-free-keeps-product-seams-not-product-reads.md),
+[0132](0132-every-screen-answers-its-first-question.md),
 [0116](0116-free-shows-nothing-it-cannot-run.md) §1 and
 [0147](0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 3. The wire
 contract is [docs/template-discovery-api.md](../template-discovery-api.md).

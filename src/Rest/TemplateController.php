@@ -163,7 +163,7 @@ final class TemplateController implements RestController
             $newer = $remote[$designId] ?? null;
             if ($newer !== null && $newer['revision'] > $entry['revision'] && $newer['state'] === 'install') $card['newer_revision'] = ['revision' => $newer['revision'], 'sha256' => $newer['sha256']];
             // The hosted index is where industries and occasions are written, bundled designs included.
-            if ($newer !== null) $card['tags'] = $newer['tags'];
+            if ($newer !== null) { $card['tags'] = $newer['tags']; $card['aliases'] = $newer['aliases']; }
             unset($remote[$designId]);
             $entries[] = $card;
         }
@@ -214,6 +214,7 @@ final class TemplateController implements RestController
             'availability' => $availability->value,
             'facets' => $card['facets'],
             'tags' => $card['tags'],
+            'aliases' => $card['aliases'],
             'remote' => [
                 'id' => $card['id'], 'revision' => $card['revision'], 'sha256' => $card['sha256'], 'state' => $card['state'],
                 'thumbnail' => $card['thumbnail'], 'tags' => $card['tags'], 'family' => $card['family'], 'popularity' => $card['popularity'],

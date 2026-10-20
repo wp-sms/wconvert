@@ -107,11 +107,13 @@ final class VocabularySince
             $since = $this->stamps[$key] ?? null;
             // An unstamped entry is a build error, not a guess: the test above
             // keeps the file complete, so reaching this means it was skipped.
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a build error for the publisher's terminal, never rendered in a page.
             if (!is_string($since)) throw new \RuntimeException('Unstamped vocabulary entry: ' . $key);
             if (version_compare($since, $version, '>')) $version = $since;
         }
         foreach ($capabilities as $capability) {
             $since = self::CAPABILITIES[$capability] ?? null;
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- a build error for the publisher's terminal, never rendered in a page.
             if ($since === null) throw new \RuntimeException('Unknown capability: ' . $capability);
             if (version_compare($since, $version, '>')) $version = $since;
         }

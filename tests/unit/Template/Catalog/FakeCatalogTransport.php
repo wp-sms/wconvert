@@ -16,9 +16,13 @@ class FakeCatalogTransport implements CatalogTransport, CatalogImageTransport
     /** @var list<string> */
     public array $requests = [];
 
-    public function get(string $url, int $limit = 262144): string
+    /** @var list<int> */
+    public array $timeouts = [];
+
+    public function get(string $url, int $limit = 262144, int $timeout = self::TIMEOUT): string
     {
         $this->requests[] = $url;
+        $this->timeouts[] = $timeout;
         $body = $this->responses[$url] ?? throw new RuntimeException('Offline');
         if (strlen($body) > $limit) throw new RuntimeException('The catalog response is too large.');
         return $body;

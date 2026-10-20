@@ -4,7 +4,7 @@ import { answerLinesOverlap, resultsMayOverlap } from '../../resources/admin/src
 
 const question = (id: string, answer_type: 'single' | 'multi') => ({ type: 'question', id, label: id, answer_type,
   options: [{ value: 'a', label: 'Apples' }, { value: 'b', label: 'Bread' }, { value: 'c', label: 'Cheese' }] });
-const tree = { v: 3, submissions: [], steps: [
+const tree = { v: 2, submissions: [], steps: [
   { id: 's', name: 'Start', kind: 'input', content: { type: 'stack', children: [question('one', 'single'), question('many', 'multi')] } },
 ] } as unknown as TemplateTree;
 const rule = (q: string, operator: 'is' | 'is_not' | 'includes_any', ...values: string[]): QuestionCondition => ({ match: 'all', clauses: [{ question: q, operator, values }] });

@@ -75,7 +75,7 @@ Choose what you want to achieve, and WConvert suggests setups that do it:
 * **Monthly targets**, for example 100 new subscribers this month.
 
 Everything is counted on your own site. There is no tracking service and no
-visitor ID. (The online design library counts how often each design is added,
+visitor ID. (The online design library counts how often each design is previewed or added,
 with no site or visitor identifier; see External services.) WConvert also notes a few dates about your setup, such as when you
 first published, so it can tell you which step needs attention. You can see
 all of them on the Analytics screen.
@@ -239,7 +239,7 @@ no referrer, so the service sees your browser's IP address.
 
 What is sent: requests from the free plugin carry no licence key, site address,
 campaign, lead or visitor data; the server's IP address, the requested address
-and a fixed user agent are all the service sees. When a design is added, the
+and a fixed user agent are all the service sees. When a design is previewed or added, the
 service counts that download for that design, with no site or visitor
 identifier. **WConvert Pro** also sends its licence key and your site's domain to
 the same service when you add a Pro design, and the service asks the WConvert

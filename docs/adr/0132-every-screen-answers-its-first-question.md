@@ -32,7 +32,7 @@ is the thing they came for the most visible thing, with one way forward?
    use is drawn wide above the gallery with Use this setup and Preview first.
    It disappears as soon as the merchant searches, filters or sorts.
 7. **Two toolbar rows.** Search, sort and a ⋯ "More ways to browse" menu
-   (collections, template packs, occasions & preferences); then format chips,
+   (collections, template packs, occasions & preferences — *packs removed by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md); hosted designs join the one gallery*); then format chips,
    a compact More filters toggle and the count. Featured collections follow
    the setups. Business stays a More filters select (owner's choice).
 8. **A setup at a glance.** The detail shows one icon line per fact (format,
@@ -44,7 +44,7 @@ is the thing they came for the most visible thing, with one way forward?
    draft with no design opens the design library straight away.
 10. Setups whose design is missing are hidden from creation, as
     `renderingFor(…, 'creation_flow')` always said; a paid install's premium
-    pack is labelled with its tier, not a lock.
+    pack is labelled with its tier, not a lock. *(Packs are gone since [ADR 0156](0156-the-catalogue-is-one-design-per-object.md); the same holds per design.)*
 
 ### Editor
 11. **A first list campaign can publish.** With no ready service of the Goal's

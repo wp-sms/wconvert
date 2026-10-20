@@ -5,7 +5,7 @@ import { journeyTrace, type Answers } from '../../resources/loader/src/journey-r
 import { journeyTestProgress } from '../../resources/admin/src/builder/structure/journeyTestProgress';
 import fixture from '../fixtures/journey-graph.json';
 
-const tree = { v: 3, steps: fixture.steps, graph: fixture.graph, submissions: [] } as unknown as TemplateTree;
+const tree = { v: 2, steps: fixture.steps, graph: fixture.graph, submissions: [] } as unknown as TemplateTree;
 const index = (id: string) => tree.steps.findIndex(screen => screen.id === id);
 const progress = (at: string, path: string[], answers: Answers = {}) => journeyTestProgress(tree, index(at), path.map(index), graphTrace(tree.steps, tree.graph!, answers));
 it('does not turn missing answers into confirmed skips before the visitor continues', () => {

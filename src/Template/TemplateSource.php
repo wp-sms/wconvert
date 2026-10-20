@@ -29,18 +29,12 @@ defined('ABSPATH') || exit;
  * run it.
  *
  * ============================================================================
- * A CANDIDATE WITH NO `tree` IS A DESIGN THIS INSTALL DID NOT GET.
+ * EVERY CANDIDATE CARRIES A TREE.
  * ============================================================================
- * That is the whole discriminator, and it is why locked metadata comes through
- * the same seam rather than through a second one. `resources/templates/locked.json`
- * carries a name, a Display Type, the design's facets and a link to a live
- * preview on wconvert.io, and no tree at all — because shipping premium trees
- * in the free ZIP and refusing the save is trialware (issue #7), and rendering
- * a real control `disabled` fires wp.org Guideline 9.
- *
- * **Bundled, never fetched**, for the reason `availability.ts` already gives
- * about upsell copy: a free wp.org plugin phoning home for advertising is a
- * different conversation with the review team (ADR 0015).
+ * A design this install did not get is never a candidate. The hosted index
+ * shows it — installable, or as a locked Pro image card — from the catalogue's
+ * own entries ({@see Catalog\TemplateCatalog}, ADR 0156), and it reaches this
+ * seam only once installed, as validated files in uploads.
  *
  * @since 0.1.0
  */

@@ -409,7 +409,7 @@ final class TemplateCatalogTest extends TestCase
         $transport = new class ($this->http->responses) extends FakeCatalogTransport {
             /** @param array<string, string> $responses */
             public function __construct(array $responses) { $this->responses = $responses; }
-            public function get(string $url, int $limit = 262144): string { return parent::get($url, PHP_INT_MAX); }
+            public function get(string $url, int $limit = 262144, int $timeout = self::TIMEOUT): string { return parent::get($url, PHP_INT_MAX, $timeout); }
         };
         $status = $this->catalog(Tier::Free, $transport)->refresh();
         self::assertSame(['page-0', 'page-1'], array_column($status['designs'], 'id'));
@@ -460,6 +460,20 @@ final class TemplateCatalogTest extends TestCase
         self::assertSame(['description' => 'A slip.'], $this->archive()->designs()[0]['meta']);
         try { $catalog->install('new-node', $this->service->sha('new-node')); self::fail('Installed a design this reader cannot read'); }
         catch (\RuntimeException $error) { self::assertStringContainsString('cannot be used on this site', $error->getMessage()); }
+    }
+
+    /** Every request gets only what is left of the twenty seconds, so a slow host cannot stretch a refresh. */
+    public function testEachRequestIsGivenOnlyWhatIsLeftOfTheBudget(): void
+    {
+        $this->service->design(self::FREE_DESIGN, 'today', 1);
+        $this->service->publish();
+        $start = $this->now;
+        $catalog = new TemplateCatalog($this->options, $this->http, $this->validator(Tier::Free), $this->archive(Tier::Free, 'free'), Tier::Free,
+            static fn (): array => [], static fn (): array => [], function () use (&$start): int { return $start += 6; }, TemplateVocabulary::fromManifest()->facets());
+        $catalog->refresh();
+        self::assertNotSame([], $timeouts = $this->http->timeouts);
+        foreach ($this->http->timeouts as $timeout) self::assertLessThanOrEqual(TemplateCatalog::BUDGET_SECONDS, $timeout);
+        self::assertLessThan(15, max([0, ...$timeouts]), 'Seconds already spent are taken off the next request');
     }
 
     public function testATwoThousandDesignIndexFitsTheBudgetAndReadsQuickly(): void

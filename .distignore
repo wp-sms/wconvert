@@ -107,7 +107,6 @@
 # Its readme.txt, changelog.txt and license.txt stay.
 /vendor/woocommerce/action-scheduler/AGENTS.md
 /vendor/woocommerce/action-scheduler/CLAUDE.md
-/AGENTS.md
 /vendor/woocommerce/action-scheduler/README.md
 /vendor/woocommerce/action-scheduler/lib/cron-expression/README.md
 
@@ -126,6 +125,7 @@
 /README.md
 /CHANGELOG.md
 /CLAUDE.md
+/AGENTS.md
 /CONTEXT.md
 /docs
 /.claude

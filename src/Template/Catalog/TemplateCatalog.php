@@ -492,8 +492,9 @@ final class TemplateCatalog
     {
         $local = $this->archive->object('index', $sha256);
         if ($local !== null) return $local;
-        PackValidator::check($this->now() - $started <= self::BUDGET_SECONDS, __('The template library took too long to answer. Try again later. Installed designs are still available.', 'wconvert'));
-        $json = $this->transport->get($this->base() . $folder . $sha256 . '.json');
+        $left = self::BUDGET_SECONDS - ($this->now() - $started);
+        PackValidator::check($left > 0, __('The template library took too long to answer. Try again later. Installed designs are still available.', 'wconvert'));
+        $json = $this->transport->get($this->base() . $folder . $sha256 . '.json', PackValidator::MAX_BYTES, $left);
         PackValidator::check(hash_equals($sha256, hash('sha256', $json)), __('The catalog changed while it was being read. Refresh again.', 'wconvert'));
         $this->archive->store('index', $sha256, $json);
         return $json;

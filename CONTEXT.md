@@ -1108,8 +1108,8 @@ already running on it.
 > browser record's `wcv1` has and the server side did not, which
 > [[Storage Consent]] already says out loud. `v` is the vocabulary version and
 > only that: a flow is said by its `graph`, and the hosted catalogue reads `v`
-> to know which vocabulary a design needs. `v: 3` once meant "has a graph" and
-> is still read that way, so the next vocabulary version is 4. See
+> to know which vocabulary a design needs. `v: 3` once meant "has a graph"; it is
+> no longer read, and the next vocabulary version is 4 so it never collides. See
 > `WConvert\Template\TemplateTree::VERSION` and [ADR 0156](docs/adr/0156-the-catalogue-is-one-design-per-object.md).
 
 A Template declares its slots as [[Slot Role]]s, which is what lets a [[Playbook]]

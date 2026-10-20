@@ -33,8 +33,8 @@ defined('ABSPATH') || exit;
  * TIER IS NOT DECLARED HERE, AND THAT IS DELIBERATE.
  * ============================================================================
  * Three of these five are [[Pro]]'s: a free install ships no fullscreen,
- * floating-bar or slide-in TREE, only the locked card that advertises one
- * ({@see \WConvert\Template\LockedTemplates}). Putting `tier` beside each case
+ * floating-bar or slide-in TREE; the hosted library shows it one only as a
+ * locked image card (ADR 0156). Putting `tier` beside each case
  * would be a second entitlement list to keep in step with the library, and
  * ADR 0015 answers "can this install do it" by which code registered rather
  * than by a table anybody maintains. A free install cannot obtain a

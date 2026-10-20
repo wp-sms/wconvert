@@ -137,10 +137,33 @@ it('resolves a "Use this template" link: local, hosted, unanswered and gone', as
   expect(await screen.findByRole('heading', { name: 'See more designs from the WConvert library?' })).toBeInTheDocument();
   third.unmount();
 
-  templates.listTemplates.mockResolvedValueOnce({ templates: [local('supper-card', 'Supper card')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
+  // Unknown to the cache: one refresh (if stale) before saying it is gone.
+  catalog.refreshCatalog.mockResolvedValue({});
+  templates.listTemplates.mockResolvedValue({ templates: [local('supper-card', 'Supper card')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
   render(<Pinned design="supper-menu" />);
   expect(await screen.findByText('That design is no longer available')).toBeInTheDocument();
+  expect(catalog.refreshCatalog).toHaveBeenCalledWith(true);
   expect(screen.getByRole('link', { name: 'Supper card' })).toHaveAttribute('href', '#optins?new=1&design=supper-card');
+});
+
+it('follows a renamed design, names a declined library, and states a locked one with no link out', async () => {
+  templates.listTemplates.mockResolvedValueOnce({ templates: [hosted('supper', 'Supper menu', 'install', { aliases: ['dinner-menu'] })], labels: LABELS, facets: FACETS, catalog: CATALOG() });
+  const renamed = render(<Pinned design="dinner-menu" />);
+  expect(await screen.findByText('Starting from “Supper menu”')).toBeInTheDocument();
+  renamed.unmount();
+
+  templates.listTemplates.mockResolvedValueOnce({ templates: [], labels: LABELS, facets: FACETS, catalog: CATALOG('no') });
+  const declined = render(<Pinned design="supper" />);
+  expect(await screen.findByText('The online design library is off')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Open Settings' })).toHaveAttribute('href', '#settings?group=data');
+  expect(catalog.refreshCatalog).not.toHaveBeenCalled();
+  declined.unmount();
+
+  templates.listTemplates.mockResolvedValueOnce({ templates: [hosted('supper-pro', 'Supper pro', 'locked'), local('supper-card', 'Supper card')], labels: LABELS, facets: FACETS, catalog: CATALOG() });
+  render(<Pinned design="supper-pro" />);
+  expect(await screen.findByText('This design needs WConvert Pro.')).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: /See this design/ })).toBeNull();
+  expect(screen.getByRole('link', { name: 'Supper card' })).toBeInTheDocument();
 });
 
 it('takes the design from the query string once and removes it from the address', () => {

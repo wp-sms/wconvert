@@ -14,9 +14,9 @@ final class WpCatalogTransport implements CatalogTransport, CatalogImageTranspor
      */
     public const USER_AGENT = 'WConvert template catalog';
 
-    public function get(string $url, int $limit = PackValidator::MAX_BYTES): string
+    public function get(string $url, int $limit = PackValidator::MAX_BYTES, int $timeout = self::TIMEOUT): string
     {
-        return $this->request($url, $limit, 'application/json')['body'];
+        return $this->request($url, $limit, 'application/json', null, max(1, min(self::TIMEOUT, $timeout)))['body'];
     }
 
     public function revalidate(string $url, ?string $etag): ?array
@@ -32,7 +32,7 @@ final class WpCatalogTransport implements CatalogTransport, CatalogImageTranspor
     }
 
     /** @return array{status: int, body: string, etag: string|null} */
-    private function request(string $url, int $limit, string $accept, ?string $etag = null): array
+    private function request(string $url, int $limit, string $accept, ?string $etag = null, int $timeout = self::TIMEOUT): array
     {
         $parts = wp_parse_url($url);
         $local = wp_get_environment_type() === 'local'
@@ -43,7 +43,7 @@ final class WpCatalogTransport implements CatalogTransport, CatalogImageTranspor
         $headers = ['Accept' => $accept];
         if ($etag !== null && preg_match('/^(?:W\/)?"[\x21\x23-\x7e]{1,128}"$/D', $etag) === 1) $headers['If-None-Match'] = $etag;
         $response = wp_safe_remote_get($url, [
-            'timeout' => 15,
+            'timeout' => $timeout,
             'redirection' => 0,
             'limit_response_size' => $limit + 1,
             'headers' => $headers,

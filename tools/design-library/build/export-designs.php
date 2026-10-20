@@ -190,7 +190,7 @@ if (($input['mode'] ?? '') === 'validate') {
     // preview, install and setup install, against an in-memory copy.
     $transport = new class($input['responses']) implements \WConvert\Template\Catalog\CatalogTransport, \WConvert\Template\Catalog\CatalogImageTransport, \WConvert\Template\Catalog\CatalogPremiumTransport {
         public function __construct(private array $responses) {}
-        public function get(string $url, int $limit = PackValidator::MAX_BYTES): string { $body = $this->responses[$url] ?? throw new RuntimeException('Missing release object ' . $url); if (strlen($body) > $limit) throw new RuntimeException('Oversized object ' . $url); return $body; }
+        public function get(string $url, int $limit = PackValidator::MAX_BYTES, int $timeout = \WConvert\Template\Catalog\CatalogTransport::TIMEOUT): string { $body = $this->responses[$url] ?? throw new RuntimeException('Missing release object ' . $url); if (strlen($body) > $limit) throw new RuntimeException('Oversized object ' . $url); return $body; }
         public function revalidate(string $url, ?string $etag): ?array { return ['body' => $this->get($url, 65536), 'etag' => null]; }
         public function image(string $url, int $bytes): string { return base64_decode($this->responses[$url] ?? throw new RuntimeException('Missing image object ' . $url), true); }
         public function authorize(array $designs, array $setups): void {}

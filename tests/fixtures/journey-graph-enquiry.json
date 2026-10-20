@@ -1,5 +1,5 @@
 {
-  "v": 3,
+  "v": 2,
   "submissions": [{"id":"enquiry","required":true,"fields":["n5"],"consents":[]}],
   "steps": [
     {"id":"contact","name":"One enquiry","kind":"input","content":{"type":"stack","children":[{"type":"field","id":"n5","name":"email","label":"Email address","required":true},{"type":"button","id":"n6","action":"submit","submission":"enquiry","label":"Send enquiry"},{"type":"button","id":"n7","action":"back","label":"Back"}]}},

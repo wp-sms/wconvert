@@ -105,6 +105,8 @@ export interface TemplateIndexEntry {
   };
   /** `industry:food-drink`-style terms from the hosted index, for a local or hosted card. */
   tags?: string[];
+  /** Earlier ids of this design, from the hosted index; a link to one still finds it. */
+  aliases?: string[];
   /**
    * Where a locked hosted card links: the design's page on wconvert.io. Only a
    * free install where Pro hints are wanted is sent one (ADR 0156).
@@ -319,3 +321,7 @@ export const getTemplateTrees = (ids: readonly string[]) =>
  * that from becoming the normal case.
  */
 export const nameOf = (labels: Record<string, string>, key: string): string => labels[key] ?? key;
+
+/** The design id a card stands for, whichever copy holds it (ADR 0156). */
+export const designIdOf = (entry: Pick<TemplateIndexEntry, 'id' | 'design_key'>): string =>
+  (entry.design_key ?? entry.id).replace(/^registered:/u, '');

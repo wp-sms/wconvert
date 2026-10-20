@@ -28,7 +28,7 @@ final class TemplateDownloads implements CatalogTransport, CatalogImageTransport
         private readonly string $origin,
     ) {}
 
-    public function get(string $url, int $limit = PackValidator::MAX_BYTES): string { return $this->public->get($url, $limit); }
+    public function get(string $url, int $limit = PackValidator::MAX_BYTES, int $timeout = CatalogTransport::TIMEOUT): string { return $this->public->get($url, $limit, $timeout); }
 
     public function revalidate(string $url, ?string $etag): ?array { return $this->public->revalidate($url, $etag); }
 

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { buildCollections, checkRuntimeCollections } from './collections.mjs';
 import { loadReviews, reviewQueue } from './reviews.mjs';
 import { galleryArtwork } from './design-gallery.mjs';
-import { buildRelease, publishRelease } from './publisher.mjs';
+import { buildRelease, guardFreeMajority, publishRelease } from './publisher.mjs';
 import { computeRevisions } from './catalogue-revisions.mjs';
 import { readJson } from './catalogue.mjs';
 import { literalColourReport } from './catalogue-lint.mjs';
@@ -56,6 +56,7 @@ if (JSON.stringify(numbered.registry) !== JSON.stringify(registry)) throw new Er
 const setups = numbered.setups.filter(setup => plan.setups.includes(setup.id));
 const wanted = new Set([...setups.map(setup => JSON.parse(setup.json).design.id), ...plan.designs]);
 const designs = numbered.designs.filter(design => wanted.has(design.id));
+guardFreeMajority(designs);
 for (const id of wanted) if (!designs.some(design => design.id === id)) throw new Error(`${id} cannot be exported: ${numbered.failures.find(f => f.id === id)?.reason ?? 'unknown design'}`);
 const colours = literalColourReport(root, designs.map(design => design.id));
 if (colours.increased.length) throw new Error('These designs added literal colours instead of tokens:\n' + colours.increased.map(row => `  ${row.id}: ${row.count} (baseline ${row.baseline})`).join('\n'));

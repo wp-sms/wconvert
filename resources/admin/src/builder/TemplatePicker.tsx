@@ -22,7 +22,7 @@ import { messageOf } from '../shell/loadable';
 import { isFreeInstall } from '../goals/availability';
 import { displayTypeOptions, proDisplayTypeLabels } from '../displayTypes';
 import { ProHint } from '../shell/ProHint';
-import { nameOf, type TemplateIndex, type TemplateIndexEntry } from '../templates/api';
+import { designIdOf, nameOf, type TemplateIndex, type TemplateIndexEntry } from '../templates/api';
 import type { Template } from '@renderer/types';
 import { usePicker } from '../discovery/usePicker';
 import { designKey } from '../discovery/model';
@@ -93,7 +93,7 @@ export function TemplatePicker({
     }).catch(() => undefined);
   }, [active, catalog, onLibraryChanged]);
   const install = async (entry: TemplateIndexEntry, sha?: string) => {
-    const remote = entry.remote ?? (entry.newer_revision ? { id: (entry.design_key ?? entry.id).replace(/^registered:/u, ''), sha256: entry.newer_revision.sha256 } : undefined);
+    const remote = entry.remote ?? (entry.newer_revision ? { id: designIdOf(entry), sha256: entry.newer_revision.sha256 } : undefined);
     if (!remote || !onLibraryChanged) return;
     setInstalling(entry.id); setLibraryError(null);
     try {
