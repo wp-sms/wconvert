@@ -11,6 +11,7 @@ import { buildRelease, publishRelease } from './publisher.mjs';
 import { computeRevisions } from './catalogue-revisions.mjs';
 import { readJson } from './catalogue.mjs';
 import { literalColourReport } from './catalogue-lint.mjs';
+import { allowedPairs, nearDuplicates } from './near-duplicates.mjs';
 
 /**
  * Build a catalogue v3 release from reviewed repository sources into a local
@@ -75,6 +76,11 @@ const bundledArtwork = [...new Set(bundledOnly.map(id => setupDesign.get(id)))].
 });
 await galleryArtwork([...artwork, ...bundledArtwork], renderer);
 for (const design of designs) Object.assign(design, { gallery: artwork.find(item => item.id === design.id).gallery, media: media(design) });
+
+// Two published designs that are one design are refused unless listed as deliberate.
+const duplicates = nearDuplicates(designs.map(design => JSON.parse(design.json)), new Map(designs.map(design => [design.id, design.gallery.dhash])), allowedPairs(root));
+if (duplicates.length) throw new Error('These published designs are near-duplicates; change one, or list the pair with its reason in publishing/near-duplicates.json:\n'
+  + duplicates.map(pair => `  ${pair.a} ~ ${pair.b} (structure ${pair.structure}%, palette ${pair.palette}, picture ${pair.picture ?? 'n/a'} bits)`).join('\n'));
 
 const known = new Set([...setups.map(setup => setup.id), ...bundledOnly]);
 const collections = plan.collections.map(id => {

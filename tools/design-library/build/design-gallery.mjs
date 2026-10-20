@@ -65,9 +65,19 @@ export async function galleryArtwork(designs, renderer) {
       const thumb1x = await encode(png, 'image/png', THUMB_WIDTH, 0, 'image/webp', 0.82);
       const thumb2x = await encode(png, 'image/png', THUMB_WIDTH * 2, 0, 'image/webp', 0.8);
       const og = await encode(png, 'image/png', OG.width, OG.height, 'image/jpeg', 0.86);
+      // A 64-bit difference hash of the card, for the near-duplicate gate.
+      const dhash = await page.evaluate(async base64 => {
+        const image = new Image(); image.src = 'data:image/png;base64,' + base64; await image.decode();
+        const canvas = document.createElement('canvas'); canvas.width = 9; canvas.height = 8;
+        const context = canvas.getContext('2d'); context.drawImage(image, 0, 0, 9, 8);
+        const data = context.getImageData(0, 0, 9, 8).data, grey = at => data[at] * 0.299 + data[at + 1] * 0.587 + data[at + 2] * 0.114;
+        let bits = '';
+        for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) bits += grey((y * 9 + x) * 4) > grey((y * 9 + x + 1) * 4) ? '1' : '0';
+        return [...bits.match(/.{4}/g)].map(nibble => parseInt(nibble, 2).toString(16)).join('');
+      }, png);
       const step = design.tree.steps[0], result = step.results?.[0];
       entry.gallery = {
-        preview, designOnly,
+        preview, designOnly, dhash,
         thumb1x: Buffer.from(thumb1x.base64, 'base64'), thumb2x: Buffer.from(thumb2x.base64, 'base64'), og: Buffer.from(og.base64, 'base64'),
         width: thumb1x.width, height: thumb1x.height,
         alt: `${design.name} — ${step.name}${result ? ` — ${result.heading}` : ''}. Sample design content.`,
