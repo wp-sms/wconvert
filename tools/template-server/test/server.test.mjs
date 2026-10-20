@@ -98,25 +98,13 @@ test('actual Worker/R2 runtime: v3 routes, headers, pointer revalidation and ato
   });
 });
 
-test('TEMPORARY v2 public read-only routes are still served for the live website', async t => {
+test('the v2 routes are gone: v2 objects left in the bucket are never served', async t => {
   const mf = runtime(); t.after(() => mf.dispose());
   const bucket = await mf.getR2Bucket('PUBLIC_TEMPLATES');
-  const fetch = path => mf.dispatchFetch('https://templates.example' + path);
-  const objects = {
-    'manifest.json': ['application/json; charset=utf-8', 'no-cache, must-revalidate'],
-    [`packs/${H}.json`]: ['application/json; charset=utf-8'], [`releases/${H}/manifest.json`]: ['application/json; charset=utf-8'],
-    [`releases/${H}/designs.json`]: ['application/json; charset=utf-8'], [`releases/${H}/page-1.json`]: ['application/json; charset=utf-8'],
-    [`previews/${H}.html`]: ['text/html; charset=utf-8'], [`thumbnails/${H}.jpg`]: ['image/jpeg'], [`assets/free/${H}.png`]: ['image/png'],
-  };
-  for (const key of Object.keys(objects)) await bucket.put(key, key.endsWith('manifest.json') ? JSON.stringify({ schema: 2, release: H, pages: [] }) : 'legacy');
-  for (const [key, [type, cache = 'public, max-age=31536000, immutable']] of Object.entries(objects)) {
-    const response = await fetch('/' + key);
-    assert.equal(response.status, 200, key); assert.equal(response.headers.get('content-type'), type); assert.equal(response.headers.get('cache-control'), cache);
-    assert.equal(response.headers.get('link'), null, 'the old discovery Link header is gone');
-  }
-  const cached = await fetch('/manifest.json');
-  assert.equal((await mf.dispatchFetch('https://templates.example/manifest.json', { headers: { 'If-None-Match': cached.headers.get('etag') } })).status, 304);
-  for (const key of [`packs/x.json`, `releases/${H}/page-100.json`, `thumbnails/${H}.webp`, `assets/premium/${H}.png`]) assert.equal((await fetch('/' + key)).status, 404, key);
+  const keys = ['manifest.json', `packs/${H}.json`, `releases/${H}/manifest.json`, `releases/${H}/designs.json`, `releases/${H}/page-1.json`,
+    `previews/${H}.html`, `thumbnails/${H}.jpg`, `assets/free/${H}.png`];
+  for (const key of keys) await bucket.put(key, 'legacy');
+  for (const key of keys) assert.equal((await mf.dispatchFetch('https://templates.example/' + key)).status, 404, key);
 });
 
 test('premium routes stay closed without Nexus, even with a tier claim', async t => {

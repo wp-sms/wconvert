@@ -9,8 +9,7 @@ scripts enforce. Nothing here grants installation rights.
 v3 has **no `designs.json`**, no `Link: rel="describedby"` header and no
 full-pack or focused viewers. The website reads the release's **detail pages**,
 each detail's **preview**, its **Open Graph image** under `og/`, and its
-thumbnail. See [Migration from v2](#migration-from-v2) for the routes that stay
-up until the website moves.
+thumbnail. The v2 routes are gone; the website reads v3 only.
 
 ## Discover one consistent release
 
@@ -54,7 +53,14 @@ successful gallery with an empty one after a fetch or validation failure.
 - The taxonomy ids (`industries`, `occasions`, `style`, `colour`) are labelled by
   the release's `taxonomy` object, not by the website or the plugin.
 - `screens` lists the design's screens as the publisher writes them.
-- `preview`, `og` and `thumb` are optional. A detail without them still has its
+- `name`, `format`, `tier` and `revision` repeat the design's index entry, so the
+  website needs no index page to draw a card. `bundled_only: true` marks a
+  design that ships inside the plugin and is in no index page: it has no
+  download, so say it is already in WConvert.
+- `design_only` is the digest of a second preview, `previews/<sha>.html`, that
+  shows the design alone for the website's live embed (fragment protocol below);
+  `preview` is the full preview. `thumb.x2` is the digest of the 2× thumbnail.
+- `preview`, `design_only`, `og` and `thumb` are optional. A detail without them still has its
   words; show no iframe or broken image for a missing one.
 - An id appears at most once across all of a release's detail pages.
 
@@ -108,10 +114,8 @@ duplicate fragment key shows `#error` with no design rendered. If the publisher
 changes the preview document, change this section and the verifier together.
 An iframe `load` event is not proof the preview rendered; HTTP errors load too.
 
-`examples/design-only-consumer.mjs` is the v2-era website example and is still
-imported by `tools/design-library/build/design-only-consumer.test.mjs`; it takes
-v2 metadata (`design_only_embed_url` per screen). Build the URL from `preview`
-instead when porting it.
+`examples/design-only-consumer.mjs` builds the design-only embed URL from a
+detail row's `design_only` digest and its `screens`.
 
 ## Withdrawn designs and popularity
 
@@ -134,18 +138,6 @@ oversized or unavailable stored objects 503. Errors are `no-store`.
 
 Size caps the service enforces: pointer 64 KiB, other JSON 256 KiB, HTML 2 MiB,
 images 5 MiB.
-
-## Migration from v2
-
-Until the website reads v3, the Worker keeps serving the v2 public read-only
-routes from whatever v2 objects remain in the public bucket: `/manifest.json`,
-`/packs/<sha>.json`, `/releases/<sha>/manifest.json`,
-`/releases/<sha>/designs.json`, `/releases/<sha>/page-N.json`,
-`/previews/<sha>.html`, `/thumbnails/<sha>.jpg` and `/assets/free/<sha>.<ext>`. This is temporary, and nothing new is published to
-them: the v3 operator scripts neither write, back up nor validate v2 objects.
-The v2 premium routes (`/grants`, `/downloads/…`, `/assets/premium/…`) are gone.
-Once the website is on v3, delete the `LEGACY` pattern in `src/index.ts` and its
-test.
 
 ## Local acceptance
 
