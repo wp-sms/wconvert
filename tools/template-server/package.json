@@ -13,8 +13,13 @@
     "test:wordpress": "node scripts/verify-wordpress.mjs",
     "publish": "node scripts/publish-remote.mjs",
     "status": "node scripts/publish-remote.mjs --status",
+    "backup": "node scripts/backup-remote.mjs",
+    "rehearse:recovery": "npm run build && node scripts/rehearse-recovery.mjs",
+    "verify:limits": "node scripts/verify-rate-limits.mjs",
     "verify:remote": "node scripts/verify-remote.mjs",
-    "test:release": "npm run build && node scripts/verify-release.mjs"
+    "test:release": "npm run build && node scripts/verify-release.mjs",
+    "verify:gallery": "npm run build && node scripts/verify-gallery.mjs",
+    "preview:gallery": "npm run build && node scripts/preview-gallery.mjs"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "3.1152.0",

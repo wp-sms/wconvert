@@ -1,0 +1,16 @@
+{
+  "setups": [
+    "maker-notes",
+    "earlier-appointment-enquiry",
+    "equipment-return-checklist",
+    "callback-slip",
+    "event-calendar",
+    "product-detail-sheet",
+    "service-process-strip",
+    "launch-index",
+    "appointment-agenda",
+    "accessible-visit-note",
+    "sms-message-preview",
+    "service-fit-brief"
+  ]
+}

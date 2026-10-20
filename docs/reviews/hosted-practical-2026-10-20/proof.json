@@ -1,0 +1,930 @@
+{
+  "schema": 1,
+  "batch": "hosted-practical-selection",
+  "setups": [
+    {
+      "id": "maker-notes",
+      "revision": "8858d8b479e95555b49d36ae18d6d3b71767d1e95cd33d59f1f2c5f1c2927ed1",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-320.png",
+          "sha256": "887659cb0e82af8ab3aeaa150929c9ce9eac36d7684ee6dc418739579eed9a6c"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-390.png",
+          "sha256": "dc2f46bc14b887281bc6bc0b0d436cdfccbe664af2fb63369cc815c4a11c803e"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-768.png",
+          "sha256": "0a3c11cc8dbcadcfb5c8d3c81702bf877ad28484dbe9fae7a3a76f1cd4d9e313"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-1440.png",
+          "sha256": "0a3c11cc8dbcadcfb5c8d3c81702bf877ad28484dbe9fae7a3a76f1cd4d9e313"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-native-320-input.png",
+          "sha256": "aed385421fc6319d0b90f34b4b30cbbca67c41a5eff8ef51592a585967c12afe"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-native-1280-input.png",
+          "sha256": "d90cc686e129c0d4a3cc59b6e459cbdda0f10d4560a5113a9dde5579a8ff5910"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-320.png",
+          "sha256": "887659cb0e82af8ab3aeaa150929c9ce9eac36d7684ee6dc418739579eed9a6c"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-390.png",
+          "sha256": "dc2f46bc14b887281bc6bc0b0d436cdfccbe664af2fb63369cc815c4a11c803e"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-768.png",
+          "sha256": "0a3c11cc8dbcadcfb5c8d3c81702bf877ad28484dbe9fae7a3a76f1cd4d9e313"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-studio-1440.png",
+          "sha256": "0a3c11cc8dbcadcfb5c8d3c81702bf877ad28484dbe9fae7a3a76f1cd4d9e313"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-native-320-success.png",
+          "sha256": "508196b2d2338b0315c4cada0914f32573572eac00185304ed70dd83ac5863bb"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/maker-notes-native-1280-success.png",
+          "sha256": "1a693339371727d87cea2cd2189f408836a0c160ec593887c8c6ecf06ac45600"
+        }
+      ]
+    },
+    {
+      "id": "callback-slip",
+      "revision": "fc8bee05fe89aada3be58e1ff79495470fbf91d30594fd8678c62fbbcf65cad9",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-320.png",
+          "sha256": "b38d472319dfe376fa557fb15c88e30a8b1f6b4ccb68156c594e1c18e33c73eb"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-390.png",
+          "sha256": "1c504f625d349ce0877b11e5b5fab74148bb4379e5bbe4441cda4921db89b5bb"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-768.png",
+          "sha256": "7fd052f1f004a6e8d2d83a5ab89dea4378835a1abc4727e963f1cc91b4d612a5"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-1440.png",
+          "sha256": "7fd052f1f004a6e8d2d83a5ab89dea4378835a1abc4727e963f1cc91b4d612a5"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-native-320-input.png",
+          "sha256": "bc3262c7b886595005251a81a4c018e84164568a7424948ab83649dee55b5827"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-native-1280-input.png",
+          "sha256": "2ac81c4c1f6050c4fda628e754221dc26cab3b55574822752700e15c9ea392da"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-320.png",
+          "sha256": "b38d472319dfe376fa557fb15c88e30a8b1f6b4ccb68156c594e1c18e33c73eb"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-390.png",
+          "sha256": "1c504f625d349ce0877b11e5b5fab74148bb4379e5bbe4441cda4921db89b5bb"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-768.png",
+          "sha256": "7fd052f1f004a6e8d2d83a5ab89dea4378835a1abc4727e963f1cc91b4d612a5"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-studio-1440.png",
+          "sha256": "7fd052f1f004a6e8d2d83a5ab89dea4378835a1abc4727e963f1cc91b4d612a5"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-native-320-success.png",
+          "sha256": "455bdf585433f154e82a3197350c7736806408a2a6deb7d184beb9c5f2538000"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/callback-slip-native-1280-success.png",
+          "sha256": "44bc690132e38ad1bf242fa06409ccd7f26b38622babb3abc02be1f9c5daab4a"
+        }
+      ]
+    },
+    {
+      "id": "event-calendar",
+      "revision": "b6f666e0ea51084f3d7744feba15d2a806209c791ef985e99e9defb6ae274ad8",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/event-calendar-studio-320.png",
+          "sha256": "7d0bdc0f655ae35c03e2ede3f6c25c15198c717b0991a86f72693f1015090390"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/event-calendar-studio-390.png",
+          "sha256": "badc61d0d53b6621f50eff41380bdeed0d8f4055b920e930c447ae2cc0c2bc48"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/event-calendar-studio-768.png",
+          "sha256": "45d6c57e049e2387eb67d32ad7b0d61742d4e8617f44cf0a0973ef45b517fc17"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/event-calendar-studio-1440.png",
+          "sha256": "45d6c57e049e2387eb67d32ad7b0d61742d4e8617f44cf0a0973ef45b517fc17"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/event-calendar-native-320-input.png",
+          "sha256": "efc05c302bc01ce74686f5f95a48c9214ba571ac225278d7abe77e921ff8dbf7"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/event-calendar-native-1280-input.png",
+          "sha256": "a28015a2403b44673edf9244ec502934621b2042a2e61cf3cf8a30e1976153b5"
+        }
+      ]
+    },
+    {
+      "id": "product-detail-sheet",
+      "revision": "a03db8599a53eed4a4db67753415cc613139897604468fca3c44ddf99b473434",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/product-detail-sheet-studio-320.png",
+          "sha256": "49f28c736769319d442b4f2f6b2adec0fa6bd0f4f28196882b70965672358fa8"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/product-detail-sheet-studio-390.png",
+          "sha256": "83b8dabf2077a9f1663bfebc3eff71736791509bc953638b6a1b74484ab076b1"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/product-detail-sheet-studio-768.png",
+          "sha256": "ea3818afaeb65b455baab7c66c8c1b3e445ba7fc07796740f22ff6764cd8587a"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/product-detail-sheet-studio-1440.png",
+          "sha256": "ea3818afaeb65b455baab7c66c8c1b3e445ba7fc07796740f22ff6764cd8587a"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/product-detail-sheet-native-320-input.png",
+          "sha256": "cbd46f4ab677f5af7dc34843576ecd239b0e25abf975101e5989d0c87159b7ea"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/product-detail-sheet-native-1280-input.png",
+          "sha256": "2a0943446eaea449a68125f434d1772393f12bae73511c8bf89fee63a37f1742"
+        }
+      ]
+    },
+    {
+      "id": "service-process-strip",
+      "revision": "f9ce4ed6e025c39600ffcb7f8104d8e052bcd84d15aa55088665776e16fc7f6a",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-320.png",
+          "sha256": "d52e0e6078d2743fec19da21f836c0e959701b97dcf49ab547a552e2686e060a"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-390.png",
+          "sha256": "9c584013cb92d41852fde2272ef8d77a09919c2883ae56cc6e5d1b854a031479"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-768.png",
+          "sha256": "fec10be559303abb467724098ef6fdd6c2132472948d92ba3c67e475b4e13e1a"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-1440.png",
+          "sha256": "18108e3715ddaf9e841bfcb1515ab1891816315d4e252b799ff9d61209741eee"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-native-320-input.png",
+          "sha256": "9aaa933cb75687b64fc113b4f4f087069866d2d8b341d50fd7e4ee728e62851d"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-native-1280-input.png",
+          "sha256": "e19447102c8bf3c25a1528f2c2d9a40022619fbc7b9ce289b78738fcbac2c079"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-320.png",
+          "sha256": "d52e0e6078d2743fec19da21f836c0e959701b97dcf49ab547a552e2686e060a"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-390.png",
+          "sha256": "9c584013cb92d41852fde2272ef8d77a09919c2883ae56cc6e5d1b854a031479"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-768.png",
+          "sha256": "fec10be559303abb467724098ef6fdd6c2132472948d92ba3c67e475b4e13e1a"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-studio-1440.png",
+          "sha256": "18108e3715ddaf9e841bfcb1515ab1891816315d4e252b799ff9d61209741eee"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-native-320-success.png",
+          "sha256": "3aba2cac80e2d20aef6a3ca00cb647f08021d8f757b0863401ed40a77aa270dd"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-process-strip-native-1280-success.png",
+          "sha256": "eee1720fe1e8218316c1dd19f7652cf89c63135fe3c4615aabf47f8442b95335"
+        }
+      ]
+    },
+    {
+      "id": "launch-index",
+      "revision": "06600f62e346824f0f0a99e592da94fabbba6c669e71e96075ebc4a8eb66b0d4",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/launch-index-studio-320.png",
+          "sha256": "bb8f25737ee9eb679a9f992c284371c92a73d1cc4269dcbb53dcd35449b653c7"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/launch-index-studio-390.png",
+          "sha256": "eba683d0154d415fe45a19c050021fb4a452d93c43b9bfac7d7980252c1ec2e2"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/launch-index-studio-768.png",
+          "sha256": "93391989b55800cfd04e1f0167a630c79dcf6d2d1bbec6031aac4a38a1773271"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/launch-index-studio-1440.png",
+          "sha256": "c200a1e3a46ef17d4fc53489319aace63524e5b3eaa8734c897df1b2240e70dd"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/launch-index-native-320-input.png",
+          "sha256": "e7c562dd4f7112e18000743de26f120745e2edc3ca775d64a66e52fb45eea33a"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/launch-index-native-1280-input.png",
+          "sha256": "ca5aa273b0029e13b4b51be2fcb03b81acdcde8c2fe93f83b8129ba34f5aa782"
+        }
+      ]
+    },
+    {
+      "id": "appointment-agenda",
+      "revision": "4daeb59fbe76fc305e656923a3288adede1025521a0326947944a7e6caf8dc6d",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-320.png",
+          "sha256": "9df6f42c3bf5eb9132a9c491b4623f995e48dc42f8b04d65829bd36d05fa9b59"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-390.png",
+          "sha256": "6ce4a15b42249a3dadb83be869f3be96d927b56a12af7dcc798aac435a209d52"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-768.png",
+          "sha256": "0ed0f0832fe852695a926179acaba387e7de0d280de8f65f1c525cf13ea77a64"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-1440.png",
+          "sha256": "0ed0f0832fe852695a926179acaba387e7de0d280de8f65f1c525cf13ea77a64"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-native-320-input.png",
+          "sha256": "ad229f2a47f678843bdbd182c779f381ccc9c0a79fd095bc69d9fa7a20f186f8"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-native-1280-input.png",
+          "sha256": "4b978fc88483c4c33ef39561e0a976adfbdfc63c21a0f88b42eff098c6920ec7"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-320.png",
+          "sha256": "9df6f42c3bf5eb9132a9c491b4623f995e48dc42f8b04d65829bd36d05fa9b59"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-390.png",
+          "sha256": "6ce4a15b42249a3dadb83be869f3be96d927b56a12af7dcc798aac435a209d52"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-768.png",
+          "sha256": "0ed0f0832fe852695a926179acaba387e7de0d280de8f65f1c525cf13ea77a64"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-studio-1440.png",
+          "sha256": "0ed0f0832fe852695a926179acaba387e7de0d280de8f65f1c525cf13ea77a64"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-native-320-success.png",
+          "sha256": "378515fa977573d9037b4a528b04933d1a350e1694c4fbfefae2969da0a01ce0"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/appointment-agenda-native-1280-success.png",
+          "sha256": "6601d84b56c9b8a6b2518c7ee124ff6150467e8e9d48799201e0821608d4653a"
+        }
+      ]
+    },
+    {
+      "id": "accessible-visit-note",
+      "revision": "560daaf9c626976e0dc8c9b73ec3edd16753f8996ebe4a62819e037b33cd752f",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "information",
+          "path": "docs/reviews/hosted-practical-2026-10-20/accessible-visit-note-studio-320.png",
+          "sha256": "ceca9852419955c8f281be4148fde80ecd8fc4c5fabd02d9a82a7ba16733e446"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "information",
+          "path": "docs/reviews/hosted-practical-2026-10-20/accessible-visit-note-studio-390.png",
+          "sha256": "4702bc65de51de73b5e37d966cbf258c8d58384e6f117d2edd6c5f7a3e013ba0"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "information",
+          "path": "docs/reviews/hosted-practical-2026-10-20/accessible-visit-note-studio-768.png",
+          "sha256": "64eb99e70849875a1ccedf60322fc58cba0f908d89212d41728e75b6fd3f14fc"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "information",
+          "path": "docs/reviews/hosted-practical-2026-10-20/accessible-visit-note-studio-1440.png",
+          "sha256": "64eb99e70849875a1ccedf60322fc58cba0f908d89212d41728e75b6fd3f14fc"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "information",
+          "path": "docs/reviews/hosted-practical-2026-10-20/accessible-visit-note-native-320-input.png",
+          "sha256": "fe8759d22f07cf1d8f109c921e122d51427b10662c04c794468290502e505380"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "information",
+          "path": "docs/reviews/hosted-practical-2026-10-20/accessible-visit-note-native-1280-input.png",
+          "sha256": "b3dbc29621edd326fbfe897562c172bf53a808e86938720522cb3e459389d834"
+        }
+      ]
+    },
+    {
+      "id": "sms-message-preview",
+      "revision": "59be64d82d927eb8568ba370366a49dfb9e794efcb905377e166f3d1d984b3a1",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-320.png",
+          "sha256": "f1ed08a0f9275f3345d167620d7201ed82242b54f82e27b88bb53c019b524b39"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-390.png",
+          "sha256": "56c2202df692ac8bae1aa7aa4fa8e8bc87d66693065d742bb63f7864c2cb7060"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-768.png",
+          "sha256": "206efec94ed9065f1d6d632555be4e01bd1ddf2edd7c6168de55de6a7d89e7ef"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-1440.png",
+          "sha256": "836bc1b3283b28c15aebe8a752aca039733a55546a3f1d2439fe586e85b51b88"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-native-320-input.png",
+          "sha256": "3238b872112f15632498000affee37a9d5694e87620e21d21b36b52fe0c3c1e0"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-native-1280-input.png",
+          "sha256": "9def3fe7f750be204a2ea61e1d50789f01a174e1c36bc98ac84597ddfb18c25a"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-320.png",
+          "sha256": "f1ed08a0f9275f3345d167620d7201ed82242b54f82e27b88bb53c019b524b39"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-390.png",
+          "sha256": "56c2202df692ac8bae1aa7aa4fa8e8bc87d66693065d742bb63f7864c2cb7060"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-768.png",
+          "sha256": "206efec94ed9065f1d6d632555be4e01bd1ddf2edd7c6168de55de6a7d89e7ef"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-studio-1440.png",
+          "sha256": "836bc1b3283b28c15aebe8a752aca039733a55546a3f1d2439fe586e85b51b88"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-native-320-success.png",
+          "sha256": "74af2f1246573f9a4a02949baacfef448c9eaf474af91a8b1b9e16f36f61564b"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/sms-message-preview-native-1280-success.png",
+          "sha256": "24722662be2c2989fda582cbb264742baa1560fd08ff0cb2824122d2acbb6e08"
+        }
+      ]
+    },
+    {
+      "id": "service-fit-brief",
+      "revision": "52bc6f33a0940429aaa149ccefbbb9436dcfb6fddae6b622b67c6767b56e1fb1",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-320.png",
+          "sha256": "b71896f6c33cbb4317567b78ec1fb476d6dddcaeb38f2dfa76461f22a1241232"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-390.png",
+          "sha256": "28a9754f197c11cb103f7721e2ab0b0d02170ab4dd267bfb8b41b0960a6669e7"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-768.png",
+          "sha256": "6fe60738ca337e55431586a5895e74a9cd12de2b15f4eb53fc019ce0ce5c4dae"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-1440.png",
+          "sha256": "fad964ec5ed3b5f6ac7e3a37168d5fa0011e1e72456f7f3415347ed8593fea82"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-native-320-input.png",
+          "sha256": "b5d05430ae2851e0bc5854960c9243114e3be90bcfbe61e8c9203e96d4a57c92"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-native-1280-input.png",
+          "sha256": "f6ec50857a914e1c5e36cf6a487b5975bd6e27da7c206e4d07640c77e3aa2308"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-320.png",
+          "sha256": "b71896f6c33cbb4317567b78ec1fb476d6dddcaeb38f2dfa76461f22a1241232"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-390.png",
+          "sha256": "28a9754f197c11cb103f7721e2ab0b0d02170ab4dd267bfb8b41b0960a6669e7"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-768.png",
+          "sha256": "6fe60738ca337e55431586a5895e74a9cd12de2b15f4eb53fc019ce0ce5c4dae"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-studio-1440.png",
+          "sha256": "fad964ec5ed3b5f6ac7e3a37168d5fa0011e1e72456f7f3415347ed8593fea82"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-native-320-success.png",
+          "sha256": "6563e48a0f4ae98ffdf9e9376da119397658a44a885fa13fb3aacc5e6d19829c"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/service-fit-brief-native-1280-success.png",
+          "sha256": "cc5ff5b0849b002127174a8c4a7823b5a30c603e845c4c8617711f6bc21847ea"
+        }
+      ]
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "revision": "9d549f6f9bc7e6c8b0d391d8e731f94afb82420519162b75f79cfb25ffb24047",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-320.png",
+          "sha256": "eed35bf2bfb082d99d7391227d677b239f57feb399e9a748308e8bd77d7aaacd"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-390.png",
+          "sha256": "b7f78ed65d5a3c3c6207ac927fe1c11f6ec43d690b50e1d53a3ce9c9ce7cbf0c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-768.png",
+          "sha256": "2d8d9a3367360d2f71fd637a09d069a0c9f4f920178e0c772f0f67695b2bdfd0"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-1440.png",
+          "sha256": "2d8d9a3367360d2f71fd637a09d069a0c9f4f920178e0c772f0f67695b2bdfd0"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-native-320-input.png",
+          "sha256": "9b488cfd248a620b2a4e2b86393e05260b9be6434932b0588238b642dbe1b5db"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-native-1280-input.png",
+          "sha256": "b30f1aef04729eaaa46298b61ee4bb668ac4cd83f8728ecfe6258c123bb8cdc6"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-320.png",
+          "sha256": "eed35bf2bfb082d99d7391227d677b239f57feb399e9a748308e8bd77d7aaacd"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-390.png",
+          "sha256": "b7f78ed65d5a3c3c6207ac927fe1c11f6ec43d690b50e1d53a3ce9c9ce7cbf0c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-768.png",
+          "sha256": "2d8d9a3367360d2f71fd637a09d069a0c9f4f920178e0c772f0f67695b2bdfd0"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-studio-1440.png",
+          "sha256": "2d8d9a3367360d2f71fd637a09d069a0c9f4f920178e0c772f0f67695b2bdfd0"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-native-320-success.png",
+          "sha256": "4d9151b7b7248e25586931b34164f6cb1476279adff7cbb7a7848c4b84462e95"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/hosted-practical-2026-10-20/earlier-appointment-enquiry-native-1280-success.png",
+          "sha256": "8b3a10a86d60de6184f4db5b926ee51a13b85ea308f9b12eb330a222a477f057"
+        }
+      ]
+    },
+    {
+      "id": "equipment-return-checklist",
+      "revision": "b6db710fc681e9110505975baeb4f99b65685002b6d2c1aa6253224c9fc2d946",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone; see review.md for the design-specific judgement and limits.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-320.png",
+          "sha256": "f76ded590d6944ef41639769f330697d1d812526f05c2536b07b460a0f688784"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-390.png",
+          "sha256": "1dab33b32fd95b34865fda60632a915d563d2925040d9cd42288a9aea569e2b9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-768.png",
+          "sha256": "39bc77815a93dc5ceac9b79025bc51ae82b7600233bbbed161574b26f80c5d05"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-1440.png",
+          "sha256": "39bc77815a93dc5ceac9b79025bc51ae82b7600233bbbed161574b26f80c5d05"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-native-320-input.png",
+          "sha256": "66d0d0c85d1b838e2307cd97adafaaaaf17c4e4757edf931848548226051a16e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "s1",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-native-1280-input.png",
+          "sha256": "a85c0efd99d16226b8d79df7e97cddfbcac6dfc3c1536662bc12936bdb062e86"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-320.png",
+          "sha256": "f76ded590d6944ef41639769f330697d1d812526f05c2536b07b460a0f688784"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-390.png",
+          "sha256": "1dab33b32fd95b34865fda60632a915d563d2925040d9cd42288a9aea569e2b9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-768.png",
+          "sha256": "39bc77815a93dc5ceac9b79025bc51ae82b7600233bbbed161574b26f80c5d05"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-studio-1440.png",
+          "sha256": "39bc77815a93dc5ceac9b79025bc51ae82b7600233bbbed161574b26f80c5d05"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-native-320-success.png",
+          "sha256": "c8bae3466b1215aee63084931fe4e17f0e9bbdd3b038c1f9b86735dea1871b36"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "s2",
+          "path": "docs/reviews/hosted-practical-2026-10-20/equipment-return-checklist-native-1280-success.png",
+          "sha256": "d0b201f063ee05036645278d314249292e6daaf6e4b613fd86531c009e819f57"
+        }
+      ]
+    }
+  ]
+}

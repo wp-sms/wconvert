@@ -15,6 +15,10 @@ async function fixture(t, overrides = {}) {
  const config = { ...settings, ...overrides };
  const state = { calls: [], error: null, override: {}, key: 0, header: {}, outage: false };
  const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'], bindings: config,
+  ratelimits: {
+   GRANT_RATE_LIMITER: { namespace_id: '1', simple: { limit: 10000, period: 60 } },
+   DOWNLOAD_RATE_LIMITER: { namespace_id: '2', simple: { limit: 10000, period: 60 } },
+  },
   outboundService: async request => {
    state.calls.push({ url: request.url, headers: Object.fromEntries(request.headers), body: request.method === 'POST' ? await request.json() : null });
    if (state.outage) return new Response('{}', { status: 503 });

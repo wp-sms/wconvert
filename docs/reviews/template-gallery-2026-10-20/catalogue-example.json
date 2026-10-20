@@ -1,0 +1,931 @@
+{
+  "schema": 1,
+  "release": "0e93e15299085eb7708218a13cf5963745ca6d7d8c036cf257c7ea2959175a98",
+  "designs": [
+    {
+      "id": "accessory-workbench",
+      "name": "Accessory workbench",
+      "pack_id": "shopping-help",
+      "packs": [
+        {
+          "id": "shopping-help",
+          "access": "pro"
+        }
+      ],
+      "format": "inline",
+      "availability": "pro",
+      "revision": "68a9e0cc8bf4920279207da15ce9d5e34c634f265bcf0a74028304dc9f9dddd6",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": [
+          "woocommerce"
+        ]
+      },
+      "screens": [
+        {
+          "id": "suggestions",
+          "label": "Useful accessories",
+          "step_id": "suggestions",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=accessory-workbench&screen=suggestions",
+          "embed_url": "https://templates.wconvert.io/previews/92dd76c3eb343155ea8f36ca8b705eb8dc091baefbd53701b3f9a2c202108b0e.html#screen=suggestions"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=accessory-workbench",
+      "embed_url": "https://templates.wconvert.io/previews/92dd76c3eb343155ea8f36ca8b705eb8dc091baefbd53701b3f9a2c202108b0e.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/ce6dbb38c5ad6b044050f1502e2c0ab16dedfacdfd3626cfc7bf2dac3495bce1.jpg",
+        "width": 864,
+        "height": 373,
+        "alt": "Accessory workbench — Useful accessories. Sample design content.",
+        "partial": false,
+        "screen_id": "suggestions",
+        "sha256": "ce6dbb38c5ad6b044050f1502e2c0ab16dedfacdfd3626cfc7bf2dac3495bce1"
+      }
+    },
+    {
+      "id": "basket-companion",
+      "name": "Basket companion",
+      "pack_id": "shopping-help",
+      "packs": [
+        {
+          "id": "shopping-help",
+          "access": "pro"
+        }
+      ],
+      "format": "inline",
+      "availability": "pro",
+      "revision": "af3ef23426fc06e502cb8eb3cd45fdefee8d8a116214305600a8044b2c875eb3",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": [
+          "woocommerce"
+        ]
+      },
+      "screens": [
+        {
+          "id": "suggestions",
+          "label": "Basket extras",
+          "step_id": "suggestions",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=basket-companion&screen=suggestions",
+          "embed_url": "https://templates.wconvert.io/previews/35a65fa4f7e846ff9a8e09bc950f010dfbdf24b4d5a710656c9ca2d672555c04.html#screen=suggestions"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=basket-companion",
+      "embed_url": "https://templates.wconvert.io/previews/35a65fa4f7e846ff9a8e09bc950f010dfbdf24b4d5a710656c9ca2d672555c04.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/b8143554b3b9c0ff20084dfe0f53b2e93ba6fdce09e3680dabfcedb6e9efb838.jpg",
+        "width": 704,
+        "height": 628,
+        "alt": "Basket companion — Basket extras. Sample design content.",
+        "partial": false,
+        "screen_id": "suggestions",
+        "sha256": "b8143554b3b9c0ff20084dfe0f53b2e93ba6fdce09e3680dabfcedb6e9efb838"
+      }
+    },
+    {
+      "id": "callback-notes",
+      "name": "Callback notes",
+      "pack_id": "services-starts",
+      "packs": [
+        {
+          "id": "services-starts",
+          "access": "free"
+        }
+      ],
+      "format": "inline",
+      "availability": "free",
+      "revision": "09e5f3f7e5ba8430e3d42a5a81d1b41643363b8b8a00e5c4a64a72280ff112cc",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Details",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=callback-notes&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/0541373bfeb8b781a4795280c9fb9ca5e62b860e8a66862a4e271a39c527cde1.html#screen=s1"
+        },
+        {
+          "id": "s2",
+          "label": "Received",
+          "step_id": "s2",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=callback-notes&screen=s2",
+          "embed_url": "https://templates.wconvert.io/previews/0541373bfeb8b781a4795280c9fb9ca5e62b860e8a66862a4e271a39c527cde1.html#screen=s2"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=callback-notes",
+      "embed_url": "https://templates.wconvert.io/previews/0541373bfeb8b781a4795280c9fb9ca5e62b860e8a66862a4e271a39c527cde1.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/2d5d4ae44ca2fba604c09de4bbab8c68690a44e53b1154d00502572fffc316af.jpg",
+        "width": 768,
+        "height": 461,
+        "alt": "Callback notes — Details. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "2d5d4ae44ca2fba604c09de4bbab8c68690a44e53b1154d00502572fffc316af"
+      }
+    },
+    {
+      "id": "cart-accessories",
+      "name": "Selected accessories",
+      "pack_id": "shopping-help",
+      "packs": [
+        {
+          "id": "shopping-help",
+          "access": "pro"
+        }
+      ],
+      "format": "inline",
+      "availability": "pro",
+      "revision": "6f6535e2c0c57999df3c6e327d18b27d29dd580976185fc0f5019b0443e07c9d",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": [
+          "woocommerce"
+        ]
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Suggestions",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=cart-accessories&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/429cbaf4ad4a40bff17f61ab9f93b8d146873a8314872dc084dc7f2f08789fb1.html#screen=s1"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=cart-accessories",
+      "embed_url": "https://templates.wconvert.io/previews/429cbaf4ad4a40bff17f61ab9f93b8d146873a8314872dc084dc7f2f08789fb1.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/44521f816203e3e80f672a2d4a33c8f92b3bed4dd6c9c20db464bea34aa5d371.jpg",
+        "width": 832,
+        "height": 679,
+        "alt": "Selected accessories — Suggestions. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "44521f816203e3e80f672a2d4a33c8f92b3bed4dd6c9c20db464bea34aa5d371"
+      }
+    },
+    {
+      "id": "cart-additions",
+      "name": "Add useful extras",
+      "pack_id": "shopping-help",
+      "packs": [
+        {
+          "id": "shopping-help",
+          "access": "pro"
+        }
+      ],
+      "format": "inline",
+      "availability": "pro",
+      "revision": "0343f7e2cf67393f95eb6ff7d88a968d73abac236c8cd16f007bea370681eb0e",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": [
+          "woocommerce"
+        ]
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Suggestions",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=cart-additions&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/3504d966124de954a4c809eee15c6ba0174dc344aaa10872d7f8e02952cdb5b1.html#screen=s1"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=cart-additions",
+      "embed_url": "https://templates.wconvert.io/previews/3504d966124de954a4c809eee15c6ba0174dc344aaa10872d7f8e02952cdb5b1.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/997ad83008439e777ea9a4b58810d32b253584659d61183857bc50c263a05987.jpg",
+        "width": 832,
+        "height": 679,
+        "alt": "Add useful extras — Suggestions. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "997ad83008439e777ea9a4b58810d32b253584659d61183857bc50c263a05987"
+      }
+    },
+    {
+      "id": "coffee-finder-board",
+      "name": "Coffee finder board",
+      "pack_id": "shopping-help",
+      "packs": [
+        {
+          "id": "shopping-help",
+          "access": "pro"
+        }
+      ],
+      "format": "inline",
+      "availability": "pro",
+      "revision": "2491f901739b3e84b8caf765835c6be66b5224b2502b6aceed43902942e8edac",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": [
+          "woocommerce"
+        ]
+      },
+      "screens": [
+        {
+          "id": "taste",
+          "label": "Choose your taste",
+          "step_id": "taste",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=coffee-finder-board&screen=taste",
+          "embed_url": "https://templates.wconvert.io/previews/6143eda5d575d61868f25be375e12d66599ac63d1ceb5cc0dcde29be9a08598e.html#screen=taste"
+        },
+        {
+          "id": "match/bright",
+          "label": "Your coffee starting point · Start with bright and fruity",
+          "step_id": "match",
+          "result_id": "bright",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=coffee-finder-board&screen=match%2Fbright",
+          "embed_url": "https://templates.wconvert.io/previews/6143eda5d575d61868f25be375e12d66599ac63d1ceb5cc0dcde29be9a08598e.html#screen=match%2Fbright"
+        },
+        {
+          "id": "match/smooth",
+          "label": "Your coffee starting point · Start with smooth and chocolatey",
+          "step_id": "match",
+          "result_id": "smooth",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=coffee-finder-board&screen=match%2Fsmooth",
+          "embed_url": "https://templates.wconvert.io/previews/6143eda5d575d61868f25be375e12d66599ac63d1ceb5cc0dcde29be9a08598e.html#screen=match%2Fsmooth"
+        },
+        {
+          "id": "match/explore",
+          "label": "Your coffee starting point · Explore a few different coffees",
+          "step_id": "match",
+          "result_id": "explore",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=coffee-finder-board&screen=match%2Fexplore",
+          "embed_url": "https://templates.wconvert.io/previews/6143eda5d575d61868f25be375e12d66599ac63d1ceb5cc0dcde29be9a08598e.html#screen=match%2Fexplore"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=coffee-finder-board",
+      "embed_url": "https://templates.wconvert.io/previews/6143eda5d575d61868f25be375e12d66599ac63d1ceb5cc0dcde29be9a08598e.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/5d9153d586f9036471f71d0150d92f27a303ed4ed183c3f41101d732247e2733.jpg",
+        "width": 768,
+        "height": 366,
+        "alt": "Coffee finder board — Choose your taste. Sample design content.",
+        "partial": false,
+        "screen_id": "taste",
+        "sha256": "5d9153d586f9036471f71d0150d92f27a303ed4ed183c3f41101d732247e2733"
+      }
+    },
+    {
+      "id": "edition-pass",
+      "name": "Edition pass",
+      "pack_id": "stores-starts",
+      "packs": [
+        {
+          "id": "stores-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "c07a02abbbe8eda3219f59da19f96b6d6c52ed101fec4ac918f03cefd63ad08a",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Your details",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=edition-pass&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/08cbe39824b818ccf1a56d90bf6b7340d375b2a664997cd27b153659119d755e.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=edition-pass&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/08cbe39824b818ccf1a56d90bf6b7340d375b2a664997cd27b153659119d755e.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=edition-pass",
+      "embed_url": "https://templates.wconvert.io/previews/08cbe39824b818ccf1a56d90bf6b7340d375b2a664997cd27b153659119d755e.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/098c83525abf5f536f4a45c51cff88d750058fa8c75213e05288c40c09a2af53.jpg",
+        "width": 432,
+        "height": 513,
+        "alt": "Edition pass — Your details. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "098c83525abf5f536f4a45c51cff88d750058fa8c75213e05288c40c09a2af53"
+      }
+    },
+    {
+      "id": "excerpt-window",
+      "name": "Excerpt window",
+      "pack_id": "publishers-starts",
+      "packs": [
+        {
+          "id": "publishers-starts",
+          "access": "free"
+        }
+      ],
+      "format": "inline",
+      "availability": "free",
+      "revision": "07ad33b5c262c445810078a83af74629c34b8a29f0cf039458d512e168a5c6d5",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Read a sample",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=excerpt-window&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/a6c97f887f1f7e5aee57be8a609cf57512b7cac099c153a26c4d96fbffe0388d.html#screen=s1"
+        },
+        {
+          "id": "s2",
+          "label": "Request received",
+          "step_id": "s2",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=excerpt-window&screen=s2",
+          "embed_url": "https://templates.wconvert.io/previews/a6c97f887f1f7e5aee57be8a609cf57512b7cac099c153a26c4d96fbffe0388d.html#screen=s2"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=excerpt-window",
+      "embed_url": "https://templates.wconvert.io/previews/a6c97f887f1f7e5aee57be8a609cf57512b7cac099c153a26c4d96fbffe0388d.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/cff3b8dbec263b5a016352f37ec2ef962cdceea8b3b19f82657673144739e81b.jpg",
+        "width": 896,
+        "height": 376,
+        "alt": "Excerpt window — Read a sample. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "cff3b8dbec263b5a016352f37ec2ef962cdceea8b3b19f82657673144739e81b"
+      }
+    },
+    {
+      "id": "inline-cart-nudge",
+      "name": "Cart nudge",
+      "pack_id": "shopping-help",
+      "packs": [
+        {
+          "id": "shopping-help",
+          "access": "pro"
+        }
+      ],
+      "format": "inline",
+      "availability": "pro",
+      "revision": "11078b1d8daa4c9c21bf1db5f47a23951b3ab4842a954be56f1d714425616a3f",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Offer",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=inline-cart-nudge&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/25211519d64da338783ea2e336901b99c3443112be11d02459cee06d4616000c.html#screen=s1"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/32dad364ac8ebfef92767e1c74f2f0c44c8789becddb582b83bf48eae6328ebb.html#design=inline-cart-nudge",
+      "embed_url": "https://templates.wconvert.io/previews/25211519d64da338783ea2e336901b99c3443112be11d02459cee06d4616000c.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/4f3fc0c07bd154dc9044b08af21a400031bbfc0b3082065d45fc329b27ab0e61.jpg",
+        "width": 640,
+        "height": 91,
+        "alt": "Cart nudge — Offer. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "4f3fc0c07bd154dc9044b08af21a400031bbfc0b3082065d45fc329b27ab0e61"
+      }
+    },
+    {
+      "id": "ledger-card",
+      "name": "Ledger card",
+      "pack_id": "publishers-starts",
+      "packs": [
+        {
+          "id": "publishers-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "2d5a9933c1f492bae5c855212c0ba924f226ff8ab7bb0abd0ba193bbc3f15c6b",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Details",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=ledger-card&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/6b854de2cc30e624328fcc8331472ef0d00cb45a3805966b81a92f29d7b94560.html#screen=s1"
+        },
+        {
+          "id": "s2",
+          "label": "Received",
+          "step_id": "s2",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=ledger-card&screen=s2",
+          "embed_url": "https://templates.wconvert.io/previews/6b854de2cc30e624328fcc8331472ef0d00cb45a3805966b81a92f29d7b94560.html#screen=s2"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=ledger-card",
+      "embed_url": "https://templates.wconvert.io/previews/6b854de2cc30e624328fcc8331472ef0d00cb45a3805966b81a92f29d7b94560.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/2d87f892302821b444795c0b53aa8a9f9b9274c10cb6726f198f808195db4b50.jpg",
+        "width": 480,
+        "height": 464,
+        "alt": "Ledger card — Details. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "2d87f892302821b444795c0b53aa8a9f9b9274c10cb6726f198f808195db4b50"
+      }
+    },
+    {
+      "id": "offer-receipt",
+      "name": "Offer receipt",
+      "pack_id": "stores-starts",
+      "packs": [
+        {
+          "id": "stores-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "0060f845b1999c1369862760a669d66d73fbe8001f1c398385cb5f2747e4d1c3",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "information",
+          "label": "Information",
+          "step_id": "information",
+          "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=offer-receipt&screen=information",
+          "embed_url": "https://templates.wconvert.io/previews/c1a4844395417b8af3375c18b6af76816cf02a6ea400f68f984323621bfc82b9.html#screen=information"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=offer-receipt",
+      "embed_url": "https://templates.wconvert.io/previews/c1a4844395417b8af3375c18b6af76816cf02a6ea400f68f984323621bfc82b9.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/d13acab9cccd02f3ae691ee88f3f19ac70ff66d98b5c48ce2eb33f58a62183ca.jpg",
+        "width": 400,
+        "height": 543,
+        "alt": "Offer receipt — Information. Sample design content.",
+        "partial": false,
+        "screen_id": "information",
+        "sha256": "d13acab9cccd02f3ae691ee88f3f19ac70ff66d98b5c48ce2eb33f58a62183ca"
+      }
+    },
+    {
+      "id": "product-shelf",
+      "name": "The product shelf",
+      "pack_id": "homeware-care",
+      "packs": [
+        {
+          "id": "homeware-care",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "31ee52924948b9ed2f1f676a39bbffbaab5d46cdd68b024490fc69c379d3dcfe",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Email request",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/e064ac2d27bba1f92993d0c5f6f09a35dec684d1ed9d3e94414b35c3b7bcbe0c.html#design=product-shelf&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/0f61d075b1be03d3d4342eb30314f3ee601781c405187bee639e56aa7da93612.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/e064ac2d27bba1f92993d0c5f6f09a35dec684d1ed9d3e94414b35c3b7bcbe0c.html#design=product-shelf&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/0f61d075b1be03d3d4342eb30314f3ee601781c405187bee639e56aa7da93612.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/e064ac2d27bba1f92993d0c5f6f09a35dec684d1ed9d3e94414b35c3b7bcbe0c.html#design=product-shelf",
+      "embed_url": "https://templates.wconvert.io/previews/0f61d075b1be03d3d4342eb30314f3ee601781c405187bee639e56aa7da93612.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/3681d331443e488e742a7b226a81fc7f19672a952841d30d6989d7d32e6d2e2d.jpg",
+        "width": 608,
+        "height": 417,
+        "alt": "The product shelf — Email request. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "3681d331443e488e742a7b226a81fc7f19672a952841d30d6989d7d32e6d2e2d"
+      }
+    },
+    {
+      "id": "reading-cover",
+      "name": "Reading cover",
+      "pack_id": "publishers-starts",
+      "packs": [
+        {
+          "id": "publishers-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "9f598d888caf249193d9ff604f11e92df327f2b870b530da2a356807f0ec19a1",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Your details",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=reading-cover&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/7b93ff6c8d60516a444f3c0db7d76219eadc32c4cb2f0e95a4a033493d5ec6f7.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=reading-cover&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/7b93ff6c8d60516a444f3c0db7d76219eadc32c4cb2f0e95a4a033493d5ec6f7.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=reading-cover",
+      "embed_url": "https://templates.wconvert.io/previews/7b93ff6c8d60516a444f3c0db7d76219eadc32c4cb2f0e95a4a033493d5ec6f7.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/6757f3ac254bd0c1c7c4b88ac2d9242c8e2dac954eb365b0e76b23c29a7f096f.jpg",
+        "width": 672,
+        "height": 390,
+        "alt": "Reading cover — Your details. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "6757f3ac254bd0c1c7c4b88ac2d9242c8e2dac954eb365b0e76b23c29a7f096f"
+      }
+    },
+    {
+      "id": "reading-desk",
+      "name": "Reading desk",
+      "pack_id": "publishers-starts",
+      "packs": [
+        {
+          "id": "publishers-starts",
+          "access": "free"
+        }
+      ],
+      "format": "inline",
+      "availability": "free",
+      "revision": "3b3e75c7e6219e5bd0a9312c1d83a0f2a7f95e0f931a6d1a76277b2cefce36bb",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Your details",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=reading-desk&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/951407d51381f59ec0961a9323e5b484f64c297b94ef1f5acdf92fce204d33d8.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=reading-desk&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/951407d51381f59ec0961a9323e5b484f64c297b94ef1f5acdf92fce204d33d8.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=reading-desk",
+      "embed_url": "https://templates.wconvert.io/previews/951407d51381f59ec0961a9323e5b484f64c297b94ef1f5acdf92fce204d33d8.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/95a4cf12352b7c55cbf6f310acd79b959b603e25bf43e5259b39fb77f3db9019.jpg",
+        "width": 768,
+        "height": 266,
+        "alt": "Reading desk — Your details. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "95a4cf12352b7c55cbf6f310acd79b959b603e25bf43e5259b39fb77f3db9019"
+      }
+    },
+    {
+      "id": "request-folio",
+      "name": "Request folio",
+      "pack_id": "services-starts",
+      "packs": [
+        {
+          "id": "services-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "742e3c3e2bb026bf4c5d5c8db9a8fae44fa234e150143c92566aba1ab9883dc5",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "request",
+          "label": "Your request",
+          "step_id": "request",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=request-folio&screen=request",
+          "embed_url": "https://templates.wconvert.io/previews/4f84f209080bd935e0377d94d7b0d17cc6434f88963a067ce47802233da0c03b.html#screen=request"
+        },
+        {
+          "id": "details",
+          "label": "Reply address",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=request-folio&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/4f84f209080bd935e0377d94d7b0d17cc6434f88963a067ce47802233da0c03b.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=request-folio&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/4f84f209080bd935e0377d94d7b0d17cc6434f88963a067ce47802233da0c03b.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=request-folio",
+      "embed_url": "https://templates.wconvert.io/previews/4f84f209080bd935e0377d94d7b0d17cc6434f88963a067ce47802233da0c03b.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/f2a56ff901df0020b15c12dffac2ce68f60d6fbedd9e5fd6b7118bc20113e8e9.jpg",
+        "width": 544,
+        "height": 392,
+        "alt": "Request folio — Your request. Sample design content.",
+        "partial": false,
+        "screen_id": "request",
+        "sha256": "f2a56ff901df0020b15c12dffac2ce68f60d6fbedd9e5fd6b7118bc20113e8e9"
+      }
+    },
+    {
+      "id": "sample-envelope",
+      "name": "Sample envelope",
+      "pack_id": "fabric-sample-enquiries",
+      "packs": [
+        {
+          "id": "fabric-sample-enquiries",
+          "access": "pro"
+        }
+      ],
+      "format": "slide_in",
+      "availability": "pro",
+      "revision": "5233e8da86c78c2e7d1c58d7a76c81ff1bb0cebd16d0704342d13a69cedb21aa",
+      "bundled": true,
+      "bundle_tier": "pro",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Your details",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/56525db07b70e97c120876c880bce7b70a28de3a423993d8fcf3562c4691c525.html#design=sample-envelope&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/42928413b4643e746d01067877617d9f15dea9cefad9e393d002cc597af1186d.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/56525db07b70e97c120876c880bce7b70a28de3a423993d8fcf3562c4691c525.html#design=sample-envelope&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/42928413b4643e746d01067877617d9f15dea9cefad9e393d002cc597af1186d.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/56525db07b70e97c120876c880bce7b70a28de3a423993d8fcf3562c4691c525.html#design=sample-envelope",
+      "embed_url": "https://templates.wconvert.io/previews/42928413b4643e746d01067877617d9f15dea9cefad9e393d002cc597af1186d.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/ac404d2d06d9590fb2f5d1b75f9c3f2d46d19e37855911e3c34dd83811cefbe6.jpg",
+        "width": 416,
+        "height": 525,
+        "alt": "Sample envelope — Your details. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "ac404d2d06d9590fb2f5d1b75f9c3f2d46d19e37855911e3c34dd83811cefbe6"
+      }
+    },
+    {
+      "id": "service-docket",
+      "name": "Service docket",
+      "pack_id": "services-starts",
+      "packs": [
+        {
+          "id": "services-starts",
+          "access": "free"
+        }
+      ],
+      "format": "inline",
+      "availability": "free",
+      "revision": "2788b169cde5e817960cc323e8a46ff54bcd73ae076a715dda75c2308839bf40",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Your details",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=service-docket&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/af74dee5e4f363348b6c0f39f8da428a93e700707a33de6b77462aee56292632.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=service-docket&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/af74dee5e4f363348b6c0f39f8da428a93e700707a33de6b77462aee56292632.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=service-docket",
+      "embed_url": "https://templates.wconvert.io/previews/af74dee5e4f363348b6c0f39f8da428a93e700707a33de6b77462aee56292632.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/5f01ce266fa5072fa31d3de18edb62e54d6b034a737a21e74649577459e5fbb1.jpg",
+        "width": 768,
+        "height": 418,
+        "alt": "Service docket — Your details. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "5f01ce266fa5072fa31d3de18edb62e54d6b034a737a21e74649577459e5fbb1"
+      }
+    },
+    {
+      "id": "service-summary",
+      "name": "Service summary",
+      "pack_id": "services-starts",
+      "packs": [
+        {
+          "id": "services-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "a8a861b71278c1d40786f8c43026f34843326fded5b6657d3810e0c56e04ce60",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "details",
+          "label": "Your details",
+          "step_id": "details",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=service-summary&screen=details",
+          "embed_url": "https://templates.wconvert.io/previews/75be07b141c0de2dbffeb7343396a0fcc8df9c4763bb86f12880c81a95e2a309.html#screen=details"
+        },
+        {
+          "id": "received",
+          "label": "Request received",
+          "step_id": "received",
+          "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=service-summary&screen=received",
+          "embed_url": "https://templates.wconvert.io/previews/75be07b141c0de2dbffeb7343396a0fcc8df9c4763bb86f12880c81a95e2a309.html#screen=received"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/3a8a09c72a32d8689642cfa11fb5d9d597b3e92eedddad998fcd12b9c18f3c17.html#design=service-summary",
+      "embed_url": "https://templates.wconvert.io/previews/75be07b141c0de2dbffeb7343396a0fcc8df9c4763bb86f12880c81a95e2a309.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/b267b0e299eada4af0b1dece53ea60afb5c72db67afd0e4c9732b38c3ef21fe7.jpg",
+        "width": 592,
+        "height": 488,
+        "alt": "Service summary — Your details. Sample design content.",
+        "partial": false,
+        "screen_id": "details",
+        "sha256": "b267b0e299eada4af0b1dece53ea60afb5c72db67afd0e4c9732b38c3ef21fe7"
+      }
+    },
+    {
+      "id": "specification-sheet",
+      "name": "Specification sheet",
+      "pack_id": "stores-starts",
+      "packs": [
+        {
+          "id": "stores-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "ae48b6d5415469cd1ba98e929c5f913a5b21f52405f65596f4dd5664b711788b",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Compare",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=specification-sheet&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/b9c9b6bf31da6086626b4983045725ecf981b9b2749eb15fc55d03b74d7c150a.html#screen=s1"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/91ee91eba2dc2d20bdd6930e3d24e6cab6cc3967dbed770a706929fb2e5bd8fa.html#design=specification-sheet",
+      "embed_url": "https://templates.wconvert.io/previews/b9c9b6bf31da6086626b4983045725ecf981b9b2749eb15fc55d03b74d7c150a.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/622de0cea01c594ef167c9b13f02986d651c7669cb4bfa18108d0f3579194ad0.jpg",
+        "width": 768,
+        "height": 575,
+        "alt": "Specification sheet — Compare. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "622de0cea01c594ef167c9b13f02986d651c7669cb4bfa18108d0f3579194ad0"
+      }
+    },
+    {
+      "id": "useful-guide",
+      "name": "A useful little guide",
+      "pack_id": "publishers-starts",
+      "packs": [
+        {
+          "id": "publishers-starts",
+          "access": "free"
+        }
+      ],
+      "format": "popup",
+      "availability": "free",
+      "revision": "01c3dd36763d7e424c30ed26d48c1b2efb654d24cf9c5f18332a1d432d5d1d6d",
+      "bundled": true,
+      "bundle_tier": "free",
+      "prerequisites": {
+        "plugins": []
+      },
+      "screens": [
+        {
+          "id": "s1",
+          "label": "Details",
+          "step_id": "s1",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=useful-guide&screen=s1",
+          "embed_url": "https://templates.wconvert.io/previews/31442fb25e4e97c0f17df8749c8d2147290285934a104c102dca780144efcd90.html#screen=s1"
+        },
+        {
+          "id": "s2",
+          "label": "Received",
+          "step_id": "s2",
+          "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=useful-guide&screen=s2",
+          "embed_url": "https://templates.wconvert.io/previews/31442fb25e4e97c0f17df8749c8d2147290285934a104c102dca780144efcd90.html#screen=s2"
+        }
+      ],
+      "preview_status": "available",
+      "preview_url": "https://templates.wconvert.io/previews/42bd06043957f8af9116b363f1ff5b8696159723a1dd114cb2796ba378073887.html#design=useful-guide",
+      "embed_url": "https://templates.wconvert.io/previews/31442fb25e4e97c0f17df8749c8d2147290285934a104c102dca780144efcd90.html",
+      "thumbnail": {
+        "url": "https://templates.wconvert.io/thumbnails/02ae53a38cdc2f891e045ab223e3b00d4bf44d25ad73c2cd9bd6bcbdffac1e07.jpg",
+        "width": 512,
+        "height": 470,
+        "alt": "A useful little guide — Details. Sample design content.",
+        "partial": false,
+        "screen_id": "s1",
+        "sha256": "02ae53a38cdc2f891e045ab223e3b00d4bf44d25ad73c2cd9bd6bcbdffac1e07"
+      }
+    }
+  ]
+}

@@ -1,0 +1,336 @@
+{
+  "id": "room-checklist",
+  "name": "Room checklist",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f7efe0",
+    "fg": "#39362d",
+    "muted": "#635f51",
+    "accent": "#3d4f50",
+    "accent-fg": "#ffffff",
+    "border": "#827f71",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "50rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Planning checklist",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n10",
+                  "text": "BEFORE YOU MOVE A THING",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n11",
+                  "text": "Make room\nfor living.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.5rem",
+                    "heading-font": "Georgia, serif",
+                    "heading-weight": "400"
+                  },
+                  "narrow": {
+                    "heading-size": "1.875rem"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n12"
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n1",
+                          "text": "01",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n2",
+                          "text": "Light",
+                          "role": "headline",
+                          "size": "s",
+                          "tokens": {
+                            "heading-size": "1.5rem"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".75rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "text": "Watch the room at the time you use it.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n4",
+                          "text": "02",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n5",
+                          "text": "Movement",
+                          "role": "headline",
+                          "size": "s",
+                          "tokens": {
+                            "heading-size": "1.5rem"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".75rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "text": "Leave the routes you walk every day clear.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "row",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n7",
+                          "text": "03",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n8",
+                          "text": "Scale",
+                          "role": "headline",
+                          "size": "s",
+                          "tokens": {
+                            "heading-size": "1.5rem"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".75rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n9",
+                      "text": "Measure the furniture, then the space around it.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "bg": "#f7efe0",
+                "pad": "1.5rem",
+                "radius": "0",
+                "gap": "1.25rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n13",
+                  "text": "TAKE THE CHECKLIST",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n14",
+                  "text": "A plan you\ncan print.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "1.75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n15",
+                  "text": "Request the room-planning worksheet, with space for measurements and notes.",
+                  "role": "body"
+                },
+                {
+                  "type": "field",
+                  "id": "n16",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "input-bg": "#ffffff",
+                    "fg": "#243535",
+                    "muted": "#e5eeeb"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n17",
+                  "role": "consent_text",
+                  "text": "Use my email to send the room-planning worksheet.",
+                  "hidden": true
+                },
+                {
+                  "type": "button",
+                  "id": "n18",
+                  "label": "Request the worksheet",
+                  "action": "submit",
+                  "role": "cta_label",
+                  "submission": "request"
+                },
+                {
+                  "type": "text",
+                  "id": "n19",
+                  "text": "One request. No marketing signup.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": "1rem"
+                  },
+                  "size": "s"
+                }
+              ],
+              "tokens": {
+                "bg": "#3d4f50",
+                "fg": "#ffffff",
+                "muted": "#e5eeeb",
+                "accent": "#f2d8a6",
+                "accent-fg": "#253535",
+                "input-bg": "#ffffff",
+                "border": "#96a6a1",
+                "pad": "1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              }
+            }
+          ],
+          "ratio": 0.65,
+          "basis": "16rem",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n20",
+              "text": "ROOM NOTES / REQUEST",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n21",
+              "role": "success_headline",
+              "text": "Worksheet request received",
+              "tokens": {
+                "heading-size": "1.75rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n22"
+            },
+            {
+              "type": "text",
+              "id": "n23",
+              "role": "success_body",
+              "text": "Thank you. Your email has been recorded for the room-planning worksheet."
+            },
+            {
+              "type": "button",
+              "id": "n24",
+              "label": "Close",
+              "action": "close",
+              "role": "close_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.75rem",
+            "gap": "1rem",
+            "bg": "#f7efe0",
+            "radius": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "request",
+        "required": true,
+        "fields": [
+          "n16"
+        ],
+        "consents": [
+          "n17"
+        ]
+      }
+    ]
+  }
+}

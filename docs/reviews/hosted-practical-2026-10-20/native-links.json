@@ -1,0 +1,26 @@
+[
+  {
+    "id": "event-calendar",
+    "href": "http://127.0.0.1:9463/",
+    "navigated": true,
+    "note": "Unconfigured merchant destination resolves to the local site home; merchant must set their actual destination."
+  },
+  {
+    "id": "product-detail-sheet",
+    "href": "http://127.0.0.1:9463/",
+    "navigated": true,
+    "note": "Unconfigured merchant destination resolves to the local site home; merchant must set their actual destination."
+  },
+  {
+    "id": "launch-index",
+    "href": "http://127.0.0.1:9463/",
+    "navigated": true,
+    "note": "Unconfigured merchant destination resolves to the local site home; merchant must set their actual destination."
+  },
+  {
+    "id": "accessible-visit-note",
+    "href": "http://127.0.0.1:9463/",
+    "navigated": true,
+    "note": "Unconfigured merchant destination resolves to the local site home; merchant must set their actual destination."
+  }
+]

@@ -1,0 +1,522 @@
+[
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "A quieter frequency · Details · Free",
+    "index": "0",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-0.png",
+    "box": {
+      "height": 494.421875,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "A quieter frequency · Received · Free",
+    "index": "1",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-1.png",
+    "box": {
+      "height": 324.34375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Availability desk · Your availability · Free",
+    "index": "2",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-2.png",
+    "box": {
+      "height": 439.3671875,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Availability desk · Enquiry received · Free",
+    "index": "3",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-3.png",
+    "box": {
+      "height": 295.359375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Name and email · Details · Free",
+    "index": "4",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-4.png",
+    "box": {
+      "height": 558.5703125,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Name and email · Received · Free",
+    "index": "5",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-5.png",
+    "box": {
+      "height": 254.46875,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Event calendar · Information · Free",
+    "index": "6",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-6.png",
+    "box": {
+      "height": 478.1953125,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Product detail sheet · Information · Free",
+    "index": "7",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-7.png",
+    "box": {
+      "height": 567.2578125,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Service process strip · Your request · Free",
+    "index": "8",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-8.png",
+    "box": {
+      "height": 414.375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Service process strip · Request received · Free",
+    "index": "9",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-9.png",
+    "box": {
+      "height": 227.359375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Appointment agenda · Your request · Free",
+    "index": "10",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-10.png",
+    "box": {
+      "height": 476.1875,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Appointment agenda · Request received · Free",
+    "index": "11",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-11.png",
+    "box": {
+      "height": 281.59375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Message sample · Your details · Free",
+    "index": "12",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-12.png",
+    "box": {
+      "height": 418.1953125,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Message sample · Request received · Free",
+    "index": "13",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-13.png",
+    "box": {
+      "height": 213.59375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Scope sheet · Your details · Free",
+    "index": "14",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-14.png",
+    "box": {
+      "height": 477.90625,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 1440,
+    "screen": "Scope sheet · Request received · Free",
+    "index": "15",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-1440-15.png",
+    "box": {
+      "height": 205.59375,
+      "width": 1152,
+      "x": 144,
+      "y": 426
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "A quieter frequency · Details · Free",
+    "index": "0",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-0.png",
+    "box": {
+      "height": 527.4296875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "A quieter frequency · Received · Free",
+    "index": "1",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-1.png",
+    "box": {
+      "height": 366.9453125,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Availability desk · Your availability · Free",
+    "index": "2",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-2.png",
+    "box": {
+      "height": 644.09375,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Availability desk · Enquiry received · Free",
+    "index": "3",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-3.png",
+    "box": {
+      "height": 334.71875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Name and email · Details · Free",
+    "index": "4",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-4.png",
+    "box": {
+      "height": 571.421875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Name and email · Received · Free",
+    "index": "5",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-5.png",
+    "box": {
+      "height": 255.265625,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Event calendar · Information · Free",
+    "index": "6",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-6.png",
+    "box": {
+      "height": 819.40625,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Product detail sheet · Information · Free",
+    "index": "7",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-7.png",
+    "box": {
+      "height": 759.515625,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Service process strip · Your request · Free",
+    "index": "8",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-8.png",
+    "box": {
+      "height": 810.5703125,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Service process strip · Request received · Free",
+    "index": "9",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-9.png",
+    "box": {
+      "height": 306.71875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Appointment agenda · Your request · Free",
+    "index": "10",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-10.png",
+    "box": {
+      "height": 910.8359375,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Appointment agenda · Request received · Free",
+    "index": "11",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-11.png",
+    "box": {
+      "height": 396.78125,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Message sample · Your details · Free",
+    "index": "12",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-12.png",
+    "box": {
+      "height": 895.96875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Message sample · Request received · Free",
+    "index": "13",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-13.png",
+    "box": {
+      "height": 304.78125,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Scope sheet · Your details · Free",
+    "index": "14",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-14.png",
+    "box": {
+      "height": 963.1015625,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "practical-essentials",
+    "width": 320,
+    "screen": "Scope sheet · Request received · Free",
+    "index": "15",
+    "path": "docs/reviews/hosted-practical-2026-10-20/practical-essentials-export-320-15.png",
+    "box": {
+      "height": 311.1875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 1440,
+    "screen": "Callback slip · Your request · Pro",
+    "index": "0",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-1440-0.png",
+    "box": {
+      "height": 567.3671875,
+      "width": 1152,
+      "x": 144,
+      "y": 402
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 1440,
+    "screen": "Callback slip · Request received · Pro",
+    "index": "1",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-1440-1.png",
+    "box": {
+      "height": 258.71875,
+      "width": 1152,
+      "x": 144,
+      "y": 402
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 1440,
+    "screen": "Launch index bar · Information · Pro",
+    "index": "2",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-1440-2.png",
+    "box": {
+      "height": 130.15625,
+      "width": 1152,
+      "x": 144,
+      "y": 402
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 1440,
+    "screen": "Availability note · Information · Pro",
+    "index": "3",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-1440-3.png",
+    "box": {
+      "height": 449.3671875,
+      "width": 1152,
+      "x": 144,
+      "y": 402
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 320,
+    "screen": "Callback slip · Your request · Pro",
+    "index": "0",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-320-0.png",
+    "box": {
+      "height": 619.734375,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 320,
+    "screen": "Callback slip · Request received · Pro",
+    "index": "1",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-320-1.png",
+    "box": {
+      "height": 258.71875,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 320,
+    "screen": "Launch index bar · Information · Pro",
+    "index": "2",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-320-2.png",
+    "box": {
+      "height": 248.3125,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  },
+  {
+    "pack": "helpful-prompts",
+    "width": 320,
+    "screen": "Availability note · Information · Pro",
+    "index": "3",
+    "path": "docs/reviews/hosted-practical-2026-10-20/helpful-prompts-export-320-3.png",
+    "box": {
+      "height": 517.734375,
+      "width": 288,
+      "x": 16,
+      "y": 564
+    }
+  }
+]

@@ -1,0 +1,251 @@
+{
+  "id": "conversation-note",
+  "name": "Conversation note",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#293454",
+    "muted": "#59627b",
+    "accent": "#394daa",
+    "accent-fg": "#ffffff",
+    "border": "#8089a6",
+    "input-bg": "#ffffff",
+    "heading-size": "1.75rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.25rem",
+    "gap": "1rem",
+    "radius": "1.25rem",
+    "width": "26rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "request",
+        "name": "Choose a topic",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n2",
+              "text": "A NOTE TO THE STUDIO",
+              "role": "eyebrow"
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n3",
+                  "text": "What are you\nworking on?",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "1.75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "text": "Choose a starting point. We will reply by email after reviewing your enquiry.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "bg": "#e7ecff",
+                "radius": "1.25rem 1.25rem 1.25rem .25rem",
+                "pad": "1.25rem"
+              }
+            },
+            {
+              "type": "field",
+              "id": "n1",
+              "name": "interest",
+              "label": "What would you like help with? (optional)",
+              "placeholder": "Choose an option",
+              "required": false,
+              "options": [
+                {
+                  "value": "repair",
+                  "label": "Repairing something"
+                },
+                {
+                  "value": "alteration",
+                  "label": "Changing or adapting it"
+                },
+                {
+                  "value": "advice",
+                  "label": "Advice before deciding"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "label": "Add my reply address",
+              "action": "next",
+              "role": "next_label"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "text": "An enquiry form, not live chat.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": "1rem"
+              },
+              "size": "s"
+            }
+          ]
+        }
+      },
+      {
+        "id": "details",
+        "name": "Your reply address",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n7",
+              "text": "YOUR NOTE / REPLY DETAILS",
+              "role": "eyebrow"
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n8",
+                  "text": "Where can we reply?",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "1.75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "text": "Leave your email so the team can continue the conversation.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "bg": "#e7ecff",
+                "radius": "1.25rem 1.25rem 1.25rem .25rem",
+                "pad": "1.25rem"
+              }
+            },
+            {
+              "type": "field",
+              "id": "n10",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "label": "Send my enquiry",
+              "action": "submit",
+              "role": "cta_label",
+              "submission": "request"
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "label": "Back to my topic",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "text": "Used only to respond. Nothing is booked.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": "1rem"
+              },
+              "size": "s"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n14",
+              "text": "NOTE RECEIVED",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n15",
+              "role": "success_headline",
+              "text": "Your note is with us",
+              "tokens": {
+                "heading-size": "1.75rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n16"
+            },
+            {
+              "type": "text",
+              "id": "n17",
+              "role": "success_body",
+              "text": "Your email and any selected topic have been recorded. The team can use them to reply; no appointment is booked."
+            },
+            {
+              "type": "button",
+              "id": "n18",
+              "label": "Close",
+              "action": "close",
+              "role": "close_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.75rem",
+            "gap": "1rem",
+            "bg": "#e7ecff",
+            "radius": "1.25rem 1.25rem .25rem 1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "request",
+        "required": true,
+        "fields": [
+          "n1",
+          "n10"
+        ],
+        "consents": []
+      }
+    ]
+  }
+}

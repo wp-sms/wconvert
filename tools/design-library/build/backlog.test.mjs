@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { validateBacklog } from './backlog.mjs';
 const plan = JSON.parse(readFileSync(new URL('../pilot/next-batch.json', import.meta.url)));
-const entries = JSON.parse(execFileSync('php', [fileURLToPath(new URL('pilot.php',import.meta.url))], {encoding:'utf8'}));
+const entries = JSON.parse(execFileSync('php', [fileURLToPath(new URL('pilot.php',import.meta.url))], {encoding:'utf8',maxBuffer:64*1024*1024}));
 test('planned needs are separate from actual campaigns and compared with known examples', () => {
   validateBacklog(plan, entries);
   const fixture = { schema: 1, entries: [0, 1].map(i => ({ id: 'planned-' + i, status: 'planned', audience: 'stores', goal: 'find_match', display_type: 'popup', design_intent: 'new_design', name: 'New need ' + i, visitor_need: 'Different task ' + i, difference: 'A useful difference', compare_campaigns: [entries[0].id], acceptance: ['Walk the actual route'] })) };

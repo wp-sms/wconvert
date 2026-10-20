@@ -139,7 +139,8 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
         </div>}
         {status.configured ? <Disclosure variant="inline" className="wconvert-packs__connection" title={__('Catalog connection', 'wconvert')}>
           <p className="m-0 break-all"><bdi>{status.source}</bdi></p>
-          <p className="m-0">{__('Checking, previewing and installing contact this service. No campaigns, leads or license details are sent. Installed packs work offline.', 'wconvert')}</p>
+          <p className="m-0">{__('Checking, previewing and installing contact the configured services. No campaigns or leads are sent. Free requests send no license key. Premium previews and installs send your license key and activated site identity to the trusted WConvert template service for authorization. Installed packs work offline.', 'wconvert')}</p>
+          <p className="m-0"><a href="https://wconvert.io/privacy/" target="_blank" rel="noopener noreferrer">{__('WConvert privacy policy', 'wconvert')}</a>{' · '}<a href="https://wconvert.io/terms/" target="_blank" rel="noopener noreferrer">{__('WConvert terms', 'wconvert')}</a></p>
         </Disclosure> : installed.length > 0 && <p className="wconvert-packs__connection">{__('No catalog is connected. Installed packs still work.', 'wconvert')}</p>}
       </>}
     </PickerDialogBody>

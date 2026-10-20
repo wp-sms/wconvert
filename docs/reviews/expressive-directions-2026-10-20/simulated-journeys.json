@@ -1,0 +1,55 @@
+[
+  {
+    "id": "seasonal-sunshine",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "listening-night-invitation",
+    "visited": [
+      "invitation"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "slower-outdoor-guide",
+    "visited": [
+      "invitation",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "thoughtful-gift-direction",
+    "visited": [
+      "interests",
+      "direction"
+    ],
+    "finalKind": "result",
+    "passed": true
+  },
+  {
+    "id": "night-sky-letter",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "flower-workshop-invitation",
+    "visited": [
+      "invitation"
+    ],
+    "finalKind": "content",
+    "passed": true
+  }
+]

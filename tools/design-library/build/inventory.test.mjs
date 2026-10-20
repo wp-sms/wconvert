@@ -56,7 +56,7 @@ test('inventory covers paid questions and fullscreens as well as Free', () => {
 });
 
 test('every pilot is a registered, complete snapshot with the intended privacy behaviour', () => {
-  const entries = JSON.parse(execFileSync('php', [resolve(import.meta.dirname, 'pilot.php')], { encoding: 'utf8' }));
+  const entries = JSON.parse(execFileSync('php', [resolve(import.meta.dirname, 'pilot.php')], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }));
   const collection = JSON.parse(readFileSync(resolve(root, 'tools/design-library/pilot/collection.json')));
   validateBriefs(collection, entries, designs);
   assert.equal(entries.length, collection.entries.length);
@@ -82,7 +82,7 @@ test('every pilot is a registered, complete snapshot with the intended privacy b
 
 test('new batches require a real comparison, supported audience and complete setup guidance', () => {
   const collection = JSON.parse(readFileSync(resolve(root, 'tools/design-library/pilot/collection.json')));
-  const entries = JSON.parse(execFileSync('php', [resolve(import.meta.dirname, 'pilot.php')], { encoding: 'utf8' }));
+  const entries = JSON.parse(execFileSync('php', [resolve(import.meta.dirname, 'pilot.php')], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }));
   for (const mutate of [
     e => { e.comparison.against = []; },
     e => { e.comparison.against = ['invented-design']; },

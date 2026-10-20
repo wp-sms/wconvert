@@ -1,0 +1,10 @@
+
+> test:wordpress
+> node scripts/verify-wordpress.mjs --remote 359f655d63d6c070eed1266a7a0fc43a57d80ebb8270745f0920c814051172bb
+
+PASS HTTPS preview/install: homeware-care
+PASS HTTPS preview/install: publishers-starts
+PASS HTTPS preview/install: services-starts
+PASS HTTPS preview/install: stores-starts
+PASS live HTTPS catalogue: 4 Free packs; 13 designs; 16 setups; 1 verified images; 2 premium refusal; 11 public HTTP requests. Offline recovery passed.
+WordPress 7.1.3 / PHP 8.1.34; no persistent site options or campaigns changed.

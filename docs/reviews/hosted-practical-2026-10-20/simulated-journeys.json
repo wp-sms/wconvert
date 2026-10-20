@@ -1,0 +1,42 @@
+[
+  {
+    "id": "maker-notes",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "callback-slip",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "service-process-strip",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "appointment-agenda",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "sms-message-preview",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "service-fit-brief",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  },
+  {
+    "id": "equipment-return-checklist",
+    "failed": "Submission not confirmed (simulated). Your details are still here. Try again.",
+    "retried": "Preview only: simulated acceptance. No details were saved or sent."
+  }
+]

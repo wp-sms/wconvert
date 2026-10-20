@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { hash } from './storage.mjs';
+import { legacyReleaseId, validateDesignCatalogue } from './design-catalogue.mjs';
 
 /** Read-only acceptance against local emulation or the configured HTTPS service. */
 export async function verifyService(base, { expected, metadataOrigin, premiumMode = 'unconfigured', fetcher = fetch } = {}) {
@@ -39,9 +40,11 @@ export async function verifyService(base, { expected, metadataOrigin, premiumMod
     const cached=await request(path,0,{headers:{'If-None-Match':response.headers.get('etag')}});assert.equal(cached.response.status,304);
     return {response,bytes};
   };
+  const releasePacks = [], releaseCollections = [];
   for(const page of manifest.pages){
     const pagePath=mirror(page.url);assert.match(pagePath,new RegExp(`^/releases/${manifest.release}/page-[1-9][0-9]?\\.json$`));
     const data=JSON.parse((await immutable(pagePath,page.sha256,262144)).bytes);assert.equal(data.release,manifest.release);assert(Array.isArray(data.packs)&&data.packs.length<=50);
+    releasePacks.push(...data.packs); releaseCollections.push(...(data.collections ?? []));
     for(const pack of data.packs){
       const previewPath=mirror(pack.preview_url);assert.match(previewPath,/^\/previews\/[a-f0-9]{64}\.html$/);
       const preview=await immutable(previewPath,previewPath.split('/').pop().split('.')[0],2097152);
@@ -60,6 +63,16 @@ export async function verifyService(base, { expected, metadataOrigin, premiumMod
         const image=await immutable(`/assets/free/${asset.sha256}.${ext}`,asset.sha256,5242880);assert.equal(image.bytes.length,asset.bytes);assert.equal(image.response.headers.get('content-type'),asset.mime);report.images++;
       }
     }
+  }
+  if (legacyReleaseId(releasePacks, releaseCollections) !== manifest.release) {
+    const path = `/releases/${manifest.release}/designs.json`;
+    const { response, bytes } = await request(path, 262144); assert.equal(response.status, 200);
+    assert.match(initial.response.headers.get('link') ?? '', /rel="describedby"/);
+    const catalogue = JSON.parse(bytes);
+    const dependencies = validateDesignCatalogue(catalogue, { id: manifest.release, packs: releasePacks, collections: releaseCollections, origin: metadataOrigin });
+    for (const [key, sha] of dependencies) await immutable('/' + key, sha, key.startsWith('thumbnails/') ? 5242880 : 2097152);
+    report.designs = catalogue.designs.length;
+    report.thumbnails = catalogue.designs.filter(design => design.thumbnail).length;
   }
   for(const path of ['/private/packs/x.json','/grants/x.json','/manifest.json?key=not-a-credential']){
     const denied=await request(path,16384);assert([400,404].includes(denied.response.status));assert.match(denied.response.headers.get('cache-control'),/no-store/);

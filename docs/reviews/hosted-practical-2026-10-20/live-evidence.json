@@ -1,0 +1,33 @@
+{
+  "release": "3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7",
+  "files": [
+    {
+      "path": "live-free-desktop.png",
+      "sha256": "79a07fe31318eedc0daeb36d5055b1b52e4ab328fce0c3a52e60df42d3a942b2"
+    },
+    {
+      "path": "live-free-mobile.png",
+      "sha256": "954bcd2307ab24115689e6693134ed0b8c643853e37fa6ad381c15a9e5bbddf1"
+    },
+    {
+      "path": "live-pro-desktop.png",
+      "sha256": "a0aa6a47a480d923b3c107d0d6718f40b39f11241cb80eb4c51991c493c6a80f"
+    },
+    {
+      "path": "live-pro-mobile.png",
+      "sha256": "e43c7ed5977f77eea136a6b0792ab13074664459bc497f5c0cc6d9cdcc4f5f80"
+    },
+    {
+      "path": "publish-live.txt",
+      "sha256": "036089d6a68d526c61f2d7370d0cb8cb949be94c5e0950cda410b702474499fb"
+    },
+    {
+      "path": "remote-verification.txt",
+      "sha256": "28885a0ab5bb03eeec020d32fbd6e187684bb41f463b55c67263d789a5202384"
+    },
+    {
+      "path": "remote-wordpress.txt",
+      "sha256": "7308397aeadf424cdf9a4be9bed8438c7c8c6d01691674cde17e6bb7a1e764df"
+    }
+  ]
+}

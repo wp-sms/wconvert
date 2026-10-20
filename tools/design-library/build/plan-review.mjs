@@ -12,7 +12,7 @@ const read=p=>JSON.parse(readFileSync(resolve(root,p),'utf8'));
 const old=p=>JSON.parse(git('show',`${pinned}:${p}`));
 const collection='tools/design-library/pilot/collection.json', curated='tools/design-library/collections/source.json';
 const paths=[...new Set([...git('diff','--no-renames','--name-only',pinned,'--').trim().split('\n'),...git('ls-files','--others','--exclude-standard').trim().split('\n')].filter(Boolean))];
-const setups=JSON.parse(execFileSync('php',['tools/design-library/build/pilot.php'],{cwd:root,env:{...process.env,WCONVERT_EXPORT_ALL:'1'},encoding:'utf8'}));
+const setups=JSON.parse(execFileSync('php',['tools/design-library/build/pilot.php'],{cwd:root,env:{...process.env,WCONVERT_EXPORT_ALL:'1'},encoding:'utf8',maxBuffer:64*1024*1024}));
 const current=read(curated), previous=old(curated);
 const result=reviewScope({base:pinned,paths,designs:readDesigns(root),setups,briefsBefore:old(collection).entries,briefsAfter:read(collection).entries,
   collectionsBefore:previous.collections,collectionsAfter:current.collections,queue:read('tools/design-library/out/review-queue.json')});

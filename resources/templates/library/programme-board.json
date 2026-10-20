@@ -1,0 +1,241 @@
+{
+  "id": "programme-board",
+  "name": "Programme board",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#252525",
+    "muted": "#5c5c5c",
+    "accent": "#282828",
+    "accent-fg": "#ffffff",
+    "border": "#8a8a86",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "38rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "programme",
+        "name": "Workshop programme",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n13",
+                  "text": "SATURDAY / SAMPLE PROGRAMME",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n14",
+                  "text": "WORKSHOP 01",
+                  "role": "eyebrow"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "id": "n15",
+              "text": "A morning\nwell spent.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "3rem",
+                "heading-font": "Georgia, serif",
+                "heading-weight": "400"
+              },
+              "narrow": {
+                "heading-size": "1.875rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n16",
+              "text": "See the shape of the workshop before you book.",
+              "role": "body"
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "split",
+                      "start": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n1",
+                          "text": "10:00",
+                          "role": "eyebrow",
+                          "tokens": {
+                            "text-size": "1.125rem",
+                            "font": "ui-monospace, monospace"
+                          }
+                        }
+                      ],
+                      "end": [
+                        {
+                          "type": "heading",
+                          "id": "n2",
+                          "text": "Look closer",
+                          "role": "headline",
+                          "size": "s"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n3",
+                          "text": "Meet the tools and the material.",
+                          "role": "body"
+                        }
+                      ],
+                      "ratio": 0.35,
+                      "basis": "12rem"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#ffffff",
+                    "pad": "1rem",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "split",
+                      "start": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n5",
+                          "text": "10:30",
+                          "role": "eyebrow",
+                          "tokens": {
+                            "text-size": "1.125rem",
+                            "font": "ui-monospace, monospace"
+                          }
+                        }
+                      ],
+                      "end": [
+                        {
+                          "type": "heading",
+                          "id": "n6",
+                          "text": "Try a technique",
+                          "role": "headline",
+                          "size": "s"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n7",
+                          "text": "A guided demonstration, with time for questions.",
+                          "role": "body"
+                        }
+                      ],
+                      "ratio": 0.35,
+                      "basis": "12rem"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#f0ede8",
+                    "pad": "1rem",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n8"
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "split",
+                      "start": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n9",
+                          "text": "11:15",
+                          "role": "eyebrow",
+                          "tokens": {
+                            "text-size": "1.125rem",
+                            "font": "ui-monospace, monospace"
+                          }
+                        }
+                      ],
+                      "end": [
+                        {
+                          "type": "heading",
+                          "id": "n10",
+                          "text": "Make it your own",
+                          "role": "headline",
+                          "size": "s"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n11",
+                          "text": "Discuss the next steps for your project.",
+                          "role": "body"
+                        }
+                      ],
+                      "ratio": 0.35,
+                      "basis": "12rem"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#ffffff",
+                    "pad": "1rem",
+                    "radius": "0"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n12"
+                }
+              ],
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n17",
+              "label": "View dates and booking details",
+              "action": "link",
+              "role": "cta_label"
+            },
+            {
+              "type": "text",
+              "id": "n18",
+              "text": "Illustrative programme. Check the actual venue, times, access and terms on the booking page.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": "1rem"
+              },
+              "size": "s"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

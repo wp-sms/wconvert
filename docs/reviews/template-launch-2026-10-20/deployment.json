@@ -1,0 +1,19 @@
+{
+  "worker": "wconvert-template-api",
+  "origin": "https://templates.wconvert.io",
+  "version": "cd421d7d-aae9-4073-8d54-645691706de8",
+  "deployment": "16428504-0cfe-474e-a834-c4143b3bac88",
+  "deployedAt": "2026-10-20T05:35:22.932755Z",
+  "trafficPercent": 100,
+  "workersDevEnabled": false,
+  "previewUrlsEnabled": false,
+  "codeReadBackHasRateLimiter": true,
+  "existingNexusSecretBindingPresent": true,
+  "publicBucket": "wconvert-templates-public",
+  "privateBucket": "wconvert-templates-private",
+  "limits": {
+    "GRANT_RATE_LIMITER": { "namespace": "202610201", "requests": 30, "seconds": 60 },
+    "DOWNLOAD_RATE_LIMITER": { "namespace": "202610202", "requests": 300, "seconds": 60 }
+  },
+  "source": "Wrangler deployment output and authenticated Cloudflare version, script, subdomain and deployment API read-back"
+}

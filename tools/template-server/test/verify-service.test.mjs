@@ -1,16 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { hash } from '../scripts/storage.mjs';
+import { legacyReleaseId } from '../scripts/design-catalogue.mjs';
 import { verifyService } from '../scripts/verify-service.mjs';
 
 function fixture(change = () => {}) {
-  const origin = 'https://templates.example', id = 'a'.repeat(64);
+  const origin = 'https://templates.example';
   const pack = Buffer.from(JSON.stringify({ templates: [{ tier: 'free' }], playbooks: [{}], assets: [] }));
   const preview = Buffer.from('<!doctype html><title>Preview</title>');
   const entries = [
     { access: 'free', url: `${origin}/packs/${hash(pack)}.json`, sha256: hash(pack), preview_url: `${origin}/previews/${hash(preview)}.html` },
     { access: 'premium', url: `${origin}/downloads/${'b'.repeat(64)}.json`, sha256: 'b'.repeat(64), preview_url: `${origin}/previews/${hash(preview)}.html` },
   ];
+  const id = legacyReleaseId(entries, []);
   const page = Buffer.from(JSON.stringify({ release: id, packs: entries }));
   const files = new Map([
     ['/manifest.json', Buffer.from(JSON.stringify({ schema: 2, release: id, pages: [{ url: `${origin}/releases/${id}/page-1.json`, sha256: hash(page) }] }))],

@@ -131,7 +131,7 @@
                   "id": "n8",
                   "role": "consent_text",
                   "text": "Send me collection news by text, up to twice a month. I can opt out.",
-                  "hidden": false,
+                  "hidden": true,
                   "tokens": {
                     "text-size": "1.125rem"
                   }

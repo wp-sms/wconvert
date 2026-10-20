@@ -1,0 +1,14 @@
+
+> verify:remote
+> node scripts/verify-remote.mjs --expected 3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7 --premium configured
+
+{
+  "release": "3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7",
+  "freePacks": 5,
+  "premiumRefusals": 3,
+  "publicPreviews": 8,
+  "images": 2,
+  "downloadedSetups": 25,
+  "metadataOrigin": "https://templates.wconvert.io",
+  "localOnly": false
+}

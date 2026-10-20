@@ -13,7 +13,7 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 132 campaigns
+## Internal creation and review studio: 148 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
@@ -21,14 +21,16 @@ screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **132 campaign setups using 76 designs**, drawn from a complete
-inventory of **108 designs**. After the shared control correction on 20 October,
-all **132 setup reviews are stale** under the existing renderer revision check.
-The preceding checkpoint had 31 current setup approvals and six approved
-collections; that is historical, not approval of this renderer. The focused
-[control review](../../docs/reviews/shared-control-icons-2026-10-20/README.md)
-checks close buttons and selectors across the inventory without renewing editorial
-approvals or publishing collections.
+The studio contains **148 campaign setups using 92 designs**, drawn from a complete
+inventory of **124 designs**. Updated 20 October: **56 setup approvals are current
+and 92 remain stale**, with nine approved curated collections. The hosted library now serves 35 setups / 32 designs / eight packs / six complete
+collections, published and verified over HTTPS on 20 October.
+The latest selection adds twelve previously unhosted studio setups using twelve
+different designs; it does not inflate the source-design count. See the
+[hosted practical review](../../docs/reviews/hosted-practical-2026-10-20/review.md)
+and its per-screen screenshot ledger. The earlier shared-control review and PR300
+approval refresh remain separately recorded; unrelated stale setups were not
+approved as part of this delivery selection.
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
@@ -537,7 +539,7 @@ The current studio has **128 setups / 75 designs**, with **107 designs / 153 reg
 
 The standalone Prefill uses an explicit empty site destination; WordPress retains real shop/home defaults. Product result previews include inert sample cards, and optional empty result links stay hidden. Graph preview traversal comes from the shipping loader. Remote v3 graph packs and explicitly declared, tier-checked paid targeting rules are now accepted by the strict importer. New source-format compatibility does not silently approve older content.
 
-Updated 20 October: six curated collections have current reviews. **31 setup approvals are current and 101 remain stale** after the shared control-icon refresh; the latter should be re-reviewed in focused batches. See [fresh approval evidence](../../docs/reviews/pr300-approvals-2026-10-20/README.md). The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
+At the PR300 checkpoint, six curated collections had current reviews and **31 setup approvals were current / 101 stale**. The newer hosted practical selection raises these to nine collections and **40 current / 92 stale**. See [fresh approval evidence](../../docs/reviews/pr300-approvals-2026-10-20/README.md). That hosted release contained 23 setups / 20 designs / six packs / three complete collections; see the current delivery plan above. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
 
 Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.
 
@@ -616,3 +618,16 @@ and registered setup (not a saved inventory), renders every screen/result at
 select-chevron centre/size/text clearance, and phone country arrow. Save the
 resulting JSON with fresh desktop/phone screenshots. It complements visual review;
 it cannot approve campaigns or bypass the publication gate.
+
+## Creative editions · 20 October 2026
+
+Ten new compositions (eight Free, two Pro), eighteen screens: menu, recipe sample, colour mosaic, measurement diagram, programme, conversation, broadsheet, project workboard, room checklist and exhibition wall. Open `out/pilot.html?batch=creative-editions`. These source/studio additions are not yet in hosted packs. Review evidence, native journeys and screenshot hashes are in `docs/reviews/creative-editions-2026-10-20/`. All ten have fresh scoped reviews; unrelated stale approvals remain a separate queue.
+
+
+## Expressive directions · 20 October 2026
+
+Six additional compositions preserve the earlier Creative editions batch: Citrus sunrise (Free popup), After hours (Pro fullscreen), Trail window (Free popup), Gift orbit (Pro inline question journey), Night observatory (Free inline) and Bloom postcard (Pro slide-in). Open `out/pilot.html?batch=expressive-directions`. Original artwork, expressive typography and distinctive compositions carry the direction; visitor-facing sections are not numbered.
+
+Eleven authored screens produce fourteen visual states with the gift results. All have studio desktop/phone captures and native WordPress evidence. The scoped review covers 84 required screenshot slots and 448 measured cases with zero findings; required-choice handling, Back, local form capture, simulated failure/retry and short-phone scrolling were checked. See [review and practical limitations](../../docs/reviews/expressive-directions-2026-10-20/review.md). These are source/studio candidates, not yet hosted packs.
+
+Two Free sample photographs also ship as verified, content-addressed JPEGs in `resources/template-artwork/`. The bundled source resolves their exact embedded bytes to the current site's plugin URL, avoiding binary photos in campaign JSON without raising payload limits. Portable exports retain the source artwork. Existing Free entries are regression-tested as unchanged. Keep hash-named files that existing campaigns reference.

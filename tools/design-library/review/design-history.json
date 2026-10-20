@@ -2110,6 +2110,12 @@
           "date": "2026-10-02",
           "revision": "ee74547daf206b6deebebeb55ff394684c632bb8112326d3120fb0535a2f511c",
           "note": "Keep the acknowledgement focused on receipt of the request."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-20",
+          "revision": "c3e26156e0bde3201f43d741b13965b7fc8a75bdc48e814dcedae445d1f30630",
+          "note": "Keep base consent hidden; SMS campaign privacy guidance enables it before capture, matching the hosted pack contract."
         }
       ]
     },
@@ -2230,6 +2236,300 @@
           "date": "2026-10-19",
           "revision": "d5630e20bb1fd933b1c5a8cf3d89554eadc414aecd6eb5698a0d1493aa4cbc87",
           "note": "Align field and action corners and make the completion Close action secondary"
+        }
+      ]
+    },
+    {
+      "id": "supper-menu",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "a590160ac7c1f03d1a5fc1f7a58dcde45a33f5d29fd69b04e9c61b45c4859623",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "19e7df07fb2fd76a075612071b736f14ddbad748b129ddee5001888b6348cb44",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "recipe-clipping",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "92a00c64ec8097061a88f22645ddec30c0a98943d79d88ec3ef68ea7fb140226",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "95f385d46bf71579e333846bd2e734ad5776e173a7728047876968cdc4d2db48",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "colour-atlas",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "588c515bd0be8cc6c7a173b0aef3f6b29c6cc36fc8e442bf26e0b3c5659768f8",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "aa29bec495e0f6232baee39a83d8a7b8df3100923bee239528f3984ab545e88d",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "measurement-map",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "428df058ff36d002afe87806b3aa17b007d16f69994b264c5acf4e13b110f678",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "760ae09ba17e76f1d4290812bc058b05bf262b05a96249180fe4e66f48e2c834",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "programme-board",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "e30691a7706ac1af8cbf09e12eb873efec3862f7b1d7300589c27bbf98ae1523",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "8eb81f3ada8498ff9c2c0fb755b8d90d8fafe0daf38344ddd597a377af19bd48",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-20",
+          "revision": "e64df05476284ed8cc9fb4e75b5d83a78c181e437e129b7321a27849c52660c6",
+          "note": "Stack the programme rail earlier so 390px phones do not squeeze descriptions beside empty time gutters."
+        }
+      ]
+    },
+    {
+      "id": "conversation-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "6ea4a0940b841ba2ef7b1322cbec9d7a547103c6b80cdb21988d17537a227e7c",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "ec55b13822f36a9759749c71e2d97f057d63f5981e1334d3e5765655ed64078f",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "weekend-broadsheet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "9a681bcffa971919936fe284b329379208be5e64dce14737d277268e5549ca5f",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "146f12bc050ac3727546d954419196c1dd1a7ab674af1bd17f74958d2987df08",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "project-workboard",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "bf0f5ac90f61494a35f9ae14cbc7aafa616dc5767ecfc1fec215c671f04611f0",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "e0bc7458b9c629b1e6747d58d2b9db5358d33cf411bb7146257465f8f09706c8",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "room-checklist",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "835317479a51d71956a3034bba8b8c605b763384e4b0e621994281ecd104e7da",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "6c4f17850bac428e05473e0a7421280c9434bbc26118c8e6c6fc4971b95b4735",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "exhibition-wall",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "f37e6471483447758a7318f0b06a060da185a18eff9a0cba0ee8825622587970",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "f730ca3d170a19450337f285e7f234ab114f85cc8c2df3fa21584954eabf2e88",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "citrus-sunrise",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "66e6462393838fb503fe611ad07b8b2fdfa1db6339243bd2221831c7f4a83946",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "1d4e2c9374957c6560c01a500f184abac7d74cd7b187575fe3bbe204aa5ca1a0",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "after-hours",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "f6c1f552d2cb9fb9b5b92761d05acb0add1c167be59826cc14721f954e2c507d",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "7c4b58e588531977ce1cba94bb7f6799b3802427a3f4d4be4680fe1b1b9e69f0",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "trail-window",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "40b6480ee02b07f509723e4c528004848f616d950065f0724cf94083f046b105",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "0027774430a495b2f69d8e27b526b055b281b18e41f147114961c3719c5af192",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "gift-orbit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "8b569831ed3783586ac407a71701e56b597e0a45fcba417c19fe54d484b9d820",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "00e94e299f55200f870704ec60a504d1bfaa616d6f5013a20ebb5603949f1da3",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "night-observatory",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "cbfd51d193ec161f28d584f3305affeeaddf6b5d16032d1d867da3d4079e8d79",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "eec7685cd5088e4edc057f6e6ca75513747875d89dd95daba88c4e71880bd884",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "bloom-postcard",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "3d929c95202db99ad722fd3748a480b7e97e1900f7ba1176dd33417251fa6500",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "0823441097b325fa528f11fdde1b681ae2ec147edb41ba4d681db276523120f4",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
         }
       ]
     }

@@ -1,0 +1,238 @@
+{
+  "id": "gift-orbit",
+  "name": "Gift orbit",
+  "display_type": "inline",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#3142c5",
+    "fg": "#fff9ec",
+    "muted": "#eeeaff",
+    "accent": "#f9ed90",
+    "accent-fg": "#263386",
+    "border": "#a3acec",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "800",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.25rem",
+    "gap": "1rem",
+    "radius": "2rem",
+    "width": "46rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "interests",
+        "name": "A little gift inspiration",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n2",
+              "text": "LESS GUESSWORK. MORE “THAT IS SO THEM.”",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n3",
+              "text": "Find their\nkind of lovely.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "3.5rem",
+                "leading": "1.05"
+              },
+              "narrow": {
+                "heading-size": "2.5rem"
+              }
+            },
+            {
+              "type": "image",
+              "id": "n4",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22720%22%20height%3D%22260%22%20viewBox%3D%220%200%20720%20260%22%3E%3Crect%20width%3D%22720%22%20height%3D%22260%22%20fill%3D%22%233142c5%22/%3E%3Cellipse%20cx%3D%22360%22%20cy%3D%22138%22%20rx%3D%22305%22%20ry%3D%2276%22%20fill%3D%22none%22%20stroke%3D%22%239fa9ff%22%20stroke-width%3D%222%22%20transform%3D%22rotate%28-9%20360%20138%29%22/%3E%3Cg%20transform%3D%22translate%28105%2063%29%20rotate%28-10%2065%2065%29%22%3E%3Crect%20width%3D%22130%22%20height%3D%22130%22%20rx%3D%2212%22%20fill%3D%22%23ffd0e6%22/%3E%3Crect%20x%3D%2256%22%20width%3D%2218%22%20height%3D%22130%22%20fill%3D%22%23ac316b%22/%3E%3Cpath%20d%3D%22M65%200C0%20-65%2012%2025%2065%200C125%20-65%20120%2025%2065%200%22%20fill%3D%22none%22%20stroke%3D%22%23ffd0e6%22%20stroke-width%3D%2213%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28310%2040%29%20rotate%289%2065%2075%29%22%3E%3Crect%20width%3D%22130%22%20height%3D%22150%22%20rx%3D%228%22%20fill%3D%22%23f9ed90%22/%3E%3Cpath%20d%3D%22M0%2049H130M65%200V150%22%20stroke%3D%22%23a44d24%22%20stroke-width%3D%2217%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%28510%2090%29%20rotate%28-8%2050%2050%29%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2250%22%20fill%3D%22%23e9cfff%22/%3E%3Cpath%20d%3D%22M10%2050H90M50%2010V90%22%20stroke%3D%22%236536a3%22%20stroke-width%3D%2214%22/%3E%3C/g%3E%3C/svg%3E",
+              "alt": "Original illustration of three colourful wrapped gifts following an orbit.",
+              "fit": "contain",
+              "tokens": {
+                "radius": "0"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "question",
+                  "id": "n1",
+                  "label": "What sounds most like them?",
+                  "answer_type": "single",
+                  "required": true,
+                  "options": [
+                    {
+                      "value": "slow",
+                      "label": "Slow mornings & little rituals"
+                    },
+                    {
+                      "value": "make",
+                      "label": "Making, trying & getting curious"
+                    },
+                    {
+                      "value": "outside",
+                      "label": "Fresh air & everyday adventures"
+                    },
+                    {
+                      "value": "unsure",
+                      "label": "I would like a little inspiration"
+                    }
+                  ],
+                  "tokens": {
+                    "radius": ".75rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "label": "Show me a direction",
+                  "action": "next",
+                  "role": "next_label",
+                  "tokens": {
+                    "radius": ".75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "text": "Just ideas. No email address needed.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": "1rem"
+                  },
+                  "size": "s"
+                }
+              ],
+              "tokens": {
+                "bg": "#fff9ec",
+                "fg": "#263386",
+                "muted": "#4f587b",
+                "accent": "#3142c5",
+                "accent-fg": "#ffffff",
+                "border": "#7d87ad",
+                "pad": "1.5rem",
+                "radius": "2rem .5rem 2rem .5rem"
+              },
+              "narrow": {
+                "pad": "1rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "direction",
+        "name": "Your gift direction",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n7",
+              "text": "A THOUGHTFUL STARTING POINT",
+              "role": "eyebrow"
+            },
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "button",
+              "id": "n9",
+              "label": "Try another answer",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg",
+                "radius": ".75rem"
+              }
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "slow",
+            "heading": "For their softer mornings.",
+            "body": "Think favourite mugs, a beautiful tea blend or a small comfort for their daily ritual.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore these gift ideas",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "slow"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "make",
+            "heading": "For their next “I made this”.",
+            "body": "Explore creative kits, useful tools or a workshop where they can try something new.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore these gift ideas",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "make"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "outside",
+            "heading": "For their days out there.",
+            "body": "Look for practical picnic pieces, a walking journal or a useful companion for a day outdoors.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore these gift ideas",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "outside"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Start with what they love.",
+            "body": "Explore the gift collection and choose something that fits their interests and your budget.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore these gift ideas"
+          }
+        ]
+      }
+    ],
+    "submissions": []
+  }
+}

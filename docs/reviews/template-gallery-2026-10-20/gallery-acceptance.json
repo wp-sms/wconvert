@@ -1,0 +1,17 @@
+{
+  "release": "0e93e15299085eb7708218a13cf5963745ca6d7d8c036cf257c7ea2959175a98",
+  "freePacks": 4,
+  "premiumRefusals": 2,
+  "publicPreviews": 6,
+  "images": 1,
+  "downloadedSetups": 16,
+  "metadataOrigin": "https://templates.wconvert.io",
+  "localOnly": true,
+  "designs": 20,
+  "thumbnails": 20,
+  "network": "intercepted; no external requests",
+  "screenDeviceChecks": 72,
+  "allowedParents": 2,
+  "blockedParents": 1,
+  "pageErrors": 0
+}

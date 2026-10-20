@@ -71,12 +71,43 @@
       "setups": [
         "upholstery-samples"
       ]
+    },
+    {
+      "id": "practical-essentials",
+      "name": "Useful everyday campaigns",
+      "description": "Nine distinct designs for clear product facts, workshop details, useful updates and thoughtful service enquiries. Includes every acknowledgement and practical setup guidance.",
+      "version": "1.0.0",
+      "setups": [
+        "maker-notes",
+        "earlier-appointment-enquiry",
+        "equipment-return-checklist",
+        "event-calendar",
+        "product-detail-sheet",
+        "service-process-strip",
+        "appointment-agenda",
+        "sms-message-preview",
+        "service-fit-brief"
+      ]
+    },
+    {
+      "id": "helpful-prompts",
+      "name": "Helpful bars and corner prompts",
+      "description": "Three focused prompts: a repair callback, arrival and access information, and a collection announcement. Requires Pro; no WooCommerce dependency.",
+      "version": "1.0.0",
+      "setups": [
+        "callback-slip",
+        "launch-index",
+        "accessible-visit-note"
+      ]
     }
   ],
   "collections": [
     "service-enquiries",
     "reader-relationships",
-    "help-shoppers-choose"
+    "help-shoppers-choose",
+    "prepare-a-visit",
+    "useful-store-details",
+    "explain-the-service"
   ],
   "deferred": [
     {
@@ -100,6 +131,12 @@
       "source": "Original WConvert fabric-swatches.svg, extracted unchanged from sample-envelope; GPL-2.0-or-later. Reviewed raster export: fabric-swatches.png. See pilot/assets/README.md.",
       "reviewedBy": "Codex — source/provenance review, 2026-10-19",
       "access": "premium"
+    },
+    "bc39288923f8b6c4f321c7d0d3acc4b9c0ba781b105ce04b3e2792bcd85c4df3": {
+      "redistribution": true,
+      "source": "Original WConvert task-lamp.svg; GPL-2.0-or-later. Reviewed 960 × 800 raster export; see pilot/assets/README.md.",
+      "reviewedBy": "Codex — provenance and raster review, 2026-10-20",
+      "access": "free"
     }
   },
   "artwork_exports": {
@@ -119,6 +156,15 @@
       "evidence": {
         "path": "docs/reviews/fabric-swatches-export-2026-10-19.md",
         "sha256": "ce3faf577c26ac70496c73c8fb6c7b75f4f9cba0936ef2aa0d2136217c14c41c"
+      }
+    },
+    "5230de1c2a29efef3e0d013506bea857421603bf1b42fb3ea369250c309e22ee": {
+      "path": "tools/design-library/pilot/assets/task-lamp.png",
+      "sha256": "bc39288923f8b6c4f321c7d0d3acc4b9c0ba781b105ce04b3e2792bcd85c4df3",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/hosted-practical-2026-10-20/task-lamp-export.md",
+        "sha256": "705ded592cd5af6cbc10f068e3d3e6239b59c6e82f8b4233b80f6ba1aaa7472c"
       }
     }
   }

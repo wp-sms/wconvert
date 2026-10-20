@@ -1,0 +1,48 @@
+{
+  "started": "2026-10-20T05:37:40.096Z",
+  "origin": "https://templates.wconvert.io",
+  "phase": "burst",
+  "grants": {
+    "sent": 80,
+    "statuses": {
+      "400": 80
+    },
+    "elapsedMs": 3782,
+    "locations": [
+      "ARN"
+    ],
+    "blocked": null
+  },
+  "privateDuringGrantBlock": {
+    "status": 401,
+    "ray": "a4d5ac21d8629bb2-ARN",
+    "retryAfter": null,
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  },
+  "files": {
+    "sent": 450,
+    "statuses": {
+      "401": 450
+    },
+    "elapsedMs": 11333,
+    "locations": [
+      "ARN"
+    ],
+    "blocked": null
+  },
+  "imageDuringFileBlock": {
+    "status": 401,
+    "ray": "a4d5ac6a49d39bb2-ARN",
+    "retryAfter": null,
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  },
+  "publicAfter": {
+    "status": 200,
+    "ray": "a4d5ac6bde372682-ARN",
+    "retryAfter": null,
+    "contentType": "application/json; charset=utf-8",
+    "cacheControl": "no-cache, must-revalidate"
+  }
+}

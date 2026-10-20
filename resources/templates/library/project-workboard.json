@@ -1,0 +1,269 @@
+{
+  "id": "project-workboard",
+  "name": "Project workboard",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffdf8",
+    "fg": "#243b31",
+    "muted": "#526359",
+    "accent": "#2e5141",
+    "accent-fg": "#ffffff",
+    "border": "#69765f",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "radius": "1.5rem",
+    "width": "48rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Project enquiry",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "STUDIO / PROJECT DESK",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n2",
+                  "text": "NEW ENQUIRY",
+                  "role": "eyebrow"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "id": "n3",
+              "text": "An idea worth\nmaking real.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "2.75rem"
+              },
+              "narrow": {
+                "heading-size": "1.875rem"
+              }
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n4",
+                      "text": "01 / THE STARTING POINT",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "text": "A room, an object,\na different way to use it.",
+                      "role": "headline",
+                      "size": "s"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "text": "Tell us which kind of project you have in mind. We can discuss what a first conversation should cover.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#d9e8db",
+                    "radius": "1.5rem 1.5rem .25rem 1.5rem",
+                    "pad": "1.25rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n7",
+                      "text": "02 / YOUR PROJECT",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "field",
+                      "id": "n8",
+                      "name": "interest",
+                      "label": "What are you planning? (optional)",
+                      "placeholder": "Choose an option",
+                      "required": false,
+                      "options": [
+                        {
+                          "value": "room",
+                          "label": "A room or space"
+                        },
+                        {
+                          "value": "object",
+                          "label": "A custom object"
+                        },
+                        {
+                          "value": "adaptation",
+                          "label": "Adapting something existing"
+                        }
+                      ]
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#f0e5ce",
+                    "radius": "1.5rem .25rem 1.5rem 1.5rem",
+                    "pad": "1.25rem"
+                  }
+                }
+              ],
+              "ratio": 0.65,
+              "basis": "14rem",
+              "tokens": {
+                "gap": ".75rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n9",
+                  "text": "03 / KEEP THE CONVERSATION GOING",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "split",
+                  "start": [
+                    {
+                      "type": "field",
+                      "id": "n10",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true
+                    }
+                  ],
+                  "end": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "button",
+                          "id": "n11",
+                          "label": "Start a project enquiry",
+                          "action": "submit",
+                          "role": "cta_label",
+                          "submission": "request"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n12",
+                          "text": "We use your email to reply. No work is agreed yet.",
+                          "role": "body",
+                          "tokens": {
+                            "text-size": ".9375rem"
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "ratio": 0.5,
+                  "basis": "14rem",
+                  "tokens": {
+                    "gap": "1rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "bg": "#edf0e9",
+                "radius": ".25rem 1.5rem 1.5rem 1.5rem",
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n13",
+              "text": "PROJECT DESK / RECEIVED",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n14",
+              "role": "success_headline",
+              "text": "Your project enquiry is recorded",
+              "tokens": {
+                "heading-size": "1.75rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n15"
+            },
+            {
+              "type": "text",
+              "id": "n16",
+              "role": "success_body",
+              "text": "Thank you. Your email and any project type selected have been received. Scope, price and timing are still to be discussed."
+            },
+            {
+              "type": "button",
+              "id": "n17",
+              "label": "Close",
+              "action": "close",
+              "role": "close_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.75rem",
+            "gap": "1rem",
+            "bg": "#d9e8db",
+            "radius": "1.5rem .25rem 1.5rem 1.5rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "request",
+        "required": true,
+        "fields": [
+          "n8",
+          "n10"
+        ],
+        "consents": []
+      }
+    ]
+  }
+}

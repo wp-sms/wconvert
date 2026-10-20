@@ -1,0 +1,832 @@
+{
+  "schema": 1,
+  "batch": "creative-editions",
+  "setups": [
+    {
+      "id": "supper-evening-menu",
+      "revision": "044e6f774a11259e856f2e3351f54baa3779926c1e819643535e86ec18a5dd22",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "menu",
+          "path": "docs/reviews/creative-editions-2026-10-20/supper-evening-menu-320.png",
+          "sha256": "495639c1f28859a2ac3def7864e7962a528783c61fb7204190a7210fe26ab20a"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "menu",
+          "path": "docs/reviews/creative-editions-2026-10-20/supper-evening-menu-390.png",
+          "sha256": "dbdb44f628f8912717d26feba65fc03c8a7b7008a7113c2ae2083455196269ad"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "menu",
+          "path": "docs/reviews/creative-editions-2026-10-20/supper-evening-menu-768.png",
+          "sha256": "3a6b660f3dce224df02d437e1524350ebfa870bef0ba7d39e2170e55e6a8aba1"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "menu",
+          "path": "docs/reviews/creative-editions-2026-10-20/supper-evening-menu-1440.png",
+          "sha256": "34207032722d9125593c441007b0f78c33efe24c6512eebcee7a3df39aa51af4"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "menu",
+          "path": "docs/reviews/creative-editions-2026-10-20/supper-evening-menu-native-320-0.png",
+          "sha256": "2c5fcce3871724a91db6ecaa042dd5218812fcb9ed0160c227854b96c96ddd08"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "menu",
+          "path": "docs/reviews/creative-editions-2026-10-20/supper-evening-menu-native-1280-0.png",
+          "sha256": "5a38ad46505b1977e322461acbe6e0f1cea71fbbeeed40143a7e6bfea3feaf84"
+        }
+      ]
+    },
+    {
+      "id": "weeknight-recipe-sample",
+      "revision": "d558b5554905e5c803492176da054abd536865f5ce471209c288c91c05b62a7b",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "sample",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-320.png",
+          "sha256": "7489bbf97926d01845c9946dcf8e816f24799f6dcd2fb3b56045e529a4402e80"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "sample",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-390.png",
+          "sha256": "0d0133b0633595397521461c81cd042fdb29234d4861eccce4adfbb48288646c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "sample",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-768.png",
+          "sha256": "ab8434c9ee2123f2aeef0a3059d781f8f5dfe843b31bcdd489504e3cab36bd86"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "sample",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-1440.png",
+          "sha256": "ab92c2dfc9709ec5f0ba049f46d89575c63efe51995ef060c0bffc1205051e1c"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "sample",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-native-320-0.png",
+          "sha256": "68de1a1f5784c6a8148deb5cf00d7ad69ff8dc6b83ccaafc4c8b466373d165eb"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "sample",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-native-1280-0.png",
+          "sha256": "89e57c5e230be9b26ea048a735973d2f6914e7ab20079c54bbcee6ce3214993f"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-320.png",
+          "sha256": "7489bbf97926d01845c9946dcf8e816f24799f6dcd2fb3b56045e529a4402e80"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-390.png",
+          "sha256": "0d0133b0633595397521461c81cd042fdb29234d4861eccce4adfbb48288646c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-768.png",
+          "sha256": "ab8434c9ee2123f2aeef0a3059d781f8f5dfe843b31bcdd489504e3cab36bd86"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-1440.png",
+          "sha256": "ab92c2dfc9709ec5f0ba049f46d89575c63efe51995ef060c0bffc1205051e1c"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-native-320-1.png",
+          "sha256": "7f5166604be913ab718c2496379974ff984e8d9c3acd304a23e76f714f020d77"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-native-1280-1.png",
+          "sha256": "3d5a0565273f64af00c5ae8363b573d5ae9d8a912480d4294fe8848a5957946d"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-320.png",
+          "sha256": "7489bbf97926d01845c9946dcf8e816f24799f6dcd2fb3b56045e529a4402e80"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-390.png",
+          "sha256": "0d0133b0633595397521461c81cd042fdb29234d4861eccce4adfbb48288646c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-768.png",
+          "sha256": "ab8434c9ee2123f2aeef0a3059d781f8f5dfe843b31bcdd489504e3cab36bd86"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-1440.png",
+          "sha256": "ab92c2dfc9709ec5f0ba049f46d89575c63efe51995ef060c0bffc1205051e1c"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-native-320-2.png",
+          "sha256": "eea147af1e8ee7f525bdef2f9cd32d5c79bd7e64c9ac4910d394d615ef8e3c82"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weeknight-recipe-sample-native-1280-2.png",
+          "sha256": "df714f89257b917455f332f2d0f8dd1a46fc9f89715584cca583a140fdabd67e"
+        }
+      ]
+    },
+    {
+      "id": "colour-collection-notes",
+      "revision": "13d7e4b8dd863e3fb29a37059d08b0caa931f32cd1b14b3f4dea28ee2d62d777",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-320.png",
+          "sha256": "8bbbf5ccaebf7268c5ce491813e466cc68264c392b20f18fd1c9cc38f701636a"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-390.png",
+          "sha256": "2f2b7a84ffbbb9d5842d0d7f2103e7b9458d19e00907298330f4a7360a7f7351"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-768.png",
+          "sha256": "5ff98e050520f0371a9df5ff0c6b028a8ccabb423a089d7966266a54b005ba74"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-1440.png",
+          "sha256": "36343d55a380483cde4910df432adfd81f765f78e4da57145204a4ce4e9ceeed"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-native-320-0.png",
+          "sha256": "4806deabdcd414d5959691fdb11a1d1c31c2b96bc51f7ff031cd79eaddba7829"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-native-1280-0.png",
+          "sha256": "dce07e2d8d539b41b9cdab6aa395a3d32af2ecd526e313a2dd01fec1c2f55e36"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-320.png",
+          "sha256": "8bbbf5ccaebf7268c5ce491813e466cc68264c392b20f18fd1c9cc38f701636a"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-390.png",
+          "sha256": "2f2b7a84ffbbb9d5842d0d7f2103e7b9458d19e00907298330f4a7360a7f7351"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-768.png",
+          "sha256": "5ff98e050520f0371a9df5ff0c6b028a8ccabb423a089d7966266a54b005ba74"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-1440.png",
+          "sha256": "36343d55a380483cde4910df432adfd81f765f78e4da57145204a4ce4e9ceeed"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-native-320-1.png",
+          "sha256": "b6c7ee8fd79a87006fa499b1e15d8b65a1b4027740dd45c8dedda7a0d8da9819"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/colour-collection-notes-native-1280-1.png",
+          "sha256": "5cc6c26de5f64b50c1ddc436b52972f7984480dd322193b125214cb20bdda332"
+        }
+      ]
+    },
+    {
+      "id": "garment-fit-guide",
+      "revision": "c81fa6499d5d05ffb00f8d3bb558d092c50f2a96c60d33e57c18894d9c09db27",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "guide",
+          "path": "docs/reviews/creative-editions-2026-10-20/garment-fit-guide-320.png",
+          "sha256": "17f7859ef3b159b872ec98aa6aca980174a20d4cc0fabee43fdc296a48452228"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "guide",
+          "path": "docs/reviews/creative-editions-2026-10-20/garment-fit-guide-390.png",
+          "sha256": "5aeb47d12faf2f55a7bab04db1c2e4e4884a55d2b34cc6b54ed44d10d7e35d2b"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "guide",
+          "path": "docs/reviews/creative-editions-2026-10-20/garment-fit-guide-768.png",
+          "sha256": "d8a975f0c1b9d8d10ed3efba2e8376f5211cca22d0499b7ee06b3079ce83fbd8"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "guide",
+          "path": "docs/reviews/creative-editions-2026-10-20/garment-fit-guide-1440.png",
+          "sha256": "80475467ace50fabbaf0f8c34c92f6c3f76de98b20e3724b995a6297866f049e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "guide",
+          "path": "docs/reviews/creative-editions-2026-10-20/garment-fit-guide-native-320-0.png",
+          "sha256": "6cb1636205d97a6c321d5da82500ea121a766638d25aef7bd7d081c41cc56463"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "guide",
+          "path": "docs/reviews/creative-editions-2026-10-20/garment-fit-guide-native-1280-0.png",
+          "sha256": "5710085b64c984f5a665e8ff6b0e1b4e07f65a6e1a04f0dda08319d4236ec4ed"
+        }
+      ]
+    },
+    {
+      "id": "workshop-programme",
+      "revision": "1454d4abff23998c713dc4ec633e9be23c60f9aadc42c22b427a0ca867bcd3bd",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "programme",
+          "path": "docs/reviews/creative-editions-2026-10-20/workshop-programme-320.png",
+          "sha256": "b6aa1a317fb2a30186deb2aa00e0ec9f99ad6d3bcbed17343b5fb5c1d47d0261"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "programme",
+          "path": "docs/reviews/creative-editions-2026-10-20/workshop-programme-390.png",
+          "sha256": "dc351385614e0ccfb23a503b0dff7331c7bdb0c386b9c8bc9a9afffee00f478e"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "programme",
+          "path": "docs/reviews/creative-editions-2026-10-20/workshop-programme-768.png",
+          "sha256": "3a3005154cd1cd3c6467761cbf1fe241439656fa24441aee13e6ac38f276c525"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "programme",
+          "path": "docs/reviews/creative-editions-2026-10-20/workshop-programme-1440.png",
+          "sha256": "2f46e2649a10d78914af456eabc5a5cdb847097eded6e5ff128db73a2d36284e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "programme",
+          "path": "docs/reviews/creative-editions-2026-10-20/workshop-programme-native-320-0.png",
+          "sha256": "9c0aa45ffa4e5d6c197a609ca155a997099f82732a40aec05e848d5f58e0b46e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "programme",
+          "path": "docs/reviews/creative-editions-2026-10-20/workshop-programme-native-1280-0.png",
+          "sha256": "1cd835014b0f2730f7c0f8ff88829f8b6c01645ff32ae2b1b855dcfc296e3dd2"
+        }
+      ]
+    },
+    {
+      "id": "studio-conversation",
+      "revision": "af107b54df198a13c7f2f654c393b50b4624e1fc5965e31d108becf848eb89cf",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "request",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-320.png",
+          "sha256": "6c9277fe488e156016e9f8c62f4295e4e0653f8137087eb20af89312e2731a85"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "request",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-390.png",
+          "sha256": "4e371a7c79c02f8d178fb3e6f4c383ce2615e6bccecb8f2ff4417030a3dbdbad"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "request",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-768.png",
+          "sha256": "4f2573634b15ec4c893bb66e471a01c469fa848dfeb34d6c41346bbf12823f1c"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "request",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-1440.png",
+          "sha256": "6c397e0ed6ac9ec371dccd58a78eebf3fe3f7b63ee68ff5b43c106bfcf988ca9"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "request",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-native-320-0.png",
+          "sha256": "95ae88da86fa670f551cda7347fd1fd20461e6c8565582d4d905b93e77781af8"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "request",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-native-1280-0.png",
+          "sha256": "b49c70ad8ea6dc692b4edacd6e8f79f1cd9c996357359fa7e92e3a3d07ef315d"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-320.png",
+          "sha256": "6c9277fe488e156016e9f8c62f4295e4e0653f8137087eb20af89312e2731a85"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-390.png",
+          "sha256": "4e371a7c79c02f8d178fb3e6f4c383ce2615e6bccecb8f2ff4417030a3dbdbad"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-768.png",
+          "sha256": "4f2573634b15ec4c893bb66e471a01c469fa848dfeb34d6c41346bbf12823f1c"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-1440.png",
+          "sha256": "6c397e0ed6ac9ec371dccd58a78eebf3fe3f7b63ee68ff5b43c106bfcf988ca9"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-native-320-1.png",
+          "sha256": "f01e8d9a35b4b3b60bac3fba840c46dae988f682f8c8b112d3a7f4080b465b6d"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-native-1280-1.png",
+          "sha256": "f3f0264b342fca248b2eb3e66a11987492850b9d2de4ddd66b103ccba0817eef"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-320.png",
+          "sha256": "6c9277fe488e156016e9f8c62f4295e4e0653f8137087eb20af89312e2731a85"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-390.png",
+          "sha256": "4e371a7c79c02f8d178fb3e6f4c383ce2615e6bccecb8f2ff4417030a3dbdbad"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-768.png",
+          "sha256": "4f2573634b15ec4c893bb66e471a01c469fa848dfeb34d6c41346bbf12823f1c"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-1440.png",
+          "sha256": "6c397e0ed6ac9ec371dccd58a78eebf3fe3f7b63ee68ff5b43c106bfcf988ca9"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-native-320-2.png",
+          "sha256": "1c8003f27c44f210b1417dae559b716af9c6e5b8840e592dcce53fe726957836"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/studio-conversation-native-1280-2.png",
+          "sha256": "bb1b2786cd0504afc012b9d21dd1317c832de1406d905715238e2a9a73ffd2ff"
+        }
+      ]
+    },
+    {
+      "id": "weekend-observations",
+      "revision": "16f9c6f32ee4927d7fecc8c58f8a3e8552b4bdb2e8b6fa227b24924db472ac2e",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-320.png",
+          "sha256": "69dc513696398dd87a59c6d22e55c08fa0f6a30b5083e282a5059978b6a11c5d"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-390.png",
+          "sha256": "76488f9f9f5b0449b32e8cc6048971bbd7a0c2d55e634273780a8870fdf7adc8"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-768.png",
+          "sha256": "8794c4dd82a859d569d8cbd6b427d030157d73fbba03581f83eed07a1ea6a5a5"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-1440.png",
+          "sha256": "7631c99cd13d7a8e7ca7c69b03b85a1941b3189a61f225c886294537baf012ba"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-native-320-0.png",
+          "sha256": "29942c69854c9c92e65b4740f2cd8eb558cff60a457cac0630ebd3c6e5e47701"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-native-1280-0.png",
+          "sha256": "69e8f949bdf643434094bebcb375784fa0d5cdf6fdedfa2c8127183abd9b54eb"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-320.png",
+          "sha256": "69dc513696398dd87a59c6d22e55c08fa0f6a30b5083e282a5059978b6a11c5d"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-390.png",
+          "sha256": "76488f9f9f5b0449b32e8cc6048971bbd7a0c2d55e634273780a8870fdf7adc8"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-768.png",
+          "sha256": "8794c4dd82a859d569d8cbd6b427d030157d73fbba03581f83eed07a1ea6a5a5"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-1440.png",
+          "sha256": "7631c99cd13d7a8e7ca7c69b03b85a1941b3189a61f225c886294537baf012ba"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-native-320-1.png",
+          "sha256": "a5698874de680d1753c29aa42e4170f7b144e75002efae3091552714813e7134"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/weekend-observations-native-1280-1.png",
+          "sha256": "f0c8d04d54d8f4d6e5de6c324d2594c0d156128927bf343711682ac8241dd4d7"
+        }
+      ]
+    },
+    {
+      "id": "custom-project-start",
+      "revision": "c98776e7050b78c63f0d0917981a42089196ee98c1adf88267e4b9794cd9ae26",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-320.png",
+          "sha256": "ffd3c8a80562fffc5f98062264a16c179daa2e0b5c63f10ee609593a3d70fcc8"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-390.png",
+          "sha256": "72e8a3901914156745c26648b644b8052d8a5eb56e7556100d5136f54683506d"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-768.png",
+          "sha256": "d31977656b0f3a6a4ed1b90ee8b756536d0504e329033cbdfec3c853e1f93ae2"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-1440.png",
+          "sha256": "78e26e0162c5ba454f24cf6cc071c6d811504ee84fbff76f3a0c83bcadeb7a6e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-native-320-0.png",
+          "sha256": "d1144e820a6bfcad154096323d17e719efe9d06796dc2ce45ed49552fd400de1"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-native-1280-0.png",
+          "sha256": "0e3535e07be275376f5bcebaec07dcab01872c0f18374877e736f1c3b4884ea1"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-320.png",
+          "sha256": "ffd3c8a80562fffc5f98062264a16c179daa2e0b5c63f10ee609593a3d70fcc8"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-390.png",
+          "sha256": "72e8a3901914156745c26648b644b8052d8a5eb56e7556100d5136f54683506d"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-768.png",
+          "sha256": "d31977656b0f3a6a4ed1b90ee8b756536d0504e329033cbdfec3c853e1f93ae2"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-1440.png",
+          "sha256": "78e26e0162c5ba454f24cf6cc071c6d811504ee84fbff76f3a0c83bcadeb7a6e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-native-320-1.png",
+          "sha256": "fadef627c0253d8f3eddc4f0639293d350906c9969610663f87778c0bffd5f1c"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/custom-project-start-native-1280-1.png",
+          "sha256": "9eaa2f75bbea7c80ce157fac98782d2175abb10bfd19676f922949928ed20427"
+        }
+      ]
+    },
+    {
+      "id": "room-planning-worksheet",
+      "revision": "5f28551ce40d9b334bedf398cdad13b69f69578a814afa1b8dd481b585a604d7",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-320.png",
+          "sha256": "ea0b8f6b0bd4712754f55e7473483ed11802065cabd962c4068e1f8ee712d25f"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-390.png",
+          "sha256": "4bf227117e58c543e2d9db44132ce0372db8039b96528ab33544be9d220e087c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-768.png",
+          "sha256": "5bae4ac114d440b30064aa33eca0d6d2352986761644872833afef8d79674bb7"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-1440.png",
+          "sha256": "b2c1117a058cbd6981ffe04349e210c939770d72b7d4b55d4ff054be7e35722e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-native-320-0.png",
+          "sha256": "b666a1f12a588243657bca565358fbeb79b621cf34deb218044fee176220f9f2"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-native-1280-0.png",
+          "sha256": "05abf5bb54c43bdf0a507004488638b79cd860d096ce2fae50fd8ecd9c4eab73"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-320.png",
+          "sha256": "ea0b8f6b0bd4712754f55e7473483ed11802065cabd962c4068e1f8ee712d25f"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-390.png",
+          "sha256": "4bf227117e58c543e2d9db44132ce0372db8039b96528ab33544be9d220e087c"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-768.png",
+          "sha256": "5bae4ac114d440b30064aa33eca0d6d2352986761644872833afef8d79674bb7"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-1440.png",
+          "sha256": "b2c1117a058cbd6981ffe04349e210c939770d72b7d4b55d4ff054be7e35722e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-native-320-1.png",
+          "sha256": "d8f2ebc40841e93b805f7b572d61bc3eb09f2fba924b81549c79adb97ae0b673"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/creative-editions-2026-10-20/room-planning-worksheet-native-1280-1.png",
+          "sha256": "1fc6c4893c4dd6e2c6085e4b00c1f15eb47c9e835687394b855ad42ff055e0f8"
+        }
+      ]
+    },
+    {
+      "id": "ceramics-open-studio",
+      "revision": "47db3eb705711b54c185f62301825476225a0dd8d4616eae2044fe7a180065d4",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "exhibition",
+          "path": "docs/reviews/creative-editions-2026-10-20/ceramics-open-studio-320.png",
+          "sha256": "0439b3313a2f1699447e35aef44b9505d027d22b3671026f1ccf4f429b3f3833"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "exhibition",
+          "path": "docs/reviews/creative-editions-2026-10-20/ceramics-open-studio-390.png",
+          "sha256": "5176b2a95a18ba911d765d6913fdab27eb151b919a7813d939ead3b29426f200"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "exhibition",
+          "path": "docs/reviews/creative-editions-2026-10-20/ceramics-open-studio-768.png",
+          "sha256": "ab2b54e142c1f9302bfc49a579a64496fd3ef5a5f41670dd7dbe036821ac67bc"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "exhibition",
+          "path": "docs/reviews/creative-editions-2026-10-20/ceramics-open-studio-1440.png",
+          "sha256": "5fbd3416b3c557d42067e2a920c774adef60265e90c6c4b3d6c3a11d5c12f174"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "exhibition",
+          "path": "docs/reviews/creative-editions-2026-10-20/ceramics-open-studio-native-320-0.png",
+          "sha256": "4a4e7c0baf340f21d61f2e6c4e0d7faee4edf2b8c659f6608a2679612d5ae25e"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "exhibition",
+          "path": "docs/reviews/creative-editions-2026-10-20/ceramics-open-studio-native-1280-0.png",
+          "sha256": "aedac45fbf02ab37b7745697561d094efc0ed834f3685369a16acf5567da218a"
+        }
+      ]
+    }
+  ]
+}

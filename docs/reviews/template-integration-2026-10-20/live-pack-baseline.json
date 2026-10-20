@@ -1,0 +1,55 @@
+{
+  "release": "3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7",
+  "packs": [
+    {
+      "id": "fabric-sample-enquiries",
+      "version": "1.0.0",
+      "sha256": "7df17a798bd0e1a332e7658f19f6423110973199691c81cb55824f547f3d2577",
+      "access": "premium"
+    },
+    {
+      "id": "helpful-prompts",
+      "version": "1.0.0",
+      "sha256": "0b9140e57e720a196f857b0f2d7bb3635e2247009fcb15fced253c780339b08f",
+      "access": "premium"
+    },
+    {
+      "id": "homeware-care",
+      "version": "1.0.2",
+      "sha256": "a1830caac83bd0297d90499a4fa272f61641e99f41650f01e6c5349800b5dbf3",
+      "access": "free"
+    },
+    {
+      "id": "practical-essentials",
+      "version": "1.0.0",
+      "sha256": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126",
+      "access": "free"
+    },
+    {
+      "id": "publishers-starts",
+      "version": "1.1.3",
+      "sha256": "d80fe2f5f5c6e9bb66d300db404cf4a2ceaee32b434aa7c29b13df0bc15f57eb",
+      "access": "free"
+    },
+    {
+      "id": "services-starts",
+      "version": "1.0.2",
+      "sha256": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c",
+      "access": "free"
+    },
+    {
+      "id": "shopping-help",
+      "version": "1.0.1",
+      "sha256": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163",
+      "access": "premium"
+    },
+    {
+      "id": "stores-starts",
+      "version": "1.1.2",
+      "sha256": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a",
+      "access": "free"
+    }
+  ],
+  "missing": [],
+  "readOnly": true
+}

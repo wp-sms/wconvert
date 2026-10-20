@@ -95,7 +95,7 @@ fixtures or staging credentials target live buckets.
 
 ## Verified service and remaining checks
 
-The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Real licensed WordPress acceptance also passed with WooCommerce. The default plugin catalogue connection and the protected-image download/install path are verified. Launch operations remain pending. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal.
+The buckets and Worker serve the reviewed release at `https://templates.wconvert.io`. The operator connected Nexus on 19 October and live issuance-refusal checks passed. Real licensed WordPress acceptance also passed with WooCommerce. The default plugin catalogue connection and the protected-image download/install path are verified. The remote publisher has passed a real R2 upload, full read-back, unchanged retry and stale-publication refusal. The 20 October launch work published service privacy/terms, checked bucket isolation and grant cleanup, and rehearsed a complete retained-catalogue restore into fresh local storage.
 Local tests run the actual Worker/WebCrypto/R2 runtime with a test Nexus responder;
 the remote WordPress verifier uses real HTTPS for Free installation and simulated failure only for the offline check. The separate Nexus WordPress tests intercept HTTP; the real WordPress → Worker → Nexus licensed route passed on 19 October using a disposable activated site and the actual premium pack.
 
@@ -107,7 +107,18 @@ References: [Create R2 buckets](https://developers.cloudflare.com/r2/buckets/cre
 
 ## Before enabling premium downloads or launching
 
-Nexus is connected and the core live licence flow is verified. Complete the remaining real licence scenarios (whole-licence expiry/revocation on dedicated disposable licences), publish and link the service terms/privacy notice before customer distribution, configure edge request limits, verify the private bucket binding/lifecycle in the dashboard, and rehearse backup restoration. The scoped publishing token can verify objects but cannot audit account settings, disabled workers.dev/preview URLs, lifecycle rules, or edge security rules. The local rollback tests preserve retained versions; no destructive rollback was performed against the hosted catalogue.
+Nexus is connected and the core live licence flow is verified. Whole-licence expiry/revocation on dedicated disposable licences remain separate acceptance scenarios. Service disclosures are now published at [privacy](https://wconvert.io/privacy/) and [terms](https://wconvert.io/terms/), with links in the plugin readme and catalogue disclosure.
+
+On 20 October, Chrome dashboard inspection confirmed both R2 buckets have public access disabled, the private bucket has no custom domain, `workers.dev` is disabled, and the enabled private-bucket lifecycle rule `cleanup-download-grants` deletes objects under `grants/` after one day. That lifecycle is storage cleanup, not pass expiry; the Worker enforces the much shorter authorization expiry. The deployment API also confirmed both `workers.dev` and preview URLs disabled. Both rate limiter bindings are saved in Cloudflare and declared in Wrangler; Worker version `cd421d7d-aae9-4073-8d54-645691706de8` deploys enforcement to 100% of traffic. Their limits and verification procedure are in the [service README](README.md#request-limits-and-recovery). The zone currently shows Free with one WAF rate-rule slot, so Worker bindings provide the two independent counters without a plan upgrade.
+
+The restore rehearsal recovered 23 public and three private objects, checked three retained releases, rolled back both older versions, and restored the current pointer in fresh local Workerd/R2. No production rollback or data deletion occurred. A local snapshot is not an offsite disaster-recovery system: separately protect a copy and the secrets/account/Nexus recovery procedures. See [recovery evidence](../../docs/reviews/template-launch-2026-10-20/recovery.json).
+
+Live request-limit verification passed on 20 October: both counters returned
+429 with `Retry-After: 60`, premium-image HEAD shared the download counter,
+the grant and download scopes were independent, and the public manifest
+remained available. After cooldown, normal 400/401 validation responses returned
+and full live catalogue verification passed. See the
+[launch evidence](../../docs/reviews/template-launch-2026-10-20/README.md).
 
 
 ## Nexus dashboard connection — 19 October 2026
@@ -146,3 +157,22 @@ from this directory. This checks public files and anonymous premium refusals; it
 does **not** prove that Nexus accepts the service key or that a licensed download
 works. Complete the real licence tests described above before claiming that.
 Without the secret, use the default verification mode (expected premium 503).
+
+
+### Website gallery configuration
+
+Deploy the gallery-capable Worker before publishing the new release. Its
+`PREVIEW_EMBED_ORIGINS` setting is:
+
+```text
+https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev
+```
+
+Use those exact origins without paths or trailing slashes. The development address
+is the approved Pages branch URL; other branches and localhost remain blocked.
+Keep the existing R2, rate-limit and Nexus bindings/secrets when deploying.
+The integrated plan preserves all eight live packs. Do not publish the old six-pack
+rehearsal. Remote publication blocks missing packs before uploads; an intentional
+removal or rollback needs one `--remove-pack ID` per removed pack as well as the
+normal `--expected` current-release check. Merely merging Git changes does not
+change the hosted Worker or catalogue.

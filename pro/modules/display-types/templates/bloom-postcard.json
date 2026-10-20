@@ -1,0 +1,92 @@
+{
+  "id": "bloom-postcard",
+  "name": "Bloom postcard",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#fff3dd",
+    "fg": "#692331",
+    "muted": "#784850",
+    "accent": "#a7213e",
+    "accent-fg": "#ffffff",
+    "border": "#a46c72",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.25rem",
+    "gap": "1rem",
+    "radius": "2rem 2rem .75rem .75rem",
+    "width": "26rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "invitation",
+        "name": "Make something beautiful",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "image",
+              "id": "n1",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22600%22%20height%3D%22320%22%20viewBox%3D%220%200%20600%20320%22%3E%3Crect%20width%3D%22600%22%20height%3D%22320%22%20fill%3D%22%23f5a6c8%22/%3E%3Cpath%20d%3D%22M300%20315V110M300%20245Q200%20160%20130%20230Q210%20290%20300%20265M300%20205Q390%20130%20460%20185Q385%20260%20300%20235%22%20fill%3D%22%23235c48%22%20stroke%3D%22%23235c48%22%20stroke-width%3D%2212%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22100%22%20rx%3D%2242%22%20ry%3D%2282%22%20fill%3D%22%23d62e34%22%20transform%3D%22rotate%280%20300%20130%29%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22100%22%20rx%3D%2242%22%20ry%3D%2282%22%20fill%3D%22%23d62e34%22%20transform%3D%22rotate%2860%20300%20130%29%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22100%22%20rx%3D%2242%22%20ry%3D%2282%22%20fill%3D%22%23d62e34%22%20transform%3D%22rotate%28120%20300%20130%29%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22100%22%20rx%3D%2242%22%20ry%3D%2282%22%20fill%3D%22%23d62e34%22%20transform%3D%22rotate%28180%20300%20130%29%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22100%22%20rx%3D%2242%22%20ry%3D%2282%22%20fill%3D%22%23d62e34%22%20transform%3D%22rotate%28240%20300%20130%29%22/%3E%3Cellipse%20cx%3D%22300%22%20cy%3D%22100%22%20rx%3D%2242%22%20ry%3D%2282%22%20fill%3D%22%23d62e34%22%20transform%3D%22rotate%28300%20300%20130%29%22/%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22130%22%20r%3D%2238%22%20fill%3D%22%23fff1a3%22/%3E%3C/svg%3E",
+              "alt": "Original cut-paper-style flower illustration.",
+              "fit": "contain",
+              "tokens": {
+                "radius": "8rem 8rem .5rem .5rem"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "text": "A little wild.\nAll yours.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "2.5rem",
+                "heading-font": "Georgia, serif",
+                "heading-weight": "400",
+                "leading": "1.05"
+              },
+              "narrow": {
+                "heading-size": "2.25rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "text": "Meet the flowers, learn a new skill and make an arrangement with your own point of view.",
+              "role": "body"
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "label": "Explore flower workshops",
+              "action": "link",
+              "role": "cta_label",
+              "tokens": {
+                "radius": ".75rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "text": "See dates, prices and what is included before booking.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": "1rem"
+              },
+              "size": "s"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

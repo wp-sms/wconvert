@@ -1,0 +1,33 @@
+{
+  "started": "2026-10-20T05:43:47.002Z",
+  "origin": "https://templates.wconvert.io",
+  "phase": "recovery",
+  "publicBefore": {
+    "status": 200,
+    "ray": "a4d5b4fe28ae70fc-ARN",
+    "retryAfter": null,
+    "contentType": "application/json; charset=utf-8",
+    "cacheControl": "no-cache, must-revalidate"
+  },
+  "grants": {
+    "status": 400,
+    "ray": "a4d5b5003b6370fc-ARN",
+    "retryAfter": null,
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  },
+  "file": {
+    "status": 401,
+    "ray": "a4d5b5013ca270fc-ARN",
+    "retryAfter": null,
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  },
+  "image": {
+    "status": 401,
+    "ray": "a4d5b5024e0470fc-ARN",
+    "retryAfter": null,
+    "contentType": "application/json",
+    "cacheControl": "private, no-store"
+  }
+}
