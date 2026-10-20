@@ -17,7 +17,6 @@ use WConvert\Rules\DisplayPlan;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Template\BundledTemplates;
 use WConvert\Template\CaptureContract;
-use WConvert\Template\LockedTemplates;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
@@ -112,7 +111,6 @@ final class FreshSetupTest extends TestCase
             self::vocabulary(),
             new BundledTemplates(self::ROOT),
             new ProTemplates(self::ROOT . '/pro'),
-            new LockedTemplates(self::ROOT),
         );
     }
 

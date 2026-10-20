@@ -27,6 +27,7 @@ defined('ABSPATH') || exit;
 final class BundledTemplates implements TemplateSource
 {
     public const PATH = 'resources/templates/library';
+    public const REVISIONS = 'resources/templates/revisions.json';
 
     public function __construct(
         private readonly string $pluginDir = WCONVERT_DIR,
@@ -49,6 +50,6 @@ final class BundledTemplates implements TemplateSource
             }
         }
 
-        return $entries;
+        return BundledRevisions::stamp($entries, BundledRevisions::read(rtrim($this->pluginDir, '/') . '/' . self::REVISIONS));
     }
 }

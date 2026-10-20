@@ -55,6 +55,8 @@ final class FindDesigns implements Ability
         $search = mb_strtolower(trim((string) ($input['search'] ?? '')));
         $designs = [];
         foreach ($this->library->all() as $id => $entry) {
+            // A superseded revision stays resolvable for its Optins, never offered (ADR 0156).
+            if (($entry['catalog_current'] ?? true) === false) continue;
             $type = (string) ($entry['display_type'] ?? 'popup');
             if (!(Tier::tryFrom((string) ($entry['tier'] ?? 'free')) ?? Tier::Free)->isSuppliedBy($this->pro) || !$this->builder->displayTypeRuns($type)) continue;
             if (isset($input['display_type']) && $type !== $input['display_type']) continue;

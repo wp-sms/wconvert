@@ -42,7 +42,6 @@ final class VerifiedAssets
             PackValidator::check(!is_link($manifest), __('The image store contains an unsupported link.', 'wconvert'));
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             if (is_file($manifest)) PackValidator::check(file_get_contents($manifest) === $json, __('This image package changed. Inspect the new revision.', 'wconvert'));
-            else PackValidator::check(count(glob($this->directory . '/sets/*.json') ?: []) < 128, __('The local image archive is full.', 'wconvert'));
             $staged = []; $urls = [];
             try {
                 foreach ($assets as $asset) {
@@ -108,6 +107,25 @@ final class VerifiedAssets
             $urls[$asset['id']] = rtrim($this->baseUrl, '/') . '/' . $key;
         }
         return $urls;
+    }
+
+    /**
+     * Name, size and modification time of every stored image: cheap to read
+     * on each request, and it changes when a file is damaged or replaced, so
+     * a cache of verified designs can be keyed on it without hashing images.
+     *
+     * @return list<string>
+     */
+    public function listing(): array
+    {
+        $files = [];
+        foreach (['free', 'premium', 'sets'] as $folder) {
+            foreach (glob($this->directory . '/' . $folder . '/*') ?: [] as $file) {
+                $files[] = $folder . '/' . basename($file) . ':' . (int) @filesize($file) . ':' . (int) @filemtime($file); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- a file removed between glob and stat reads as zero, which changes the key.
+            }
+        }
+        sort($files);
+        return $files;
     }
 
     /** @param array<string, mixed> $asset */

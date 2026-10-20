@@ -7,7 +7,9 @@ use RuntimeException;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
 use WConvert\Rules\RuleVocabulary;
-use WConvert\Template\Catalog\InstalledPacks;
+use WConvert\Template\Catalog\DesignArchive;
+use WConvert\Template\Catalog\TemplateCatalog;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
@@ -68,65 +70,68 @@ final class PackPlaybooksTest extends TestCase
         PackValidator::shipping()->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }
 
-    public function testPackConsumersReuseOneReadAndARepairOrInstallRefreshesIt(): void
+    /**
+     * Install a hosted setup and its pinned design into a fresh archive.
+     *
+     * @param \Closure(array<string, mixed>): array<string, mixed> $change edits the setup's Playbook
+     */
+    private function installSetup(string $directory, int $revision, ?\Closure $change = null): DesignArchive
     {
-        $directory = sys_get_temp_dir() . '/wconvert-pack-cache-' . bin2hex(random_bytes(8));
-        $installed = new InstalledPacks($directory, PackValidator::shipping());
+        $http = new FakeCatalogTransport();
+        $service = new CatalogFixture($http);
+        $design = $service->design('resources/templates/library/fieldwork.json', 'fieldwork');
+        $playbook = require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php';
+        $service->setup('welcome-discount', $design, $change === null ? $playbook : $change($playbook), $revision);
+        $service->publish();
+        $options = new FakeOptionStore();
+        $options->set(TemplateCatalog::SOURCE_OPTION, CatalogFixture::SOURCE);
+        $options->set(TemplateCatalog::CONSENT_OPTION, 'yes');
+        $GLOBALS['wconvertTestTransients'] = [];
+        $archive = new DesignArchive($directory, PackValidator::shipping(), 'secret', null, 'free');
+        $catalog = new TemplateCatalog($options, $http, PackValidator::shipping(), $archive);
+        $catalog->refresh();
+        $catalog->installSetup('welcome-discount', $service->setupSha('welcome-discount'));
+        return new DesignArchive($directory, PackValidator::shipping(), 'secret', null, 'free');
+    }
 
+    private function remove(string $directory): void
+    {
+        if (!is_dir($directory)) return;
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($files as $file) $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
+        rmdir($directory);
+    }
+
+    public function testACorruptArchivedSetupIsIgnoredAndANewerRevisionOffersTheNewWords(): void
+    {
+        $directory = sys_get_temp_dir() . '/wconvert-setup-cache-' . bin2hex(random_bytes(8));
         try {
-            $pack = $this->pack();
-            $json = json_encode($pack, JSON_THROW_ON_ERROR);
-            $saved = $installed->install($json);
-            $this->assertCount(1, $installed->entries());
+            $archive = $this->installSetup($directory, 1);
+            $this->assertCount(1, $archive->playbooks());
+            $this->assertCount(1, $archive->playbooks(), 'a second consumer reuses the same request-local snapshot');
+            foreach (glob($directory . '/setups/*.json') ?: [] as $file) file_put_contents($file, 'broken');
+            $this->assertSame([], (new DesignArchive($directory, PackValidator::shipping(), 'secret', null, 'free'))->playbooks(), 'a corrupt archive is ignored by the next request');
 
-            file_put_contents($directory . '/' . $saved['digest'] . '.json', 'broken');
-            $this->assertCount(1, $installed->playbooks(), 'a second consumer rescanned the same request-local archive');
-            $this->assertSame(
-                [],
-                (new InstalledPacks($directory, PackValidator::shipping()))->playbooks(),
-                'a corrupt archive must be ignored by the next request'
-            );
-
-            $installed->install($json);
-            $pack['version'] = '1.1.0';
-            $pack['playbooks'][0]['rules'][0]['seconds'] = 15;
-            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
-
-            $this->assertSame(15, $installed->playbooks()[0]['rules'][0]['seconds']);
-
-            $pack['version'] = '1.2.0';
-            $pack['playbooks'][0]['rules'][0]['seconds'] = 20;
-            (new InstalledPacks($directory, PackValidator::shipping()))
-                ->install(json_encode($pack, JSON_THROW_ON_ERROR));
-
-            $pack['version'] = '1.1.1';
-            $pack['playbooks'][0]['rules'][0]['seconds'] = 18;
-            try {
-                $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
-                $this->fail('A stale request-local snapshot replaced a newer install.');
-            } catch (RuntimeException $error) {
-                $this->assertStringContainsString('already installed', $error->getMessage());
-            }
-
-            $this->assertSame(20, $installed->playbooks()[0]['rules'][0]['seconds']);
+            $archive = $this->installSetup($directory, 2, static function (array $playbook): array {
+                $playbook['rules'][0]['seconds'] = 15;
+                return $playbook;
+            });
+            $this->assertSame(15, $archive->playbooks()[0]['rules'][0]['seconds']);
+            $this->assertSame('setup-2-welcome-discount', $archive->playbooks()[0]['id']);
         } finally {
-            foreach (glob($directory . '/*.json') ?: [] as $file) unlink($file);
-            if (is_dir($directory)) rmdir($directory);
+            $this->remove($directory);
         }
     }
 
     public function testInstalledStartsUseTheSharedPrefillAndUpdatesDoNotChangeExistingSnapshots(): void
     {
         $directory = sys_get_temp_dir() . '/wconvert-starts-' . bin2hex(random_bytes(8));
-        $installed = new InstalledPacks($directory, PackValidator::shipping());
         try {
-            $pack = $this->pack();
-            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+            $installed = $this->installSetup($directory, 1);
             $entry = $installed->playbooks()[0];
-            $canonical = $installed->entries()[0]['design_key'];
-            $this->assertSame('pack:store:fieldwork', $canonical);
-            $this->assertNotSame('welcome-discount', $entry['id']);
-            $this->assertNotSame('fieldwork', $entry['template_id']);
+            $this->assertSame('registered:fieldwork', $installed->entries()[0]['design_key'], 'A favourite follows the design across revisions');
+            $this->assertSame('setup-1-welcome-discount', $entry['id']);
+            $this->assertSame('design-1-fieldwork', $entry['template_id']);
             $vocabulary = TemplateVocabulary::fromManifest();
             $templates = TemplateLibrary::from($vocabulary, $installed);
             $playbooks = PlaybookLibrary::fromEntries($installed->playbooks(), $templates, $vocabulary, RuleVocabulary::fromManifest());
@@ -135,25 +140,16 @@ final class PackPlaybooksTest extends TestCase
             $this->assertSame(\WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 8]]), $draft['config']['display_rules']);
             $this->assertSame('grow_email_list', $draft['goal']);
             $this->assertArrayNotHasKey('destination_ids', $draft['config']);
-            $this->assertArrayNotHasKey('status', $draft);
-            $this->assertSame('Store', $playbooks->find($entry['id'])->toArray()['collection']['name']);
             $before = json_encode($draft);
-            $pack['version'] = '1.1.0';
-            $pack['playbooks'][0]['rules'][0]['seconds'] = 15;
-            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
-            $this->assertCount(1, $installed->playbooks());
-            $this->assertNotSame($entry['id'], $installed->playbooks()[0]['id']);
+            $installed = $this->installSetup($directory, 2, static function (array $playbook): array {
+                $playbook['rules'][0]['seconds'] = 15;
+                return $playbook;
+            });
+            $this->assertCount(1, $installed->playbooks(), 'Only the newest revision of a setup offers a new campaign');
             $this->assertSame(15, $installed->playbooks()[0]['rules'][0]['seconds']);
-            $this->assertCount(2, $installed->entries(), 'Old design baselines stay addressable.');
-            foreach ($installed->entries() as $design) $this->assertSame($canonical, $design['design_key'], 'A favorite follows a logical design across immutable release IDs.');
             $this->assertSame($before, json_encode($draft), 'An existing campaign owns its snapshot.');
-            // A newer design-only release cannot resurrect a removed old start.
-            $pack['version'] = '1.2.0'; unset($pack['playbooks']);
-            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
-            $this->assertSame([], $installed->playbooks());
         } finally {
-            foreach (glob($directory . '/*.json') ?: [] as $file) unlink($file);
-            if (is_dir($directory)) rmdir($directory);
+            $this->remove($directory);
         }
     }
 

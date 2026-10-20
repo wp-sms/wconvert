@@ -42,21 +42,30 @@ final class PackValidatorJourneyTest extends TestCase
         $pack['requires']['capabilities'][] = 'template-tree:3';
         $directory = sys_get_temp_dir() . '/wc-graph-pack-' . bin2hex(random_bytes(6));
         $validator = $this->validator(Tier::Pro);
-        $installed = new \WConvert\Template\Catalog\InstalledPacks($directory, $validator);
+        $store = static function (array $pack, int $revision) use ($directory, $validator): void {
+            $object = ['schema' => 3, 'minor' => 0, 'id' => 'graph', 'revision' => $revision, 'name' => $pack['templates'][0]['name'],
+                'display_type' => $pack['templates'][0]['display_type'], 'tier' => 'pro', 'requires' => $pack['requires'],
+                'assets' => [], 'tree' => $pack['templates'][0]['tree'], 'tokens' => $pack['templates'][0]['tokens']];
+            $json = json_encode($object, JSON_THROW_ON_ERROR);
+            $validator->validate(\WConvert\Template\Catalog\DesignObject::design($json, hash('sha256', $json))['pack']);
+            (new \WConvert\Template\Catalog\DesignArchive($directory, $validator, 'secret', null, 'pro'))->store('designs', hash('sha256', $json), $json);
+        };
         try {
-            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
-            $original = $installed->entries()[0];
-            $pack['version'] = '1.1.0';
+            $pack['templates'][0]['tier'] = 'pro';
+            $store($pack, 1);
             $pack['templates'][0]['tokens']['bg'] = '#ffffff';
-            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
-            $offline = new \WConvert\Template\Catalog\InstalledPacks($directory, $validator);
+            $store($pack, 2);
+            $offline = new \WConvert\Template\Catalog\DesignArchive($directory, $validator, 'secret', null, 'pro');
             $library = \WConvert\Template\TemplateLibrary::from(TemplateVocabulary::fromManifest(), $offline);
             self::assertCount(2, $library->all());
-            self::assertSame($tree['graph'], $library->find($original['id'])['tree']['graph']);
-            self::assertSame($original['tokens'], $library->find($original['id'])['tokens']);
-            self::assertFalse($library->find($original['id'])['catalog_current']);
+            $original = $library->find('design-1-graph');
+            self::assertSame($tree['graph'], $original['tree']['graph']);
+            self::assertNotSame('#ffffff', $original['tokens']['bg'] ?? null);
+            self::assertFalse($original['catalog_current']);
+            self::assertTrue($library->find('design-2-graph')['catalog_current']);
         } finally {
-            foreach (glob($directory . '/*') ?: [] as $file) unlink($file);
+            $files = is_dir($directory) ? new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST) : [];
+            foreach ($files as $file) $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
             if (is_dir($directory)) rmdir($directory);
         }
     }

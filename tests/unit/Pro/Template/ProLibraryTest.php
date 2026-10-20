@@ -6,34 +6,18 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Pro\Template\ProTemplates;
 use WConvert\Template\BundledTemplates;
-use WConvert\Template\LockedTemplates;
 use WConvert\Template\TemplateFacets;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
 /**
- * Pro's designs, and the upsell they are supposed to make disappear.
+ * Pro's designs, composed the way `ProServiceProvider` composes them.
  *
- * ============================================================================
- * "A PAYING CUSTOMER IS NEVER SHOWN AN ADVERTISEMENT FOR WHAT THEY BOUGHT."
- * ============================================================================
- * That is ADR 0026's rule and `LockedTemplates`'s docblock asserted it in
- * prose: *"A Pro install sees none of this, and not because of a check here …
- * Pro registers the real trees through the same `TemplateSource` seam, so a
- * stub whose id a real entry already holds is dropped."*
- *
- * **The premise was false.** Nothing registered a `TemplateSource` at all, so
- * `TemplateLibrary::locked()`'s `array_diff_key` dropped nothing and every Pro
- * install showed a **Pro badge** on the six bar and slide-in cards it had
- * already paid for. A docblock cannot fail; this can.
- *
- * ============================================================================
- * IT COMPOSES THE SAME THREE SOURCES `ProServiceProvider` DOES, IN ORDER.
- * ============================================================================
- * Order is the mechanism rather than a detail: `LockedTemplates` last, so a
- * stub meets an id the real design already holds. Reading the container instead
- * would need WordPress; the value under test is the composition, which is three
- * arguments in one line.
+ * Free once bundled a locked card for each of these; that file is gone (ADR
+ * 0156). A design this install did not get is now a hosted catalogue entry,
+ * so what remains to prove here is that Pro registers its real designs and
+ * keeps every one free already had. Reading the container instead would need
+ * WordPress; the value under test is the composition.
  */
 #[CoversClass(ProTemplates::class)]
 final class ProLibraryTest extends TestCase
@@ -47,31 +31,7 @@ final class ProLibraryTest extends TestCase
             TemplateVocabulary::fromManifest(self::FREE_DIR),
             new BundledTemplates(self::FREE_DIR),
             new ProTemplates(self::PRO_DIR),
-            new LockedTemplates(self::FREE_DIR),
         );
-    }
-
-    /**
-     * ==========================================================================
-     * THE RULE WITH NO REMAINDER: A PRO INSTALL HAS NO LOCKED CARD AT ALL.
-     * ==========================================================================
-     * This used to filter for `floating_bar` and `slide_in`, because those were
-     * the six of nine designs #95 shipped and three cards were still standing
-     * on a Pro install — two designs nobody had authored yet, and one
-     * ({@see \WConvert\Template\LockedTemplates} `popup-spin-to-win`) that could
-     * never be authored at all. A test scoped to the Display Types that happened
-     * to be finished is a test that reads green while a paying customer is
-     * looking at an advertisement for what they bought.
-     *
-     * With the two designs authored and the third card **withdrawn**
-     * (ADR 0053), `locked()` on Pro is empty, and that is the assertion ADR 0026
-     * actually makes. It fails the day a ninth card is added to `locked.json`
-     * without a design behind it in Pro's ZIP — which is the direction this
-     * breaks, every time.
-     */
-    public function testAProInstallIsShownNoUpsellAtAll(): void
-    {
-        $this->assertSame([], array_keys($this->library()->locked()));
     }
 
     public function testFullscreenSetupsRegisterWithTheirProDesignsAndProEntitlement(): void
@@ -123,46 +83,6 @@ final class ProLibraryTest extends TestCase
     }
 
     /**
-     * And the same fact from the other end. A card and the design behind it are
-     * two files written months apart — the stub in free's `locked.json`, the
-     * tree in Pro's library — so the id is the only thing joining them, and a
-     * typo in either would leave the upsell standing beside the design.
-     *
-     * The list is spelled out rather than read off `locked()`, which is what
-     * makes it catch the *other* direction too: a card quietly deleted from
-     * `locked.json` leaves free's gallery advertising one fewer design than Pro
-     * ships, and nothing derived from that file can notice its own absence.
-     */
-    public function testEveryAdvertisedDesignHasARealDesignBehindIt(): void
-    {
-        $library = $this->library();
-
-        $advertised = [
-            'fullscreen-editorial',
-            'fullscreen-split',
-            'fullscreen-poster',
-            'bar-announcement',
-            'bar-email-capture',
-            'bar-countdown',
-            'slide-in-photo',
-            'popup-two-column',
-            'inline-cart-nudge',
-            'bar-code',
-            'slide-in-code',
-            'slide-in-nudge',
-            'slide-in-benefits',
-            'popup-editorial',
-            'popup-flash',
-            'inline-code-strip',
-        ];
-
-        foreach ($advertised as $id) {
-            $this->assertNotNull($library->find($id), $id . ' is advertised in locked.json and shipped by nobody');
-            $this->assertArrayNotHasKey($id, $library->locked());
-        }
-    }
-
-    /**
      * ==========================================================================
      * THE WITHDRAWN CARD, AND WHY IT IS AN ASSERTION RATHER THAN A COMMENT.
      * ==========================================================================
@@ -193,64 +113,7 @@ final class ProLibraryTest extends TestCase
     {
         $library = $this->library();
 
-        $this->assertArrayNotHasKey('popup-spin-to-win', $library->locked(), 'withdrawn by ADR 0053');
         $this->assertNull($library->find('popup-spin-to-win'), 'withdrawn by ADR 0053');
-
-        $free = TemplateLibrary::from(
-            TemplateVocabulary::fromManifest(self::FREE_DIR),
-            new BundledTemplates(self::FREE_DIR),
-            new LockedTemplates(self::FREE_DIR),
-        );
-
-        $this->assertArrayNotHasKey('popup-spin-to-win', $free->locked(), 'withdrawn by ADR 0053');
-    }
-
-    /**
-     * ==========================================================================
-     * THE CARD AND THE DESIGN MUST DESCRIBE THE SAME THING.
-     * ==========================================================================
-     * A locked stub's facets are the one place in the vocabulary they are
-     * AUTHORED rather than derived ({@see \WConvert\Template\TemplateFacets}),
-     * because a stub has no tree to read them off. So free's picker filters
-     * these designs by hand-written facets and Pro's filters the same designs by
-     * facets read off the tree — and if the two disagree, a merchant who
-     * filtered by *"Side by side"* on free and then upgraded finds the design
-     * somewhere else.
-     */
-    public function testAFreeInstallsCardDescribesTheDesignProActuallyShips(): void
-    {
-        $library = $this->library();
-        $free = TemplateLibrary::from(
-            TemplateVocabulary::fromManifest(self::FREE_DIR),
-            new BundledTemplates(self::FREE_DIR),
-            new LockedTemplates(self::FREE_DIR),
-        );
-
-        foreach ($free->locked() as $id => $stub) {
-            $real = $library->find($id);
-
-            if ($real === null) {
-                continue;
-            }
-
-            /*
-             * The THREE the picker filters by, and only those. `act` and
-             * `asks_consent` are derived and travel with an entry, but a stub
-             * has no tree to read them off and is never refused for its act
-             * anyway — a design that is not offered is never refused
-             * ({@see Gallery}'s `refusalFor`). Asserting them here would be
-             * asserting that a card knows something it structurally cannot.
-             */
-            foreach (TemplateFacets::FILTERED as $facet) {
-                $this->assertSame(
-                    $stub['facets'][$facet],
-                    $real['facets'][$facet],
-                    sprintf('%s: the card and the design disagree about %s', $id, $facet)
-                );
-            }
-
-            $this->assertSame($stub['display_type'], $real['display_type'], $id . ': the card and the design disagree');
-        }
     }
 
     /**

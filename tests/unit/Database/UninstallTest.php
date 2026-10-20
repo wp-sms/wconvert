@@ -115,7 +115,7 @@ final class UninstallTest extends TestCase
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(16, $options, 'every new option needs an uninstall entry');
+        $this->assertCount(17, $options, 'every new option needs an uninstall entry');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(
@@ -180,14 +180,14 @@ final class UninstallTest extends TestCase
         $this->assertStringNotContainsString("'actionscheduler", self::contents());
     }
 
-    public function testPackCleanupRemovesOnlyOwnedFilesAndNeverFollowsDirectories(): void
+    public function testArchiveCleanupRemovesOnlyOwnedFilesAndNeverFollowsDirectories(): void
     {
         $uploads = sys_get_temp_dir() . '/wconvert-uninstall-' . bin2hex(random_bytes(8));
-        $archive = $uploads . '/wconvert-template-packs';
+        $archive = $uploads . '/wconvert-templates/designs';
         mkdir($archive, 0755, true);
         $owned = $archive . '/' . str_repeat('a', 64) . '.json';
         file_put_contents($owned, '{}');
-        file_put_contents($archive . '/.pack-test123', '{}');
+        file_put_contents($archive . '/.object-test123', '{}');
         file_put_contents($uploads . '/keep.txt', 'other uploads');
         file_put_contents($archive . '/keep.txt', 'site owner file');
         symlink($uploads . '/keep.txt', $archive . '/' . str_repeat('b', 64) . '.json');
@@ -196,13 +196,13 @@ final class UninstallTest extends TestCase
             exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($uploads), $output, $code);
             $this->assertSame(0, $code, implode("\n", $output));
             $this->assertFileDoesNotExist($owned);
-            $this->assertFileDoesNotExist($archive . '/.pack-test123');
+            $this->assertFileDoesNotExist($archive . '/.object-test123');
             $this->assertFileExists($uploads . '/keep.txt');
-            $this->assertFileExists($archive . '/keep.txt');
+            $this->assertFileExists($archive . '/keep.txt', 'a file WConvert did not name keeps its folder');
         } finally {
             foreach (glob($archive . '/*') ?: [] as $file) unlink($file);
-            foreach (glob($archive . '/.pack-*') ?: [] as $file) unlink($file);
-            rmdir($archive); unlink($uploads . '/keep.txt'); rmdir($uploads);
+            foreach (glob($archive . '/.object-*') ?: [] as $file) unlink($file);
+            rmdir($archive); rmdir(dirname($archive)); unlink($uploads . '/keep.txt'); rmdir($uploads);
         }
     }
 

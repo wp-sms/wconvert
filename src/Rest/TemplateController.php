@@ -7,6 +7,8 @@ use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\Tier;
+use WConvert\Admin\ProHints;
+use WConvert\Template\Catalog\TemplateCatalog;
 use WConvert\Template\TemplateLabels;
 use WConvert\Template\PictureTransfer;
 use WConvert\Template\TemplateLibrary;
@@ -69,6 +71,7 @@ final class TemplateController implements RestController
         private readonly TemplateVocabulary $vocabulary,
         private readonly ProPresence $pro,
         private readonly ?PrivacyGuidance $privacyGuidance = null,
+        private readonly ?TemplateCatalog $catalog = null,
     ) {
     }
 
@@ -120,53 +123,119 @@ final class TemplateController implements RestController
      * agreed on has to acquire a translatable name the moment it becomes a chip
      * ({@see TemplateLabels}).
      *
-     * **Locked designs interleave with the rest**, sorted into one list by id,
-     * because a merchant comparing designs is comparing designs — a premium one
-     * pushed to the bottom is an advertisement in the shape of a gallery. What
-     * marks it is its `availability`, which the surface renders through the
-     * doctrine it already has (`availability.ts`, ADR 0026).
+     * **One card per design, whatever holds it** (ADR 0156). Bundled, Pro's,
+     * installed and hosted copies share a `design_key`; the highest local
+     * revision is the card, a higher hosted revision adds a "newer version"
+     * line to it, and a design only the hosted library has is a card of its
+     * own that installs on use. Nothing here makes a network request: hosted
+     * entries come from the verified local index.
      *
-     * ***Amended by ADR 0116: a free install is sent no locked design at
-     * all.*** The interleaving above holds wherever Pro is installed, where
-     * Pro's designs are information the site can act on. On free,
-     * `locked.json` stays in the ZIP but never reaches the payload, so the
-     * gallery has no card to hide and the REST answer carries no upsell.
+     * **A free install sees a Pro design only as a locked image card**, and
+     * only where Pro hints are wanted ({@see ProHints::shown()}): a server
+     * thumbnail, the plan's name and a link to wconvert.io. Never a tree,
+     * never Apply, and no Pro JSON ever reaches free. That supersedes ADR 0116
+     * §1 for designs; every other surface still hides what free cannot run.
+     *
+     * A withdrawn design leaves the gallery. Its local copies stay resolvable,
+     * because an Optin that already used one keeps its copy, and they are
+     * listed in `withdrawn` so the editor can say so.
      */
     public function index(): WP_REST_Response
     {
         $entries = [];
         $free = $this->pro->installedTier() === Tier::Free;
+        $hints = $free && $this->catalog !== null && ProHints::shown($this->pro);
+        $status = $this->catalog?->status();
+        $remote = [];
+        foreach ($status['designs'] ?? [] as $card) $remote[$card['id']] = $card;
+        $withdrawn = [];
 
         foreach ($this->templates->all() as $entry) {
+            $designId = substr((string) $entry['design_key'], strlen('registered:'));
+            if ($this->catalog?->isWithdrawn($designId, (int) $entry['revision'])) {
+                $withdrawn[$entry['id']] = $this->reasonFor($designId, (int) $entry['revision']);
+                continue;
+            }
             if (($entry['catalog_current'] ?? true) === false) continue;
             $availability = $this->availabilityOf((string) $entry['tier']);
             if ($free && $availability === Availability::Locked) continue;
-            $entries[] = $this->indexEntry($entry, $availability);
+            $card = $this->indexEntry($entry, $availability);
+            $newer = $remote[$designId] ?? null;
+            if ($newer !== null && $newer['revision'] > $entry['revision'] && $newer['state'] === 'install') $card['newer_revision'] = ['revision' => $newer['revision'], 'sha256' => $newer['sha256']];
+            unset($remote[$designId]);
+            $entries[] = $card;
         }
 
-        foreach ($free ? [] : $this->templates->locked() as $entry) {
-            // **`locked` by construction, not by tier arithmetic.** A stub is a
-            // design this install did not get — that is what having no tree
-            // MEANS ({@see \WConvert\Template\LockedTemplates}) — so it is
-            // absent and buyable from us, whatever the tier flag beside it
-            // says. Reading the flag instead would resolve a Pro-but-unshipped
-            // design to `ready` and draw a card with nothing behind it.
-            $entries[] = $this->indexEntry($entry, Availability::Locked);
+        foreach ($remote as $card) {
+            if ($card['state'] === 'ready') continue;
+            if ($card['state'] === 'locked' && !$hints) continue;
+            $entries[] = $this->remoteEntry($card);
         }
 
-        usort($entries, static fn (array $a, array $b): int => strcmp((string) $a['id'], (string) $b['id']));
+        // By design, so hosted and local cards interleave rather than a hosted
+        // block trailing the list as if it were an advertisement.
+        usort($entries, static fn (array $a, array $b): int => strcmp((string) $a['design_key'], (string) $b['design_key']) ?: strcmp((string) $a['id'], (string) $b['id']));
 
         return new WP_REST_Response([
             'templates' => $entries,
             'labels' => TemplateLabels::all(),
             'facets' => $this->vocabulary->facets(),
+            'withdrawn' => (object) $withdrawn,
+            'catalog' => $status === null ? null : [
+                'enabled' => $status['enabled'], 'consent' => $status['consent'], 'checked_at' => $status['checked_at'],
+                'update_required' => $status['update_required'], 'taxonomy' => $status['taxonomy'],
+            ],
         ]);
+    }
+
+    /**
+     * A design only the hosted library has, as a card. `ready` availability
+     * means "this site can use it once installed"; what is still in the way —
+     * the install itself, a newer WConvert, Pro, another plugin — is `remote.state`.
+     *
+     * @param array<string, mixed> $card
+     * @return array<string, mixed>
+     */
+    private function remoteEntry(array $card): array
+    {
+        $availability = match ($card['state']) {
+            'locked' => Availability::Locked,
+            'unavailable' => Availability::Unavailable,
+            default => Availability::Ready,
+        };
+        $entry = [
+            'id' => 'remote:' . $card['id'],
+            'design_key' => 'registered:' . $card['id'],
+            'name' => $card['name'],
+            'display_type' => $card['format'],
+            'tier' => in_array($card['tier'], ['free', 'pro'], true) ? $card['tier'] : 'pro',
+            'availability' => $availability->value,
+            'facets' => $card['facets'],
+            'remote' => [
+                'id' => $card['id'], 'revision' => $card['revision'], 'sha256' => $card['sha256'], 'state' => $card['state'],
+                'thumbnail' => $card['thumbnail'], 'tags' => $card['tags'], 'family' => $card['family'], 'popularity' => $card['popularity'],
+                'prerequisites' => $card['prerequisites'],
+            ],
+        ];
+        if ($card['state'] === 'locked') {
+            // The one place a free admin meets a Pro design: a link to see it, never to buy it here.
+            $entry['preview_url'] = 'https://wconvert.io/templates/' . rawurlencode((string) $card['slug']) . '/?utm_source=plugin&utm_medium=picker&utm_campaign=pro-design';
+        }
+        return $entry;
+    }
+
+    private function reasonFor(string $id, int $revision): string
+    {
+        foreach ($this->catalog?->withdrawn() ?? [] as $row) {
+            if ($row['id'] === $id && ($row['revision'] === null || $row['revision'] === $revision)) return $row['reason'];
+        }
+        return 'other';
     }
 
     /**
      * The designs themselves, for the cards on screen.
      *
-     * **Only registered entries.** A locked design has no tree by construction,
+     * **Only registered entries.** A hosted design has no local tree until it is installed,
      * so asking for one is not an error to report — it is simply absent from
      * the answer, and the card that asked keeps its skeleton and then its
      * *"See this design"* link. An id this install never shipped behaves
@@ -255,11 +324,9 @@ final class TemplateController implements RestController
     /**
      * One card's worth of an entry — everything but the design itself.
      *
-     * `preview_url` travels only where there is one, which is only on a locked
-     * card: it is where *"See this design"* goes, and it is the whole substitute
-     * for a preview a free install cannot render. A `ready` card renders the
-     * real design instead, which is what ADR 0010 means by there being no
-     * thumbnails anywhere in this flow.
+     * A local card renders the real design; only a hosted card carries a
+     * thumbnail ({@see self::remoteEntry()}), because there is no tree here to
+     * render (ADR 0156, amending ADR 0010).
      *
      * @param array<string, mixed> $entry
      * @return array<string, mixed>
@@ -274,11 +341,8 @@ final class TemplateController implements RestController
             'tier' => $entry['tier'],
             'availability' => $availability->value,
             'facets' => $entry['facets'],
+            'revision' => $entry['revision'] ?? 1,
         ];
-
-        if (is_string($entry['preview_url'] ?? null)) {
-            $card['preview_url'] = $entry['preview_url'];
-        }
 
         return $card;
     }

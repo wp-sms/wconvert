@@ -36,13 +36,11 @@ final class TemplateLibrary
 {
     /**
      * @param array<string, array<string, mixed>> $templates Registered designs, with trees.
-     * @param array<string, array<string, mixed>> $locked Designs this install did not get, as metadata.
      * @param list<Rejection> $rejections
      */
     private function __construct(
         private readonly TemplateVocabulary $vocabulary,
         private readonly array $templates,
-        private readonly array $locked = [],
         private readonly array $rejections = [],
         private readonly ?\Closure $build = null,
     ) {
@@ -64,23 +62,23 @@ final class TemplateLibrary
      */
     public static function deferred(TemplateVocabulary $vocabulary, \Closure $build): self
     {
-        return new self($vocabulary, [], [], [], $build);
+        return new self($vocabulary, [], [], $build);
     }
 
     /**
-     * The library this install ships: the bundled designs, and the metadata for
-     * the ones it did not get.
+     * The library this install ships: the bundled designs.
      *
      * The convenience constructor over {@see self::from()}, kept because it is
      * what the container and every test calls and because "one ZIP" is still
      * the common case. What changed under it is that the glob is now one
      * {@see TemplateSource} among several rather than the only one there can be
-     * — [[Pro]] composes its own beside these, and the fetched index will
-     * compose a third (ADR 0043).
+     * — [[Pro]] composes its own beside these, and installed downloads are a
+     * third (ADR 0043, ADR 0156). A design this install did not get is no
+     * longer a bundled stub: it is a catalogue entry ({@see Catalog\TemplateCatalog}).
      */
     public static function fromDirectory(TemplateVocabulary $vocabulary, string $pluginDir = WCONVERT_DIR): self
     {
-        return self::from($vocabulary, new BundledTemplates($pluginDir), new LockedTemplates($pluginDir));
+        return self::from($vocabulary, new BundledTemplates($pluginDir));
     }
 
     /**
@@ -99,38 +97,30 @@ final class TemplateLibrary
      * index can deliver **content and never capability**, which is the
      * constraint issue #7 recorded.
      *
-     * **Order decides collisions, and only among entries of the same kind.**
-     * The first source to claim an id keeps it and a later claim is a
-     * {@see RejectionReason::DuplicateId} — a second entry silently replacing
-     * the first is a gallery that lost a card with nothing to read. Locked
-     * metadata is not in that contest: a stub whose id a real entry holds is
-     * simply never returned ({@see self::locked()}), because that is a Pro
-     * install seeing the design rather than the advertisement for it.
+     * **Order decides collisions of id.** The first source to claim an id
+     * keeps it and a later claim is a {@see RejectionReason::DuplicateId} — a
+     * second entry silently replacing the first is a gallery that lost a card
+     * with nothing to read.
+     *
+     * **The highest revision decides which copy of a DESIGN is current**
+     * (ADR 0156). Bundled, Pro's and installed copies of one design share a
+     * `design_key` and carry distinct ids, so every revision stays resolvable
+     * for source baselines while exactly one — the highest, the first source
+     * on a tie — is `catalog_current` and offered to new campaigns. That
+     * replaces "first source wins", which let a stale bundled copy hide a
+     * newer download.
      */
     public static function from(TemplateVocabulary $vocabulary, TemplateSource ...$sources): self
     {
         $templates = [];
-        $locked = [];
         $rejections = [];
 
         foreach ($sources as $source) {
             foreach ($source->entries() as $candidate) {
                 $id = is_string($candidate['id'] ?? null) ? $candidate['id'] : '';
 
-                if ($id === '') {
-                    $rejections[] = new Rejection('', RejectionReason::Malformed);
-                    continue;
-                }
-
-                // **No `tree` is the whole discriminator.** A candidate with no
-                // tree is a design this install did not get, and the card for
-                // it is bundled metadata pointing at a live preview on
-                // wconvert.io ({@see LockedTemplates}).
-                if (!is_array($candidate['tree'] ?? null)) {
-                    if (!isset($locked[$id])) {
-                        $locked[$id] = self::stub($id, $candidate, $vocabulary);
-                    }
-
+                if ($id === '' || !is_array($candidate['tree'] ?? null)) {
+                    $rejections[] = new Rejection($id, RejectionReason::Malformed);
                     continue;
                 }
 
@@ -151,15 +141,24 @@ final class TemplateLibrary
             }
         }
 
+        $current = [];
+        foreach ($templates as $id => $entry) {
+            $key = $entry['design_key'];
+            if (!isset($current[$key]) || $entry['revision'] > $templates[$current[$key]]['revision']) $current[$key] = $id;
+        }
+        foreach ($templates as $id => &$entry) {
+            $entry['catalog_current'] = $current[$entry['design_key']] === $id;
+        }
+        unset($entry);
+
         ksort($templates);
-        ksort($locked);
         usort($rejections, static fn (Rejection $a, Rejection $b): int => strcmp($a->id, $b->id));
 
         foreach ($rejections as $rejection) {
             $rejection->warn(__METHOD__);
         }
 
-        return new self($vocabulary, $templates, $locked, $rejections);
+        return new self($vocabulary, $templates, $rejections);
     }
 
     /**
@@ -175,33 +174,6 @@ final class TemplateLibrary
         }
 
         return $this->templates;
-    }
-
-    /**
-     * The designs this install did not get, keyed by id — metadata only, never
-     * a tree.
-     *
-     * **A stub whose id a registered entry already holds is not returned**, and
-     * that one line is how a [[Pro]] install stops seeing upsell cards. Pro
-     * registers the real designs through the same {@see TemplateSource} seam,
-     * so the id collides and the advertisement drops out — rather than a tier
-     * check on a surface, which is the thing that eventually shows a paying
-     * customer an advertisement for what they bought (ADR 0026).
-     *
-     * Kept out of {@see self::all()} on purpose. Everything that reads `all()`
-     * — {@see self::snapshotInto()}, {@see \WConvert\Playbook\PlaybookLibrary},
-     * the prefill path — wants a design it can render, and a stub is not one.
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    public function locked(): array
-    {
-        $loaded = $this->materialized();
-        if ($loaded !== $this) {
-            return $loaded->locked();
-        }
-
-        return array_diff_key($this->locked, $this->templates);
     }
 
     /**
@@ -424,51 +396,11 @@ final class TemplateLibrary
             'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields(), $normalized['tokens']),
             'tree' => $normalized['tree'],
             'tokens' => $normalized['tokens'],
-        ] + (isset($decoded['design_key']) ? ['design_key' => $decoded['design_key']] : []) + (isset($decoded['catalog_current']) ? ['catalog_current' => $decoded['catalog_current'] === true] : []);
-    }
-
-    /**
-     * One design this install did not get, as the card for it.
-     *
-     * ========================================================================
-     * ITS FACETS ARE AUTHORED, WHICH IS THE ONE PLACE THEY CAN BE.
-     * ========================================================================
-     * Everywhere else a facet is derived from a tree so it cannot drift
-     * ({@see TemplateFacets}) — and this is the entry that has no tree, because
-     * shipping premium trees in the free ZIP and refusing the save is trialware
-     * (issue #7). So the facets are written into `locked.json` beside the name.
-     *
-     * They are still **normalised against the manifest**, which is what stops
-     * that exception from becoming a hole: a stub claiming a `shape` no layout
-     * declares or a `captures` no field kind declares would draw a chip nothing
-     * in this admin can name, and it is dropped here instead. The values that
-     * survive are exactly the ones the picker's own chip strip enumerates.
-     *
-     * `preview_url` is where *"See this design"* goes, and it is the whole
-     * substitute for a preview: no tree, no thumbnail, no image of any kind, so
-     * ADR 0010's *no static thumbnails anywhere* survives intact. Admin-side
-     * links to your own site are explicitly welcomed by wp.org Guideline 10.
-     *
-     * @param array<string, mixed> $decoded
-     * @return array<string, mixed>
-     */
-    private static function stub(string $id, array $decoded, TemplateVocabulary $vocabulary): array
-    {
-        $url = $decoded['preview_url'] ?? null;
-
-        return [
-            'id' => $id,
-            'name' => is_string($decoded['name'] ?? null) ? $decoded['name'] : $id,
-            'display_type' => is_string($decoded['display_type'] ?? null) ? $decoded['display_type'] : 'popup',
-            // A stub exists BECAUSE it is premium, so the default is premium.
-            // The stub's own availability does not depend on this — a stub is
-            // `locked` by construction, because it has no tree
-            // ({@see \WConvert\Rest\TemplateController}) — so what the tier
-            // decides is which tier the upsell card NAMES. Every stub free
-            // ships declares its own.
-            'tier' => self::tierOf($decoded, Tier::Pro),
-            'facets' => TemplateFacets::authored($decoded['facets'] ?? null, $vocabulary->facets()),
-            'preview_url' => is_string($url) && $url !== '' ? $url : null,
+            // Which copy of a design this is, and the design it is a copy of
+            // (ADR 0156). Every source supplies both; a bare entry — a test,
+            // an import — is revision 1 of itself.
+            'revision' => is_int($decoded['revision'] ?? null) && $decoded['revision'] >= 1 ? $decoded['revision'] : 1,
+            'design_key' => is_string($decoded['design_key'] ?? null) ? $decoded['design_key'] : 'registered:' . $id,
         ];
     }
 

@@ -75,7 +75,6 @@ final class OccasionRoutesTest extends TestCase
             $this->templates,
             new \WConvert\Template\BundledTemplates(self::PLUGIN_DIR),
             new \WConvert\Pro\Template\ProTemplates(self::PLUGIN_DIR . '/pro'),
-            new \WConvert\Template\LockedTemplates(self::PLUGIN_DIR),
         );
 
         $this->optins = new OptinRepository($this->db = new FakeConnection(), $published, $vocabulary, new MilestoneStore($milestones));

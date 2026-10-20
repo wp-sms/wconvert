@@ -263,7 +263,6 @@ final class AgentCampaignInput
             if (!$this->builder->displayTypeRuns((string) ($entry['display_type'] ?? 'popup'))) return self::needsPro();
             return $entry;
         }
-        if (isset($this->library->locked()[$id])) return self::needsPro();
         return Reply::refused(__('That design is not on this site. Use a design_id from wconvert/find-designs.', 'wconvert'), 'wconvert_agent_unknown_design');
     }
 

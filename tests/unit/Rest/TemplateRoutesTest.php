@@ -210,7 +210,7 @@ final class TemplateRoutesTest extends TestCase
      * ==========================================================================
      * Shipping the tree and refusing the save is trialware (issue #7), and a
      * gallery of padlocks reads the same way to wp.org's reviewers (ADR 0116).
-     * `locked.json` is still bundled; a free install's payload never carries it.
+     * Without the hosted catalogue, a free install has no Pro design to name.
      */
     public function testAFreeInstallIsSentNoLockedDesign(): void
     {
@@ -220,28 +220,82 @@ final class TemplateRoutesTest extends TestCase
     }
 
     /**
-     * A paid install still sees a stub's card — a name, its facets and a link to
-     * a live preview on wconvert.io — and never the design. A stub is `locked`
-     * by construction, because it has no tree.
+     * A hosted catalogue with one Free and one Pro design, read by a
+     * controller on an install of `$tier`.
+     *
+     * @return array<string, array<string, mixed>> cards by id
      */
-    public function testAPaidInstallIsOfferedLockedCardsWithSomewhereToGo(): void
+    private static function hostedCards(Tier $tier, bool $hints, ?\Closure $publish = null): array
     {
-        $locked = array_values(array_filter(self::cards(Tier::Pro), static fn (array $c): bool => $c['availability'] === 'locked'));
-
-        $this->assertNotSame([], $locked, 'a paid install is shown no locked stub');
-
-        foreach ($locked as $card) {
-            $this->assertSame('pro', $card['tier']);
-            $this->assertArrayNotHasKey('tree', $card);
-            // Fullscreen (ADR 0098), decision-support and contextual enquiry
-            // designs have no published marketing pages yet. Their cards
-            // stay informational; never invent a preview URL for this test.
-            if (in_array($card['id'], ['accessory-workbench', 'basket-companion', 'cart-accessories', 'cart-additions', 'coffee-finder-board', 'fullscreen-editorial', 'fullscreen-split', 'fullscreen-poster', 'gift-edit', 'space-planner', 'kit-workbench', 'service-directory', 'project-route', 'reading-path', 'slide-in-question', 'session-card', 'split-notice', 'margin-note', 'sample-envelope', 'availability-note', 'inline-signpost', 'callback-slip', 'launch-index', 'conversation-note', 'exhibition-wall', 'after-hours', 'gift-orbit', 'bloom-postcard'], true)) {
-                $this->assertEmpty($card['preview_url'] ?? null);
-            } else {
-                $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');
-            }
+        $directory = sys_get_temp_dir() . '/wconvert-hosted-' . bin2hex(random_bytes(6));
+        $http = new \WConvert\Tests\Unit\Template\Catalog\FakeCatalogTransport();
+        $service = new \WConvert\Tests\Unit\Template\Catalog\CatalogFixture($http);
+        $service->design('resources/templates/library/reading-slip.json', 'hosted-reading', 1, [], ['thumb' => str_repeat('c', 64)]);
+        $service->design('pro/modules/display-types/templates/availability-note.json', 'hosted-note', 1, [], ['thumb' => str_repeat('d', 64), 'slug' => 'availability-note']);
+        $service->design('resources/templates/library/reading-slip.json', 'reading-slip', 5);
+        if ($publish !== null) $publish($service);
+        $service->publish();
+        $options = new FakeOptionStore();
+        $options->set(\WConvert\Template\Catalog\TemplateCatalog::SOURCE_OPTION, \WConvert\Tests\Unit\Template\Catalog\CatalogFixture::SOURCE);
+        $options->set(\WConvert\Template\Catalog\TemplateCatalog::CONSENT_OPTION, 'yes');
+        $GLOBALS['wconvertTestTransients'] = [];
+        $GLOBALS['wconvertTestCapabilities'] = $hints ? ['install_plugins'] : [];
+        $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
+        $validator = new \WConvert\Template\Catalog\PackValidator(\WConvert\Template\TemplateManifest::load(), $vocabulary, $tier);
+        $catalog = new \WConvert\Template\Catalog\TemplateCatalog($options, $http, $validator,
+            new \WConvert\Template\Catalog\DesignArchive($directory, $validator, 'secret'), $tier, static fn (): array => ['reading-slip' => 1]);
+        try {
+            $catalog->refresh();
+            $data = (new TemplateController(TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR), $vocabulary, new FakeProPresence($tier), null, $catalog))->index()->get_data();
+        } finally {
+            $GLOBALS['wconvertTestCapabilities'] = [];
+            exec('rm -rf ' . escapeshellarg($directory));
         }
+        self::assertIsArray($data);
+        return array_column($data['templates'], null, 'id') + ['_withdrawn' => (array) $data['withdrawn']];
+    }
+
+    /**
+     * ==========================================================================
+     * FREE MEETS A PRO DESIGN ONLY AS A LOCKED IMAGE CARD (ADR 0156).
+     * ==========================================================================
+     * A server thumbnail, the plan's name and a link to wconvert.io — never a
+     * tree, never Apply — and only for someone who could install Pro. Without
+     * the hint conditions the card is not sent at all (ADR 0147's gate).
+     */
+    public function testAFreeInstallSeesAProDesignOnlyAsALockedImageCard(): void
+    {
+        $cards = self::hostedCards(Tier::Free, true);
+        $locked = $cards['remote:hosted-note'];
+        $this->assertSame('locked', $locked['availability']);
+        $this->assertArrayNotHasKey('tree', $locked);
+        $this->assertSame('https://catalog.example/v3/thumbs/' . str_repeat('d', 64) . '.webp', $locked['remote']['thumbnail']['1x']);
+        $this->assertStringStartsWith('https://wconvert.io/templates/availability-note/', $locked['preview_url']);
+        $this->assertSame('install', $cards['remote:hosted-reading']['remote']['state']);
+        $this->assertSame('ready', $cards['remote:hosted-reading']['availability']);
+
+        $this->assertArrayNotHasKey('remote:hosted-note', self::hostedCards(Tier::Free, false), 'No hint, no card');
+        $pro = self::hostedCards(Tier::Pro, true);
+        $this->assertSame('ready', $pro['remote:hosted-note']['availability'], 'A Pro install installs it instead');
+        $this->assertSame('install', $pro['remote:hosted-note']['remote']['state']);
+    }
+
+    /** A hosted revision above the bundled one is a line on the bundled card, not a second card. */
+    public function testANewerHostedRevisionIsALineOnTheLocalCard(): void
+    {
+        $cards = self::hostedCards(Tier::Free, false);
+        $this->assertArrayNotHasKey('remote:reading-slip', $cards);
+        $this->assertSame(5, $cards['reading-slip']['newer_revision']['revision']);
+    }
+
+    /** A withdrawn design leaves the gallery; its local copy is named for the editor's notice. */
+    public function testAWithdrawnBundledDesignLeavesTheGalleryAndIsNamed(): void
+    {
+        $cards = self::hostedCards(Tier::Free, false, static function ($service): void {
+            $service->withdrawn = [['id' => 'reading-slip', 'reason' => 'rights']];
+        });
+        $this->assertArrayNotHasKey('reading-slip', $cards);
+        $this->assertSame('rights', $cards['_withdrawn']['reading-slip']);
     }
 
     /** Every design free actually ships is `ready` — never `unavailable`. */
@@ -269,40 +323,10 @@ final class TemplateRoutesTest extends TestCase
         }
     }
 
-    /**
-     * ==========================================================================
-     * A PAYING CUSTOMER IS NEVER SHOWN AN ADVERTISEMENT FOR WHAT THEY BOUGHT.
-     * ==========================================================================
-     * On this install Pro is loaded and ships nothing, which is the harder half
-     * of the case: a stub whose real design is still absent must stay `locked`
-     * rather than resolving to `ready` and drawing a card with no tree behind
-     * it. The upsell disappears when Pro REGISTERS the design, by id collision,
-     * and not when a licence flag flips.
-     */
-    public function testALoadedProDoesNotResolveAStubItDidNotShip(): void
+    /** Interleaved by design, so a hosted design is not an advertisement at the bottom. */
+    public function testCardsSitInDesignOrder(): void
     {
-        $stubs = 0;
-
-        foreach (self::cards(true) as $card) {
-            if ($card['tier'] === 'free') {
-                continue;
-            }
-
-            $stubs++;
-
-            $this->assertSame('locked', $card['availability'], $card['id'] . ' resolved ready with no design behind it');
-        }
-
-        // The loop above asserted nothing at all when the cards moved tier and
-        // the filter still named the old one — a vacuous pass on the exact
-        // claim this test exists to make. It cannot go quiet again.
-        $this->assertGreaterThan(0, $stubs, 'no premium card reached the assertion');
-    }
-
-    /** Interleaved, so a premium design is not an advertisement at the bottom. */
-    public function testLockedCardsSitInOrderWithTheRest(): void
-    {
-        $ids = array_column(self::cards(), 'id');
+        $ids = array_column(self::cards(), 'design_key');
         $sorted = $ids;
         sort($sorted);
 

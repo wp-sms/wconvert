@@ -69,7 +69,6 @@ final class AgentSite
         $milestones = new FakeOptionStore();
         $sources = [new \WConvert\Template\BundledTemplates(self::PLUGIN_DIR)];
         if ($tier !== Tier::Free) $sources[] = new \WConvert\Pro\Template\ProTemplates(self::PLUGIN_DIR . '/pro');
-        $sources[] = new \WConvert\Template\LockedTemplates(self::PLUGIN_DIR);
         $this->library = TemplateLibrary::from($this->templates, ...$sources);
 
         $this->optins = new OptinRepository($this->db = new FakeConnection(), $published, $this->rules, new MilestoneStore($milestones));

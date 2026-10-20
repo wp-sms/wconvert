@@ -19,7 +19,6 @@ use WConvert\Support\SiteDependency;
 use WConvert\Support\SitePresence;
 use WConvert\Support\Tier;
 use WConvert\Template\BundledTemplates;
-use WConvert\Template\LockedTemplates;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
@@ -130,14 +129,10 @@ final class ProServiceProvider implements ServiceProvider
          * Pro exists. The import runs Pro → free, which is the one direction
          * ADR 0028 allows.
          *
-         * **`LockedTemplates` stays LAST, and the order is the point.** A stub
-         * whose id a registered entry already holds is dropped by
-         * `TemplateLibrary::locked()`, which is how ADR 0026's *"a paying
-         * customer is never shown an advertisement for what they bought"* falls
-         * out of the id rather than out of a tier test somebody has to
-         * remember. Free's own bundled designs stay in the list because Pro
-         * ships free's gallery too — a Pro install has every popup and inline
-         * design free has, plus these.
+         * Free's own bundled designs stay in the list because Pro ships free's
+         * gallery too — a Pro install has every popup and inline design free
+         * has, plus these. Installed downloads come last; which copy of a
+         * design is current is decided by revision, not by order (ADR 0156).
          */
         $container->register(
             TemplateLibrary::class,
@@ -150,8 +145,7 @@ final class ProServiceProvider implements ServiceProvider
                         $vocabulary,
                         new BundledTemplates(WCONVERT_DIR),
                         new ProTemplates(WCONVERT_PRO_DIR),
-                        new LockedTemplates(WCONVERT_DIR),
-                        $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class),
+                        $c->resolve(\WConvert\Template\Catalog\DesignArchive::class),
                     )
                 );
             }
@@ -169,7 +163,7 @@ final class ProServiceProvider implements ServiceProvider
                     WCONVERT_DIR,
                     array_merge(
                         (new \WConvert\Pro\Template\ProPlaybooks(WCONVERT_PRO_DIR))->entries(),
-                        $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class)->playbooks()
+                        $c->resolve(\WConvert\Template\Catalog\DesignArchive::class)->playbooks()
                     )
                 )
             )
