@@ -1,0 +1,660 @@
+{
+  "schema": 1,
+  "batch": "expressive-directions",
+  "setups": [
+    {
+      "id": "seasonal-sunshine",
+      "revision": "430a2c508ae5896f57fceb43140a0898e3b79669a8fcd91d3edeb3780ccc1980",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-320.png",
+          "sha256": "42b20139517fbc18d40373ccdb708a3e663a8e6148830ea8458e160bd946753f"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-390.png",
+          "sha256": "ef16ad9bacf6ec2480b4306c9742b6cf67bda9513c426ffb387790a146b08a38"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-768.png",
+          "sha256": "4b86c5768e057f23bab514e564994ecd5b862ee8c669d2686e7b58ba7cc8d417"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-1440.png",
+          "sha256": "ed4cc02e1f46c6281d87d0a66ceed866c93b0c733c634c80b117015a38e6f7d5"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-native-320-0.png",
+          "sha256": "8dae7538e433dcb18098dd7dc3e54f1019a0dc14565239114dcba4d7aa8290f1"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-native-1280-0.png",
+          "sha256": "5a38b86f9700bc6ea8c27b375c67ac51503efe21855f0d88405152750f6f0695"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-320.png",
+          "sha256": "42b20139517fbc18d40373ccdb708a3e663a8e6148830ea8458e160bd946753f"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-390.png",
+          "sha256": "ef16ad9bacf6ec2480b4306c9742b6cf67bda9513c426ffb387790a146b08a38"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-768.png",
+          "sha256": "4b86c5768e057f23bab514e564994ecd5b862ee8c669d2686e7b58ba7cc8d417"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-1440.png",
+          "sha256": "ed4cc02e1f46c6281d87d0a66ceed866c93b0c733c634c80b117015a38e6f7d5"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-native-320-1.png",
+          "sha256": "baab58f74bda1c83337986fc01ae464785137be99893ed1e5b1a29fe4a1ea6e0"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/seasonal-sunshine-native-1280-1.png",
+          "sha256": "3e50020ee80166e531b8ef012ebe3733616fb509f7c9621e7b478242e0ea79d4"
+        }
+      ]
+    },
+    {
+      "id": "listening-night-invitation",
+      "revision": "416d2c9fe6ec0e3a63b0e62a19de353f708d4f94148201a66bd4d1d58f75228b",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/listening-night-invitation-320.png",
+          "sha256": "8bc101171c1f4d5cb24aebf9f933fc6b2cea4c012cd9a7876894980031d10419"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/listening-night-invitation-390.png",
+          "sha256": "c2b1b2df461c7a27b2884ba692c34805a62e43ddac72fcfb4cd0f8e3e8c0f5c1"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/listening-night-invitation-768.png",
+          "sha256": "576f5581e69c49627d49caedf8abcc9d228445e551647f82e60c7ced6d1ace53"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/listening-night-invitation-1440.png",
+          "sha256": "dda32a98b82d04c8dcfeadb9ec7c922310c6b7b44351a5d5f2423d349ce245cc"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/listening-night-invitation-native-320-0.png",
+          "sha256": "63b751707f84df900c2490b823b59c10d4c45defdc12f0e913573cb26a022ad5"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/listening-night-invitation-native-1280-0.png",
+          "sha256": "9755a250a1eb41fa18931522391fa61e7d75be451b7f4ba15d96977bc4745f9d"
+        }
+      ]
+    },
+    {
+      "id": "slower-outdoor-guide",
+      "revision": "f6bb433c160bc896bc9878bbe4cb54cf6b4d0a8e9d5dbcdf355448174da037d6",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-320.png",
+          "sha256": "542323e5da3b89ce80020fbda37550220343d7c8442ce7c4403ef7dfbc998e94"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-390.png",
+          "sha256": "ad39987aa86cf1b2229f09579cb917ccd4b2b90934d6db33fda9735ff235874b"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-768.png",
+          "sha256": "7bbbd88e7f585e59381eeea3dc7bcbb9e091ec3d8076319b2671d268d1d46d16"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-1440.png",
+          "sha256": "14c012c710945995902cc2714ba2e6192ba59f7ae4123a9277663e20e35152f4"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-native-320-0.png",
+          "sha256": "6698c0a047c5069fada75322bb3a09a2716effc5ff3e514b0968c78a0e47f5f2"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-native-1280-0.png",
+          "sha256": "f99abe13c1f219e05be623a42a8b229a74310ea04a3643f00e346044344fe29d"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-320.png",
+          "sha256": "542323e5da3b89ce80020fbda37550220343d7c8442ce7c4403ef7dfbc998e94"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-390.png",
+          "sha256": "ad39987aa86cf1b2229f09579cb917ccd4b2b90934d6db33fda9735ff235874b"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-768.png",
+          "sha256": "7bbbd88e7f585e59381eeea3dc7bcbb9e091ec3d8076319b2671d268d1d46d16"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-1440.png",
+          "sha256": "14c012c710945995902cc2714ba2e6192ba59f7ae4123a9277663e20e35152f4"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-native-320-1.png",
+          "sha256": "b6d18435aef86bf307953ee6b413dbac9e4779fcd2891f8d5fd774a19fb78868"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-native-1280-1.png",
+          "sha256": "ffad18871909cbfde329fb7567ac22327baf7cebab924a57559048132422a589"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-320.png",
+          "sha256": "542323e5da3b89ce80020fbda37550220343d7c8442ce7c4403ef7dfbc998e94"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-390.png",
+          "sha256": "ad39987aa86cf1b2229f09579cb917ccd4b2b90934d6db33fda9735ff235874b"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-768.png",
+          "sha256": "7bbbd88e7f585e59381eeea3dc7bcbb9e091ec3d8076319b2671d268d1d46d16"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-1440.png",
+          "sha256": "14c012c710945995902cc2714ba2e6192ba59f7ae4123a9277663e20e35152f4"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-native-320-2.png",
+          "sha256": "ba956c25eb2b8b880bed7be11316814a9348c5d0492fed9949ce2d7907ddb504"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/slower-outdoor-guide-native-1280-2.png",
+          "sha256": "746fd183343da693f11f60aab08963bc265d473cfd7e5f02a0694c5ffbbe4ffd"
+        }
+      ]
+    },
+    {
+      "id": "thoughtful-gift-direction",
+      "revision": "503f8acc7f63ce50be77f5efa0e1f64791b7ac38a3be581c907bdb4accfb66bb",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "interests",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-320.png",
+          "sha256": "29c5e853a400f83a32c7d9681c913925bde503920203ed9ca552df1dfe149551"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "interests",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-390.png",
+          "sha256": "ce916f6d3996e44625e07735e1c09be43a01fa0b884221917a029f5edb6eeab9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "interests",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-768.png",
+          "sha256": "4d3adde09d33ac24e977fe18837884924baad3633f38a44c38e8533d5e6c1bca"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "interests",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-1440.png",
+          "sha256": "09d5b658fecb236f246e7e82c05919b521136af4f7d3b21dd1f6277cdbf5335b"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "interests",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-320-0.png",
+          "sha256": "c7610dfae5d5cf4cc940ac612828b35e87cca64b7fdcdcdf03b332ed2ceef662"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "interests",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-1280-0.png",
+          "sha256": "9308d7e5b9a80c661d61a8001d3d45fe0b95d7843b39a6f551d79dcb5cbf7abf"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "direction",
+          "result": "slow",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-320.png",
+          "sha256": "29c5e853a400f83a32c7d9681c913925bde503920203ed9ca552df1dfe149551"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "direction",
+          "result": "slow",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-390.png",
+          "sha256": "ce916f6d3996e44625e07735e1c09be43a01fa0b884221917a029f5edb6eeab9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "direction",
+          "result": "slow",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-768.png",
+          "sha256": "4d3adde09d33ac24e977fe18837884924baad3633f38a44c38e8533d5e6c1bca"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "direction",
+          "result": "slow",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-1440.png",
+          "sha256": "09d5b658fecb236f246e7e82c05919b521136af4f7d3b21dd1f6277cdbf5335b"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "direction",
+          "result": "slow",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-320-1-slow.png",
+          "sha256": "5e2307c2497c4a328cef3eb9e874bd4722af1985031d4a27f0c3cad10401298a"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "direction",
+          "result": "slow",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-1280-1-slow.png",
+          "sha256": "21d557e8c29030daddab44a972dd708b3b116ebcf7f1db43d9286067c5e49f1d"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "direction",
+          "result": "make",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-320.png",
+          "sha256": "29c5e853a400f83a32c7d9681c913925bde503920203ed9ca552df1dfe149551"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "direction",
+          "result": "make",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-390.png",
+          "sha256": "ce916f6d3996e44625e07735e1c09be43a01fa0b884221917a029f5edb6eeab9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "direction",
+          "result": "make",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-768.png",
+          "sha256": "4d3adde09d33ac24e977fe18837884924baad3633f38a44c38e8533d5e6c1bca"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "direction",
+          "result": "make",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-1440.png",
+          "sha256": "09d5b658fecb236f246e7e82c05919b521136af4f7d3b21dd1f6277cdbf5335b"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "direction",
+          "result": "make",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-320-1-make.png",
+          "sha256": "a156ab0b98415c71dc507f816a64b8507b05e2e13548db9769cae96939e46b84"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "direction",
+          "result": "make",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-1280-1-make.png",
+          "sha256": "4e59ae4417c77cc88f24eee587062d90215a6aa7465e27d7689d0773b0a8bf88"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "direction",
+          "result": "outside",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-320.png",
+          "sha256": "29c5e853a400f83a32c7d9681c913925bde503920203ed9ca552df1dfe149551"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "direction",
+          "result": "outside",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-390.png",
+          "sha256": "ce916f6d3996e44625e07735e1c09be43a01fa0b884221917a029f5edb6eeab9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "direction",
+          "result": "outside",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-768.png",
+          "sha256": "4d3adde09d33ac24e977fe18837884924baad3633f38a44c38e8533d5e6c1bca"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "direction",
+          "result": "outside",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-1440.png",
+          "sha256": "09d5b658fecb236f246e7e82c05919b521136af4f7d3b21dd1f6277cdbf5335b"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "direction",
+          "result": "outside",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-320-1-outside.png",
+          "sha256": "10deca475301f850ac149af4834ab829d2e5cb0e882e7a9359fc3adc732ffb14"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "direction",
+          "result": "outside",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-1280-1-outside.png",
+          "sha256": "03d8fc4f30841fb2916df51477d698dbd7bfaeb8a4c6aff7b829d7ff563034c0"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "direction",
+          "result": "fallback",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-320.png",
+          "sha256": "29c5e853a400f83a32c7d9681c913925bde503920203ed9ca552df1dfe149551"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "direction",
+          "result": "fallback",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-390.png",
+          "sha256": "ce916f6d3996e44625e07735e1c09be43a01fa0b884221917a029f5edb6eeab9"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "direction",
+          "result": "fallback",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-768.png",
+          "sha256": "4d3adde09d33ac24e977fe18837884924baad3633f38a44c38e8533d5e6c1bca"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "direction",
+          "result": "fallback",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-1440.png",
+          "sha256": "09d5b658fecb236f246e7e82c05919b521136af4f7d3b21dd1f6277cdbf5335b"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "direction",
+          "result": "fallback",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-320-1-fallback.png",
+          "sha256": "99bbbe62b9e2a8c6712889ebe9bac8f0221e0eee1decbe9f2ae3f617d2d0afba"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "direction",
+          "result": "fallback",
+          "path": "docs/reviews/expressive-directions-2026-10-20/thoughtful-gift-direction-native-1280-1-fallback.png",
+          "sha256": "8ac8243a5e16b8fc4098c6a1b37b1a28bc602f35a03cc103707e8329e119ea14"
+        }
+      ]
+    },
+    {
+      "id": "night-sky-letter",
+      "revision": "5056a27ea45598a862d5ba30dd114b0e08c338adc3bc8d17c3f554a53a866296",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-320.png",
+          "sha256": "769a3a0b9eafda678d2147b396c07425070ba2fe796c09a082252d3365fc1bea"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-390.png",
+          "sha256": "dfa4d2ddd76d7422cdb437c27647d9fd864e7bde42df32ab2fedcc11ac6762c7"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-768.png",
+          "sha256": "41a8ee7096c77481ff1e6bff3d86e40994767fd54881f59019b1f7eb33397a40"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-1440.png",
+          "sha256": "6262598e8804acf96828d2f3625227a9cb264f8aa37743a2bccf6d61a28f09c2"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-native-320-0.png",
+          "sha256": "9d2b02522b0ffa1d5cd119acc91780a914ea0d09372c893a9d12968ca70552b0"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "details",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-native-1280-0.png",
+          "sha256": "ead26e55383468d31c3dbbc48088106b168ba34da1ab223c54f6506895487eb7"
+        },
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-320.png",
+          "sha256": "769a3a0b9eafda678d2147b396c07425070ba2fe796c09a082252d3365fc1bea"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-390.png",
+          "sha256": "dfa4d2ddd76d7422cdb437c27647d9fd864e7bde42df32ab2fedcc11ac6762c7"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-768.png",
+          "sha256": "41a8ee7096c77481ff1e6bff3d86e40994767fd54881f59019b1f7eb33397a40"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-1440.png",
+          "sha256": "6262598e8804acf96828d2f3625227a9cb264f8aa37743a2bccf6d61a28f09c2"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-native-320-1.png",
+          "sha256": "7b735779e8461687046c6f7e7020fdbe996e4ed38c107e1da39e0ca5ecff7d33"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "received",
+          "path": "docs/reviews/expressive-directions-2026-10-20/night-sky-letter-native-1280-1.png",
+          "sha256": "a8413dd95b43a0fd215d595698692a7532f7029353afd3f3e04cabcd5ec5fc95"
+        }
+      ]
+    },
+    {
+      "id": "flower-workshop-invitation",
+      "revision": "79883b2bb93bf6497a663b67b60353ca562fc25a45000b6a39a66b865f7a6c17",
+      "judgement": "All authored screens inspected at four studio widths and native desktop/phone. Distinct composition and practical judgement recorded in review.md.",
+      "captures": [
+        {
+          "surface": "studio",
+          "width": 320,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/flower-workshop-invitation-320.png",
+          "sha256": "9836c2b17f570f129a98edc9e98f2a9d4ed94e20296c6329ab5ec567cb7c0718"
+        },
+        {
+          "surface": "studio",
+          "width": 390,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/flower-workshop-invitation-390.png",
+          "sha256": "4bf6b0e5144939a0c56adcc411218541601bfbc07f53351a5b232d0d2ada02fe"
+        },
+        {
+          "surface": "studio",
+          "width": 768,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/flower-workshop-invitation-768.png",
+          "sha256": "4abe476a69250857619813bb5258f90725073c6ca914377071818673d140ac05"
+        },
+        {
+          "surface": "studio",
+          "width": 1440,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/flower-workshop-invitation-1440.png",
+          "sha256": "52da0715ccb93958c7ee94ad6d844b1da911169c1c27b1d55e4f3705e531b248"
+        },
+        {
+          "surface": "wordpress",
+          "width": 320,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/flower-workshop-invitation-native-320-0.png",
+          "sha256": "eae7eda616840a23530d42624d506abfd099ac2f3a4b65d6d8a9a8bb7d5de4e5"
+        },
+        {
+          "surface": "wordpress",
+          "width": 1280,
+          "screen": "invitation",
+          "path": "docs/reviews/expressive-directions-2026-10-20/flower-workshop-invitation-native-1280-0.png",
+          "sha256": "ae9051d597174149eb357ef186539c92df0ecd8a1d637858662a26626648f496"
+        }
+      ]
+    }
+  ]
+}

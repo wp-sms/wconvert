@@ -45,7 +45,7 @@ final class BundledTemplates implements TemplateSource
             $decoded = JsonFile::read($file);
 
             if ($decoded !== null) {
-                $entries[] = $decoded;
+                $entries[] = BundledArtwork::forSite($decoded, $this->pluginDir, defined('WCONVERT_URL') ? WCONVERT_URL : '');
             }
         }
 

@@ -3898,6 +3898,162 @@
         ],
         "reason": "A gallery wall: large two-line exhibition title, panoramic original still life and a separate caption/action rail below. Neither a form split nor text placed over a photograph."
       }
+    },
+    {
+      "id": "seasonal-sunshine",
+      "audience": "stores",
+      "family": "Citrus sunrise",
+      "visitor_need": "Explore seasonal shop news before subscribing.",
+      "difference": "A sculptural circular still life balances oversized stacked type above a curved cobalt signup strip; original orange/cobalt art supplies the composition.",
+      "requirements": [
+        "Replace the illustrative oranges if they do not represent your shop. Configure a real seasonal email programme and its delivery destination. No discount or delivery is promised."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition study, 20 October 2026. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use only on relevant pages; exclude checkout and completed requests.",
+        "Replace the illustrative oranges if they do not represent your shop. Configure a real seasonal email programme and its delivery destination. No discount or delivery is promised."
+      ],
+      "measure": "Accepted requests; delivery and bookings are separate outcomes.",
+      "batch": "expressive-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "colour-atlas",
+          "popup-two-column"
+        ],
+        "reason": "A sculptural circular still life balances oversized stacked type above a curved cobalt signup strip; original orange/cobalt art supplies the composition."
+      }
+    },
+    {
+      "id": "listening-night-invitation",
+      "audience": "services",
+      "family": "After hours",
+      "visitor_need": "Discover a listening event before viewing practical details.",
+      "difference": "A large-scale vinyl poster with acid-yellow type, original grooved record art and a contrasting pink perforated ticket footer.",
+      "requirements": [
+        "Link the real event page with dates, price, age/access restrictions and venue information. The record is illustrative, not an advertised performer or release. No booking is created."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition study, 20 October 2026. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use only on relevant pages; exclude checkout and completed requests.",
+        "Link the real event page with dates, price, age/access restrictions and venue information. The record is illustrative, not an advertised performer or release. No booking is created."
+      ],
+      "measure": "Clicks to the configured information page; not purchases or bookings.",
+      "batch": "expressive-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "fullscreen-poster",
+          "exhibition-wall"
+        ],
+        "reason": "A large-scale vinyl poster with acid-yellow type, original grooved record art and a contrasting pink perforated ticket footer."
+      }
+    },
+    {
+      "id": "slower-outdoor-guide",
+      "audience": "publishers",
+      "family": "Trail window",
+      "visitor_need": "Preview the guide before sharing a reply address.",
+      "difference": "An arched photographic window flows into large editorial type, then a separate arched request panel and acknowledgement.",
+      "requirements": [
+        "Prepare the actual guide and delivery destination. The landscape is fictional and is not a route recommendation. Replace safety and access advice with researched local information."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition study, 20 October 2026. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use only on relevant pages; exclude checkout and completed requests.",
+        "Prepare the actual guide and delivery destination. The landscape is fictional and is not a route recommendation. Replace safety and access advice with researched local information."
+      ],
+      "measure": "Accepted requests; delivery and bookings are separate outcomes.",
+      "batch": "expressive-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "recipe-clipping",
+          "portrait-frame"
+        ],
+        "reason": "An arched photographic window flows into large editorial type, then a separate arched request panel and acknowledgement."
+      }
+    },
+    {
+      "id": "thoughtful-gift-direction",
+      "audience": "stores",
+      "family": "Gift orbit",
+      "visitor_need": "Explore gift ideas without an email gate.",
+      "difference": "A cobalt poster with orbiting original gift illustrations leads to a single high-signal interest choice and three distinct ungated recommendation routes.",
+      "requirements": [
+        "Replace the illustrative suggestions with real curated collections and configure every result destination. This is an interest-based guide, not a product availability or suitability guarantee. No email is collected."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition study, 20 October 2026. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use only on relevant pages; exclude checkout and completed requests.",
+        "Replace the illustrative suggestions with real curated collections and configure every result destination. This is an interest-based guide, not a product availability or suitability guarantee. No email is collected."
+      ],
+      "measure": "Clicks to the configured information page; not purchases or bookings.",
+      "batch": "expressive-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "gift-edit",
+          "coffee-finder-board"
+        ],
+        "reason": "A cobalt poster with orbiting original gift illustrations leads to a single high-signal interest choice and three distinct ungated recommendation routes."
+      }
+    },
+    {
+      "id": "night-sky-letter",
+      "audience": "publishers",
+      "family": "Night observatory",
+      "visitor_need": "Understand a sky-watching newsletter before subscribing.",
+      "difference": "A cinematic illustrated horizon spans the entire composition beneath oversized serif type; the editorial and signup footer form a separate quiet band.",
+      "requirements": [
+        "Use on astronomy articles. The moon and stars are graphic illustrations, not a date/location forecast. Configure the actual newsletter and use researched observing advice."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition study, 20 October 2026. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use only on relevant pages; exclude checkout and completed requests.",
+        "Use on astronomy articles. The moon and stars are graphic illustrations, not a date/location forecast. Configure the actual newsletter and use researched observing advice."
+      ],
+      "measure": "Accepted requests; delivery and bookings are separate outcomes.",
+      "batch": "expressive-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "weekend-broadsheet",
+          "ledger-card"
+        ],
+        "reason": "A cinematic illustrated horizon spans the entire composition beneath oversized serif type; the editorial and signup footer form a separate quiet band."
+      }
+    },
+    {
+      "id": "flower-workshop-invitation",
+      "audience": "services",
+      "family": "Bloom postcard",
+      "visitor_need": "Explore a flower workshop before booking.",
+      "difference": "A small arched cut-paper floral postcard pairs large expressive serif type with one clear workshop handoff; designed for a corner rather than a miniature generic popup.",
+      "requirements": [
+        "Replace the illustration if it misrepresents the workshop. Link actual dates, venue, access, prices and inclusions. Opening the link does not reserve a place."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition study, 20 October 2026. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use only on relevant pages; exclude checkout and completed requests.",
+        "Replace the illustration if it misrepresents the workshop. Link actual dates, venue, access, prices and inclusions. Opening the link does not reserve a place."
+      ],
+      "measure": "Clicks to the configured information page; not purchases or bookings.",
+      "batch": "expressive-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "portrait-frame",
+          "session-card"
+        ],
+        "reason": "A small arched cut-paper floral postcard pairs large expressive serif type with one clear workshop handoff; designed for a corner rather than a miniature generic popup."
+      }
     }
   ],
   "batches": [
@@ -3960,6 +4116,10 @@
     {
       "id": "creative-editions",
       "name": "Creative editions: ten original compositions"
+    },
+    {
+      "id": "expressive-directions",
+      "name": "Expressive directions: six original concepts"
     }
   ]
 }

@@ -1,0 +1,242 @@
+{
+  "seasonal-sunshine-long-508": [
+    {
+      "height": 1189.171875,
+      "width": 476,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 403.078125,
+      "width": 476,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "seasonal-sunshine-long-536": [
+    {
+      "height": 1172.171875,
+      "width": 504,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 371.71875,
+      "width": 504,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "seasonal-sunshine-long-560": [
+    {
+      "height": 918.875,
+      "width": 528,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 371.71875,
+      "width": 528,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "seasonal-sunshine-long-592": [
+    {
+      "height": 860.640625,
+      "width": 560,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 371.71875,
+      "width": 560,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "listening-night-invitation-long-508": [
+    {
+      "height": 1593.671875,
+      "width": 508,
+      "x": 43,
+      "y": 511.796875
+    }
+  ],
+  "listening-night-invitation-long-536": [
+    {
+      "height": 1573.671875,
+      "width": 536,
+      "x": 43,
+      "y": 511.796875
+    }
+  ],
+  "listening-night-invitation-long-560": [
+    {
+      "height": 1660.296875,
+      "width": 560,
+      "x": 43,
+      "y": 511.796875
+    }
+  ],
+  "listening-night-invitation-long-592": [
+    {
+      "height": 1662.608642578125,
+      "width": 591,
+      "x": 43,
+      "y": 511.796875
+    }
+  ],
+  "night-sky-letter-long-508": [
+    {
+      "height": 961.4375,
+      "width": 508,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 379.71875,
+      "width": 508,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "night-sky-letter-long-536": [
+    {
+      "height": 910.484375,
+      "width": 536,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 379.71875,
+      "width": 536,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "night-sky-letter-long-560": [
+    {
+      "height": 916.7265625,
+      "width": 560,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 379.71875,
+      "width": 560,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "night-sky-letter-long-592": [
+    {
+      "height": 923.484375,
+      "width": 591,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 355.11785888671875,
+      "width": 591,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "seasonal-sunshine-rtl-long-320": [
+    {
+      "height": 1158.578125,
+      "width": 288,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 593.15625,
+      "width": 288,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "listening-night-invitation-rtl-long-320": [
+    {
+      "height": 1382.890625,
+      "width": 320,
+      "x": 43,
+      "y": 511.796875
+    }
+  ],
+  "slower-outdoor-guide-rtl-long-320": [
+    {
+      "height": 742.78125,
+      "width": 288,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 874.875,
+      "width": 288,
+      "x": 646,
+      "y": 511.796875
+    },
+    {
+      "height": 593.15625,
+      "width": 288,
+      "x": 43,
+      "y": 1454.796875
+    }
+  ],
+  "thoughtful-gift-direction-rtl-long-320": [
+    {
+      "height": 950.09375,
+      "width": 320,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 365.625,
+      "width": 320,
+      "x": 646,
+      "y": 511.796875
+    },
+    {
+      "height": 365.625,
+      "width": 320,
+      "x": 43,
+      "y": 1529.796875
+    },
+    {
+      "height": 365.625,
+      "width": 320,
+      "x": 646,
+      "y": 1529.796875
+    },
+    {
+      "height": 365.625,
+      "width": 320,
+      "x": 43,
+      "y": 1963.796875
+    }
+  ],
+  "night-sky-letter-rtl-long-320": [
+    {
+      "height": 963.8203125,
+      "width": 320,
+      "x": 43,
+      "y": 511.796875
+    },
+    {
+      "height": 514.4375,
+      "width": 320,
+      "x": 646,
+      "y": 511.796875
+    }
+  ],
+  "flower-workshop-invitation-rtl-long-320": [
+    {
+      "height": 633.515625,
+      "width": 288,
+      "x": 43,
+      "y": 511.796875
+    }
+  ]
+}

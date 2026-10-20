@@ -2424,6 +2424,114 @@
           "note": "Polish original composition after desktop, phone, intermediate-width and native review."
         }
       ]
+    },
+    {
+      "id": "citrus-sunrise",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "66e6462393838fb503fe611ad07b8b2fdfa1db6339243bd2221831c7f4a83946",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "1d4e2c9374957c6560c01a500f184abac7d74cd7b187575fe3bbe204aa5ca1a0",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "after-hours",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "f6c1f552d2cb9fb9b5b92761d05acb0add1c167be59826cc14721f954e2c507d",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "7c4b58e588531977ce1cba94bb7f6799b3802427a3f4d4be4680fe1b1b9e69f0",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "trail-window",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "40b6480ee02b07f509723e4c528004848f616d950065f0724cf94083f046b105",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "0027774430a495b2f69d8e27b526b055b281b18e41f147114961c3719c5af192",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "gift-orbit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "8b569831ed3783586ac407a71701e56b597e0a45fcba417c19fe54d484b9d820",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "00e94e299f55200f870704ec60a504d1bfaa616d6f5013a20ebb5603949f1da3",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "night-observatory",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "cbfd51d193ec161f28d584f3305affeeaddf6b5d16032d1d867da3d4079e8d79",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "eec7685cd5088e4edc057f6e6ca75513747875d89dd95daba88c4e71880bd884",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
+    },
+    {
+      "id": "bloom-postcard",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "3d929c95202db99ad722fd3748a480b7e97e1900f7ba1176dd33417251fa6500",
+          "note": "Original expressive composition with new artwork; candidate pending visual and journey review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "0823441097b325fa528f11fdde1b681ae2ec147edb41ba4d681db276523120f4",
+          "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
+        }
+      ]
     }
   ]
 }
