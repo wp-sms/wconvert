@@ -12,6 +12,7 @@ export async function galleryArtwork(packs, renderer) {
       entry.gallery = [];
       for (const design of pack.templates) {
         const embed = publicPreview(pack, renderer, entry.media, { designId: design.id, embed: true });
+        const designOnly = publicPreview(pack, renderer, entry.media, { designId: design.id, designOnly: true });
         await page.setContent(embed);
         await page.evaluate(async () => { await document.fonts.ready; });
         // Shadow DOM images are data URLs. Wait for decoding, not an arbitrary delay.
@@ -31,7 +32,7 @@ export async function galleryArtwork(packs, renderer) {
         }, bytes.toString('base64'));
         const step = design.tree.steps[0], result = step.results?.[0];
         entry.gallery.push({
-          id: design.id, embed,
+          id: design.id, embed, designOnly,
           thumbnail: {
             bytes, ...dimensions, partial: false,
             screen_id: step.id + (result ? '/' + result.id : ''),

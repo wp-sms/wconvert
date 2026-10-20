@@ -1,0 +1,28 @@
+{
+  "release": "e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d",
+  "freePacks": 5,
+  "premiumRefusals": 3,
+  "publicPreviews": 8,
+  "images": 2,
+  "downloadedSetups": 25,
+  "metadataOrigin": "https://templates.wconvert.io",
+  "localOnly": true,
+  "designs": 50,
+  "bundledOnlyDesigns": 18,
+  "galleryCollections": 9,
+  "formats": [
+    "floating_bar",
+    "fullscreen",
+    "inline",
+    "popup",
+    "slide_in"
+  ],
+  "thumbnails": 50,
+  "network": "intercepted; no external requests",
+  "screenDeviceChecks": 180,
+  "designOnlyChecks": 360,
+  "keyboardScrollChecks": 15,
+  "allowedParents": 3,
+  "blockedParents": 1,
+  "pageErrors": 0
+}

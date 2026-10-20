@@ -1,0 +1,42 @@
+{
+  "release": "e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d",
+  "freePacks": 5,
+  "premiumRefusals": 3,
+  "publicPreviews": 8,
+  "images": 2,
+  "downloadedSetups": 25,
+  "metadataOrigin": "https://templates.wconvert.io",
+  "localOnly": false,
+  "designs": 50,
+  "bundledOnlyDesigns": 18,
+  "galleryCollections": 9,
+  "formats": [
+    "floating_bar",
+    "fullscreen",
+    "inline",
+    "popup",
+    "slide_in"
+  ],
+  "thumbnails": 50,
+  "verifiedAt": "2026-10-20T11:49:58.707Z",
+  "network": "live service HTTPS; synthetic parent harnesses plus actual staging document",
+  "screenDeviceChecks": 180,
+  "designOnlyChecks": 360,
+  "keyboardScrollChecks": 15,
+  "allowedParents": 3,
+  "blockedParents": 1,
+  "pageErrors": 0,
+  "staging": {
+    "origin": "https://dev.wconvert-website.pages.dev",
+    "httpStatus": 200,
+    "actualWebsiteDocument": true,
+    "temporaryBrowserIframeOnly": true,
+    "design": "coffee-finder-board",
+    "screen": "match/explore",
+    "devices": [
+      "mobile",
+      "desktop"
+    ],
+    "parentDomAccessBlocked": true
+  }
+}

@@ -4,7 +4,7 @@ const check = (ok, message) => { if (!ok) throw Error(message); };
 const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,59}$/.test(value);
 
 /** Explicit public projection: never spread source trees, setup data or download credentials. */
-export function designCatalogue(packs, rows, origin, objects) {
+export function designCatalogue(packs, rows, origin, objects, { bundledOnly = false } = {}) {
   const designs = new Map();
   const add = (folder, extension, bytes) => {
     const sha256 = hash(bytes), key = `${folder}/${sha256}.${extension}`;
@@ -21,7 +21,7 @@ export function designCatalogue(packs, rows, origin, objects) {
       const previous = designs.get(design.id);
       if (previous) {
         check(previous.revision === revision, 'Conflicting versions of one public design');
-        previous.packs.push(delivery);
+        if (!bundledOnly) previous.packs.push(delivery);
         continue;
       }
       const screens = design.tree.steps.flatMap(step => (step.results?.length ? step.results : [null]).map(result => ({
@@ -33,7 +33,7 @@ export function designCatalogue(packs, rows, origin, objects) {
         && new Set(screens.map(screen => screen.id)).size === screens.length, 'Invalid or duplicate public screens');
       const facts = entry.public_metadata?.[design.id];
       const item = {
-        id: design.id, name: design.name, pack_id: pack.id, packs: [delivery],
+        id: design.id, name: design.name, ...(bundledOnly ? { packs: [] } : { pack_id: pack.id, packs: [delivery] }),
         format: design.display_type, availability: design.tier, revision,
         ...(typeof facts?.description === 'string' && facts.description.trim() ? { description: facts.description } : {}),
         ...(typeof facts?.bundled === 'boolean' ? { bundled: facts.bundled } : {}),
@@ -43,15 +43,20 @@ export function designCatalogue(packs, rows, origin, objects) {
       };
       const artwork = entry.gallery?.find(artwork => artwork.id === design.id);
       if (artwork) {
-        check(row.preview_url && typeof artwork.embed === 'string' && Buffer.byteLength(artwork.embed) <= 2097152, 'Invalid focused preview');
+        check((bundledOnly || row?.preview_url) && typeof artwork.embed === 'string' && Buffer.byteLength(artwork.embed) <= 2097152, 'Invalid focused preview');
         const thumbnail = artwork.thumbnail;
         check(Buffer.isBuffer(thumbnail.bytes) && thumbnail.bytes.length > 0 && thumbnail.bytes.length <= 5242880
           && Number.isInteger(thumbnail.width) && thumbnail.width > 0 && Number.isInteger(thumbnail.height) && thumbnail.height > 0
           && typeof thumbnail.alt === 'string' && thumbnail.alt.trim() && typeof thumbnail.partial === 'boolean'
           && screens.some(screen => screen.id === thumbnail.screen_id), 'Invalid public thumbnail');
         item.preview_status = 'available';
-        item.preview_url = row.preview_url + '#design=' + encodeURIComponent(design.id);
         item.embed_url = add('previews', 'html', Buffer.from(artwork.embed));
+        item.preview_url = (bundledOnly ? item.embed_url : row.preview_url) + '#design=' + encodeURIComponent(design.id);
+        if (artwork.designOnly !== undefined) {
+          check(typeof artwork.designOnly === 'string' && Buffer.byteLength(artwork.designOnly) <= 2097152, 'Invalid design-only preview');
+          item.design_only_embed = { version: 1, url: add('previews', 'html', Buffer.from(artwork.designOnly)),
+            devices: ['desktop', 'mobile'], default_device: 'desktop', mobile_width: 320 };
+        }
         item.thumbnail = {
           url: add('thumbnails', 'jpg', thumbnail.bytes), width: thumbnail.width, height: thumbnail.height,
           alt: thumbnail.alt, partial: thumbnail.partial, screen_id: thumbnail.screen_id,
@@ -60,6 +65,7 @@ export function designCatalogue(packs, rows, origin, objects) {
         for (const screen of screens) {
           screen.preview_url = item.preview_url + '&screen=' + encodeURIComponent(screen.id);
           screen.embed_url = item.embed_url + '#screen=' + encodeURIComponent(screen.id);
+          if (item.design_only_embed) screen.design_only_embed_url = item.design_only_embed.url + '#screen=' + encodeURIComponent(screen.id);
         }
       }
       designs.set(design.id, item);

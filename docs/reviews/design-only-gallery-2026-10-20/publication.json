@@ -1,0 +1,15 @@
+{
+  "account": "c1a1ad8e669eb8c31ce039ea78aa6ab9",
+  "origin": "https://templates.wconvert.io",
+  "publicBucket": "wconvert-templates-public",
+  "privateBucket": "wconvert-templates-private",
+  "release": "e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d",
+  "created": 129,
+  "reused": 39,
+  "privateObjects": 4,
+  "dryRun": false,
+  "publishedAt": "2026-10-20T11:45:34.669Z",
+  "approvedBy": "User approval in this chat",
+  "workerRedeployed": false,
+  "websiteChanged": false
+}

@@ -1,7 +1,8 @@
 <?php
 /** Trusted repository sources only. This CLI never loads WordPress or writes site data. */
 define('ABSPATH', '/');
-$root = dirname(__DIR__, 3);
+$root = isset($argv[1]) ? realpath($argv[1]) : dirname(__DIR__, 3);
+if (!$root || !is_file($root . '/src/constants.php')) throw new RuntimeException('Invalid trusted source root');
 define('WCONVERT_URL', '');
 require $root . '/src/constants.php';
 function __(string $text, string $domain = ''): string { return $text; }
@@ -22,6 +23,28 @@ use WConvert\Template\Catalog\PackValidator;
 
 $validator = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Pro);
 $input = json_decode(stream_get_contents(STDIN), true, 64, JSON_THROW_ON_ERROR);
+function publicDesignFacts(array $template): array {
+    return [
+        'bundled' => true, 'bundle_tier' => $template['tier'],
+        'prerequisites' => ['plugins' => \WConvert\Template\CommerceSupport::used($template['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($template['tree'])
+            || array_filter($template['tree']['steps'], static fn (array $step): bool => ($step['products_required'] ?? false) === true
+                || (bool) array_filter($step['results'] ?? [], static fn (array $result): bool => isset($result['product_filter']) || !empty($result['product_ids']))) ? ['woocommerce'] : []],
+    ];
+}
+if (($input['mode'] ?? '') === 'bundled-gallery') {
+    $output = [];
+    foreach ($input['design_ids'] as $id) {
+        if (!PackValidator::identifier($id)) throw new RuntimeException('Invalid design identity');
+        $files = array_merge(glob($root . '/resources/templates/library/' . $id . '.json') ?: [], glob($root . '/pro/modules/*/templates/' . $id . '.json') ?: []);
+        if (count($files) !== 1) throw new RuntimeException('Missing or ambiguous bundled design');
+        $template = json_decode(file_get_contents($files[0]), true, 48, JSON_THROW_ON_ERROR);
+        // Internal render container only: never stored as a delivery pack or editable public JSON.
+        $output[] = ['json' => json_encode(['id' => $id, 'name' => $template['name'], 'templates' => [$template]], JSON_THROW_ON_ERROR),
+            'media' => [], 'public_metadata' => [$id => publicDesignFacts($template)]];
+    }
+    echo json_encode($output, JSON_THROW_ON_ERROR);
+    exit;
+}
 if (($input['mode'] ?? '') === 'validate') {
     foreach ($input['packs'] as $pack) $validator->decode($pack['json']);
     // Exercise the complete shipping refresh path (including metadata, URLs and references).
@@ -98,12 +121,7 @@ foreach ($definition['setups'] as $id) {
     // Every source resolved above belongs to a shipped Free or Pro template directory.
     $publicMetadata = [];
     foreach ($templates as $template) {
-        $publicMetadata[$template['id']] = [
-            'bundled' => true, 'bundle_tier' => $template['tier'],
-            'prerequisites' => ['plugins' => \WConvert\Template\CommerceSupport::used($template['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($template['tree'])
-                || array_filter($template['tree']['steps'], static fn (array $step): bool => ($step['products_required'] ?? false) === true
-                    || (bool) array_filter($step['results'] ?? [], static fn (array $result): bool => isset($result['product_filter']) || !empty($result['product_ids']))) ? ['woocommerce'] : []],
-        ];
+        $publicMetadata[$template['id']] = publicDesignFacts($template);
     }
     $output[] = ['access' => $paid ? 'premium' : 'free', 'json' => $json, 'media' => array_values($media), 'public_metadata' => $publicMetadata];
 }

@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-20T11:50:09.421Z",
+  "manifest": {
+    "schema": 2,
+    "release": "e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d",
+    "pages": [
+      {
+        "url": "https://templates.wconvert.io/releases/e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d/page-1.json",
+        "sha256": "d51ff102cf02a49dc05a3c7db999c9a8c21dd7422135d6d9c5969a883dcaf615"
+      }
+    ]
+  }
+}

@@ -71,8 +71,12 @@ export async function verifyService(base, { expected, metadataOrigin, premiumMod
     const catalogue = JSON.parse(bytes);
     const dependencies = validateDesignCatalogue(catalogue, { id: manifest.release, packs: releasePacks, collections: releaseCollections, origin: metadataOrigin });
     for (const [key, sha] of dependencies) await immutable('/' + key, sha, key.startsWith('thumbnails/') ? 5242880 : 2097152);
-    report.designs = catalogue.designs.length;
-    report.thumbnails = catalogue.designs.filter(design => design.thumbnail).length;
+    const all = [...catalogue.designs, ...(catalogue.extensions?.bundled_designs ?? [])];
+    report.designs = all.length;
+    report.bundledOnlyDesigns = catalogue.extensions?.bundled_designs.length ?? 0;
+    report.galleryCollections = catalogue.extensions?.collections.length ?? 0;
+    report.formats = [...new Set(all.map(design => design.format))].sort();
+    report.thumbnails = all.filter(design => design.thumbnail).length;
   }
   for(const path of ['/private/packs/x.json','/grants/x.json','/manifest.json?key=not-a-credential']){
     const denied=await request(path,16384);assert([400,404].includes(denied.response.status));assert.match(denied.response.headers.get('cache-control'),/no-store/);
