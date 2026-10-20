@@ -15,7 +15,11 @@ import { RegionError } from '../shell/Region';
 import { Gallery, type Fit } from './Gallery';
 import { DesignComparison } from './DesignComparison';
 import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
-import { facetOptions, narrow, toggled, type Chosen } from './facets';
+import { facetOptions, narrow, toggled, TAG_FACET, type Chosen } from './facets';
+import { LibraryConsent } from '../templates/LibraryConsent';
+import { installDesign, refreshCatalog } from '../templates/catalog';
+import { messageOf } from '../shell/loadable';
+import { isFreeInstall } from '../goals/availability';
 import { displayTypeOptions, proDisplayTypeLabels } from '../displayTypes';
 import { ProHint } from '../shell/ProHint';
 import { nameOf, type TemplateIndex, type TemplateIndexEntry } from '../templates/api';
@@ -56,12 +60,53 @@ export interface TemplatePickerProps {
   readonly fieldMappings?: unknown;
   /** The design being inspected, if any, so the dialog's header can name it. */
   readonly onInspectedChange?: (entry: TemplateIndexEntry | undefined) => void;
+  /** Reload the index after the hosted library changed it; absent where the library is off (ADR 0156). */
+  readonly onLibraryChanged?: () => Promise<void>;
+  /** Open a design that was just installed, by its new template id. */
+  readonly onInspectInstalled?: (id: string) => void;
 }
+
+/** The hosted library's taxonomy groups the picker filters by, in this order. */
+const TAG_GROUPS = ['industry', 'occasion', 'style'] as const;
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false, fieldMappings, onInspectedChange,
+  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy: pickerBusy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false, fieldMappings, onInspectedChange,
+  onLibraryChanged, onInspectInstalled,
 }: TemplatePickerProps) {
+  const catalog = index.catalog;
+  const [installing, setInstalling] = useState<string | null>(null);
+  const [libraryError, setLibraryError] = useState<string | null>(null);
+  const busy = pickerBusy || installing !== null;
+  /*
+   * Opening the picker is the one moment the library may check for new
+   * designs, and the server holds it to twice a day (ADR 0156). A failure is
+   * quiet: the designs already here are the answer until the next open.
+   */
+  const checked = useRef(false);
+  useEffect(() => {
+    if (!active || checked.current || !onLibraryChanged || catalog?.enabled !== true || catalog.consent !== 'yes') return;
+    checked.current = true;
+    void refreshCatalog(true).then((status) => {
+      if (status.checked_at !== catalog.checked_at) return onLibraryChanged();
+      return undefined;
+    }).catch(() => undefined);
+  }, [active, catalog, onLibraryChanged]);
+  const install = async (entry: TemplateIndexEntry, sha?: string) => {
+    const remote = entry.remote ?? (entry.newer_revision ? { id: (entry.design_key ?? entry.id).replace(/^registered:/u, ''), sha256: entry.newer_revision.sha256 } : undefined);
+    if (!remote || !onLibraryChanged) return;
+    setInstalling(entry.id); setLibraryError(null);
+    try {
+      const installed = await installDesign(remote.id, sha ?? remote.sha256);
+      await onLibraryChanged();
+      onInspectInstalled?.(installed.template_id);
+    } catch (cause) {
+      setLibraryError(messageOf(cause));
+    } finally { setInstalling(null); }
+  };
+  const tagLabels = useMemo(() => Object.fromEntries(Object.entries(catalog?.taxonomy ?? {})
+    .flatMap(([group, terms]) => terms.map(({ id, label }) => [`${group}:${id}`, label] as const))), [catalog?.taxonomy]);
+  const searchLabels = useMemo(() => ({ ...index.labels, tags: tagLabels }), [index.labels, tagLabels]);
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(0);
@@ -73,7 +118,8 @@ export function TemplatePicker({
   const picker = usePicker();
   const [compared,setCompared] = useState<string[]>([]); const [comparing,setComparing] = useState(false); const fromComparison = useRef(false);
   const [settings, setSettings] = useState(false);
-  const [sort, setSort] = useState('recommended');
+  // Where Pro designs are shown locked, what this site can use comes first (ADR 0156).
+  const [sort, setSort] = useState(() => isFreeInstall() && index.templates.some((entry) => entry.remote?.state === 'locked') ? 'available' : 'recommended');
   const [savedOnly, setSavedOnly] = useState(false);
   const saved = useMemo(() => new Set(picker.data?.preferences.saved ?? []), [picker.data?.preferences.saved]);
 
@@ -86,20 +132,29 @@ export function TemplatePicker({
       };
       // Hidden members leave the counts and facets too, not only the cards
       // (ADR 0116).
-      return index.templates.filter((entry) => entry.display_type === displayType && isShown(entry.availability))
+      // A locked hosted card reaches a free install only where Pro hints are
+      // wanted; the server decides that, so the card is drawn when it is sent.
+      return index.templates.filter((entry) => entry.display_type === displayType && (isShown(entry.availability) || entry.remote?.state === 'locked'))
         .sort((a, b) => rank(a.id) - rank(b.id));
     },
     [index.templates, displayType],
   );
   const available = useMemo(
-    () => forType.filter((entry) => (!availableOnly || entry.availability === 'ready')
+    () => forType.filter((entry) => (!availableOnly || usable(entry))
       && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets))
       && (!savedOnly || saved.has(designKey(entry)))),
     [forType, availableOnly, goalFitOnly, fit.outcome, savedOnly, saved],
   );
   const shown = useMemo(
-    () => { const entries = narrow(available, displayType, chosenFacets, query, index.labels); return sort === 'name' ? entries.sort((a,b)=>a.name.localeCompare(b.name)) : entries; },
-    [available, displayType, chosenFacets, query, index.labels, sort],
+    () => {
+      const entries = narrow(available, displayType, chosenFacets, query, searchLabels);
+      if (sort === 'name') return entries.sort((a, b) => a.name.localeCompare(b.name));
+      if (sort === 'popular') return entries.sort((a, b) => (b.remote?.popularity ?? 0) - (a.remote?.popularity ?? 0));
+      // Stable, so recommended order holds within each half.
+      if (sort === 'available') return entries.sort((a, b) => Number(usable(b)) - Number(usable(a)));
+      return entries;
+    },
+    [available, displayType, chosenFacets, query, searchLabels, sort],
   );
   const pages = Math.max(1, Math.ceil(shown.length / 24));
   const currentPage = Math.min(page, pages - 1);
@@ -107,8 +162,11 @@ export function TemplatePicker({
   const inspected = forType.find((entry) => entry.id === inspectedId);
   const detailShown = settings ? undefined : inspected;
   useEffect(() => { onInspectedChange?.(detailShown); }, [detailShown, onInspectedChange]);
-  const comparedEntries = forType.filter(entry=>compared.includes(entry.id) && entry.availability === 'ready');
-  const hasLocked = forType.some((entry) => entry.availability !== 'ready');
+  const comparedEntries = forType.filter(entry=>compared.includes(entry.id) && entry.availability === 'ready' && entry.remote === undefined);
+  const hasLocked = forType.some((entry) => !usable(entry));
+  const hasPopularity = forType.some((entry) => (entry.remote?.popularity ?? 0) > 0);
+  const tagFacets = TAG_GROUPS.map((group) => [TAG_FACET + group, (catalog?.taxonomy[group] ?? []).map(({ id }) => id)] as const)
+    .filter(([, values]) => values.length > 0);
   const secondaryFacets = Object.entries(index.facets).filter(([key]) =>
     !['captures', 'has_image', 'act'].includes(key),
   );
@@ -134,6 +192,7 @@ export function TemplatePicker({
       id: `${facet}.${value}`,
       label: facet === 'act'
         ? (value === 'submit' ? __('Fill in a form', 'wconvert') : __('Follow a link', 'wconvert'))
+        : facet.startsWith(TAG_FACET) ? tagLabels[`${facet.slice(TAG_FACET.length)}:${value}`] ?? value
         : nameOf(index.labels.facetValues, `${facet}.${value}`),
       remove: () => toggle(facet, value),
     }))),
@@ -142,7 +201,7 @@ export function TemplatePicker({
     ...(query ? [{ id: 'query', label: query, remove: () => { setQuery(''); setPage(0); } }] : []),
   ];
   const options = (facet: string, values: readonly string[]) =>
-    facetOptions(available, facet, values, chosenFacets, query, index.labels);
+    facetOptions(available, facet, values, chosenFacets, query, searchLabels);
 
   if (forType.length === 0) {
     // The way forward is a format that has designs: the campaign's own first,
@@ -178,6 +237,8 @@ export function TemplatePicker({
             </select>}
             <select className="wconvert-picker__select" aria-label={__('Sort designs', 'wconvert')} value={sort} onChange={event=>{setSort(event.target.value);setPage(0);}}>
               <option value="recommended">{__('Recommended first','wconvert')}</option>
+              {hasLocked && <option value="available">{__('Available on this site first','wconvert')}</option>}
+              {hasPopularity && <option value="popular">{__('Most used','wconvert')}</option>}
               <option value="name">{__('Name A–Z','wconvert')}</option>
             </select>
             <Button variant="outline" disabled={busy} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('Preferences','wconvert')}</Button>
@@ -210,6 +271,14 @@ export function TemplatePicker({
                   </Button>
                 ))}
               </div>
+              {tagFacets.map(([facet, values]) => (
+                <FacetStrip key={facet} facet={facet} title={{
+                  [`${TAG_FACET}industry`]: __('Industry', 'wconvert'), [`${TAG_FACET}occasion`]: __('Occasion', 'wconvert'), [`${TAG_FACET}style`]: __('Style', 'wconvert'),
+                }[facet] ?? facet}
+                  options={options(facet, values)} labels={index.labels} chosen={chosenFacets[facet] ?? []}
+                  labelOf={(value) => tagLabels[`${facet.slice(TAG_FACET.length)}:${value}`] ?? value}
+                  onToggle={(value) => toggle(facet, value)} />
+              ))}
               {secondaryFacets.map(([facet, values]) => (
                 <FacetStrip key={facet} facet={facet}
                   title={facet === 'shape' ? __('Layout', 'wconvert') : nameOf(index.labels.facets, facet)}
@@ -236,6 +305,9 @@ export function TemplatePicker({
           </div>}
         </div>
         {picker.error && !settings && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
+        {onLibraryChanged && catalog?.enabled && catalog.consent === 'unanswered' && <LibraryConsent onAnswered={() => { void onLibraryChanged(); }} />}
+        {catalog?.update_required && <p className="wconvert-picker__notice text-note">{__('Update WConvert to see new designs from the online library.', 'wconvert')}</p>}
+        {libraryError && <RegionError message={libraryError} onRetry={() => setLibraryError(null)} />}
         <div className="wconvert-picker__body">
           {shown.length === 0 ? (
             <EmptyState icon={LayoutTemplate} title={__('No designs match', 'wconvert')}
@@ -246,6 +318,7 @@ export function TemplatePicker({
             <Gallery compared={comparedEntries.map(entry=>entry.id)} onCompare={id=>{const ids=comparedEntries.map(entry=>entry.id);if(ids.includes(id))setCompared(ids.filter(value=>value!==id));else if(ids.length<2){setCompared([...ids,id]);onNear(id);}}} entries={visible} trees={trees} labels={index.labels} chosen={chosen} fit={fit}
               saved={saved} saving={picker.saving || !picker.data} onSave={entry => picker.toggleSaved(designKey(entry))}
               busy={busy} onChoose={onChoose} onNear={onNear} failed={failed} onRetry={onRetry}
+              installing={installing} onInstall={onLibraryChanged ? (entry) => { void install(entry); } : undefined}
               onPreview={(id) => {
                 returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
                 onNear(id);
@@ -275,13 +348,14 @@ export function TemplatePicker({
   );
 }
 
-function FacetStrip({ facet, title, options, labels, chosen, onToggle }: {
+function FacetStrip({ facet, title, options, labels, chosen, onToggle, labelOf }: {
   facet: string;
   title: string;
   options: readonly { value: string; count: number }[];
   labels: TemplateIndex['labels'];
   chosen: readonly string[];
   onToggle: (value: string) => void;
+  labelOf?: (value: string) => string;
 }) {
   const labelId = useId();
   if (options.length === 0) return null;
@@ -292,12 +366,17 @@ function FacetStrip({ facet, title, options, labels, chosen, onToggle }: {
         <Button key={value} type="button" variant="outline" className="wconvert-picker__filter"
           aria-pressed={chosen.includes(value)} disabled={count === 0 && !chosen.includes(value)}
           onClick={() => onToggle(value)}>
-          {nameOf(labels.facetValues, `${facet}.${value}`)}
+          {labelOf ? labelOf(value) : nameOf(labels.facetValues, `${facet}.${value}`)}
           <span aria-hidden="true" className="wconvert-picker__option-count">{formatCount(count)}</span>
         </Button>
       ))}
     </div>
   );
+}
+
+/** Ready here, or one install away from it. */
+function usable(entry: TemplateIndexEntry): boolean {
+  return entry.availability === 'ready' && (entry.remote === undefined || entry.remote.state === 'install');
 }
 
 /** Fetch only nearby trees, in batches within the server's 24-design limit. */

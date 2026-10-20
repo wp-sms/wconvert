@@ -4,10 +4,20 @@ import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/
 /** Facet selections operate on the already-loaded index, never on preview trees. */
 export type Chosen = Readonly<Record<string, readonly string[]>>;
 
-type SearchLabels = Pick<TemplateLabelsWithFacets, 'facetValues' | 'fields' | 'params'>;
+type SearchLabels = Pick<TemplateLabelsWithFacets, 'facetValues' | 'fields' | 'params'> & {
+  /** `industry:food-drink` → "Food & drink", from the hosted library's taxonomy (ADR 0156). */
+  readonly tags?: Readonly<Record<string, string>>;
+};
+
+/** A facet over the hosted index's authored words: `tag:industry`, `tag:occasion`, `tag:style`. */
+export const TAG_FACET = 'tag:';
 
 /** Normalise the index's scalar, list and boolean facets for one comparison. */
 function valuesOf(entry: TemplateIndexEntry, facet: string): readonly string[] {
+  if (facet.startsWith(TAG_FACET)) {
+    const group = facet.slice(TAG_FACET.length) + ':';
+    return (entry.tags ?? entry.remote?.tags ?? []).filter((tag) => tag.startsWith(group)).map((tag) => tag.slice(group.length));
+  }
   const held = (entry.facets as unknown as Record<string, unknown>)[facet];
 
   if (typeof held === 'boolean') return held ? ['true'] : [];
@@ -66,6 +76,12 @@ export function matchesEntryQuery(entry: TemplateIndexEntry, query: string, labe
   if (entry.facets.has_image) {
     words.push(labels?.facetValues['has_image.true'] ?? __('With a picture', 'wconvert'));
     words.push(__('Image', 'wconvert'));
+  }
+  // Industries, occasions and styles are words a merchant searches with: "restaurant", "christmas".
+  for (const tag of entry.tags ?? entry.remote?.tags ?? []) {
+    const label = labels?.tags?.[tag];
+    if (label) words.push(label);
+    words.push(tag.slice(tag.indexOf(':') + 1).replace(/-/gu, ' '));
   }
   if (entry.facets.act === 'submit') {
     words.push(__('Form', 'wconvert'), labels?.params?.submit ?? __('Sends the form', 'wconvert'));

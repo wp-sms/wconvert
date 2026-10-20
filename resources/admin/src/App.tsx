@@ -13,7 +13,7 @@ import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
-import { createHref, editorHref, hashFor, leadsHref, occasionHref, optinsHref, reportHref, sendingIssuesHref } from './nav';
+import { createHref, editorHref, hashFor, leadsHref, occasionHref, optinsHref, reportHref, sendingIssuesHref, takeDesignLink } from './nav';
 import { OccasionPage } from './occasions/OccasionPage';
 import { ImportOccasionMenu } from './occasions/ImportOccasion';
 import type { OccasionNotice } from './occasions/api';
@@ -61,6 +61,11 @@ export function App() {
     onEditingStateChange(state);
   }, [onEditingStateChange]);
   const creating = route.creating;
+  // "Use this template" on wconvert.io lands here once, then becomes a route.
+  useEffect(() => {
+    const design = takeDesignLink();
+    if (design) navigate(createHref({ design }));
+  }, [navigate]);
   const startCreating = () => { if (!campaignBusyRef.current) navigate(createHref()); };
   // What a copy or an import did, shown where it is about (GUIDELINES §8).
   const [notice, setNotice] = useState<OccasionNotice | null>(null);
@@ -151,6 +156,7 @@ export function App() {
         <OptinsSection
           key={listVersion}
           creating={creating}
+          design={route.design}
           occasion={route.occasion}
           notice={notice?.kind === 'import' ? notice : null}
           onDismissNotice={() => setNotice(null)}
@@ -193,6 +199,7 @@ export function App() {
  */
 function OptinsSection({
   creating,
+  design,
   occasion,
   notice,
   onDismissNotice,
@@ -206,6 +213,7 @@ function OptinsSection({
   onEdit,
 }: {
   creating: boolean;
+  design?: string;
   /** The list's Occasion filter, and the occasion a new campaign is created into. */
   occasion?: string;
   notice: OccasionNotice | null;
@@ -221,7 +229,7 @@ function OptinsSection({
 }) {
   const onListBusyChange = useCallback((busy: boolean) => onEditingStateChange({ dirty: false, busy }), [onEditingStateChange]);
   if (creating) {
-    return <CreationFlow occasion={occasion} onCancel={onCancelCreate} onEdit={onEdit} onEditingStateChange={onEditingStateChange} />;
+    return <CreationFlow occasion={occasion} design={design} onCancel={onCancelCreate} onEdit={onEdit} onEditingStateChange={onEditingStateChange} />;
   }
 
   /*
@@ -240,8 +248,9 @@ function OptinsSection({
 }
 
 /** Owns creation's temporary navigation guard until the editor takes over. */
-function CreationFlow({ occasion, onCancel, onEdit, onEditingStateChange }: {
+function CreationFlow({ occasion, design, onCancel, onEdit, onEditingStateChange }: {
   occasion?: string;
+  design?: string;
   onCancel: () => void;
   onEdit: (id: string) => void;
   onEditingStateChange: (state: EditingState) => void;
@@ -265,7 +274,7 @@ function CreationFlow({ occasion, onCancel, onEdit, onEditingStateChange }: {
   };
   return <>
     <BackLink className="mb-4" onClose={leave} disabled={busy} />
-    <GoalScreen occasion={occasion} onBusyChange={onBusyChange} onCheckOptins={leave} onCreated={(id) => {
+    <GoalScreen occasion={occasion} design={design} onBusyChange={onBusyChange} onCheckOptins={leave} onCreated={(id) => {
       // Release before navigating; a late child cleanup must not overwrite
       // the newly mounted editor's dirty/busy state.
       ownsGuard.current = false;

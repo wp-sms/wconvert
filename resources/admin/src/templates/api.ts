@@ -83,11 +83,31 @@ export interface TemplateIndexEntry {
    */
   availability: Availability;
   facets: TemplateFacets;
+  /** Which copy of the design this is; the highest local revision is the card (ADR 0156). */
+  revision?: number;
+  /** A hosted revision above this one, reviewed and applied through the usual flow. */
+  newer_revision?: { revision: number; sha256: string };
   /**
-   * Where *"See this design"* goes, on a card whose design this install did not
-   * get. Bundled beside the name, never fetched — a free wp.org plugin phoning
-   * home for advertising copy is a different conversation with the review team
-   * (ADR 0015).
+   * Set on a design only the hosted library has (ADR 0156). It has no tree on
+   * this site, so the card shows the server's thumbnail; `state` is what still
+   * stands between the merchant and using it.
+   */
+  remote?: {
+    id: string;
+    revision: number;
+    sha256: string;
+    state: 'install' | 'update_plugin' | 'locked' | 'unavailable';
+    thumbnail: { '1x': string; '2x': string } | null;
+    tags: string[];
+    family: string | null;
+    popularity: number | null;
+    prerequisites: string[];
+  };
+  /** `industry:food-drink`-style terms from the hosted index, for a local or hosted card. */
+  tags?: string[];
+  /**
+   * Where a locked hosted card links: the design's page on wconvert.io. Only a
+   * free install where Pro hints are wanted is sent one (ADR 0156).
    */
   preview_url?: string;
 }
@@ -256,6 +276,16 @@ export interface TemplateIndex {
   labels: TemplateLabelsWithFacets;
   /** `{ shape: [...], captures: [...], has_image: ['true'] }`, in vocabulary order. */
   facets: Record<string, string[]>;
+  /** Template ids withdrawn from the library, with the reason, for the editor's notice. */
+  withdrawn?: Record<string, 'rights' | 'quality' | 'broken' | 'other'>;
+  /** The hosted library's state on this site; null where it is switched off. */
+  catalog?: {
+    enabled: boolean;
+    consent: 'unanswered' | 'yes' | 'no';
+    checked_at: string | null;
+    update_required: boolean;
+    taxonomy: Record<string, { id: string; label: string }[]>;
+  } | null;
 }
 
 export const listTemplates = () => apiFetch<TemplateIndex>({ path: '/wconvert/v1/templates' });

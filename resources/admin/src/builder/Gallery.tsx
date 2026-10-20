@@ -38,6 +38,10 @@ export interface GalleryProps {
   readonly compared?: readonly string[];
   readonly onCompare?: (id:string)=>void;
   readonly onRetry?: (id: string) => void;
+  /** Install a hosted design, or the newer revision of a local one (ADR 0156). */
+  readonly onInstall?: (entry: TemplateIndexEntry) => void;
+  /** The card whose install is in flight. */
+  readonly installing?: string | null;
 }
 
 /** Constraints and publication guidance for this edited Optin. */
@@ -195,11 +199,13 @@ export function Gallery({
   onNear,
   onPreview,
   failed,
-  onRetry, saved, saving, onSave, compared, onCompare,
+  onRetry, saved, saving, onSave, compared, onCompare, onInstall, installing,
 }: GalleryProps) {
   return (
     <ul className="wconvert-gallery" data-preview-first={onPreview !== undefined || undefined}>
-      {entries.filter((entry) => isShown(entry.availability)).map((entry) => {
+      {entries.filter((entry) => isShown(entry.availability) || entry.remote?.state === 'locked').map((entry) => {
+        const { remote } = entry;
+        if (remote !== undefined) return <HostedCard key={entry.id} entry={{ ...entry, remote }} labels={labels} busy={busy} installing={installing === entry.id} onInstall={onInstall} />;
         const locked = renderingFor(entry.availability, 'settings_list') === 'upsell';
         const inUse = entry.id === chosen;
         const refused = refusalFor(entry, fit);
@@ -234,7 +240,8 @@ export function Gallery({
             // Browse cards describe their fields; the detail explains the
             // effect of applying one. Direct-choice callers keep that warning
             // here, immediately beside their apply action.
-            notes={onPreview !== undefined && !locked ? summary : changes ?? undefined}
+            notes={entry.newer_revision && onInstall ? __('A newer version of this design is in the library.', 'wconvert')
+              : onPreview !== undefined && !locked ? summary : changes ?? undefined}
             onNear={locked ? undefined : onNear}
             loadError={!locked && failed?.has(entry.id)}
             onRetry={onRetry === undefined ? undefined : () => onRetry(entry.id)}
@@ -295,14 +302,19 @@ export function Gallery({
                   </a>
                 </Button>
               ) : onPreview !== undefined ? (
-                <Button
-                  variant="outline"
-                  aria-describedby={describedBy}
-                  disabled={busy}
-                  onClick={() => onPreview(entry.id)}
-                >
-                  {__('Preview design', 'wconvert')}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    aria-describedby={describedBy}
+                    disabled={busy}
+                    onClick={() => onPreview(entry.id)}
+                  >
+                    {__('Preview design', 'wconvert')}
+                  </Button>
+                  {/* The newer revision is installed, then reviewed and applied the usual way. */}
+                  {entry.newer_revision && onInstall && <Button variant="link" aria-describedby={describedBy} disabled={busy}
+                    onClick={() => onInstall(entry)}>{installing === entry.id ? __('Getting it…', 'wconvert') : __('Get the newer version', 'wconvert')}</Button>}
+                </div>
               ) : (
                 /*
                   **`busy` takes the real attribute and the other two do not.**
@@ -376,5 +388,56 @@ export function GallerySkeleton({ cards = 6 }: { cards?: number }) {
       ))}
       </ul>
     </>
+  );
+}
+
+/**
+ * A design only the hosted library has (ADR 0156). There is no tree on this
+ * site, so the card is the server's thumbnail — loaded by the browser with no
+ * referrer — and one honest action for what stands in the way.
+ *
+ * **A locked card is a picture and a link, never a control.** No Apply, no
+ * disabled button, no Pro JSON; "Pro" is the plan's name, and the link leaves
+ * for the design's page on wconvert.io (wp.org Guidelines 5 and 11).
+ */
+function HostedCard({ entry, labels, busy, installing, onInstall }: {
+  entry: TemplateIndexEntry & { remote: NonNullable<TemplateIndexEntry['remote']> };
+  labels: TemplateLabelsWithFacets;
+  busy: boolean;
+  installing: boolean;
+  onInstall?: (entry: TemplateIndexEntry) => void;
+}) {
+  const { state, thumbnail } = entry.remote;
+  return (
+    <TemplateCard
+      displayType={entry.display_type}
+      id={entry.id.replace(':', '-')}
+      name={entry.name}
+      notes={state === 'update_plugin' ? __('Needs a newer version of WConvert.', 'wconvert')
+        : state === 'unavailable' ? __('Needs a plugin this site doesn’t have.', 'wconvert') : undefined}
+      marks={<div className="flex flex-wrap items-center gap-2">
+        <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
+        {state === 'locked' && <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(entry.tier)}</Badge>}
+      </div>}
+      absent={thumbnail ? (
+        <img className="wconvert-gallery__thumbnail" src={thumbnail['1x']} srcSet={`${thumbnail['1x']} 1x, ${thumbnail['2x']} 2x`}
+          alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+      ) : (
+        <ul className="wconvert-facets">{marksFor(entry, labels).map((word) => <li key={word}>{word}</li>)}</ul>
+      )}
+      action={(describedBy) => state === 'locked' ? (
+        entry.preview_url ? (
+          <Button asChild variant="outline">
+            <a href={entry.preview_url} target="_blank" rel="noopener noreferrer" aria-describedby={describedBy}>
+              {__('See this design', 'wconvert')}<ExternalLink aria-hidden="true" />
+            </a>
+          </Button>
+        ) : <span className="text-note text-muted-foreground">{sprintf(/* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */ __('Available with %s.', 'wconvert'), tierProductName(entry.tier))}</span>
+      ) : state === 'install' && onInstall ? (
+        <Button variant="outline" aria-describedby={describedBy} disabled={busy} onClick={() => onInstall(entry)}>
+          {installing ? __('Adding…', 'wconvert') : __('Add to my designs', 'wconvert')}
+        </Button>
+      ) : null}
+    />
   );
 }

@@ -118,6 +118,8 @@ export interface AdminRoute {
   occasion?: string;
   /** Choosing a goal and setup for a new campaign: an address, so Back and reload keep it. */
   creating: boolean;
+  /** A design the new campaign starts from, from a "Use this template" link (ADR 0156). */
+  design?: string;
   editId?: string;
   editorTab?: 'rules';
   returnTo: string;
@@ -154,7 +156,28 @@ export const editorHref = (id: string, returnTo?: string, tab?: 'rules'): string
     tab,
     back: returnTo ? returnHref(returnTo) : undefined,
   });
-export const createHref = ({ occasion }: { occasion?: string } = {}): string => withQuery('optins', { new: 1, occasion });
+export const createHref = ({ occasion, design }: { occasion?: string; design?: string } = {}): string => withQuery('optins', { new: 1, occasion, design });
+
+/** A catalogue design id, as a link may carry it. */
+export const DESIGN_ID = /^[a-z0-9][a-z0-9-]{0,59}$/;
+
+/**
+ * `admin.php?page=wconvert&design=<id>`, the website's "Use this template".
+ *
+ * A query string rather than a hash, because the login screen keeps a query
+ * through `redirect_to` and drops a fragment. Read once, then moved into the
+ * creation route and removed from the address, so a reload does not repeat it
+ * (ADR 0156). Nothing installs on page load.
+ */
+export function takeDesignLink(location: Pick<Location, 'search' | 'pathname' | 'hash'> = window.location): string | undefined {
+  const params = new URLSearchParams(location.search);
+  const design = params.get('design') ?? '';
+  if (!params.has('design')) return undefined;
+  params.delete('design');
+  const search = params.toString();
+  window.history.replaceState(null, '', `${location.pathname}${search ? `?${search}` : ''}${location.hash}`);
+  return DESIGN_ID.test(design) ? design : undefined;
+}
 /** The campaign list, filtered to one occasion or not. */
 export const optinsHref = ({ occasion }: { occasion?: string } = {}): string => withQuery('optins', { occasion });
 export const occasionHref = (id: string): string => `#occasions/${id}`;
@@ -212,6 +235,7 @@ export function routeFrom(hash: string): AdminRoute {
     ...(OCCASION_PAGE.test(path) ? { occasionId: path.slice('occasions/'.length) } : {}),
     ...(occasion ? { occasion } : {}),
     creating: section === 'optins' && !value('edit') && value('new') === '1',
+    ...(section === 'optins' && value('new') === '1' && DESIGN_ID.test(value('design') ?? '') ? { design: value('design') } : {}),
     editId: section === 'optins' ? value('edit') : undefined,
     editorTab: section === 'optins' && value('edit') && value('tab') === 'rules' ? 'rules' : undefined,
     returnTo: returnHref(params.get('back')),

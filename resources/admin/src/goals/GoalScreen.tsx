@@ -10,7 +10,9 @@ import { PickerSearch } from '../discovery/PickerSearch';
 import { Dialog, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { PickerDialogContent, PickerDialogHeader, PickerDialogBody } from '../discovery/PickerDialog';
-import { TemplatePacks } from '../templates/TemplatePacks';
+import { OnlineSetups } from '../templates/OnlineSetups';
+import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
+import { fitsOutcome } from './outcome';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
@@ -58,9 +60,15 @@ export interface GoalScreenProps {
   occasion?: string;
   onBusyChange?: (busy: boolean) => void;
   onCheckOptins?: () => void;
+  /** A design id from a "Use this template" link: shown first, then started from (ADR 0156). */
+  design?: string;
 }
 
-export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: into }: GoalScreenProps) {
+export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: into, design }: GoalScreenProps) {
+  const [unpinned, setUnpinned] = useState(false);
+  const { pinned: pinnedState, reload: reloadPinned } = usePinnedDesign(unpinned ? undefined : design);
+  // The local design a new campaign starts from, once it is on this site.
+  const pinned = pinnedState?.state === 'ready' ? pinnedState.entry : null;
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
   const [packsOpen, setPacksOpen] = useState(false);
   const [inspected, setInspected] = useState<PlaybookEntry | null>(null);
@@ -187,7 +195,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     try {
       const selected = previewEntries.find(entry => entry.id === playbookId);
       const prepared = selected && previews.previews.get(selected.id);
-      const prefilled = selected?.revision ? await prefill(goal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
+      const filled = selected?.revision ? await prefill(goal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
+      // Started from a linked design with no setup: the server snapshots it on create.
+      const prefilled = pinned && !playbookId ? { ...filled, config: { ...filled.config, template_id: pinned.id } } : filled;
       // Leads stay in WConvert until a service is connected (ADR 0133), so
       // the prefill needs no capture mode written into it.
       const home = into ? picker.data?.occasions.items.find(item => item.id === into) : undefined;
@@ -214,10 +224,12 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   };
 
   if (goal === null) {
-    const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow') : [];
+    // A linked design offers only the goals it can serve (ADR 0085).
+    const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow').filter((entry) => !pinned || fitsOutcome(entry.outcome, pinned.facets)) : [];
     return <Region className="wconvert-creation wconvert-creation--goals">
       <Step at={1} />
       <RegionHeader title={__('What do you want to achieve?', 'wconvert')} />
+      {pinnedState && <PinnedDesignNotice pinned={pinnedState} onReload={reloadPinned} onInstalled={reloadPinned} onClear={() => setUnpinned(true)} />}
       {goals.status === 'failed' ? <RegionErrorState message={goals.message} onRetry={() => setGoalsRetry((value) => value + 1)} />
         : <RegionBody className="wconvert-creation__goals">{goals.status === 'loading' ? <ChoiceSkeleton /> : shown.length === 0 ?
         <EmptyState icon={Sparkles} title={__('No goals available', 'wconvert')}
@@ -277,7 +289,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     ...(businessId !== 'all' ? [{ id: 'business', label: businesses.get(businessId) ?? __('Selected business', 'wconvert'), remove: () => setBusinessId('all') }] : []),
     ...(formatId !== 'all' ? [{ id: 'format', label: displayTypeLabel(formatId), remove: () => setFormatId('all') }] : []),
     ...(collectionId !== 'all' ? [{ id: 'collection', label: collectionId === 'bundled'
-      ? __('Included with WConvert', 'wconvert') : collections.get(collectionId) ?? __('Selected pack', 'wconvert'), remove: () => setCollectionId('all') }] : []),
+      ? __('Included with WConvert', 'wconvert') : collections.get(collectionId) ?? __('Selected source', 'wconvert'), remove: () => setCollectionId('all') }] : []),
   ];
   // What "More filters" holds, so its closed row can say how many are on.
   const hiddenFilters = Number(businessId !== 'all') + Number(collectionId !== 'all') + Number(savedOnly) + Number(availableOnly);
@@ -391,6 +403,11 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
       trailing={<Button variant="outline" disabled={starting !== null} onClick={changeGoal}>
         <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Change goal', 'wconvert')}
       </Button>} />
+    {pinned && <div className="wconvert-picker__notice" role="status">
+      <strong>{sprintf(/* translators: %s: a design name. */ __('Starting from “%s”', 'wconvert'), pinned.name)}</strong>
+      <p>{__('Start with this design and your own words, or pick a setup below that uses it.', 'wconvert')}</p>
+      <div><Button disabled={starting !== null} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Starting…', 'wconvert') : __('Start with this design', 'wconvert')}</Button></div>
+    </div>}
     {picker.error && !settings && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
     {vocabulary.status === 'failed' && <RegionError message={__('Setup details could not be loaded. You can still choose a setup and review its rules in the editor.', 'wconvert')} onRetry={() => setRulesRetry((value) => value + 1)} />}
     {/*
@@ -416,7 +433,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
               <Library aria-hidden="true" />{allCollections ? __('Show all setups', 'wconvert') : __('Browse collections', 'wconvert')}
             </DropdownMenuItem>
             {catalogConfigured() && <DropdownMenuItem onSelect={() => { choseCollection.current = false; setPacksOpen(true); }}>
-              <LayoutTemplate aria-hidden="true" />{__('Template packs', 'wconvert')}
+              <LayoutTemplate aria-hidden="true" />{__('Online setups', 'wconvert')}
             </DropdownMenuItem>}
             <DropdownMenuItem onSelect={() => { setSettings(true); void picker.reload(); }}>
               <CalendarDays aria-hidden="true" />{__('Occasions & preferences', 'wconvert')}
@@ -453,7 +470,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
                 <option value="all">{__('All campaign setups', 'wconvert')}</option>
                 <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
                 {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-                {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
+                {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected source', 'wconvert')}</option>}
               </select>
             </label>
             <fieldset className="wconvert-filter-field">
@@ -488,10 +505,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
         event.preventDefault();
         (choseCollection.current ? collectionPicker.current : browseTrigger.current)?.focus();
       }}>
-        <AdminDialogHeader title={__('Template packs', 'wconvert')} meta={__('Packs add designs and campaign setups to your library.', 'wconvert')} />
-        <TemplatePacks displayType="" goal={goal.id}
-          onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
-          onChooseStartingPoints={(id) => { choseCollection.current = true; setFiltersOpen(true); setCollectionId(id); setFormatId('all'); setBusinessId('all'); setQuery(''); setPacksOpen(false); }} />
+        <AdminDialogHeader title={__('Online setups', 'wconvert')} meta={sprintf(/* translators: %s: a campaign goal. */ __('Campaign setups from the WConvert library for “%s”.', 'wconvert'), goal.label)} />
+        <PickerDialogBody><OnlineSetups goal={goal.id} onInstalled={() => setPlaybooksRetry((value) => value + 1)} /></PickerDialogBody>
       </PickerDialogContent>
     </Dialog>
     <Dialog open={settings} onOpenChange={setSettings}>
