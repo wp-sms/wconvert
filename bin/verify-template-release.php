@@ -44,7 +44,8 @@ $transport = new class($directory, $base) implements CatalogTransport, CatalogIm
     public bool $offline = false;
     public function __construct(private string $directory, private string $base) {}
     public function get(string $url, int $limit = PackValidator::MAX_BYTES): string { return $this->read('public', $url, $limit); }
-    public function revalidate(string $url, ?string $etag): ?array { return ['body' => $this->read('public', $url, 65536), 'etag' => null]; }
+    /** @return array{body: string, etag: string|null} */
+    public function revalidate(string $url, ?string $etag): array { return ['body' => $this->read('public', $url, 65536), 'etag' => null]; }
     public function image(string $url, int $bytes): string { return $this->read('public', $url, $bytes); }
     public function authorize(array $designs, array $setups): void {}
     public function premium(string $path, int $limit): string { return $this->read('private', $this->base . substr($path, strlen('premium/')), $limit); }

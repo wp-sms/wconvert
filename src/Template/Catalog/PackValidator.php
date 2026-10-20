@@ -136,7 +136,6 @@ final class PackValidator
             // `v` is the vocabulary (2); 3 is the earlier spelling of a flow (ADR 0156).
             self::check(in_array($tree['v'] ?? null, [TemplateTree::VERSION, 3], true), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
             self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
-            self::check(TemplateTree::VERSION <= $requires['tree'], __('This pack understates its design vocabulary.', 'wconvert'));
             // The capability names flows by their old version number; it is a name, not a version.
             $requiredCapabilities[] = $graph ? 'template-tree:3' : 'template-tree:2';
             $nodeIds = [];
