@@ -1,0 +1,90 @@
+[
+  {
+    "id": "supper-evening-menu",
+    "visited": [
+      "menu"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "weeknight-recipe-sample",
+    "visited": [
+      "sample",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "colour-collection-notes",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "garment-fit-guide",
+    "visited": [
+      "guide"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "workshop-programme",
+    "visited": [
+      "programme"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "studio-conversation",
+    "visited": [
+      "request",
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "weekend-observations",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "custom-project-start",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "room-planning-worksheet",
+    "visited": [
+      "details",
+      "received"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "ceramics-open-studio",
+    "visited": [
+      "exhibition"
+    ],
+    "finalKind": "content",
+    "passed": true
+  }
+]

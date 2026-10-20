@@ -1,0 +1,165 @@
+{
+  "id": "measurement-map",
+  "name": "Measurement map",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#243a30",
+    "muted": "#536359",
+    "accent": "#365748",
+    "accent-fg": "#ffffff",
+    "border": "#7d877b",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "48rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "guide",
+        "name": "Measurement guide",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n2",
+              "text": "A BETTER FIT STARTS HERE",
+              "role": "eyebrow"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "heading",
+                  "id": "n3",
+                  "text": "Measure once.\nChoose with confidence.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.75rem",
+                    "heading-font": "Georgia, serif",
+                    "heading-weight": "400"
+                  },
+                  "narrow": {
+                    "heading-size": "1.875rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "text": "Use a shirt you already like. Lay it flat without stretching the fabric.",
+                  "role": "body"
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n5",
+                      "text": "BEFORE YOU CHOOSE",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "text": "Compare garment measurements, not body measurements. Check the product’s own size chart.",
+                      "role": "body",
+                      "tokens": {
+                        "text-size": ".9375rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#edf1ee",
+                    "pad": "1.25rem",
+                    "radius": "0"
+                  }
+                }
+              ],
+              "ratio": 0.65,
+              "basis": "16rem"
+            },
+            {
+              "type": "image",
+              "id": "n1",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22600%22%20height%3D%22380%22%20viewBox%3D%220%200%20600%20380%22%3E%3Crect%20width%3D%22600%22%20height%3D%22380%22%20fill%3D%22%23edf1ee%22/%3E%3Cpath%20d%3D%22M170%2075L235%2045H365L430%2075L482%20148L420%20187L390%20145V325H210V145L180%20187L118%20148Z%22%20fill%3D%22%23d2dccc%22%20stroke%3D%22%23365748%22%20stroke-width%3D%223%22/%3E%3Cpath%20d%3D%22M260%2045Q300%20105%20340%2045%22%20fill%3D%22none%22%20stroke%3D%22%23365748%22%20stroke-width%3D%223%22/%3E%3Cpath%20d%3D%22M217%20190H383M224%20183L217%20190L224%20197M376%20183L383%20190L376%20197M352%2091V315M345%2098L352%2091L359%2098M345%20308L352%20315L359%20308%22%20fill%3D%22none%22%20stroke%3D%22%23ab442d%22%20stroke-width%3D%223%22/%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22190%22%20r%3D%2222%22%20fill%3D%22%23ab442d%22/%3E%3Ccircle%20cx%3D%22352%22%20cy%3D%22270%22%20r%3D%2222%22%20fill%3D%22%23ab442d%22/%3E%3Ctext%20x%3D%22300%22%20y%3D%22198%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2224%22%20fill%3D%22white%22%3EA%3C/text%3E%3Ctext%20x%3D%22352%22%20y%3D%22278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2224%22%20fill%3D%22white%22%3EB%3C/text%3E%3C/svg%3E",
+              "alt": "Flat shirt diagram. A measures chest width horizontally; B measures length from shoulder to hem.",
+              "fit": "contain",
+              "tokens": {
+                "radius": "0"
+              }
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n7",
+                      "text": "A / CHEST WIDTH",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "text": "Measure straight across, just below the sleeves.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n9",
+                      "text": "B / BODY LENGTH",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n10",
+                      "text": "Measure from the shoulder beside the collar to the hem.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "ratio": 0.5,
+              "basis": "16rem"
+            },
+            {
+              "type": "divider",
+              "id": "n11"
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "label": "Open the size and fit guide",
+              "action": "link",
+              "role": "cta_label"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

@@ -13,7 +13,7 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 132 campaigns
+## Internal creation and review studio: 142 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
@@ -21,8 +21,8 @@ screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **132 campaign setups using 76 designs**, drawn from a complete
-inventory of **108 designs**. Updated 20 October: **40 setup approvals are current
+The studio contains **142 campaign setups using 86 designs**, drawn from a complete
+inventory of **118 designs**. Updated 20 October: **50 setup approvals are current
 and 92 remain stale**, with nine approved curated collections. The hosted library now serves 35 setups / 32 designs / eight packs / six complete
 collections, published and verified over HTTPS on 20 October.
 The latest selection adds twelve previously unhosted studio setups using twelve
@@ -618,3 +618,7 @@ and registered setup (not a saved inventory), renders every screen/result at
 select-chevron centre/size/text clearance, and phone country arrow. Save the
 resulting JSON with fresh desktop/phone screenshots. It complements visual review;
 it cannot approve campaigns or bypass the publication gate.
+
+## Creative editions · 20 October 2026
+
+Ten new compositions (eight Free, two Pro), eighteen screens: menu, recipe sample, colour mosaic, measurement diagram, programme, conversation, broadsheet, project workboard, room checklist and exhibition wall. Open `out/pilot.html?batch=creative-editions`. These source/studio additions are not yet in hosted packs. Review evidence, native journeys and screenshot hashes are in `docs/reviews/creative-editions-2026-10-20/`. All ten have fresh scoped reviews; unrelated stale approvals remain a separate queue.

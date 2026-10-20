@@ -25,3 +25,13 @@ The illustration depicts a terracotta pot, cream vase and green cup. It illustra
 ## Task lamp downloadable derivative · 20 October 2026
 
 `task-lamp.png` is the separately reviewed 960 × 800 resvg-js export of the unchanged original SVG. It ships as a Free asset in Useful everyday campaigns. Source URI, PNG and provenance evidence are pinned in the publishing plan. It remains fictional sample artwork; replace its facts and picture together. See `docs/reviews/hosted-practical-2026-10-20/task-lamp-export.md`.
+
+## Creative editions · 20 October 2026
+
+`garment-measurement.svg` is original WConvert geometric artwork, authored for Measurement map and available under the repository GPL-2.0-or-later licence. It depicts a simplified flat shirt with A (chest width) and B (shoulder-to-hem length). It has no external references, scripts, fonts or trademarks. It is illustrative: merchants must match the instructions to their own size chart. The template embeds the exact SVG source. A hosted raster derivative is not published in this batch.
+
+`ceramic-exhibition.jpg` is original AI-generated sample imagery made with the built-in OpenAI image generation tool on 20 October 2026. No reference image was supplied. It depicts fictional objects, not actual merchandise, third-party artwork or completed customer work. The 1536 × 1024 generated image was encoded to JPEG at quality 78 with `sips`; its composition was not edited. It is provided as reusable sample artwork to the extent the project can grant rights; no exclusivity or copyright ownership in AI output is asserted. Merchants should replace it when it would misrepresent their exhibition. The Pro Exhibition wall template embeds these JPEG bytes. No hosted asset upload is included.
+
+Generation prompt:
+
+> Create one polished editorial photograph for a fictional contemporary ceramics exhibition template. Landscape 3:2. A sculptural matte terracotta vessel with curved handle, a small chalk-white angular vase and a wide dark charcoal bowl arranged as an artful still life on three pale stone plinths at deliberately different heights. Warm ivory seamless background, strong late-afternoon directional sunlight from left, crisp architectural shadows falling right, gallery-quality restrained composition, tactile ceramic detail, sophisticated quiet luxury. The three objects occupy the lower two thirds with generous cream breathing room above. Absolutely no text, no lettering, no logos, no people, no frames, no UI. Original imagery, not reproductions of identifiable artworks. This is a reusable illustration of fictional objects for a web template.

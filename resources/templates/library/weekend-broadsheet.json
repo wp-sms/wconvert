@@ -1,0 +1,298 @@
+{
+  "id": "weekend-broadsheet",
+  "name": "Weekend broadsheet",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fbf9f1",
+    "fg": "#242a28",
+    "muted": "#58605a",
+    "accent": "#242a28",
+    "accent-fg": "#ffffff",
+    "border": "#818980",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "50rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "The next edition",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n11",
+                  "text": "INDEPENDENT NOTES",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n12",
+                  "text": "THE WEEKEND EDITION",
+                  "role": "eyebrow"
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n13"
+            },
+            {
+              "type": "heading",
+              "id": "n14",
+              "text": "The Observant",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "3.5rem",
+                "heading-font": "Georgia, serif",
+                "heading-weight": "400",
+                "align": "center"
+              },
+              "narrow": {
+                "heading-size": "1.875rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n15"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "text": "THE LEAD STORY",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "text": "The pleasure\nof noticing.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-font": "Georgia, serif",
+                        "heading-size": "2.5rem",
+                        "heading-weight": "400"
+                      },
+                      "narrow": {
+                        "heading-size": "1.875rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "text": "Small observations about the places, objects and rituals that shape a day.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n4",
+                      "text": "IN EACH EDITION",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n5"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "text": "01   One considered essay",
+                      "role": "body"
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n7"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "text": "02   Something worth keeping",
+                      "role": "body"
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n9"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n10",
+                      "text": "03   A question to carry",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#ece8dc",
+                    "pad": "1.25rem",
+                    "radius": "0"
+                  }
+                }
+              ],
+              "ratio": 0.65,
+              "basis": "14rem",
+              "tokens": {
+                "gap": "1.5rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n16",
+                  "text": "A GOOD END TO THE WEEK",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "field",
+                      "id": "n17",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true,
+                      "tokens": {
+                        "input-bg": "#ffffff",
+                        "fg": "#242a28",
+                        "muted": "#e0e5df"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "id": "n18",
+                      "label": "Request the weekend letter",
+                      "action": "submit",
+                      "role": "cta_label",
+                      "submission": "request"
+                    }
+                  ]
+                },
+                {
+                  "type": "consent",
+                  "id": "n19",
+                  "role": "consent_text",
+                  "text": "Email me the weekend letter. I can unsubscribe anytime.",
+                  "hidden": true
+                },
+                {
+                  "type": "text",
+                  "id": "n20",
+                  "text": "Weekly reading, with an unsubscribe link in every email.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": "1rem"
+                  },
+                  "size": "s"
+                }
+              ],
+              "tokens": {
+                "bg": "#242a28",
+                "fg": "#ffffff",
+                "muted": "#e0e5df",
+                "accent": "#f1dd90",
+                "accent-fg": "#242a28",
+                "border": "#9aa49a",
+                "input-bg": "#ffffff",
+                "pad": "1.25rem",
+                "radius": "0"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n21",
+              "text": "THE OBSERVANT / READER DESK",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n22",
+              "role": "success_headline",
+              "text": "Reader request received",
+              "tokens": {
+                "heading-size": "1.75rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n23"
+            },
+            {
+              "type": "text",
+              "id": "n24",
+              "role": "success_body",
+              "text": "Thank you. We have recorded your request for the weekend letter."
+            },
+            {
+              "type": "button",
+              "id": "n25",
+              "label": "Close",
+              "action": "close",
+              "role": "close_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.75rem",
+            "gap": "1rem",
+            "bg": "#ece8dc",
+            "radius": "0"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "request",
+        "required": true,
+        "fields": [
+          "n17"
+        ],
+        "consents": [
+          "n19"
+        ]
+      }
+    ]
+  }
+}

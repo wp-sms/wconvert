@@ -9,7 +9,7 @@ const root = resolve(import.meta.dirname, '../../..');
 const out = resolve(import.meta.dirname, '../out');
 const designs = readDesigns(root);
 const setups = JSON.parse(execFileSync('php', ['tools/design-library/build/pilot.php'], {
-  cwd: root, env: { ...process.env, WCONVERT_EXPORT_ALL: '1' }, encoding: 'utf8',
+  cwd: root, env: { ...process.env, WCONVERT_EXPORT_ALL: '1' }, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
 }));
 const entries = [...designs.map(d => ({ ...d, source: 'design' })), ...setups.map(s => ({
   id: s.id, source: 'setup', display_type: s.display_type, ...s.config.template,

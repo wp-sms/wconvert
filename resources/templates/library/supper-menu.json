@@ -1,0 +1,230 @@
+{
+  "id": "supper-menu",
+  "name": "Supper menu",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f8f0dc",
+    "fg": "#3d281e",
+    "muted": "#654d3e",
+    "accent": "#6c362a",
+    "accent-fg": "#ffffff",
+    "border": "#7d877b",
+    "input-bg": "#ffffff",
+    "heading-size": "2.25rem",
+    "heading-weight": "700",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "tracking": "-0.025em",
+    "pad": "1rem",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "33rem",
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "menu",
+        "name": "Sample menu",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n13",
+              "text": "THE LONG TABLE / SAMPLE MENU",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n14",
+              "text": "Make an evening\nof it.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "2.75rem",
+                "heading-font": "Georgia, serif",
+                "heading-weight": "400"
+              },
+              "narrow": {
+                "heading-size": "1.875rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n15",
+              "text": "A seasonal supper, served in three chapters.",
+              "role": "body"
+            },
+            {
+              "type": "divider",
+              "id": "n16"
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "text": "01",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "text": "To begin",
+                      "role": "headline",
+                      "size": "s",
+                      "tokens": {
+                        "heading-size": "1.5rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "text": "Roasted roots · cultured cream · toasted seeds",
+                  "role": "body",
+                  "tokens": {
+                    "text-size": ".9375rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": ".375rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n4"
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n5",
+                      "text": "02",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n6",
+                      "text": "At the table",
+                      "role": "headline",
+                      "size": "s",
+                      "tokens": {
+                        "heading-size": "1.5rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "text": "Seasonal greens · butter beans · warm flatbread",
+                  "role": "body",
+                  "tokens": {
+                    "text-size": ".9375rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": ".375rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n9",
+                      "text": "03",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n10",
+                      "text": "Something sweet",
+                      "role": "headline",
+                      "size": "s",
+                      "tokens": {
+                        "heading-size": "1.5rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n11",
+                  "text": "Poached pear · oat crumble · vanilla",
+                  "role": "body",
+                  "tokens": {
+                    "text-size": ".9375rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": ".375rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n12"
+            },
+            {
+              "type": "button",
+              "id": "n17",
+              "label": "Explore the supper evenings",
+              "action": "link",
+              "role": "cta_label"
+            },
+            {
+              "type": "text",
+              "id": "n18",
+              "text": "See current dates, price and dietary information before booking.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": "1rem"
+              },
+              "size": "s"
+            }
+          ],
+          "tokens": {
+            "pad": "1rem",
+            "gap": "1rem",
+            "radius": "0",
+            "border": "#71553d"
+          },
+          "edges": "all"
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

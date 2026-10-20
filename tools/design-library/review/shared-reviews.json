@@ -51739,6 +51739,1986 @@
         }
       },
       "record_id": "5e737d20a36db90bebfe99e531185b21bd0dd1009c13ef994ff404617a4a3d12"
+    },
+    {
+      "id": "supper-evening-menu",
+      "revision": "044e6f774a11259e856f2e3351f54baa3779926c1e819643535e86ec18a5dd22",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.918Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "5b89fc0ff8b331b66c99eb6ef141e12ac6fa7832f1976e606054ef49b44e9755"
+    },
+    {
+      "id": "weeknight-recipe-sample",
+      "revision": "d558b5554905e5c803492176da054abd536865f5ce471209c288c91c05b62a7b",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "d5760e3aa58dbed8b615fa92049899ad86165bf52a3dec7810cc072a39814a45"
+    },
+    {
+      "id": "colour-collection-notes",
+      "revision": "13d7e4b8dd863e3fb29a37059d08b0caa931f32cd1b14b3f4dea28ee2d62d777",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "6d5a2579fd8245d407a6fd27941b2b0827b1c4656ea3b7ac3d4415f341e59805"
+    },
+    {
+      "id": "garment-fit-guide",
+      "revision": "c81fa6499d5d05ffb00f8d3bb558d092c50f2a96c60d33e57c18894d9c09db27",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "18bc317da9887a5305f5bda787d10b08b638c8119c530d83f3ec0414b6a7b919"
+    },
+    {
+      "id": "workshop-programme",
+      "revision": "1454d4abff23998c713dc4ec633e9be23c60f9aadc42c22b427a0ca867bcd3bd",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "ddc6b73ad63b8f9a89639598acc6d0c7ef9f0bda49d6e9ab2f5b0625b8fb5c19"
+    },
+    {
+      "id": "studio-conversation",
+      "revision": "af107b54df198a13c7f2f654c393b50b4624e1fc5965e31d108becf848eb89cf",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "3f7c510bfe4b85439c821e049958d2c52d0664f90446611b0785b74a682750dd"
+    },
+    {
+      "id": "weekend-observations",
+      "revision": "16f9c6f32ee4927d7fecc8c58f8a3e8552b4bdb2e8b6fa227b24924db472ac2e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "e89812ba261a9d6cc3cfd49a686b2c187ae7a640d8a87759201b9b2251e39b2b"
+    },
+    {
+      "id": "custom-project-start",
+      "revision": "c98776e7050b78c63f0d0917981a42089196ee98c1adf88267e4b9794cd9ae26",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "91b73f7ab6897c64b69a6f17c97d38992b260b81893d5474407984cf012e8573"
+    },
+    {
+      "id": "room-planning-worksheet",
+      "revision": "5f28551ce40d9b334bedf398cdad13b69f69578a814afa1b8dd481b585a604d7",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "19d023d7fe2ba95d84f7ddf3bfc0388cc3df51ce5db5ee27678bd231b8d01e21"
+    },
+    {
+      "id": "ceramics-open-studio",
+      "revision": "47db3eb705711b54c185f62301825476225a0dd8d4616eae2044fe7a180065d4",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T07:58:42.920Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "bf59f9ecfa04b894c05d8b2cf7e7e57479a0e8f29fea6a3db8c9bd99fb98adb3"
+    },
+    {
+      "id": "supper-evening-menu",
+      "revision": "044e6f774a11259e856f2e3351f54baa3779926c1e819643535e86ec18a5dd22",
+      "base_id": "5b89fc0ff8b331b66c99eb6ef141e12ac6fa7832f1976e606054ef49b44e9755",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.427Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "f5b04f28dbd1f849f4973f9a256a03438e69cb1f4ea35b5f3e61939a518e6669"
+    },
+    {
+      "id": "weeknight-recipe-sample",
+      "revision": "d558b5554905e5c803492176da054abd536865f5ce471209c288c91c05b62a7b",
+      "base_id": "d5760e3aa58dbed8b615fa92049899ad86165bf52a3dec7810cc072a39814a45",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "6da41008757526a1e8ecbcdcbadd25d855d5b9f408915b5e96da83dd9bad42f4"
+    },
+    {
+      "id": "colour-collection-notes",
+      "revision": "13d7e4b8dd863e3fb29a37059d08b0caa931f32cd1b14b3f4dea28ee2d62d777",
+      "base_id": "6d5a2579fd8245d407a6fd27941b2b0827b1c4656ea3b7ac3d4415f341e59805",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "f0e4ab30b9a835b4f977f451f9c67c87f55729252b344069cff9e78d2ffece2a"
+    },
+    {
+      "id": "garment-fit-guide",
+      "revision": "c81fa6499d5d05ffb00f8d3bb558d092c50f2a96c60d33e57c18894d9c09db27",
+      "base_id": "18bc317da9887a5305f5bda787d10b08b638c8119c530d83f3ec0414b6a7b919",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "4c877c9b66b2e427e612d99c8796d9d598f9d73bb69eb9d85ce5988ba693e283"
+    },
+    {
+      "id": "workshop-programme",
+      "revision": "1454d4abff23998c713dc4ec633e9be23c60f9aadc42c22b427a0ca867bcd3bd",
+      "base_id": "ddc6b73ad63b8f9a89639598acc6d0c7ef9f0bda49d6e9ab2f5b0625b8fb5c19",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "88f43a94920afe5ffd60d603df848cc6931c579611a2675a5887d21c187bcf95"
+    },
+    {
+      "id": "studio-conversation",
+      "revision": "af107b54df198a13c7f2f654c393b50b4624e1fc5965e31d108becf848eb89cf",
+      "base_id": "3f7c510bfe4b85439c821e049958d2c52d0664f90446611b0785b74a682750dd",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "953287324053e0f5faaa7e6fbe5bef4c96b744572dfe3baedfe51d24ddc5310b"
+    },
+    {
+      "id": "weekend-observations",
+      "revision": "16f9c6f32ee4927d7fecc8c58f8a3e8552b4bdb2e8b6fa227b24924db472ac2e",
+      "base_id": "e89812ba261a9d6cc3cfd49a686b2c187ae7a640d8a87759201b9b2251e39b2b",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "08e3aa0b523ab7d5c60a7b46de36fb35c861eb4e13f2c63d88837851cf56c80d"
+    },
+    {
+      "id": "custom-project-start",
+      "revision": "c98776e7050b78c63f0d0917981a42089196ee98c1adf88267e4b9794cd9ae26",
+      "base_id": "91b73f7ab6897c64b69a6f17c97d38992b260b81893d5474407984cf012e8573",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "13f76949795d94cbe9672d2736ba861a637fed43de32f5195417a34b2c59c74d"
+    },
+    {
+      "id": "room-planning-worksheet",
+      "revision": "5f28551ce40d9b334bedf398cdad13b69f69578a814afa1b8dd481b585a604d7",
+      "base_id": "19d023d7fe2ba95d84f7ddf3bfc0388cc3df51ce5db5ee27678bd231b8d01e21",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "df0d4d1707963159d6c8f87da90a28dc703fcafdd55f16fc739c06ab96facc40"
+    },
+    {
+      "id": "ceramics-open-studio",
+      "revision": "47db3eb705711b54c185f62301825476225a0dd8d4616eae2044fe7a180065d4",
+      "base_id": "bf59f9ecfa04b894c05d8b2cf7e7e57479a0e8f29fea6a3db8c9bd99fb98adb3",
+      "decision": "approved",
+      "reviewer": "Codex — creative editions",
+      "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+      "at": "2026-10-20T08:00:02.428Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+              "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+              "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+              "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+              "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+              "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+            },
+            {
+              "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+              "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+            }
+          ]
+        }
+      },
+      "record_id": "d17f0120a61707b31747e2eddb7978d830b55e81218bd0ea04a9d2c90816d7ed"
     }
   ]
 }

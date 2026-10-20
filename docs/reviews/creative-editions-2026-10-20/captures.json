@@ -1,0 +1,766 @@
+[
+  {
+    "id": "supper-evening-menu",
+    "width": 320,
+    "file": "supper-evening-menu-320.png",
+    "rects": [
+      {
+        "height": 747.65625,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "weeknight-recipe-sample",
+    "width": 320,
+    "file": "weeknight-recipe-sample-320.png",
+    "rects": [
+      {
+        "height": 664.1875,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 587.9375,
+        "width": 320,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 405.71875,
+        "width": 320,
+        "x": 43,
+        "y": 1203.796875
+      }
+    ]
+  },
+  {
+    "id": "colour-collection-notes",
+    "width": 320,
+    "file": "colour-collection-notes-320.png",
+    "rects": [
+      {
+        "height": 849.1875,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 421.078125,
+        "width": 288,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "garment-fit-guide",
+    "width": 320,
+    "file": "garment-fit-guide-320.png",
+    "rects": [
+      {
+        "height": 878.046875,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 320,
+    "file": "workshop-programme-320.png",
+    "rects": [
+      {
+        "height": 876.125,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "studio-conversation",
+    "width": 320,
+    "file": "studio-conversation-320.png",
+    "rects": [
+      {
+        "height": 477.71875,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 543.71875,
+        "width": 288,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 411.71875,
+        "width": 288,
+        "x": 43,
+        "y": 1083.796875
+      }
+    ]
+  },
+  {
+    "id": "weekend-observations",
+    "width": 320,
+    "file": "weekend-observations-320.png",
+    "rects": [
+      {
+        "height": 1050.78125,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 389.71875,
+        "width": 320,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "custom-project-start",
+    "width": 320,
+    "file": "custom-project-start-320.png",
+    "rects": [
+      {
+        "height": 930.890625,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 451.078125,
+        "width": 320,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "room-planning-worksheet",
+    "width": 320,
+    "file": "room-planning-worksheet-320.png",
+    "rects": [
+      {
+        "height": 881.375,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 323.71875,
+        "width": 288,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "ceramics-open-studio",
+    "width": 320,
+    "file": "ceramics-open-studio-320.png",
+    "rects": [
+      {
+        "height": 757.2890625,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "supper-evening-menu",
+    "width": 390,
+    "file": "supper-evening-menu-390.png",
+    "rects": [
+      {
+        "height": 662.15625,
+        "width": 358,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "weeknight-recipe-sample",
+    "width": 390,
+    "file": "weeknight-recipe-sample-390.png",
+    "rects": [
+      {
+        "height": 616.1875,
+        "width": 390,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 508.625,
+        "width": 390,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 332.359375,
+        "width": 390,
+        "x": 43,
+        "y": 1155.796875
+      }
+    ]
+  },
+  {
+    "id": "colour-collection-notes",
+    "width": 390,
+    "file": "colour-collection-notes-390.png",
+    "rects": [
+      {
+        "height": 777.1875,
+        "width": 358,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 347.71875,
+        "width": 358,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "garment-fit-guide",
+    "width": 390,
+    "file": "garment-fit-guide-390.png",
+    "rects": [
+      {
+        "height": 866.28125,
+        "width": 390,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 390,
+    "file": "workshop-programme-390.png",
+    "rects": [
+      {
+        "height": 779.890625,
+        "width": 358,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "studio-conversation",
+    "width": 390,
+    "file": "studio-conversation-390.png",
+    "rects": [
+      {
+        "height": 432.71875,
+        "width": 358,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 467.359375,
+        "width": 358,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 356.359375,
+        "width": 358,
+        "x": 43,
+        "y": 1006.796875
+      }
+    ]
+  },
+  {
+    "id": "weekend-observations",
+    "width": 390,
+    "file": "weekend-observations-390.png",
+    "rects": [
+      {
+        "height": 992.78125,
+        "width": 390,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 347.71875,
+        "width": 390,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "custom-project-start",
+    "width": 390,
+    "file": "custom-project-start-390.png",
+    "rects": [
+      {
+        "height": 824.65625,
+        "width": 390,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 395.71875,
+        "width": 390,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "room-planning-worksheet",
+    "width": 390,
+    "file": "room-planning-worksheet-390.png",
+    "rects": [
+      {
+        "height": 809.375,
+        "width": 358,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 299.71875,
+        "width": 358,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "ceramics-open-studio",
+    "width": 390,
+    "file": "ceramics-open-studio-390.png",
+    "rects": [
+      {
+        "height": 779.953125,
+        "width": 390,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "supper-evening-menu",
+    "width": 768,
+    "file": "supper-evening-menu-768.png",
+    "rects": [
+      {
+        "height": 603.515625,
+        "width": 528,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "weeknight-recipe-sample",
+    "width": 768,
+    "file": "weeknight-recipe-sample-768.png",
+    "rects": [
+      {
+        "height": 463.8555908203125,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 483.90380859375,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 307.9005126953125,
+        "width": 671,
+        "x": 43,
+        "y": 1024.0703125
+      }
+    ]
+  },
+  {
+    "id": "colour-collection-notes",
+    "width": 768,
+    "file": "colour-collection-notes-768.png",
+    "rects": [
+      {
+        "height": 557.5380859375,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 266.53961181640625,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "garment-fit-guide",
+    "width": 768,
+    "file": "garment-fit-guide-768.png",
+    "rects": [
+      {
+        "height": 813.255859375,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 768,
+    "file": "workshop-programme-768.png",
+    "rects": [
+      {
+        "height": 687.21875,
+        "width": 608,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "studio-conversation",
+    "width": 768,
+    "file": "studio-conversation-768.png",
+    "rects": [
+      {
+        "height": 432.71875,
+        "width": 416,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 467.359375,
+        "width": 416,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 332.359375,
+        "width": 416,
+        "x": 43,
+        "y": 1006.796875
+      }
+    ]
+  },
+  {
+    "id": "weekend-observations",
+    "width": 768,
+    "file": "weekend-observations-768.png",
+    "rects": [
+      {
+        "height": 599.111083984375,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 255.43377685546875,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "custom-project-start",
+    "width": 768,
+    "file": "custom-project-start-768.png",
+    "rects": [
+      {
+        "height": 534.716796875,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 276.40252685546875,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "room-planning-worksheet",
+    "width": 768,
+    "file": "room-planning-worksheet-768.png",
+    "rects": [
+      {
+        "height": 387.2095947265625,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 222.77874755859375,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "ceramics-open-studio",
+    "width": 768,
+    "file": "ceramics-open-studio-768.png",
+    "rects": [
+      {
+        "height": 820.04736328125,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "supper-evening-menu",
+    "width": 1440,
+    "file": "supper-evening-menu-1440.png",
+    "rects": [
+      {
+        "height": 603.515625,
+        "width": 528,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "weeknight-recipe-sample",
+    "width": 1440,
+    "file": "weeknight-recipe-sample-1440.png",
+    "rects": [
+      {
+        "height": 463.8555908203125,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 483.90380859375,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 307.9005126953125,
+        "width": 671,
+        "x": 43,
+        "y": 1024.0703125
+      }
+    ]
+  },
+  {
+    "id": "colour-collection-notes",
+    "width": 1440,
+    "file": "colour-collection-notes-1440.png",
+    "rects": [
+      {
+        "height": 534.3072509765625,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 255.43377685546875,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "garment-fit-guide",
+    "width": 1440,
+    "file": "garment-fit-guide-1440.png",
+    "rects": [
+      {
+        "height": 813.255859375,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 1440,
+    "file": "workshop-programme-1440.png",
+    "rects": [
+      {
+        "height": 687.21875,
+        "width": 608,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "studio-conversation",
+    "width": 1440,
+    "file": "studio-conversation-1440.png",
+    "rects": [
+      {
+        "height": 432.71875,
+        "width": 416,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 467.359375,
+        "width": 416,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 332.359375,
+        "width": 416,
+        "x": 43,
+        "y": 1006.796875
+      }
+    ]
+  },
+  {
+    "id": "weekend-observations",
+    "width": 1440,
+    "file": "weekend-observations-1440.png",
+    "rects": [
+      {
+        "height": 575.1466064453125,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 245.2164306640625,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "custom-project-start",
+    "width": 1440,
+    "file": "custom-project-start-1440.png",
+    "rects": [
+      {
+        "height": 534.716796875,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 276.40252685546875,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "room-planning-worksheet",
+    "width": 1440,
+    "file": "room-planning-worksheet-1440.png",
+    "rects": [
+      {
+        "height": 341.4237060546875,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 204.9564208984375,
+        "width": 671,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "ceramics-open-studio",
+    "width": 1440,
+    "file": "ceramics-open-studio-1440.png",
+    "rects": [
+      {
+        "height": 522.7880859375,
+        "width": 671,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 508,
+    "file": "workshop-programme-508.png",
+    "rects": [
+      {
+        "height": 741.453125,
+        "width": 476,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 536,
+    "file": "workshop-programme-536.png",
+    "rects": [
+      {
+        "height": 711.21875,
+        "width": 504,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 560,
+    "file": "workshop-programme-560.png",
+    "rects": [
+      {
+        "height": 711.21875,
+        "width": 528,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "workshop-programme",
+    "width": 592,
+    "file": "workshop-programme-592.png",
+    "rects": [
+      {
+        "height": 687.21875,
+        "width": 560,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  }
+]

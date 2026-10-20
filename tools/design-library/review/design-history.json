@@ -2238,6 +2238,192 @@
           "note": "Align field and action corners and make the completion Close action secondary"
         }
       ]
+    },
+    {
+      "id": "supper-menu",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "a590160ac7c1f03d1a5fc1f7a58dcde45a33f5d29fd69b04e9c61b45c4859623",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "19e7df07fb2fd76a075612071b736f14ddbad748b129ddee5001888b6348cb44",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "recipe-clipping",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "92a00c64ec8097061a88f22645ddec30c0a98943d79d88ec3ef68ea7fb140226",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "95f385d46bf71579e333846bd2e734ad5776e173a7728047876968cdc4d2db48",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "colour-atlas",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "588c515bd0be8cc6c7a173b0aef3f6b29c6cc36fc8e442bf26e0b3c5659768f8",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "aa29bec495e0f6232baee39a83d8a7b8df3100923bee239528f3984ab545e88d",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "measurement-map",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "428df058ff36d002afe87806b3aa17b007d16f69994b264c5acf4e13b110f678",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "760ae09ba17e76f1d4290812bc058b05bf262b05a96249180fe4e66f48e2c834",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "programme-board",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "e30691a7706ac1af8cbf09e12eb873efec3862f7b1d7300589c27bbf98ae1523",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "8eb81f3ada8498ff9c2c0fb755b8d90d8fafe0daf38344ddd597a377af19bd48",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-20",
+          "revision": "e64df05476284ed8cc9fb4e75b5d83a78c181e437e129b7321a27849c52660c6",
+          "note": "Stack the programme rail earlier so 390px phones do not squeeze descriptions beside empty time gutters."
+        }
+      ]
+    },
+    {
+      "id": "conversation-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "6ea4a0940b841ba2ef7b1322cbec9d7a547103c6b80cdb21988d17537a227e7c",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "ec55b13822f36a9759749c71e2d97f057d63f5981e1334d3e5765655ed64078f",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "weekend-broadsheet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "9a681bcffa971919936fe284b329379208be5e64dce14737d277268e5549ca5f",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "146f12bc050ac3727546d954419196c1dd1a7ab674af1bd17f74958d2987df08",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "project-workboard",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "bf0f5ac90f61494a35f9ae14cbc7aafa616dc5767ecfc1fec215c671f04611f0",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "e0bc7458b9c629b1e6747d58d2b9db5358d33cf411bb7146257465f8f09706c8",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "room-checklist",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "835317479a51d71956a3034bba8b8c605b763384e4b0e621994281ecd104e7da",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "6c4f17850bac428e05473e0a7421280c9434bbc26118c8e6c6fc4971b95b4735",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
+    },
+    {
+      "id": "exhibition-wall",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-20",
+          "revision": "f37e6471483447758a7318f0b06a060da185a18eff9a0cba0ee8825622587970",
+          "note": "Original creative-editions composition; candidate awaiting visual and native review."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-20",
+          "revision": "f730ca3d170a19450337f285e7f234ab114f85cc8c2df3fa21584954eabf2e88",
+          "note": "Polish original composition after desktop, phone, intermediate-width and native review."
+        }
+      ]
     }
   ]
 }

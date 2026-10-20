@@ -1,0 +1,28 @@
+{
+  "width": 320,
+  "height": 568,
+  "links": [
+    {
+      "id": "supper-evening-menu",
+      "href": "http://127.0.0.1:9463/",
+      "landed": "http://127.0.0.1:9463/"
+    },
+    {
+      "id": "garment-fit-guide",
+      "href": "http://127.0.0.1:9463/",
+      "landed": "http://127.0.0.1:9463/"
+    },
+    {
+      "id": "workshop-programme",
+      "href": "http://127.0.0.1:9463/",
+      "landed": "http://127.0.0.1:9463/"
+    },
+    {
+      "id": "ceramics-open-studio",
+      "href": "http://127.0.0.1:9463/",
+      "landed": "http://127.0.0.1:9463/"
+    }
+  ],
+  "backSelection": "Advice before deciding",
+  "colourShortPhone": "Scrolled to form; submitted successfully; closed acknowledgement and restored page"
+}

@@ -1,0 +1,104 @@
+[
+  {
+    "id": "supper-evening-menu",
+    "file": "supper-evening-menu-rtl-long.png",
+    "rects": [
+      {
+        "height": 1196.3125,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "colour-collection-notes",
+    "file": "colour-collection-notes-rtl-long.png",
+    "rects": [
+      {
+        "height": 1258.375,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 611.15625,
+        "width": 288,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "studio-conversation",
+    "file": "studio-conversation-rtl-long.png",
+    "rects": [
+      {
+        "height": 636.4375,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 726.4375,
+        "width": 288,
+        "x": 726,
+        "y": 471.796875
+      },
+      {
+        "height": 601.796875,
+        "width": 288,
+        "x": 43,
+        "y": 1265.796875
+      }
+    ]
+  },
+  {
+    "id": "weekend-observations",
+    "file": "weekend-observations-rtl-long.png",
+    "rects": [
+      {
+        "height": 1425.15625,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 524.4375,
+        "width": 320,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "room-planning-worksheet",
+    "file": "room-planning-worksheet-rtl-long.png",
+    "rects": [
+      {
+        "height": 1435.75,
+        "width": 288,
+        "x": 43,
+        "y": 471.796875
+      },
+      {
+        "height": 458.4375,
+        "width": 288,
+        "x": 726,
+        "y": 471.796875
+      }
+    ]
+  },
+  {
+    "id": "ceramics-open-studio",
+    "file": "ceramics-open-studio-rtl-long.png",
+    "rects": [
+      {
+        "height": 909.9140625,
+        "width": 320,
+        "x": 43,
+        "y": 471.796875
+      }
+    ]
+  }
+]

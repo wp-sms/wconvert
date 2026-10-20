@@ -441,6 +441,31 @@
         "captures": [],
         "has_image": false
       }
+    },
+    {
+      "id": "conversation-note",
+      "name": "Conversation note",
+      "display_type": "slide_in",
+      "tier": "pro",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email",
+          "interest"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "exhibition-wall",
+      "name": "Exhibition wall",
+      "display_type": "fullscreen",
+      "tier": "pro",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": true
+      }
     }
   ]
 }
