@@ -18,7 +18,7 @@ export function maintenanceScope(maintenance, selected, batch) {
 export function reviewScope({ base, paths, designs, setups, briefsBefore = [], briefsAfter = [], collectionsBefore = [], collectionsAfter = [], queue = [] }) {
   // Unknown production source changes are deliberately broad. Never guess that a
   // runtime/style change is harmless from a filename or a representative render.
-  const shared = paths.filter(p => /^(src\/|resources\/(renderer|loader)\/|pro\/(src|resources)\/|pro\/modules\/[^/]+\/(src|loader)\/)/.test(p)
+  const shared = paths.filter(p => /^(src\/|resources\/(renderer|loader|phone)\/|pro\/(src|resources)\/|pro\/modules\/[^/]+\/(src|loader)\/)/.test(p)
     || (/^pro\/modules\//.test(p) && p.endsWith('.php') && !setupPath(p))
     || (/^tools\/design-library\/pilot\/assets\//.test(p) && !p.endsWith('.md'))
     || ['wconvert.php', 'pro/wconvert-pro.php', 'resources/templates/manifest.json'].includes(p));

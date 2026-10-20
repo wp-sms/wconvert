@@ -69,6 +69,13 @@ customer site. The harness prevents outbound mail. It opens shadow roots solely
 for inspection. Check desktop, phone, transition widths, scrolling, dismissal,
 required/invalid input and saved values. Test failure/retry in the studio as well.
 
+Before saving each native screenshot, assert the actual page viewport width and
+wait for the expected screen content. For asynchronous products, wait for a
+loaded product action, not merely the page heading or an empty renderer root.
+Recheck the viewport after switching tabs: browser-wide overrides may apply to
+the newest tab. A filename containing `320` is not evidence of a phone viewport.
+Inspect the saved image before adding it to the approval ledger.
+
 Save the final screenshots in a new `docs/reviews/<batch-date>/` directory. Keep
 a `proof.json` ledger with each setup's current `revision`, a written `judgement`
 and `captures` (`screen`, nullable `result`, `surface`, `width`, `path`, `sha256`).

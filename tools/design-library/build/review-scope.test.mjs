@@ -14,8 +14,8 @@ test('copy and individual brief changes have a local scope',()=>{
  const x=input();x.paths=['resources/playbooks/one.php'];assert.deepEqual(reviewScope(x).setups.map(e=>e.id),['one']);
  x.paths=[];x.briefsAfter=[{id:'one',requirements:['new requirement']}];assert.deepEqual(reviewScope(x).setups.map(e=>e.id),['one']);
 });
-test('renderer and capture changes require the whole library',()=>{
- for(const path of ['resources/renderer/src/css.ts','resources/loader/src/index.ts','src/Playbook/Prefill.php','pro/modules/journeys/loader/index.ts','pro/modules/journeys/module.php','wconvert.php','resources/templates/manifest.json','tools/design-library/pilot/assets/example.svg']){
+test('renderer, phone and capture changes require the whole library',()=>{
+ for(const path of ['resources/renderer/src/css.ts','resources/phone/src/enhance.ts','resources/loader/src/index.ts','src/Playbook/Prefill.php','pro/modules/journeys/loader/index.ts','pro/modules/journeys/module.php','wconvert.php','resources/templates/manifest.json','tools/design-library/pilot/assets/example.svg']){
  const x=input();x.paths=[path];const p=reviewScope(x);assert.equal(p.mode,'whole-library',path);assert.equal(p.setups.length,3);assert.equal(p.designs.length,2);
  }
 });

@@ -537,7 +537,7 @@ The current studio has **128 setups / 75 designs**, with **107 designs / 153 reg
 
 The standalone Prefill uses an explicit empty site destination; WordPress retains real shop/home defaults. Product result previews include inert sample cards, and optional empty result links stay hidden. Graph preview traversal comes from the shipping loader. Remote v3 graph packs and explicitly declared, tier-checked paid targeting rules are now accepted by the strict importer. New source-format compatibility does not silently approve older content.
 
-Updated 19 October: six curated collections have current reviews for 25 unique setups. **103 other studio approvals remain stale** and should be re-reviewed in focused batches. The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
+Updated 20 October: six curated collections have current reviews. **31 setup approvals are current and 101 remain stale** after the shared control-icon refresh; the latter should be re-reviewed in focused batches. See [fresh approval evidence](../../docs/reviews/pr300-approvals-2026-10-20/README.md). The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
 
 Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.
 
@@ -599,8 +599,9 @@ See [the workflow](MAINTENANCE.md#reusable-batch-verification) and
 [the complete evidence](../../docs/reviews/considered-essentials-2026-10-19/README.md).
 
 This batch adds no hosted pack and publishes nothing to R2. The library sources
-contain 108 designs / 155 registered setups. The existing six collection approvals
-remain current; the 101 unrelated stale setups are still a separate review backlog.
+contain 108 designs / 155 registered setups. The six collection approvals were
+refreshed on 20 October together with 31 setup approvals after the shared control-icon correction. The 101 other stale setups
+remain a separate review backlog.
 There are also 39 older design-version records to reconcile during that backlog.
 The named batch gate now checks only its dependent designs and reports this debt;
 the unscoped whole-library gate still fails until all required reviews and design

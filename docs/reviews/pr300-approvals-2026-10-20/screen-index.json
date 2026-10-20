@@ -1,0 +1,394 @@
+[
+  {
+    "id": "add-useful-extras",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 1
+  },
+  {
+    "id": "basket-cross-sells",
+    "screen": "suggestions",
+    "result": null,
+    "step": 0,
+    "board": 1
+  },
+  {
+    "id": "checklist-download",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 1
+  },
+  {
+    "id": "checklist-download",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 1
+  },
+  {
+    "id": "cleaning-quote",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 2
+  },
+  {
+    "id": "cleaning-quote",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 2
+  },
+  {
+    "id": "coffee-taste-finder",
+    "screen": "taste",
+    "result": null,
+    "step": 0,
+    "board": 2
+  },
+  {
+    "id": "coffee-taste-finder",
+    "screen": "match",
+    "result": "bright",
+    "step": 1,
+    "board": 2
+  },
+  {
+    "id": "coffee-taste-finder",
+    "screen": "match",
+    "result": "smooth",
+    "step": 1,
+    "board": 3
+  },
+  {
+    "id": "coffee-taste-finder",
+    "screen": "match",
+    "result": "explore",
+    "step": 1,
+    "board": 3
+  },
+  {
+    "id": "consultation-invitation",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 3
+  },
+  {
+    "id": "consultation-invitation",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 3
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 4
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 4
+  },
+  {
+    "id": "edition-early-access",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 4
+  },
+  {
+    "id": "edition-early-access",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 4
+  },
+  {
+    "id": "editorial-weekly",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 5
+  },
+  {
+    "id": "editorial-weekly",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 5
+  },
+  {
+    "id": "equipment-return-checklist",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 5
+  },
+  {
+    "id": "equipment-return-checklist",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 5
+  },
+  {
+    "id": "excerpt-window",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 6
+  },
+  {
+    "id": "excerpt-window",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 6
+  },
+  {
+    "id": "explore-compatible-extras",
+    "screen": "suggestions",
+    "result": null,
+    "step": 0,
+    "board": 6
+  },
+  {
+    "id": "first-order-receipt",
+    "screen": "information",
+    "result": null,
+    "step": 0,
+    "board": 6
+  },
+  {
+    "id": "gift-planning-guide",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 7
+  },
+  {
+    "id": "gift-planning-guide",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 7
+  },
+  {
+    "id": "home-repair-quote",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 7
+  },
+  {
+    "id": "home-repair-quote",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 7
+  },
+  {
+    "id": "homeware-care-notes",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 8
+  },
+  {
+    "id": "homeware-care-notes",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 8
+  },
+  {
+    "id": "lighting-collection",
+    "screen": "information",
+    "result": null,
+    "step": 0,
+    "board": 8
+  },
+  {
+    "id": "maker-notes",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 8
+  },
+  {
+    "id": "maker-notes",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 9
+  },
+  {
+    "id": "reading-notes-guide",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 9
+  },
+  {
+    "id": "reading-notes-guide",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 9
+  },
+  {
+    "id": "recommend-accessory",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 9
+  },
+  {
+    "id": "renovation-callback",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 10
+  },
+  {
+    "id": "renovation-callback",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 10
+  },
+  {
+    "id": "repair-advice-request",
+    "screen": "request",
+    "result": null,
+    "step": 0,
+    "board": 10
+  },
+  {
+    "id": "repair-advice-request",
+    "screen": "details",
+    "result": null,
+    "step": 1,
+    "board": 10
+  },
+  {
+    "id": "repair-advice-request",
+    "screen": "received",
+    "result": null,
+    "step": 2,
+    "board": 11
+  },
+  {
+    "id": "repair-assessment",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 11
+  },
+  {
+    "id": "repair-assessment",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 11
+  },
+  {
+    "id": "restock-announcements",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 11
+  },
+  {
+    "id": "restock-announcements",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 12
+  },
+  {
+    "id": "sale-deadline",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 12
+  },
+  {
+    "id": "shopping-guidance",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 12
+  },
+  {
+    "id": "specification-sheet",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 12
+  },
+  {
+    "id": "sunday-reading",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 13
+  },
+  {
+    "id": "sunday-reading",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 13
+  },
+  {
+    "id": "upholstery-samples",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 13
+  },
+  {
+    "id": "upholstery-samples",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 13
+  },
+  {
+    "id": "website-review-enquiry",
+    "screen": "details",
+    "result": null,
+    "step": 0,
+    "board": 14
+  },
+  {
+    "id": "website-review-enquiry",
+    "screen": "received",
+    "result": null,
+    "step": 1,
+    "board": 14
+  },
+  {
+    "id": "writing-checklist",
+    "screen": "s1",
+    "result": null,
+    "step": 0,
+    "board": 14
+  },
+  {
+    "id": "writing-checklist",
+    "screen": "s2",
+    "result": null,
+    "step": 1,
+    "board": 14
+  }
+]

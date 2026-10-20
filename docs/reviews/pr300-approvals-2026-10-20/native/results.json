@@ -1,0 +1,969 @@
+[
+  {
+    "id": "cleaning-quote",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "cleaning-quote-1280-0.png",
+        "text": "A practical next stepA cleaner home. A clear next step.Tell us the kind of clean you need. We will use your email to discuss the scope.An estimate request. No booking or payment.Your name (optional)Email address *What kind of clean? (optional)Choose a serviceRegular cleaningA deep cleanMoving in or outRequest a cleaning estimateWe use your details to respond to this request."
+      },
+      {
+        "step": 1,
+        "file": "cleaning-quote-1280-1.png",
+        "text": "Thank youRequest receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "edition-early-access",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "edition-early-access-1280-0.png",
+        "text": "The next editionFirst look.Your inbox.A short email when a new collection arrives. No daily noise.Email address *Email me new-collection announcements. I can unsubscribe anytime.Request first accessCollection announcements only. Access and availability depend on the release."
+      },
+      {
+        "step": 1,
+        "file": "edition-early-access-1280-1.png",
+        "text": "Thank youYou’re on our request list.We have received your request for collection announcements."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "editorial-weekly",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "editorial-weekly-1280-0.png",
+        "text": "One good read. Every Friday.An essay worth making time for.A question to think about.A useful link to keep.Email address *Email me the Friday letter. I can unsubscribe anytime.Request the Friday letterYou can unsubscribe at any time."
+      },
+      {
+        "step": 1,
+        "file": "editorial-weekly-1280-1.png",
+        "text": "Request receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "homeware-care-notes",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "homeware-care-notes-1280-0.png",
+        "text": "Made for everydayCare for the pieces you love.A monthly note on looking after handmade homeware, from cleaning to careful storage.Email address *Email me monthly care notes. I can unsubscribe anytime.Request care notes"
+      },
+      {
+        "step": 1,
+        "file": "homeware-care-notes-1280-1.png",
+        "text": "Your request is received.Thank you for requesting monthly homeware care notes."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "restock-announcements",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "restock-announcements-1280-0.png",
+        "text": "Back in the makingAnother chance. When it returns.Request occasional email news when pieces return to this collection.Email address *Email me collection restock announcements. I can unsubscribe anytime.Request collection newsCollection news only. No product reservation or automatic stock alert."
+      },
+      {
+        "step": 1,
+        "file": "restock-announcements-1280-1.png",
+        "text": "Thank youRequest receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "upholstery-samples",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "upholstery-samples-1280-0.png",
+        "text": "Find the right fabric.Ask about samples before choosing your upholstery.What matters most? (optional)Choose an optionHow it feelsMatching a colorEveryday careEmail address *Ask about fabric samplesWe use your details to respond. Samples and postage are agreed separately."
+      },
+      {
+        "step": 1,
+        "file": "upholstery-samples-1280-1.png",
+        "text": "Request receivedYour fabric sample enquiry is received. No sample order or payment has been made."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "reading-notes-guide",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "reading-notes-guide-1280-0.png",
+        "text": "A practical guideRead.Notice.Remember.Five ways to get more from a book.Keep more of what you read.A short guide to choosing a question, taking notes and returning to useful ideas.Email address *Request the guideOne guide email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "reading-notes-guide-1280-1.png",
+        "text": "Request receivedThank you. Your request for the reading guide is received."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "writing-checklist",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "writing-checklist-1280-0.png",
+        "text": "THE DRAFT CHECKLIST07Checks for aclearer draft.Give your drafta second look.Seven checks for structure, evidence and a useful ending.Email address *Request the writing checklistOne checklist email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "writing-checklist-1280-1.png",
+        "text": "Request receivedThank you. Your writing checklist request has been received.START WITH ONE PASSRead your opening aloud. Is the point clear before the detail begins?Your request is for the writing checklist."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "repair-assessment",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "repair-assessment-1280-0.png"
+      },
+      {
+        "step": 1,
+        "file": "repair-assessment-1280-1.png",
+        "text": "Your requestAssessment request receivedThank you. Your request has been received. A visit, scope and price still need to be agreed."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form",
+      "submission completed after browser wait deadline; acknowledgment observed on next inspection"
+    ]
+  },
+  {
+    "id": "repair-advice-request",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "repair-advice-request-1280-0.png",
+        "text": "1 / Your requestTwo short stepsCould it be repaired?What needs attention? (optional)Choose an itemA chairA tableAnother pieceContinue to emailNo photos or measurements needed to start."
+      },
+      {
+        "step": 1,
+        "file": "repair-advice-request-1280-1.png",
+        "text": "2 / Reply addressTwo short stepsWhere can we reply?Email address *BackSend requestWe use your email to discuss this request. This is not a booking."
+      },
+      {
+        "step": 2,
+        "file": "repair-advice-request-1280-2.png",
+        "text": "Your request is received.Thank you. We have received your repair enquiry. No repair or appointment has been confirmed."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "renovation-callback",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "renovation-callback-1280-0.png",
+        "text": "A project starts with a conversationTalk through your renovation.Leave your number to discuss the scope and next steps for your project.Your name (optional)Phone number *🇺🇸+1Include + and the country code, for example +1 202 555 0123.What can we help with? (optional)Choose a topicA new projectImproving something existingHelp choosing the next stepNo appointment is booked here.Request a planning call"
+      },
+      {
+        "step": 1,
+        "file": "renovation-callback-1280-1.png",
+        "text": "Planning call requestedYour request is saved. The team can contact you to agree a time.Your number is for responding to this enquiry."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form"
+    ]
+  },
+  {
+    "id": "excerpt-window",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "excerpt-window-1280-0.png",
+        "text": "Try one exerciseMake the next step smaller.Write down one task you have been putting off. Now describe its first two minutes.“Sort the whole room” becomes “clear one shelf”. A small starting point makes the next action easier to see.An exercise from the Small Starts workbook.Keep going with the workbook.Six short exercises for turning a difficult project into a doable next step.Email address *Request the workbookOne resource email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "excerpt-window-1280-1.png",
+        "text": "Small StartsYour request is received.Thank you for requesting the workbook. Keep your first small step nearby."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "sunday-reading",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "sunday-reading-1280-0.png",
+        "text": "A letter worth making time forLess scrolling.More reading.One thoughtful essay every Sunday. Books, places and ideas that stay with you.The Sunday reading listEmail address *Email me the Sunday reading list. I can unsubscribe anytime.Request the Sunday letterWeekly. Free to read. Unsubscribe anytime."
+      },
+      {
+        "step": 1,
+        "file": "sunday-reading-1280-1.png",
+        "text": "Thank youA slower Sunday starts here.We have received your request for the Sunday letter."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "website-review-enquiry",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "website-review-enquiry-1280-0.png",
+        "text": "Website reviewFind the friction in your website.A focused review of the pages your customers use most.01 / ClarityCan visitors find the answer?02 / UsabilityCan they take the next step?Email address *Ask about a reviewWe use your email to discuss scope and pricing. This does not book a review."
+      },
+      {
+        "step": 1,
+        "file": "website-review-enquiry-1280-1.png",
+        "text": "Request receivedYour website review enquiry is received. Scope, pricing and timing are agreed separately."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "home-repair-quote",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "home-repair-quote-1280-0.png",
+        "text": "A practical next stepSmall repair.Fresh start.Tell us which part of your home needs attention. We will use your details to discuss the job.A request for a quote. No booking or payment is made here.Your name (optional)Email address *What needs attention? (optional)Choose a serviceA repairAn installationHelp decidingRequest a repair quoteWe use your details to respond to this request."
+      },
+      {
+        "step": 1,
+        "file": "home-repair-quote-1280-1.png",
+        "text": "Thank youYour request is received.Thank you for describing what you need. This is a quote request, not a confirmed booking."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "lighting-collection",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "lighting-collection-1280-0.png",
+        "text": "The lighting editA softer kind of evening.Table lamps for reading corners and quiet rooms.Explore the lighting edit"
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "specification-sheet",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "specification-sheet-1280-0.png",
+        "text": "Which table fits your space?Two everyday options. Start with the space beside your seat.FootprintSmall · 35 × 35 cmWide · 50 × 40 cmBest besideSmall · an armchairWide · a two-seat sofaCareSmall · wipe cleanWide · wipe cleanExplore the tablesCheck the product pages for materials, price and availability."
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "sale-deadline",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "sale-deadline-1280-0.png",
+        "text": "Time left to shop the sale6d 23:59:02See sale details"
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "first-order-receipt",
+    "width": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "first-order-receipt-1280-0.png",
+        "text": "For your first order10% offA little towards something you will keep.Your checkout codeREVIEW10Copy codeFirst order only. One use per customer. Cannot be combined with other offers.Find your first piece"
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "maker-notes",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "maker-notes-320-0.png",
+        "text": "The making of thingsFrom the workshop.A monthly note about materials, making and the people behind the pieces.Email address *Email me the monthly maker notes.Request the maker notesYou can unsubscribe at any time."
+      },
+      {
+        "step": 1,
+        "file": "maker-notes-320-1.png",
+        "text": "Thank youRequest receivedThank you. We have received your request.You can unsubscribe at any time."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "gift-planning-guide",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "gift-planning-guide-320-0.png",
+        "text": "Find a gift with a little thought.A guide to choosing by interests, occasion and what someone will actually use. Your name is optional.First name (optional)Email address *Request the gift guideOne resource email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "gift-planning-guide-320-1.png",
+        "text": "Request receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "checklist-download",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "checklist-download-320-0.png",
+        "text": "The forty-page guide, freeEverything we know about getting started, in one PDF.First name (optional)Email address *Send me the guideOne guide email. No newsletter."
+      },
+      {
+        "step": 1,
+        "file": "checklist-download-320-1.png",
+        "text": "Request receivedThank you. We have received your request for the guide."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "consultation-invitation",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "consultation-invitation-320-0.png",
+        "text": "Find the next step for your projectA first conversation about what you need, what is possible and whether we can help.Your name (optional)Email address *Request a consultationWe’ll use your details to reply. No appointment is booked."
+      },
+      {
+        "step": 1,
+        "file": "consultation-invitation-320-1.png",
+        "text": "Consultation request receivedThank you for getting in touch. We have received your details and your request for a conversation."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "earlier-appointment-enquiry-320-0.png",
+        "text": "Flexible on timing?Could an earlier time work for you?Tell us when you are usually available. We can contact you if a suitable appointment opens up.When could you come? (optional)Choose a preferenceWeekdaysWeekendsEither worksEmail address *Ask about an earlier timeWe use your details to respond. No place is reserved and any existing booking stays the same."
+      },
+      {
+        "step": 1,
+        "file": "earlier-appointment-enquiry-320-1.png",
+        "text": "Your enquiryEnquiry receivedThank you. We have received your details and any availability preference you selected. Your existing booking has not changed.Close"
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "equipment-return-checklist",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "equipment-return-checklist-320-0.png",
+        "text": "Ready to return your equipment?Request a checklist for the accessories, preparation and handover details to check before you return it.First name (optional)Email address *Request the return checklistOne checklist email. No newsletter signup. Your rental terms still apply."
+      },
+      {
+        "step": 1,
+        "file": "equipment-return-checklist-320-1.png",
+        "text": "Checklist request receivedThank you. We have received your request. This does not book a collection or confirm that equipment has been returned."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "maker-notes",
+    "width": 1280,
+    "actualWidth": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "maker-notes-1280-0.png",
+        "text": "The making of thingsFrom the workshop.A monthly note about materials, making and the people behind the pieces.Email address *Email me the monthly maker notes.Request the maker notesYou can unsubscribe at any time."
+      },
+      {
+        "step": 1,
+        "file": "maker-notes-1280-1.png",
+        "text": "Thank youRequest receivedThank you. We have received your request.You can unsubscribe at any time."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "gift-planning-guide",
+    "width": 1280,
+    "actualWidth": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "gift-planning-guide-1280-0.png",
+        "text": "Find a gift with a little thought.A guide to choosing by interests, occasion and what someone will actually use. Your name is optional.First name (optional)Email address *Request the gift guideOne resource email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "gift-planning-guide-1280-1.png",
+        "text": "Request receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "checklist-download",
+    "width": 1280,
+    "actualWidth": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "checklist-download-1280-0.png",
+        "text": "The forty-page guide, freeEverything we know about getting started, in one PDF.First name (optional)Email address *Send me the guideOne guide email. No newsletter."
+      },
+      {
+        "step": 1,
+        "file": "checklist-download-1280-1.png",
+        "text": "Request receivedThank you. We have received your request for the guide."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "consultation-invitation",
+    "width": 1280,
+    "actualWidth": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "consultation-invitation-1280-0.png",
+        "text": "Find the next step for your projectA first conversation about what you need, what is possible and whether we can help.Your name (optional)Email address *Request a consultationWe’ll use your details to reply. No appointment is booked."
+      },
+      {
+        "step": 1,
+        "file": "consultation-invitation-1280-1.png",
+        "text": "Consultation request receivedThank you for getting in touch. We have received your details and your request for a conversation."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "width": 1280,
+    "actualWidth": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "earlier-appointment-enquiry-1280-0.png",
+        "text": "Flexible on timing?Could an earlier time work for you?Tell us when you are usually available. We can contact you if a suitable appointment opens up.When could you come? (optional)Choose a preferenceWeekdaysWeekendsEither worksEmail address *Ask about an earlier timeWe use your details to respond. No place is reserved and any existing booking stays the same."
+      },
+      {
+        "step": 1,
+        "file": "earlier-appointment-enquiry-1280-1.png",
+        "text": "Your enquiryEnquiry receivedThank you. We have received your details and any availability preference you selected. Your existing booking has not changed.Close"
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "equipment-return-checklist",
+    "width": 1280,
+    "actualWidth": 1280,
+    "screens": [
+      {
+        "step": 0,
+        "file": "equipment-return-checklist-1280-0.png",
+        "text": "Ready to return your equipment?Request a checklist for the accessories, preparation and handover details to check before you return it.First name (optional)Email address *Request the return checklistOne checklist email. No newsletter signup. Your rental terms still apply."
+      },
+      {
+        "step": 1,
+        "file": "equipment-return-checklist-1280-1.png",
+        "text": "Checklist request receivedThank you. We have received your request. This does not book a collection or confirm that equipment has been returned."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "edition-early-access",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "edition-early-access-320-0.png",
+        "text": "The next editionFirst look.Your inbox.A short email when a new collection arrives. No daily noise.Email address *Email me new-collection announcements. I can unsubscribe anytime.Request first accessCollection announcements only. Access and availability depend on the release."
+      },
+      {
+        "step": 1,
+        "file": "edition-early-access-320-1.png",
+        "text": "Thank youYou’re on our request list.We have received your request for collection announcements."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "sale-deadline",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "sale-deadline-320-0.png",
+        "text": "Time left to shop the sale6d 23:59:17See sale details"
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "first-order-receipt",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "first-order-receipt-320-0.png",
+        "text": "For your first order10% offA little towards something you will keep.Your checkout codeREVIEW10Copy codeFirst order only. One use per customer. Cannot be combined with other offers.Find your first piece"
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "lighting-collection",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "lighting-collection-320-0.png",
+        "text": "The lighting editA softer kind of evening.Table lamps for reading corners and quiet rooms.Explore the lighting edit"
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "homeware-care-notes",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "homeware-care-notes-320-0.png",
+        "text": "Made for everydayCare for the pieces you love.A monthly note on looking after handmade homeware, from cleaning to careful storage.Email address *Email me monthly care notes. I can unsubscribe anytime.Request care notes"
+      },
+      {
+        "step": 1,
+        "file": "homeware-care-notes-320-1.png",
+        "text": "Your request is received.Thank you for requesting monthly homeware care notes."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "restock-announcements",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "restock-announcements-320-0.png",
+        "text": "Back in the makingAnother chance. When it returns.Request occasional email news when pieces return to this collection.Email address *Email me collection restock announcements. I can unsubscribe anytime.Request collection newsCollection news only. No product reservation or automatic stock alert."
+      },
+      {
+        "step": 1,
+        "file": "restock-announcements-320-1.png",
+        "text": "Thank youRequest receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "specification-sheet",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "specification-sheet-320-0.png",
+        "text": "Which table fits your space?Two everyday options. Start with the space beside your seat.FootprintSmall · 35 × 35 cmWide · 50 × 40 cmBest besideSmall · an armchairWide · a two-seat sofaCareSmall · wipe cleanWide · wipe cleanExplore the tablesCheck the product pages for materials, price and availability."
+      }
+    ],
+    "checks": []
+  },
+  {
+    "id": "home-repair-quote",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "home-repair-quote-320-0.png",
+        "text": "A practical next stepSmall repair.Fresh start.Tell us which part of your home needs attention. We will use your details to discuss the job.A request for a quote. No booking or payment is made here.Your name (optional)Email address *What needs attention? (optional)Choose a serviceA repairAn installationHelp decidingRequest a repair quoteWe use your details to respond to this request."
+      },
+      {
+        "step": 1,
+        "file": "home-repair-quote-320-1.png",
+        "text": "Thank youYour request is received.Thank you for describing what you need. This is a quote request, not a confirmed booking."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "cleaning-quote",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "cleaning-quote-320-0.png",
+        "text": "A practical next stepA cleaner home. A clear next step.Tell us the kind of clean you need. We will use your email to discuss the scope.An estimate request. No booking or payment.Your name (optional)Email address *What kind of clean? (optional)Choose a serviceRegular cleaningA deep cleanMoving in or outRequest a cleaning estimateWe use your details to respond to this request."
+      },
+      {
+        "step": 1,
+        "file": "cleaning-quote-320-1.png",
+        "text": "Thank youRequest receivedThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "repair-assessment",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "repair-assessment-320-0.png",
+        "text": "A practical first stepTell us aboutyour repair.Choose the kind of non-urgent repair you want to discuss. We will use your email to reply.For non-urgent repairs. No visit is booked here.Your name (optional)Email address *What needs attention? (optional)Choose an optionFixtures or fittingsInterior surfacesAnother non-urgent repairRequest an assessmentWe use your details to respond to this request."
+      },
+      {
+        "step": 1,
+        "file": "repair-assessment-320-1.png",
+        "text": "Your requestAssessment request receivedThank you. Your request has been received. A visit, scope and price still need to be agreed."
+      }
+    ],
+    "checks": [
+      "empty required field stays on form",
+      "invalid email stays on form"
+    ]
+  },
+  {
+    "id": "renovation-callback",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "renovation-callback-320-0.png"
+      },
+      {
+        "step": 1,
+        "file": "renovation-callback-320-1.png",
+        "text": "Planning call requested\n\nYour request is saved. The team can contact you to agree a time.\n\nYour number is for responding to this enquiry."
+      }
+    ],
+    "checks": [
+      "required phone blocked empty submission",
+      "valid phone request acknowledged"
+    ]
+  },
+  {
+    "id": "repair-advice-request",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "repair-advice-request-320-0.png",
+        "text": "1 / YOUR REQUEST\n\nTwo short steps\n\nCould it be repaired?\nWhat needs attention? (optional)\nChoose an item\nA chair\nA table\nAnother piece\nContinue to email\n\nNo photos or measurements needed to start."
+      },
+      {
+        "step": 1,
+        "file": "repair-advice-request-320-1.png",
+        "text": "2 / REPLY ADDRESS\n\nTwo short steps\n\nWhere can we reply?\nEmail address *\nBack\nSend request\n\nWe use your email to discuss this request. This is not a booking."
+      },
+      {
+        "step": 2,
+        "file": "repair-advice-request-320-2.png",
+        "text": "Your request is received.\n\nThank you. We have received your repair enquiry. No repair or appointment has been confirmed."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "website-review-enquiry",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "website-review-enquiry-320-0.png",
+        "text": "WEBSITE REVIEW\n\nFind the friction in your website.\n\nA focused review of the pages your customers use most.\n\n01 / CLARITY\n\nCan visitors find the answer?\n\n02 / USABILITY\n\nCan they take the next step?\n\nEmail address *\nAsk about a review\n\nWe use your email to discuss scope and pricing. This does not book a review."
+      },
+      {
+        "step": 1,
+        "file": "website-review-enquiry-320-1.png",
+        "text": "Request received\n\nYour website review enquiry is received. Scope, pricing and timing are agreed separately."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "sunday-reading",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "sunday-reading-320-0.png",
+        "text": "A LETTER WORTH MAKING TIME FOR\n\nLess scrolling.\nMore reading.\n\nOne thoughtful essay every Sunday. Books, places and ideas that stay with you.\n\nTHE SUNDAY READING LIST\n\nEmail address *\nEmail me the Sunday reading list. I can unsubscribe anytime.\nRequest the Sunday letter\n\nWeekly. Free to read. Unsubscribe anytime."
+      },
+      {
+        "step": 1,
+        "file": "sunday-reading-320-1.png",
+        "text": "THANK YOU\n\nA slower Sunday starts here.\n\nWe have received your request for the Sunday letter."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "editorial-weekly",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "editorial-weekly-320-0.png",
+        "text": "One good read. Every Friday.\n\nAn essay worth making time for.\n\nA question to think about.\n\nA useful link to keep.\n\nEmail address *\nEmail me the Friday letter. I can unsubscribe anytime.\nRequest the Friday letter\n\nYou can unsubscribe at any time."
+      },
+      {
+        "step": 1,
+        "file": "editorial-weekly-320-1.png",
+        "text": "Request received\n\nThank you. We have received your request."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "writing-checklist",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "writing-checklist-320-0.png",
+        "text": "THE DRAFT CHECKLIST\n\n07\n\nChecks for a\nclearer draft.\n\nGive your draft\na second look.\n\nSeven checks for structure, evidence and a useful ending.\n\nEmail address *\nRequest the writing checklist\n\nOne checklist email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "writing-checklist-320-1.png",
+        "text": "Request received\n\nThank you. Your writing checklist request has been received.\n\nSTART WITH ONE PASS\n\nRead your opening aloud. Is the point clear before the detail begins?\n\nYour request is for the writing checklist."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "reading-notes-guide",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "reading-notes-guide-320-0.png",
+        "text": "A PRACTICAL GUIDE\n\nRead.\nNotice.\nRemember.\n\nFive ways to get more from a book.\n\nKeep more of what you read.\n\nA short guide to choosing a question, taking notes and returning to useful ideas.\n\nEmail address *\nRequest the guide\n\nOne guide email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "reading-notes-guide-320-1.png",
+        "text": "Request received\n\nThank you. Your request for the reading guide is received."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "excerpt-window",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "excerpt-window-320-0.png",
+        "text": "TRY ONE EXERCISE\n\nMake the next step smaller.\n\nWrite down one task you have been putting off. Now describe its first two minutes.\n\n“Sort the whole room” becomes “clear one shelf”. A small starting point makes the next action easier to see.\n\nAn exercise from the Small Starts workbook.\n\nKeep going with the workbook.\n\nSix short exercises for turning a difficult project into a doable next step.\n\nEmail address *\nRequest the workbook\n\nOne resource email. No newsletter signup."
+      },
+      {
+        "step": 1,
+        "file": "excerpt-window-320-1.png",
+        "text": "SMALL STARTS\n\nYour request is received.\n\nThank you for requesting the workbook. Keep your first small step nearby."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  },
+  {
+    "id": "upholstery-samples",
+    "width": 320,
+    "actualWidth": 320,
+    "screens": [
+      {
+        "step": 0,
+        "file": "upholstery-samples-320-0.png",
+        "text": "Find the right fabric.\n\nAsk about samples before choosing your upholstery.\n\nWhat matters most? (optional)\nChoose an option\nHow it feels\nMatching a color\nEveryday care\nEmail address *\nAsk about fabric samples\n\nWe use your details to respond. Samples and postage are agreed separately."
+      },
+      {
+        "step": 1,
+        "file": "upholstery-samples-320-1.png",
+        "text": "Request received\n\nYour fabric sample enquiry is received. No sample order or payment has been made."
+      }
+    ],
+    "checks": [
+      "valid request acknowledged"
+    ]
+  }
+]

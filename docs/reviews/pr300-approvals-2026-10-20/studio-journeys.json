@@ -1,0 +1,273 @@
+[
+  {
+    "id": "edition-early-access",
+    "screens": [
+      "The next editionFirst look.Your inbox.A short email when a new collection arrives. No daily noise.Email address *Email me new-collection announcements. I can unsubscribe anytime.Request first accessCollection announcements only. Access and availability depend on the release.",
+      "Thank youYou’re on our request list.We have received your request for collection announcements."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "sale-deadline",
+    "screens": [
+      "Time left to shop the sale2d 04:32:18See sale details"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "first-order-receipt",
+    "screens": [
+      "For your first order10% offA little towards something you will keep.Your checkout codeYOUR CODECopy codeFirst order only. One use per customer. Cannot be combined with other offers.Find your first piece"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "lighting-collection",
+    "screens": [
+      "The lighting editA softer kind of evening.Table lamps for reading corners and quiet rooms.Explore the lighting edit"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "homeware-care-notes",
+    "screens": [
+      "Made for everydayCare for the pieces you love.A monthly note on looking after handmade homeware, from cleaning to careful storage.Email address *Email me monthly care notes. I can unsubscribe anytime.Request care notes",
+      "Your request is received.Thank you for requesting monthly homeware care notes."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "restock-announcements",
+    "screens": [
+      "Back in the makingAnother chance. When it returns.Request occasional email news when pieces return to this collection.Email address *Email me collection restock announcements. I can unsubscribe anytime.Request collection newsCollection news only. No product reservation or automatic stock alert.",
+      "Thank youRequest receivedThank you. We have received your request."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "specification-sheet",
+    "screens": [
+      "Which table fits your space?Two everyday options. Start with the space beside your seat.FootprintSmall · 35 × 35 cmWide · 50 × 40 cmBest besideSmall · an armchairWide · a two-seat sofaCareSmall · wipe cleanWide · wipe cleanExplore the tablesCheck the product pages for materials, price and availability."
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "home-repair-quote",
+    "screens": [
+      "A practical next stepSmall repair.Fresh start.Tell us which part of your home needs attention. We will use your details to discuss the job.A request for a quote. No booking or payment is made here.Your name (optional)Email address *What needs attention? (optional)Choose a serviceA repairAn installationHelp decidingRequest a repair quoteWe use your details to respond to this request.",
+      "Thank youYour request is received.Thank you for describing what you need. This is a quote request, not a confirmed booking."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "cleaning-quote",
+    "screens": [
+      "A practical next stepA cleaner home. A clear next step.Tell us the kind of clean you need. We will use your email to discuss the scope.An estimate request. No booking or payment.Your name (optional)Email address *What kind of clean? (optional)Choose a serviceRegular cleaningA deep cleanMoving in or outRequest a cleaning estimateWe use your details to respond to this request.",
+      "Thank youRequest receivedThank you. We have received your request."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "repair-assessment",
+    "screens": [
+      "A practical first stepTell us aboutyour repair.Choose the kind of non-urgent repair you want to discuss. We will use your email to reply.For non-urgent repairs. No visit is booked here.Your name (optional)Email address *What needs attention? (optional)Choose an optionFixtures or fittingsInterior surfacesAnother non-urgent repairRequest an assessmentWe use your details to respond to this request.",
+      "Your requestAssessment request receivedThank you. Your request has been received. A visit, scope and price still need to be agreed."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "renovation-callback",
+    "screens": [
+      "A project starts with a conversationTalk through your renovation.Leave your number to discuss the scope and next steps for your project.Your name (optional)Phone number *🇬🇧+44Include + and the country code, for example +1 202 555 0123.What can we help with? (optional)Choose a topicA new projectImproving something existingHelp choosing the next stepNo appointment is booked here.Request a planning call",
+      "Planning call requestedYour request is saved. The team can contact you to agree a time.Your number is for responding to this enquiry."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "repair-advice-request",
+    "screens": [
+      "1 / Your requestTwo short stepsCould it be repaired?What needs attention? (optional)Choose an itemA chairA tableAnother pieceContinue to emailNo photos or measurements needed to start.",
+      "2 / Reply addressTwo short stepsWhere can we reply?Email address *BackSend requestWe use your email to discuss this request. This is not a booking.",
+      "Your request is received.Thank you. We have received your repair enquiry. No repair or appointment has been confirmed."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "website-review-enquiry",
+    "screens": [
+      "Website reviewFind the friction in your website.A focused review of the pages your customers use most.01 / ClarityCan visitors find the answer?02 / UsabilityCan they take the next step?Email address *Ask about a reviewWe use your email to discuss scope and pricing. This does not book a review.",
+      "Request receivedYour website review enquiry is received. Scope, pricing and timing are agreed separately."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "sunday-reading",
+    "screens": [
+      "A letter worth making time forLess scrolling.More reading.One thoughtful essay every Sunday. Books, places and ideas that stay with you.The Sunday reading listEmail address *Email me the Sunday reading list. I can unsubscribe anytime.Request the Sunday letterWeekly. Free to read. Unsubscribe anytime.",
+      "Thank youA slower Sunday starts here.We have received your request for the Sunday letter."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "editorial-weekly",
+    "screens": [
+      "One good read. Every Friday.An essay worth making time for.A question to think about.A useful link to keep.Email address *Email me the Friday letter. I can unsubscribe anytime.Request the Friday letterYou can unsubscribe at any time.",
+      "Request receivedThank you. We have received your request."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "writing-checklist",
+    "screens": [
+      "THE DRAFT CHECKLIST07Checks for aclearer draft.Give your drafta second look.Seven checks for structure, evidence and a useful ending.Email address *Request the writing checklistOne checklist email. No newsletter signup.",
+      "Request receivedThank you. Your writing checklist request has been received.START WITH ONE PASSRead your opening aloud. Is the point clear before the detail begins?Your request is for the writing checklist."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "reading-notes-guide",
+    "screens": [
+      "A practical guideRead.Notice.Remember.Five ways to get more from a book.Keep more of what you read.A short guide to choosing a question, taking notes and returning to useful ideas.Email address *Request the guideOne guide email. No newsletter signup.",
+      "Request receivedThank you. Your request for the reading guide is received."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "excerpt-window",
+    "screens": [
+      "Try one exerciseMake the next step smaller.Write down one task you have been putting off. Now describe its first two minutes.“Sort the whole room” becomes “clear one shelf”. A small starting point makes the next action easier to see.An exercise from the Small Starts workbook.Keep going with the workbook.Six short exercises for turning a difficult project into a doable next step.Email address *Request the workbookOne resource email. No newsletter signup.",
+      "Small StartsYour request is received.Thank you for requesting the workbook. Keep your first small step nearby."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "recommend-accessory",
+    "screens": [
+      "A useful additionComplete your setupTake a closer look at these accessories.Product imageYour productCurrent store priceView productProduct imageYour productCurrent store priceView product"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "explore-compatible-extras",
+    "screens": [
+      "A considered pairingMake more of your everyday kit.Explore useful extras before you choose.Product imageYour productCurrent store priceView productProduct imageYour productCurrent store priceView product"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "add-useful-extras",
+    "screens": [
+      "A useful additionComplete your setupAdd an extra to complete your setup.Product imageYour productCurrent store priceAdd to cartProduct imageYour productCurrent store priceAdd to cart"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "basket-cross-sells",
+    "screens": [
+      "Before you check outOne more useful thing?Optional extras for the items in your basket.Product imageYour productCurrent store priceAdd to cartProduct imageYour productCurrent store priceAdd to cart"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "coffee-taste-finder",
+    "screens": [
+      "Find your everyday coffeeA cup that suits your taste.Choose the flavours you enjoy. See a starting point without sharing your email.Which flavours sound good?Choose the closest match. You can change your answer.Bright and fruitySmooth and chocolateyHelp me exploreSee my starting point",
+      "Start with bright and fruityExplore coffees with fruit-led tasting notes. Check each product for roast and brewing details.Sample products. Choose this shop’s products and filters in the editor.Product imageYour productCurrent store priceView productProduct imageYour productCurrent store priceView productResource linkChange my answer"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "shopping-guidance",
+    "screens": [
+      "A little help before you chooseReview the details that matter for your order.Read the guide"
+    ],
+    "passed": true,
+    "failureRetry": false
+  },
+  {
+    "id": "upholstery-samples",
+    "screens": [
+      "Find the right fabric.Ask about samples before choosing your upholstery.What matters most? (optional)Choose an optionHow it feelsMatching a colorEveryday careEmail address *Ask about fabric samplesWe use your details to respond. Samples and postage are agreed separately.",
+      "Request receivedYour fabric sample enquiry is received. No sample order or payment has been made."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "maker-notes",
+    "screens": [
+      "The making of thingsFrom the workshop.A monthly note about materials, making and the people behind the pieces.Email address *Email me the monthly maker notes.Request the maker notesYou can unsubscribe at any time.",
+      "Thank youRequest receivedThank you. We have received your request.You can unsubscribe at any time."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "gift-planning-guide",
+    "screens": [
+      "Find a gift with a little thought.A guide to choosing by interests, occasion and what someone will actually use. Your name is optional.First name (optional)Email address *Request the gift guideOne resource email. No newsletter signup.",
+      "Request receivedThank you. We have received your request."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "checklist-download",
+    "screens": [
+      "The forty-page guide, freeEverything we know about getting started, in one PDF.First name (optional)Email address *Send me the guideOne guide email. No newsletter.",
+      "Request receivedThank you. We have received your request for the guide."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "consultation-invitation",
+    "screens": [
+      "Find the next step for your projectA first conversation about what you need, what is possible and whether we can help.Your name (optional)Email address *Request a consultationWe’ll use your details to reply. No appointment is booked.",
+      "Consultation request receivedThank you for getting in touch. We have received your details and your request for a conversation."
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "screens": [
+      "Flexible on timing?Could an earlier time work for you?Tell us when you are usually available. We can contact you if a suitable appointment opens up.When could you come? (optional)Choose a preferenceWeekdaysWeekendsEither worksEmail address *Ask about an earlier timeWe use your details to respond. No place is reserved and any existing booking stays the same.",
+      "Your enquiryEnquiry receivedThank you. We have received your details and any availability preference you selected. Your existing booking has not changed.Close"
+    ],
+    "passed": true,
+    "failureRetry": true
+  },
+  {
+    "id": "equipment-return-checklist",
+    "screens": [
+      "Ready to return your equipment?Request a checklist for the accessories, preparation and handover details to check before you return it.First name (optional)Email address *Request the return checklistOne checklist email. No newsletter signup. Your rental terms still apply.",
+      "Checklist request receivedThank you. We have received your request. This does not book a collection or confirm that equipment has been returned."
+    ],
+    "passed": true,
+    "failureRetry": true
+  }
+]
