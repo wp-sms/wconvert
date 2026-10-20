@@ -45,10 +45,6 @@
       "custom_domain": true
     }
   ],
-  // The top level is production. Wrangler does not inherit bindings, vars or
-  // routes into an environment, so staging repeats every one of them with its
-  // own buckets, counters and address. Deployed by
-  // .github/workflows/template-service.yml, never by dashboard paste.
   "env": {
     "staging": {
       "name": "wconvert-template-api-staging",

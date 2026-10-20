@@ -66,6 +66,9 @@ rate-limit counters, and the address `templates-staging.wconvert.io`. Local
 
 ### Deploying (from Git only)
 
+Keep `wrangler.jsonc` plain JSON, with no comments: the publish, verify and test
+scripts read it with `JSON.parse`.
+
 `.github/workflows/template-service.yml` deploys the Worker. A merge to `main`
 that touches `tools/template-server/**` deploys **staging**; production is
 deployed only by running that workflow by hand with `environment: production`.
