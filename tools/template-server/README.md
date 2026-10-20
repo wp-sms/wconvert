@@ -207,3 +207,22 @@ WCONVERT_VERIFY_WOOCOMMERCE=/absolute/path/to/woocommerce WCONVERT_VERIFY_PREMIU
 ```
 
 The WooCommerce path supplies the real dependency needed by shopping-help; omit it for releases without product suggestions. This flag only enables explicit filesystem fixtures in the disposable verifier. It never enables production premium access. The check includes image hashes, local hydration, unchanged-image reuse and offline version snapshots.
+
+
+### Integrated gallery release (20 October)
+
+The reconciled plan includes all eight live packs (35 setups / 32 designs). The
+six-pack gallery rehearsal remains historical evidence, not a publication candidate.
+`PREVIEW_EMBED_ORIGINS` includes the exact HTTPS development website
+`https://dev.wconvert-website.pages.dev` alongside the two public website origins.
+Localhost and other Pages previews are not implicitly permitted.
+
+Remote publication checks the live catalogue before uploading. Missing pack IDs
+stop publication. For a deliberately reviewed removal or rollback that removes
+packs, repeat `--remove-pack ID` for **exactly** the IDs to remove. A blanket bypass
+is not supported. `--expected` still guards concurrent publishers. A dry run is
+local-only and cannot establish which packs are currently live.
+
+Backup destinations are checked for WordPress ancestors even when the CLI runs
+from a managed worktree. Keep backups outside any web-served directory and protect
+an offsite copy separately.

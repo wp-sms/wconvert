@@ -859,7 +859,7 @@ it('asks for the empty list to carry the only Create button', async () => {
   const onEmptyChange = vi.fn();
   render(<OptinList onEdit={() => undefined} onCreate={() => undefined} onEmptyChange={onEmptyChange} />);
   await screen.findByRole('button', { name: /Create your first campaign/ });
-  expect(onEmptyChange).toHaveBeenLastCalledWith(true);
+  await waitFor(() => expect(onEmptyChange).toHaveBeenLastCalledWith(true));
 });
 
 it('keeps other campaign families actionable while a write is pending', async () => {

@@ -11,7 +11,7 @@ function embeddingOrigins(value: string | undefined): string {
   try {
     if (origins.some(origin => {
       const url = new URL(origin);
-      return url.protocol !== 'https:' || url.origin !== origin || !!url.username || !!url.password;
+      return !/^(?:[a-z0-9.-]+|\[[a-f0-9:]+\])$/i.test(url.hostname) || url.protocol !== 'https:' || url.origin !== origin || !!url.username || !!url.password;
     })) return "'none'";
     return origins.join(' ');
   } catch { return "'none'"; }

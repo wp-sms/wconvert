@@ -1,0 +1,9 @@
+{
+  "release": "9f070cdd52e29a96240261c3041a91c32269121f235efc51e682a6c8a0646f49",
+  "packs": 8,
+  "identicalLivePackPayloads": 8,
+  "designs": 32,
+  "screens": 56,
+  "publicObjects": 82,
+  "hosted": false
+}

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, existsSync, statSync, readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync, statSync, readFileSync, mkdirSync, writeFileSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { backupRemote } from '../scripts/backup-remote.mjs';
@@ -69,4 +69,19 @@ test('a publication during backup invalidates the snapshot', async t => {
   };
   await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory, f.origin), /Catalogue changed/);
   assert(!existsSync(f.directory));
+});
+
+
+test('backup rejects a WordPress destination even from a managed worktree or symlink', async t => {
+  const f = fixture(t), root = join(f.directory, '..', 'site');
+  mkdirSync(join(root, 'wp-content'), { recursive: true });
+  writeFileSync(join(root, 'wp-load.php'), '<?php');
+  const alias = join(f.directory, '..', 'public-alias');
+  symlinkSync(join(root, 'wp-content'), alias);
+  for (const parent of [root, join(root, 'wp-content'), alias]) {
+    const destination = join(parent, 'private-backup');
+    await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, destination, f.origin), /outside the WordPress document root/);
+    assert(!existsSync(destination));
+  }
+  assert.equal(f.reads.length, 0, 'Reject before reading premium objects');
 });

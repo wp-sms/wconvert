@@ -31,7 +31,7 @@
     }
   ],
   "vars": {
-    "PREVIEW_EMBED_ORIGINS": "https://wconvert.io https://www.wconvert.io",
+    "PREVIEW_EMBED_ORIGINS": "https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev",
     "NEXUS_GRANT_URL": "https://my.wconvert.io/api/v1/wconvert/entitlements/grant",
     "NEXUS_KEYS_URL": "https://my.wconvert.io/api/v1/wconvert/entitlements/keys",
     "NEXUS_ISSUER": "https://nexus.veronalabs.com",

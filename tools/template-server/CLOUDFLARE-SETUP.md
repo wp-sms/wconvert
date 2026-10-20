@@ -157,3 +157,22 @@ from this directory. This checks public files and anonymous premium refusals; it
 does **not** prove that Nexus accepts the service key or that a licensed download
 works. Complete the real licence tests described above before claiming that.
 Without the secret, use the default verification mode (expected premium 503).
+
+
+### Website gallery configuration
+
+Deploy the gallery-capable Worker before publishing the new release. Its
+`PREVIEW_EMBED_ORIGINS` setting is:
+
+```text
+https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev
+```
+
+Use those exact origins without paths or trailing slashes. The development address
+is the approved Pages branch URL; other branches and localhost remain blocked.
+Keep the existing R2, rate-limit and Nexus bindings/secrets when deploying.
+The integrated plan preserves all eight live packs. Do not publish the old six-pack
+rehearsal. Remote publication blocks missing packs before uploads; an intentional
+removal or rollback needs one `--remove-pack ID` per removed pack as well as the
+normal `--expected` current-release check. Merely merging Git changes does not
+change the hosted Worker or catalogue.

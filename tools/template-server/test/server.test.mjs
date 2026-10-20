@@ -63,7 +63,12 @@ test('actual Worker/R2 runtime: public routing, private refusal, caches and atom
 });
 
 test('design catalogue discovery is additive; embedding origins are exact and fail closed', async t => {
- for (const configured of ['https://wconvert.io https://www.wconvert.io', '*', 'https://wconvert.io/path', 'https://wconvert.io https://user:pass@example.com']) {
+ for (const [configured, allowed] of [
+  ['https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev', true],
+  ['https://dev.wconvert-website.pages.dev', true],
+  ['https://evil.example;frame-src', false], ['https://*', false], ['*', false], ['https://*.pages.dev', false], ['http://localhost:3000', false],
+  ['https://wconvert.io/path', false], ['https://wconvert.io https://user:pass@example.com', false],
+ ]) {
   const mf = new Miniflare(convertV4MiniflareOptions({
    modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'),
    compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES'],
@@ -83,7 +88,7 @@ test('design catalogue discovery is additive; embedding origins are exact and fa
    assert.equal(cached.status, 304); assert.equal(cached.headers.get('link'), response.headers.get('link'));
    assert.equal((await fetch(`/thumbnails/${digest}.jpg`)).headers.get('content-type'), 'image/jpeg');
    const csp = (await fetch(`/previews/${digest}.html`)).headers.get('content-security-policy');
-   assert(csp.endsWith('frame-ancestors ' + (configured.startsWith('https://wconvert.io https://www.') ? configured : "'none'")));
+   assert(csp.endsWith('frame-ancestors ' + (allowed ? configured : "'none'")));
    assert(!csp.includes('allow-same-origin'));
   } finally { await mf.dispose(); }
  }

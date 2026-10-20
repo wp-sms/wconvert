@@ -99,7 +99,7 @@ Unknown designs/screens, unsupported device values or duplicate/unknown fragment
 
 ## Isolation and public content
 
-The Worker explicitly allows `https://wconvert.io` and `https://www.wconvert.io` as embedding parents through `PREVIEW_EMBED_ORIGINS`. Wildcards, credentials, paths, HTTP origins or malformed configuration fail closed with `frame-ancestors 'none'`. Add a reviewed exact HTTPS staging origin in configuration when needed; do not allow arbitrary parent-provided origins.
+The Worker explicitly allows `https://wconvert.io`, `https://www.wconvert.io` and `https://dev.wconvert-website.pages.dev` as embedding parents through `PREVIEW_EMBED_ORIGINS`. Wildcards, credentials, paths, HTTP origins or malformed configuration fail closed with `frame-ancestors 'none'`. Add a reviewed exact HTTPS staging origin in configuration when needed; do not allow arbitrary parent-provided origins.
 
 HTML is CSP-sandboxed with scripts but without same-origin, form, popup or top-navigation permissions. Connections are disabled; images/fonts are data URLs; `base-uri` and `form-action` are blocked. Sample inputs are disabled, names removed and link destinations stripped. No lead submission, email, checkout, cart action or installation occurs. Public metadata contains no editable trees, private pack URLs, license keys, passes, credentials or grant records. Public previews intentionally disclose rendered Pro appearance, including flattened artwork, without supplying premium installation payloads.
 
@@ -119,9 +119,9 @@ Replace the manually reviewed design inventory with a successful catalogue snaps
 
 Deployment requires explicit authorization:
 
-Before building the production release, reconcile the publishing plan with the live catalogue. On 20 October 2026, the live release `3f78ca41c2f7c38f7a6fec4b3a741fa200ef88b4b5333e909a57fb663711e5a7` had eight packs, while this checkout's plan had six. The missing local entries were `helpful-prompts` and `practical-essentials`. The six-pack local acceptance release is for testing; do not promote it over the live release. Bring in the reviewed source/approvals for those packs first.
+The integrated publishing plan preserves all eight live packs, including `helpful-prompts` and `practical-essentials`, with their reviewed sources and approvals. The earlier six-pack acceptance release is incomplete and must not be promoted. Build a fresh release from the integrated branch; remote publication now refuses unacknowledged removal of any currently listed pack before uploading objects.
 
-1. Deploy the updated Worker with the two approved embedding origins, retaining its existing private bindings, rate limits and Nexus configuration.
+1. Deploy the updated Worker with the three approved embedding origins, retaining its existing private bindings, rate limits and Nexus configuration.
 2. Build and validate a new approved release for `https://templates.wconvert.io`, then publish with the current release guard using the existing publisher.
 3. Run public remote acceptance and browser checks on the approved website origins. Existing plugin catalogue validation is exercised by the release builder; no plugin update is required.
 4. Update the website consumer separately. The implementation in this repository does not modify or deploy the website.

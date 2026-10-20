@@ -142,3 +142,9 @@ Use one prelaunch WConvert Template Library environment: Worker `wconvert-templa
 buckets `wconvert-templates-public` and `wconvert-templates-private`, both private.
 Local staging of objects means preparing files before manifest promotion, not a
 second hosted environment. See the [setup guide](../../template-server/CLOUDFLARE-SETUP.md).
+
+
+Remote publication also compares the selected release with the live pack IDs before
+any uploads. An incomplete plan cannot silently remove live packs. Intentional
+removals (including a rollback to a smaller catalogue) require an exact repeated
+`--remove-pack ID` list; do not use this to bypass an incomplete checkout.

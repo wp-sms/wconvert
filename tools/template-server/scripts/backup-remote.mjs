@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { loadEnvFile } from 'node:process';
 import { parseArgs } from 'node:util';
-import { lstatSync, mkdirSync, writeFileSync, realpathSync } from 'node:fs';
+import { lstatSync, mkdirSync, writeFileSync, realpathSync, existsSync } from 'node:fs';
 import { dirname, isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cloudTarget } from './cloud-config.mjs';
@@ -13,6 +13,11 @@ import { legacyReleaseId, validateDesignCatalogue } from './design-catalogue.mjs
 export async function backupRemote(publicBucket, privateBucket, directory, origin) {
   assert(isAbsolute(directory), 'Use an absolute backup directory outside the web root');
   const destinationParent = realpathSync(dirname(directory));
+  // Inspect the destination itself as well: managed worktrees are outside wp-content.
+  for (let parent = destinationParent; ; parent = dirname(parent)) {
+    assert(!existsSync(resolve(parent, 'wp-load.php')) && !(existsSync(resolve(parent, 'wp-admin')) && existsSync(resolve(parent, 'wp-content'))), 'Backups must stay outside the WordPress document root');
+    if (dirname(parent) === parent) break;
+  }
   const scriptPath = fileURLToPath(import.meta.url), contentAt = scriptPath.indexOf('/wp-content/');
   if (contentAt !== -1) {
     const webRoot = scriptPath.slice(0, contentAt);

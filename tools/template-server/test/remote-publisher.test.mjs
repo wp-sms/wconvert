@@ -133,3 +133,37 @@ test('bounded reads, missing bucket/access errors and scope restrictions fail cl
  assert.throws(()=>cloudTarget({...config,workers_dev:true}),/Configure/);
  assert.throws(()=>cloudTarget({...config,r2_buckets:config.r2_buckets.map(b=>({...b,bucket_name:'same-bucket'}))}),/Configure/);
 });
+
+
+function catalogue(id, ids) {
+ const output = release(id), key = `releases/${id}/page-1.json`;
+ const page = Buffer.from(JSON.stringify({ release: id, packs: ids.map(id => ({ id })) }));
+ output.origin = 'https://templates.example';
+ output.manifest = Buffer.from(JSON.stringify({ schema: 2, release: id, pages: [{url: `${output.origin}/${key}`, sha256: hash(page)}] }));
+ output.objects.set(key, page); output.objects.set(`releases/${id}/manifest.json`, output.manifest);
+ return output;
+}
+
+test('publication preserves every live pack, with exact acknowledgement for intentional removals', async t => {
+ const f = await fixture(t), ids = ['stores-starts', 'services-starts', 'publishers-starts', 'homeware-care', 'shopping-help', 'fabric-sample-enquiries', 'helpful-prompts', 'practical-essentials'];
+ await publishRemote(f.publicBucket, f.privateBucket, catalogue(first, ids), privateObjects, null);
+ const six = catalogue(second, ids.slice(0, 6)), before = f.requests.length;
+ await assert.rejects(publishRemote(f.publicBucket, f.privateBucket, six, privateObjects, first), /helpful-prompts, practical-essentials/);
+ assert(f.requests.slice(before).every(r => r.method === 'GET'));
+ assert.equal(await currentRelease(f.publicBucket), first);
+ await assert.rejects(publishRemote(f.publicBucket, f.privateBucket, six, privateObjects, first, ['helpful-prompts']), /would remove/);
+ await assert.rejects(publishRemote(f.publicBucket, f.privateBucket, six, privateObjects, first, ['helpful-prompts', 'practical-essentials', 'other']), /would remove/);
+ await publishRemote(f.publicBucket, f.privateBucket, catalogue(third, [...ids, 'new-pack']), privateObjects, first);
+ await publishRemote(f.publicBucket, f.privateBucket, catalogue(first, ids), privateObjects, third, ['new-pack']);
+ await publishRemote(f.publicBucket, f.privateBucket, six, privateObjects, first, ['practical-essentials', 'helpful-prompts']);
+ assert.equal(await currentRelease(f.publicBucket), second);
+});
+
+test('corrupt live catalogue pages block retention checks before uploading', async t => {
+ const f = await fixture(t);
+ await publishRemote(f.publicBucket, f.privateBucket, catalogue(first, ['live-pack']), privateObjects, null);
+ f.corrupt(`templates-public/releases/${first}/page-1.json`);
+ const before = f.requests.length;
+ await assert.rejects(publishRemote(f.publicBucket, f.privateBucket, catalogue(second, ['live-pack']), privateObjects, first), /Missing or changed catalogue page/);
+ assert(f.requests.slice(before).every(r => r.method === 'GET'));
+});

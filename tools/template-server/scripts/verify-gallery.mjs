@@ -36,7 +36,7 @@ try {
     if (url.origin === release.origin) {
       const response = await mf.dispatchFetch(url.href);
       await route.fulfill({ status: response.status, headers: Object.fromEntries(response.headers), body: Buffer.from(await response.arrayBuffer()) });
-    } else if (['https://wconvert.io', 'https://www.wconvert.io', 'https://blocked.example'].includes(url.origin)) {
+    } else if (['https://wconvert.io', 'https://www.wconvert.io', 'https://dev.wconvert-website.pages.dev', 'https://blocked.example'].includes(url.origin)) {
       await route.fulfill({ contentType: 'text/html', body: `<!doctype html><title>Embedding test</title><iframe title="WConvert design preview" sandbox="allow-scripts" referrerpolicy="no-referrer" style="width:90vw;height:80vh" src="${representative.embed_url}"></iframe>` });
     } else { throw Error(`Unexpected preview request: ${request.url()}`); }
   });
@@ -89,7 +89,7 @@ try {
   assert.equal(await page.locator('#error').isVisible(), true);
   await page.goto(representative.preview_url);
   assert.equal(await page.locator('header h1').isVisible(), true);
-  for (const origin of ['https://wconvert.io', 'https://www.wconvert.io']) {
+  for (const origin of ['https://wconvert.io', 'https://www.wconvert.io', 'https://dev.wconvert-website.pages.dev']) {
     await page.goto(origin);
     await page.frameLocator('iframe').locator('#sample').waitFor({ state: 'visible' });
   }
@@ -98,7 +98,7 @@ try {
   assert(violations.length > 0, 'Browser must enforce frame-ancestors');
   assert.deepEqual(errors, []);
   assert(requests.every(request => request.method === 'GET'));
-  const result = { ...report, localOnly: true, network: 'intercepted; no external requests', screenDeviceChecks: screens, allowedParents: 2, blockedParents: 1, pageErrors: errors.length };
+  const result = { ...report, localOnly: true, network: 'intercepted; no external requests', screenDeviceChecks: screens, allowedParents: 3, blockedParents: 1, pageErrors: errors.length };
   if (output) writeFileSync(resolve(output, 'gallery-acceptance.json'), JSON.stringify(result, null, 2) + '\n');
   console.log(JSON.stringify(result, null, 2));
 } finally { await browser.close(); await mf.dispose(); }

@@ -48,18 +48,31 @@ try {
   }
   const retained = [...release.objects.keys()].filter(key => /^releases\/[a-f0-9]{64}\/manifest\.json$/.test(key)).map(key => key.split('/')[1]).sort();
   assert.deepEqual([...snapshot.retained].sort(), retained);
+  const packIds = id => {
+    const manifest = JSON.parse(release.objects.get(`releases/${id}/manifest.json`));
+    return manifest.pages.flatMap(page => JSON.parse(release.objects.get(new URL(page.url).pathname.slice(1))).packs.map(pack => pack.id));
+  };
+  // Only this isolated rehearsal acknowledges removals automatically. The remote
+  // CLI always requires the operator to name each intentional removal.
+  const acknowledgements = [];
+  const removals = (from, to) => {
+    const next = new Set(packIds(to));
+    const ids = packIds(from).filter(id => !next.has(id)).sort();
+    acknowledgements.push({ from, to, removedPacks: ids });
+    return ids;
+  };
   let current = release.id; const rollbacks = [];
   for (const id of retained.filter(id => id !== release.id)) {
     const prior = readPublicRelease(directory, id);
-    await publishRemote(pub, priv, prior, readPrivateRelease(directory, prior), current);
+    await publishRemote(pub, priv, prior, readPrivateRelease(directory, prior), current, removals(current, id));
     await verify(id); rollbacks.push(id); current = id;
   }
-  if (current !== release.id) await publishRemote(pub, priv, release, privateObjects, current);
+  if (current !== release.id) await publishRemote(pub, priv, release, privateObjects, current, removals(current, release.id));
   await verify(release.id);
   assert.equal((await priv.list({ prefix: 'grants/' })).objects.length, 0);
   console.log(JSON.stringify({
     release: release.id, backupCapturedAt: snapshot.capturedAt, restoredPublicObjects: restore.created + 1,
-    restoredPrivateObjects: privateObjects.size, service, rollbacks,
+    restoredPrivateObjects: privateObjects.size, service, rollbacks, acknowledgements,
     restoredCurrentRelease: release.id, elapsedSeconds: (Date.now() - started) / 1000,
     localOnly: true, productionWrites: 0,
     limitations: 'Fresh local Workerd/R2 restore; no live account failover, Nexus restore, secret recovery or licensed HTTP acceptance.',
