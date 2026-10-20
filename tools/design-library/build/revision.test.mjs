@@ -27,10 +27,17 @@ test('adding, renaming or removing another design updates comparison data withou
   assert.equal(campaignRevision({ ...campaign, fingerprint: 'new-analysis', revision: 'previous' }, 'renderer'), campaignRevision(campaign, 'renderer'));
 });
 
-test('actual copy, layout, purpose, requirements, timing and rendered-output changes still invalidate approval', () => {
+test('editing the planning brief or moving the setup to another batch keeps the approval', () => {
+  const revision = campaignRevision(campaign, 'renderer');
+  for (const change of [{ requirements: ['Configure resource delivery'] }, { batch: 'later' }, { visitor_need: 'Reworded' }, { measure: 'Other' }, { difference: 'Other' }]) {
+    assert.equal(campaignRevision({ ...campaign, ...change }, 'renderer'), revision);
+  }
+});
+
+test('actual copy, layout, purpose, timing and rendered-output changes still invalidate approval', () => {
   const revision = campaignRevision(campaign, 'renderer');
   for (const change of [
-    { goal: 'collect_enquiries' }, { requirements: ['Configure resource delivery'] },
+    { goal: 'collect_enquiries' },
     { tokens: { bg: '#000' } }, { config: { display_rules: { seconds: 20 } } },
     { tree: { ...template.tree, steps: [] } }, { name: 'A different campaign' },
   ]) assert.notEqual(campaignRevision({ ...campaign, ...change }, 'renderer'), revision);

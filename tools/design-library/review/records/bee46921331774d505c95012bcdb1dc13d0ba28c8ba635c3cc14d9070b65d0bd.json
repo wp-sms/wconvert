@@ -1,0 +1,95 @@
+{
+  "id": "specification-sheet",
+  "revision": "565329602bd6dbae3877b9cf05d7a572597cc30a046d4eb2fc1906f437abaacf",
+  "base_id": "1c1bca84910e0174b4e10ba1f60e60b8a36fc9310518da6ae13ba6e91f8796cb",
+  "decision": "approved",
+  "reviewer": "Approval identity change (review process)",
+  "note": "Current under campaign-content-v3; the approval key now covers only what ships (rendered screens and shipped configuration), not the planning brief. Not a new review.",
+  "at": "2026-10-20T16:43:12Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-12.png",
+          "sha256": "8a8602323dd39726d33b95ab0c3cef5da2ecdff6f16682ed8b7670452caf7ce2"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-12.png",
+          "sha256": "a40e55d2823ee512de8849cd6703bc388f01383e595e830ca8af013c19e21092"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-12.png",
+          "sha256": "0acc79ee635698ba5b0c4f5e636312d02cb9937f67793e7a21374890cf6e8713"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-12.png",
+          "sha256": "d6d99420af4b6f337f9ac15b67a5cee933b8514d64427bc6e9e4925202075ce5"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/specification-sheet-1280-0.png",
+          "sha256": "60c6a63857ead193655a81358b30093061a5f64539e73350783e12415b7898ed"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/specification-sheet-320-0.png",
+          "sha256": "435237d7799f0e9f212d4e6cf35899bc6c00542cc12f593dddfdea9b78b552df"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "bee46921331774d505c95012bcdb1dc13d0ba28c8ba635c3cc14d9070b65d0bd"
+}
