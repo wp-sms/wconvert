@@ -1,0 +1,122 @@
+{
+  "verifiedAt": "2026-10-20T11:46:05.711Z",
+  "release": "e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d",
+  "checks": [
+    {
+      "path": "/downloads/7df17a798bd0e1a332e7658f19f6423110973199691c81cb55824f547f3d2577.json",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/downloads/7df17a798bd0e1a332e7658f19f6423110973199691c81cb55824f547f3d2577.json",
+      "method": "HEAD",
+      "status": 401
+    },
+    {
+      "path": "/assets/premium/606cf8ea1082395085f26566efff4285b3191e7b688f7498be38299463d1ccd6.png",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/assets/premium/606cf8ea1082395085f26566efff4285b3191e7b688f7498be38299463d1ccd6.png",
+      "method": "HEAD",
+      "status": 401
+    },
+    {
+      "path": "/assets/free/606cf8ea1082395085f26566efff4285b3191e7b688f7498be38299463d1ccd6.png",
+      "status": 404
+    },
+    {
+      "path": "/downloads/0b9140e57e720a196f857b0f2d7bb3635e2247009fcb15fced253c780339b08f.json",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/downloads/0b9140e57e720a196f857b0f2d7bb3635e2247009fcb15fced253c780339b08f.json",
+      "method": "HEAD",
+      "status": 401
+    },
+    {
+      "path": "/downloads/87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163.json",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/downloads/87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163.json",
+      "method": "HEAD",
+      "status": 401
+    },
+    {
+      "path": "/previews/0000000000000000000000000000000000000000000000000000000000000000.html",
+      "status": 404
+    },
+    {
+      "path": "/private/packs/0000000000000000000000000000000000000000000000000000000000000000.json",
+      "status": 404
+    },
+    {
+      "path": "/grants/private.json",
+      "status": 404
+    },
+    {
+      "path": "/packs/bar-countdown.json",
+      "status": 404
+    },
+    {
+      "path": "/manifest.json?key=not-a-credential",
+      "status": 400
+    }
+  ],
+  "csp": "sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'; frame-ancestors https://wconvert.io https://www.wconvert.io https://dev.wconvert-website.pages.dev",
+  "retainedRelease": "9f070cdd52e29a96240261c3041a91c32269121f235efc51e682a6c8a0646f49",
+  "retainedCatalogueUnchanged": true,
+  "retainedFocusedPreviewHashVerified": true,
+  "blackFriday": {
+    "id": "black-friday-2026",
+    "name": "Prepare for Black Friday",
+    "description": "Start with early access, a clear offer or a final-day announcement. Review the offer and your own dates.",
+    "items": [
+      {
+        "setup_id": "edition-early-access",
+        "design_id": "edition-pass",
+        "stage": "before",
+        "pack_id": "stores-starts",
+        "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+      },
+      {
+        "setup_id": "first-order-receipt",
+        "design_id": "offer-receipt",
+        "stage": "during",
+        "pack_id": "stores-starts",
+        "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+      },
+      {
+        "setup_id": "sale-deadline",
+        "design_id": "bar-countdown",
+        "stage": "during"
+      },
+      {
+        "setup_id": "homeware-care-notes",
+        "design_id": "product-shelf",
+        "stage": "after",
+        "pack_id": "homeware-care",
+        "pack_digest": "a1830caac83bd0297d90499a4fa272f61641e99f41650f01e6c5349800b5dbf3"
+      }
+    ],
+    "design_ids": [
+      "edition-pass",
+      "offer-receipt",
+      "bar-countdown",
+      "product-shelf"
+    ],
+    "event": {
+      "family": "black-friday",
+      "start": "2026-11-27",
+      "end_exclusive": "2026-12-01",
+      "feature_start": "2026-10-16",
+      "feature_end_exclusive": "2026-12-01",
+      "date_basis": "site-calendar",
+      "end_semantics": "exclusive"
+    }
+  }
+}

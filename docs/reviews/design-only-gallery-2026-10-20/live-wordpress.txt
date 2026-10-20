@@ -1,0 +1,7 @@
+PASS HTTPS preview/install: homeware-care
+PASS HTTPS preview/install: practical-essentials
+PASS HTTPS preview/install: publishers-starts
+PASS HTTPS preview/install: services-starts
+PASS HTTPS preview/install: stores-starts
+PASS live HTTPS catalogue: 5 Free packs; 22 designs; 25 setups; 2 verified images; 3 premium refusal; 14 public HTTP requests. Offline recovery passed.
+WordPress 7.1.3 / PHP 8.1.34; no persistent site options or campaigns changed.

@@ -7,6 +7,13 @@ This is the template API, separate from the plugin customer UI. It is excluded f
 
 The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates those bindings on disk. The hosted Worker uses the same handler with the two real private R2 buckets.
 
+The [published design-only gallery](../../docs/reviews/design-only-gallery-2026-10-20/README.md)
+extends the public sidecar with approved bundled-only designs, exact seasonal
+membership and separately versioned canvas embeds. Approved and published on
+20 October 2026. See the [website handoff](../../docs/reviews/design-only-gallery-2026-10-20/WEBSITE-HANDOFF.md),
+[consumer contract](GALLERY-CONTRACT.md) and [website example](examples/design-only-consumer.mjs). Existing full/focused
+viewers and protected installation routes retain their contracts.
+
 ## Rehearse locally
 
 From the plugin repository, install the isolated tooling once:

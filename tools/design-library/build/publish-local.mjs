@@ -11,14 +11,16 @@ import { artworkExports } from './artwork.mjs';
 import { galleryArtwork } from './design-gallery.mjs';
 import { buildRelease, publishRelease, sha256 } from './publisher.mjs';
 
-const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
-const { values } = parseArgs({ options: { directory: { type: 'string' }, origin: { type: 'string' }, expected: { type: 'string' } } });
+const implementationRoot = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
+const { values } = parseArgs({ options: { directory: { type: 'string' }, origin: { type: 'string' }, expected: { type: 'string' },
+  'source-directory': { type: 'string' }, 'gallery-plan': { type: 'string' } } });
+const root = values['source-directory'] ? realpathSync(resolve(values['source-directory'])) : implementationRoot;
 if (!values.directory || !values.origin || !values.expected) throw new Error('Usage: npm run templates:release:local -- --directory /private/local/storage --origin https://templates.example --expected none|<current-release>');
 // R2 is not needed. This directory models separate public/private storage, so it
 // must not live inside WordPress's public document root (including through symlinks).
 mkdirSync(resolve(values.directory), { recursive: true, mode: 0o700 });
 const directory = realpathSync(resolve(values.directory));
-const wpRoot = resolve(root, '../../..');
+const wpRoot = resolve(implementationRoot, '../../..');
 if (existsSync(join(wpRoot, 'wp-load.php')) && (directory === wpRoot || directory.startsWith(wpRoot + sep))) throw new Error('Use a storage directory outside the WordPress public document root');
 execFileSync('bash', [resolve(root, 'tools/design-library/build.sh'), 'renderer', 'pilot'], { cwd: root, stdio: 'inherit' });
 const read = path => JSON.parse(readFileSync(resolve(root, path), 'utf8'));
@@ -34,7 +36,7 @@ if (new Set(selected).size !== selected.length) throw new Error('A setup is assi
 for (const id of selected) {
   if (!source.collections.some(collection => collection.items.some(item => item.setup_id === id)) || queue.find(row => row.id === id)?.state !== 'approved') throw new Error(`Missing current approval: ${id}`);
 }
-const php = (input) => execFileSync('php', [resolve(root, 'tools/design-library/build/export-packs.php')], { input: JSON.stringify(input), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const php = (input) => execFileSync('php', [resolve(implementationRoot, 'tools/design-library/build/export-packs.php'), root], { input: JSON.stringify(input), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 const renderer = readFileSync(resolve(root, 'tools/design-library/out/renderer.iife.js'), 'utf8');
 const packs = JSON.parse(php({ ...plan, raster_sources: artworkExports(root, plan.artwork_exports) })).map(pack => {
   const media = pack.media.map(item => ({ ...item, bytes: Buffer.from(item.base64, 'base64') }));
@@ -53,11 +55,41 @@ const collections = plan.collections.map(id => {
   }) };
 });
 await galleryArtwork(packs, renderer);
-const release = buildRelease({ origin: values.origin, packs, collections, designs: true });
+let gallery;
+if (values['gallery-plan']) {
+  const requested = JSON.parse(readFileSync(resolve(values['gallery-plan']), 'utf8'));
+  if (requested.schema !== 1 || !Array.isArray(requested.bundled_setups) || !Array.isArray(requested.collections)
+    || new Set(requested.bundled_setups).size !== requested.bundled_setups.length
+    || new Set(requested.collections).size !== requested.collections.length) throw Error('Invalid gallery plan');
+  const packedIds = new Set(packs.flatMap(entry => JSON.parse(entry.json).templates.map(design => design.id)));
+  const setupDesigns = new Map();
+  for (const entry of packs) {
+    const pack = JSON.parse(entry.json);
+    for (const setup of pack.playbooks) setupDesigns.set(setup.id, { design_id: setup.template_id, ...references.get(setup.id) });
+  }
+  const designIds = new Set();
+  for (const id of requested.bundled_setups) {
+    const entry = entries.find(entry => entry.id === id);
+    if (!entry || queue.find(row => row.id === id)?.state !== 'approved') throw Error(`Missing current bundled approval: ${id}`);
+    if (packedIds.has(entry.template_id)) throw Error(`Bundled selection is already delivered by a pack: ${id}`);
+    designIds.add(entry.template_id);
+    setupDesigns.set(id, { design_id: entry.template_id });
+  }
+  const bundled = JSON.parse(php({ mode: 'bundled-gallery', design_ids: [...designIds].sort() }));
+  await galleryArtwork(bundled, renderer);
+  const galleryCollections = requested.collections.map(id => {
+    const collection = compiled.find(item => item.id === id);
+    if (!collection || collection.status !== 'published') throw Error(`Collection lacks current approval: ${id}`);
+    return collection;
+  });
+  gallery = { bundled, collections: galleryCollections, setupDesigns };
+}
+const release = buildRelease({ origin: values.origin, packs, collections, designs: true, gallery });
 const responses = Object.fromEntries(release.objects.map(object => [`${new URL(values.origin).origin}/${object.scope === 'private' ? object.key.replace('packs/', 'downloads/') : object.key}`, object.bytes.toString(object.key.startsWith('assets/') ? 'base64' : 'utf8')]));
 responses[`${new URL(values.origin).origin}/manifest.json`] = release.manifest;
 const empty = mkdtempSync(join(tmpdir(), 'wconvert-release-validation-'));
 try { process.stdout.write(php({ mode: 'validate', packs: packs.map(({ json, access }) => ({ json, access })), responses, source: `${new URL(values.origin).origin}/manifest.json`, empty_directory: empty })); }
 finally { rmSync(empty, { recursive: true, force: true }); }
 const result = publishRelease(directory, release, values.expected === 'none' ? null : values.expected);
-console.log(JSON.stringify({ ...result, directory, packs: packs.length, setups: selected.length, collections: collections.length, deferred: plan.deferred, hosted: false }, null, 2));
+console.log(JSON.stringify({ ...result, directory, sourceDirectory: root, packs: packs.length, setups: selected.length, collections: collections.length,
+  bundledDesigns: gallery?.bundled.length ?? 0, galleryCollections: gallery?.collections.length ?? 0, deferred: plan.deferred, hosted: false }, null, 2));

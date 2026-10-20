@@ -1,0 +1,1068 @@
+{
+  "observed_at": "2026-10-20T11:41:44.256Z",
+  "source_directory": "/Users/navidkashani/.codex/worktrees/template-library-refresh/wconvert",
+  "source_commit": "12db4f1b32d610c5297a72db38b63e04b0506676",
+  "source_clean": true,
+  "live": {
+    "release": "9f070cdd52e29a96240261c3041a91c32269121f235efc51e682a6c8a0646f49",
+    "designs": 32,
+    "packs": 8,
+    "formats": {
+      "floating_bar": 1,
+      "inline": 13,
+      "popup": 15,
+      "slide_in": 3
+    }
+  },
+  "source": {
+    "bundled_designs": 124,
+    "formats": {
+      "floating_bar": 7,
+      "fullscreen": 6,
+      "inline": 40,
+      "popup": 59,
+      "slide_in": 12
+    },
+    "approved_setups": 56,
+    "missing_designs": 92,
+    "approved_missing_designs": 18
+  },
+  "candidate": {
+    "release": "e03c91ed1bcff606d305e0a796eb750ef8f5f9f97fd308768620b0d9bf6fc68d",
+    "designs": 50,
+    "pack_designs": 32,
+    "bundled_only_designs": 18,
+    "packs": 8,
+    "formats": {
+      "floating_bar": 2,
+      "fullscreen": 2,
+      "inline": 19,
+      "popup": 22,
+      "slide_in": 5
+    },
+    "screens": 90,
+    "gallery_collections": 9,
+    "removed_designs": [],
+    "existing_pack_bytes_unchanged": true,
+    "missing_approved_designs": [],
+    "all_previews_available": true,
+    "all_design_only_v1": true
+  },
+  "approved_missing": [
+    {
+      "id": "gift-orbit",
+      "format": "inline",
+      "tier": "pro",
+      "approved_setups": [
+        "thoughtful-gift-direction"
+      ]
+    },
+    {
+      "id": "after-hours",
+      "format": "fullscreen",
+      "tier": "pro",
+      "approved_setups": [
+        "listening-night-invitation"
+      ]
+    },
+    {
+      "id": "bar-countdown",
+      "format": "floating_bar",
+      "tier": "pro",
+      "approved_setups": [
+        "sale-deadline"
+      ]
+    },
+    {
+      "id": "bloom-postcard",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": [
+        "flower-workshop-invitation"
+      ]
+    },
+    {
+      "id": "conversation-note",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": [
+        "studio-conversation"
+      ]
+    },
+    {
+      "id": "exhibition-wall",
+      "format": "fullscreen",
+      "tier": "pro",
+      "approved_setups": [
+        "ceramics-open-studio"
+      ]
+    },
+    {
+      "id": "citrus-sunrise",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "seasonal-sunshine"
+      ]
+    },
+    {
+      "id": "collection-poster",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "lighting-collection"
+      ]
+    },
+    {
+      "id": "colour-atlas",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "colour-collection-notes"
+      ]
+    },
+    {
+      "id": "measurement-map",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": [
+        "garment-fit-guide"
+      ]
+    },
+    {
+      "id": "night-observatory",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": [
+        "night-sky-letter"
+      ]
+    },
+    {
+      "id": "programme-board",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "workshop-programme"
+      ]
+    },
+    {
+      "id": "project-workboard",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": [
+        "custom-project-start"
+      ]
+    },
+    {
+      "id": "recipe-clipping",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": [
+        "weeknight-recipe-sample"
+      ]
+    },
+    {
+      "id": "room-checklist",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "room-planning-worksheet"
+      ]
+    },
+    {
+      "id": "supper-menu",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "supper-evening-menu"
+      ]
+    },
+    {
+      "id": "trail-window",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": [
+        "slower-outdoor-guide"
+      ]
+    },
+    {
+      "id": "weekend-broadsheet",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": [
+        "weekend-observations"
+      ]
+    }
+  ],
+  "remaining_missing": [
+    {
+      "id": "gift-edit",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-content-guide",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-product-finder",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-service-enquiry",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "kit-workbench",
+      "format": "fullscreen",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "project-route",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "reading-path",
+      "format": "inline",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "service-directory",
+      "format": "inline",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "space-planner",
+      "format": "inline",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "bar-announcement",
+      "format": "floating_bar",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "bar-code",
+      "format": "floating_bar",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "bar-email-capture",
+      "format": "floating_bar",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "fullscreen-editorial",
+      "format": "fullscreen",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "fullscreen-poster",
+      "format": "fullscreen",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "fullscreen-split",
+      "format": "fullscreen",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-code-strip",
+      "format": "inline",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-signpost",
+      "format": "floating_bar",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "margin-note",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "popup-editorial",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "popup-flash",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "popup-two-column",
+      "format": "popup",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "session-card",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "slide-in-benefits",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "slide-in-code",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "slide-in-nudge",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "slide-in-photo",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "slide-in-question",
+      "format": "slide_in",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "split-notice",
+      "format": "floating_bar",
+      "tier": "pro",
+      "approved_setups": []
+    },
+    {
+      "id": "agenda-card",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "appointment-note",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "benefit-grid",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "bold-ask",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "centred-card",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "code-reveal",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "cream-coupon",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "deadline-panel",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "fieldwork",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "flash-offer",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "ink-split",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-bar",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-benefits",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-choice",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-cta",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-phone",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-quiet",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-rule",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-split",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "inline-tinted",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-email-only",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-email-then-sms",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-enquiry",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "journey-offer-first",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "launch-checklist",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "makers-index",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "material-pair",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "number-invitation",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "offer-panel",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "photo-offer",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "photo-wash",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "portrait-frame",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "preference-card",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "project-notebook",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "project-pair",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "punched-ticket",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "reader-review",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "reading-slip",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "resource-index",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "service-ledger",
+      "format": "inline",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "split-hero",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "stacked-signup",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "studio-window",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "summer-archive",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "sunday-marginalia",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    },
+    {
+      "id": "wide-banner",
+      "format": "popup",
+      "tier": "free",
+      "approved_setups": []
+    }
+  ],
+  "collections": [
+    {
+      "id": "black-friday-2026",
+      "name": "Prepare for Black Friday",
+      "description": "Start with early access, a clear offer or a final-day announcement. Review the offer and your own dates.",
+      "items": [
+        {
+          "setup_id": "edition-early-access",
+          "design_id": "edition-pass",
+          "stage": "before",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        },
+        {
+          "setup_id": "first-order-receipt",
+          "design_id": "offer-receipt",
+          "stage": "during",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        },
+        {
+          "setup_id": "sale-deadline",
+          "design_id": "bar-countdown",
+          "stage": "during"
+        },
+        {
+          "setup_id": "homeware-care-notes",
+          "design_id": "product-shelf",
+          "stage": "after",
+          "pack_id": "homeware-care",
+          "pack_digest": "a1830caac83bd0297d90499a4fa272f61641e99f41650f01e6c5349800b5dbf3"
+        }
+      ],
+      "design_ids": [
+        "edition-pass",
+        "offer-receipt",
+        "bar-countdown",
+        "product-shelf"
+      ],
+      "event": {
+        "family": "black-friday",
+        "start": "2026-11-27",
+        "end_exclusive": "2026-12-01",
+        "feature_start": "2026-10-16",
+        "feature_end_exclusive": "2026-12-01",
+        "date_basis": "site-calendar",
+        "end_semantics": "exclusive"
+      }
+    },
+    {
+      "id": "explain-the-service",
+      "name": "Explain a service before an enquiry",
+      "description": "Show the process or separate included work from work agreed later. An enquiry starts a conversation; it does not book or quote a job.",
+      "items": [
+        {
+          "setup_id": "service-process-strip",
+          "design_id": "service-process-strip",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "service-fit-brief",
+          "design_id": "scope-sheet",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        }
+      ],
+      "design_ids": [
+        "service-process-strip",
+        "scope-sheet"
+      ]
+    },
+    {
+      "id": "help-shoppers-choose",
+      "name": "Help shoppers choose",
+      "description": "Useful accessories, optional basket extras, a short product finder and fabric sample enquiries. Choose the help your shop needs.",
+      "items": [
+        {
+          "setup_id": "recommend-accessory",
+          "design_id": "cart-accessories",
+          "stage": "any",
+          "pack_id": "shopping-help",
+          "pack_digest": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163"
+        },
+        {
+          "setup_id": "explore-compatible-extras",
+          "design_id": "accessory-workbench",
+          "stage": "any",
+          "pack_id": "shopping-help",
+          "pack_digest": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163"
+        },
+        {
+          "setup_id": "add-useful-extras",
+          "design_id": "cart-additions",
+          "stage": "any",
+          "pack_id": "shopping-help",
+          "pack_digest": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163"
+        },
+        {
+          "setup_id": "basket-cross-sells",
+          "design_id": "basket-companion",
+          "stage": "any",
+          "pack_id": "shopping-help",
+          "pack_digest": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163"
+        },
+        {
+          "setup_id": "coffee-taste-finder",
+          "design_id": "coffee-finder-board",
+          "stage": "any",
+          "pack_id": "shopping-help",
+          "pack_digest": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163"
+        },
+        {
+          "setup_id": "shopping-guidance",
+          "design_id": "inline-cart-nudge",
+          "stage": "any",
+          "pack_id": "shopping-help",
+          "pack_digest": "87728d956d81aff132c6d02ea40536007fc642783718d328ba70230e24bd5163"
+        },
+        {
+          "setup_id": "upholstery-samples",
+          "design_id": "sample-envelope",
+          "stage": "any",
+          "pack_id": "fabric-sample-enquiries",
+          "pack_digest": "7df17a798bd0e1a332e7658f19f6423110973199691c81cb55824f547f3d2577"
+        }
+      ],
+      "design_ids": [
+        "cart-accessories",
+        "accessory-workbench",
+        "cart-additions",
+        "basket-companion",
+        "coffee-finder-board",
+        "inline-cart-nudge",
+        "sample-envelope"
+      ]
+    },
+    {
+      "id": "launch-a-collection",
+      "name": "Introduce a collection",
+      "description": "Build interest, announce what is new and help shoppers explore.",
+      "items": [
+        {
+          "setup_id": "edition-early-access",
+          "design_id": "edition-pass",
+          "stage": "before",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        },
+        {
+          "setup_id": "restock-announcements",
+          "design_id": "edition-pass",
+          "stage": "during",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        },
+        {
+          "setup_id": "lighting-collection",
+          "design_id": "collection-poster",
+          "stage": "during"
+        },
+        {
+          "setup_id": "specification-sheet",
+          "design_id": "specification-sheet",
+          "stage": "during",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        }
+      ],
+      "design_ids": [
+        "edition-pass",
+        "collection-poster",
+        "specification-sheet"
+      ]
+    },
+    {
+      "id": "prepare-a-visit",
+      "name": "Help visitors plan a visit",
+      "description": "Show event and arrival details, explain the consultation or invite a callback. Choose the relevant starting point; these are alternatives, not an automatic sequence.",
+      "items": [
+        {
+          "setup_id": "event-calendar",
+          "design_id": "event-calendar",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "accessible-visit-note",
+          "design_id": "availability-note",
+          "stage": "any",
+          "pack_id": "helpful-prompts",
+          "pack_digest": "0b9140e57e720a196f857b0f2d7bb3635e2247009fcb15fced253c780339b08f"
+        },
+        {
+          "setup_id": "earlier-appointment-enquiry",
+          "design_id": "availability-desk",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "appointment-agenda",
+          "design_id": "appointment-agenda",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "callback-slip",
+          "design_id": "callback-slip",
+          "stage": "any",
+          "pack_id": "helpful-prompts",
+          "pack_digest": "0b9140e57e720a196f857b0f2d7bb3635e2247009fcb15fced253c780339b08f"
+        }
+      ],
+      "design_ids": [
+        "event-calendar",
+        "availability-note",
+        "availability-desk",
+        "appointment-agenda",
+        "callback-slip"
+      ]
+    },
+    {
+      "id": "reader-relationships",
+      "name": "Give readers a reason to return",
+      "description": "Useful newsletters and resources, with a clear promise and an easy next step.",
+      "items": [
+        {
+          "setup_id": "sunday-reading",
+          "design_id": "reading-desk",
+          "stage": "any",
+          "pack_id": "publishers-starts",
+          "pack_digest": "d80fe2f5f5c6e9bb66d300db404cf4a2ceaee32b434aa7c29b13df0bc15f57eb"
+        },
+        {
+          "setup_id": "editorial-weekly",
+          "design_id": "ledger-card",
+          "stage": "any",
+          "pack_id": "publishers-starts",
+          "pack_digest": "d80fe2f5f5c6e9bb66d300db404cf4a2ceaee32b434aa7c29b13df0bc15f57eb"
+        },
+        {
+          "setup_id": "writing-checklist",
+          "design_id": "useful-guide",
+          "stage": "any",
+          "pack_id": "publishers-starts",
+          "pack_digest": "d80fe2f5f5c6e9bb66d300db404cf4a2ceaee32b434aa7c29b13df0bc15f57eb"
+        },
+        {
+          "setup_id": "reading-notes-guide",
+          "design_id": "reading-cover",
+          "stage": "any",
+          "pack_id": "publishers-starts",
+          "pack_digest": "d80fe2f5f5c6e9bb66d300db404cf4a2ceaee32b434aa7c29b13df0bc15f57eb"
+        },
+        {
+          "setup_id": "excerpt-window",
+          "design_id": "excerpt-window",
+          "stage": "any",
+          "pack_id": "publishers-starts",
+          "pack_digest": "d80fe2f5f5c6e9bb66d300db404cf4a2ceaee32b434aa7c29b13df0bc15f57eb"
+        }
+      ],
+      "design_ids": [
+        "reading-desk",
+        "ledger-card",
+        "useful-guide",
+        "reading-cover",
+        "excerpt-window"
+      ]
+    },
+    {
+      "id": "sale-planning",
+      "name": "Plan a useful sale",
+      "description": "Invitations, offer announcements and thoughtful follow-up. Choose the parts your store needs.",
+      "items": [
+        {
+          "setup_id": "edition-early-access",
+          "design_id": "edition-pass",
+          "stage": "before",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        },
+        {
+          "setup_id": "sale-deadline",
+          "design_id": "bar-countdown",
+          "stage": "during"
+        },
+        {
+          "setup_id": "first-order-receipt",
+          "design_id": "offer-receipt",
+          "stage": "during",
+          "pack_id": "stores-starts",
+          "pack_digest": "365f98a4e15a1ba586151d379d47ba3901a93bf2a4bcf82c429ceb1410b9011a"
+        },
+        {
+          "setup_id": "lighting-collection",
+          "design_id": "collection-poster",
+          "stage": "during"
+        },
+        {
+          "setup_id": "homeware-care-notes",
+          "design_id": "product-shelf",
+          "stage": "after",
+          "pack_id": "homeware-care",
+          "pack_digest": "a1830caac83bd0297d90499a4fa272f61641e99f41650f01e6c5349800b5dbf3"
+        }
+      ],
+      "design_ids": [
+        "edition-pass",
+        "bar-countdown",
+        "offer-receipt",
+        "collection-poster",
+        "product-shelf"
+      ]
+    },
+    {
+      "id": "service-enquiries",
+      "name": "Make the next enquiry easier",
+      "description": "Quote requests, callbacks and project discussions. A request is not a confirmed booking.",
+      "items": [
+        {
+          "setup_id": "home-repair-quote",
+          "design_id": "service-docket",
+          "stage": "any",
+          "pack_id": "services-starts",
+          "pack_digest": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c"
+        },
+        {
+          "setup_id": "cleaning-quote",
+          "design_id": "service-docket",
+          "stage": "any",
+          "pack_id": "services-starts",
+          "pack_digest": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c"
+        },
+        {
+          "setup_id": "repair-assessment",
+          "design_id": "service-docket",
+          "stage": "any",
+          "pack_id": "services-starts",
+          "pack_digest": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c"
+        },
+        {
+          "setup_id": "renovation-callback",
+          "design_id": "callback-notes",
+          "stage": "any",
+          "pack_id": "services-starts",
+          "pack_digest": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c"
+        },
+        {
+          "setup_id": "repair-advice-request",
+          "design_id": "request-folio",
+          "stage": "any",
+          "pack_id": "services-starts",
+          "pack_digest": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c"
+        },
+        {
+          "setup_id": "website-review-enquiry",
+          "design_id": "service-summary",
+          "stage": "any",
+          "pack_id": "services-starts",
+          "pack_digest": "2fb9053eeb2d54d29815f77750c7d939e20aaf17d47ddfecf25aa43ecf9de64c"
+        }
+      ],
+      "design_ids": [
+        "service-docket",
+        "callback-notes",
+        "request-folio",
+        "service-summary"
+      ]
+    },
+    {
+      "id": "useful-store-details",
+      "name": "Help shoppers feel informed",
+      "description": "Explain a product, announce a collection, share useful maker updates or help a customer prepare a return. Review product facts, destinations and delivery before publishing.",
+      "items": [
+        {
+          "setup_id": "product-detail-sheet",
+          "design_id": "product-detail-sheet",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "launch-index",
+          "design_id": "launch-index",
+          "stage": "any",
+          "pack_id": "helpful-prompts",
+          "pack_digest": "0b9140e57e720a196f857b0f2d7bb3635e2247009fcb15fced253c780339b08f"
+        },
+        {
+          "setup_id": "maker-notes",
+          "design_id": "quieter-frequency",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "equipment-return-checklist",
+          "design_id": "name-and-email",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        },
+        {
+          "setup_id": "sms-message-preview",
+          "design_id": "message-sample",
+          "stage": "any",
+          "pack_id": "practical-essentials",
+          "pack_digest": "3849ba6896cbd4b7d5b8dfb10d2dbe7644c0007d7e975741c0a207e5814b5126"
+        }
+      ],
+      "design_ids": [
+        "product-detail-sheet",
+        "launch-index",
+        "quieter-frequency",
+        "name-and-email",
+        "message-sample"
+      ]
+    }
+  ]
+}
