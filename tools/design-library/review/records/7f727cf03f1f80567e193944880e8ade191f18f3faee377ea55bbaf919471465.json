@@ -1,0 +1,51 @@
+{
+  "id": "writing-checklist",
+  "revision": "729b1d0fd45584eabcac6def6c10b3d1c5ed4c85a91805998f407f97718ba9b3",
+  "base_id": "bc1c2fa24586501cc4ffd00d73b81f09e60f4aa135e92c4b5d6729eaaa5f22a8",
+  "decision": "approved",
+  "reviewer": "Codex — six-design refinement review",
+  "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+  "at": "2026-09-29T01:30:05.465Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    }
+  },
+  "record_id": "7f727cf03f1f80567e193944880e8ade191f18f3faee377ea55bbaf919471465"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "gift-planning-guide",
+  "revision": "27cf0740b9a807ea4011c51c2a5c6a8ec3cd52362e56b895f09c2b7940caba90",
+  "base_id": "a61c05acfb01db6eba3818be234a6b4590e5f638b4e76adb361fc88db5a9fb36",
+  "decision": "approved",
+  "reviewer": "Codex — contextual-help editorial review",
+  "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+  "at": "2026-09-28T15:38:49.395Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        },
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    }
+  },
+  "record_id": "67a2c0c2000f767ad024437831a69ae1a9a9b972c034e47b7a3685416052613d"
+}

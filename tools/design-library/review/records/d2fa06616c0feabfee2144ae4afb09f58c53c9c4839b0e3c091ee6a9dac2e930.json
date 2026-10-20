@@ -1,0 +1,39 @@
+{
+  "id": "sale-deadline",
+  "revision": "76649b0c24b808501ce6ee1f2dbbd27a4885faa6fe7a0f567f45dff0e9595c43",
+  "base_id": "01a3a588593683be0e0bec65dd56ecf99fb4a66bc76784ae4014684a358e809a",
+  "decision": "approved",
+  "reviewer": "Codex — recommendation release regression",
+  "note": "Every screen inspected at desktop and 320px; unchanged-output comparison retains earlier route and configured WordPress evidence. Scope and limits recorded explicitly.",
+  "at": "2026-10-05T08:21:09.569Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/recommendations-rc-2026-10-05/library-review.md",
+          "sha256": "b998790ca40e373968d8f88f152d7fa8d1f7a856fd7be79e9229a0c1a072d775"
+        }
+      ]
+    }
+  },
+  "record_id": "d2fa06616c0feabfee2144ae4afb09f58c53c9c4839b0e3c091ee6a9dac2e930"
+}

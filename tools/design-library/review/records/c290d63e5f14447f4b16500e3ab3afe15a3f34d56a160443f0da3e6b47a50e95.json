@@ -1,0 +1,91 @@
+{
+  "id": "repair-assessment",
+  "revision": "bca3e52e7017d53d5ed29201263fc83df24e171b75ef6dc1a2bae97d3654ae6d",
+  "base_id": "4f5d94382958d40b61bb2ee83970384a3a44d4c900addad0e69bb33e33d6cf33",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-08.webp",
+          "sha256": "3d3dc61d535ffeca89445759e27497580767a7ea2ecace5f37739c8cd249cdba"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-08.webp",
+          "sha256": "ca5da2b36f444b2dc0df40036d928e7ea6567dffe460b69855647e6f68d0ed63"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-assessment-1280-0.webp",
+          "sha256": "b0036ddb771f06c9b160bc1953efc1ec4a3913c52acb438a75872df3bf2702c8"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-assessment-1280-1.webp",
+          "sha256": "541f840f419e864d465741d51499c82f1ca410ec2a1f344421d51e9ef5f57e48"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-assessment-1280-retry.webp",
+          "sha256": "6a49f46abffb501811d7ed5f8875ecd1d5426e29ac400b77c8771089c7bd389f"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-assessment-320-0.webp",
+          "sha256": "d26ec2decece60cb2805ceffeb153f37135608e660300c99111f89171e4897e5"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-assessment-320-1.webp",
+          "sha256": "accbc224ea6fc5e041a3c11ffeff1812288155a91ac9f7ea9baf2a71e30a1321"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/repair-assessment-320-retry.webp",
+          "sha256": "6a46a5bcb1f1a532b274c985456533ab2c9d11e42f81e4f56e66ec49d82fed0e"
+        }
+      ]
+    }
+  },
+  "record_id": "c290d63e5f14447f4b16500e3ab3afe15a3f34d56a160443f0da3e6b47a50e95"
+}

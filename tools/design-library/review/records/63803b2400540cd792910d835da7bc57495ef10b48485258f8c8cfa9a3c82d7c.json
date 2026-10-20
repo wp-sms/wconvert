@@ -1,0 +1,55 @@
+{
+  "id": "specification-sheet",
+  "revision": "119a0c00403ecdf4339d8cb986c4b1443290b595550d00333f1e6a84eeedf73d",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — native WordPress and rendered-screen review",
+  "note": "Every screen reviewed on desktop/phone and RTL; published disposable campaign checked with fictional submissions or a matching destination. Homeware retains its unchanged bundled SVG; its exact raster derivative was separately reviewed. Local outbox only, no external delivery.",
+  "at": "2026-10-01T06:36:06.422Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        },
+        {
+          "path": "docs/reviews/template-collection-layout-round2-2026-10-01.txt",
+          "sha256": "df9f2f13b602af8b81613e5bfd6539c60a13283c57360c25f0ac3ff574988ead"
+        },
+        {
+          "path": "docs/reviews/specification-real-2026-10-01.png",
+          "sha256": "f7d67196a028ed71f4c1699bce620f82e3650057345a8111d6a3f2dead1afeec"
+        },
+        {
+          "path": "docs/reviews/specification-phone-2026-10-01.png",
+          "sha256": "01b7795a4ae11167186407390b38c353f6607ea54263af6f4a87a0a80c825bb2"
+        },
+        {
+          "path": "docs/reviews/specification-rtl-proof-2026-10-01.png",
+          "sha256": "10b78457635aaec60f2d509b3afeda7152ef2e2e335b9777a8c4ba236e0d0fcb"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    }
+  },
+  "record_id": "63803b2400540cd792910d835da7bc57495ef10b48485258f8c8cfa9a3c82d7c"
+}

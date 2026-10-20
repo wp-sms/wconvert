@@ -1,0 +1,99 @@
+{
+  "id": "collection-reader-relationships",
+  "revision": "898491010e037fdc861b8a0582e2d21fce724c527d16dc4d72eee39979bca66d",
+  "base_id": "465330b8cedde4f07cef5e7408ef9e81ff5117f604731508544c896e4a313c23",
+  "decision": "approved",
+  "reviewer": "Codex — collection membership and dependency review",
+  "note": "Reviewed new comparison/resource placement and separately approved raster export. Unchanged collection metadata and campaigns retain prior evidence; all dependencies have current approvals.",
+  "at": "2026-10-01T06:36:06.930Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        },
+        {
+          "path": "docs/reviews/template-local-progress-2026-10-01.md",
+          "sha256": "a7321b9fcbca1e676753a9eda8d54a9eba543302bd01be0adea01997d2eed0b0"
+        },
+        {
+          "path": "docs/reviews/template-collections-round2-2026-10-01.md",
+          "sha256": "46c176ea4046067ab74e4a6d9dbf5c60e58ddc43623cc5d80557af62f9de1557"
+        },
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        },
+        {
+          "path": "docs/reviews/template-local-progress-2026-10-01.md",
+          "sha256": "a7321b9fcbca1e676753a9eda8d54a9eba543302bd01be0adea01997d2eed0b0"
+        },
+        {
+          "path": "docs/reviews/template-collections-round2-2026-10-01.md",
+          "sha256": "46c176ea4046067ab74e4a6d9dbf5c60e58ddc43623cc5d80557af62f9de1557"
+        },
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        },
+        {
+          "path": "docs/reviews/template-local-progress-2026-10-01.md",
+          "sha256": "a7321b9fcbca1e676753a9eda8d54a9eba543302bd01be0adea01997d2eed0b0"
+        },
+        {
+          "path": "docs/reviews/template-collections-round2-2026-10-01.md",
+          "sha256": "46c176ea4046067ab74e4a6d9dbf5c60e58ddc43623cc5d80557af62f9de1557"
+        },
+        {
+          "path": "docs/reviews/template-practical-round2-2026-10-01.md",
+          "sha256": "3c91cdf0881f749f179c28e7b2ad1c1a94d2d1dbe6e19f955fdf40c2ebd33138"
+        }
+      ]
+    }
+  },
+  "record_id": "9275ae12c1bec000a45339b437b6e4f1b899909626688b63f3b65078fda33522"
+}

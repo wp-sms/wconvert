@@ -1,0 +1,39 @@
+{
+  "id": "restock-announcements",
+  "revision": "0395448c6aea00512567358fb4a213451e48e714e3067bb2d2b3fda65d59d737",
+  "base_id": "f433bc3666c1d223ccf6c4a6e8eccab7c3f14132a0abbe27624fad6e6aff9604",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+  "at": "2026-10-12T04:22:52.557Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    }
+  },
+  "record_id": "e7f6fd9fb38fe2e08ce4863a2eb793eb3e80d758bd610e65746636045e6ea410"
+}

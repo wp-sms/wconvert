@@ -1,0 +1,51 @@
+{
+  "id": "basket-cross-sells",
+  "revision": "5f9fe30c1b8c7f63bba408e13586eb76ddee7b47de294fc2506fd3c3ceae2735",
+  "base_id": "72e971ac5dd21cd38af3611bf5c12bd67989815c659fe0d4185a45917382d581",
+  "decision": "approved",
+  "reviewer": "Codex — fresh bundled collection review",
+  "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+  "at": "2026-10-18T04:42:39.402Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    }
+  },
+  "record_id": "20167c99b60fc816f2c0caacab59e1e5a793b5986c40d82bd4b870ba27db9240"
+}

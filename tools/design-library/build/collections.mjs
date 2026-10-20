@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { globSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { reviewQueue } from './reviews.mjs';
+import { loadReviews, reviewQueue } from './reviews.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(value);
@@ -66,7 +66,7 @@ export function checkRuntimeCollections(root, compiled) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
   const read = path => JSON.parse(readFileSync(resolve(root, path), 'utf8'));
-  const result = buildCollections(root, read('tools/design-library/collections/source.json'), read('tools/design-library/out/pilot.json'), read('tools/design-library/out/review-queue.json'), read('tools/design-library/review/shared-reviews.json'));
+  const result = buildCollections(root, read('tools/design-library/collections/source.json'), read('tools/design-library/out/pilot.json'), read('tools/design-library/out/review-queue.json'), loadReviews(root));
   const out = resolve(root, 'tools/design-library/out'); mkdirSync(out, { recursive: true });
   writeFileSync(resolve(out, 'collections-review.json'), JSON.stringify(result, null, 2) + '\n');
   if (process.argv.includes('--check')) checkRuntimeCollections(root, result.compiled);

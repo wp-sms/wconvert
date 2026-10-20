@@ -1,0 +1,39 @@
+{
+  "id": "gift-planning-guide",
+  "revision": "cb68ef96a1d3017f7ba68c76a7a3dbd37970702f8e197b0be7ef158a81506f45",
+  "base_id": "67a2c0c2000f767ad024437831a69ae1a9a9b972c034e47b7a3685416052613d",
+  "decision": "approved",
+  "reviewer": "Codex — six-design refinement review",
+  "note": "All source/dependent screens inspected; corrected 176-case source and 176-case dependent matrices pass. Native WordPress checks confirm validation, capture/retry, saved values or configured destination as applicable. No external delivery or conversion-lift claim.",
+  "at": "2026-09-29T01:30:05.465Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    }
+  },
+  "record_id": "0214dfe4856bbb0652906fe9d85e9f702138f3d85723d6ccd1ec35e649d95002"
+}

@@ -1,0 +1,103 @@
+{
+  "id": "homeware-care-notes",
+  "revision": "6d1453bd2df02be5c629b1af7234693d5a25a3f6a9882f18ab409b07beda9296",
+  "base_id": "cecdfba53b4b3bb18d5644ef4b0ac824ce8de73a2402ab6375669847e56b03d0",
+  "decision": "approved",
+  "reviewer": "Codex — PR 300 review",
+  "note": "Fresh desktop/phone and all-screen review after shared control icon fixes. Native form/commerce journeys and studio failure/retry evidence inspected. Scope and limitations in the dated report; no external delivery or conversion claim.",
+  "at": "2026-10-20T05:38:27.378Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-08.png",
+          "sha256": "8a0df93c915843108dfb9adaee01cfa1c1c09e7545f15233665a1b28f41a311b"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-08.png",
+          "sha256": "20aae38461579a1214178493595221ec30624d576bd52f859e051f1f284d0076"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-08.png",
+          "sha256": "8a0df93c915843108dfb9adaee01cfa1c1c09e7545f15233665a1b28f41a311b"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-08.png",
+          "sha256": "a9eb575c05f51ce7bdb5971db4491991defb1f78c4a52a0fdb6add682cc22166"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/homeware-care-notes-1280-0.png",
+          "sha256": "61dabce5ad7daf2fa6f8af4d25b61d23e0d7d85d529649eeeb6da3d433b31bce"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/homeware-care-notes-1280-1.png",
+          "sha256": "4191d7327603dc26665d2dd9142349f54d013e40df16c7db98dc8aa482297f7d"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/homeware-care-notes-320-0.png",
+          "sha256": "f70b53b5d81dc09f9cbbbef7d565462c6f28ded67f58ed9060ae5a82db6436a6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/homeware-care-notes-320-1.png",
+          "sha256": "dfbb32c0bd964303492b5f33497c03ce82f12715c39f0e78e221bb889f810db5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "65e4a138a11bcfa26a720cd1f2669039ef1af2b3d0f09af207fbf42cac227cba"
+}

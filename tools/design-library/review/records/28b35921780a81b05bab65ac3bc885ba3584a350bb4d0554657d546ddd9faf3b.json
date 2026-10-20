@@ -1,0 +1,51 @@
+{
+  "id": "collection-launch-a-collection",
+  "revision": "cb941e197ecdd02cf31cdaf7a061bb6d7066c312ed8e60912393e24748a8cd07",
+  "base_id": "1b40e5078db532c81ef9ff14ba198ae4ba79141f46ec9992cd640aca46aaba6c",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed exact setup dependencies, all screens, practical alternatives and date/business/plan filtering in the rebuilt collection studio.",
+  "at": "2026-10-12T04:24:11.127Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+          "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+          "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12-collections.md",
+          "sha256": "ec451b236431899589659f0a271ebfc8d640b45003a99a2c86bfc7f19bf86672"
+        },
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    }
+  },
+  "record_id": "28b35921780a81b05bab65ac3bc885ba3584a350bb4d0554657d546ddd9faf3b"
+}

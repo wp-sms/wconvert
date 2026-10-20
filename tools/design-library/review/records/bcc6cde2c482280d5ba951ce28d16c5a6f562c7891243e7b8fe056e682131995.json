@@ -1,0 +1,87 @@
+{
+  "id": "first-order-receipt",
+  "revision": "85c77da271e6fa21cf61bd2a1c84b1243cd661bbc0c591f11a176300e925ac96",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — visual-variety local review",
+  "note": "New composition reviewed on every screen at desktop/phone and RTL; final real WordPress journeys, destinations, layout and contrast checks recorded. No external delivery or release approval.",
+  "at": "2026-09-28T18:32:50.365715+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+          "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+          "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/first-order-receipt-0-ltr.png",
+          "sha256": "45c31810fd56a7cf76d4492304c6a3ee72690add97f73698708389392a92f2eb"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/first-order-receipt-0-rtl.png",
+          "sha256": "9f1aace1a78f3e8ddd730283a362953276e4bfafcac56b376d394c69d32af695"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-eight.jpg",
+          "sha256": "389d957e1aad26a53655b64111509142775e5b8ae8e052c5c7eb979e5fec6d46"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/studio-retry-preserves-details.png",
+          "sha256": "46027ed4baa746f81c3b95237dd09316f652ce82ca3deeda985435444e805409"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+          "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        }
+      ]
+    }
+  },
+  "record_id": "bcc6cde2c482280d5ba951ce28d16c5a6f562c7891243e7b8fe056e682131995"
+}

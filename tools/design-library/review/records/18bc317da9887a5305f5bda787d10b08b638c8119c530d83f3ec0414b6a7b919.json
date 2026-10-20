@@ -1,0 +1,99 @@
+{
+  "id": "garment-fit-guide",
+  "revision": "c81fa6499d5d05ffb00f8d3bb558d092c50f2a96c60d33e57c18894d9c09db27",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — creative editions",
+  "note": "New composition reviewed across all authored screens, native desktop/phone and failure/retry rehearsal. Source/studio candidate; no hosted publication. Merchant facts, artwork suitability and destinations require configuration.",
+  "at": "2026-10-20T07:58:42.920Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "1b293d25558121e664d66bec05ac25c6f4af89bd5470f278990189213c6031d3"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    }
+  },
+  "record_id": "18bc317da9887a5305f5bda787d10b08b638c8119c530d83f3ec0414b6a7b919"
+}

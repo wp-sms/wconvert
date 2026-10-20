@@ -1,0 +1,51 @@
+{
+  "id": "website-review-enquiry",
+  "revision": "80751ed05d12d20c98bb59bd8e089d1759cde40f16b1bbb3ffbcb3883465e57e",
+  "base_id": "00d02ddd223da23e222359324cab434fc85bd318d1c47b55188ab65b7f904c89",
+  "decision": "approved",
+  "reviewer": "Codex — content equivalence review",
+  "note": "Renew unchanged approval under content-only revision identity. Previous renderer, campaign content and evidence verified exactly; no new visual inspection claimed. See stable-approvals report.",
+  "at": "2026-10-01T06:28:22.667Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/template-stable-approvals-2026-10-01.md",
+          "sha256": "27cd3ee5d87baedf490444ec1365e347779cf5af3d82fabf976ca52bc6236031"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/template-stable-approvals-2026-10-01.md",
+          "sha256": "27cd3ee5d87baedf490444ec1365e347779cf5af3d82fabf976ca52bc6236031"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/template-stable-approvals-2026-10-01.md",
+          "sha256": "27cd3ee5d87baedf490444ec1365e347779cf5af3d82fabf976ca52bc6236031"
+        }
+      ]
+    }
+  },
+  "record_id": "0c1e5e2096bf50066d88af6436c73003f0ba7756a49c7fa0783549cd623c84ae"
+}

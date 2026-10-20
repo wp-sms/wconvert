@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { buildCollections, checkRuntimeCollections } from './collections.mjs';
-import { reviewQueue } from './reviews.mjs';
+import { loadReviews, reviewQueue } from './reviews.mjs';
 import { galleryArtwork } from './design-gallery.mjs';
 import { buildRelease, publishRelease } from './publisher.mjs';
 import { computeRevisions } from './catalogue-revisions.mjs';
@@ -35,7 +35,7 @@ execFileSync('bash', [resolve(root, 'tools/design-library/build.sh'), 'renderer'
 const plan = readJson(root, 'tools/design-library/publishing/catalog.json');
 if (plan.schema !== 2) throw new Error('Unsupported delivery plan');
 const metadata = readJson(root, 'tools/design-library/publishing/designs.json');
-const entries = readJson(root, 'tools/design-library/out/pilot.json'), reviews = readJson(root, 'tools/design-library/review/shared-reviews.json');
+const entries = readJson(root, 'tools/design-library/out/pilot.json'), reviews = loadReviews(root);
 const queue = reviewQueue(reviews, entries, root);
 const { compiled } = buildCollections(root, readJson(root, 'tools/design-library/collections/source.json'), entries, queue, reviews);
 checkRuntimeCollections(root, compiled);

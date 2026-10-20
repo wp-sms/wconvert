@@ -1,0 +1,135 @@
+{
+  "id": "pre-visit-checklist",
+  "revision": "428c3bfcc535206405ed5f8a23e47c2f1e71a115ab8afc8994f81ecdb60cf648",
+  "base_id": "25d0ab6c7eedb05a7044d6d7442781cc79c02c3b438b5171501fd4c786968c4b",
+  "decision": "approved",
+  "reviewer": "Codex — editorial refinement review",
+  "note": "Only nearest-design comparison metadata changed. Source and campaign configuration unchanged. Re-inspected every screen at desktop/320px; prior journey evidence retained, local WordPress verifier rerun. No new native browser walkthrough claimed. External delivery skipped.",
+  "at": "2026-09-28T14:47:38.805326+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.md",
+          "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+          "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+          "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+          "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+          "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+        },
+        {
+          "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+          "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    }
+  },
+  "record_id": "a29169dee2095853cf9d518991c3fff73d447aef5c1a7238cfacf7c9fe6fd2af"
+}

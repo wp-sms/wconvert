@@ -1,0 +1,103 @@
+{
+  "id": "writing-checklist",
+  "revision": "84cdcd46f37a34f19bdd4561987c3ce88fc9cf0cd881792af7eefcacb4bdc3d9",
+  "base_id": "942283f0ed40a4a00956576f9f54ec8cfbb2084fcbf0e8b2d4b6ac2074e20127",
+  "decision": "approved",
+  "reviewer": "Codex — PR 300 review",
+  "note": "Fresh desktop/phone and all-screen review after shared control icon fixes. Native form/commerce journeys and studio failure/retry evidence inspected. Scope and limitations in the dated report; no external delivery or conversion claim.",
+  "at": "2026-10-20T05:38:27.379Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-14.png",
+          "sha256": "1ec99b7abd8849ecca7f298ee63ff51c7899f02414db8fde6cfd07970c72635c"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-14.png",
+          "sha256": "9c6af9c792d5d29102b738812d38d00c290f5de2e1d700e3ea6cf5ae1266fb5a"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-14.png",
+          "sha256": "1ec99b7abd8849ecca7f298ee63ff51c7899f02414db8fde6cfd07970c72635c"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-14.png",
+          "sha256": "5c4ccfcea7a0200cc0fe23cf70da8b501d6be76e2499efb7c98eac16c277a2f5"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/writing-checklist-1280-0.png",
+          "sha256": "df595ddb99cdacd4e911394c89e6db4f53788668bf265c2cc80878f128f2905a"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/writing-checklist-1280-1.png",
+          "sha256": "fc71291d9d726175f3d88d3786636351c707012287ddc3fc2f7987c097038433"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/writing-checklist-320-0.png",
+          "sha256": "7f135e38930a9e7e75e8629928007b325d04313df38ef2582fece33e35914ea3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/writing-checklist-320-1.png",
+          "sha256": "1aeaa1d8dfc721bcd31657418ac9e54dd7da9499db7391fd86f01c8f6424b224"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "8a4db5ed1a88eafb1436498c20bb0e1303cacf0d2e43e87b9cc4c69d74e904be"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "membership-details",
+  "revision": "27d6b8a433ac41217dd9e388b017a6949cd9be93775168d515113079a89786fc",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — recorded coverage-batch review",
+  "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+  "at": "2026-09-28T12:38:13.405Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    }
+  },
+  "record_id": "19383dc643cad9692e77edd9fe0cec2d3f28d2f6c5bbc4a32b5b314fdb4e64a1"
+}

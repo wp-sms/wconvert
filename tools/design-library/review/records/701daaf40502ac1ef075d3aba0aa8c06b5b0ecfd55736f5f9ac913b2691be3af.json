@@ -1,0 +1,51 @@
+{
+  "id": "local-class-news",
+  "revision": "c758b8871967914f6fad37705021a2a2368776958066ba171470581cde12f675",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — contextual-help editorial review",
+  "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+  "at": "2026-09-28T15:38:49.396Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    }
+  },
+  "record_id": "701daaf40502ac1ef075d3aba0aa8c06b5b0ecfd55736f5f9ac913b2691be3af"
+}

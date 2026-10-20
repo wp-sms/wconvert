@@ -1,0 +1,95 @@
+{
+  "id": "cart-delivery-help",
+  "revision": "7314e8efd5e38dd4298d402968e7f155f009d6a0bfeb4b1da113f7f062bb456c",
+  "base_id": "c76c947e2e1da78de34f761ffda6b0f1e74f1cb3d408d114f253945403ebe75c",
+  "decision": "approved",
+  "reviewer": "Codex — four design directions review",
+  "note": "Only the derived nearest-design list changed. Existing design/Playbook sources compared byte-for-byte with the prior reviewed commit; renderer and brief unchanged. Prior visual/journey evidence retained, with fresh whole-library layout/native checks and explicit comparison review.",
+  "at": "2026-09-28T16:24:38.145Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    }
+  },
+  "record_id": "3094ebf83b51ad5f65c3e42b050375eec966f47ca85a76b878efa6e7b15df0b1"
+}

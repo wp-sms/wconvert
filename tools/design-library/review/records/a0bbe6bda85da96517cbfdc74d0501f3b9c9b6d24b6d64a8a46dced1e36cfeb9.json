@@ -1,0 +1,63 @@
+{
+  "id": "venue-visit-request",
+  "revision": "0bf82702f755bb127ec975be6fab9deeb5eb71ebcfb3cd8dac4c02ac535b507e",
+  "base_id": "3d07a02d7cc5ea28708571360c7ef3009130f71ed86568024bf642fce7598a98",
+  "decision": "approved",
+  "reviewer": "Codex — comparison-dependent re-review",
+  "note": "Nearest-design metadata changed after the resource follow-up addition. Both unchanged screens visually rechecked at desktop/320px, required fields and simulated failure/retry exercised again, current native WordPress checks pass. Existing intentional reuse remains appropriate.",
+  "at": "2026-09-28T14:22:53.551Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        }
+      ]
+    }
+  },
+  "record_id": "a0bbe6bda85da96517cbfdc74d0501f3b9c9b6d24b6d64a8a46dced1e36cfeb9"
+}

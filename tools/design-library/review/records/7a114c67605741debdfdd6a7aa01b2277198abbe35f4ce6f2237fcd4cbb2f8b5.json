@@ -1,0 +1,39 @@
+{
+  "id": "lighting-collection",
+  "revision": "44b0d7ad0e8b57a96255f74ff8bd68bdc7fa10119ee8bf09ecae56f38ee590a7",
+  "base_id": "73ca01597f180458ee3bf9c833098d730993af1beb6d526daf9f8bfe49a15bea",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Retain the previous visual review after identical markup for every screen and identical responsive styles; full journey tests and real WordPress commerce checks pass.",
+  "at": "2026-10-04T06:03:29.997Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    }
+  },
+  "record_id": "7a114c67605741debdfdd6a7aa01b2277198abbe35f4ce6f2237fcd4cbb2f8b5"
+}

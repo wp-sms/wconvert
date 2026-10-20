@@ -1,0 +1,63 @@
+{
+  "id": "collection-reader-relationships",
+  "revision": "76b2fd51e0f3983d09faec23cc61b027504714edce42a7591fe422f608d3d2a1",
+  "base_id": "cde2ba2fd4467d71f33bfff47edda4e9177fd45971b42b145a1252a03142e4b6",
+  "decision": "approved",
+  "reviewer": "Codex — fresh bundled collection review",
+  "note": "All collection members have fresh visual, journey and native WordPress evidence. Six candidate collections, prepared screens, Free availability and event boundaries inspected. No automatic campaign scheduling or mutation. See scoped report and manifest.",
+  "at": "2026-10-18T04:43:36.544Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+          "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+          "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/discovery/discovery.json",
+          "sha256": "6bfadeb50d7b3e380723abd79955273d3dad54a220909c8f6c2a3932b2ca3c58"
+        }
+      ]
+    }
+  },
+  "record_id": "0ae549e9b7fb5dc549ab8ed031d560993faec8e96260cb090b2139f4baa1e80e"
+}

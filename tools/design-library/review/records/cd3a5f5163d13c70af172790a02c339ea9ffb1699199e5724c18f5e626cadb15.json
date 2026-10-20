@@ -1,0 +1,63 @@
+{
+  "id": "collection-discovery",
+  "revision": "ede58c59a0dce1b6a8caa44c5555e4c7c3c8d51f1450191b70cd3239d87eb89e",
+  "base_id": "45d35b975250e0ac83b7ab7247d909c6e5f25f71f0bbca0444111b9d2cda157a",
+  "decision": "approved",
+  "reviewer": "Codex — editorial refinement review",
+  "note": "Only nearest-design comparison metadata changed. Source and campaign configuration unchanged. Re-inspected every screen at desktop/320px; prior journey evidence retained, local WordPress verifier rerun. No new native browser walkthrough claimed. External delivery skipped.",
+  "at": "2026-09-28T14:47:38.805326+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        }
+      ]
+    }
+  },
+  "record_id": "cd3a5f5163d13c70af172790a02c339ea9ffb1699199e5724c18f5e626cadb15"
+}

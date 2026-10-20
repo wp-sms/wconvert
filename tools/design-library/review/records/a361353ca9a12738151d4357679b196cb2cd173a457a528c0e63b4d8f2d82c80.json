@@ -1,0 +1,91 @@
+{
+  "id": "homeware-care-notes",
+  "revision": "a3be8cea7a8f89e010e1e5a86ea45e5245b4b958fbcb04a6396fe2c699062dbc",
+  "base_id": "d6123f5e63ea044e9ce9133b6e4f674b0c14b3eb669e6b253b19e44d465058a4",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-05.webp",
+          "sha256": "647c3901083695d419bd35eb4d9b8a23ba2983c19b27b37cf0a736f160ea327e"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-05.webp",
+          "sha256": "c347dfbcbf6e952083a4a8248a28caf2303719ae4bf96a8b6a145e513332a330"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/homeware-care-notes-1280-0.webp",
+          "sha256": "f3a5e1e353aa2e0b1ee276d81a39c6afacfac9be8820b09ceff96ecd0aa519fb"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/homeware-care-notes-1280-1.webp",
+          "sha256": "99c4056ed30025d1a4d6caf2e6bcf36dbc5509b4fd32d99c814fb8b4945fd089"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/homeware-care-notes-1280-retry.webp",
+          "sha256": "350a65af11a22e027e2ea1b297026a318a770bf2bfa2c1ddd6e5f81eb983522f"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/homeware-care-notes-320-0.webp",
+          "sha256": "d2185f8c876f6189fd1853c9fbd1711ac3a8f0fc513382194aa7b3a319513e15"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/homeware-care-notes-320-1.webp",
+          "sha256": "10df21291b6848f0ec64699c93e94c020fb9548a5ffd2be137a6aea70cd3b82a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/homeware-care-notes-320-retry.webp",
+          "sha256": "1b79478f1e8bffcba22dec875d0f5a8a06ec2da3de1609fcbbbee34d61d11e9b"
+        }
+      ]
+    }
+  },
+  "record_id": "a361353ca9a12738151d4357679b196cb2cd173a457a528c0e63b4d8f2d82c80"
+}

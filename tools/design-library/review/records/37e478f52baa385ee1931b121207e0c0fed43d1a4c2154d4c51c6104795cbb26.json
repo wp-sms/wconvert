@@ -1,0 +1,51 @@
+{
+  "id": "coffee-taste-finder",
+  "revision": "320c494f3262d426aa441e9142a75bbf81d371382abbbc053d39df362964692f",
+  "base_id": "26958ab6faaa99174f0a43220fb478736572345b1590b7643cc024dd85d80862",
+  "decision": "approved",
+  "reviewer": "Codex — fresh bundled collection review",
+  "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+  "at": "2026-10-18T04:42:39.402Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    }
+  },
+  "record_id": "37e478f52baa385ee1931b121207e0c0fed43d1a4c2154d4c51c6104795cbb26"
+}

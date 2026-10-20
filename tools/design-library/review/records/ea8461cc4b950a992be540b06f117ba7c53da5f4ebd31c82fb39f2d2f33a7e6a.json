@@ -1,0 +1,95 @@
+{
+  "id": "sale-deadline",
+  "revision": "9aba4b0fb8209d710f26ddf435bf1cb0deef2a6b13c7cd31f81cafbbc8467301",
+  "base_id": "14282b0a579907663d54ac21b5d853f9d86586320bb0fd4b14289b86a7219fe9",
+  "decision": "approved",
+  "reviewer": "Codex — PR 300 review",
+  "note": "Fresh desktop/phone and all-screen review after shared control icon fixes. Native form/commerce journeys and studio failure/retry evidence inspected. Scope and limitations in the dated report; no external delivery or conversion claim.",
+  "at": "2026-10-20T05:38:27.378Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-12.png",
+          "sha256": "8a8602323dd39726d33b95ab0c3cef5da2ecdff6f16682ed8b7670452caf7ce2"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-12.png",
+          "sha256": "a40e55d2823ee512de8849cd6703bc388f01383e595e830ca8af013c19e21092"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-12.png",
+          "sha256": "0acc79ee635698ba5b0c4f5e636312d02cb9937f67793e7a21374890cf6e8713"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-12.png",
+          "sha256": "d6d99420af4b6f337f9ac15b67a5cee933b8514d64427bc6e9e4925202075ce5"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/sale-deadline-1280-0.png",
+          "sha256": "4cd8368931cc09ccb683f50c0ce5fa5c2750ba83410b6fbe664a2339eaa9b255"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/sale-deadline-320-0.png",
+          "sha256": "3e16a3b0645430dc448552e6aa8eab407a2c3367aa365f6597f6e11e59067034"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "ea8461cc4b950a992be540b06f117ba7c53da5f4ebd31c82fb39f2d2f33a7e6a"
+}

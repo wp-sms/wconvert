@@ -1,0 +1,75 @@
+{
+  "id": "basket-cross-sells",
+  "revision": "2018e0b73e51709bc2a4066765edc8aa43f7b144787037eb187f9b53b20ade6a",
+  "base_id": "6c17c95e73f26f262bb7d8a860e4150e209842415694446ff3b028c12e521f04",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.883Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-01.webp",
+          "sha256": "11919eb74b26ab7c1a8e6b03e52ab111645f8536bed9c5b7488fe8411f4cd4a5"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-01.webp",
+          "sha256": "6fcacf56653f789bbee60f5f74afc5e072b9d6b73c265866987d07dc3ad885a1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+          "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-basket-cross-sells-desktop.webp",
+          "sha256": "f5ed4367d0857dddafac4911c3d38d5d09846c3a71cd0f2847e7182d2d938d17"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-basket-cross-sells-phone.webp",
+          "sha256": "878a6d95323bf86e1701d5be3e7d4b868c88866136239e5f32a5c388deaed5cd"
+        }
+      ]
+    }
+  },
+  "record_id": "244f14e0f2c1b08b3ffc017a088b7fc968e5b10ae801e8dac0342b2d6489d50f"
+}

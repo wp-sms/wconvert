@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { readDesigns, analyseDesigns } from './inventory.mjs';
 import { validateBriefs, coverage } from './briefs.mjs';
-import { reviewQueue } from './reviews.mjs';
+import { loadReviews, reviewQueue } from './reviews.mjs';
 import { campaignRevision } from './revision.mjs';
 import { maintenanceReport, editorialFindings } from './maintenance.mjs';
 import { validateBacklog } from './backlog.mjs';
@@ -28,7 +28,7 @@ for (const entry of entries) {
   entry.fingerprint = design.fingerprint;
   entry.revision = campaignRevision(entry, rendererRevision);
 }
-const sharedReviews = JSON.parse(readFileSync(resolve(root, 'tools/design-library/review/shared-reviews.json'), 'utf8'));
+const sharedReviews = loadReviews(root);
 const queue = reviewQueue(sharedReviews, entries, root);
 writeFileSync(resolve(out, 'review-queue.json'), JSON.stringify(queue, null, 2) + '\n');
 const backlog = JSON.parse(readFileSync(resolve(root, 'tools/design-library/pilot/next-batch.json'), 'utf8'));

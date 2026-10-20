@@ -1,0 +1,39 @@
+{
+  "id": "homeware-care-notes",
+  "revision": "d15a750aac10492b93abf0040716fa470ec70a42a55c0a49961d30ff99727038",
+  "base_id": "82dd069eae52f1ed4a84c419b1eaf00979bc0ff0096f7842129d4aa57e92a911",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+  "at": "2026-10-12T04:22:52.557Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    }
+  },
+  "record_id": "d6123f5e63ea044e9ce9133b6e4f674b0c14b3eb669e6b253b19e44d465058a4"
+}

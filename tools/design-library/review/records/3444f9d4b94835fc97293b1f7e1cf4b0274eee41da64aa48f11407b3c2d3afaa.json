@@ -1,0 +1,83 @@
+{
+  "id": "first-order-receipt",
+  "revision": "d31335df711e004e07a1d59f42470e1b16b4843f6d41b74606bd121e7e01d5ae",
+  "base_id": "7836a6cdb24e4b2b6bca72f0a2d49d08426014b7790ea7870ab9e99d15b4396c",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-04.webp",
+          "sha256": "5bf91c857d2eb3ba4abf655732cff5247773adc8ea0d162f4c3bff74efbd9472"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-04.webp",
+          "sha256": "1e5701223800fa2a09b60444e2f10dcf94738b01eb31179f354a2ac528a2748c"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/first-order-receipt-1280-0.webp",
+          "sha256": "651e5d32c6719bdde96d385a85265ad72f0c89562f2d6ccfbb46c06c8661f739"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/first-order-receipt-1280-copied.webp",
+          "sha256": "84c45bcd9acf93a41dce3692fdf1859523a6ee7eef72190242f2b360f745645b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/first-order-receipt-320-0.webp",
+          "sha256": "b7e87e0530deccfc76f0e9d23b8fcf1bd66a40ab6e648c96202d515415005edd"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/first-order-receipt-320-copied.webp",
+          "sha256": "f5385b59fedc121442dcbf02eb00d39e3c05c942b27782bb72c192588dc8639c"
+        }
+      ]
+    }
+  },
+  "record_id": "3444f9d4b94835fc97293b1f7e1cf4b0274eee41da64aa48f11407b3c2d3afaa"
+}

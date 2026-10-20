@@ -1,0 +1,99 @@
+{
+  "id": "restock-announcements",
+  "revision": "055ff876402024205b402f7653deafde0741a2699fffd67a7aec0df73867f4d6",
+  "base_id": "e7f6fd9fb38fe2e08ce4863a2eb793eb3e80d758bd610e65746636045e6ea410",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-08.webp",
+          "sha256": "3d3dc61d535ffeca89445759e27497580767a7ea2ecace5f37739c8cd249cdba"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-08.webp",
+          "sha256": "ca5da2b36f444b2dc0df40036d928e7ea6567dffe460b69855647e6f68d0ed63"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-09.webp",
+          "sha256": "ccc417a9e0f7a3f4e309122847279d16d187bd2e50dae1d99883dfcee4bfe62a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-09.webp",
+          "sha256": "c8af5a407688bf361ceb3604133f518f1beb196287ea08936f887ca0a30487ab"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/restock-announcements-1280-0.webp",
+          "sha256": "58d615f142830cb9d8c630bbc79d1bc59c80c67078afdc77471e3f37bda8fdaf"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/restock-announcements-1280-1.webp",
+          "sha256": "71fbb3270195bc387e8767b14dfec5d2ef5989a52c1bd151df8a258aa695a3d9"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/restock-announcements-1280-retry.webp",
+          "sha256": "40175dc929e0b001085c53e4b554028be59fd11e09aaed5ab8766f3b71235f0c"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/restock-announcements-320-0.webp",
+          "sha256": "10d715467b924336bdf8a2b7831969040234153bda2b6683111080713a4f7aa2"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/restock-announcements-320-1.webp",
+          "sha256": "19244c81fd5be668938d8604650c3856b2a091805f3ec0afa9136d716b22ecba"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/restock-announcements-320-retry.webp",
+          "sha256": "c835600370b288e71e05916ad50d8cbaea35d987447da8f63a26d5a03e0f42b7"
+        }
+      ]
+    }
+  },
+  "record_id": "fecb96701ec9a2ca17f797c759fb8516dd62cd3c32ea62ea7c32f4f124d7220d"
+}

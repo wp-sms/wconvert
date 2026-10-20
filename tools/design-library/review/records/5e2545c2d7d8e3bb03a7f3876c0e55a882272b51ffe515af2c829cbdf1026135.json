@@ -1,0 +1,39 @@
+{
+  "id": "collection-reader-relationships",
+  "revision": "8de6c3f63f70674e1589a41fb38f80e197701befe2f9b5674a925b465f82a411",
+  "base_id": "f25760b86c3b54afbce0ed923dc5cadc80bdcc00e1673e970eb73e79358755cc",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "All referenced setups retain identical rendered markup/styles, catalog metadata and content. Refresh renderer-bound review references only.",
+  "at": "2026-10-04T06:03:53.485Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    }
+  },
+  "record_id": "5e2545c2d7d8e3bb03a7f3876c0e55a882272b51ffe515af2c829cbdf1026135"
+}

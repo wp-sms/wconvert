@@ -1,0 +1,39 @@
+{
+  "id": "reading-notes-guide",
+  "revision": "c79a70bcdd6bc39e9045faaf5c61ae662c3988191eade5c1dddf163b180b99d5",
+  "base_id": "c5ac7161e9ae9690e8302335673b471969b1366d1d736e42a8b362b0bcb1469f",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+  "at": "2026-10-12T04:22:52.557Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    }
+  },
+  "record_id": "8b4d7b8bbe8c5d9cf2441d8d1d28abf13c0a80ce30c17dd28d366b372f287000"
+}

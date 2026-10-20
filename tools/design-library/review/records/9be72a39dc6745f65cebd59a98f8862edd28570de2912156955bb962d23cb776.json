@@ -1,0 +1,51 @@
+{
+  "id": "recommend-accessory",
+  "revision": "4549aa5218e1b410b1fc2d5f35b2fd3acd9a1b98e3f08d37977b50d9741cbb0f",
+  "base_id": "bec16a830d6b01a0d2a69ff3b49b3369ffbf98f57115dabebb547fa3388fec47",
+  "decision": "approved",
+  "reviewer": "Codex — fresh bundled collection review",
+  "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+  "at": "2026-10-18T04:42:39.402Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    }
+  },
+  "record_id": "9be72a39dc6745f65cebd59a98f8862edd28570de2912156955bb962d23cb776"
+}

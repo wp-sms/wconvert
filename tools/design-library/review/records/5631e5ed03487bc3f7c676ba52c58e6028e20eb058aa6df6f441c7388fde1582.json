@@ -1,0 +1,39 @@
+{
+  "id": "fitness-introduction",
+  "revision": "c463fd8c64dca705d787e8e2c2caf071690ae5b3ff6b902ef7b263ae34603c91",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — recorded coverage-batch review",
+  "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+  "at": "2026-09-28T12:38:09.271Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    }
+  },
+  "record_id": "5631e5ed03487bc3f7c676ba52c58e6028e20eb058aa6df6f441c7388fde1582"
+}

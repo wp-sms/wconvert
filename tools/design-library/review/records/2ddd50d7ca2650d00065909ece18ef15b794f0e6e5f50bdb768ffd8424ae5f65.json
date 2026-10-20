@@ -1,0 +1,63 @@
+{
+  "id": "collection-sale-planning",
+  "revision": "5e44f7184b59520478aa62ad189af2f171145bc18c8db143479f944c5177b3d2",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex local review",
+  "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+  "at": "2026-09-30T08:02:14.027Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+          "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+        },
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+          "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+        }
+      ]
+    }
+  },
+  "record_id": "2ddd50d7ca2650d00065909ece18ef15b794f0e6e5f50bdb768ffd8424ae5f65"
+}

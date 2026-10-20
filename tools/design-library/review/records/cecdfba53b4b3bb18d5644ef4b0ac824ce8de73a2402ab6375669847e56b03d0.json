@@ -1,0 +1,51 @@
+{
+  "id": "homeware-care-notes",
+  "revision": "22472ba79421d5af6d93ea2c4cc20fc556bcafb80ab7b66335669a05470b727f",
+  "base_id": "a361353ca9a12738151d4357679b196cb2cd173a457a528c0e63b4d8f2d82c80",
+  "decision": "approved",
+  "reviewer": "Codex — fresh bundled collection review",
+  "note": "All prepared screens/results visually inspected at desktop and 320px, including long-copy/RTL stress. Configured native WordPress journeys and applicable WooCommerce actions passed; external delivery skipped. Scope and evidence are recorded in the fresh review report.",
+  "at": "2026-10-18T04:42:39.402Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/README.md",
+          "sha256": "4b07a69c71a08e16392947cf6feef84e4b71b57ec9b65277ff1e0e7bd3930a21"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-18/manifest.json",
+          "sha256": "4de99bdc9178077dff5616a7d0a3b2083e28e78fd95928cc0784f1a4b5bf898f"
+        }
+      ]
+    }
+  },
+  "record_id": "cecdfba53b4b3bb18d5644ef4b0ac824ce8de73a2402ab6375669847e56b03d0"
+}

@@ -1,0 +1,99 @@
+{
+  "id": "spare-parts-advice",
+  "revision": "3d04b2fea88c6924c213c38ca5c8be2a9139924df9db61cd891e45ebd446c093",
+  "base_id": "de5245227ef349e226aff90f5672e538f83fbb1f1705666505b4565c97927a6a",
+  "decision": "approved",
+  "reviewer": "Codex — full library cleanup",
+  "note": "Final source screens/default results inspected at phone and desktop sizes, real Playbook prefills checked, native disposable capture suite passed. Prior branch-specific journey evidence remains valid: field/submission IDs and question logic are unchanged. No real delivery tested.",
+  "at": "2026-09-29T02:19:39.172Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/manifest.json",
+          "sha256": "706aabb2c9f20b86881b81b661ca817a919cc8d258d02baf431cf8a00d39ee27"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/after.json",
+          "sha256": "52edf1571f834bfbe9827986cda6ea44ded28ccf2ae5f34d7ca977eb63ee9398"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/registered-setups.json",
+          "sha256": "a7b1bd46e86139264355e335e976681daab32de18ef6ca5dcc19085ee72009ba"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/snapshot-check.json",
+          "sha256": "02eff79b2787a36649b60bbe6aef78960595652466bfc4ff42672591d4519d4f"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    }
+  },
+  "record_id": "ac90960706f958794e014a2e270901b8e742eabd066bfd750b484134d1b58ce7"
+}

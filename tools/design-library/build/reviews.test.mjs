@@ -54,3 +54,28 @@ test('unreviewed entries stay pending and record tampering fails closed', t => {
   store.records[0].note='Silently edited';
   assert.throws(()=>reviewQueue(store,entries,root),/Invalid/);
 });
+
+test('the record store is one file per decision, and a fork in a chain is refused', async () => {
+  const { mkdtempSync, rmSync, mkdirSync, writeFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { tmpdir } = await import('node:os');
+  const { createHash } = await import('node:crypto');
+  const { loadReviews, writeReviews, emptyReviews, RECORDS } = await import('./reviews.mjs');
+  const root = mkdtempSync(join(tmpdir(), 'wconvert-records-'));
+  try {
+    const record = (id, base_id, note) => { const body = { id, revision: 'r', base_id, decision: 'review', reviewer: 'a', note, at: '2026-10-20T00:00:00Z', checks: {} }; return { ...body, record_id: createHash('sha256').update(JSON.stringify(body)).digest('hex') }; };
+    const first = record('card', null, 'one'), second = record('card', first.record_id, 'two'), other = record('bar', null, 'x');
+    assert.equal(writeReviews(root, emptyReviews(), { schema: 1, records: [second, other, first] }), 3);
+    assert.deepEqual(loadReviews(root).records.map(r => r.note), ['x', 'one', 'two'], 'Chains are read in order whatever the file order');
+    const fork = record('card', first.record_id, 'parallel');
+    writeFileSync(join(root, RECORDS, fork.record_id + '.json'), JSON.stringify(fork));
+    assert.throws(() => loadReviews(root), /two decisions over the same earlier review/);
+    rmSync(join(root, RECORDS, fork.record_id + '.json'));
+    const orphan = record('card', 'f'.repeat(64), 'lost');
+    writeFileSync(join(root, RECORDS, orphan.record_id + '.json'), JSON.stringify(orphan));
+    assert.throws(() => loadReviews(root), /out of chain/);
+    rmSync(join(root, RECORDS, orphan.record_id + '.json'));
+    writeFileSync(join(root, RECORDS, first.record_id + '.json'), JSON.stringify({ ...first, note: 'edited' }));
+    assert.throws(() => loadReviews(root), /does not match its contents/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});

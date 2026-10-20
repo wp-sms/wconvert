@@ -1,0 +1,39 @@
+{
+  "id": "editorial-weekly",
+  "revision": "9ebe5aca0830c0c57521833b47c6125459c9257d22bed80bbfc340863467bbaf",
+  "base_id": "f2733e2b7b08a3dd27383d1f4efd8e4fbd1778087793de1f1419b3c87e96044e",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Retain the previous visual review after identical markup for every screen and identical responsive styles; full journey tests and real WordPress commerce checks pass.",
+  "at": "2026-10-04T06:03:29.997Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+          "sha256": "40c0c02544e7f660672b54dd50d26f0856374204810e0eb79e118529c44e33a7"
+        }
+      ]
+    }
+  },
+  "record_id": "a7d31ddd772f4bc90ed4bade8de159ec9f47ed55ebad360f86801fdf30596b93"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "home-repair-quote",
+  "revision": "5e6b40750133d0203edf5482e502030a53054bc237374e2e568ad51eb814c3e9",
+  "base_id": "c57f1fb44bf706b889a29055f13f57f2c02bbaa2a0e1722b91e73c4eab31d037",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed every current screen and result at desktop/phone sizes; current source notes and practical requirements checked. See scoped visual, journey and WordPress evidence.",
+  "at": "2026-10-12T04:22:52.557Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/commerce-refresh-2026-10-12.md",
+          "sha256": "e790527cc57eba709098583faf604286a68f06205ca0b4ccb48a18cb3211d89f"
+        }
+      ]
+    }
+  },
+  "record_id": "2d4cff43317fd2bf94b7b55da709a07656f849175ebbdd0970bffd0f08f7cfdb"
+}

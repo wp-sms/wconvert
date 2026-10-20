@@ -1,0 +1,59 @@
+{
+  "id": "studio-welcome",
+  "revision": "fbca03cc447137535154b75b76bcc7dede16bc20712340e88ada0d30ac618b4c",
+  "base_id": "62444f1936362ef0cf447b5a82311c28a32a8e86c7f7c1d674cc1334d028433a",
+  "decision": "approved",
+  "reviewer": "Codex — six-design refinement review",
+  "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+  "at": "2026-09-29T01:30:05.464Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        },
+        {
+          "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+          "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+        }
+      ]
+    }
+  },
+  "record_id": "5628d23ff0c765a9c0313d41795278c5f0aaeebe1bd4a81abe9c4fd9b62aa391"
+}

@@ -1,0 +1,63 @@
+{
+  "id": "sms-message-preview",
+  "revision": "6330671305ee56a2d7286807da890a827ebca7cdf04fed7f09886550d6b82714",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed every screen and native WordPress behaviour. Original artwork where applicable; no external delivery or conversion-performance claim. See dated evidence.",
+  "at": "2026-10-02T14:12:15.139Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+          "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-audit.json",
+          "sha256": "cfd4b6852cc4d30b99302e20ef3b2390cae60ac4f9c8c3c2101e6326f846a424"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-no-artwork.json",
+          "sha256": "72ae138facb6e21962964fc3563eaa0eb6b9724fc24ac1826f365dd25cdfd5b1"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-sms-desktop.png",
+          "sha256": "f93167b97985cf2892f5f9ea2a2b9b4ee6e02303bb9b61ff4f69decd1bef178a"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+          "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+          "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+          "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+          "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+        },
+        {
+          "path": "docs/reviews/trust-and-fit-2026-10-02-local-picker.png",
+          "sha256": "c83c9fde4f13b9867d7635aa4f78738ecc46407b64f273bc54637c6f90ce3b7d"
+        }
+      ]
+    }
+  },
+  "record_id": "693d124c35ae39af001dd58c065ac21b58ebd6bd62f7c8ef401760f5b247fb18"
+}

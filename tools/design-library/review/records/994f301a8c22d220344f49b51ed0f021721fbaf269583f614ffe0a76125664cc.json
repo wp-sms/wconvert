@@ -1,0 +1,99 @@
+{
+  "id": "membership-details",
+  "revision": "11e9b78860f8e9e81682b2e9ac6931bea3fec43821bfb965b4d2ce8da770069f",
+  "base_id": "85db9213e2f8b8f1625b7570506cf02122dff49aeaf28c0a5adbf98e504e8e3a",
+  "decision": "approved",
+  "reviewer": "Codex — full library cleanup",
+  "note": "Only nearest-design comparison metadata and its revision changed; campaign configuration and output are identical. Preserve previous stage evidence and record current comparison review.",
+  "at": "2026-09-29T02:19:39.172Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/manifest.json",
+          "sha256": "706aabb2c9f20b86881b81b661ca817a919cc8d258d02baf431cf8a00d39ee27"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/after.json",
+          "sha256": "52edf1571f834bfbe9827986cda6ea44ded28ccf2ae5f34d7ca977eb63ee9398"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/registered-setups.json",
+          "sha256": "a7b1bd46e86139264355e335e976681daab32de18ef6ca5dcc19085ee72009ba"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29.md",
+          "sha256": "55e91ae720b45dd7095d4153b368e92b5189ced6d2550890091226d9143b64c5"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/wordpress.json",
+          "sha256": "3681ca56f539a68b8d04145a49101efe9a2a0d26757ddfc3f27064ef2fe8acf0"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/snapshot-check.json",
+          "sha256": "02eff79b2787a36649b60bbe6aef78960595652466bfc4ff42672591d4519d4f"
+        },
+        {
+          "path": "docs/reviews/template-library-cleanup-2026-09-29/campaign-changes.json",
+          "sha256": "ac52aa2319f25c58a1b42115da19bc91398f7cb94cd6a4c750dd980414c27d00"
+        }
+      ]
+    }
+  },
+  "record_id": "994f301a8c22d220344f49b51ed0f021721fbaf269583f614ffe0a76125664cc"
+}

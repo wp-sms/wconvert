@@ -1,0 +1,127 @@
+{
+  "id": "venue-visit-request",
+  "revision": "f6b566e4dc9617cf8d7fc34ba254e23775ee43830ac52753b30dace8e49be1e6",
+  "base_id": "a86206181be31b1d72738ec87d7fd20bb913ebd5c6badeb4f3afccfe9f9d95ba",
+  "decision": "approved",
+  "reviewer": "Codex — visual-variety local review",
+  "note": "Comparison-only refresh: source design, Playbook and brief verified unchanged against HEAD. Prior visual/journey evidence retained; nearest-design metadata and fresh full-library layout/native checks reviewed. No claim of new manual visual inspection.",
+  "at": "2026-09-28T18:32:50.364836+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+          "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+          "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.md",
+          "sha256": "21230d5a140cdc1ccfa1911f33c7d5a36291a0f37b192ffcf9b16cf17c5292bb"
+        },
+        {
+          "path": "docs/reviews/template-decision-neighbours-2026-09-28.json",
+          "sha256": "f4b50abc504beea6cf8b26b2d2b4990abcd0b38e2280fcdc069471dca936fbdc"
+        },
+        {
+          "path": "docs/reviews/template-decision-support-2026-09-28.json",
+          "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.md",
+          "sha256": "b497f2f07b4b551e043e1716b320aca3ffaae5176b4793d6e8080814853d3030"
+        },
+        {
+          "path": "docs/reviews/template-editorial-refinement-2026-09-28.json",
+          "sha256": "0d6312b6047a5627c2b6a5453f103817d53d9133237ba6e3cdbb73a43994fd44"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.md",
+          "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28.json",
+          "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+          "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+        },
+        {
+          "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+          "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+        }
+      ]
+    }
+  },
+  "record_id": "51e7035b811083478a29d3d06e2da3543f2d6bbdb4f3aa182d99292b48b03d8e"
+}

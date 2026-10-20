@@ -1,0 +1,99 @@
+{
+  "id": "earlier-appointment-enquiry",
+  "revision": "fc040fccbb10138f03dc7ad7e4837faff4901d06147194f5b817ac21b8f79e48",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — considered essentials",
+  "note": "Navy introduction and light response area. Optional availability and email align on desktop and stack before they become cramped. Secondary Close action on receipt. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+  "at": "2026-10-19T12:13:43.005485+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+          "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-1440.png",
+          "sha256": "a0bad8ee9c22477bb1997b2ed02b580769fb2620c64d55d553c995e3515e37df"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-320.png",
+          "sha256": "11373ac4d4b1a41956b6c2461f8710462b103e48a2bfd6b7788322b7ada6757b"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-390.png",
+          "sha256": "215b18f4f0e8ec116cdb4adb399336299f04cf89d1f3fc40ea8bb33cff0363c2"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-768.png",
+          "sha256": "9465115435e2d4989f618fb0f2bf0fb3e559affee438fb2c4a01ed89c4bb0ea8"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-320-rtl-stress.png",
+          "sha256": "729bb28484b4b0eee65c8b77f9f8680673478f2a0291732082eceb774c4fae99"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+          "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+          "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-retry.png",
+          "sha256": "7f5a0f3a523b006c2aea6f329ddd9a62543f61e87fdd98ee52796e67445a285e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+          "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+          "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-1280-input.png",
+          "sha256": "e3eff2f0f19e2faff2909d6e02e43da8779e2248cd8ae9cfbe6e45f8dc1cec6f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-1280-success.png",
+          "sha256": "3b8274d014269af09b615dda19495bdeba1d6ed26b58a7ab8cb8e903d1101fba"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-320-input.png",
+          "sha256": "288c0e7ddaca0f7ff359f6257ca5f8b1771383d05c08496f9221cc77c44f220f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/earlier-appointment-enquiry-native-320-success.png",
+          "sha256": "179621e443c76ea6683a7a5e08c5004911061f3c2cba9e24e66f455e3153bd12"
+        }
+      ]
+    }
+  },
+  "record_id": "e1fe8a710f2d54e1bc03b143cf526dbddc23f26d2b0e3734804c8ae7fe47f2b6"
+}

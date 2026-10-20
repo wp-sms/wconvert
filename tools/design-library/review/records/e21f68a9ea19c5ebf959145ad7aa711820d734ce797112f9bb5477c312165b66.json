@@ -1,0 +1,71 @@
+{
+  "id": "collection-sale-planning",
+  "revision": "0170f8f4dafc3eac3b4931afeeb01cc15b04129605137a93cd614943c13d8b80",
+  "base_id": "9816f5737a4b37b15f9554303e09f28406a09f626c20b02249ab82b9c081b328",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed collection membership, every member screen and configured WordPress journeys. Candidate discovery calendar/Free availability checked; regenerated published membership is a separate required release check. No automatic scheduling or external delivery.",
+  "at": "2026-10-12T12:34:27.200Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/discovery/collection-4.webp",
+          "sha256": "a77bf4202c765cc6bf1f784ca52d27f1b37deaffd53d9fdd40da7ae92464833c"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/discovery/discovery.json",
+          "sha256": "7c4533fb036156f8813104694c59ab602fc121ae470e92f48067cf54eb96764b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+          "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+        }
+      ]
+    }
+  },
+  "record_id": "e21f68a9ea19c5ebf959145ad7aa711820d734ce797112f9bb5477c312165b66"
+}

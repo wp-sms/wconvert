@@ -1,0 +1,99 @@
+{
+  "id": "renovation-callback",
+  "revision": "f8c2332ae5d756522f271518f75269d6a366c74f7e65c0c1b52a9a42ff737a6e",
+  "base_id": "2a2d7c3eee17fd0fe55fbce706b467699b6856822a9e9f5eb697499770ab8af5",
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Fresh desktop/320px, all-screen and long-copy RTL inspection; configured local WordPress journey checked. See report for actual versus simulated checks. No external delivery claim.",
+  "at": "2026-10-12T12:33:44.882Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-07.webp",
+          "sha256": "0af1af808e264f4e3ba47de2029a4116d0e9c66ca9c9bda7350d21f72de2be6a"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-07.webp",
+          "sha256": "3558f8cf9bbead0a90fc69e9d236303fc506c01ae8e95614567be1230088ff9b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/native.json",
+          "sha256": "38c59aab69f2ce95d9397ae176c995254fa70e3156be2ebdd3cf5dbc01a0f6f3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-1280-0.webp",
+          "sha256": "5e889e3ee1c8abc15c94b7d813e42909225b2dbef027ef7d0b93eacc27b9d42b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-1280-1.webp",
+          "sha256": "a451479ddad5f4f758870e742ac4206c2ad5ab648ad7c30d55ca07ce0fe3ef36"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-1280-countries.webp",
+          "sha256": "1b600e4ca372ea7489bfc5298448638d70d6f14efea9b53fe35e93aff57f6fa3"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-1280-retry.webp",
+          "sha256": "b2df2812ff8ac1cf3b862b3f91077f0450d71daa43cea69d748e373aa5c0a925"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-320-0.webp",
+          "sha256": "95400f16f88291c3b8bc44afa9d1d759f995f484581120b7f51f0d9346fc7405"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-320-1.webp",
+          "sha256": "324c78a341833f8dcee547ddafb1671c3a48f6b816832752c4b3c4dd22e07575"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-320-countries.webp",
+          "sha256": "9b0d4fdffae6d0c0f9f541b76d4832d3d64eac1582049fa4e06bf839c305d838"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/native/renovation-callback-320-retry.webp",
+          "sha256": "04d080c211c92a8d0509094b5b5d2ebfbdccaa8d28a0f9fd38cfcfedaf9e1b08"
+        }
+      ]
+    }
+  },
+  "record_id": "f04efcd87f00a63ffbe177dbf83423b213bed9115bd8676987ebd9ec729749f9"
+}

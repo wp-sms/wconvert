@@ -1,0 +1,43 @@
+{
+  "id": "repair-assessment",
+  "revision": "cc7b26624f4a154bd3f9f29b1b0223decd02cb807f2dcc1141538c2c73d79ce2",
+  "base_id": "4b559ef659b6f69ce201ad8280c499c17b58a594b1ddc31bd55a7f19574bff9d",
+  "decision": "approved",
+  "reviewer": "Codex — local follow-through",
+  "note": "Verified prior renderer-bound revision matches exactly when restoring the old nearest-design list. Source, setup and renderer are unchanged. Re-inspected all 768/320px screens; prior journey/WordPress evidence retained. See template-local-progress-2026-10-01.md.",
+  "at": "2026-10-01T06:01:59.799Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        },
+        {
+          "path": "docs/reviews/repair-assessment-recheck-2026-10-01.jpg",
+          "sha256": "3e0586f1f4ae0e45d8fd5e2b1990865e55421edbc6ed954f3223893da9634c27"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+          "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+        }
+      ]
+    }
+  },
+  "record_id": "ef5c67a8b4c4dbfb9bb7754c906bb79598b191b9385f45c69e56aa0bf4189b83"
+}

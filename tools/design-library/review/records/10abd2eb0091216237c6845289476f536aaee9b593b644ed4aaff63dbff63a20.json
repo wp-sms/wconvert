@@ -1,0 +1,99 @@
+{
+  "id": "checklist-download",
+  "revision": "79cda6d7dc4a370d3f19525b085f93f7e5fb19b87add7b6ac2ab2906bc2c3c15",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — considered essentials",
+  "note": "Balanced guide typography and aligned name/email/action. Optional name now matches the actual requirement. Receipt only confirms the request. Four-width screen inspection, narrow RTL/long copy, native local capture and simulated retry evidence recorded. External delivery and physical devices excluded.",
+  "at": "2026-10-19T12:13:43.005394+00:00",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/proof.json",
+          "sha256": "b02b7b1b67f361a03ac722bd0e7a2a0928827ffeccee73f96f0c311b05857823"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-1440.png",
+          "sha256": "30590afd3ec68175755c73ef94fe43922ae8a616af0e3f83092cb49b2d021b12"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-320.png",
+          "sha256": "eb71580f736417c80894e35102596b384397bb7c1f8031837c979ef8596dca64"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-390.png",
+          "sha256": "ed090884d24d4d49976d1e0b6f146d2249f6ed80649b34149705113887c6c54d"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-768.png",
+          "sha256": "bd2824496ab013a6142cf392bf884bcb1a54d674d8f736c57c52eef099c92d36"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-320-rtl-stress.png",
+          "sha256": "adcaf04195146cdb5712c3c6379e31e75a4407f33175b1fa1619b1f7bc33ca01"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/measurements.json",
+          "sha256": "175577179a655d86be02729177295707d87aa579026f91e63f253488dcd2c3f2"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/simulated-retries.json",
+          "sha256": "9d068dfdb642c135c69f99430f708688872a037ef6e5e721e30e404d0aa1c18f"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-retry.png",
+          "sha256": "4a752e09bea14012f0e01eae067966937220450d1fb466804b4fc7abea4bab04"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/README.md",
+          "sha256": "72beb22ccc22d2935c7946fd109d968999f52f96623d44f1b19f014b2194e5c1"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-journeys.json",
+          "sha256": "d6b3b1f406dcf21a4553c371da2d5aeab454313b20641837b4a87f44e134950c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/native-capture-summary.json",
+          "sha256": "f8a1de377e90d5e95ccfd3d76a44608576f5e9ad050471b3c0cae1ce73f4196c"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-1280-input.png",
+          "sha256": "81ecbdddb29feb3e9ea52862b193751866e1c67b787ae7c6b81b155b5b22d6b0"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-1280-success.png",
+          "sha256": "42db84ab39a3d1b5dbc82fa0ccd974d411769c5e9febb11a1636f1024acf4698"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-320-input.png",
+          "sha256": "23e52fed74f5fd21f69791befff130a9e6e967bf927beca253c4abb6c5e39d49"
+        },
+        {
+          "path": "docs/reviews/considered-essentials-2026-10-19/checklist-download-native-320-success.png",
+          "sha256": "d3c80476e144da8217190703da812af499ebab8df3fc2b9f8af9ff2038795c8a"
+        }
+      ]
+    }
+  },
+  "record_id": "10abd2eb0091216237c6845289476f536aaee9b593b644ed4aaff63dbff63a20"
+}

@@ -1,0 +1,99 @@
+{
+  "id": "collection-useful-store-details",
+  "revision": "e5fced14dd688d0efd05ef3f1ede299b5c37305c7a5a04a8f603629fa6a0eb22",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — hosted practical collections",
+  "note": "Grouping and Free/Pro contexts reviewed; all member screens and native WordPress paths reviewed with current evidence.",
+  "at": "2026-10-20T07:12:09.932Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+          "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+          "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+          "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+          "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+          "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+          "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+          "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+          "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+          "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+          "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+          "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+          "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        }
+      ]
+    }
+  },
+  "record_id": "b25d52b3970156580d9191d90fba9b8df1afcdc41caa2bd3c678ebe8279a1a2c"
+}

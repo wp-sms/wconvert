@@ -1,0 +1,51 @@
+{
+  "id": "project-readiness-guide",
+  "revision": "e9d0be09a822d9dbd761989bab6da9d1e5bc3f573bb9fcabedccc208b9862c37",
+  "base_id": "19a8d9a451be5e4adbda2ed1179176b58738e29018a0096402a01716c97328d1",
+  "decision": "approved",
+  "reviewer": "Codex — contextual-help editorial review",
+  "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+  "at": "2026-09-28T15:38:49.396Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+          "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+        },
+        {
+          "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+          "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+        }
+      ]
+    }
+  },
+  "record_id": "9979a91ca59bdaec1324c52d38078b8d3f29ba40458a162266cb50a739c05066"
+}

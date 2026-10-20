@@ -1,0 +1,71 @@
+{
+  "id": "content-guide",
+  "revision": "4ffab1f71649045627ebce38a17e8f42e9ce9a2485a6454218e07fe52b2dd9bd",
+  "base_id": "8dfab642baef2d28d28e6152ea8f2f02c2ebcddbf8856ccf4f85da27b2b4b04b",
+  "decision": "approved",
+  "reviewer": "Codex — four design directions review",
+  "note": "Only the derived nearest-design list changed. Existing design/Playbook sources compared byte-for-byte with the prior reviewed commit; renderer and brief unchanged. Prior visual/journey evidence retained, with fresh whole-library layout/native checks and explicit comparison review.",
+  "at": "2026-09-28T16:24:38.145Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.json",
+          "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+        },
+        {
+          "path": "docs/reviews/template-practical-review-2026-09-28.md",
+          "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.md",
+          "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+        },
+        {
+          "path": "docs/reviews/template-directions-2026-09-28.json",
+          "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+        },
+        {
+          "path": "docs/reviews/template-coverage-2026-09-28.json",
+          "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+        }
+      ]
+    }
+  },
+  "record_id": "f60960814cedaf8ddb2ae94b2e3d71ea005db07c63050e8768db2e5963d70d66"
+}

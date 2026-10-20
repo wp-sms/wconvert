@@ -1,0 +1,107 @@
+{
+  "id": "coffee-taste-finder",
+  "revision": "90ddd3f3b6a2bb3fb66adfa9c7cdd1542f58a069e56c18b83ee3a40d9aed249c",
+  "base_id": "6e4b914807d190c9ccd34a585a798e3208e8acd6c8a2f276dfa8b5b5901eac74",
+  "decision": "approved",
+  "reviewer": "Claude — tier re-tag carry-forward (ADR 0146)",
+  "note": "Carried forward unchanged: the only difference from the approved revision is the tier slug (basic/elite to pro) when Pro collapsed to one tier (ADR 0146). Nothing rendered, no copy, no journey and no renderer changed; diffed against main. The prior record's evidence still applies.",
+  "at": "2026-10-13T09:30:00.000Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/manifest.json",
+          "sha256": "e1f65eed6d4744cebbb9e4b51a44ca4c13cedef070c5f5c3e29dae511cfc89c0"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-02.webp",
+          "sha256": "5d019e0372634e25c05856e28f54c3326a456474dea5c73e8218e8f7c33f688b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-02.webp",
+          "sha256": "e573c5a3ff448b97133d596e1849f2c7b85bd6e24386cfbab5f18e3b7b0102dd"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/visual/campaigns-audit.json",
+          "sha256": "573a5eb5dc6121f185fc8eb39266ab4503df3194eed7529ef6e5a641e2b2fce1"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/stress/campaigns-audit.json",
+          "sha256": "bb15df84e0843590e6c45dbbebc12949e33236065109912b390554e58ca0ffd5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/studio-journeys.json",
+          "sha256": "fe8fa11d6829e06b1284212d042ddd46e9a71f142395cb7ea5febe12345f7be9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/README.md",
+          "sha256": "6f4c0420591c45294a8eaa537d644f6c5ebb4120141a48c24a48a83f9daf01ff"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/commerce-refresh-2026-10-12-live.json",
+          "sha256": "a572120061d21e4919d0301d6498d5fb0c9ef2e0273e831d7e34369584320be7"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-bright-phone.webp",
+          "sha256": "6b546d3c8940a6de4dd716dedaabe404d86586591400df7f58f460c0e7b43969"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-bright.webp",
+          "sha256": "ba92d679427d97ec73d753dd8bfa8ffe01f27a417f7da9db99d586f33f42bf51"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-desktop.webp",
+          "sha256": "0eb0b96cbfd4e1d952b3b5df3407a586f2759065655a1fb417afeea4e7dc6e08"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-empty-desktop.webp",
+          "sha256": "e37ec3b6942f1aff30608d07668cd9244a318aede92ad2b855771071d4d31e0c"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-empty-phone.webp",
+          "sha256": "f17e871e0deffeefe0d1dc2acf31d495b0bd17f5d6407794cfe948011ed4dc6d"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-phone.webp",
+          "sha256": "b71a8b8a43b1a0e1be12c0077c133730ff2477f1bcc8ca9e61c06f26806fc94b"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-smooth-phone.webp",
+          "sha256": "49f019db996367cdb6fa180865adc689003c82c3680f2e926f6492f429f6e888"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-smooth.webp",
+          "sha256": "134dd4236ab73c6e4c81c70cec26bfe5c29c2001a1916a437cf14e983db915ae"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-unsure-phone.webp",
+          "sha256": "b5b75371e8d8b472e9c8b5a3d40ee2e7af655ff914e380f69352d855ad21a7a7"
+        },
+        {
+          "path": "docs/reviews/collection-approvals-2026-10-12/commerce/october-live-coffee-taste-finder-unsure.webp",
+          "sha256": "3a680ebde7a4e723029fe4fea22c0d29608f9705cc5d9caa5dae3ac09042a166"
+        }
+      ]
+    }
+  },
+  "record_id": "26958ab6faaa99174f0a43220fb478736572345b1590b7643cc024dd85d80862"
+}
