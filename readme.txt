@@ -20,7 +20,7 @@ and it gives you a ready-made popup or form. The words, fields and timing are
 already filled in. Change anything you like, then publish.
 
 No account to create and no outside service to connect. Your leads stay on your
-own site.
+own site. An optional online design library is used only after you allow it.
 
 = Start from a goal =
 
@@ -41,8 +41,10 @@ Choose what you want to achieve, and WConvert suggests setups that do it:
 
 = Make it yours =
 
-* **68 ready-made designs** to start from. Their artwork is original and drawn
-  in the page, so no image is loaded from another site.
+* **80 ready-made designs** to start from, included in the plugin. Their artwork
+  is original and drawn in the page, so no image is loaded from another site.
+* **More designs from the online WConvert library**, once you allow it. You add
+  one to your designs with a click, and it then works offline like the rest.
 * **Click any part of the design to change it**: words, colours, fields and
   buttons. Check how it looks on desktop and on a phone before you publish.
 * **Move designs between sites.** Export a design to a file and import it
@@ -73,7 +75,8 @@ Choose what you want to achieve, and WConvert suggests setups that do it:
 * **Monthly targets**, for example 100 new subscribers this month.
 
 Everything is counted on your own site. There is no tracking service and no
-visitor ID. WConvert also notes a few dates about your setup, such as when you
+visitor ID. (The online design library counts how often each design is added,
+with no site or visitor identifier; see External services.) WConvert also notes a few dates about your setup, such as when you
 first published, so it can tell you which step needs attention. You can see
 all of them on the Analytics screen.
 
@@ -148,7 +151,8 @@ not supported and is refused with a message.
 = Do I need an account or another service? =
 
 No. Everything works inside WordPress, with nothing else installed. MailPoet
-and WP SMS are used only if you already have them.
+and WP SMS are used only if you already have them. The online design library is
+optional and asks before it loads anything; see External services.
 
 = How do I put a form inside a post? =
 
@@ -219,23 +223,37 @@ Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or
 WConvert works without an account or any external service, and nothing below is
 contacted unless an administrator turns it on. There are two optional services.
 
-**Template catalog.** The bundled design library works offline. Administrators
-can choose Template packs and explicitly check the WConvert Template Library at
-https://templates.wconvert.io, preview a pack and install its designs. The service
-address is supplied by default; no background catalog requests run. Opening the
-picker reads local state only. An operator can override the catalog address or
-disable remote discovery with an explicit empty address.
+**Online design library.** The designs included in the plugin work offline and
+need nothing else. The online WConvert library at https://templates.wconvert.io
+is on by default but **asks first**: before anything is fetched, the design
+picker shows a one-time question, and the answer is kept in Settings → Data &
+privacy, where it can be changed at any time. Nothing is fetched on activation,
+from cron, on the dashboard or on your site's pages. While the picker is open,
+WConvert checks for new designs at most twice a day.
 
-A catalog request retrieves JSON template data and, for illustrated packs,
-PNG/JPEG/WebP images. Image size and SHA-256 checksum must match the manifest;
-accepted images are stored under `wp-content/uploads/` so installed designs keep
-working offline. No executable code or fonts are downloaded. Free requests send
-no licence key. WConvert Pro sends its licence key and activated site identity to
-the trusted template service only for an explicit premium preview/install. The
-service asks Nexus to authorize a short-lived pass for that pack and its images.
-It does not receive campaigns, leads or visitor form answers. Normal HTTP traffic
-also exposes the web server's IP address and requested URL. Changing the catalog
-address does not change the trusted recipient for licence credentials.
+What is fetched: JSON design and setup data and PNG, JPEG or WebP images. Every
+file is checked against a SHA-256 checksum, and nothing executable or any font
+is downloaded. A design you add is stored under `wp-content/uploads/` and keeps
+working offline. Your browser loads design thumbnails from the same address with
+no referrer, so the service sees your browser's IP address.
+
+What is sent: requests from the free plugin carry no licence key, site address,
+campaign, lead or visitor data; the server's IP address, the requested address
+and a fixed user agent are all the service sees. When a design is added, the
+service counts that download for that design, with no site or visitor
+identifier. **WConvert Pro** also sends its licence key and your site's domain to
+the same service when you add a Pro design, and the service asks the WConvert
+licence server (Nexus, at https://my.wconvert.io) to issue a five-minute pass for
+those files.
+
+The service runs on Cloudflare, which processes these requests for us. Its
+request logs are kept for at most 7 days and download counts for 3 months.
+
+To turn the library off for the whole site, add
+`define( 'WCONVERT_TEMPLATE_CATALOG', false );` to `wp-config.php`, or return
+`false` from the `wconvert_template_catalog` filter. An operator can also point
+it at another catalogue address; the trusted recipient of a Pro licence key does
+not change with it.
 
 Service terms: https://wconvert.io/terms/
 Privacy policy: https://wconvert.io/privacy/
@@ -316,7 +334,7 @@ logos.
 
 = 1.0.0 =
 * First public release: popups and inline forms created goal-first, a library
-  of 68 designs, design import and export, a lead log with consent records and
+  of 80 designs, design import and export, a lead log with consent records and
   CSV export, analytics by goal with monthly targets, and MailPoet and WP SMS
   integrations.
 
