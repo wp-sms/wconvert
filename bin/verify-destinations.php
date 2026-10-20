@@ -13,7 +13,7 @@
  * BOOTS with Action Scheduler bundled beside it, that `as_enqueue_async_action()`
  * is actually defined by the time a capture fires, and that a real capture
  * really does put a job on a real queue carrying two ids and no personal data.
- * A green suite is not the same as a plugin that runs (CLAUDE.md).
+ * A green suite is not the same as a plugin that runs (AGENTS.md).
  *
  * IT REFUSES TO RUN ON AN INSTALL THAT HAS LEADS. It captures and then deletes,
  * and it writes to the Destination options. Boot a throwaway WordPress —

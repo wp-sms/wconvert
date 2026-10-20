@@ -100,7 +100,7 @@ final class PayloadTag
      *   **Required, and null is the answer most sites give.** A default would
      *   let a caller forget it and print a page whose site-wide cap silently
      *   does nothing — and it would let the byte tests measure a tag the front
-     *   end never renders (CLAUDE.md: no back-compat shims; this is the same
+     *   end never renders (AGENTS.md: no back-compat shims; this is the same
      *   rule read at a signature).
      * @param string $timezone `wp_timezone()->getName()` — an IANA name, or a
      *   fixed offset for a site with no city chosen.
