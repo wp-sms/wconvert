@@ -27,7 +27,7 @@ test('adding, renaming or removing another design updates comparison data withou
   assert.equal(campaignRevision({ ...campaign, fingerprint: 'new-analysis', revision: 'previous' }, 'renderer'), campaignRevision(campaign, 'renderer'));
 });
 
-test('actual copy, layout, purpose, requirements, timing and renderer changes still invalidate approval', () => {
+test('actual copy, layout, purpose, requirements, timing and rendered-output changes still invalidate approval', () => {
   const revision = campaignRevision(campaign, 'renderer');
   for (const change of [
     { goal: 'collect_enquiries' }, { requirements: ['Configure resource delivery'] },
@@ -38,4 +38,16 @@ test('actual copy, layout, purpose, requirements, timing and renderer changes st
   changedCopy.tree.steps[0].content.children[0].text = 'New promise';
   assert.notEqual(campaignRevision(changedCopy, 'renderer'), revision);
   assert.notEqual(campaignRevision(campaign, 'renderer-v2'), revision);
+});
+
+test('a renderer change that draws the same output keeps the approval; one that draws something else does not', async () => {
+  const { renderedIdentities } = await import('./rendered-identity.mjs');
+  const { readFileSync } = await import('node:fs');
+  const renderer = readFileSync(new URL('../out/renderer.iife.js', import.meta.url), 'utf8');
+  const entry = { ...campaign, tree: { v: 2, steps: template.tree.steps, submissions: [] } };
+  const same = renderedIdentities(renderer + '\n// a comment the renderer gained\n', [entry]).get('sample');
+  assert.equal(same, renderedIdentities(renderer, [entry]).get('sample'));
+  const restyled = renderer.replace('WConvertRenderer', 'WConvertRenderer').replace(/(SHADOW_CSS\s*=\s*)/, '$1"/* new */" + ');
+  assert.notEqual(renderedIdentities(restyled, [entry]).get('sample'), same, 'A stylesheet change is a rendered change');
+  assert.equal(campaignRevision(entry, same), campaignRevision(entry, renderedIdentities(renderer, [entry]).get('sample')));
 });

@@ -30,7 +30,8 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const OUT = resolve(HERE, '../out');
+// `visual-diff.mjs` builds an older renderer beside the current one.
+const OUT = process.env.WCONVERT_RENDERER_OUT ?? resolve(HERE, '../out');
 const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
 
 /*
