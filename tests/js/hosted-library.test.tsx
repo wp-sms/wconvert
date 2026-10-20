@@ -39,7 +39,7 @@ const CATALOG = (consent: 'unanswered' | 'yes' | 'no' = 'yes'): TemplateIndex['c
 });
 const picker = (entries: TemplateIndexEntry[], props: Record<string, unknown> = {}, consent: 'unanswered' | 'yes' | 'no' = 'yes') => render(
   <TemplatePicker index={{ templates: entries, labels: LABELS, facets: FACETS, catalog: CATALOG(consent) }} trees={new Map()} displayType="popup"
-    chosen={undefined} fit={{ bound: false, sibling: null, act: 'submit' }} busy={false} onChoose={vi.fn()} onNear={vi.fn()} onPreview={vi.fn()} {...props} />);
+    chosen={undefined} fit={{ bound: false, sibling: null, act: 'submit' }} busy={false} onChoose={vi.fn()} onNear={vi.fn()} {...props} />);
 
 it('draws a hosted design from its server thumbnail, without a referrer, and installs it on request', async () => {
   catalog.refreshCatalog.mockResolvedValue({ checked_at: '2026-10-20T00:00:00+00:00' });
