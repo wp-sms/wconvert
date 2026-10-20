@@ -13,7 +13,7 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 128 campaigns
+## Internal creation and review studio: 132 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
@@ -21,10 +21,14 @@ screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **128 campaign setups using 75 designs**, drawn from a complete
-inventory of **107 designs**. Current editorial status is **25 approved setups,
-103 stale setup reviews and six approved collections**. The 25 approved setups
-cover every bundled collection dependency. See the [fresh review](../../docs/reviews/collection-approvals-2026-10-18/README.md).
+The studio contains **132 campaign setups using 76 designs**, drawn from a complete
+inventory of **108 designs**. After the shared control correction on 20 October,
+all **132 setup reviews are stale** under the existing renderer revision check.
+The preceding checkpoint had 31 current setup approvals and six approved
+collections; that is historical, not approval of this renderer. The focused
+[control review](../../docs/reviews/shared-control-icons-2026-10-20/README.md)
+checks close buttons and selectors across the inventory without renewing editorial
+approvals or publishing collections.
 Counts in the dated batch notes below describe those earlier checkpoints. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
@@ -533,7 +537,7 @@ The current studio has **128 setups / 75 designs**, with **107 designs / 153 reg
 
 The standalone Prefill uses an explicit empty site destination; WordPress retains real shop/home defaults. Product result previews include inert sample cards, and optional empty result links stay hidden. Graph preview traversal comes from the shipping loader. Remote v3 graph packs and explicitly declared, tier-checked paid targeting rules are now accepted by the strict importer. New source-format compatibility does not silently approve older content.
 
-Updated 19 October: six curated collections have current reviews for 25 unique setups. **103 other studio approvals remain stale** and should be re-reviewed in focused batches. The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
+Updated 20 October: six curated collections have current reviews. **31 setup approvals are current and 101 remain stale** after the shared control-icon refresh; the latter should be re-reviewed in focused batches. See [fresh approval evidence](../../docs/reviews/pr300-approvals-2026-10-20/README.md). The hosted release is 23 setups / 20 designs / six packs / three complete collections. Nexus authorization and protected-image installation are live and verified; external campaign delivery remains skipped.
 
 Repeat the visual review with `npm run templates:collections` and `out/collection-audit.html`. `tools/visual-tests/template-studio-refresh.mjs` exercises the curated studio journeys (local studio default port 9452). `tools/visual-tests/template-refresh.mjs` uses the disposable commerce harness (default port 9453); seed `?wconvert_commerce_fixture=1&json=1` first. These fixtures never belong on a customer site.
 
@@ -572,3 +576,43 @@ saves actual-size screenshots. See [corrective review](../../docs/reviews/announ
 output directory. For the older-essentials visual/native runners,
 `WCONVERT_REVIEW_EVIDENCE` selects a new evidence directory so follow-up reviews
 do not overwrite earlier approval evidence.
+
+## Considered essentials and targeted review — 19 October 2026
+
+Open `out/pilot.html?batch=considered-essentials`. Two older designs have clearer
+typography, spacing and form grouping. Availability desk is a new inline layout;
+earlier-appointment enquiries and equipment-return checklists are two new useful
+setups. The latter deliberately reuses the guide design. Four existing setups
+and two new ones were checked across all twelve screens, four preview widths,
+RTL/long copy and mounted desktop/phone WordPress.
+
+Run `npm run templates:review:scope -- origin/main` before reviewing a change. It
+finds all registered dependent setups, including ones outside the curated studio,
+and separates unrelated stale reviews. Shared runtime changes still require a
+whole-library pass. Adding a template does not reset unrelated approvals.
+
+`npm run templates:review:proof -- docs/reviews/<batch-date>/proof.json` checks that
+the batch's current revisions have every screen/result at all four studio widths
+and desktop/phone WordPress captures. Missing or changed screenshots fail. It
+does not replace actually inspecting the pictures or testing the visitor journey.
+See [the workflow](MAINTENANCE.md#reusable-batch-verification) and
+[the complete evidence](../../docs/reviews/considered-essentials-2026-10-19/README.md).
+
+This batch adds no hosted pack and publishes nothing to R2. The library sources
+contain 108 designs / 155 registered setups. The six collection approvals were
+refreshed on 20 October together with 31 setup approvals after the shared control-icon correction. The 101 other stale setups
+remain a separate review backlog.
+There are also 39 older design-version records to reconcile during that backlog.
+The named batch gate now checks only its dependent designs and reports this debt;
+the unscoped whole-library gate still fails until all required reviews and design
+versions are current. Approval criteria and revision hashes were not relaxed.
+
+### Shared visitor controls
+
+Run `npm run templates:controls:proof`, serve `out/`, open
+`control-proof.html` and select **Run checks**. This discovers every current design
+and registered setup (not a saved inventory), renders every screen/result at
+320/390/768/1440px in both directions, and checks the actual close-icon centre,
+select-chevron centre/size/text clearance, and phone country arrow. Save the
+resulting JSON with fresh desktop/phone screenshots. It complements visual review;
+it cannot approve campaigns or bypass the publication gate.

@@ -1,5 +1,8 @@
 # 0146: Pro is one tier
 
+**Shared control amendment — [ADR 0155](0155-visitor-controls-use-font-independent-geometry.md):** Free now caps at 14,896 B and Pro at 27,872 B gzip-9. Earlier byte measurements below are historical.
+
+
 Date: 2026-10-13. Status: accepted.
 Supersedes [0056](0056-the-tier-ladder-is-a-manifest.md) (the three-rung ladder).
 Amends [0014](0014-pro-replaces-the-loader.md), [0015](0015-enforcement-is-by-non-registration.md),

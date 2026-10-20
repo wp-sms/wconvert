@@ -543,7 +543,12 @@ export const SHADOW_CSS = [
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:max(.875rem,.8125em);font-weight:500;color:var(--wc-muted,#6b7280)}`,
-  `select.wc-input{appearance:none;padding-inline-end:2rem}.wc-field:has(select):after{content:"▾"/"";position:absolute;inset-inline-end:1rem;bottom:.75rem;pointer-events:none}`,
+  // Both controls use geometry, not font glyphs: text boxes can be centred
+  // while their ink sits low. Anchor the chevron to the input, not its label.
+  `.wc-control-icon{display:block;inline-size:1.25rem;block-size:1.25rem;flex:none;pointer-events:none}`,
+  `.wc-select{display:grid;min-inline-size:0}`,
+  `.wc-select>select{appearance:none;padding-inline-end:2.75rem;grid-area:1/1}`,
+  `.wc-select>.wc-control-icon{grid-area:1/1;align-self:center;justify-self:end;margin-inline-end:.875rem}`,
   /*
    * ==========================================================================
    * A compact field-and-button row can use its placeholder as the visible cue.
@@ -642,7 +647,7 @@ export const SHADOW_CSS = [
   `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px #b91c1c}`,
 
   // Container chrome, not vocabulary: a template cannot omit the way out.
-  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;font:inherit;font-size:1.25rem;line-height:1;cursor:pointer;color:#1f2937;background:#ffffff;border:1px solid #64748b;border-radius:50%;display:grid;place-items:center;padding:0;z-index:1}`,
+  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;cursor:pointer;color:#1f2937;background:#ffffff;border:1px solid #64748b;border-radius:50%;display:grid;place-items:center;padding:0;z-index:1}`,
   /*
    * ==========================================================================
    * 24×24 IS THE FLOOR. IT IS NOT THE TARGET SIZE FOR A THUMB.

@@ -18,7 +18,7 @@ return [
         'body' => __('A monthly note about materials, making and the people behind the pieces.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
-        'consent_text' => __('Email me the monthly maker notes. I can unsubscribe anytime.', 'wconvert'),
+        'consent_text' => __('Email me the monthly maker notes.', 'wconvert'),
         'cta_label' => __('Request the maker notes', 'wconvert'),
         'fine_print' => [
             __('You can unsubscribe at any time.', 'wconvert'),

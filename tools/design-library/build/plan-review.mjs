@@ -1,0 +1,23 @@
+import { execFileSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { readDesigns } from './inventory.mjs';
+import { reviewScope } from './review-scope.mjs';
+const root=resolve(import.meta.dirname,'../../..');
+const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'});
+const base=process.argv[2];
+if(!base || process.argv.length!==3) throw Error('Pass a base revision: npm run templates:review:scope -- origin/main');
+const pinned=git('rev-parse','--verify',`${base}^{commit}`).trim();
+const read=p=>JSON.parse(readFileSync(resolve(root,p),'utf8'));
+const old=p=>JSON.parse(git('show',`${pinned}:${p}`));
+const collection='tools/design-library/pilot/collection.json', curated='tools/design-library/collections/source.json';
+const paths=[...new Set([...git('diff','--no-renames','--name-only',pinned,'--').trim().split('\n'),...git('ls-files','--others','--exclude-standard').trim().split('\n')].filter(Boolean))];
+const setups=JSON.parse(execFileSync('php',['tools/design-library/build/pilot.php'],{cwd:root,env:{...process.env,WCONVERT_EXPORT_ALL:'1'},encoding:'utf8'}));
+const current=read(curated), previous=old(curated);
+const result=reviewScope({base:pinned,paths,designs:readDesigns(root),setups,briefsBefore:old(collection).entries,briefsAfter:read(collection).entries,
+  collectionsBefore:previous.collections,collectionsAfter:current.collections,queue:read('tools/design-library/out/review-queue.json')});
+writeFileSync(resolve(root,'tools/design-library/out/review-scope.json'),JSON.stringify(result,null,2)+'\n');
+console.log(`${result.mode}: ${result.designs.length} designs / ${result.setups.length} setups / ${result.collections.length} collections.`);
+for(const e of result.setups) console.log(`${e.id}: ${e.screens.length} screens/results${e.in_studio?'':' — add a studio brief before approval'}`);
+console.log(`${result.unrelated_pending.length} unrelated pending/stale reviews remain in the backlog; none were reset or approved.`);
+console.log('Read out/review-scope.json for the complete screen/width checklist. '+result.notice);

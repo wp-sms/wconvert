@@ -53,3 +53,15 @@ it('validates a required multi-choice group without requiring every option', () 
   expect(validQuestions(root, content)).toBe(true);
   expect(root.checkValidity()).toBe(true);
 });
+
+it('keeps a font-independent chevron when the phone country changes', async () => {
+  const user = userEvent.setup(); const { root, ui } = mount();
+  const arrow = () => root.querySelector('.lpi__arrow');
+  expect(arrow()?.textContent).toBe('');
+  expect(arrow()?.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+  await user.click(ui.getByRole('button', { name: 'Select country: United Kingdom (+44)' }));
+  await user.type(ui.getByRole('combobox', { name: 'Search countries' }), 'Canada');
+  fireEvent.click(ui.getByRole('option', { name: /Canada/ }));
+  expect(arrow()?.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+  expect(ui.getByRole('button', { name: 'Select country: Canada (+1)' })).toBeEnabled();
+});

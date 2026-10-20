@@ -1,0 +1,68 @@
+[
+  {
+    "id": "maker-notes",
+    "width": 1280,
+    "emptyBlocked": true,
+    "completed": true
+  },
+  {
+    "id": "gift-planning-guide",
+    "width": 1280,
+    "emptyBlocked": true,
+    "completed": true
+  },
+  {
+    "id": "checklist-download",
+    "width": 1280,
+    "emptyBlocked": true,
+    "completed": true
+  },
+  {
+    "id": "consultation-invitation",
+    "width": 1280,
+    "emptyBlocked": true,
+    "completed": true
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "width": 1280,
+    "emptyBlocked": true,
+    "completed": true
+  },
+  {
+    "id": "equipment-return-checklist",
+    "width": 1280,
+    "emptyBlocked": true,
+    "completed": true
+  },
+  {
+    "id": "maker-notes",
+    "width": 320,
+    "completed": true
+  },
+  {
+    "id": "gift-planning-guide",
+    "width": 320,
+    "completed": true
+  },
+  {
+    "id": "checklist-download",
+    "width": 320,
+    "completed": true
+  },
+  {
+    "id": "consultation-invitation",
+    "width": 320,
+    "completed": true
+  },
+  {
+    "id": "earlier-appointment-enquiry",
+    "width": 320,
+    "completed": true
+  },
+  {
+    "id": "equipment-return-checklist",
+    "width": 320,
+    "completed": true
+  }
+]

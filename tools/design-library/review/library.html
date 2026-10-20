@@ -23,7 +23,7 @@ const requestedIds=new Set((new URLSearchParams(location.search).get('designs')|
 const all=()=>data[$('version').value].filter(e=>!requestedIds.size||requestedIds.has(e.id));
 if(data.title){document.title='WConvert · Starting points';document.querySelector('h1').textContent=data.title;document.querySelector('header p').textContent=data.intro;$('version').closest('label').hidden=true;}
 function walk(n,fn){fn(n);if(n.content)walk(n.content,fn);for(const k of ['steps','children','start','end'])for(const c of n[k]||[])walk(c,fn)}
-function prepared(e,stress){e=structuredClone(e);walk(e.tree,n=>{if(n.type==='code'&&!n.text)n.text='SAMPLE CODE'});if(stress)walk(e.tree,n=>{if(n.type==='consent')n.hidden=false;if(['headline','success_headline'].includes(n.role))n.text+=' — a little more to explore together';if(['body','success_body'].includes(n.role))n.text+=' Take a moment to explore the details and choose what works for you.';if(n.type==='button')n.label+=' and explore the details'});if($('no-artwork').checked)walk(e.tree,n=>{if(n.type==='image')n.hidden=true});return e}
+function prepared(e,stress){e=structuredClone(e);walk(e.tree,n=>{if(n.type==='code'&&!n.text)n.text='SAMPLE CODE'});if(stress)walk(e.tree,n=>{if(n.type==='consent'){n.hidden=false;if(!n.text?.trim())n.text='Please contact me about this request.';}if(['headline','success_headline'].includes(n.role))n.text+=' — a little more to explore together';if(['body','success_body'].includes(n.role))n.text+=' Take a moment to explore the details and choose what works for you.';if(n.type==='button')n.label+=' and explore the details'});if($('no-artwork').checked)walk(e.tree,n=>{if(n.type==='image')n.hidden=true});return e}
 function mount(e,step,width,stress,rtl,variant=null){
  const frame=document.createElement('div');frame.className='sized';frame.dir=rtl?'rtl':'ltr';
  const type=e.display_type;const authored=e.tokens.width||'28rem';
@@ -59,7 +59,11 @@ function measure(root,width,displayType){
  const leaves=[...root.querySelectorAll('.wc-heading,.wc-text,strong,.wc-products div,.wc-products span,.wc-label,.wc-eyebrow,.wc-badge,.wc-consent-text,.wc-rating-text,.wc-code,input,select,textarea,button,a.wc-button,.wc-question-choice')].filter(e=>e.getBoundingClientRect().height>1);
  const controls=leaves.filter(e=>e.matches('input:not([type=checkbox]):not([type=radio]),select,textarea,button,a.wc-button,.wc-question-choice'));
  const overflow=[root,...root.querySelectorAll('*')].filter(e=>e.clientWidth>2&&e.scrollWidth>e.clientWidth+2&&!e.matches('input,select,textarea')).map(e=>e.className);
- const minControl=controls.length?Math.round(Math.min(...controls.map(e=>e.getBoundingClientRect().height))*10)/10:null;
+ const standardControls=controls.filter(e=>!e.matches('.wc-close'));
+ const minControl=standardControls.length?Math.round(Math.min(...standardControls.map(e=>e.getBoundingClientRect().height))*10)/10:null;
+ const close=root.querySelector('.wc-close'),closeBox=close?.getBoundingClientRect();
+ const closeTarget=closeBox?Math.min(closeBox.width,closeBox.height):null;
+ const closeMinimum=matchMedia('(pointer: coarse)').matches?44:32;
  const inputs=controls.filter(e=>e.matches('input,select,textarea'));
  const inputSize=inputs.length?Math.min(...inputs.map(e=>parseFloat(getComputedStyle(e).fontSize))):null;
  const text=leaves.filter(e=>e.textContent.trim()&&!e.matches('input,select,textarea')&&getComputedStyle(e).position!=='absolute');
@@ -67,7 +71,7 @@ function measure(root,width,displayType){
  const height=Math.ceil(root.scrollHeight);const viewportHeight={320:568,390:844,768:1024,1440:900}[width];
  const textRatios=text.map(el=>textContrast(el)).filter(Boolean);for(const input of inputs){for(const [kind,color] of [['Input text',getComputedStyle(input).color],['Field placeholder',getComputedStyle(input,'::placeholder').color]]){const item=textContrast(input,color);if(item)textRatios.push({...item,text:kind+': '+(input.placeholder||input.name)})}}
  const fieldRatios=inputs.map(fieldContrast).filter(Boolean),lowContrast=textRatios.filter(c=>c.ratio<c.minimum),lowFieldContrast=fieldRatios.filter(c=>c.ratio<c.minimum);
- return {composition,lowContrast,lowFieldContrast,textRatios,fieldRatios,width:Math.round(root.getBoundingClientRect().width),height,overflow:[...new Set(overflow)],minControl,inputSize,minText,scroll:height>viewportHeight*.85};
+ return {composition,lowContrast,lowFieldContrast,textRatios,fieldRatios,width:Math.round(root.getBoundingClientRect().width),height,overflow:[...new Set(overflow)],minControl,closeTarget,closeMinimum,inputSize,minText,scroll:height>viewportHeight*.85};
 }
 function options(){const entries=all();$('page').replaceChildren(...Array.from({length:Math.ceil(entries.length/6)},(_,i)=>new Option(`${i+1} / ${Math.ceil(entries.length/6)}`,i)));$('design').replaceChildren(new Option('All designs',''),...entries.map(e=>new Option(e.name,e.id)))}
 function draw(){
@@ -87,8 +91,8 @@ async function check(){
   }
   await new Promise(resolve=>setTimeout(resolve,0));
  }
- const bad=results.filter(m=>m.composition.length||m.lowContrast.length||m.lowFieldContrast.length||m.overflow.length||m.minControl!==null&&m.minControl<44||m.inputSize!==null&&m.inputSize<16);
- $('checks').replaceChildren();const p=document.createElement('p');p.id='check-summary';p.textContent=`${results.length} rendered cases across ${all().length} designs. ${bad.length} cases need attention (detached announcement forms, horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).`; $('checks').append(p);
+ const bad=results.filter(m=>m.composition.length||m.lowContrast.length||m.lowFieldContrast.length||m.overflow.length||m.minControl!==null&&m.minControl<44||m.closeTarget!==null&&m.closeTarget<m.closeMinimum||m.inputSize!==null&&m.inputSize<16);
+ $('checks').replaceChildren();const p=document.createElement('p');p.id='check-summary';p.textContent=`${results.length} rendered cases across ${all().length} designs. ${bad.length} cases need attention (detached announcement forms, horizontal overflow, form controls under 44px, close targets under the pointer-specific minimum, input text under 16px or low solid-colour text/field-outline contrast).`; $('checks').append(p);
  const table=document.createElement('table');table.innerHTML='<thead><tr><th>Design</th><th>Cases</th><th>Overflow</th><th>Smallest control</th><th>Input text</th><th>Smallest text</th></tr></thead>';const body=document.createElement('tbody');for(const e of all()){const rows=results.filter(m=>m.id===e.id);const tr=document.createElement('tr');for(const v of [e.name,rows.length,rows.filter(m=>m.overflow.length).length,Math.min(...rows.filter(m=>m.minControl!==null).map(m=>m.minControl)),Math.min(...rows.filter(m=>m.inputSize!==null).map(m=>m.inputSize)),Math.min(...rows.map(m=>m.minText))]){const td=document.createElement('td');td.textContent=Number.isFinite(v)||typeof v==='string'?v:'—';tr.append(td)}body.append(tr)}table.append(body);$('checks').append(table);$('results').textContent=JSON.stringify({summary:p.textContent,failures:bad,cases:results},null,2);$('run').disabled=false;
 }
 options();draw();for(const id of ['width','page','design','rtl','stress','no-artwork'])$(id).addEventListener('change',draw);$('version').addEventListener('change',()=>{$('checks').replaceChildren();$('results').textContent='';options();draw()});$('next').addEventListener('click',()=>{$('design').value='';$('page').selectedIndex=($('page').selectedIndex+1)%$('page').options.length;draw()});$('run').addEventListener('click',check);

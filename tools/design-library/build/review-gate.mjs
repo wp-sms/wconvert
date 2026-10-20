@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { maintenanceScope } from './review-scope.mjs';
 const batch = process.argv[2];
 const entries = JSON.parse(readFileSync(new URL('../out/pilot.json', import.meta.url)));
 const queue = JSON.parse(readFileSync(new URL('../out/review-queue.json', import.meta.url)));
@@ -10,6 +11,7 @@ for (const row of pending) console.log(`${row.id}: ${row.state} — ${row.reason
 if (pending.length) process.exitCode = 1;
 
 const maintenance = JSON.parse(readFileSync(new URL('../out/maintenance.json', import.meta.url))).maintenance;
-const undocumented = maintenance.filter(d => d.unrecorded_change);
+const { required: undocumented, outside } = maintenanceScope(maintenance, selected, batch);
 for (const design of undocumented) console.log(`${design.id}: record the design change and review ${design.dependents.length} dependent setups.`);
 if (undocumented.length) process.exitCode = 1;
+if (outside.length) console.log(`${outside.length} unrelated designs have unrecorded changes outside this batch. The whole-library gate still requires them.`);

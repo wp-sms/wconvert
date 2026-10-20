@@ -1,5 +1,8 @@
 # The free contract is proven at the source, not at the artifact
 
+**Shared control amendment — [ADR 0155](0155-visitor-controls-use-font-independent-geometry.md):** Free now caps at 14,896 B and Pro at 27,872 B gzip-9. Earlier byte measurements below are historical.
+
+
 **Current loader byte limits — [ADR 0146](0146-pro-is-one-tier.md):** Pro is one tier. Free caps at 14,720 B and Pro at 27,712 B gzip-9 (the old Elite figure), measured on Node 22. *Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): Free caps at 14,768 B.* The per-rung figures below are historical.
 
 **Loader byte limits — [ADR 0139](0139-one-option-menu-and-sentence-rows.md), amended 2026-10-12:** Free / Basic / Pro / Elite cap at 14,720 / 25,472 / 27,040 / 27,712 bytes gzip-9, measured on Node 22. The ADR 0111 and ADR 0109 loader figures below are historical.

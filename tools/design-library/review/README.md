@@ -5,6 +5,9 @@ and its evidence through the normal Git branch/PR workflow; this is not a hosted
 multi-user service. Browser edits are drafts until imported and committed.
 
 1. Build with `npm run templates:pilot` and inspect the prepared campaign.
+   Run `npm run templates:review:scope -- origin/main` to identify all affected
+   dependents. Use the [batch verification workflow](../MAINTENANCE.md#reusable-batch-verification)
+   and run `templates:review:proof` on the final screenshot ledger before import.
 2. Complete the comparison in the brief and the [practical review](../pilot/PRACTICAL-REVIEW.md).
    Check every screen and result, including failure/retry and acknowledgements.
 3. Save the supporting report under `docs/reviews/`. State what was observed,
@@ -48,7 +51,7 @@ conversion improvement, physical-device verification or release approval.
 External email/SMS delivery is skipped at the user's request for this work.
 
 `pilot/next-batch.json` is empty after the contextual-help batch. The collection
-contains 128 actual setups, with separate campaign and design counts. Add planned
+contains 132 actual setups, with separate campaign and design counts. Add planned
 briefs only after choosing distinct visitor needs; the validator rejects IDs
 already in the collection.
 

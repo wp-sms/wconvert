@@ -1,0 +1,22 @@
+{
+  "database": {
+    "wordpress": "7.1.3",
+    "captures": 83,
+    "weekday_saved": true,
+    "flexible_saved": false
+  },
+  "intercepted_messages": 9,
+  "subjects": [
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource",
+    "Your requested resource"
+  ],
+  "external_delivery": false,
+  "notes": "All mail intercepted by disposable fixture. flexible_saved=false means Either works was not submitted in this pass; weekday option was saved. No production data."
+}

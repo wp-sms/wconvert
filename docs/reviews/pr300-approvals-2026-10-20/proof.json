@@ -1,0 +1,624 @@
+{
+  "schema": 1,
+  "batch": "considered-essentials",
+  "setups": [
+    {
+      "id": "maker-notes",
+      "revision": "8858d8b479e95555b49d36ae18d6d3b71767d1e95cd33d59f1f2c5f1c2927ed1",
+      "judgement": "Inspected every screen at four studio widths and in mounted WordPress at 320/1280px. Form grouping, label/chevron clearance, close alignment, typography, consent and acknowledgements are coherent; no clipping observed. See README for native and simulated behaviour limits.",
+      "captures": [
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-08.png",
+          "sha256": "8a0df93c915843108dfb9adaee01cfa1c1c09e7545f15233665a1b28f41a311b"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-08.png",
+          "sha256": "20aae38461579a1214178493595221ec30624d576bd52f859e051f1f284d0076"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-08.png",
+          "sha256": "20aae38461579a1214178493595221ec30624d576bd52f859e051f1f284d0076"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-08.png",
+          "sha256": "8a0df93c915843108dfb9adaee01cfa1c1c09e7545f15233665a1b28f41a311b"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/maker-notes-320-0.png",
+          "sha256": "d0a00a1233140e30d164079ddfd55ec10067c1a01bd156319750cf3447acb390"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/maker-notes-1280-0.png",
+          "sha256": "f5b64d459273d812b1a86a90abc9e75bf7bdca1e53bbc044c6ca2925e3e5c872"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-09.png",
+          "sha256": "175924c4321d455effdd265a252688353a137ddc40b915cf58ffd384dae363aa"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-09.png",
+          "sha256": "a7c91c9379c4e37c4eb5df366fb41e1133c7ff3f45057f692ca3ca74dcfeca18"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-09.png",
+          "sha256": "a7c91c9379c4e37c4eb5df366fb41e1133c7ff3f45057f692ca3ca74dcfeca18"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-09.png",
+          "sha256": "175924c4321d455effdd265a252688353a137ddc40b915cf58ffd384dae363aa"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/maker-notes-320-1.png",
+          "sha256": "d60746fa0d061727cf5ab2ea1624e1bbcb3f50860cbe88859bb0866bb68c1f11"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/maker-notes-1280-1.png",
+          "sha256": "d77021fccf655d10c071a6c1a7da353d3947651937adaa06405a167ce75629cf"
+        }
+      ]
+    },
+    {
+      "id": "gift-planning-guide",
+      "revision": "c0aaa36a5bf50e0490d5eb26e69e46a4d61a51c79e80419ffec781da9c333e14",
+      "judgement": "Inspected every screen at four studio widths and in mounted WordPress at 320/1280px. Form grouping, label/chevron clearance, close alignment, typography, consent and acknowledgements are coherent; no clipping observed. See README for native and simulated behaviour limits.",
+      "captures": [
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-07.png",
+          "sha256": "3f6ac5c14f57d6ba2e1fc50cc132ab77521308838e9f044e39f9d79a2ad08d44"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-07.png",
+          "sha256": "0ce04bee6c066422443012e187ed659d9448f3118eab42556ac47cfa53a889fb"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-07.png",
+          "sha256": "0ce04bee6c066422443012e187ed659d9448f3118eab42556ac47cfa53a889fb"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-07.png",
+          "sha256": "3f6ac5c14f57d6ba2e1fc50cc132ab77521308838e9f044e39f9d79a2ad08d44"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/gift-planning-guide-320-0.png",
+          "sha256": "7a9f20255f49d37830e841c3c66e4dc84cace9fb762ce93b34521b593602ab7c"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/gift-planning-guide-1280-0.png",
+          "sha256": "3d73bd1d3bd79a60fc7b0c83080b2236fa4de60486ded744da3f222d05115be5"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-07.png",
+          "sha256": "3f6ac5c14f57d6ba2e1fc50cc132ab77521308838e9f044e39f9d79a2ad08d44"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-07.png",
+          "sha256": "0ce04bee6c066422443012e187ed659d9448f3118eab42556ac47cfa53a889fb"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-07.png",
+          "sha256": "0ce04bee6c066422443012e187ed659d9448f3118eab42556ac47cfa53a889fb"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-07.png",
+          "sha256": "3f6ac5c14f57d6ba2e1fc50cc132ab77521308838e9f044e39f9d79a2ad08d44"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/gift-planning-guide-320-1.png",
+          "sha256": "303faae2a12036774f23551568ebd61c7bc3fb67fbef0105d7e1ee77a92e312e"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/gift-planning-guide-1280-1.png",
+          "sha256": "6e164e2a2378db826a0f0c93dc56bac800f6150ec996d98fd8180c0d1e4a3980"
+        }
+      ]
+    },
+    {
+      "id": "checklist-download",
+      "revision": "3eafd0dcca417d1afe13bfb06eb2f18d7e8e587b072c9c530e4a7953b55b8b01",
+      "judgement": "Inspected every screen at four studio widths and in mounted WordPress at 320/1280px. Form grouping, label/chevron clearance, close alignment, typography, consent and acknowledgements are coherent; no clipping observed. See README for native and simulated behaviour limits.",
+      "captures": [
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-01.png",
+          "sha256": "45078631ffe05c4a05ac5f296761f1c4f9103094d86ac8918139ae2f4e70f1fd"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-01.png",
+          "sha256": "45078631ffe05c4a05ac5f296761f1c4f9103094d86ac8918139ae2f4e70f1fd"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/checklist-download-320-0.png",
+          "sha256": "f862617940061b6c62aafcae188dfd063a47a768693f39465a0fe11fc7199649"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/checklist-download-1280-0.png",
+          "sha256": "946452b1b80a033408c436c7ab3b95d0e8a88dc909b7b6ff7de43c9701326c57"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-01.png",
+          "sha256": "45078631ffe05c4a05ac5f296761f1c4f9103094d86ac8918139ae2f4e70f1fd"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-01.png",
+          "sha256": "45078631ffe05c4a05ac5f296761f1c4f9103094d86ac8918139ae2f4e70f1fd"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/checklist-download-320-1.png",
+          "sha256": "8cbffd414ca74bcfeabe34077856d74df63775aecca311a6514d4e821c5df11d"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/checklist-download-1280-1.png",
+          "sha256": "34af53f2b5bd9865b0eb26218200f049809c4bc84d1e4f0e1d5f822308d666b1"
+        }
+      ]
+    },
+    {
+      "id": "consultation-invitation",
+      "revision": "17db0be7c6f4583646fbb3fa50daf4f200b6c057c965e82295f3bbf87d989335",
+      "judgement": "Inspected every screen at four studio widths and in mounted WordPress at 320/1280px. Form grouping, label/chevron clearance, close alignment, typography, consent and acknowledgements are coherent; no clipping observed. See README for native and simulated behaviour limits.",
+      "captures": [
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-03.png",
+          "sha256": "470c488ff45a89a43939b4c069328818ece94c7e263ee778bbd52e723ae14a72"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-03.png",
+          "sha256": "470c488ff45a89a43939b4c069328818ece94c7e263ee778bbd52e723ae14a72"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-320-0.png",
+          "sha256": "a81ff55d9e0019f0bf2024563774fb63b56c348f137e1a936a0ae2094aecc254"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-1280-0.png",
+          "sha256": "4c6d35298352a12a7c70e8923057baa76377c9ef6259b65bba6d79fb6e9f6e63"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-03.png",
+          "sha256": "470c488ff45a89a43939b4c069328818ece94c7e263ee778bbd52e723ae14a72"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-03.png",
+          "sha256": "470c488ff45a89a43939b4c069328818ece94c7e263ee778bbd52e723ae14a72"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-320-1.png",
+          "sha256": "a3920c26b358353abb8aaf9c7bf84133c944e7bea0d3faa7864b4e9f57f47810"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-1280-1.png",
+          "sha256": "f2e28d89bbc2f59006edd02e02d893312d8b5b21534b76f49d7c4fbf64cab2dc"
+        }
+      ]
+    },
+    {
+      "id": "earlier-appointment-enquiry",
+      "revision": "9d549f6f9bc7e6c8b0d391d8e731f94afb82420519162b75f79cfb25ffb24047",
+      "judgement": "Inspected every screen at four studio widths and in mounted WordPress at 320/1280px. Form grouping, label/chevron clearance, close alignment, typography, consent and acknowledgements are coherent; no clipping observed. See README for native and simulated behaviour limits.",
+      "captures": [
+        {
+          "screen": "details",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-04.png",
+          "sha256": "2593f982b677f94f8c0ccb796151109f23fa509482174f76aa6155c60776722b"
+        },
+        {
+          "screen": "details",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-04.png",
+          "sha256": "a1766346480899abbdda90e332fbb33368dd98a2ddd3d839ed4f2f2b749c5674"
+        },
+        {
+          "screen": "details",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-04.png",
+          "sha256": "a1766346480899abbdda90e332fbb33368dd98a2ddd3d839ed4f2f2b749c5674"
+        },
+        {
+          "screen": "details",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-04.png",
+          "sha256": "2593f982b677f94f8c0ccb796151109f23fa509482174f76aa6155c60776722b"
+        },
+        {
+          "screen": "details",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/earlier-appointment-enquiry-320-0.png",
+          "sha256": "de68f0fa0ab37ae5271017d356fbb42824554bc2f265ab964b2e119aa0636742"
+        },
+        {
+          "screen": "details",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/earlier-appointment-enquiry-1280-0.png",
+          "sha256": "280a795303fb79e40ec0436256601d0d84a2a2c95207c8ec8582d7a675787030"
+        },
+        {
+          "screen": "received",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-04.png",
+          "sha256": "2593f982b677f94f8c0ccb796151109f23fa509482174f76aa6155c60776722b"
+        },
+        {
+          "screen": "received",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-04.png",
+          "sha256": "a1766346480899abbdda90e332fbb33368dd98a2ddd3d839ed4f2f2b749c5674"
+        },
+        {
+          "screen": "received",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-04.png",
+          "sha256": "a1766346480899abbdda90e332fbb33368dd98a2ddd3d839ed4f2f2b749c5674"
+        },
+        {
+          "screen": "received",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-04.png",
+          "sha256": "2593f982b677f94f8c0ccb796151109f23fa509482174f76aa6155c60776722b"
+        },
+        {
+          "screen": "received",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/earlier-appointment-enquiry-320-1.png",
+          "sha256": "e52cc016a8f7bd2990ffbd43776d07b4c0543067599a6f94d7edb50f4853f6d0"
+        },
+        {
+          "screen": "received",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/earlier-appointment-enquiry-1280-1.png",
+          "sha256": "444ea720c9ca0391462b8a7f667cc07ac484611367f39f2db4ccabf95226c649"
+        }
+      ]
+    },
+    {
+      "id": "equipment-return-checklist",
+      "revision": "b6db710fc681e9110505975baeb4f99b65685002b6d2c1aa6253224c9fc2d946",
+      "judgement": "Inspected every screen at four studio widths and in mounted WordPress at 320/1280px. Form grouping, label/chevron clearance, close alignment, typography, consent and acknowledgements are coherent; no clipping observed. See README for native and simulated behaviour limits.",
+      "captures": [
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-05.png",
+          "sha256": "44936c0d35f6ff263a6a69d09b756b26300aaf4a1c17ee65d62911604fbb3bd7"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-05.png",
+          "sha256": "cb27db62f1de049ad5eef69c7fd67b31b67f17d246a381d4e3fc659383f7a675"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-05.png",
+          "sha256": "cb27db62f1de049ad5eef69c7fd67b31b67f17d246a381d4e3fc659383f7a675"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-05.png",
+          "sha256": "44936c0d35f6ff263a6a69d09b756b26300aaf4a1c17ee65d62911604fbb3bd7"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/equipment-return-checklist-320-0.png",
+          "sha256": "c7b5fccfbd7b45a3a023aba30c34d387440b33b39fbb6cfd8784c05a0fef7826"
+        },
+        {
+          "screen": "s1",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/equipment-return-checklist-1280-0.png",
+          "sha256": "4d47e4fa47be6d5077e7006aeac19deb26889999f4752b74786157fcaf705bdd"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-05.png",
+          "sha256": "44936c0d35f6ff263a6a69d09b756b26300aaf4a1c17ee65d62911604fbb3bd7"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 390,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-05.png",
+          "sha256": "cb27db62f1de049ad5eef69c7fd67b31b67f17d246a381d4e3fc659383f7a675"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 768,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-05.png",
+          "sha256": "cb27db62f1de049ad5eef69c7fd67b31b67f17d246a381d4e3fc659383f7a675"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "studio",
+          "width": 1440,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-05.png",
+          "sha256": "44936c0d35f6ff263a6a69d09b756b26300aaf4a1c17ee65d62911604fbb3bd7"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 320,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/equipment-return-checklist-320-1.png",
+          "sha256": "ba3995b69bcaade4c7c80c0c4fd6feb08180ce9e1e0e553d759716645d3be4f7"
+        },
+        {
+          "screen": "s2",
+          "result": null,
+          "surface": "wordpress",
+          "width": 1280,
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/equipment-return-checklist-1280-1.png",
+          "sha256": "b649b36be6d1180ad668790152e8dc4e622fb0bb3f29366c4119aca249ed04cf"
+        }
+      ]
+    }
+  ]
+}

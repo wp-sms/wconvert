@@ -1,0 +1,98 @@
+[
+  {
+    "id": "add-useful-extras",
+    "width": 320,
+    "rendered": "A useful additionComplete your setupAdd an extra to complete your setup.Reusable coffee filters$15.00Add to cartView productCoffee cleaning brush$8.00Add to cartView product",
+    "action": "real add-to-cart clicked"
+  },
+  {
+    "id": "add-useful-extras",
+    "width": 1280,
+    "rendered": "A useful additionComplete your setupAdd an extra to complete your setup.Reusable coffee filters$15.00Add to cartView productCoffee cleaning brush$8.00Add to cartView product",
+    "action": "real add-to-cart clicked"
+  },
+  {
+    "id": "recommend-accessory",
+    "width": 320,
+    "rendered": "A useful additionComplete your setupTake a closer look at these accessories.Reusable coffee filters$15.00View productCoffee cleaning brush$8.00View product",
+    "action": "configured product/guide links inspected"
+  },
+  {
+    "id": "recommend-accessory",
+    "width": 1280,
+    "rendered": "A useful additionComplete your setupTake a closer look at these accessories.Reusable coffee filters$15.00View productCoffee cleaning brush$8.00View product",
+    "action": "configured product/guide links inspected"
+  },
+  {
+    "id": "explore-compatible-extras",
+    "width": 320,
+    "rendered": "A considered pairingMake more of your everyday kit.Explore useful extras before you choose.Reusable coffee filters$15.00View productCoffee cleaning brush$8.00View product",
+    "action": "configured product/guide links inspected"
+  },
+  {
+    "id": "explore-compatible-extras",
+    "width": 1280,
+    "rendered": "A considered pairingMake more of your everyday kit.Explore useful extras before you choose.Reusable coffee filters$15.00View productCoffee cleaning brush$8.00View product",
+    "action": "configured product/guide links inspected"
+  },
+  {
+    "id": "basket-cross-sells",
+    "width": 320,
+    "rendered": "Before you check outOne more useful thing?Optional extras for the items in your basket.Coffee cleaning brush$8.00Add to cartView productReusable coffee filters$15.00Add to cartView productCoffee storage jar$12.00Add to cartView product",
+    "action": "real add-to-cart clicked"
+  },
+  {
+    "id": "basket-cross-sells",
+    "width": 1280,
+    "rendered": "Before you check outOne more useful thing?Optional extras for the items in your basket.Coffee cleaning brush$8.00Add to cartView productReusable coffee filters$15.00Add to cartView productCoffee storage jar$12.00Add to cartView product",
+    "action": "real add-to-cart clicked"
+  },
+  {
+    "id": "shopping-guidance",
+    "width": 320,
+    "rendered": "A little help before you chooseReview the details that matter for your order.Read the guide",
+    "action": "configured product/guide links inspected"
+  },
+  {
+    "id": "shopping-guidance",
+    "width": 1280,
+    "rendered": "A little help before you chooseReview the details that matter for your order.Read the guide",
+    "action": "configured product/guide links inspected"
+  },
+  {
+    "id": "coffee-taste-finder",
+    "width": 320,
+    "result": "bright",
+    "text": "Start with bright and fruityExplore coffees with fruit-led tasting notes. Check each product for roast and brewing details.Bright coffee$12.00View productBright coffee$12.00View productBrowse all coffeesChange my answer"
+  },
+  {
+    "id": "coffee-taste-finder",
+    "width": 320,
+    "result": "smooth",
+    "text": "Start with smooth and chocolateyExplore coffees with chocolate or nutty tasting notes. Check each product for roast and brewing details.Smooth coffee$12.00View productSmooth coffee$12.00View productBrowse all coffeesChange my answer"
+  },
+  {
+    "id": "coffee-taste-finder",
+    "width": 320,
+    "result": "explore",
+    "text": "Explore a few different coffeesCompare the tasting notes and choose what appeals to you. A sampler can be a useful place to start.Explore coffee$12.00View productExplore coffee$12.00View productBrowse all coffeesChange my answer"
+  },
+  {
+    "id": "coffee-taste-finder",
+    "width": 1280,
+    "result": "bright",
+    "text": "Start with bright and fruityExplore coffees with fruit-led tasting notes. Check each product for roast and brewing details.Bright coffee$12.00View productBright coffee$12.00View productBright coffee$12.00View productBrowse all coffeesChange my answer"
+  },
+  {
+    "id": "coffee-taste-finder",
+    "width": 1280,
+    "result": "smooth",
+    "text": "Start with smooth and chocolateyExplore coffees with chocolate or nutty tasting notes. Check each product for roast and brewing details.Smooth coffee$12.00View productSmooth coffee$12.00View productSmooth coffee$12.00View productBrowse all coffeesChange my answer"
+  },
+  {
+    "id": "coffee-taste-finder",
+    "width": 1280,
+    "result": "explore",
+    "text": "Explore a few different coffeesCompare the tasting notes and choose what appeals to you. A sampler can be a useful place to start.Explore coffee$12.00View productExplore coffee$12.00View productExplore coffee$12.00View productBrowse all coffeesChange my answer"
+  }
+]

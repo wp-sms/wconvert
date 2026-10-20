@@ -11,6 +11,25 @@ justify a new design. Compare existing structures before authoring another one.
 
 ## Change a design
 
+Before reviewing a batch, run `npm run templates:review:scope -- origin/main`
+(or pass the commit the work started from). The report in `out/review-scope.json`
+lists changed designs, **every registered dependent setup**, every screen/result
+and affected collections. It separates the unrelated stale-review backlog from
+this change. Dependents outside the curated studio still need a brief and review.
+Shared renderer, loader, PHP runtime, vocabulary or sample-artwork changes request a whole-library
+review. The planner never changes approval hashes or clears stale decisions.
+
+`npm run templates:gate -- <batch>` enforces current approvals and recorded design
+versions for that batch. It reports unrelated maintenance debt without blocking
+the named batch. `npm run templates:gate` without a batch still enforces the
+entire library. A batch pass is not permission to release a shared runtime change
+without the wider review identified by the scope report.
+
+Keep source fixes local to the design where possible. This preserves unrelated
+reviews; it does not exempt a shared rendering fix from broader verification.
+Finish layout/copy edits before capturing final evidence. Any later edit requires
+fresh evidence for its affected setups. Do not repeatedly approve a moving target.
+
 1. Build with `npm run templates:pilot`. In **Design maintenance and update impact**,
    choose the design. The dependency list includes every registered Playbook,
    including starts outside the curated collection. Curated entries open directly.
@@ -32,6 +51,48 @@ justify a new design. Compare existing structures before authoring another one.
 5. Import revision-bound visual, journey and WordPress evidence, run
    `npm run templates:gate`, and submit the normal PR. The gate fails for an
    unrecorded design change, missing approval, stale output or changed evidence.
+
+### Reusable batch verification
+
+Build `node tools/design-library/build/batch-audit.mjs <batch>` after the pilot.
+Its single page shows every prepared screen at 320, 390, 768 and 1440px, with
+long-copy and RTL controls. Inspect the pictures; measurement results alone do
+not assess hierarchy, relevance or composition. The consent stress control uses
+sample text only when a normally hidden consent leaf has no prepared wording.
+
+For real capture, mount `tools/visual-tests/mu/harness.php` and
+`tools/visual-tests/mu/template-batch.php` in a **disposable localhost WordPress**.
+Open `/?wconvert_template_batch=<setup>&batch=<batch>`. This fixture reads the
+studio's batch allowlist, uses real Prefill and local capture, disables other
+fixture campaigns and replaces its previous campaign. It never belongs on a
+customer site. The harness prevents outbound mail. It opens shadow roots solely
+for inspection. Check desktop, phone, transition widths, scrolling, dismissal,
+required/invalid input and saved values. Test failure/retry in the studio as well.
+
+Before saving each native screenshot, assert the actual page viewport width and
+wait for the expected screen content. For asynchronous products, wait for a
+loaded product action, not merely the page heading or an empty renderer root.
+Recheck the viewport after switching tabs: browser-wide overrides may apply to
+the newest tab. A filename containing `320` is not evidence of a phone viewport.
+Inspect the saved image before adding it to the approval ledger.
+
+Save the final screenshots in a new `docs/reviews/<batch-date>/` directory. Keep
+a `proof.json` ledger with each setup's current `revision`, a written `judgement`
+and `captures` (`screen`, nullable `result`, `surface`, `width`, `path`, `sha256`).
+An all-screen sheet may cover multiple screen records. Use `studio` for all four
+widths and `wordpress` for 320 and 1280px. The considered-essentials evidence is a
+complete example. Before importing a review, run:
+
+```sh
+npm run templates:review:proof -- docs/reviews/<batch-date>/proof.json
+```
+
+It rejects missing screens/results/widths, incomplete batches, stale revisions,
+missing pictures and changed screenshot bytes. It **does not approve designs**
+or establish that someone looked at a screenshot. The visual judgement, actual
+journey checks and native WordPress evidence remain reviewer responsibilities.
+Import the ledger as supporting evidence with the written review. Keep provider
+delivery and physical-device testing explicitly separate.
 
 Changing only Playbook copy requires new campaign review evidence, not a design
 version. Renderer and container changes require wider regression checks, including
@@ -82,8 +143,8 @@ must preview the change, preserve custom content, create a recoverable draft and
 require explicit application. That feature is not implemented here.
 
 Work in batches: identify a useful uncovered need, compare, author, inspect, test,
-record evidence, then expand. The working library currently contains 128 setups
-using 75 source designs; the full design inventory contains 107 designs. Do not count
+record evidence, then expand. The working library currently contains 132 setups
+using 76 source designs; the full design inventory contains 108 designs. Do not count
 planned briefs, colour variants or unreviewed candidates as additional designs.
 
 ## Browse designs without duplicate cards
