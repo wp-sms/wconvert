@@ -12,6 +12,8 @@ import { computeRevisions } from './catalogue-revisions.mjs';
 import { readJson } from './catalogue.mjs';
 import { literalColourReport } from './catalogue-lint.mjs';
 import { allowedPairs, nearDuplicates } from './near-duplicates.mjs';
+import { contrastReport } from './catalogue-contrast.mjs';
+import { copyIssues } from './catalogue-copy.mjs';
 
 /**
  * Build a catalogue v3 release from reviewed repository sources into a local
@@ -58,6 +60,11 @@ for (const id of wanted) if (!designs.some(design => design.id === id)) throw ne
 const colours = literalColourReport(root, designs.map(design => design.id));
 if (colours.increased.length) throw new Error('These designs added literal colours instead of tokens:\n' + colours.increased.map(row => `  ${row.id}: ${row.count} (baseline ${row.baseline})`).join('\n'));
 
+// Words a visitor reads, published or not, carry no objective defect.
+const copy = [...designs.map(design => [design.id, copyIssues(JSON.parse(design.json).tree, design.id)]),
+  ...setups.map(setup => [setup.id, copyIssues({ copy: JSON.parse(setup.json).playbook.copy ?? null }, setup.id)])].filter(([, issues]) => issues.length);
+if (copy.length) throw new Error('Fix these words before publishing:\n' + copy.flatMap(([, issues]) => issues.map(issue => `  ${issue.at}: ${issue.rule} — “${issue.text}”`)).join('\n'));
+
 // Public artwork: the shipping renderer, a blocked network, downscaled premium pictures.
 const renderer = readFileSync(resolve(root, 'tools/design-library/out/renderer.iife.js'), 'utf8');
 const media = design => design.media.map(item => ({ ...item, bytes: Buffer.from(item.base64, 'base64') }));
@@ -75,6 +82,10 @@ const bundledArtwork = [...new Set(bundledOnly.map(id => setupDesign.get(id)))].
   return { id, pack: previewPack({ ...source, revision: 0, meta: { description: metadata.designs?.[id]?.description } }), media: [] };
 });
 await galleryArtwork([...artwork, ...bundledArtwork], renderer);
+// Text measured against the pixels actually behind it, pictures included (WCAG AA).
+const contrast = [...await contrastReport(designs.map(design => JSON.parse(design.json)), renderer)].filter(([, failures]) => failures.length);
+if (contrast.length) throw new Error('These designs have text a visitor cannot read against what is behind it:\n'
+  + contrast.flatMap(([id, failures]) => failures.map(failure => `  ${id} ${failure.screen}: “${failure.text}” ${failure.ratio}:1`)).join('\n'));
 for (const design of designs) Object.assign(design, { gallery: artwork.find(item => item.id === design.id).gallery, media: media(design) });
 
 // Two published designs that are one design are refused unless listed as deliberate.

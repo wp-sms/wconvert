@@ -1,5 +1,8 @@
 import { chromium } from 'playwright';
 import { publicPreview } from './public-preview.mjs';
+import { cacheKey, cached, codeOf, remember } from './cache.mjs';
+
+const CODE = codeOf(import.meta.url) + codeOf(new URL('./public-preview.mjs', import.meta.url)) + codeOf(new URL('./preview-controls.mjs', import.meta.url));
 
 /** The website's largest card; 2× is twice that, and Open Graph is its own fixed frame. */
 export const THUMB_WIDTH = 600;
@@ -36,6 +39,9 @@ export async function galleryArtwork(designs, renderer) {
     }, { base64, mime, width, height, type, quality });
     for (const entry of designs) {
       const design = entry.pack.templates[0];
+      const key = cacheKey(CODE, renderer, entry.pack, (entry.media ?? []).map(item => [item.id, item.bytes.toString('base64')]));
+      const hit = cached('gallery', key);
+      if (hit) { entry.gallery = hit; continue; }
       // Downscale premium pictures before any public HTML is built from them.
       const previewMedia = [];
       for (const asset of entry.pack.assets ?? []) {
@@ -85,6 +91,7 @@ export async function galleryArtwork(designs, renderer) {
           id: item.id + (variant ? '/' + variant.id : ''), label: item.name + (variant ? ` · ${variant.heading}` : ''),
         }))),
       };
+      remember('gallery', key, entry.gallery);
     }
     return designs;
   } finally { await browser.close(); }
