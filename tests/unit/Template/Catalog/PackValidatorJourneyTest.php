@@ -39,7 +39,7 @@ final class PackValidatorJourneyTest extends TestCase
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
         $pack['templates'][0]['tree'] = $tree;
         $pack['requires']['tree'] = 3;
-        $pack['requires']['capabilities'][] = 'template-tree:3';
+        $pack['requires']['capabilities'][] = 'template-flow:1';
         $directory = sys_get_temp_dir() . '/wc-graph-pack-' . bin2hex(random_bytes(6));
         $validator = $this->validator(Tier::Pro);
         $store = static function (array $pack, int $revision) use ($directory, $validator): void {
@@ -76,7 +76,7 @@ final class PackValidatorJourneyTest extends TestCase
         $base = $this->pack();
         $base['templates'][0]['tree'] = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
         $base['requires']['tree'] = 3;
-        $base['requires']['capabilities'][] = 'template-tree:3';
+        $base['requires']['capabilities'][] = 'template-flow:1';
         foreach ([
             static function (&$p) { array_pop($p['requires']['capabilities']); },
             static function (&$p) { $p['requires']['tree'] = 2; },

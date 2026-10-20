@@ -30,7 +30,7 @@ final class VocabularySince
 
     /** Every capability a v3 design may declare, and the release that first read it. */
     public const CAPABILITIES = [
-        'template-tree:2' => '1.0.0', 'template-tree:3' => '1.0.0', 'success-actions:1' => '1.0.0',
+        'template-tree:2' => '1.0.0', 'template-flow:1' => '1.0.0', 'success-actions:1' => '1.0.0',
         'enquiry-choice:1' => '1.0.0', 'campaign-starts:1' => '1.0.0', 'paid-campaign-rules:1' => '1.0.0',
         'capture-journey:1' => '1.0.0', 'question-journey:1' => '1.0.0', 'pack-images:1' => '1.0.0',
         'commerce-products:1' => '1.0.0', 'result-product-filters:1' => '1.0.0', 'result-product-filters:2' => '1.0.0',

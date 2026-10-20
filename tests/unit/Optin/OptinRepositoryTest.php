@@ -152,7 +152,7 @@ final class OptinRepositoryTest extends TestCase
             $edges[] = ['id' => 'next_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'default'];
             if (isset($screen['when'])) $edges[] = ['id' => 'hidden_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'hidden'];
         }
-        $tree['v'] = 3;
+        $tree['v'] = 2;
         $tree['graph'] = ['entry' => $tree['steps'][0]['id'], 'edges' => $edges];
         $template['tree'] = $tree;
         $config = ['template' => $template, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];

@@ -95,7 +95,7 @@ final class DesignPackageTest extends TestCase
     public function testTwoSubmissionsAndVisibleConsentSurviveGraphImport(): void
     {
         $design = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true);
-        $design['tree']['v'] = 3;
+        $design['tree']['v'] = 2;
         $design['tree']['graph'] = ['entry' => 'email', 'edges' => [
             ['id' => 'first', 'from' => 'email', 'to' => 'sms', 'kind' => 'default'],
             ['id' => 'last', 'from' => 'sms', 'to' => 'received', 'kind' => 'default'],

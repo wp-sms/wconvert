@@ -24,7 +24,7 @@ final class PackValidator
     public const MAX_BYTES = 262144;
     /** One internal pack per design or setup object; a merchant transfer is one design too. */
     public const MAX_TEMPLATES = 1;
-    public const CAPABILITIES = ['template-tree:2', 'template-tree:3', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'paid-campaign-rules:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1', 'result-product-filters:1', 'result-product-filters:2', 'quiz-product-actions:1'];
+    public const CAPABILITIES = ['template-tree:2', 'template-flow:1', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'paid-campaign-rules:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1', 'result-product-filters:1', 'result-product-filters:2', 'quiz-product-actions:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free, private readonly bool $portable = false)
@@ -133,11 +133,11 @@ final class PackValidator
             }
             $graph = TemplateTree::isGraph($tree);
             $this->keys($tree, $graph ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
-            // `v` is the vocabulary (2); 3 is the earlier spelling of a flow (ADR 0156).
-            self::check(in_array($tree['v'] ?? null, [TemplateTree::VERSION, 3], true), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
+            // `v` is the vocabulary version; a flow is said by `graph` (ADR 0156).
+            self::check(($tree['v'] ?? null) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
             self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
-            // The capability names flows by their old version number; it is a name, not a version.
-            $requiredCapabilities[] = $graph ? 'template-tree:3' : 'template-tree:2';
+            if ($graph) $requiredCapabilities[] = 'template-flow:1';
+            $requiredCapabilities[] = 'template-tree:2';
             $nodeIds = [];
             $count = 0;
             foreach ($tree['steps'] as $step) {
