@@ -44,6 +44,8 @@ final class TemplateCatalog
     /** Availability of one catalogue entry on this site, strongest reason first. */
     public const STATES = ['unavailable', 'locked', 'update_plugin', 'install', 'ready'];
 
+    private const EMPTY_INDEX = ['designs' => [], 'revisions' => [], 'setups' => [], 'collections' => [], 'taxonomy' => [], 'popularity' => [], 'skipped' => 0];
+
     /** @var array{designs: list<array<string, mixed>>, revisions: list<array<string, mixed>>, setups: list<array<string, mixed>>, collections: list<array<string, mixed>>, taxonomy: array<string, mixed>, popularity: array<string, int>, skipped: int}|null */
     private ?array $index = null;
 
@@ -110,7 +112,9 @@ final class TemplateCatalog
     public function status(): array
     {
         $cache = $this->cache();
-        $index = $this->index();
+        // Switched off, or the answer is no: the cached index stays on disk
+        // but offers nothing, so turning the library off takes effect at once.
+        $index = self::enabled($this->options) && $this->consent() === 'yes' ? $this->index() : self::EMPTY_INDEX;
         $designs = []; $setups = [];
         foreach ($index['designs'] as $entry) {
             if ($this->isWithdrawn($entry['id'], $entry['revision'])) continue;
@@ -246,6 +250,7 @@ final class TemplateCatalog
      */
     public function collections(): array
     {
+        if (!self::enabled($this->options) || $this->consent() !== 'yes') return [];
         $installed = $this->archive->setupRevisions();
         $collections = [];
         foreach ($this->index()['collections'] as $collection) {
@@ -516,7 +521,7 @@ final class TemplateCatalog
     private function index(): array
     {
         if ($this->index !== null) return $this->index;
-        $empty = ['designs' => [], 'revisions' => [], 'setups' => [], 'collections' => [], 'taxonomy' => [], 'popularity' => [], 'skipped' => 0];
+        $empty = self::EMPTY_INDEX;
         $cache = $this->cache();
         $files = ($cache['source'] ?? '') === $this->source() ? $this->indexFiles($cache) : null;
         if ($files === null) return $this->index = $empty;

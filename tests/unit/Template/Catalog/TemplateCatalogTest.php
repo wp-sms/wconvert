@@ -97,6 +97,21 @@ final class TemplateCatalogTest extends TestCase
         self::assertFalse(TemplateCatalog::enabled($this->options), 'An explicit empty address disables the library');
     }
 
+    public function testTurningTheLibraryOffHidesTheCachedIndexAtOnce(): void
+    {
+        $this->service->design(self::FREE_DESIGN, 'reading');
+        $this->service->publish();
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        self::assertCount(1, $catalog->status()['designs']);
+        $catalog->setConsent(false);
+        self::assertSame([], $catalog->status()['designs'], 'Answering no hides what was already read');
+        $catalog->setConsent(true);
+        $GLOBALS['wconvertTestFilters']['wconvert_template_catalog'] = [static fn (): bool => false];
+        self::assertSame([], $this->catalog()->status()['designs'], 'Switching the library off hides it too');
+        self::assertSame([], $this->catalog()->collections());
+    }
+
     public function testTheHostedDefaultCarriesTheMajorVersionInItsAddress(): void
     {
         self::assertSame('https://templates.wconvert.io/v3/manifest.json', TemplateCatalog::DEFAULT_SOURCE);
