@@ -3,7 +3,7 @@
 The internal studio reads the shared review store in `records/`: **one JSON file
 per decision**, named by its digest (ADR 0156). Reviewers share those files and
 their evidence through the normal Git branch/PR workflow; this is not a hosted
-multi-user service. Browser edits are drafts until imported and committed.
+multi-user service. The studio shows the decisions; it does not record them.
 
 Each record names the decision it was made over (`base_id`), so a campaign's
 records form one chain. Two branches that both decide over the same earlier
@@ -19,7 +19,8 @@ record whose bytes no longer match its name is refused the same way.
 3. Write one `docs/reviews/<batch>/review.md` with a line per setup on what is
    specific to it. Do not restate the standing limits below.
 4. Write the export (`{"schema": 2, "reviews": [...]}`, one entry per setup,
-   `base_id` its latest record) or use the studio's **Review decision** form.
+   `base_id` its latest record). Agents and commands record decisions; the
+   studio only shows them, with their notes and evidence.
    `journey` and `wordpress` cite `results.json`; `visual` cites the setup's two
    contact sheets and `review.md`. All three must pass for **approved**.
 5. Import and gate:
@@ -51,8 +52,8 @@ idempotent for an identical export. Concurrent local imports are serialized. A
 process crash can leave `records.lock`; remove that empty directory only after
 checking no import process remains.
 
-On a conflict, rebuild, read the current shared decision, and use **Use shared
-version** to discard the outdated local draft before making a new decision.
+On a conflict, rebuild, read the current shared decision in the studio, and
+write the new decision over the later record.
 Reviewer names are editorial attribution, not authenticated identities or signed
 approvals. Git review is the sharing and accountability boundary.
 

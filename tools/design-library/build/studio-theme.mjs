@@ -29,7 +29,7 @@ export function studioPage(html, page, root = process.env.WCONVERT_PLUGIN ?? res
   html = html.replaceAll('var(--muted)', 'var(--muted-foreground)');
   if (!/name=["']viewport["']/.test(html)) html = '<meta name="viewport" content="width=device-width,initial-scale=1">' + html;
   const css = readFileSync(resolve(library, 'studio/chrome.css'), 'utf8');
-  const tabs = [['pilot', 'Campaigns', 'pilot.html'], ['designs', 'Designs', 'library-review.html'], ['collections', 'Collections', 'collection-studio.html'], ['bench', 'Workbench', 'bench.html']];
+  const tabs = [['pilot', 'Setups', 'pilot.html'], ['designs', 'Designs', 'library-review.html'], ['collections', 'Collections', 'collection-studio.html'], ['bench', 'Workbench', 'bench.html']];
   const section = ['library-review', 'starting-points', 'gallery', 'flagships', 'roadmap'].includes(page) ? 'designs' : page;
   const nav = `<nav class="studio-nav" aria-label="Studio navigation"><a class="studio-brand" href="pilot.html">WConvert <span>Template studio</span></a><div class="studio-links">${tabs.map(([id, title, href]) => `<a href="${href}"${id === section ? ' aria-current="page"' : ''}>${title}</a>`).join('')}</div><span class="studio-internal">Internal review</span></nav>`;
   if (!/<header\b/.test(html)) throw new Error(`Studio theme: missing page header in ${page}`);

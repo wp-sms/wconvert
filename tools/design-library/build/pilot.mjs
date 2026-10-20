@@ -40,7 +40,10 @@ const lifecycle = JSON.parse(readFileSync(resolve(root, 'tools/design-library/re
 const maintenance = maintenanceReport(designs, usage, entries, lifecycle);
 const editorial = entries.flatMap(editorialFindings);
 writeFileSync(resolve(out, 'maintenance.json'), JSON.stringify({ maintenance, editorial }, null, 2) + '\n');
-const data = { maintenance, editorial, backlog, queue, entries, inventory, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
+// What the delivery plan puts online, and what it holds back and why (ADR 0156).
+const catalog = JSON.parse(readFileSync(resolve(root, 'tools/design-library/publishing/catalog.json'), 'utf8'));
+const delivery = { online: catalog.setups, held: catalog.bundled_only.map(({ setup, reason }) => ({ setup, reason })) };
+const data = { maintenance, editorial, queue, delivery, entries, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
 writeFileSync(resolve(out, 'coverage.json'), JSON.stringify(data.coverage, null, 2) + '\n');
 writeFileSync(resolve(out, 'inventory.json'), JSON.stringify(inventory, null, 2) + '\n');
 writeFileSync(resolve(out, 'pilot.json'), JSON.stringify(entries, null, 2) + '\n');
