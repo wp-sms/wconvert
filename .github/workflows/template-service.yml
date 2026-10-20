@@ -1,0 +1,65 @@
+name: Template service
+
+# =============================================================================
+# Deploys the templates.wconvert.io Worker from Git, so the live service runs
+# exactly a commit on main. Pasting code into the dashboard is retired: it left
+# production running a file nobody had reviewed.
+#
+#   push to main (tools/template-server/**) ── test ── deploy
+#   workflow_dispatch                        ── test ── deploy
+#
+# One environment while WConvert is prelaunch. The GitHub environment
+# `template-service` holds the token, so a reviewer rule can be added there
+# without touching this file.
+#
+# This deploys CODE. Catalogue data is published separately by
+# `npm run publish` (tools/template-server/README.md), which a deploy neither
+# runs nor changes.
+#
+# Pull requests are tested by ci.yml's `template-service` job, not here.
+# =============================================================================
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/template-server/**'
+      - '.github/workflows/template-service.yml'
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits rather than racing.
+concurrency:
+  group: template-service
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: tools/template-server
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: template-service
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tools/template-server/package-lock.json
+
+      - run: npm ci
+
+      - name: Type-check and test
+        run: npm run check && npm test
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy --message "${GITHUB_SHA}"

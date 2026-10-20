@@ -11,6 +11,10 @@ vocabulary, and `Optin` / `Lead` / `Contact` / `Goal` / `Playbook` /
 
 ## Agent skills
 
+Every agent reads this file. `AGENTS.md` is a symlink to it, so Codex gets the
+same rules, and `.agents/skills` links to `.claude/skills` for the same reason.
+Edit this file, never the link.
+
 ### Issue tracker
 
 GitHub Issues on `wp-sms/wconvert`, via the `gh` CLI. See

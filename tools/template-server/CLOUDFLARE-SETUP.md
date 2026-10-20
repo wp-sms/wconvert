@@ -58,9 +58,29 @@ service key locally when ready.
 
 Set the Worker runtime compatibility date to `2026-10-01`, matching the supported date confirmed in the dashboard and our tested Wrangler configuration.
 
-The default Wrangler configuration is the single hosted environment. **Do not use
-`--env staging`**; no such environment is configured. Local `wrangler dev`, tests
-and dry-run builds use emulated storage and do not upload files.
+There is one hosted environment, `templates.wconvert.io`, while WConvert is
+prelaunch. Local `wrangler dev`, tests and dry-run builds use emulated storage
+and upload nothing.
+
+### Deploying (from Git only)
+
+Keep `wrangler.jsonc` plain JSON, with no comments: the publish, verify and test
+scripts read it with `JSON.parse`.
+
+`.github/workflows/template-service.yml` deploys the Worker. A merge to `main`
+that touches `tools/template-server/**` deploys it, after its tests pass; the
+workflow can also be run by hand. Do not paste code into the dashboard: the
+live service must be a commit on `main`, and the next deploy overwrites a
+pasted one. A deploy changes Worker code only. Catalogue data still goes out
+through `npm run publish`.
+
+One-time operator setup:
+
+1. Create a Cloudflare API token with **Workers Scripts: Edit**, **Workers Routes:
+   Edit** (zone `wconvert.io`) and **Account Settings: Read**.
+2. In GitHub → Settings → Environments, create `template-service` and add the
+   token as `CLOUDFLARE_API_TOKEN`. Add a reviewer rule there if you want a
+   deploy to wait for approval; the workflow needs no change.
 
 For deployments and the Nexus connection:
 
