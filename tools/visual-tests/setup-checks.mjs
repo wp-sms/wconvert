@@ -1,23 +1,49 @@
-/** Configured, local-only visitor review for the non-commerce collection setups. */
+/**
+ * The two mechanical review checks, run by a machine (tools/design-library/review/README.md):
+ * every setup to review is built through Prefill on a disposable local WordPress
+ * (mu/harness.php + mu/collection-approval.php), shown, and walked as a visitor
+ * at 320 and 1280 px — empty and invalid input refused, required consent
+ * enforced, one simulated failure kept the details, retry saved a local Lead,
+ * the acknowledgement appeared, and real links, coupons and resource emails
+ * work. One failing setup never stops the run.
+ *
+ *   WCONVERT_REVIEW_RESULTS=docs/reviews/<batch>/results.json node tools/visual-tests/setup-checks.mjs
+ *
+ * Setups: WCONVERT_REVIEW_IDS (comma-separated), else every setup the review
+ * queue does not show as approved. Setups that show products need the commerce
+ * fixture: they run only with WCONVERT_REVIEW_COMMERCE=1. Screenshots go to
+ * WCONVERT_REVIEW_SHOTS (default: the temp folder) and are never evidence.
+ */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 const base=process.env.WCONVERT_TEMPLATE_REVIEW_URL||'http://127.0.0.1:9453';
 if(!['localhost','127.0.0.1'].includes(new URL(base).hostname))throw Error('Disposable local site required');
-const evidence=process.env.WCONVERT_REVIEW_EVIDENCE||'/tmp/collection-approvals-native';fs.mkdirSync(evidence,{recursive:true});
-const commerce=['add-useful-extras','recommend-accessory','shopping-guidance','explore-compatible-extras','basket-cross-sells','coffee-taste-finder'];
-const source=JSON.parse(fs.readFileSync('tools/design-library/collections/source.json'));
+const output=process.env.WCONVERT_REVIEW_RESULTS;
+if(!output||!/^docs\/reviews\/[a-z0-9._-]+\/results\.json$/.test(output))throw Error('Set WCONVERT_REVIEW_RESULTS=docs/reviews/<batch>/results.json');
+fs.mkdirSync(path.dirname(output),{recursive:true});
+const evidence=process.env.WCONVERT_REVIEW_SHOTS||fs.mkdtempSync(path.join(os.tmpdir(),'setup-checks-'));fs.mkdirSync(evidence,{recursive:true});
+const entries=JSON.parse(fs.readFileSync('tools/design-library/out/pilot.json','utf8'));
+const queue=JSON.parse(fs.readFileSync('tools/design-library/out/review-queue.json','utf8'));
+const approved=new Set(queue.filter(row=>row.state==='approved').map(row=>row.id));
 const selected=process.env.WCONVERT_REVIEW_IDS?.split(',');
-const ids=[...new Set(source.collections.flatMap(c=>c.items.map(i=>i.setup_id)))].filter(id=>!commerce.includes(id)&&(!selected||selected.includes(id)));
+const showsProducts=entry=>JSON.stringify(entry.tree).includes('"product');
+const chosen=entries.filter(entry=>selected?selected.includes(entry.id):!approved.has(entry.id));
+const ids=chosen.filter(entry=>process.env.WCONVERT_REVIEW_COMMERCE==='1'||!showsProducts(entry)).map(entry=>entry.id);
 const run=Date.now().toString(36);
-const browser=await chromium.launch(),results=[];
+const browser=await chromium.launch(),results=chosen.filter(entry=>!ids.includes(entry.id)).map(entry=>({id:entry.id,revision:entry.revision,skipped:'Shows products: run again with the commerce fixture and WCONVERT_REVIEW_COMMERCE=1'}));
+const save=()=>fs.writeFileSync(output,JSON.stringify({schema:1,at:new Date().toISOString(),site:'disposable local WordPress',checks:['journey','wordpress'],setups:results},null,2)+'\n');
 try{
  for(const id of ids)for(const width of [320,1280]){
   console.log(id,width);
+  const revision=entries.find(entry=>entry.id===id).revision;
   const email=`review-${run}-${id}-${width}@example.test`;
-  const context=await browser.newContext({viewport:{width,height:800},hasTouch:width===320});
+  const context=await browser.newContext({viewport:{width,height:800},hasTouch:width===320});let page;
+  try{
   if(id==='first-order-receipt')await context.grantPermissions(['clipboard-read','clipboard-write']);
   await context.addCookies([{name:'wcv_test_consent',value:'allow',url:base}]);
-  const page=await context.newPage(),errors=[],captures=[];let endpoint,failedOnce=false;
+  page=await context.newPage();const errors=[],captures=[];let endpoint,failedOnce=false,attempts=0;
   page.on('pageerror',e=>errors.push(e.message));
   await page.addInitScript(()=>{window.reviewRoots=[];const attach=Element.prototype.attachShadow;Element.prototype.attachShadow=function(o){const r=attach.call(this,o);window.reviewRoots.push(r);return r;};});
   page.on('response',async r=>{if(r.url()===endpoint&&r.request().method()==='POST')captures.push({status:r.status(),body:await r.json()});});
@@ -26,6 +52,7 @@ try{
   if(id==='sale-deadline')await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&/\d/.test(r.querySelector('.wc-countdown')?.textContent||'')));
   endpoint=await page.locator('#wconvert-payload').getAttribute('data-capture');
   await page.route(endpoint,async route=>{
+   if(route.request().postDataJSON()?.submission)attempts++;
    if(route.request().postDataJSON()?.submission&&!failedOnce){failedOnce=true;await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({message:'Simulated temporary failure. Try again.'})});}
    else await route.continue();
   });
@@ -62,14 +89,21 @@ try{
    if(before.action==='submit'){await click('[data-action="submit"]');if((await state()).action!=='submit')throw Error(id+': invalid identifier bypassed');}
    await page.evaluate(email=>{const r=window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root'));for(const el of r.querySelectorAll('.wc-field input,.wc-field select,.wc-consent input')){
     if(el.type==='checkbox')el.checked=true;else if(el.tagName==='SELECT')el.selectedIndex=Math.min(1,el.options.length-1);else if(el.type==='email')el.value=email;else if(el.type==='tel')el.value='+447400123456';else if(el.type!=='hidden')el.value='Review example';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));
-   }},email);
+   }
+   // A question is answered with its first choice, as a visitor taking the quickest route would.
+   const answered=new Set();for(const el of r.querySelectorAll('input[type="radio"]')){if(answered.has(el.name))continue;answered.add(el.name);el.checked=true;el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));}
+   },email);
    if(before.action==='submit'){
     const consent=await page.evaluate(()=>{const el=window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root')).querySelector('.wc-consent input[required]');if(!el)return false;el.checked=false;el.dispatchEvent(new Event('change',{bubbles:true}));return true;});
-    if(consent){await click('[data-action="submit"]');if(failedOnce||(await state()).action!=='submit')throw Error(id+': required consent bypassed');await page.evaluate(()=>{const el=window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root')).querySelector('.wc-consent input');el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));});consentChecked=true;}
-    await click('[data-action="submit"]');await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-error')?.textContent));
-    if((await state()).action!=='submit'||!failedOnce)throw Error(id+': failed request left form');
-    const value=await page.evaluate(()=>window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root')).querySelector('input[type="email"],input[type="tel"]').value);if(!value.includes('@')&&!value.includes('7400'))throw Error('Retry lost details');
-    await page.screenshot({path:`${evidence}/${id}-${width}-retry.png`,fullPage:true});
+    if(consent){const sent=attempts;await click('[data-action="submit"]');if(attempts>sent||(await state()).action!=='submit')throw Error(id+': required consent bypassed');await page.evaluate(()=>{const el=window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root')).querySelector('.wc-consent input');el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));});consentChecked=true;}
+    // The journey's first submission fails once on purpose: the form must stay, keep the details and allow a retry.
+    if(!failedOnce){
+     await click('[data-action="submit"]');await page.waitForFunction(()=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-error')?.textContent));
+     if(!failedOnce)throw Error(id+': no submission was sent');
+     if((await state()).action!=='submit')throw Error(id+': failed request left form');
+     const value=await page.evaluate(()=>window.reviewRoots.find(r=>r.host.isConnected&&r.querySelector('.wc-root')).querySelector('input[type="email"],input[type="tel"]').value);if(!value.includes('@')&&!value.includes('7400'))throw Error('Retry lost details');
+     await page.screenshot({path:`${evidence}/${id}-${width}-retry.png`,fullPage:true});
+    }
    }
    const previous=(await state()).text;await click('[data-action="next"],[data-action="submit"]');
    await page.waitForFunction(previous=>window.reviewRoots.some(r=>r.host.isConnected&&r.querySelector('.wc-root')?.innerText!==previous&&!r.querySelector('[aria-busy="true"]')),previous);
@@ -90,7 +124,11 @@ try{
    if(!outbox.some(mail=>mail.to===email&&mail.message.includes(resource)))throw Error(id+': resource email not handed to local mail interceptor');
    localResourceEmail=true;
   }
-  results.push({id,width,states,backChecked,consentChecked,localResourceEmail,validation:form,simulatedFailureRetry:failedOnce,localLeadSaved:form,configuredResource:response.status(),actualCtaOpened:!!link,couponChecked:id==='first-order-receipt',copiedCode,countdownConfigured:id==='sale-deadline',passed:true});fs.writeFileSync(`${evidence}/native.json`,JSON.stringify(results,null,2)+'\n');await context.close();
+  results.push({id,revision,width,passed:true,screens:states.length,validation:form,consentChecked,backChecked,simulatedFailureRetry:failedOnce,localLeadSaved:form,configuredResource:response.status(),actualCtaOpened:!!link,couponChecked:id==='first-order-receipt',copiedCode,localResourceEmail});
+  }catch(error){results.push({id,revision,width,passed:false,failure:error.message.split('\n')[0]});await page?.screenshot({path:`${evidence}/${id}-${width}-failure.png`,fullPage:true}).catch(()=>{});}
+  finally{save();await context.close();}
  }
- fs.writeFileSync(`${evidence}/native.json`,JSON.stringify(results,null,2)+'\n');console.log('Passed',results.length,'configured visitor journeys');
-}finally{await browser.close();}
+ const failed=results.filter(row=>row.passed===false);
+ console.log(`${results.filter(row=>row.passed).length} passed, ${failed.length} failed, ${results.filter(row=>row.skipped).length} skipped → ${output}`);
+ for(const row of failed)console.log(`  ${row.id} @${row.width}: ${row.failure}`);
+}finally{save();await browser.close();}

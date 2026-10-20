@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -23,8 +23,10 @@ import { latestReview, loadReviews, writeReviews } from './reviews.mjs';
  * phone width, in one browser, and compared pixel for pixel. A campaign whose
  * pixels are identical everywhere is reported as carried; with `--apply` its
  * decision is carried by a new chained record that says so. Every other
- * campaign is listed for review. No decision is invented: nothing that was not
- * current under the base renderer is ever carried.
+ * campaign is listed for review, and `out/visual-diff.html` shows only its
+ * changed screens, before beside after, so the reviewer judges the change
+ * rather than the whole setup again. No decision is invented: nothing that was
+ * not current under the base renderer is ever carried.
  */
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const { values } = parseArgs({ options: { base: { type: 'string' }, apply: { type: 'boolean', default: false }, 'all-approved': { type: 'boolean', default: false } } });
@@ -66,15 +68,29 @@ try {
           document.getElementById('sample').innerHTML = `<style>${api.SHADOW_CSS}</style>${node.outerHTML}`;
         }, [entry.tree, entry.tokens ?? {}, index, variant, step.products_required]);
         await page.evaluate(async () => { await document.fonts.ready; });
-        images.push(createHash('sha256').update(await page.locator('#sample').screenshot({ animations: 'disabled' })).digest('hex'));
+        const png = await page.locator('#sample').screenshot({ animations: 'disabled' });
+        images.push({ label: `${step.name ?? step.id}${variant ? ' · ' + (variant.heading ?? variant.id) : ''} · ${width}px`, png, hash: createHash('sha256').update(png).digest('hex') });
       }
-      return images.join(',');
+      return images;
     };
+    const changes = [];
     for (const entry of candidates) {
-      let same = true;
-      for (const width of [1200, 375]) same &&= (await shots(before, entry, width)) === (await shots(after, entry, width));
-      report[same ? 'carried' : 'review'].push(entry.id);
+      const changed = [];
+      for (const width of [1200, 375]) {
+        const old = await shots(before, entry, width), now = await shots(after, entry, width);
+        now.forEach((shot, index) => { if (shot.hash !== old[index]?.hash) changed.push({ label: shot.label, before: old[index]?.png, after: shot.png }); });
+      }
+      report[changed.length ? 'review' : 'carried'].push(entry.id);
+      if (changed.length) changes.push({ id: entry.id, name: entry.name, changed });
     }
+    // Only what moved, before beside after: the reviewer judges the change, not the whole setup again.
+    const data = image => image ? `<img src="data:image/png;base64,${image.toString('base64')}" alt="">` : '<p>(no screen)</p>';
+    const html = `<!doctype html><meta charset="utf-8"><title>Visual diff · ${values.base}</title><style>body{font:14px system-ui;margin:24px;background:#f6f4ee}h2{margin:32px 0 8px}figure{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 0 24px}img{max-width:100%;border:1px solid #ccc;background:#fff}</style>`
+      + `<h1>${changes.length} setups look different from ${values.base}</h1>`
+      + changes.map(item => `<h2>${item.name} <small>${item.id}</small></h2>` + item.changed.map(change => `<p>${change.label}</p><figure>${data(change.before)}${data(change.after)}</figure>`).join('')).join('');
+    mkdirSync(resolve(root, 'tools/design-library/out'), { recursive: true });
+    writeFileSync(resolve(root, 'tools/design-library/out/visual-diff.html'), html);
+    report.page = 'tools/design-library/out/visual-diff.html';
   } finally { await browser.close(); }
   if (values.apply && report.carried.length) {
     const next = structuredClone(store), at = new Date().toISOString().replace(/\.\d+Z$/, 'Z');

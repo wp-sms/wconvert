@@ -130,6 +130,16 @@ these only refuse what is objectively wrong or make review cheaper:
   (`build/rendered-identity.mjs`). `templates:visual-diff` renders each
   campaign whose renderer moved with both renderers at two widths and carries
   only the pixel-identical ones forward by a record that says so.
+  *Amended 20 October:* the key covers only what ships — the rendered screens
+  and the shipped configuration — not the planning brief or batch; an edited
+  evidence file no longer stales a decision (a missing one does); collections
+  are keyed on setup revisions, not record ids. `visual-diff` also writes the
+  changed screens before beside after, so a re-review judges the change.
+- **Two of the three checks are run by a machine.** `setup-checks.mjs` walks
+  every setup to review as a visitor on a disposable WordPress and writes
+  `results.json` (`journey`, `wordpress`); the reviewer judges contact sheets
+  (`batch-audit.mjs --capture`) against a short list in
+  `pilot/PRACTICAL-REVIEW.md`. The unused screenshot-ledger check is removed.
 - **Review records are one file each**, chained by `base_id`; a fork from two
   branches is refused on read instead of the later merge silently winning.
 - **Near-duplicates** — structure, palette and a thumbnail difference hash all

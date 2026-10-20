@@ -591,12 +591,10 @@ finds all registered dependent setups, including ones outside the curated studio
 and separates unrelated stale reviews. Shared runtime changes still require a
 whole-library pass. Adding a template does not reset unrelated approvals.
 
-`npm run templates:review:proof -- docs/reviews/<batch-date>/proof.json` checks that
-the batch's current revisions have every screen/result at all four studio widths
-and desktop/phone WordPress captures. Missing or changed screenshots fail. It
-does not replace actually inspecting the pictures or testing the visitor journey.
-See [the workflow](MAINTENANCE.md#reusable-batch-verification) and
-[the complete evidence](../../docs/reviews/considered-essentials-2026-10-19/README.md).
+A machine runs the visitor-route and WordPress checks
+(`tools/visual-tests/setup-checks.mjs` → `results.json`); the reviewer judges
+the contact sheets. See [the workflow](MAINTENANCE.md#reusable-batch-verification)
+and [what is judged](pilot/PRACTICAL-REVIEW.md).
 
 This batch adds no hosted pack and publishes nothing to R2. The library sources
 contain 108 designs / 155 registered setups. The six collection approvals were

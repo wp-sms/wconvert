@@ -202,6 +202,13 @@ Every design is published as its own object with its own **revision**
   generated `revisions.json` files; `templates:revisions:check` fails the build
   otherwise. Never put `revision` in the design file — it would change the bytes
   every approval is pinned to.
+- **Approval is two machine checks and one judgement**
+  ([`pilot/PRACTICAL-REVIEW.md`](../../../tools/design-library/pilot/PRACTICAL-REVIEW.md)).
+  `setup-checks.mjs` records the visitor route and the configured WordPress run;
+  you judge the contact sheets from `batch-audit.mjs queue --capture` and write
+  only what is specific to each setup. After a renderer change run
+  `templates:visual-diff --apply` first and judge only what it lists. An
+  approval goes stale only when what ships changes, not when the brief does.
 - **Publishing is a plan entry.** Add the setup to `publishing/catalog.json`
   `setups` once it is approved; `npm run templates:release:local` exports it,
   renders its thumbnails and previews, and runs the shipping PHP reader over

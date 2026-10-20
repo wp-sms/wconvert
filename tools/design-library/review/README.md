@@ -11,34 +11,40 @@ review merge in Git without a conflict and are then **refused on read**, naming
 both records: rebuild, read both and record one decision over the later. A
 record whose bytes no longer match its name is refused the same way.
 
-1. Build with `npm run templates:pilot` and inspect the prepared campaign.
-   Run `npm run templates:review:scope -- origin/main` to identify all affected
-   dependents. Use the [batch verification workflow](../MAINTENANCE.md#reusable-batch-verification)
-   and run `templates:review:proof` on the final screenshot ledger before import.
-2. Complete the comparison in the brief and the [practical review](../pilot/PRACTICAL-REVIEW.md).
-   Check every screen and result, including failure/retry and acknowledgements.
-3. Save the supporting report under `docs/reviews/`. State what was observed,
-   simulated, tested through native WordPress and left untested. Keep test details
-   fictional. Do not include credentials or real customer data.
-4. In **Review decision**, enter a reviewer name and notes. Expand **Checks and
-   evidence**. Record visual, visitor-route and configured WordPress results, with
-   one repository-relative evidence path per line. All three must pass for
-   **Editorially reviewed**. A single report may support several checks.
-5. Export review, then import:
+1. Build with `npm run templates:pilot`. After a renderer or shared-CSS change,
+   run `npm run templates:visual-diff -- --base origin/main --apply` first.
+2. Run the machine checks and capture the contact sheets, then judge what only a
+   person can: [the workflow](../MAINTENANCE.md#reusable-batch-verification),
+   [what is judged](../pilot/PRACTICAL-REVIEW.md).
+3. Write one `docs/reviews/<batch>/review.md` with a line per setup on what is
+   specific to it. Do not restate the standing limits below.
+4. Write the export (`{"schema": 2, "reviews": [...]}`, one entry per setup,
+   `base_id` its latest record) or use the studio's **Review decision** form.
+   `journey` and `wordpress` cite `results.json`; `visual` cites the setup's two
+   contact sheets and `review.md`. All three must pass for **approved**.
+5. Import and gate:
 
    ```bash
-   npm run templates:review -- '/path/to/wconvert-pilot-review.json'
+   npm run templates:review -- '/path/to/export.json'
    npm run templates:gate -- coverage
    ```
 
-   Import rebuilds the actual campaigns before validation. The gate rebuilds again
-   and exits nonzero for missing, stale or revision-requested approvals. Omit
-   `coverage` to check every campaign. This workflow runs locally, without CI.
-6. Commit the evidence and the new record files together. Rebuild the studio on
-   another checkout to see the decisions.
+   Import rebuilds the campaigns before validation; the gate exits nonzero for
+   missing, stale or revision-requested approvals.
+6. Commit the evidence and the new record files together.
 
-Campaign content and renderer revisions bind decisions to the reviewed output. Derived similarity neighbours and fingerprints are excluded, so expanding the library does not invalidate an unchanged campaign. Evidence
-content is hashed too: a changed or missing file invalidates the approval. Import
+**Standing limits of every review**, said once here rather than in each report:
+an approval does not assert external email or SMS delivery, physical-device
+behaviour, a translation review, measured conversion, or release approval.
+Machine checks run on a disposable local WordPress with local capture and a
+local mail outbox.
+
+A decision is bound to what ships: the rendered screens and the shipped
+configuration (`build/revision.mjs`). The planning brief, the batch, similarity
+neighbours and fingerprints are excluded, so editing a brief or growing the
+library does not invalidate an unchanged setup. Evidence is hashed when it is
+imported; a missing file stales the decision, an edited one does not (Git shows
+the edit). Import
 validates the complete export before writing, adds one new file per decision and
 never rewrites an existing one, rejects stale exports and conflicts, and is
 idempotent for an identical export. Concurrent local imports are serialized. A

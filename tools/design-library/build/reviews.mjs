@@ -121,13 +121,10 @@ export function reviewQueue(store, entries, root) {
     let state = 'review', reason = 'No shared review yet.';
     if (record) {
       state = record.decision; reason = 'Shared review for the current version.';
-      if (record.revision !== entry.revision) { state = 'stale'; reason = 'Campaign or renderer changed. Review every screen again.'; }
-      else {
-        try {
-          if (reviewStages.some(stage => record.checks[stage].evidence.some(e => evidenceFile(root, e.path).sha256 !== e.sha256))) {
-            state = 'stale'; reason = 'Supporting evidence changed. Confirm the review again.';
-          }
-        } catch { state = 'stale'; reason = 'Supporting evidence is missing or invalid.'; }
+      if (record.revision !== entry.revision) { state = 'stale'; reason = 'What visitors get changed. Run templates:visual-diff, then review what it lists.'; }
+      // Evidence must still exist; an edit to it is visible in Git and does not stale the decision.
+      else if (reviewStages.some(stage => record.checks[stage].evidence.some(e => !existsSync(resolve(root, e.path))))) {
+        state = 'stale'; reason = 'Supporting evidence is missing.';
       }
     }
     return { id: entry.id, state, reason, record };

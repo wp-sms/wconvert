@@ -1,0 +1,99 @@
+{
+  "id": "custom-project-start",
+  "revision": "24d816d645f1f3b2ed0ba175c0611bcddc69668e94d9206cf77630b5767f86d9",
+  "base_id": "4345d992d97ea49ce1b40628f3c432c7ae43ae8597392cf0fcfae8a8cd7b847d",
+  "decision": "approved",
+  "reviewer": "Approval identity change (review process)",
+  "note": "Current under campaign-content-v3; the approval key now covers only what ships (rendered screens and shipped configuration), not the planning brief. Not a new review.",
+  "at": "2026-10-20T16:43:12Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    }
+  },
+  "record_id": "7cbb9e33472461de0d1e7acbf07dd0f8d9e830cb6abdf92b12383af4ad09cb38"
+}

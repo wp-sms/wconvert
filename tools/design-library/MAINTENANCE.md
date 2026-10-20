@@ -50,49 +50,38 @@ fresh evidence for its affected setups. Do not repeatedly approve a moving targe
    shipping; they do not automatically gain an approval from this gate.
 5. Import revision-bound visual, journey and WordPress evidence, run
    `npm run templates:gate`, and submit the normal PR. The gate fails for an
-   unrecorded design change, missing approval, stale output or changed evidence.
+   unrecorded design change, missing approval, stale output or missing evidence.
 
 ### Reusable batch verification
 
-Build `node tools/design-library/build/batch-audit.mjs <batch>` after the pilot.
-Its single page shows every prepared screen at 320, 390, 768 and 1440px, with
-long-copy and RTL controls. Inspect the pictures; measurement results alone do
-not assess hierarchy, relevance or composition. The consent stress control uses
-sample text only when a normally hidden consent leaf has no prepared wording.
+What to check is in [the practical review](pilot/PRACTICAL-REVIEW.md); the
+standing limits of every review are in [review/README.md](review/README.md).
 
-For real capture, mount `tools/visual-tests/mu/harness.php` and
-`tools/visual-tests/mu/template-batch.php` in a **disposable localhost WordPress**.
-Open `/?wconvert_template_batch=<setup>&batch=<batch>`. This fixture reads the
-studio's batch allowlist, uses real Prefill and local capture, disables other
-fixture campaigns and replaces its previous campaign. It never belongs on a
-customer site. The harness prevents outbound mail. It opens shadow roots solely
-for inspection. Check desktop, phone, transition widths, scrolling, dismissal,
-required/invalid input and saved values. Test failure/retry in the studio as well.
+1. **Machine checks.** Serve a disposable localhost WordPress with
+   `tools/visual-tests/mu/harness.php` and `mu/collection-approval.php` mounted,
+   then run
 
-Before saving each native screenshot, assert the actual page viewport width and
-wait for the expected screen content. For asynchronous products, wait for a
-loaded product action, not merely the page heading or an empty renderer root.
-Recheck the viewport after switching tabs: browser-wide overrides may apply to
-the newest tab. A filename containing `320` is not evidence of a phone viewport.
-Inspect the saved image before adding it to the approval ledger.
+   ```sh
+   WCONVERT_REVIEW_RESULTS=docs/reviews/<batch>/results.json node tools/visual-tests/setup-checks.mjs
+   ```
 
-Save the final screenshots in a new `docs/reviews/<batch-date>/` directory. Keep
-a `proof.json` ledger with each setup's current `revision`, a written `judgement`
-and `captures` (`screen`, nullable `result`, `surface`, `width`, `path`, `sha256`).
-An all-screen sheet may cover multiple screen records. Use `studio` for all four
-widths and `wordpress` for 320 and 1280px. The considered-essentials evidence is a
-complete example. Before importing a review, run:
-
-```sh
-npm run templates:review:proof -- docs/reviews/<batch-date>/proof.json
-```
-
-It rejects missing screens/results/widths, incomplete batches, stale revisions,
-missing pictures and changed screenshot bytes. It **does not approve designs**
-or establish that someone looked at a screenshot. The visual judgement, actual
-journey checks and native WordPress evidence remain reviewer responsibilities.
-Import the ledger as supporting evidence with the written review. Keep provider
-delivery and physical-device testing explicitly separate.
+   It takes every setup the queue does not show as approved (or
+   `WCONVERT_REVIEW_IDS`), walks each as a visitor at 320 and 1280 px and records
+   pass or fail per setup. Screenshots stay in the temp folder. Add the commerce
+   fixture and `WCONVERT_REVIEW_COMMERCE=1` for setups that show products.
+2. **Contact sheets.**
+   `node tools/design-library/build/batch-audit.mjs queue --capture docs/reviews/<batch>`
+   writes `<id>-320.png` and `<id>-1440.png` per setup; `out/queue-audit.html`
+   has the other widths, RTL, longer copy and the themes.
+3. **After a renderer or shared-CSS change**, run
+   `npm run templates:visual-diff -- --base origin/main --apply` first:
+   pixel-identical setups are carried, and `out/visual-diff.html` shows the
+   others' changed screens before beside after. Judge the change, not the whole
+   setup again.
+4. **Judge and record.** One `docs/reviews/<batch>/review.md` with a line per
+   setup on what is specific to it. Cite `results.json` for `journey` and
+   `wordpress`, and the setup's two contact sheets plus `review.md` for
+   `visual`; then `npm run templates:review` and `templates:gate`.
 
 Changing only Playbook copy requires new campaign review evidence, not a design
 version. Renderer and container changes require wider regression checks, including

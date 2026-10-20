@@ -15,13 +15,13 @@ function fixture(t) {
   return { root, entries, review, exported: { schema: 2, reviews: [review] } };
 }
 
-test('shared approval is revision-bound and invalidated by changed or missing evidence', t => {
+test('shared approval is revision-bound; edited evidence keeps it, missing evidence stales it', t => {
   const {root, entries, exported} = fixture(t);
   const store = mergeReviews(emptyReviews(), exported, entries, root);
   assert.equal(reviewQueue(store, entries, root)[0].state, 'approved');
   assert.equal(reviewQueue(store, [{...entries[0], revision:'changed'}], root)[0].state, 'stale');
   writeFileSync(join(root, 'docs/reviews/proof.md'), 'Changed evidence');
-  assert.equal(reviewQueue(store, entries, root)[0].state, 'stale');
+  assert.equal(reviewQueue(store, entries, root)[0].state, 'approved', 'An evidence edit is visible in Git; it is not a new version of the setup');
   rmSync(join(root, 'docs/reviews/proof.md'));
   assert.equal(reviewQueue(store, entries, root)[0].state, 'stale');
 });

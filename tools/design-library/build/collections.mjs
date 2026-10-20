@@ -38,9 +38,10 @@ export function buildCollections(root, source, entries, setupQueue, reviews) {
       const setupFile = globSync([`resources/playbooks/${entry.id}.php`, `pro/modules/*/playbooks/${entry.id}.php`], { cwd: root }).map(file => resolve(root, file))[0];
       const designFile = globSync([`resources/templates/library/${entry.template_id}.json`, `pro/modules/*/templates/${entry.template_id}.json`], { cwd: root }).map(file => resolve(root, file))[0];
       if (hash(readFileSync(setupFile)) !== item.setup_hash || hash(readFileSync(designFile)) !== item.design_hash) throw new Error(`Stale collection dependency: ${item.setup_id}`);
-      return { revision: entry.revision, record: approval.record?.record_id, current: approval.state === 'approved' };
+      return { revision: entry.revision, current: approval.state === 'approved' };
     });
-    return { ...collection, dependencies_current: dependencies.every(item => item.current), revision: hash(JSON.stringify([collection, dependencies])) };
+    // Keyed on what the setups are, not on which record approved them: carrying an approval does not stale a collection.
+    return { ...collection, dependencies_current: dependencies.every(item => item.current), revision: hash(JSON.stringify([collection, dependencies.map(item => item.revision)])) };
   });
   const queue = reviewQueue(reviews, compiled.map(collection => ({ id: `collection-${collection.id}`, revision: collection.revision })), root);
   return { compiled: compiled.map((collection, at) => ({ ...collection, status: collection.dependencies_current && queue[at].state === 'approved' ? 'published' : 'draft' })), queue };
