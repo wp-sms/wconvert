@@ -1,88 +1,42 @@
-import { createHash } from 'node:crypto';
-const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+/**
+ * Catalogue v3 detail pages: what the website reads for its gallery. The plugin
+ * never reads them, so they carry the marketing words and the preview/og/thumb
+ * digests the website follows.
+ */
 const check = (ok, message) => { if (!ok) throw Error(message); };
-const json = value => JSON.stringify(value, null, 2) + '\n';
-export const legacyReleaseId = (packs, collections) => hash(json({ packs, collections }));
+const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
+const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,59}$/.test(value);
+const words = (value, max) => typeof value === 'string' && value.trim() !== '' && value.length <= max;
+const terms = value => value === undefined || (Array.isArray(value) && value.every(identifier));
+const dimension = value => Number.isSafeInteger(value) && value > 0 && value <= 10000;
 
-/** Release identity commits to the entire public projection, including preview/image hashes. */
-export function validateDesignCatalogue(catalogue, { id, packs, collections, origin }) {
-  check(catalogue?.schema === 1 && catalogue.release === id && Array.isArray(catalogue.designs), 'Invalid design catalogue');
-  const extensions = catalogue.extensions;
-  check(hash(json({ packs, collections, designs: catalogue.designs })) === id, 'Design catalogue integrity mismatch');
-  if (extensions) {
-    check(catalogue.designs.length > 0 && catalogue.designs.every(design => design.gallery_extensions_sha256 === hash(json(extensions))), 'Gallery extension integrity mismatch');
-    check(extensions.schema === 1 && extensions.capabilities?.design_only_embed === 1
-      && extensions.capabilities.bundled_designs === 1 && extensions.capabilities.collection_designs === 1
-      && Array.isArray(extensions.bundled_designs) && Array.isArray(extensions.collections), 'Invalid gallery extensions');
-  } else check(catalogue.designs.every(design => !('gallery_extensions_sha256' in design)), 'Missing gallery extensions');
-  const dependencies = new Map(), ids = new Set();
-  const reference = (value, kind, fragment = false) => {
-    const url = new URL(value);
-    check(url.origin === origin && !url.username && !url.password && !url.search && (fragment || !url.hash), 'Invalid public design URL');
-    const match = url.pathname.match(kind === 'preview' ? /^\/previews\/([a-f0-9]{64})\.html$/ : /^\/thumbnails\/([a-f0-9]{64})\.jpg$/);
-    check(match, 'Invalid public design asset');
-    dependencies.set(url.pathname.slice(1), match[1]);
-  };
-  const bundled = extensions?.bundled_designs ?? [], all = [...catalogue.designs, ...bundled];
-  for (const design of all) {
-    check(/^[a-z0-9][a-z0-9-]{0,59}$/.test(design.id) && !ids.has(design.id), 'Repeated or invalid design ID'); ids.add(design.id);
-    check(['free', 'pro'].includes(design.availability) && /^[a-f0-9]{64}$/.test(design.revision), 'Invalid design tier or revision');
-    check(['popup', 'inline', 'floating_bar', 'slide_in', 'fullscreen'].includes(design.format), 'Invalid design format');
-    check(Array.isArray(design.packs) && (bundled.includes(design)
-      ? design.packs.length === 0 && !('pack_id' in design) && design.bundled === true && design.bundle_tier === design.availability
-      : design.packs.length > 0 && design.pack_id === design.packs[0].id), 'Invalid design pack membership');
-    check(new Set(design.packs.map(pack => pack.id)).size === design.packs.length, 'Repeated design pack membership');
-    for (const delivery of design.packs) check(packs.some(pack => pack.id === delivery.id && (pack.access === 'premium' ? 'pro' : 'free') === delivery.access), 'Design references an absent pack');
-    check(Array.isArray(design.screens) && design.screens.length > 0 && new Set(design.screens.map(screen => screen.id)).size === design.screens.length, 'Invalid design screens');
-    check(['available', 'unavailable'].includes(design.preview_status), 'Invalid preview status');
-    if (design.preview_status === 'unavailable') {
-      check(!design.preview_url && !design.embed_url && !design.design_only_embed && !design.thumbnail
-        && design.screens.every(screen => !screen.preview_url && !screen.embed_url && !screen.design_only_embed_url), 'Unavailable preview references assets');
-      continue;
+/**
+ * Validate one detail page and return its public dependencies as [key, sha]
+ * pairs. A null sha is the 2x thumbnail, whose own digest is not in its name.
+ * `seen` spans every detail page of a release: an id appears once.
+ */
+export function detailDependencies(page, seen = new Set()) {
+  check(page?.schema === 3 && Array.isArray(page.details), 'Invalid detail page');
+  const dependencies = [];
+  for (const detail of page.details) {
+    check(identifier(detail?.id) && !seen.has(detail.id), 'Repeated or invalid detail id');
+    seen.add(detail.id);
+    check(typeof detail.slug === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(detail.slug), `Invalid detail slug: ${detail.id}`);
+    check(detail.description === undefined || words(detail.description, 1000), `Invalid detail description: ${detail.id}`);
+    check(['industries', 'occasions', 'style', 'colour'].every(key => terms(detail[key])), `Invalid detail taxonomy: ${detail.id}`);
+    check(detail.screens === undefined || Array.isArray(detail.screens), `Invalid detail screens: ${detail.id}`);
+    if (detail.preview !== undefined) {
+      check(digest(detail.preview), `Invalid preview digest: ${detail.id}`);
+      dependencies.push([`v3/previews/${detail.preview}.html`, detail.preview]);
     }
-    reference(design.preview_url, 'preview', true); reference(design.embed_url, 'preview');
-    if (design.design_only_embed) {
-      const embed = design.design_only_embed;
-      check(embed.version === 1 && JSON.stringify(embed.devices) === '["desktop","mobile"]'
-        && embed.default_device === 'desktop' && embed.mobile_width === 320, 'Invalid design-only capability');
-      reference(embed.url, 'preview');
+    if (detail.og !== undefined) {
+      check(digest(detail.og), `Invalid og digest: ${detail.id}`);
+      dependencies.push([`v3/og/${detail.og}.jpg`, detail.og]);
     }
-    for (const screen of design.screens) {
-      check(screen.preview_url === design.preview_url + '&screen=' + encodeURIComponent(screen.id)
-        && screen.embed_url === design.embed_url + '#screen=' + encodeURIComponent(screen.id), 'Invalid screen selection URL');
-      check(design.design_only_embed
-        ? screen.design_only_embed_url === design.design_only_embed.url + '#screen=' + encodeURIComponent(screen.id)
-        : !screen.design_only_embed_url, 'Invalid design-only screen URL');
-    }
-    const thumbnail = design.thumbnail;
-    check(thumbnail && Number.isInteger(thumbnail.width) && thumbnail.width > 0 && Number.isInteger(thumbnail.height) && thumbnail.height > 0
-      && typeof thumbnail.alt === 'string' && thumbnail.alt.trim() && typeof thumbnail.partial === 'boolean'
-      && design.screens.some(screen => screen.id === thumbnail.screen_id), 'Invalid thumbnail metadata');
-    reference(thumbnail.url, 'thumbnail');
-    check(dependencies.get(new URL(thumbnail.url).pathname.slice(1)) === thumbnail.sha256, 'Invalid thumbnail digest');
-  }
-  const collectionIds = new Set();
-  for (const collection of extensions?.collections ?? []) {
-    check(/^[a-z0-9][a-z0-9-]{0,63}$/.test(collection.id) && !collectionIds.has(collection.id), 'Repeated or invalid gallery collection');
-    collectionIds.add(collection.id);
-    check(Array.isArray(collection.items) && collection.items.length > 0
-      && new Set(collection.items.map(item => item.setup_id)).size === collection.items.length, 'Invalid collection items');
-    for (const item of collection.items) {
-      const design = all.find(design => design.id === item.design_id);
-      check(design && /^[a-z0-9][a-z0-9-]{0,63}$/.test(item.setup_id) && ['any', 'before', 'during', 'after'].includes(item.stage), 'Invalid collection design membership');
-      if (item.pack_id) {
-        check(packs.some(pack => pack.id === item.pack_id && pack.sha256 === item.pack_digest)
-          && design.packs.some(pack => pack.id === item.pack_id), 'Invalid collection pack reference');
-      } else check(bundled.includes(design) && !item.pack_digest, 'Missing collection delivery reference');
-    }
-    check(JSON.stringify(collection.design_ids) === JSON.stringify([...new Set(collection.items.map(item => item.design_id))]), 'Invalid collection design IDs');
-    const event = collection.event;
-    if (event) {
-      check(event.date_basis === 'site-calendar' && event.end_semantics === 'exclusive' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(event.family)
-        && ['start', 'end_exclusive', 'feature_start', 'feature_end_exclusive'].every(key =>
-          /^\d{4}-\d{2}-\d{2}$/.test(event[key]) && new Date(event[key] + 'T12:00:00Z').toISOString().slice(0, 10) === event[key])
-        && event.start < event.end_exclusive && event.feature_start < event.feature_end_exclusive
-        && event.feature_start <= event.start && event.feature_end_exclusive <= event.end_exclusive, 'Invalid gallery event dates');
+    if (detail.thumb !== undefined) {
+      const thumb = detail.thumb;
+      check(thumb && digest(thumb.sha) && dimension(thumb.width) && dimension(thumb.height) && words(thumb.alt, 300), `Invalid detail thumbnail: ${detail.id}`);
+      dependencies.push([`v3/thumbs/${thumb.sha}.webp`, thumb.sha], [`v3/thumbs/${thumb.sha}@2x.webp`, null]);
     }
   }
   return dependencies;

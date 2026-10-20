@@ -7,8 +7,12 @@ const hash = b => createHash('sha256').update(b).digest('hex');
 const keys = [0, 1].map(n => { const pair = generateKeyPairSync('ed25519'); return { privateKey: pair.privateKey, jwk: { ...pair.publicKey.export({ format: 'jwk' }), kid: `key-${n}`, alg: 'EdDSA', use: 'sig' } }; });
 const encode = x => Buffer.from(JSON.stringify(x)).toString('base64url');
 const signed = (claims, index = 0, header = {}) => { const input = `${encode({ alg: 'EdDSA', typ: 'nexus-entitlement+jwt', kid: keys[index].jwk.kid, ...header })}.${encode(claims)}`; return input + '.' + sign(null, Buffer.from(input), keys[index].privateKey).toString('base64url'); };
-const image = Buffer.from('private image fixture'), imageHash = hash(image);
-const pack = Buffer.from(JSON.stringify({ assets: [{ mime: 'image/png', access: 'premium', sha256: imageHash, bytes: image.length }] })), digest = hash(pack);
+import { catalogue } from './fixtures.mjs';
+const library = catalogue({ designs: [{ id: 'night-owl', tier: 'pro', images: ['premium', 'free'] }, { id: 'other-pro', tier: 'pro', images: ['premium'] }],
+ setups: [{ id: 'night-start', design: 'night-owl' }] });
+const night = library.objects['night-owl'], digest = night.sha256, setup = library.objects['night-start'].sha256, other = library.objects['other-pro'].sha256;
+const [premiumImage, freeImage] = night.assets, imageHash = premiumImage.sha256, image = library.private.get(`v3/assets/${imageHash}.png`);
+const designPath = `/v3/premium/designs/${digest}.json`, setupPath = `/v3/premium/setups/${setup}.json`, imagePath = `/v3/premium/assets/${imageHash}.png`;
 const origin = 'https://templates.example', nexus = 'https://nexus.example';
 const settings = { NEXUS_GRANT_URL: nexus + '/api/v1/wconvert/entitlements/grant', NEXUS_KEYS_URL: nexus + '/api/v1/wconvert/entitlements/keys', NEXUS_ISSUER: nexus, NEXUS_AUDIENCE: origin, NEXUS_ENVIRONMENT: 'staging', NEXUS_SERVICE_KEY: 'test-service-secret' };
 async function fixture(t, overrides = {}) {
@@ -17,7 +21,9 @@ async function fixture(t, overrides = {}) {
  const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8'), compatibilityDate: '2026-10-01', r2Buckets: ['PUBLIC_TEMPLATES', 'PRIVATE_TEMPLATES'], bindings: config,
   ratelimits: {
    GRANT_RATE_LIMITER: { namespace_id: '1', simple: { limit: 10000, period: 60 } },
-   DOWNLOAD_RATE_LIMITER: { namespace_id: '2', simple: { limit: 10000, period: 60 } },
+   GRANT_IP_RATE_LIMITER: { namespace_id: '2', simple: { limit: 10000, period: 60 } },
+   DOWNLOAD_RATE_LIMITER: { namespace_id: '3', simple: { limit: 10000, period: 60 } },
+   DOWNLOAD_IP_RATE_LIMITER: { namespace_id: '4', simple: { limit: 10000, period: 60 } },
   },
   outboundService: async request => {
    state.calls.push({ url: request.url, headers: Object.fromEntries(request.headers), body: request.method === 'POST' ? await request.json() : null });
@@ -34,35 +40,42 @@ async function fixture(t, overrides = {}) {
   }
  }));
  t.after(() => mf.dispose());
- const bucket = await mf.getR2Bucket('PRIVATE_TEMPLATES'); await bucket.put(`packs/${digest}.json`, pack); await bucket.put(`assets/premium/${imageHash}.png`, image);
+ const bucket = await mf.getR2Bucket('PRIVATE_TEMPLATES'), publicBucket = await mf.getR2Bucket('PUBLIC_TEMPLATES');
+ for (const [key, bytes] of library.private) await bucket.put(key, bytes);
+ for (const [key, bytes] of library.public) await publicBucket.put(key, bytes);
  const fetch = (path, options) => mf.dispatchFetch(origin + path, options);
- const issue = (body = { pack: digest, domain: 'shop.example/blog' }) => fetch('/grants', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-License-Key': 'test-customer-secret' }, body: JSON.stringify(body) });
+ const issue = (body = { domain: 'shop.example/blog', designs: [digest], setups: [setup] }) => fetch('/v3/grants', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-License-Key': 'test-customer-secret' }, body: JSON.stringify(body) });
  return { state, mf, bucket, fetch, issue };
 }
-test('Nexus passes authorize an exact pack and images, including HEAD and retries', async t => {
+test('one Nexus pass authorizes an exact batch: objects plus premium images, including HEAD and retries', async t => {
  const { state, bucket, fetch, issue } = await fixture(t);
  const response = await issue(); assert.equal(response.status, 200, await response.clone().text());
  const { grant } = await response.json(); const headers = { Authorization: `Bearer ${grant}` };
  assert.match(response.headers.get('cache-control'), /private, no-store/);
  assert.equal(state.calls[0].body.permission, 'templates:download'); assert.equal(Object.keys(state.calls[0].body).sort().join(','), 'domain,permission,resource_digest');
- const expectedFiles = [[`/assets/premium/${imageHash}.png`, imageHash, image.length], [`/downloads/${digest}.json`, digest, pack.length]];
+ // The free image is public, so it is not in the pass's file list.
+ const expectedFiles = [[imagePath, imageHash, image.length], [designPath, digest, night.bytes.length], [setupPath, setup, library.objects['night-start'].bytes.length]];
  assert.equal(state.calls[0].body.resource_digest, hash(JSON.stringify(expectedFiles)));
- for (const [path, expected] of [[`/downloads/${digest}.json`, pack], [`/assets/premium/${imageHash}.png`, image]]) {
+ for (const [path, expected] of [[designPath, night.bytes], [setupPath, library.objects['night-start'].bytes], [imagePath, image]]) {
   const first = await fetch(path, { headers }); assert.equal(first.status, 200); assert.deepEqual(Buffer.from(await first.arrayBuffer()), expected); assert.match(first.headers.get('cache-control'), /private, no-store/);
   assert.equal((await fetch(path, { headers, method: 'HEAD' })).status, 200);
   assert.equal((await fetch(path, { headers: { ...headers, 'If-None-Match': '*' } })).status, 200);
   assert.equal((await fetch(path, { method: 'HEAD' })).status, 401);
  }
- assert.equal((await fetch(`/assets/premium/${'a'.repeat(64)}.png`, { headers })).status, 403);
- assert.equal((await fetch(`/downloads/${digest}.json`, { headers: { Authorization: `Bearer ${grant.slice(0,-3)}xxx` } })).status, 401);
+ // Files outside the batch are refused, even existing premium ones.
+ for (const path of [`/v3/premium/assets/${'a'.repeat(64)}.png`, `/v3/premium/designs/${other}.json`, `/v3/premium/assets/${freeImage.sha256}.png`]) {
+  const refused = await fetch(path, { headers }); assert.equal(refused.status, 403, path); assert.deepEqual(await refused.json(), { error_code: 'resource_not_allowed' });
+ }
+ assert.equal((await fetch(`/v3/assets/${freeImage.sha256}.png`)).status, 200, 'the free image is public');
+ assert.equal((await fetch(designPath, { headers: { Authorization: `Bearer ${grant.slice(0,-3)}xxx` } })).status, 401);
  state.outage = true;
- assert.equal((await fetch(`/downloads/${digest}.json`, { headers })).status, 200, 'issued pass finishes through Nexus outage');
+ assert.equal((await fetch(designPath, { headers })).status, 200, 'issued pass finishes through Nexus outage');
  assert.equal((await issue()).status, 503, 'new issuance fails closed');
- await bucket.put(`assets/premium/${imageHash}.png`, 'damaged');
- assert.equal((await fetch(`/assets/premium/${imageHash}.png`, { headers })).status, 503);
+ await bucket.put(`v3/assets/${imageHash}.png`, 'damaged');
+ assert.equal((await fetch(imagePath, { headers })).status, 503);
  const stored = JSON.parse(await (await bucket.get(`grants/${hash(grant)}.json`)).text());
  stored.claims.site = 'other.example'; await bucket.put(`grants/${hash(grant)}.json`, JSON.stringify(stored));
- assert.equal((await fetch(`/downloads/${digest}.json`, { headers })).status, 401, 'context binding checked');
+ assert.equal((await fetch(designPath, { headers })).status, 401, 'context binding checked');
 });
 test('licence, activation, service and availability failures stay distinct', async t => {
  const { state, issue } = await fixture(t);
@@ -83,14 +96,14 @@ test('signed but wrong claims, algorithms and lifetimes cannot issue access', as
 });
 test('public access never calls Nexus; clients cannot supply resource sets or credentials in URLs', async t => {
  const { state, mf, fetch, issue } = await fixture(t);
- const publicBucket = await mf.getR2Bucket('PUBLIC_TEMPLATES'); await publicBucket.put(`packs/${digest}.json`, pack);
- assert.equal((await fetch(`/packs/${digest}.json`)).status,200); assert.equal(state.calls.length,0);
- assert.equal((await issue({ pack:digest,domain:'shop.example',files:['anything'] })).status,400);
- assert.equal((await fetch('/grants?key=secret',{method:'POST'})).status,400);
- assert.equal((await fetch('/grants')).status,405);
- assert.equal((await fetch(`/downloads/${digest}.json?grant=secret`)).status,400);
- assert.equal((await fetch('/private/packs/'+digest+'.json')).status,404);
+ assert.equal((await fetch(`/v3/assets/${freeImage.sha256}.png`)).status,200); assert.equal(state.calls.length,0);
+ assert.equal((await issue({ domain:'shop.example', designs:[digest], setups:[], files:['anything'] })).status,400);
+ assert.equal((await fetch('/v3/grants?key=secret',{method:'POST'})).status,400);
+ assert.equal((await fetch('/v3/grants')).status,405);
+ assert.equal((await fetch(`${designPath}?grant=secret`)).status,400);
+ assert.equal((await fetch(`/v3/designs/${digest}.json`)).status,404, 'a premium object has no public address');
  assert.equal((await fetch('/grants/'+digest+'.json')).status,404);
+ assert.equal((await fetch('/v3/grants/'+digest+'.json')).status,404);
  assert.equal(state.calls.length,0);
 });
 
@@ -102,9 +115,9 @@ test('expiry is enforced on each file; context loss and storage outages never gr
  const expiredClaims = { ...context.claims, iat: at-100, exp: at-1 };
  const expired = signed(expiredClaims);
  await bucket.put(`grants/${hash(expired)}.json`, JSON.stringify({ ...context, claims: expiredClaims }));
- for (const method of ['GET','HEAD']) assert.equal((await fetch(`/downloads/${digest}.json`,{method, headers:{Authorization:`Bearer ${expired}`}})).status,401);
+ for (const method of ['GET','HEAD']) assert.equal((await fetch(designPath,{method, headers:{Authorization:`Bearer ${expired}`}})).status,401);
  await bucket.delete(`grants/${hash(grant)}.json`);
- assert.equal((await fetch(`/downloads/${digest}.json`,{headers:{Authorization:`Bearer ${grant}`}})).status,401);
+ assert.equal((await fetch(designPath,{headers:{Authorization:`Bearer ${grant}`}})).status,401);
 });
 
 test('unknown signing key refresh is bounded, rotations and outage fail safely', async t => {
@@ -123,8 +136,8 @@ test('unknown signing key refresh is bounded, rotations and outage fail safely',
 
 test('malformed and oversized requests are bounded and never call Nexus', async t => {
  const { fetch, state } = await fixture(t);
- for (const [body,status] of [['{',400],['x'.repeat(4097),413]]) {
-  const response=await fetch('/grants',{method:'POST',headers:{'Content-Type':'application/json','X-License-Key':'test'},body});
+ for (const [body,status] of [['{',400],['x'.repeat(8193),413]]) {
+  const response=await fetch('/v3/grants',{method:'POST',headers:{'Content-Type':'application/json','X-License-Key':'test'},body});
   assert.equal(response.status,status);
  }
  assert.equal(state.calls.length,0);
@@ -157,7 +170,7 @@ test('custom API hostname accepts the pinned issuer, never the API origin as iss
  });
  const response = await issue(); assert.equal(response.status, 200);
  const { grant } = await response.json();
- assert.equal((await fetch(`/downloads/${digest}.json`, { headers: { Authorization: `Bearer ${grant}` } })).status, 200);
+ assert.equal((await fetch(designPath, { headers: { Authorization: `Bearer ${grant}` } })).status, 200);
  assert.ok(state.calls.every(c => new URL(c.url).origin === api));
  state.override = { iss: api };
  assert.equal((await issue()).status, 503, 'API hostname is not the trusted signed issuer');
@@ -183,4 +196,31 @@ test('unsafe or mismatched configured endpoints never send credentials', async t
    assert.equal(state.calls.length, 0);
   });
  }
+});
+
+test('a batch is 1-50 unique premium digests the service stores; anything else never reaches Nexus', async t => {
+ const { state, bucket, issue } = await fixture(t);
+ const many = [];
+ for (let n = 0; n < 50; n++) { const bytes = Buffer.from(JSON.stringify({ schema: 3, n, assets: [] })); await bucket.put(`v3/designs/${hash(bytes)}.json`, bytes); many.push(hash(bytes)); }
+ const fifty = await issue({ domain: 'shop.example', designs: many, setups: [] });
+ assert.equal(fifty.status, 200, 'fifty is allowed');
+ assert.equal(state.calls.filter(c => c.body).length, 1);
+ const before = state.calls.length;
+ for (const [body, status, code] of [
+  [{ domain: 'shop.example', designs: [...many, digest], setups: [] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: many.slice(0, 49), setups: [setup, 'f'.repeat(64)] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: [], setups: [] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: [digest, digest], setups: [] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: [digest], setups: [digest] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: ['ABC'], setups: [] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: [digest] }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', pack: digest }, 400, 'invalid_request'],
+  [{ domain: 'shop.example', designs: ['f'.repeat(64)], setups: [] }, 404, 'not_found'],
+  [{ domain: 'shop.example', designs: [setup], setups: [] }, 404, 'not_found'],
+  [{ domain: 'shop.example', designs: [], setups: [digest] }, 404, 'not_found'],
+ ]) {
+  const response = await issue(body); assert.equal(response.status, status, JSON.stringify(body).slice(0, 120));
+  assert.deepEqual(await response.json(), { error_code: code });
+ }
+ assert.equal(state.calls.length, before, 'refused batches never call Nexus');
 });

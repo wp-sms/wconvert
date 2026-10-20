@@ -4,73 +4,80 @@ import { mkdtempSync, rmSync, existsSync, statSync, readFileSync, mkdirSync, wri
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { backupRemote } from '../scripts/backup-remote.mjs';
-import { legacyReleaseId } from '../scripts/design-catalogue.mjs';
-import { hash, readPublicRelease, readPrivateRelease } from '../scripts/storage.mjs';
+import { readPublicRelease, readPrivateRelease } from '../scripts/storage.mjs';
+import { catalogue, json } from './fixtures.mjs';
 
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), 'wconvert-backup-test-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  const directory = join(root, 'snapshot'), origin = 'https://templates.example';
-  const pub = new Map(), priv = new Map(), ids = [];
-  const image = Buffer.from('private image'), imageKey = `assets/premium/${hash(image)}.png`;
-  const pack = Buffer.from(JSON.stringify({ templates: [{ tier: 'pro' }], assets: [{ access: 'premium', sha256: hash(image), mime: 'image/png', bytes: image.length }] }));
-  priv.set(imageKey, image); priv.set(`packs/${hash(pack)}.json`, pack);
+  const directory = join(root, 'snapshot');
+  const older = catalogue({ designs: [{ id: 'reading-slip' }, { id: 'night-owl', tier: 'pro', images: ['premium', 'free'] }], label: 'older' });
+  const current = catalogue({ designs: [{ id: 'reading-slip' }, { id: 'night-owl', tier: 'pro', images: ['premium', 'free'] }, { id: 'third-design' }],
+    setups: [{ id: 'night-start', design: 'night-owl' }], label: 'current', popularity: { schema: 3, generated: '2026-10-20', downloads: { 'reading-slip': 4 } } });
+  const pub = new Map([...older.public, ...current.public, ['v3/manifest.json', current.pointer]]);
+  const priv = new Map([...older.private, ...current.private]);
   priv.set(`grants/${'c'.repeat(64)}.json`, Buffer.from('must never be backed up'));
-  for (const label of ['first', 'second']) {
-    const preview = Buffer.from(`<h1>${label}</h1>`), previewKey = `previews/${hash(preview)}.html`;
-    pub.set(previewKey, preview);
-    const entries = [{ access: 'premium', url: `${origin}/downloads/${hash(pack)}.json`, sha256: hash(pack), preview_url: `${origin}/${previewKey}` }];
-    const id = legacyReleaseId(entries, []); ids.push(id);
-    const pageKey = `releases/${id}/page-1.json`;
-    const page = Buffer.from(JSON.stringify({ release: id, packs: entries }));
-    pub.set(pageKey, page);
-    const manifest = Buffer.from(JSON.stringify({ schema: 2, release: id, pages: [{ url: `${origin}/${pageKey}`, sha256: hash(page) }] }));
-    pub.set(`releases/${id}/manifest.json`, manifest); pub.set('manifest.json', manifest);
-  }
-  const reads = [];
+  const ids = [older.id, current.id].sort(), reads = [];
   const bucket = (scope, objects) => ({ get: async key => {
     reads.push(`${scope}/${key}`);
     const bytes = objects.get(key);
     return bytes ? { arrayBuffer: async () => bytes } : null;
   } });
-  return { directory, origin, pub, priv, ids, imageKey, reads,
+  const image = [...current.private.keys()].find(key => key.startsWith('v3/assets/'));
+  return { directory, pub, priv, ids, older, current, image, reads,
     publicBucket: { ...bucket('public', pub), retainedReleases: async () => ids },
     privateBucket: bucket('private', priv) };
 }
 
 test('backup includes all retained dependencies, protects local files, excludes grants, and refuses overwrite', async t => {
-  const f = fixture(t), report = await backupRemote(f.publicBucket, f.privateBucket, f.directory, f.origin);
-  assert.deepEqual(report.retained, f.ids); assert.equal(report.privateObjects, 2);
+  const f = fixture(t), report = await backupRemote(f.publicBucket, f.privateBucket, f.directory);
+  assert.deepEqual(report.retained, f.ids); assert.equal(report.release, f.current.id);
+  assert.equal(report.privateObjects, new Set([...f.older.private.keys(), ...f.current.private.keys()]).size);
+  assert.equal(report.publicObjects, new Set([...f.older.public.keys(), ...f.current.public.keys()]).size + 1);
   assert.equal(statSync(f.directory).mode & 0o777, 0o700);
   assert.equal(statSync(join(f.directory, 'backup.json')).mode & 0o777, 0o600);
-  assert(!f.reads.some(key => key.includes('/grants/')));
-  const release = readPublicRelease(f.directory);
-  assert.equal(release.id, f.ids[1]); assert.equal(readPrivateRelease(f.directory, release).size, 2);
-  assert.equal(readPublicRelease(f.directory, f.ids[0]).id, f.ids[0]);
+  assert(!f.reads.some(key => key.includes('grants/')));
+  // The inventory carries every file's digest, including the 2x thumbnails whose names do not.
+  const doubles = report.files.filter(file => file.path.endsWith('@2x.webp'));
+  assert(doubles.length > 0 && doubles.every(file => /^[a-f0-9]{64}$/.test(file.sha256)));
+  const release = await readPublicRelease(f.directory);
+  assert.equal(release.id, f.current.id); assert.equal((await readPrivateRelease(f.directory, release)).size, report.privateObjects);
+  assert.equal((await readPublicRelease(f.directory, f.older.id)).id, f.older.id);
   assert.deepEqual(JSON.parse(readFileSync(join(f.directory, 'backup.json'))), report);
-  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory, f.origin), /EEXIST/);
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /EEXIST/);
 });
 
-test('missing or corrupt private backup dependencies fail before creating the destination', async t => {
+test('missing or corrupt dependencies fail before creating the destination', async t => {
   const f = fixture(t);
-  f.priv.set(f.imageKey, Buffer.from('corrupt'));
-  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory, f.origin), /checksum mismatch/);
+  f.priv.set(f.image, Buffer.from('corrupt'));
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /Missing or changed dependency: private/);
   assert(!existsSync(f.directory));
-  f.priv.delete(f.imageKey);
-  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory, f.origin), /Missing backup dependency/);
+  f.priv.delete(f.image);
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /Missing or changed dependency/);
   assert(!existsSync(f.directory));
+  f.priv.set(f.image, f.current.private.get(f.image));
+  f.pub.delete([...f.pub.keys()].find(key => key.startsWith('v3/index/') && JSON.parse(f.pub.get(key)).downloads));
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /Missing popularity sidecar/);
 });
 
 test('a publication during backup invalidates the snapshot', async t => {
   const f = fixture(t), original = f.publicBucket.get; let reads = 0;
   f.publicBucket.get = async key => {
-    if (key === 'manifest.json' && ++reads === 2) return { arrayBuffer: async () => f.pub.get(`releases/${f.ids[0]}/manifest.json`) };
+    if (key === 'v3/manifest.json' && ++reads === 2) return { arrayBuffer: async () => f.older.pointer };
     return original(key);
   };
-  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory, f.origin), /Catalogue changed/);
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /Catalogue changed/);
   assert(!existsSync(f.directory));
 });
 
+test('a pointer outside the retained releases, or an invalid one, is refused', async t => {
+  const f = fixture(t);
+  f.publicBucket.retainedReleases = async () => [f.older.id];
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /missing from the retained releases/);
+  f.pub.set('v3/manifest.json', json({ schema: 2, release: f.current.id, pages: [] }));
+  await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, f.directory), /Invalid catalogue pointer/);
+  assert(!existsSync(f.directory));
+});
 
 test('backup rejects a WordPress destination even from a managed worktree or symlink', async t => {
   const f = fixture(t), root = join(f.directory, '..', 'site');
@@ -80,7 +87,7 @@ test('backup rejects a WordPress destination even from a managed worktree or sym
   symlinkSync(join(root, 'wp-content'), alias);
   for (const parent of [root, join(root, 'wp-content'), alias]) {
     const destination = join(parent, 'private-backup');
-    await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, destination, f.origin), /outside the WordPress document root/);
+    await assert.rejects(backupRemote(f.publicBucket, f.privateBucket, destination), /outside the WordPress document root/);
     assert(!existsSync(destination));
   }
   assert.equal(f.reads.length, 0, 'Reject before reading premium objects');

@@ -1,22 +1,70 @@
 # WConvert Template Library
 
-For the release-linked public design catalogue, focused embeds, real thumbnails,
-website integration and migration order, see [the public gallery contract](GALLERY-CONTRACT.md).
+The template service: a Cloudflare Worker that serves catalogue v3, plus the
+operator scripts that publish, verify, count and back it up. The wire contract
+is [`docs/template-discovery-api.md`](../../docs/template-discovery-api.md); the
+website's part of it is [the gallery contract](GALLERY-CONTRACT.md). This
+directory is excluded from plugin packages with the rest of `tools/`.
 
-This is the template API, separate from the plugin customer UI. It is excluded from plugin packages with the rest of `tools/`. It runs locally without a Cloudflare account. One hosted environment uses Worker `wconvert-template-api` and private R2 buckets `wconvert-templates-public` and `wconvert-templates-private`; local development emulates those bindings without contacting Cloudflare. Local commands do not create cloud resources or change site settings. The explicit remote publishing command below writes to the configured R2 buckets.
+It runs locally without a Cloudflare account. Production is Worker
+`wconvert-template-api` with R2 buckets `wconvert-templates-public` and
+`wconvert-templates-private`; `env.staging` in `wrangler.jsonc` is a separate
+Worker with its own buckets, counters and dataset (see
+[CLOUDFLARE-SETUP.md](CLOUDFLARE-SETUP.md)). Local commands create no cloud
+resources. Only the explicit remote commands below write to R2.
 
-The existing studio still owns sources and review approvals. `templates:release:local` builds a validated, immutable release. This service reads its public and private objects through separate R2 bindings. Local development emulates those bindings on disk. The hosted Worker uses the same handler with the two real private R2 buckets.
+The publisher (`tools/design-library/build/publisher.mjs`, run through
+`npm run templates:release:local`) owns sources, review approvals and the
+release build. It writes a release directory this service reads.
 
-The [published design-only gallery](../../docs/reviews/design-only-gallery-2026-10-20/README.md)
-extends the public sidecar with approved bundled-only designs, exact seasonal
-membership and separately versioned canvas embeds. Approved and published on
-20 October 2026. See the [website handoff](../../docs/reviews/design-only-gallery-2026-10-20/WEBSITE-HANDOFF.md),
-[consumer contract](GALLERY-CONTRACT.md) and [website example](examples/design-only-consumer.mjs). Existing full/focused
-viewers and protected installation routes retain their contracts.
+## Storage layout
+
+A release directory holds `<directory>/public/<key>` and
+`<directory>/private/<key>`. A public key is exactly the URL path without its
+leading slash.
+
+| Key | Bucket | What |
+| --- | --- | --- |
+| `v3/manifest.json` | public | The pointer: `{schema: 3, minor, release, withdrawn, popularity?, latest_major?}`. The only mutable object. |
+| `v3/releases/<sha>.json` | public | A release: `pages`, `details`, `i18n`, `taxonomy`, `collections`. |
+| `v3/index/<sha>.json` | public | An index page, detail page, i18n sidecar or popularity sidecar. |
+| `v3/designs/<sha>.json`, `v3/setups/<sha>.json` | public | Free design and setup objects. |
+| `v3/assets/<sha>.<png\|jpg\|webp>` | public | Free images. |
+| `v3/thumbs/<sha>.webp`, `v3/thumbs/<sha>@2x.webp` | public | Card thumbnails. `@2x` is named after the 1× digest. |
+| `v3/og/<sha>.jpg`, `v3/previews/<sha>.html` | public | The website's Open Graph images and sandboxed previews. |
+| `v3/designs/<sha>.json`, `v3/setups/<sha>.json`, `v3/assets/<sha>.<ext>` | private | Premium objects and images, served at `/v3/premium/…`. |
+| `grants/<sha>.json` | private | Five-minute pass contexts, written by the Worker only. |
+
+Every key except the pointer and the 2× thumbnail names the SHA-256 of its
+exact bytes. Each script rejects a file whose bytes do not match its name, a
+public object that is not Free, and any key outside this table.
+
+### What a release must contain
+
+Every script that reads a release (`seed`, `publish`, `backup`, the verifiers)
+walks the same dependency closure (`releaseClosure` in `scripts/storage.mjs`)
+and refuses the whole release on the first gap:
+
+- the pointer's `release`, and its `popularity` sidecar if named;
+- every `pages`, `details` and `i18n` digest as `v3/index/<sha>.json`, with at
+  most 16 pages and 1 MiB of pages in total;
+- every design entry's object, at `bytes` and `sha256`: public when `tier` is
+  `free`, private otherwise, and never both. The object's `id`, `revision` and
+  `tier` must match the entry. Design ids are unique across pages, and an alias
+  is never a live id;
+- every image a design object lists in `assets`: Free images public, premium
+  images private, at most 50 per design and 20 MiB in total. A Free design binds
+  only Free images, and every `image_bindings` row names a listed image;
+- each design entry's `thumb` as both `v3/thumbs/<sha>.webp` (verified by
+  digest) and `v3/thumbs/<sha>@2x.webp` (present and within budget);
+- every setup's object, and the exact design `{id, revision}` it pins among the
+  release's design entries. A Free setup pins a Free design;
+- every detail's `preview`, `og` and `thumb` objects (1× and 2×).
+
+Every `v3/releases/<sha>.json` in a directory is a retained release and is
+walked too, since each one is staged for rollback.
 
 ## Rehearse locally
-
-From the plugin repository, install the isolated tooling once:
 
 ```sh
 npm ci --prefix tools/template-server
@@ -24,104 +72,131 @@ npm run check --prefix tools/template-server
 npm test --prefix tools/template-server
 ```
 
-Build an approved release outside the WordPress document root, using a new directory for the first rehearsal:
+Build a release with the publisher into a new directory outside the WordPress
+document root, then:
 
 ```sh
-npm run templates:release:local -- \
-  --directory /tmp/wconvert-template-release \
-  --origin https://templates.example --expected none
 npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release none
 npm run dev --prefix tools/template-server
+npm run verify --prefix tools/template-server        # in another terminal
 ```
 
-In another terminal:
-
-```sh
-npm run verify --prefix tools/template-server
-```
-
-The service binds to `http://127.0.0.1:9454`. Open `/manifest.json` for the catalogue. The verifier follows its pages, checks exact hashes, downloads Free packs/images, checks public Free/Pro previews and confirms premium downloads are refused. For manual preview, take a `preview_url` from a catalogue page and replace only its origin with `http://127.0.0.1:9454`.
-
-`https://templates.example` remains the **metadata origin**, not a real host. The local service mirrors its paths. Do not configure this HTTP mirror in the plugin: the production reader deliberately requires HTTPS. The native local-release verifier remains an isolated fixture check; `npm run test:wordpress --prefix tools/template-server -- --remote CURRENT_RELEASE_ID` uses real WordPress HTTP requests to the configured HTTPS API and temporary installation storage. No production URL is configured by this tool.
-
-The earlier five-pack rehearsal served four Free packs (16 setups), five public previews including one premium pack, and one Free image. That release listed 22 setups; all 34 rendered preview screens/results were exercised through the service's actual CSP and device controls. The 19 October illustrated release now contains six packs and 23 setups; see the hosted release section below for its current evidence. Premium downloads require the Nexus configuration described below; no permissive authorizer is enabled by default.
+The service binds to `http://127.0.0.1:9454`; open `/v3/manifest.json`. The
+verifier walks the release closure through HTTP, checks hashes, types, cache
+headers, HEAD lengths and 304s, and confirms that premium objects are absent
+from public storage and refused anonymously. `npm run test:release -- DIR` does
+the same against an in-memory Workerd/R2 without a dev server.
 
 ## Updating, retrying and rolling back
 
-The local release builder requires the previous release ID, preserves immutable pack versions and writes its manifest last. To load its next output into local R2, supply the ID currently returned by the running service:
+To load the next build into local R2, pass the release the running service
+currently serves:
 
 ```sh
 npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release CURRENT_RELEASE_ID
-```
-
-The seed tool validates the public and private dependency closures of every retained release before writing anything, including the pages, packs, previews and images needed for rollback. It refuses premium source in public packs, checks file sizes/hashes, writes immutable objects conditionally, reads every object back, then conditionally replaces `manifest.json`. An interrupted write leaves the old manifest in place. Concurrent publishers cannot both replace the same version. An identical retry reuses the existing objects. Nothing deletes old files.
-
-For a local rollback, choose a retained release in the same validated output directory:
-
-```sh
 npm run seed --prefix tools/template-server -- /tmp/wconvert-template-release CURRENT_RELEASE_ID RETAINED_RELEASE_ID
 ```
 
-This switches the catalogue pointer; it does not rewrite installed templates or existing campaigns. The command only accesses local Wrangler storage. `scripts/storage.mjs` provides a tested R2-compatible conditional promotion operation, and the remote publishing CLI uses that same operation. There is no public write endpoint.
+The second form points the pointer at a retained release. Immutable objects are
+written conditionally and read back, then the pointer is replaced with an R2
+compare-and-swap. An interrupted write leaves the old pointer. Two publishers
+cannot both replace the same version. Nothing deletes old files. A rollback
+switches the pointer; it does not touch installed designs or existing Optins.
 
 ## Access and caching
 
-- The Worker has separate public and private bucket bindings. Private files are served only after Nexus grant verification; bucket paths and temporary grant records have no public routes.
-- Catalogue, Free packs, public previews and Free images have explicit route patterns. Arbitrary file paths, queries and write methods are refused.
-- With missing Nexus configuration, Premium routes return `503` and `private, no-store`. Configured routes verify an Ed25519 Nexus pass on every GET/HEAD/retry, including a conditional request. No client tier header or fake authorizer enables access.
-- Immutable files have long-lived caches and ETags. The mutable manifest must revalidate. Missing/unavailable responses are not cached.
-- HTML demos use an isolated sandbox CSP, disabled sample forms, no external network resources and no referrer. Public previews are viewable demonstrations, not editable premium source or DRM.
+- Public routes are an explicit list (the table above, under `/v3/`). Anything
+  else is 404, a query string is 400, and any method but GET/HEAD is 405 (POST
+  only on `/v3/grants`).
+- The pointer is `no-cache, must-revalidate` with an ETag; `If-None-Match`
+  returns 304. Everything else is `public, max-age=31536000, immutable` with an
+  ETag. Errors are `no-store`.
+- Caps: pointer 64 KiB, other JSON 256 KiB, HTML 2 MiB, images 5 MiB. An
+  oversized stored object is 503, never served.
+- Previews carry a sandbox CSP with no network and `frame-ancestors` from
+  `PREVIEW_EMBED_ORIGINS`. Other responses are `default-src 'none';
+  frame-ancestors 'none'`, `nosniff`, `no-referrer`.
+- **Temporary:** the v2 public read-only routes (`/manifest.json`, `/packs/…`,
+  `/releases/<sha>/(manifest|designs|page-N).json`, `/previews/…`,
+  `/thumbnails/…`, `/assets/free/…`) are still served for the live website
+  until it migrates. The v2 premium routes are gone. See
+  [the gallery contract](GALLERY-CONTRACT.md#migration-from-v2).
 
-## Nexus integration
+## Premium grants
 
-`POST /grants` accepts only `{pack: <pack hash>, domain: <SDK canonical site>}`
-and an `X-License-Key` header. WordPress obtains the key through the existing Pro
-SDK, only during an explicit premium preview/install. The Worker loads the trusted
-immutable pack and computes SHA-256 over UTF-8 JSON of `[path, sha256, bytes]`
-tuples sorted by path, covering the pack and exact permitted images. Clients may
-not supply membership, permissions, product or audience.
+`POST /v3/grants` takes exactly `{"domain", "designs": [sha…], "setups": [sha…]}`
+with an `X-License-Key` header: 1–50 unique digests in total. Each digest must
+be stored privately under `v3/designs/` or `v3/setups/` (otherwise 404
+`not_found`). The Worker builds the file list itself: each object at
+`/v3/premium/(designs|setups)/<sha>.json`, plus every **premium** image a design
+object lists, at `/v3/premium/assets/<sha>.<ext>`. Free images stay at
+`/v3/assets/` and need no pass, so they are not in the list. Clients cannot
+supply the list, permissions, product or audience.
 
-Nexus issues the signed pass. The Worker verifies EdDSA/type, issuer, audience,
-environment, protocol, WConvert store/item/permission, site, activation shape,
-resource digest and bounded lifetime. After verification it saves the signed
-subject/activation/resource context and public verification key under
-`grants/<sha256(pass)>.json` in private R2. No licence key or pass is stored there.
-This trusted record supplies expected claims on every subsequent private request;
-it also lets valid passes finish through Nexus/key-server outages. R2's strong
-read-after-write consistency avoids a just-issued pass being temporarily missing.
-The records are not a licence database. They never override Nexus decisions.
-Expiry is checked on every file, even while the record awaits lifecycle cleanup.
+`resource_digest` is SHA-256 over the UTF-8 JSON of `[path, sha256, bytes]`
+tuples sorted by path. Nexus issues an EdDSA pass for that digest; the Worker
+verifies type, issuer, audience, environment, version, store, item, permission,
+site, activation, digest and a lifetime of at most 300 seconds, then answers
+`{"grant", "expires_in"}`. It saves the verified claims, the public key and the
+file list as `grants/<sha256(pass)>.json` in private R2: no licence key or pass.
+Every GET/HEAD with `Authorization: Bearer <pass>` re-verifies the pass against
+that record, checks the path is in the list, and checks the stored bytes' hash
+and size. A valid pass finishes through a Nexus outage; expiry is checked on
+every file. Refusal codes are those of v2 (`invalid_key`, `license_expired`,
+`domain_not_allowed`, `invalid_grant`, `resource_not_allowed`, `not_found`,
+`rate_limited`, …).
 
-Signing-key discovery is bounded to 32 KiB/5 seconds at the configured HTTPS
-endpoint, with a 60-second edge cache and at most one unknown-key refresh per
-30 seconds per edge cache. A newly rotated key during that interval may briefly
-return a retryable error. Redirects are never followed. Expired passes require a
-new Nexus decision; plugin downloads retry an expired pass once. Network failures,
-service configuration errors and Nexus outages fail closed; they never claim an
-expired licence. 429/503 Retry-After values suppress repeated plugin requests for
-the indicated bounded interval. Grant issuance and file delivery have separate backoff scopes, so an issuance outage does not interrupt already authorized files. Managed-key sites receive a manager-directed refusal without renewal/activation details. There is no sleeping PHP retry loop.
+Signing-key discovery is bounded to 32 KiB and 5 seconds at the configured HTTPS
+endpoint, with a 60-second edge cache and at most one unknown-key refresh per 30
+seconds. Redirects are never followed. Without the Nexus secret, premium routes
+answer 503 `service_not_configured`.
 
-The plugin uses an independently configured HTTPS origin constant
-`WCONVERT_TEMPLATE_API_ORIGIN` before sending any credential. Public catalogue,
-preview and Free reads never send credentials or call Nexus. Premium pack/images
-keep the existing digest/type/dimension checks and complete-set installation.
-Passes live only in the WordPress request's memory, never admin responses, URLs,
-catalogue options or logs. Installed content stays available offline.
+The plugin sends credentials only to its pinned origin
+(`WCONVERT_TEMPLATE_API_ORIGIN`, defaulting to `templates.wconvert.io`), and only
+on an explicit premium install or preview.
 
-Run `npm test --prefix tools/template-server` for real Workerd/R2/WebCrypto tests
-with a test-only Nexus responder. `TemplateDownloadsTest` exercises the WordPress
-transport and SDK. `bin/verify-template-downloads.php` rehearses boot, real container
-wiring, premium pack/media installation and offline use in disposable WordPress.
-Run `npm run test:wordpress --prefix tools/template-server` for that disposable
-PHP 8.1 rehearsal (root Composer/Pro packages and npm dependencies are required).
-No test responder ships in the Worker or plugin. A service without its Nexus
-secret remains closed. The original `verify` command expects an unconfigured
-local service; it does not test a live licensed deployment. The hosted service
-has its own secret, which is never copied into the local rehearsal.
+## Counting downloads
+
+For every GET of `/v3/designs/<sha>.json` or `/v3/premium/designs/<sha>.json`
+whose `User-Agent` starts with `WConvert template` (the plugin's
+`WConvert template catalog` and Pro's `WConvert template downloads`), the Worker
+writes one Analytics Engine point to the `DOWNLOADS` binding before any
+storage, cache or grant work: `blobs: [sha, 'free'|'premium']`, `doubles: [1]`,
+`indexes: [sha]`. No IP, domain, licence, pass or other identifier is written. A
+missing or failing binding never changes the response. HEAD requests, other
+agents and other paths are not counted, so the operator verifiers never count.
+
+The datasets are `wconvert_design_downloads` (production) and
+`wconvert_design_downloads_staging` (staging).
+
+### Popularity sidecar
+
+```sh
+npm run popularity --prefix tools/template-server -- \
+  --credentials /absolute/analytics.env --output /absolute/new-popularity.json [--env staging]
+```
+
+This queries the Analytics Engine SQL API for the environment's dataset:
+
+```sql
+SELECT blob1 AS sha, SUM(_sample_interval) AS downloads FROM <dataset>
+WHERE timestamp > NOW() - INTERVAL '90' DAY GROUP BY sha
+```
+
+It maps digests to design ids through the live pointer's index pages (verified
+by hash), adds revisions of one design together, and writes
+`{"schema": 3, "generated", "downloads": {"<id>": n}}` to a new file. Digests the
+live index no longer lists are reported as `unmappedDownloads`, not guessed. The
+credentials file is a private regular file (mode 600) holding
+`WCONVERT_ANALYTICS_API_TOKEN`, a Cloudflare API token that can read Account
+Analytics. Publish the result with `--popularity` (below).
 
 ## Remote publication
 
-The account, bucket names and HTTPS origin come from `wrangler.jsonc`. Build the release for that exact origin, outside the WordPress document root. The credential file must be an absolute path to a private regular file (mode 600), with `WCONVERT_R2_ACCESS_KEY_ID` and `WCONVERT_R2_SECRET_ACCESS_KEY`.
+The account, buckets, dataset and HTTPS origin come from `wrangler.jsonc`;
+`--env staging` selects `env.staging`. The R2 credentials file is a private
+regular file (mode 600) with `WCONVERT_R2_ACCESS_KEY_ID` and
+`WCONVERT_R2_SECRET_ACCESS_KEY`.
 
 ```sh
 npm run status --prefix tools/template-server -- --credentials /absolute/publisher.env
@@ -129,107 +204,126 @@ npm run publish --prefix tools/template-server -- --directory /absolute/release 
 npm run publish --prefix tools/template-server -- --directory /absolute/release --expected CURRENT_RELEASE_ID --apply --credentials /absolute/publisher.env
 ```
 
-Use `--expected none` only for an empty remote catalogue. Without `--apply`, publication validates locally and makes no network request. For rollback add `--retained RETAINED_RELEASE_ID` to the same command. Private dependencies are uploaded first; public dependencies are checked before the conditional manifest replacement. An uncertain write is never retried automatically: inspect status first. No objects are deleted.
+Without `--apply`, publication validates locally and makes no network request.
+`--expected` is the live release (`none` only for an empty catalogue); the
+pointer is replaced only if it is still exactly the version this run read.
+Private objects upload first, then public objects, each read back, then the
+pointer. An uncertain write is never retried automatically: check `status`.
+Nothing is deleted.
 
-After deployment to the configured hosted service, run:
+- **Rollback:** add `--retained RETAINED_RELEASE_ID` to point at an older
+  release in the same directory.
+- **Publish guard:** publication is refused if the new release's pages drop a
+  design id that the live release lists, unless the new pointer withdraws it
+  (any `withdrawn` row with that id) or a new entry keeps it in `aliases`. This
+  replaces v2's `--remove-pack`. The refusal names every dropped id and happens
+  before any upload.
+- **Withdraw:** `--withdraw ID[@REVISION]:REASON` (repeatable; reason `rights`,
+  `quality`, `broken` or `other`) adds a row to the new pointer. Used with
+  `--directory` it satisfies the guard; used alone with `--expected` it
+  republishes the live pointer with the same release.
+- **Withdrawals carry over.** The new pointer keeps every live withdrawal, even
+  if the release directory's pointer does not list it, so a rebuild cannot
+  quietly undo one. Only `--reinstate ID[@REVISION]` (exactly the row's id and
+  revision) removes a row.
+- **Popularity:** `--popularity /absolute/sidecar.json` uploads the sidecar as
+  `v3/index/<sha>.json` and points the pointer at it, alone or with a release.
+  A release whose own pointer names no sidecar keeps the live one.
 
 ```sh
-npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID --premium configured
+npm run publish --prefix tools/template-server -- --expected CURRENT_RELEASE_ID \
+  --withdraw old-design:rights --popularity /absolute/new-popularity.json --apply --credentials /absolute/publisher.env
 ```
 
-This read-only check tests Free content and public previews and requires anonymous
-premium requests to return 401. It does not send a licence or prove successful
-licensed access. For a service without its Nexus secret, omit `--premium configured`
-to require the unconfigured 503 response instead. Neither mode accepts an anonymous
-successful premium download.
+After publishing to a deployed service:
 
-## Hosted setup status
+```sh
+npm run verify:remote --prefix tools/template-server -- --expected CURRENT_RELEASE_ID --premium configured [--env staging]
+```
 
-Follow [the Cloudflare preparation checklist](CLOUDFLARE-SETUP.md). It lists the
-account/domain decisions, two private buckets, grant-record lifecycle rule, Nexus
-handoff, secrets and remaining hosted acceptance. The remote publisher uploaded and verified the first release on 18 October 2026. The Worker and custom domain are live. Free/public HTTPS acceptance and real WordPress installation/offline checks passed on 18 October 2026. Nexus was connected on 19 October. Real licensed WordPress installation with WooCommerce, deactivated-site refusal and natural five-minute pass expiry passed. See the [connection evidence](../../docs/reviews/nexus-worker-connection-2026-10-19.md) for scope and limitations.
+This read-only check walks the public closure over HTTPS and requires anonymous
+premium requests to return 401 (`--premium configured`) or 503 (the default, for
+a service without its Nexus secret). It sends no licence and does not prove a
+licensed download.
 
-Local simulation is evidence of behaviour, not evidence of a deployed service. Wrangler's local administrative explorer is a development-only surface; keep the development server loopback-only.
+## Request limits
 
-References: [R2 Workers API and conditional operations](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/), [local development data](https://developers.cloudflare.com/workers/local-development/local-data/), [Wrangler configuration](https://developers.cloudflare.com/workers/wrangler/configuration/). Versions are pinned in the separate lockfile; regenerate `Env` with `npm run types` after config changes.
+Shared hosting puts many sites behind one IP, so the tight counters are per site
+and the IP only has a loose ceiling:
 
-The hosted WordPress check does not change persistent site options or send a licence. It downloads Free packs through the shipping transport, verifies their images, confirms premium refusal, and simulates an outage after installation. The plugin now defaults to `https://templates.wconvert.io/manifest.json` when the catalogue option is absent. The picker still fetches only on an explicit Check for packs action. An explicit empty option disables discovery, and custom sources remain supported. Pro uses a separately pinned trusted origin; catalogue overrides cannot redirect credentials. The native verifier starts without endpoint overrides.
+| Binding | Key | Limit |
+| --- | --- | --- |
+| `GRANT_IP_RATE_LIMITER` | connecting IP | 600 POST `/v3/grants` a minute |
+| `GRANT_RATE_LIMITER` | IP + SHA-256 of the lower-cased `domain` | 30 a minute |
+| `DOWNLOAD_IP_RATE_LIMITER` | connecting IP | 6000 premium GET/HEAD a minute |
+| `DOWNLOAD_RATE_LIMITER` | SHA-256 of the bearer pass | 1000 a minute |
 
-The 19 October illustrated release adds Fabric sample enquiries, with one protected PNG and no WooCommerce dependency. Six packs / 23 setups / 20 designs are published. Real licensed installation verifies the downloaded image and hydrates a local URL; installed previews work during a simulated outage. See [release acceptance](../../docs/reviews/hosted-picker-release-2026-10-19.md). Service disclosures are published at [privacy](https://wconvert.io/privacy/) and [terms](https://wconvert.io/terms/). See the [setup guide](CLOUDFLARE-SETUP.md) for operational checks and remaining licence scenarios.
-
-## Request limits and recovery
-
-The Worker uses separate Cloudflare rate limiter bindings: `GRANT_RATE_LIMITER`
-allows 30 POST `/grants` requests per 60 seconds, and `DOWNLOAD_RATE_LIMITER`
-allows 300 private GET/HEAD requests per 60 seconds. Private JSON and premium
-images share the download counter. Keys use Cloudflare's connecting IP; shared
-hosting can share a quota. Limits are approximate per Cloudflare location, not a
-global quota. Public discovery, Free packs and previews use neither counter.
-Exhausted counters return 429 with `Retry-After: 60` and `private, no-store`;
-missing or failing bindings return 503. Nexus retains its own issuance limits.
+The per-site grant counter runs after the body is parsed and validated, before
+the licence check, storage or Nexus. A file request without a well-formed pass
+skips the pass counter and is refused 401 without a storage read. Keys use
+Cloudflare's `CF-Connecting-IP`; limits are approximate per Cloudflare location.
+Public routes use no counter. An exhausted counter answers 429 with
+`Retry-After: 60` and `private, no-store`; a missing or failing binding answers
+503 `rate_limit_unavailable` (fail closed). Nexus keeps its own issuance limits.
 See [Cloudflare rate limiter semantics](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
 
-Run a bounded live probe explicitly, then wait at least 65 seconds after its last
-request before checking recovery:
+A bounded live probe of the per-site counters (the IP ceilings are too high to
+reach with it). Wait at least 65 seconds after its last request before checking
+recovery:
 
 ```sh
-npm run verify:limits --prefix tools/template-server -- --phase burst
-npm run verify:limits --prefix tools/template-server -- --phase recovery
+npm run verify:limits --prefix tools/template-server -- --phase burst [--env staging]
+npm run verify:limits --prefix tools/template-server -- --phase recovery [--env staging]
 ```
 
-The probe sends no licences, passes or valid grant bodies and does not call
-Nexus. It temporarily consumes the probe IP's private-service limits.
+It sends a well-formed batch with no licence and a made-up pass: no Nexus call,
+no credential. It temporarily consumes the probe IP's premium allowance.
 
-Create an exclusive backup outside the web root using the existing private R2
-publishing credentials. The parent directory must exist; never commit snapshots:
+## Backup and recovery
 
 ```sh
 npm run backup --prefix tools/template-server -- \
-  --credentials /private/template-publisher.env \
-  --directory /private/backups/new-snapshot
-npm run rehearse:recovery --prefix tools/template-server -- \
-  /private/backups/new-snapshot
+  --credentials /private/template-publisher.env --directory /private/backups/new-snapshot [--env staging]
+npm run rehearse:recovery --prefix tools/template-server -- /private/backups/new-snapshot
 ```
 
-Backup reads the current pointer and every retained release's public/private
-dependencies, verifies hashes and sizes, and refuses a pointer change during
-capture. Files use mode 0600, directories 0700. Temporary grants, passes,
-licences, Worker secrets, Cloudflare settings and Nexus data are excluded.
-Rehearsal restores into fresh local Workerd/R2, verifies the service, checks
-private bytes and isolation, rolls back each retained version and restores the
-current pointer. It never writes production.
+Backup reads the pointer, lists every retained `v3/releases/`, walks each
+closure (public and private), and refuses a pointer change during capture. It
+writes an exclusive destination outside any WordPress document root (files
+0600, directories 0700) and a `backup.json` inventory with every file's SHA-256
+and size, which is the only record of each 2× thumbnail's digest. Grants,
+passes, licences, Worker secrets, Cloudflare settings, Nexus data and v2 objects
+are not backed up.
 
-For a real recovery, provision the Worker/bindings and restore its separately
-managed secret first. Use the existing remote publisher with the backup as its
-release directory and its normal expected-current-release guard. Verify private
-and public objects before promoting the manifest, then run remote and licensed
-WordPress acceptance. The local rehearsal does not prove account failover,
-secret recovery or Nexus recovery. Keep a separately protected off-machine copy
-for disaster recovery; the launch rehearsal only created a local snapshot.
+Rehearsal checks every file against that inventory, restores into fresh local
+Workerd/R2, verifies the service and private isolation, rolls back to each
+retained release and forward again, then restores the current pointer. Only this
+local rehearsal withdraws dropped designs automatically (reason `other`) and
+reinstates them on the way back. It never writes production.
 
-To rehearse all local packs, including private images, without Nexus or network authorization:
+For a real recovery, provision the Worker, bindings and secret first, then use
+the remote publisher with the backup as its release directory and its normal
+`--expected` guard, and run remote and licensed WordPress acceptance. A local
+snapshot is not off-site disaster recovery.
+
+## WordPress acceptance
 
 ```sh
-WCONVERT_VERIFY_WOOCOMMERCE=/absolute/path/to/woocommerce WCONVERT_VERIFY_PREMIUM_FIXTURES=1 npm run test:wordpress --prefix tools/template-server -- /absolute/private/release-directory
+npm run test:wordpress --prefix tools/template-server -- /absolute/release-directory
+npm run test:wordpress --prefix tools/template-server -- --remote CURRENT_RELEASE_ID
 ```
 
-The WooCommerce path supplies the real dependency needed by shopping-help; omit it for releases without product suggestions. This flag only enables explicit filesystem fixtures in the disposable verifier. It never enables production premium access. The check includes image hashes, local hydration, unchanged-image reuse and offline version snapshots.
+These boot a disposable PHP 8.1 WordPress (Playground) and run the plugin's own
+verifier: `bin/verify-template-release.php` for a local directory,
+`bin/verify-template-api.php` against the live service. The runner refuses to
+start if that verifier is not in the checkout.
 
+## Status
 
-### Integrated gallery release (20 October)
-
-The reconciled plan includes all eight live packs (35 setups / 32 designs). The
-six-pack gallery rehearsal remains historical evidence, not a publication candidate.
-`PREVIEW_EMBED_ORIGINS` includes the exact HTTPS development website
-`https://dev.wconvert-website.pages.dev` alongside the two public website origins.
-Localhost and other Pages previews are not implicitly permitted.
-
-Remote publication checks the live catalogue before uploading. Missing pack IDs
-stop publication. For a deliberately reviewed removal or rollback that removes
-packs, repeat `--remove-pack ID` for **exactly** the IDs to remove. A blanket bypass
-is not supported. `--expected` still guards concurrent publishers. A dry run is
-local-only and cannot establish which packs are currently live.
-
-Backup destinations are checked for WordPress ancestors even when the CLI runs
-from a managed worktree. Keep backups outside any web-served directory and protect
-an offsite copy separately.
+The v2 service went live at `https://templates.wconvert.io` on 18–20 October
+2026 (see [the connection evidence](../../docs/reviews/nexus-worker-connection-2026-10-19.md)
+and [launch evidence](../../docs/reviews/template-launch-2026-10-20/README.md)).
+The v3 Worker, bindings and data in this directory are not yet deployed or
+published. Local simulation is evidence of behaviour, not of a deployed
+service. Regenerate `Env` with `npm run types` after changing `wrangler.jsonc`,
+which must stay plain JSON: the scripts parse it with `JSON.parse`.

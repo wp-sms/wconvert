@@ -1,88 +1,225 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, lstatSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { legacyReleaseId, validateDesignCatalogue } from './design-catalogue.mjs';
+import { detailDependencies } from './design-catalogue.mjs';
 export const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const check = (ok, reason) => { if (!ok) throw Error(reason); };
-const digest = '[a-f0-9]{64}';
-const allowed = new RegExp(`^(packs/${digest}\\.json|releases/${digest}/(manifest|designs|page-[1-9][0-9]?)\\.json|previews/${digest}\\.html|thumbnails/${digest}\\.jpg|assets/free/${digest}\\.(png|jpg|webp))$`);
+const H = '[a-f0-9]{64}';
+/** The only mutable object. Every other key names the SHA-256 of its bytes. */
+export const POINTER = 'v3/manifest.json';
+export const PUBLIC_KEY = new RegExp(`^v3/(manifest\\.json|(releases|index|designs|setups)/${H}\\.json|assets/${H}\\.(png|jpg|webp)|thumbs/${H}(@2x)?\\.webp|og/${H}\\.jpg|previews/${H}\\.html)$`);
+export const PRIVATE_KEY = new RegExp(`^v3/((designs|setups)/${H}\\.json|assets/${H}\\.(png|jpg|webp))$`);
+export const budget = key => key === POINTER ? 65536 : key.endsWith('.html') ? 2097152 : key.endsWith('.json') ? 262144 : 5242880;
+export const EXTENSIONS = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+export const REASONS = ['rights', 'quality', 'broken', 'other'];
+const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
+export const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,59}$/.test(value);
+const revision = value => Number.isSafeInteger(value) && value > 0;
+const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const parse = (bytes, what) => { try { return JSON.parse(bytes.toString('utf8')); } catch { throw Error(`Invalid JSON: ${what}`); } };
+/** The 2x thumbnail is named after the 1x digest; nothing else escapes its own name. */
+const named = key => key !== POINTER && !key.endsWith('@2x.webp');
+export const nameDigest = key => key.match(/([a-f0-9]{64})(?:@2x)?\.[a-z]+$/)?.[1];
 
-/** Read a trusted, previously validated publisher output, never its private sibling. */
-export function readPublicRelease(directory, retainedRelease) {
-  const root = resolve(directory, 'public'), objects = new Map(); let total = 0;
+export function validatePointer(bytes) {
+  check(bytes?.length > 0 && bytes.length <= 65536, 'Pointer exceeds 64 KiB');
+  const pointer = parse(bytes, POINTER);
+  check(pointer?.schema === 3 && Number.isSafeInteger(pointer.minor) && pointer.minor >= 0 && digest(pointer.release), 'Invalid catalogue pointer');
+  check(Array.isArray(pointer.withdrawn), 'Invalid catalogue withdrawals');
+  const seen = new Set();
+  for (const row of pointer.withdrawn) {
+    check(object(row) && identifier(row.id) && (row.revision === undefined || revision(row.revision)) && REASONS.includes(row.reason), 'Invalid withdrawal');
+    const key = `${row.id}@${row.revision ?? '*'}`;
+    check(!seen.has(key), `Repeated withdrawal: ${key}`); seen.add(key);
+  }
+  check(pointer.popularity === undefined || digest(pointer.popularity), 'Invalid popularity reference');
+  check(pointer.latest_major === undefined || (Number.isSafeInteger(pointer.latest_major) && pointer.latest_major >= 3), 'Invalid latest_major');
+  return pointer;
+}
+export const pointerBytes = pointer => Buffer.from(JSON.stringify(pointer, null, 2) + '\n');
+
+export function validatePopularity(bytes) {
+  check(bytes?.length > 0 && bytes.length <= 262144, 'Popularity sidecar exceeds 256 KiB');
+  const data = parse(bytes, 'popularity');
+  check(data?.schema === 3 && /^\d{4}-\d{2}-\d{2}$/.test(data.generated ?? '') && object(data.downloads)
+    && Object.entries(data.downloads).every(([id, count]) => identifier(id) && Number.isSafeInteger(count) && count >= 0), 'Invalid popularity sidecar');
+  return data;
+}
+
+/**
+ * Walk one release's dependency closure: release → pages, details, i18n →
+ * designs and setups → bound images and thumbnails. `read(scope, key)` resolves
+ * to the exact bytes or null. Premium objects must be absent from public
+ * storage; without `withPrivate` their contents are not read.
+ */
+export async function releaseClosure(id, read, { withPrivate = true } = {}) {
+  const objects = new Map();
+  const load = async (scope, key, sha, size) => {
+    const bytes = await read(scope, key);
+    check(bytes, `Missing or changed dependency: ${scope}/${key}`);
+    check(bytes.length > 0 && bytes.length <= budget(key), `Dependency exceeds its budget: ${scope}/${key}`);
+    if (sha) check(hash(bytes) === sha, `Missing or changed dependency: ${scope}/${key}`);
+    if (size !== undefined) check(bytes.length === size, `Dependency size mismatch: ${scope}/${key}`);
+    objects.set(`${scope}/${key}`, bytes);
+    return bytes;
+  };
+  const absent = async key => check(!(await read('public', key)), `Premium object in public storage: ${key}`);
+  check(digest(id), 'Invalid release identity');
+  const release = parse(await load('public', `v3/releases/${id}.json`, id), id);
+  check(release?.schema === 3 && Number.isSafeInteger(release.minor) && release.minor >= 0, 'Invalid release identity');
+  const unique = list => Array.isArray(list) && list.every(digest) && new Set(list).size === list.length;
+  check(unique(release.pages) && release.pages.length >= 1 && release.pages.length <= 16, 'Invalid release pages');
+  const details = release.details ?? [], i18n = release.i18n ?? {};
+  check(unique(details) && details.length <= 64, 'Invalid release detail pages');
+  check(object(i18n) && Object.entries(i18n).every(([locale, sha]) => /^[a-z]{2,3}(?:_[A-Z]{2})?$/.test(locale) && digest(sha)), 'Invalid release i18n');
+  check(release.taxonomy === undefined || object(release.taxonomy), 'Invalid release taxonomy');
+  check(release.collections === undefined || (Array.isArray(release.collections)
+    && release.collections.every(item => identifier(item?.id)) && new Set(release.collections.map(item => item.id)).size === release.collections.length), 'Invalid release collections');
+  const designs = new Map(), setups = new Map(); let total = 0;
+  const identity = entry => object(entry) && identifier(entry.id) && revision(entry.revision) && digest(entry.sha256)
+    && Number.isSafeInteger(entry.bytes) && entry.bytes > 0 && entry.bytes <= 262144 && typeof entry.tier === 'string' && entry.tier !== '';
+  for (const sha of release.pages) {
+    const bytes = await load('public', `v3/index/${sha}.json`, sha); total += bytes.length;
+    const page = parse(bytes, sha);
+    check(page?.schema === 3 && Array.isArray(page.designs ?? []) && Array.isArray(page.setups ?? []), 'Invalid index page');
+    for (const entry of page.designs ?? []) {
+      check(identity(entry) && !designs.has(entry.id), `Repeated or invalid design entry: ${entry?.id}`);
+      designs.set(entry.id, entry);
+    }
+    for (const entry of page.setups ?? []) {
+      check(identity(entry) && !setups.has(entry.id), `Repeated or invalid setup entry: ${entry?.id}`);
+      setups.set(entry.id, entry);
+    }
+  }
+  check(total <= 1048576, 'Index pages exceed 1 MiB in total');
+  for (const entry of designs.values()) {
+    // Ids are never reused: a rename keeps the old id as an alias, never as a live id.
+    check(entry.aliases === undefined || (Array.isArray(entry.aliases) && entry.aliases.every(alias => identifier(alias) && !designs.has(alias))), `Invalid aliases: ${entry.id}`);
+    if (entry.thumb !== undefined) {
+      check(digest(entry.thumb), `Invalid thumbnail digest: ${entry.id}`);
+      await load('public', `v3/thumbs/${entry.thumb}.webp`, entry.thumb);
+      await load('public', `v3/thumbs/${entry.thumb}@2x.webp`);
+    }
+    const premium = entry.tier !== 'free', key = `v3/designs/${entry.sha256}.json`;
+    if (premium) { await absent(key); if (!withPrivate) continue; }
+    const design = parse(await load(premium ? 'private' : 'public', key, entry.sha256, entry.bytes), key);
+    check(design?.schema === 3 && design.id === entry.id && design.revision === entry.revision && design.tier === entry.tier, `Design object differs from its entry: ${entry.id}`);
+    check(Array.isArray(design.assets) && design.assets.length <= 50, `Invalid image list: ${entry.id}`);
+    const assets = new Set(); let images = 0;
+    for (const asset of design.assets) {
+      const extension = EXTENSIONS[asset?.mime];
+      check(extension && typeof asset.id === 'string' && !assets.has(asset.id) && digest(asset.sha256) && ['free', 'premium'].includes(asset.access)
+        && Number.isSafeInteger(asset.bytes) && asset.bytes > 0 && asset.bytes <= 5242880, `Invalid image: ${entry.id}`);
+      check(premium || asset.access === 'free', `A Free design binds a premium image: ${entry.id}`);
+      assets.add(asset.id); images += asset.bytes;
+      const image = `v3/assets/${asset.sha256}.${extension}`;
+      if (asset.access === 'free') await load('public', image, asset.sha256, asset.bytes);
+      else { await absent(image); await load('private', image, asset.sha256, asset.bytes); }
+    }
+    check(images <= 20971520, `Images exceed 20 MiB: ${entry.id}`);
+    check(Array.isArray(design.image_bindings ?? []) && (design.image_bindings ?? []).every(binding => assets.has(binding?.asset_id)), `An image binding names an unlisted image: ${entry.id}`);
+  }
+  for (const entry of setups.values()) {
+    const design = designs.get(entry.design?.id);
+    check(design && design.revision === entry.design.revision, `Setup pins an unlisted design revision: ${entry.id}`);
+    check(entry.tier !== 'free' || design.tier === 'free', `A Free setup pins a premium design: ${entry.id}`);
+    const premium = entry.tier !== 'free', key = `v3/setups/${entry.sha256}.json`;
+    if (premium) { await absent(key); if (!withPrivate) continue; }
+    const setup = parse(await load(premium ? 'private' : 'public', key, entry.sha256, entry.bytes), key);
+    check(setup?.schema === 3 && setup.id === entry.id && setup.revision === entry.revision && setup.tier === entry.tier
+      && setup.design?.id === entry.design.id && setup.design?.revision === entry.design.revision, `Setup object differs from its entry: ${entry.id}`);
+  }
+  const gallery = [], seen = new Set();
+  for (const sha of details) {
+    const page = parse(await load('public', `v3/index/${sha}.json`, sha), sha);
+    for (const [key, sha] of detailDependencies(page, seen)) await load('public', key, sha ?? undefined);
+    gallery.push(...page.details);
+  }
+  for (const sha of Object.values(i18n)) {
+    const data = parse(await load('public', `v3/index/${sha}.json`, sha), sha);
+    check(data?.schema === 3 && object(data.designs), 'Invalid i18n sidecar');
+  }
+  return { id, release, designs, setups, details: gallery, objects };
+}
+
+/** Read a directory tree of `scope` keys. Names are verified against their bytes. */
+function readTree(root, pattern, scope) {
+  const objects = new Map(); let total = 0;
   function visit(folder, prefix = '') {
     check(!lstatSync(folder).isSymbolicLink(), 'Symlinks are not allowed');
     for (const name of readdirSync(folder)) {
       const file = join(folder, name), key = prefix + name, stat = lstatSync(file);
       check(!stat.isSymbolicLink(), 'Symlinks are not allowed');
       if (stat.isDirectory()) { visit(file, key + '/'); continue; }
-      check(stat.isFile() && (key === 'manifest.json' || allowed.test(key)), `Unexpected public file: ${key}`);
-      const limit = (key.startsWith('assets/') || key.startsWith('thumbnails/')) ? 5242880 : key.startsWith('previews/') ? 2097152 : 262144;
-      total += stat.size; check(stat.size > 0 && stat.size <= limit && total <= 134217728 && objects.size < 2000, 'Public release exceeds local rehearsal budget');
+      check(stat.isFile() && pattern.test(key), `Unexpected ${scope} file: ${key}`);
+      total += stat.size;
+      check(stat.size > 0 && stat.size <= budget(key) && total <= 268435456 && objects.size < 20000, `${scope} release exceeds its local budget`);
       const bytes = readFileSync(file);
-      if (!key.startsWith('releases/') && key !== 'manifest.json') check(key.split('/').pop().split('.')[0] === hash(bytes), `Digest mismatch: ${key}`);
-      if (key.startsWith('packs/')) {
-        const pack = JSON.parse(bytes);
-        check(Array.isArray(pack.templates) && pack.templates.every(t => t.tier === 'free') && (pack.assets ?? []).every(a => a.access === 'free'), 'Premium source cannot enter public storage');
-      }
+      if (named(key)) check(nameDigest(key) === hash(bytes), `Digest mismatch: ${key}`);
       objects.set(key, bytes);
     }
   }
   visit(root);
-  if (retainedRelease !== undefined) check(/^[a-f0-9]{64}$/.test(retainedRelease), 'Invalid retained release');
-  const manifest = objects.get(retainedRelease ? `releases/${retainedRelease}/manifest.json` : 'manifest.json'); check(manifest, 'No published manifest');
-  const pointer = JSON.parse(manifest);
-  check(objects.get(`releases/${pointer.release}/manifest.json`)?.equals(manifest), 'Missing retained manifest');
-  // Every retained release is staged for rollback, so validate each dependency
-  // closure before allowing any writes, not just the selected catalogue.
-  function validateRelease(bytes, expectedId) {
-    const pointer = JSON.parse(bytes);
-    check(pointer.schema === 2 && new RegExp(`^${digest}$`).test(pointer.release) && pointer.release === expectedId, 'Invalid release identity');
-    let origin;
-    const releasePacks = [], releaseCollections = [];
-    const localKey = value => { const u = new URL(value); check(u.protocol === 'https:' && !u.username && !u.password && !u.search && !u.hash, 'Invalid published URL'); origin ??= u.origin; check(u.origin === origin, 'Mixed release origins'); return u.pathname.slice(1); };
-    const verified = (key, sha) => { const bytes = objects.get(key); check(bytes && hash(bytes) === sha, `Missing or changed dependency: ${key}`); return bytes; };
-    check(Array.isArray(pointer.pages) && pointer.pages.length > 0 && pointer.pages.length <= 16, 'Invalid pages');
-    for (const page of pointer.pages) {
-      const key = localKey(page.url); check(key.startsWith(`releases/${pointer.release}/page-`), 'Wrong release page');
-      const data = JSON.parse(verified(key, page.sha256)); check(data.release === pointer.release, 'Page identity mismatch');
-      releasePacks.push(...data.packs); releaseCollections.push(...(data.collections ?? []));
-      for (const pack of data.packs) {
-        if (pack.preview_url) { const preview = localKey(pack.preview_url); verified(preview, preview.split('/').pop().split('.')[0]); }
-        const key = localKey(pack.url);
-        if (key.startsWith('downloads/')) { check(pack.access === 'premium', 'Invalid private pack'); continue; }
-        check(key === `packs/${pack.sha256}.json` && pack.access === 'free', 'Invalid Free pack');
-        const data = JSON.parse(verified(key, pack.sha256));
-        for (const asset of data.assets ?? []) verified(`assets/free/${asset.sha256}.${{ 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[asset.mime]}`, asset.sha256);
-      }
-    }
-    if (legacyReleaseId(releasePacks, releaseCollections) !== pointer.release) {
-      const bytes = objects.get(`releases/${pointer.release}/designs.json`);
-      check(bytes, 'Missing design catalogue dependency');
-      const dependencies = validateDesignCatalogue(JSON.parse(bytes), { id: pointer.release, packs: releasePacks, collections: releaseCollections, origin });
-      for (const [key, sha] of dependencies) verified(key, sha);
-    }
-    return origin;
-  }
-  let origin, retainedOrigin;
+  return objects;
+}
+
+/**
+ * Read a trusted, previously validated publisher output, never its private
+ * sibling. Every release in the directory is validated: each stays staged for
+ * rollback. `retained` points the pointer at an older release instead.
+ */
+export async function readPublicRelease(directory, retained) {
+  const objects = readTree(resolve(directory, 'public'), PUBLIC_KEY, 'public');
   for (const [key, bytes] of objects) {
-    const retained = key.match(new RegExp(`^releases/(${digest})/manifest\\.json$`));
-    if (!retained) continue;
-    const releaseOrigin = validateRelease(bytes, retained[1]);
-    retainedOrigin ??= releaseOrigin;
-    check(releaseOrigin === retainedOrigin, 'Retained releases must use the same origin');
-    if (retained[1] === pointer.release) origin = releaseOrigin;
+    if (!/^v3\/(designs|setups)\//.test(key)) continue;
+    const data = parse(bytes, key);
+    check(data?.tier === 'free' && (data.assets ?? []).every(asset => asset?.access === 'free'), `Premium source cannot enter public storage: ${key}`);
   }
-  objects.delete('manifest.json');
-  return { id: pointer.release, manifest, objects, origin };
+  const original = objects.get(POINTER); check(original, 'No published pointer');
+  objects.delete(POINTER);
+  let pointer = validatePointer(original);
+  if (retained !== undefined) { check(digest(retained), 'Invalid retained release'); pointer = { ...pointer, release: retained }; }
+  const releases = [...objects.keys()].map(key => key.match(/^v3\/releases\/([a-f0-9]{64})\.json$/)?.[1]).filter(Boolean).sort();
+  check(releases.includes(pointer.release), 'The pointer names a release that is not in this directory');
+  const read = async (scope, key) => (scope === 'public' && objects.get(key)) || null;
+  const closures = new Map();
+  for (const id of releases) closures.set(id, await releaseClosure(id, read, { withPrivate: false }));
+  if (pointer.popularity) validatePopularity(objects.get(`v3/index/${pointer.popularity}.json`) ?? check(false, 'Missing popularity sidecar'));
+  return { id: pointer.release, pointer: retained === undefined ? original : pointerBytes(pointer), objects, releases, closures };
+}
+
+/** Private source closure of every release in the same validated directory. Never exposed by public routes. */
+export async function readPrivateRelease(directory, release) {
+  const objects = new Map(); let total = 0;
+  const readPrivate = key => {
+    check(PRIVATE_KEY.test(key), 'Invalid private object path');
+    if (objects.has(key)) return objects.get(key);
+    let path = resolve(directory, 'private');
+    try {
+      check(!lstatSync(path).isSymbolicLink(), 'Symlinks are not allowed');
+      for (const part of key.split('/')) { path = join(path, part); check(!lstatSync(path).isSymbolicLink(), 'Symlinks are not allowed'); }
+    } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+    const stat = lstatSync(path);
+    check(stat.isFile() && stat.size > 0 && stat.size <= budget(key), 'Private file exceeds budget');
+    const bytes = readFileSync(path);
+    check(hash(bytes) === nameDigest(key), `Private digest/size mismatch: ${key}`);
+    total += bytes.length; check(total <= 268435456 && objects.size < 20000, 'Private release exceeds its local budget');
+    objects.set(key, bytes);
+    return bytes;
+  };
+  const read = async (scope, key) => scope === 'public' ? release.objects.get(key) ?? null : readPrivate(key);
+  for (const id of release.releases) await releaseClosure(id, read);
+  return objects;
 }
 
 /** R2-compatible conditional promotion. Old immutable objects remain for rollback. */
 export async function promote(bucket, release, expected) {
-  check(expected === null || /^[a-f0-9]{64}$/.test(expected), 'Supply expected release or none');
-  const current = await bucket.get('manifest.json');
+  check(expected === null || digest(expected), 'Supply expected release or none');
+  const current = await bucket.get(POINTER);
   const currentId = current ? JSON.parse(await current.text()).release : null;
   check(currentId === expected, 'Current release changed; inspect before retrying');
+  // A pointer composed from the live one must replace exactly that version.
+  if (release.basis !== undefined) check((current?.etag ?? null) === release.basis, 'Current pointer changed; inspect before retrying');
   let created = 0;
   for (const [key, bytes] of release.objects) {
     const existing = await bucket.get(key);
@@ -94,41 +231,9 @@ export async function promote(bucket, release, expected) {
     const stored = await bucket.get(key);
     check(stored && hash(Buffer.from(await stored.arrayBuffer())) === hash(bytes), `Read-back failed: ${key}`);
   }
-  const promoted = await bucket.put('manifest.json', release.manifest, { onlyIf: current ? { etagMatches: current.etag } : { etagDoesNotMatch: '*' }, sha256: hash(release.manifest) });
-  check(promoted, 'Concurrent publication won; prior manifest preserved');
+  const promoted = await bucket.put(POINTER, release.pointer, { onlyIf: current ? { etagMatches: current.etag } : { etagDoesNotMatch: '*' }, sha256: hash(release.pointer) });
+  check(promoted, 'Concurrent publication won; prior pointer preserved');
   return { release: release.id, created, reused: release.objects.size - created };
-}
-
-/** Private source closure from the same validated release. Never exposed by public routes. */
-export function readPrivateRelease(directory, release) {
-  const objects = new Map(); let total = 0;
-  const read = (key, expected, size) => {
-    check(/^(packs\/[a-f0-9]{64}\.json|assets\/premium\/[a-f0-9]{64}\.(png|jpg|webp))$/.test(key), 'Invalid private object path');
-    const parts = key.split('/'); let path = resolve(directory, 'private');
-    check(!lstatSync(path).isSymbolicLink(), 'Symlinks are not allowed');
-    for (const part of parts) { path = join(path, part); check(!lstatSync(path).isSymbolicLink(), 'Symlinks are not allowed'); }
-    const stat = lstatSync(path); check(stat.isFile() && stat.size > 0 && stat.size <= (key.startsWith('packs/') ? 262144 : 5242880), 'Private file exceeds budget');
-    const bytes = readFileSync(path); check(hash(bytes) === expected && (size === undefined || bytes.length === size), `Private digest/size mismatch: ${key}`);
-    if (!objects.has(key)) { total += bytes.length; check(total <= 134217728 && objects.size < 2000, 'Private release exceeds rehearsal budget'); objects.set(key, bytes); }
-    return bytes;
-  };
-  for (const [key, bytes] of release.objects) {
-    if (!/^releases\/[^/]+\/page-\d+\.json$/.test(key)) continue;
-    for (const entry of JSON.parse(bytes).packs) {
-      if (entry.access !== 'premium') continue;
-      check(new URL(entry.url).pathname === `/downloads/${entry.sha256}.json`, 'Invalid premium download address');
-      const pack = JSON.parse(read(`packs/${entry.sha256}.json`, entry.sha256));
-      check(Array.isArray(pack.assets) && pack.assets.length <= 16, 'Invalid private asset manifest');
-      for (const asset of pack.assets) {
-        const ext = { 'image/png':'png', 'image/jpeg':'jpg', 'image/webp':'webp' }[asset.mime];
-        check(ext && ['free','premium'].includes(asset.access), 'Invalid private asset');
-        const path = `assets/${asset.access}/${asset.sha256}.${ext}`;
-        if (asset.access === 'premium') read(path, asset.sha256, asset.bytes);
-        else { const bytes = release.objects.get(path); check(bytes && hash(bytes) === asset.sha256 && bytes.length === asset.bytes, 'Missing Free asset used by premium pack'); }
-      }
-    }
-  }
-  return objects;
 }
 
 export async function stagePrivate(bucket, objects) {
