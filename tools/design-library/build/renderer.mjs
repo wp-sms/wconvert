@@ -52,7 +52,9 @@ writeFileSync(
     `export { prepareControls, readFields, restoreFields, disposePreview, validQuestions } from '${resolve(PLUGIN, 'tools/design-library/preview/controls')}';`,
     `export { previewResult } from '${resolve(PLUGIN, 'tools/design-library/preview/results')}';`,
     `export { graphTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-graph')}';`,
-    `export { render, closeButton } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    `export { render, closeButton, shell } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    // The capture endpoint's refusal, so a check can draw the error a design colours.
+    `export { refuse } from '${resolve(PLUGIN, 'resources/loader/src/capture')}';`,
     ...(existsSync(`${closeReserve}.ts`) ? [`export { reserveBesideClose } from '${closeReserve}';`] : []),
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,

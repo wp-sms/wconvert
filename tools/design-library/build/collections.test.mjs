@@ -29,3 +29,33 @@ test('runtime publication refuses stale reviews and changed shipped metadata', a
     assert.throws(() => checkRuntimeCollections(root, [reviewed]), /Retire obsolete/);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
+
+test('a Collection is carried only when every setup in it was carried and its decision was current', async () => {
+  const { carryCollections, collectionRevision } = await import('./collections.mjs');
+  const { createHash } = await import('node:crypto');
+  const record = body => ({ ...body, record_id: createHash('sha256').update(JSON.stringify(body)).digest('hex') });
+  const checks = { visual: { status: 'passed', evidence: [] }, journey: { status: 'passed', evidence: [] }, wordpress: { status: 'passed', evidence: [] } };
+  const two = { ...collection, id: 'pair', items: [collection.items[0], { ...collection.items[0], setup_id: 'other' }] };
+  const source = { collections: [collection, two] };
+  const before = { offer: 'o'.repeat(64), other: 'p'.repeat(64) };
+  // Each setup's revision under the base renderer, by identity scheme: old, then new.
+  // `pair` was reviewed under the old scheme, so it is matched there.
+  const previous = new Map([['offer', [before.offer, 'x'.repeat(64)]], ['other', ['y'.repeat(64), before.other]]]);
+  const entries = [{ id: 'offer', revision: '1'.repeat(64) }, { id: 'other', revision: '2'.repeat(64) }];
+  const store = { schema: 1, records: [
+    record({ id: 'collection-sale', revision: collectionRevision(collection, [before.offer]), base_id: null, decision: 'approved', reviewer: 'A person', note: 'Looked', at: '2026-10-20T00:00:00Z', checks }),
+    record({ id: 'collection-pair', revision: collectionRevision(two, [before.offer, 'y'.repeat(64)]), base_id: null, decision: 'approved', reviewer: 'A person', note: 'Looked', at: '2026-10-20T00:00:00Z', checks }),
+  ] };
+  const evidence = [{ path: 'docs/reviews/visual-diff/report.md', sha256: 'e'.repeat(64) }];
+  const carried = carryCollections({ source, entries, store, carried: ['offer', 'other'], previous, at: '2026-10-21T00:00:00Z', evidence });
+  assert.deepEqual(carried.map(item => item.id), ['collection-sale', 'collection-pair']);
+  assert.equal(carried[0].revision, collectionRevision(collection, [entries[0].revision]));
+  assert.equal(carried[0].base_id, store.records[0].record_id);
+  assert.equal(carried[0].decision, 'approved');
+  assert.deepEqual(carried[0].checks.visual.evidence, evidence);
+  // A setup that changed and was NOT carried leaves its Collection for a person.
+  assert.deepEqual(carryCollections({ source, entries, store, carried: ['offer'], previous, at: 'now' }).map(item => item.id), ['collection-sale']);
+  // A decision that was already stale under the base renderer is never carried.
+  const stale = { schema: 1, records: [record({ ...store.records[0], record_id: undefined, revision: 'f'.repeat(64) })] };
+  assert.deepEqual(carryCollections({ source, entries, store: stale, carried: ['offer', 'other'], previous, at: 'now' }), []);
+});

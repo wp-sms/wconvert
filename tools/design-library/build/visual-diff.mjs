@@ -7,8 +7,10 @@ import { parseArgs } from 'node:util';
 import { createHash } from 'node:crypto';
 import { chromium } from 'playwright';
 import { renderedIdentities } from './rendered-identity.mjs';
+import { SAMPLE_DEADLINE, SAMPLE_ERROR, SAMPLE_NOW, drawWithChrome } from './chrome.mjs';
+import { carryCollections } from './collections.mjs';
 import { campaignRevision } from './revision.mjs';
-import { latestReview, loadReviews, writeReviews } from './reviews.mjs';
+import { evidenceFile, latestReview, loadReviews, reviewQueue, writeReviews } from './reviews.mjs';
 
 /**
  * After a renderer change, ask only about campaigns that LOOK different
@@ -27,6 +29,14 @@ import { latestReview, loadReviews, writeReviews } from './reviews.mjs';
  * changed screens, before beside after, so the reviewer judges the change
  * rather than the whole setup again. No decision is invented: nothing that was
  * not current under the base renderer is ever carried.
+ *
+ * Every screen is drawn as a visitor meets it — with the close control, a
+ * refused first field and a countdown painted at a fixed clock
+ * ({@link drawWithChrome}) — so "pixel-identical" covers the three pieces a
+ * design colours (ADR 0159). With `--apply`, each Collection whose setups were
+ * all carried is carried too, with a note under `docs/reviews/` as its
+ * evidence, and the runtime Collections are republished
+ * (`templates:collections:publish`).
  */
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const { values } = parseArgs({ options: { base: { type: 'string' }, apply: { type: 'boolean', default: false }, 'all-approved': { type: 'boolean', default: false } } });
@@ -45,28 +55,31 @@ try {
   const after = readFileSync(resolve(root, 'tools/design-library/out/renderer.iife.js'), 'utf8');
   const entries = JSON.parse(readFileSync(resolve(root, 'tools/design-library/out/pilot.json'), 'utf8'));
   const store = loadReviews(root);
-  const old = renderedIdentities(before, entries);
+  // A decision may have been recorded under either identity scheme; both are
+  // computed for the BASE renderer, so only what was current there is carried.
+  const schemes = [renderedIdentities(before, entries, { version: 1 }), renderedIdentities(before, entries)];
+  const previous = new Map(entries.map(entry => [entry.id, schemes.map(identities => campaignRevision(entry, identities.get(entry.id)))]));
   const candidates = entries.filter(entry => {
     const latest = latestReview(store, entry.id);
     if (values['all-approved']) return latest?.decision === 'approved' && latest.revision === entry.revision;
-    return latest && latest.revision !== entry.revision && latest.revision === campaignRevision(entry, old.get(entry.id));
+    return latest && latest.revision !== entry.revision && previous.get(entry.id).includes(latest.revision);
   });
   const browser = await chromium.launch();
   const report = { base: values.base, carried: [], review: [] };
   try {
     const page = await browser.newPage({ deviceScaleFactor: 1 });
     await page.route('**/*', route => route.abort());
+    await page.clock.setFixedTime(SAMPLE_NOW);
     const shots = async (renderer, entry, width) => {
       await page.setViewportSize({ width, height: 900 });
       const images = [];
       for (const [index, step] of entry.tree.steps.entries()) for (const variant of step.results?.length ? step.results : [null]) {
         await page.setContent('<!doctype html><body style="margin:0"><div id="sample"></div></body>');
         await page.addScriptTag({ content: renderer });
-        await page.evaluate(([tree, tokens, index, variant, required]) => {
-          const api = window.WConvertRenderer, node = api.render(tree, tokens, index);
-          if (variant) api.previewResult?.(node, variant, required);
-          document.getElementById('sample').innerHTML = `<style>${api.SHADOW_CSS}</style>${node.outerHTML}`;
-        }, [entry.tree, entry.tokens ?? {}, index, variant, step.products_required]);
+        await page.evaluate(([draw, entry, index, variant, deadline, message]) => {
+          const { host } = new Function(`return ${draw}`)()(window.WConvertRenderer, entry, index, variant, deadline, message);
+          document.getElementById('sample').append(host);
+        }, [drawWithChrome.toString(), entry, index, variant, SAMPLE_DEADLINE, SAMPLE_ERROR]);
         await page.evaluate(async () => { await document.fonts.ready; });
         const png = await page.locator('#sample').screenshot({ animations: 'disabled' });
         images.push({ label: `${step.name ?? step.id}${variant ? ' · ' + (variant.heading ?? variant.id) : ''} · ${width}px`, png, hash: createHash('sha256').update(png).digest('hex') });
@@ -97,10 +110,29 @@ try {
     for (const id of report.carried) {
       const latest = latestReview(store, id), entry = entries.find(item => item.id === id);
       const body = { id, revision: entry.revision, base_id: latest.record_id, decision: latest.decision, reviewer: 'Visual diff (ADR 0156)',
-        note: `Pixel-identical to the decision this follows under the renderer at ${values.base}, every screen at 1200 and 375 px; content unchanged. Not a new review.`, at, checks: latest.checks };
+        note: `Pixel-identical to the decision this follows under the renderer at ${values.base}, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.`, at, checks: latest.checks };
       next.records.push({ ...body, record_id: createHash('sha256').update(JSON.stringify(body)).digest('hex') });
     }
+    // The Collections that moved only because these setups did, carried with a
+    // note saying so — the record PR #314 wrote by hand.
+    const source = JSON.parse(readFileSync(resolve(root, 'tools/design-library/collections/source.json'), 'utf8'));
+    const pending = carryCollections({ source, entries, store, carried: report.carried, previous, at });
+    if (pending.length) {
+      const note = `docs/reviews/visual-diff-${at.slice(0, 10)}/collections-carry-${values.base.replace(/[^a-zA-Z0-9]+/g, '-')}.md`;
+      mkdirSync(resolve(root, note, '..'), { recursive: true });
+      writeFileSync(resolve(root, note), `# Collections carried over a renderer change\n\n`
+        + `\`npm run templates:visual-diff -- --base ${values.base} --apply\` rendered every setup whose decision was current under ${values.base} with both renderers, `
+        + `each screen and result at 1200 and 375 px with the close control, a refused field and the countdown drawn. ${report.carried.length} were pixel-identical and carried; `
+        + `${report.review.length} are listed for review.\n\nA Collection's revision hashes its setups' revisions, so these went stale with no change to their items, order, words or screens. `
+        + `Each is carried with its previous evidence. Not a new review.\n\n${pending.map(record => `- ${record.id.replace(/^collection-/, '')}`).join('\n')}\n`);
+      const evidence = [evidenceFile(root, note)];
+      next.records.push(...carryCollections({ source, entries, store, carried: report.carried, previous, at, evidence }));
+      report.collections = pending.map(record => record.id);
+    }
     report.written = writeReviews(root, store, next);
+    // The queue the Collections are published from, refreshed with what was just carried.
+    writeFileSync(resolve(root, 'tools/design-library/out/review-queue.json'), JSON.stringify(reviewQueue(loadReviews(root), entries, root), null, 2) + '\n');
+    if (pending.length) execFileSync('node', [resolve(root, 'tools/design-library/build/collections.mjs'), '--publish'], { cwd: root, stdio: 'inherit' });
   }
   console.log(JSON.stringify(report, null, 2));
 } finally { rmSync(scratch, { recursive: true, force: true }); }

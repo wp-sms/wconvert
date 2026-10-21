@@ -35,7 +35,7 @@ async function preview(target,entry,index=0,width=768,rtl=false){
  const host=node('div'),shadow=host.attachShadow({mode:'open'}),style=node('style');style.textContent=R.SHADOW_CSS;shadow.append(style);frame.append(host);target.append(frame);
  const tree=structuredClone(entry.tree);function demo(n){if(!n||typeof n!=='object')return;if(n.type==='code'&&!n.text)n.text='YOUR CODE';Object.values(n).forEach(demo)}demo(tree);
  const root=R.render(tree,{...entry.tokens,...(['popup','slide_in'].includes(type)?{width:'100%'}:{})},index);root.style.maxBlockSize='none';root.inert=true;root.setAttribute('aria-hidden','true');shadow.append(root);if(type==='fullscreen')R.decorateFullscreen(root,entry.tokens.width,'550px');R.prepareControls(root,shadow);
- root.querySelectorAll('.wc-count').forEach(n=>n.textContent='2d 04:32:18');
+ root.querySelectorAll('.wc-count').forEach(n=>n.textContent={d:'2',h:'04',m:'32',s:'18'}[n.dataset.unit]??'2d 04:32:18');
  await Promise.all([...root.querySelectorAll('img')].map(img=>{img.loading='eager';return img.decode().catch(()=>{})}));
  if(!frame.isConnected)return;const scale=Math.min(1,target.clientWidth/frame.offsetWidth);frame.style.transform=`scale(${scale})`;target.style.height=Math.ceil(root.scrollHeight*scale+4)+'px';target.dataset.ready='true';
 }

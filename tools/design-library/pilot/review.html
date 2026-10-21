@@ -223,9 +223,10 @@ function mount(target, entry, index, available, full = false, variant = null) {
     link.textContent = result.link_label || '';
     link.removeAttribute('href');
   }
+  // A boxed countdown's slots each hold one unit (ADR 0159).
   root.querySelectorAll('.wc-count').forEach(n => {
-    n.textContent = '2d 04:32:18';
-    n.parentElement.setAttribute('aria-label', 'Sample countdown, not a configured deadline');
+    n.textContent = { d: '2', h: '04', m: '32', s: '18' }[n.dataset.unit] ?? '2d 04:32:18';
+    n.closest('.wc-countdown').setAttribute('aria-label', 'Sample countdown, not a configured deadline');
   });
   if (sampleCode) root.setAttribute('aria-description', 'Coupon placeholder: configure a valid merchant code before publication.');
   if (full) root.style.maxHeight = 'none';

@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
 import { cacheKey, cached, codeOf, remember } from './cache.mjs';
+import { SAMPLE_DEADLINE, SAMPLE_ERROR, drawWithChrome } from './chrome.mjs';
 
-const CODE = codeOf(import.meta.url);
+const CODE = codeOf(import.meta.url) + codeOf(new URL('./chrome.mjs', import.meta.url).href);
 
 /**
  * Text that cannot be read against what is actually behind it (ADR 0156,
@@ -12,6 +13,12 @@ const CODE = codeOf(import.meta.url);
  * background meets, so a bright patch behind a pale word counts.
  *
  * WCAG AA: 4.5 for body text, 3 for large text (24px, or 18.66px bold).
+ *
+ * Each screen is drawn with what the loader adds (ADR 0159): a refused first
+ * field, whose message is text like any other and is held to 4.5, and the
+ * close control, whose × is a shape and is held to 3:1 (WCAG 1.4.11) against
+ * the pixels inside its own button — its disc where it has one, the card or
+ * the photograph behind it where it is bare.
  */
 export async function contrastReport(designs, renderer) {
   const browser = await chromium.launch();
@@ -27,12 +34,11 @@ export async function contrastReport(designs, renderer) {
       for (const [index, step] of design.tree.steps.entries()) for (const variant of step.results?.length ? step.results : [null]) {
         await page.setContent('<!doctype html><body style="margin:0;background:#ffffff"><div id="sample"></div></body>');
         await page.addScriptTag({ content: renderer });
-        await page.evaluate(([tree, tokens, index, variant, required]) => {
-          const api = window.WConvertRenderer, node = api.render(tree, tokens, index);
-          if (variant) api.previewResult?.(node, variant, required);
+        await page.evaluate(([draw, design, index, variant, deadline, message]) => {
+          const api = window.WConvertRenderer, { root } = new Function(`return ${draw}`)()(api, design, index, variant, deadline, message);
           // As the public preview does: the whole design, not the first viewport of it.
-          document.getElementById('sample').innerHTML = `<style>${api.SHADOW_CSS}\n.wc-root{max-block-size:none}</style>${node.outerHTML}`;
-        }, [design.tree, design.tokens ?? {}, index, variant, step.products_required]);
+          document.getElementById('sample').innerHTML = `<style>${api.SHADOW_CSS}\n.wc-root{max-block-size:none}</style>${root.outerHTML}`;
+        }, [drawWithChrome.toString(), design, index, variant, SAMPLE_DEADLINE, SAMPLE_ERROR]);
         // Every picture decoded and laid out first, CSS backgrounds included:
         // a box measured before its image arrives is measured in the wrong place.
         await page.evaluate(async () => {
@@ -59,11 +65,19 @@ export async function contrastReport(designs, renderer) {
             const colour = style.color.match(/[\d.]+/g).map(Number);
             if (colour.length > 3 && colour[3] === 0) continue;
             const size = parseFloat(style.fontSize), weight = Number(style.fontWeight) || 400;
-            found.push({ text: own.slice(0, 40), colour: colour.slice(0, 3), large: size >= 24 || (size >= 18.66 && weight >= 700),
+            found.push({ text: own.slice(0, 40), colour: colour.slice(0, 3), floor: size >= 24 || (size >= 18.66 && weight >= 700) ? 3 : 4.5,
               x: Math.round(box.left + scrollX), y: Math.round(box.top + scrollY), w: Math.round(box.width), h: Math.round(box.height) });
           }
+          // The ×: its stroke against the middle of its own button, which is
+          // where the glyph sits and what a disc, a square or nothing shows.
+          const close = sample.querySelector('.wc-close');
+          if (close) {
+            const box = close.getBoundingClientRect(), inset = box.width * 0.2;
+            found.push({ text: '× (close)', colour: getComputedStyle(close).color.match(/[\d.]+/g).map(Number).slice(0, 3), floor: 3,
+              x: Math.round(box.left + scrollX + inset), y: Math.round(box.top + scrollY + inset), w: Math.round(box.width - 2 * inset), h: Math.round(box.height - 2 * inset) });
+          }
           const hide = document.createElement('style');
-          hide.textContent = '#sample *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important}#sample ::placeholder{color:transparent!important}';
+          hide.textContent = '#sample *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important;text-decoration-color:transparent!important}#sample ::placeholder{color:transparent!important}#sample .wc-close svg{visibility:hidden!important}';
           document.head.append(hide);
           return found;
         });
@@ -90,7 +104,7 @@ export async function contrastReport(designs, renderer) {
         }, [shot, texts]);
         texts.forEach((text, at) => {
           const ratio = ratios[at];
-          if (ratio !== null && ratio < (text.large ? 3 : 4.5)) failures.push({ screen: step.id + (variant ? '/' + variant.id : ''), text: text.text, ratio: Math.round(ratio * 100) / 100 });
+          if (ratio !== null && ratio < text.floor) failures.push({ screen: step.id + (variant ? '/' + variant.id : ''), text: text.text, ratio: Math.round(ratio * 100) / 100 });
         });
       }
       report.set(design.id, remember('contrast', key, failures));
