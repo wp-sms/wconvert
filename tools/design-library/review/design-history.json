@@ -2676,6 +2676,66 @@
           "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
         }
       ]
+    },
+    {
+      "id": "halloween-engraved",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "a0c1e65b679d2142571734fe3c1ab1acda56734d7e96a6b0b807e523e9b54b40",
+          "note": "Baseline of the reviewed Halloween prototype library design; adding campaign setups and collection metadata."
+        }
+      ]
+    },
+    {
+      "id": "halloween-monster",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "df5ad0cd4c8de2ca4922b7647073914267cb3c0b62470e7944def5ee9385b265",
+          "note": "Baseline of the reviewed Halloween prototype library design; adding campaign setups and collection metadata."
+        }
+      ]
+    },
+    {
+      "id": "halloween-forest",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "6cd715e2eb952c8551c4e38392736005cd3759a5eca72c73aa0826d3dd601d46",
+          "note": "Baseline of the reviewed Halloween prototype library design; adding campaign setups and collection metadata."
+        }
+      ]
+    },
+    {
+      "id": "halloween-bats",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "fea1bbc7f8c2277b067359b7709d47d8e2f08cc91469b4711d448ba9e0500235",
+          "note": "Baseline of the reviewed Halloween prototype library design; adding campaign setups and collection metadata."
+        }
+      ]
+    },
+    {
+      "id": "halloween-countdown",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "15068514601a6dd87ae7918640fd84beab4ceeb3b56e551d1c91919ad6f36300",
+          "note": "Baseline of the reviewed Halloween prototype library design; adding campaign setups and collection metadata."
+        }
+      ]
     }
   ]
 }

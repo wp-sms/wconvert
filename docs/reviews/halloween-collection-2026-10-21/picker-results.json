@@ -1,0 +1,88 @@
+{
+  "pro": {
+    "status": 200,
+    "campaigns_unchanged": true,
+    "collection": {
+      "id": "halloween-2026",
+      "name": "Prepare for Halloween",
+      "description": "Choose a Halloween signup, illustrated offer or compact countdown. Review the sample discount, coupon, shop link and your own campaign dates.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 85,
+      "event": {
+        "family": "halloween",
+        "start": "2026-10-31",
+        "end_exclusive": "2026-11-01",
+        "feature_start": "2026-09-01",
+        "feature_end_exclusive": "2026-11-01"
+      },
+      "revision": "36d5adb49494042dd917c8d74eb19fbcb98b02a1d01f4e7fdcd982bc228f4317",
+      "items": [
+        {
+          "setup_id": "halloween-midnight-offer",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-treat-signup",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-after-dark-offer",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-midnight-flight-offer",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-sale-countdown",
+          "stage": "any"
+        }
+      ]
+    }
+  },
+  "free": {
+    "status": 200,
+    "campaigns_unchanged": true,
+    "collection": {
+      "id": "halloween-2026",
+      "name": "Prepare for Halloween",
+      "description": "Choose a Halloween signup, illustrated offer or compact countdown. Review the sample discount, coupon, shop link and your own campaign dates.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 85,
+      "event": {
+        "family": "halloween",
+        "start": "2026-10-31",
+        "end_exclusive": "2026-11-01",
+        "feature_start": "2026-09-01",
+        "feature_end_exclusive": "2026-11-01"
+      },
+      "revision": "36d5adb49494042dd917c8d74eb19fbcb98b02a1d01f4e7fdcd982bc228f4317",
+      "items": [
+        {
+          "setup_id": "halloween-midnight-offer",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-treat-signup",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-after-dark-offer",
+          "stage": "any"
+        },
+        {
+          "setup_id": "halloween-midnight-flight-offer",
+          "stage": "any"
+        }
+      ]
+    }
+  }
+}

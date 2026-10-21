@@ -4236,6 +4236,136 @@
         ],
         "reason": "A bakery photograph beside a sage panel in a humanist face, with the free-loaf code on the success screen; served from the catalogue only."
       }
+    },
+    {
+      "id": "halloween-midnight-offer",
+      "audience": "stores",
+      "family": "Halloween midnight print",
+      "visitor_need": "Show a Halloween offer in an illustrated print.",
+      "difference": "An engraved orange frame around a cream offer panel.",
+      "requirements": [
+        "Real offer and terms",
+        "Site-owned destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert Halloween prototypes and library designs reviewed 2026-10-21.",
+      "suggested_setup": [
+        "Plan from September; choose dates that match your actual Halloween promotion.",
+        "Review page targeting and exclude checkout."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "halloween-2026",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Use the reviewed Halloween prototype as a complete editable campaign starting point."
+      }
+    },
+    {
+      "id": "halloween-treat-signup",
+      "audience": "stores",
+      "family": "Halloween treat with teeth",
+      "visitor_need": "Invite email signups and reveal an offer code.",
+      "difference": "A playful monster mouth frames email signup and an on-screen code reveal.",
+      "requirements": [
+        "Valid coupon and terms",
+        "Email destination or Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert Halloween prototypes and library designs reviewed 2026-10-21.",
+      "suggested_setup": [
+        "Plan from September; choose dates that match your actual Halloween promotion.",
+        "Review page targeting and exclude checkout."
+      ],
+      "measure": "Accepted email submissions; coupon redemption is a separate store metric.",
+      "batch": "halloween-2026",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "halloween-monster"
+        ],
+        "reason": "Use the reviewed Halloween prototype as a complete editable campaign starting point."
+      }
+    },
+    {
+      "id": "halloween-after-dark-offer",
+      "audience": "stores",
+      "family": "Halloween after dark",
+      "visitor_need": "Present a Halloween offer against a quiet forest scene.",
+      "difference": "An atmospheric forest separates editorial introduction from a clear coupon offer.",
+      "requirements": [
+        "Real offer and terms",
+        "Site-owned destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert Halloween prototypes and library designs reviewed 2026-10-21.",
+      "suggested_setup": [
+        "Plan from September; choose dates that match your actual Halloween promotion.",
+        "Review page targeting and exclude checkout."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "halloween-2026",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "halloween-forest"
+        ],
+        "reason": "Use the reviewed Halloween prototype as a complete editable campaign starting point."
+      }
+    },
+    {
+      "id": "halloween-midnight-flight-offer",
+      "audience": "stores",
+      "family": "Halloween midnight flight",
+      "visitor_need": "Draw attention to a Halloween offer with moving bats.",
+      "difference": "Authored bat motion adds seasonal character to a forest offer.",
+      "requirements": [
+        "Real offer and terms",
+        "Site-owned destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert Halloween prototypes and library designs reviewed 2026-10-21.",
+      "suggested_setup": [
+        "Plan from September; choose dates that match your actual Halloween promotion.",
+        "Review page targeting and exclude checkout."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "halloween-2026",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "halloween-bats"
+        ],
+        "reason": "Use the reviewed Halloween prototype as a complete editable campaign starting point."
+      }
+    },
+    {
+      "id": "halloween-sale-countdown",
+      "audience": "stores",
+      "family": "Halloween drop countdown",
+      "visitor_need": "Keep a Halloween sale visible in a compact bar.",
+      "difference": "A small pumpkin and stable compact timer keep the deadline visible without a tall popup.",
+      "requirements": [
+        "Real offer and terms",
+        "Site-owned destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert Halloween prototypes and library designs reviewed 2026-10-21.",
+      "suggested_setup": [
+        "Plan from September; choose dates that match your actual Halloween promotion.",
+        "Review page targeting and exclude checkout."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "halloween-2026",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "halloween-countdown"
+        ],
+        "reason": "Use the reviewed Halloween prototype as a complete editable campaign starting point."
+      }
     }
   ],
   "batches": [
@@ -4306,6 +4436,10 @@
     {
       "id": "new-designs-batch",
       "name": "New designs: seven setups from the twelve-design batch"
+    },
+    {
+      "id": "halloween-2026",
+      "name": "Halloween campaign collection"
     }
   ]
 }

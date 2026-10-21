@@ -1,0 +1,47 @@
+{
+  "id": "halloween-after-dark-offer",
+  "revision": "16c1d912d7adcf1bcefe20fb2fdb132bf1f9546f14aa3d44a652f2b4f22000c1",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed the prepared Halloween setup on phone and desktop, plus normal/long-copy audits and native WordPress journey checks. See the per-setup judgement in review.md.",
+  "at": "2026-10-21T14:02:54.771Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-after-dark-offer-320.png",
+          "sha256": "2d5f0469a9699e0966abef2aa503c943ed121719744cea5488725f61ae2402dd"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-after-dark-offer-1440.png",
+          "sha256": "d80edc058c8b11d76e1317edc74257d3073ee5d9203665c42d3b80efd9b3d4fb"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "d3757300b5d683edb45382a23d75cc011b438c0eeef01c83963023423d0c75e4"
+}

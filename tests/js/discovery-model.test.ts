@@ -2,9 +2,34 @@ import { describe, expect, it } from 'vitest';
 import { designKey, groupSetups, matchingCollections, preferredStage } from '../../resources/admin/src/discovery/model';
 import type { PlaybookEntry } from '../../resources/admin/src/goals/api';
 import type { Collection, PickerData } from '../../resources/admin/src/discovery/api';
+import halloweenSource from '../../resources/collections/halloween-2026.json';
 const setup = (id: string, design = 'registered:card', availability = 'ready', format = 'popup') => ({ id, design_key: design, display_type: format, availability }) as PlaybookEntry;
 const collection: Collection = { id: 'bf', revision: 'r', name: 'Sale', description: 'Sale ideas', cover: 'sale', priority: 1, business_types: ['stores'], markets: [], event: { family: 'black-friday', start: '2026-11-27', end_exclusive: '2026-12-01', feature_start: '2026-10-16', feature_end_exclusive: '2026-12-01' }, items: [{ setup_id: 'before', stage: 'before' }, { setup_id: 'bar', stage: 'during' }] };
 const data: PickerData = { schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [collection], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] }, occasions: { schema: 1, revision: 0, items: [] } };
+describe('bundled Halloween planning window', () => {
+  const halloween = halloweenSource as Collection;
+  const entries = halloween.items.map(item => setup(item.setup_id, `registered:${item.setup_id}`));
+  const calendar = (today: string) => ({ ...data, today, collections: [halloween] });
+
+  it('features all five designs throughout September and October, then retires them', () => {
+    expect(matchingCollections(calendar('2026-08-31'), entries, true)).toEqual([]);
+    for (const day of ['2026-09-01', '2026-10-30', '2026-10-31']) {
+      const matches = matchingCollections(calendar(day), entries, true);
+      expect(matches).toHaveLength(1);
+      expect(matches[0].designs).toBe(5);
+      expect(preferredStage(halloween, day, entries)).toBe('any');
+    }
+    expect(matchingCollections(calendar('2026-11-01'), entries, true)).toEqual([]);
+    expect(matchingCollections(calendar('2026-11-01'), entries, false)).toEqual([]);
+  });
+
+  it('still offers four designs without the Pro countdown and respects the seasonal opt-out', () => {
+    const free = entries.filter(entry => entry.id !== 'halloween-sale-countdown');
+    expect(matchingCollections(calendar('2026-10-01'), free, true)[0].designs).toBe(4);
+    const hidden = { ...calendar('2026-10-01'), preferences: { ...data.preferences, events: ['halloween'] } };
+    expect(matchingCollections(hidden, entries, false)).toEqual([]);
+  });
+});
 describe('relevant, distinct discovery', () => {
   it('groups only filtered setups and separates formats and namespaces', () => {
     const entries = [setup('a'), setup('b'), setup('c', 'pack:shop:card'), setup('d', 'registered:card', 'ready', 'inline')];
