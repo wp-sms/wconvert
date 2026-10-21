@@ -258,7 +258,7 @@ final class LoaderContractTest extends TestCase
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('14896', $result['output']);
+        $this->assertStringContainsString('17456', $result['output']);
     }
 
     public function testFailsWhenProsBundleExceedsItsByteBudget(): void
@@ -268,7 +268,7 @@ final class LoaderContractTest extends TestCase
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('28160', $result['output']);
+        $this->assertStringContainsString('30720', $result['output']);
     }
 
     /**

@@ -399,7 +399,7 @@ function LayoutParams({
   );
 }
 
-const STYLE_PARAMS = ['size', 'level', 'shape', 'fit', 'place'];
+const STYLE_PARAMS = ['size', 'level', 'shape', 'fit', 'place', 'layout'];
 /** A heading's level is for screen readers and search, not for looks: Advanced. Size is the plain control. */
 const ADVANCED_PARAMS = ['level'];
 

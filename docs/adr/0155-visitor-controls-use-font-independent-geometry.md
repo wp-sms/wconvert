@@ -15,7 +15,9 @@ events pass through the drawing. The phone adapter replaces the library's arrow
 using the same helper; country selection and validation stay with the library.
 
 The close target stays 32px for fine pointers and 44px for coarse pointers. No
-per-template offsets or font-specific corrections are introduced. Templates
+per-template offsets or font-specific corrections are introduced.
+*Amended by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): a design may now set the close control's colours and
+corner from closed tokens; its size, glyph, label and drawing are unchanged.* Templates
 remain configuration and cannot supply SVG markup or arbitrary paths.
 
 ## Payload cost
@@ -24,6 +26,7 @@ Node 22.23.2 gzip-9 measures the updated loaders at 14,852 B Free and 27,840 B P
 These exceed the previous 14,768 / 27,712 B ceilings. Allocate 128 B more to Free
 and 160 B more to Pro: **14,896 / 27,872 B**, retaining the hard, flagless gate.
 *Amended by [ADR 0158](0158-a-close-control-takes-room-only-beside-what-it-covers.md): Pro is 28,160 B for the close reserve on bars and slide-ins.*
+*Amended by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): Free is 17,456 B and Pro 30,720 B, with headroom.*
 The same Pro base applies to analytics/commerce combined checks. The optional
 phone asset and phone-page ceilings do not increase. This pays for a common
 rendering correction, with no new dependency or network request.

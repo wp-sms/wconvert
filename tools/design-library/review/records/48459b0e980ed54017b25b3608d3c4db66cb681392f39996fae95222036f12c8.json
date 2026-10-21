@@ -1,0 +1,47 @@
+{
+  "id": "trade-account-enquiry",
+  "revision": "17f3f65fc5c47f1ac4ec32419e47bd8efc42fd988a2a560952839794015a4f4e",
+  "base_id": "28313a596fb7172010dc7b15424c52ea3f14b42be80eaa079b0f6396d8c77769",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at HEAD, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T08:27:39Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/trade-account-enquiry-320.png",
+          "sha256": "5b68cf61a355335a554eb14180728bf4cf87ad3b6ffa9dde7c70e66be23da453"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/trade-account-enquiry-1440.png",
+          "sha256": "1f6ea82c0e58e2e6d2463704648a4b313de1c9552759235548b41a317332ad8c"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "48459b0e980ed54017b25b3608d3c4db66cb681392f39996fae95222036f12c8"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "care-clinic-request",
+  "revision": "feff4a742f8ce67f05cb4a8f5f2b38a0f9c1cbc7f075fffdde50b9edcf6f1174",
+  "base_id": "3e15724774dfd9783ce322b2ce5a346cf057a3ddb7a59b9e2b050a565c0fa32a",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at main, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T07:59:17Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/care-clinic-request-320.png",
+          "sha256": "27aacf9b04a25f97f455a003b9bdd57ac6b550c88034d041cb87a5178047ce8d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/care-clinic-request-1440.png",
+          "sha256": "ab0838d92038d7cffe79312cef323231d10fb65368f4d1b1e0079cd7f4d10031"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "39c1f8726e440d148ca94125aa024fa1d49b1f51f510272c80fbd22ff6d3c45f"
+}

@@ -193,6 +193,11 @@ site-local. Where a design needs one, say so in `notes`:
 That is the same shape as the privacy link and the cart URL: the plugin
 resolves what it can and asks the merchant for what only they know.
 
+A design whose countdown is `boxes` declares the `countdown_units` Role. Fill
+it with the four unit words, each in `__()`, so they translate:
+`'countdown_units' => ['days_label' => __('Days', 'wconvert'), 'hours_label' => …, 'minutes_label' => …, 'seconds_label' => …]`
+(ADR 0159; `final-hours-sale` is the example).
+
 For a guide or emailed offer, name the remaining setup in plain words:
 *Configure a delivery destination and add the guide before publishing.* Do not
 imply that selecting the Playbook already does this. Updating shipped copy

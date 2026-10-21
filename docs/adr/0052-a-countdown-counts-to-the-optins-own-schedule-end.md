@@ -4,6 +4,11 @@ A `countdown` node carries no `until`, no `minutes`, and no `evergreen` flag. It
 counts to the [[Optin]]'s `ends_at` — the same instant that decides whether the
 Optin is on the page at all — and there is nowhere to put a second deadline.
 
+*Amended by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): a countdown may also be drawn as `boxes`, one per
+unit with the design's words under them. Its only new params are that layout
+and those words; the deadline is still `ends_at` alone, and it is still one
+silent timer.*
+
 Two arguments arrive at that from opposite directions and neither is the usual
 one about scope.
 

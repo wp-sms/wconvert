@@ -97,8 +97,8 @@
       "added": 19
     },
     "deadline-panel": {
-      "revision": 1,
-      "content": "fae9bdb53b78a60371005b1fe381f5103c87eeb4e278bb19cb5e42d909c8fcea",
+      "revision": 2,
+      "content": "977568149556a7576edf4196ed10a3bbf1a949ebfabf2476097dd340dbfe043b",
       "added": 20
     },
     "edition-pass": {
@@ -462,8 +462,8 @@
       "added": 174
     },
     "changelog": {
-      "revision": 1,
-      "content": "41703a2b71e8ae4d69f45466e9838183b5bf4dd107526fcdabf10062a68178db",
+      "revision": 2,
+      "content": "8e4e04d00f3da35bb0d6a190fa3c09f7ad1a430337939ac9e372f5a21b55e7e0",
       "added": 175
     },
     "field-guide": {
@@ -482,13 +482,13 @@
       "added": 178
     },
     "last-call": {
-      "revision": 1,
-      "content": "f74b55701ba3df9f665cb1880dd6f3e7c769080bcd39efb4eed4abbe7d10df84",
+      "revision": 2,
+      "content": "e096221cf8db3ae7cc32d3e6b97680ee01a3ea2710a8e793d4ff2c2cb9c3dc75",
       "added": 179
     },
     "lookbook": {
-      "revision": 1,
-      "content": "672fb44cff3d4cdf319023ec32a4c8374df97c367ae28f0eb96dd83d580fe1cf",
+      "revision": 2,
+      "content": "4685f74be841a3b8c59de07d8e7cb7cfbae712a405c1b8ce7bd66b43f7a4c19f",
       "added": 180
     },
     "polaroid": {
@@ -512,8 +512,8 @@
       "added": 184
     },
     "ticker-line": {
-      "revision": 1,
-      "content": "b72daed3934b5d5f27647525170ec81565a808b1caa40cfc7cebac0edd2fee79",
+      "revision": 2,
+      "content": "17911c3d06e8cb3e602d90fa3bcd000926028e57f370e4c4ce9ad447ab1d753a",
       "added": 185
     }
   },
@@ -929,13 +929,13 @@
       "added": 173
     },
     "final-hours-sale": {
-      "revision": 1,
-      "content": "cb89add6d735ef668865113e0b022035956746dad82a1c266e20b358c6f64515",
+      "revision": 2,
+      "content": "081149c763da8d4574de76009d8a37a93c8b8bbb2b16746071db6ca0a842a098",
       "added": 186
     },
     "early-access-launch": {
-      "revision": 1,
-      "content": "01cec4b59cce84980305d7a289364c0039118f47031e9a5282c2c6af283fa52d",
+      "revision": 2,
+      "content": "9ff48d11a9363499aa2a622135893796fd0b65b54c8b2439ba7c921c6c9aaf8d",
       "added": 187
     },
     "monthly-planting-letter": {
@@ -954,8 +954,8 @@
       "added": 190
     },
     "release-notes-signup": {
-      "revision": 1,
-      "content": "6d9ecfaa5d3e51c5d12be2cd25ba89bfdaee09f6697e78061e8417bab80411f5",
+      "revision": 2,
+      "content": "a2bc008a71a6e5a2909c0bdd6225b4d0a122cb9246c00e18e51f73f04861cfb3",
       "added": 191
     },
     "bakery-first-loaf": {

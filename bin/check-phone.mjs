@@ -10,9 +10,10 @@ const cap = 16 * 1024;
 if (phone > cap) throw new Error(`phone asset: ${phone} B exceeds ${cap} B`);
 console.log(`  ✓ phone feature: ${phone} B gzipped (budget ${cap} B)`);
 for (const [label, path, base] of [
-  ['free', 'public/loader/loader.js', 14336],
+  // ADR 0159: both bases follow their loader budget's +2560 B.
+  ['free', 'public/loader/loader.js', 16896],
   // ADR 0158: the Pro base follows the Pro loader budget's +288 B.
-  ['pro', 'pro/public/loader/loader.js', 26912],
+  ['pro', 'pro/public/loader/loader.js', 29472],
 ]) {
   const total = size(path) + phone;
   console.log(`  ✓ ${label} phone page: ${total} B gzipped (combined ceiling ${base + cap} B)`);

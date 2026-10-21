@@ -395,21 +395,46 @@
       ]
     },
     "countdown": {
-      "content": [],
-      "copy": [],
+      "content": [
+        "days_label",
+        "hours_label",
+        "minutes_label",
+        "seconds_label"
+      ],
+      "copy": [
+        "days_label",
+        "hours_label",
+        "minutes_label",
+        "seconds_label"
+      ],
       "params": [
+        "layout",
         "hidden",
         "tokens",
         "narrow"
       ],
-      "roles": [],
+      "roles": [
+        "countdown_units"
+      ],
       "style_tokens": [
         "font",
         "text-size",
         "fg",
         "heading-weight",
-        "tracking"
-      ]
+        "tracking",
+        "border",
+        "radius",
+        "input-bg"
+      ],
+      "choices": {
+        "layout": [
+          "line",
+          "boxes"
+        ]
+      },
+      "defaults": {
+        "layout": "line"
+      }
     },
     "code": {
       "content": [
@@ -704,7 +729,13 @@
     "overlay": "rgba(0, 0, 0, 0)",
     "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
     "motion": "200ms",
-    "backdrop": "rgba(15, 23, 42, 0.55)"
+    "backdrop": "rgba(15, 23, 42, 0.55)",
+    "close-fg": "#1f2937",
+    "close-bg": "#ffffff",
+    "close-border": "#64748b",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fef2f2"
   },
   "roles": [
     "headline",
@@ -732,7 +763,8 @@
     "next_label",
     "back_label",
     "skip_label",
-    "close_label"
+    "close_label",
+    "countdown_units"
   ],
   "authored_roles": [
     "code_value",
@@ -817,6 +849,11 @@
       "left bottom",
       "center bottom",
       "right bottom"
+    ],
+    "close-radius": [
+      "50%",
+      "0.375rem",
+      "0"
     ]
   },
   "facets": {
@@ -847,7 +884,9 @@
       "accent-fg",
       "border",
       "input-bg",
-      "backdrop"
+      "backdrop",
+      "error-fg",
+      "error-bg"
     ],
     "type": [
       "font",
@@ -860,6 +899,12 @@
       "gap",
       "radius",
       "align"
+    ],
+    "close": [
+      "close-radius",
+      "close-fg",
+      "close-bg",
+      "close-border"
     ],
     "other": [],
     "heading": [

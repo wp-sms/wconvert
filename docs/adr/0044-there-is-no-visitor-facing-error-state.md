@@ -56,6 +56,9 @@ So work out what a visitor-facing error could actually mean here:
   is another field refusal. It remains beside the native select on the form;
   qualification does not create a third design screen or expose a later
   destination failure to the visitor.*
+  *Amended by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): the refusal is still drawn by the loader, in the
+  same places, and a design may now colour it (`error-fg`, `error-bg`); it
+  cannot remove it.*
 
 A step is a thing the merchant lays out, styles with tokens, writes copy for,
 and previews in the builder. Giving them one for a state that only exists when

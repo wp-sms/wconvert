@@ -17,7 +17,7 @@ const entries = [...designs.map(d => ({ ...d, source: 'design' })), ...setups.ma
 const renderer = readFileSync(resolve(out, 'renderer.iife.js'), 'utf8');
 writeFileSync(resolve(out, 'control-proof.html'), `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Shared visitor control proof</title><style>body{font:16px/1.5 system-ui;margin:24px;background:#f3f4f6;color:#172338}button{font:inherit;padding:10px 16px}#stage{margin-top:24px}pre{white-space:pre-wrap}</style>
-<h1>Shared visitor control proof</h1><p>Every design and registered setup, every screen/result, 320/390/768/1440px, LTR/RTL. Checks actual icon geometry and select clearance. This is not visual approval of the whole library.</p><button id="run">Run checks</button><p id="status">Ready</p><div id="stage"></div><pre id="results"></pre>
+<h1>Shared visitor control proof</h1><p>Every design and registered setup, every screen/result, 320/390/768/1440px, LTR/RTL, every close shape. Checks actual icon geometry, the close target size and select clearance. This is not visual approval of the whole library.</p><button id="run">Run checks</button><p id="status">Ready</p><div id="stage"></div><pre id="results"></pre>
 <script>${renderer}</script><script>
 const entries=${JSON.stringify(entries).replaceAll('<','\\u003c')}, R=WConvertRenderer;
 const stage=document.getElementById('stage'), status=document.getElementById('status');
@@ -37,10 +37,13 @@ document.getElementById('run').onclick=async()=>{
    const context={id:entry.id,source:entry.source,width,dir,screen:entry.tree.steps[step].id,result:result?.id};
    const fail=issue=>report.failures.push({...context,issue});
    const close=panel.querySelector('.wc-close');
-   if(close){report.close++;const svg=close.querySelector('svg'),path=svg?.querySelector('path');
+   // Every shape a design may choose (ADR 0159): the target keeps its size and the × its centre.
+   if(close)for(const shape of ['50%','0.375rem','0']){report.close++;panel.style.setProperty('--wc-close-radius',shape);const svg=close.querySelector('svg'),path=svg?.querySelector('path'),box=rect(close),target=matchMedia('(pointer:coarse)').matches?44:32;
     if(!path)fail('Close must use font-independent geometry');
-    else if(difference(rect(close),rect(path))>.51)fail('Close ink is not centred');
+    else if(difference(box,rect(path))>.51)fail('Close ink is not centred ('+shape+')');
+    if(Math.abs(box.width-target)>.51||Math.abs(box.height-target)>.51)fail('Close target is not '+target+'px ('+shape+')');
    }
+   panel.style.removeProperty('--wc-close-radius');
    for(const input of panel.querySelectorAll('select.wc-input')){report.select++;selects++;const svg=input.parentElement.querySelector('svg'),path=svg?.querySelector('path');
     if(!path){fail('Missing select chevron');continue;}
     const a=rect(input),b=rect(svg),ink=rect(path),css=getComputedStyle(input);

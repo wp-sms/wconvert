@@ -1,0 +1,103 @@
+{
+  "id": "home-repair-quote",
+  "revision": "309868fdf777489e43e174f077ba25781c6484be58dbc1843f1d00b3a45e35dc",
+  "base_id": "973026fa70ace067235139b7f3f4d0bf00c499ab196103a265e1ce7e821d8f80",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at main, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T07:59:17Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-07.png",
+          "sha256": "3f6ac5c14f57d6ba2e1fc50cc132ab77521308838e9f044e39f9d79a2ad08d44"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-07.png",
+          "sha256": "0ce04bee6c066422443012e187ed659d9448f3118eab42556ac47cfa53a889fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-07.png",
+          "sha256": "3f6ac5c14f57d6ba2e1fc50cc132ab77521308838e9f044e39f9d79a2ad08d44"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-07.png",
+          "sha256": "cefd5c2ec5a3d2f19dc902278953a99347184eab88ce74a6e1f3eb19b7d47b42"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/home-repair-quote-1280-0.png",
+          "sha256": "6d2dfb2717397b396715f421c8f85d3cf44035a470df405d059a00c7119b83d4"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/home-repair-quote-1280-1.png",
+          "sha256": "b3167d7086e3b4bb70e5c3cae14b429df24f607e40163838ee81519e4ebf6d30"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/home-repair-quote-320-0.png",
+          "sha256": "ef6e69101e0072bfebbf667365badce11bc6c79ff2432ad6ec98ab29a2da3031"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/home-repair-quote-320-1.png",
+          "sha256": "3b57901f3b68dc29dd220a3a9c3775e104e30f9eb37fd3df2d22b079162920ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "6b3748bfb2300f1c650ee3a8a866f2db3321257230f5e1c5ff1937cc7786a8ac"
+}

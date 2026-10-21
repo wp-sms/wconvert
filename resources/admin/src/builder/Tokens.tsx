@@ -11,7 +11,7 @@ import { Button } from '../components/ui/button';
 import { ChevronDown, CodeXml, RotateCcw, TriangleAlert } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { AlignmentPreview } from './ChoicePreview';
-import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
+import { CHOICES, TOKENS, groupsOf, paintOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
 import { MeasurementValue } from './MeasurementValue';
@@ -28,7 +28,8 @@ import {
   urlIn,
   type Axis,
 } from './themes';
-import { READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
+import { AA_NORMAL, READABLE_PAIRS, drawsPair, pairKey, readableFix, verdictOf } from './contrast';
+import { nodesOf } from './structure/tree';
 import { cssOnlyNote, useAdvanced } from './advanced';
 import { FieldHeading, PanelHint, PanelSection } from './PanelSection';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -274,6 +275,8 @@ export function Tokens({
       onChange={(value) =>
         onChange({ ...template, tokens: withToken(template.tokens, token.name, value) }, tokenCoalesce(token.name))
       }
+      paint={(shown) => paintOf(template.tokens, shown)}
+      clearable={CLEARABLE.includes(token.name)}
     />
   );
 
@@ -322,7 +325,10 @@ export function Tokens({
 }
 
 /** What the plain Look shows; everything else is Advanced's (ADR 0135, 0136). */
-const PLAIN_TOKENS: readonly string[] = ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align', 'bg-image', 'shadow'];
+const PLAIN_TOKENS: readonly string[] = ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align', 'bg-image', 'shadow', 'close-radius'];
+
+/** The two grounds a bare × is made of, and the only colours that offer None (ADR 0159). */
+const CLEARABLE: readonly string[] = ['close-bg', 'close-border'];
 
 /**
  * The Look's sections after Colors, and which fields share a row. Body text
@@ -335,6 +341,9 @@ const LOOK_SECTIONS: readonly { id: string; title: () => string; groups: readonl
   { id: 'space', title: () => groupName('space'), groups: ['space'], rows: [['width'], ['pad'], ['gap'], ['radius'], ['align']] },
   { id: 'image', title: () => groupName('image'), groups: ['image'], rows: [['bg-image'], ['image-position'], ['overlay']] },
   { id: 'effects', title: () => groupName('effects'), groups: ['effects'], rows: [['shadow'], ['motion']] },
+  // Shape in the plain view; its colours are Advanced's, since a merchant who
+  // changes only brand colours should not meet three more swatches for the ×.
+  { id: 'close', title: () => groupName('close'), groups: ['close'], rows: [['close-radius'], ['close-fg'], ['close-bg', 'close-border']] },
   { id: 'other', title: () => groupName('other'), groups: ['other'], rows: [] },
 ];
 
@@ -356,6 +365,8 @@ export function groupName(id: TokenGroupId): string {
       return __('Effects', 'wconvert');
     case 'space':
       return __('Size and space', 'wconvert');
+    case 'close':
+      return __('Close button', 'wconvert');
     case 'other':
       return __('Other settings', 'wconvert');
   }
@@ -416,6 +427,7 @@ function Palette({
       open={openToken === token.name}
       onOpenChange={(open) => onOpenChange(open ? token.name : null)}
       onChange={write(token.name)}
+      paint={(shown) => paintOf(template.tokens, shown)}
     />
   );
 
@@ -473,6 +485,8 @@ export function TokenField({
   onOpenChange,
   onChange,
   resetSaid,
+  paint = (shown: string) => shown,
+  clearable = false,
 }: {
   simple?: boolean;
   /** The token's own name — the key its choices and its value labels are under. */
@@ -508,6 +522,15 @@ export function TokenField({
    * would be one more thing for every call site to get right.
    */
   resetSaid?: string;
+  /**
+   * What a colour control paints for a value. A design's `{"close-fg":"fg"}`
+   * names a colour rather than spelling one, and `transparent` spells none;
+   * both still want a swatch, so the panel resolves them for the swatch only and
+   * the stored value stays what the design wrote.
+   */
+  paint?: (shown: string) => string;
+  /** Offers None — a clear value — beside the picker (ADR 0159: the bare ×). */
+  clearable?: boolean;
 }) {
   const field = useId();
   // Empty means "whatever the design says", so every control below opens on the
@@ -578,13 +601,15 @@ export function TokenField({
     return <ShadowField label={label} shown={shown} value={value} fallback={fallback} offered={offered ?? []} labels={labels} token={token} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />;
   }
 
-  if (isColor(shown)) {
+  if (isColor(paint(shown))) {
     return (
       <div className="wconvert-token wconvert-token--color">
         <ColorField
           label={label}
           fallback={fallback}
           value={value}
+          paint={paint}
+          clearable={clearable}
           open={open}
           onOpenChange={onOpenChange}
           onChange={onChange}
@@ -1212,10 +1237,10 @@ function Reset({
  * is the first control in this product that lets someone fail AA for somebody
  * else — in one click, silently, discovered later from a customer.
  *
- * **Four pairs, and `backdrop` is deliberately not one of them.** It sits
- * behind the popup rather than behind text, so a ratio for it would be a number
- * about nothing. The four that are here are every place the renderer paints
- * words on a surface.
+ * **`backdrop` is deliberately not one of the pairs.** It sits behind the
+ * popup rather than behind text, so a ratio for it would be a number about
+ * nothing. The pairs here are every place the renderer paints words on a
+ * surface, plus the close ×, which is held to 3:1 as a shape (ADR 0159).
  *
  * **It sits WITH the colours now.** It was above a closed disclosure that
  * contained them, so the default view of the Design tab was three ratios and no
@@ -1229,11 +1254,14 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
   // implies ({@see resolvedToken}).
   const value = (name: string) => resolvedToken(template.tokens, name);
 
-  const read = READABLE_PAIRS.map(([fg, bg]) => ({
+  const types = nodesOf(template.tree).map((block) => block.type);
+  const read = READABLE_PAIRS.filter(([fg, bg]) => drawsPair(pairKey(fg, bg), types)).map(([fg, bg, floor]) => ({
     key: pairKey(fg, bg),
     fg,
     bg,
-    verdict: readability(value(fg), value(bg)),
+    // A shape is SEEN rather than read, so the × says so (WCAG 1.4.11).
+    seen: floor !== undefined && floor < AA_NORMAL,
+    verdict: verdictOf(value, [fg, bg, floor]),
     named: sprintf(
       /* translators: 1: the text color's name, e.g. “Lighter text”. 2: the surface's, e.g. “Background”. */
       __('%1$s on %2$s', 'wconvert'),
@@ -1261,7 +1289,9 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
           <span title={pair.verdict.said}>
             {pair.verdict.readable === null
               ? sprintf(/* translators: 1: a pair, e.g. “Text on Background”. 2: why it cannot be measured. */ __('%1$s: %2$s', 'wconvert'), pair.named, pair.verdict.said)
-              : sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), pair.named)}
+              : pair.seen
+                ? sprintf(/* translators: %s: a pair, e.g. “Close button icon on Close button background”. */ __('%s is hard to see', 'wconvert'), pair.named)
+                : sprintf(/* translators: %s: a pair, e.g. “Text on Background”. */ __('%s is hard to read', 'wconvert'), pair.named)}
             {advanced && pair.verdict.ratio !== null ? ` (${sprintf(/* translators: %s: a contrast ratio, e.g. “4.5”. */ __('%s:1', 'wconvert'), pair.verdict.ratio)})` : ''}
           </span>
           {pair.verdict.readable === false && (

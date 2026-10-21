@@ -1,0 +1,47 @@
+{
+  "id": "repair-workshop-news",
+  "revision": "4a966cc373622640dd9210410fbe1d383d632f82ee5b101e775a05142d3bd23c",
+  "base_id": "812e602e65748bd2ed040ae2aeb5a28bb685c2b0b4aaebfbec8919132c021c95",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at main, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T07:59:17Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/repair-workshop-news-320.png",
+          "sha256": "0c6ec1f4026da745215b3edc3dc4f636ddbfdc3bce5271ba0cfd2ac64fa4bb2a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/repair-workshop-news-1440.png",
+          "sha256": "78136f13b7f32fbdf316987b11358f6b160f610db099e50ab3eb2435fc03bc54"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "de789719714c500698f8973b9dbbb06e4a9dc2b7d1e18a1ca1f4836cd11b7a96"
+}

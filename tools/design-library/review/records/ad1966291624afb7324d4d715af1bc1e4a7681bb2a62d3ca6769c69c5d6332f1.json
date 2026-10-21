@@ -1,0 +1,47 @@
+{
+  "id": "landscaping-enquiry",
+  "revision": "f7d16f215d1d6cef7bcbdfd9455031feaafb2ab9c85333aa9f720a8d6e5af5eb",
+  "base_id": "5d8ccc23640fbe6f4095e508c05efd2e275e24bad74b23f069d323017489c5b4",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at HEAD, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T08:27:39Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/landscaping-enquiry-320.png",
+          "sha256": "7205244c1511059860faaa65b03c25d06d6b850235b4fed2985f29405ffa933d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/landscaping-enquiry-1440.png",
+          "sha256": "8297eff5c699605309df97fe0ad8c9ef93beabe68cc07227b3abb724c42da438"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "ad1966291624afb7324d4d715af1bc1e4a7681bb2a62d3ca6769c69c5d6332f1"
+}

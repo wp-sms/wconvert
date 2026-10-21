@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { READABLE_PAIRS, pairKey, readability } from '../contrast';
+import { READABLE_PAIRS, drawsPair, pairKey, verdictOf } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
@@ -355,20 +355,22 @@ function whatLosesWords(template: Template): Problem[] {
 /**
  * Colour pairs a visitor may not be able to read.
  *
- * The four places the renderer paints words on a surface, against AA for body
- * text. `backdrop` is deliberately absent: it sits behind the popup rather than
- * behind text. A pair {@see contrastOf} cannot read is not reported — a
+ * The places the renderer paints words on a surface, against AA for body
+ * text, and the close ×, against the non-text floor (ADR 0159). `backdrop`
+ * is deliberately absent: it sits behind the popup rather than behind text. A pair {@see contrastOf} cannot read is not reported — a
  * translucent colour has no ratio of its own, and a guess here would be a
  * warning about nothing or a silence about something.
  */
 function whatCannotBeRead(template: Template): Problem[] {
   const value = (name: string) => resolvedToken(template.tokens, name);
 
-  return READABLE_PAIRS.flatMap(([fg, bg]) => {
-    // The same verdict the Look's readout gives (ADR 0135), so the review and the panel never disagree.
-    const said = SAID[pairKey(fg, bg)];
+  const types = nodesOf(template.tree).map((block) => block.type);
 
-    return readability(value(fg), value(bg)).readable !== false || said === undefined
+  return READABLE_PAIRS.flatMap((pair) => {
+    // The same verdict the Look's readout gives (ADR 0135), so the review and the panel never disagree.
+    const said = SAID[pairKey(pair[0], pair[1])];
+
+    return verdictOf(value, pair).readable !== false || said === undefined || !drawsPair(pairKey(pair[0], pair[1]), types)
       ? []
       : [{ said: said(), path: null, check: 'readable' as const }];
   });
@@ -391,4 +393,8 @@ const SAID: Readonly<Record<string, () => string>> = {
     __('The button’s label is hard to read on the button. Fix it in the Look.', 'wconvert'),
   'fg/input-bg': () =>
     __('The text in the form fields is hard to read on their background. Fix it in the Look.', 'wconvert'),
+  'error-fg/error-bg': () =>
+    __('The error message is hard to read on its background. Fix it in the Look.', 'wconvert'),
+  'close-fg/close-bg': () =>
+    __('The close button is hard to see. Fix it in the Look.', 'wconvert'),
 };

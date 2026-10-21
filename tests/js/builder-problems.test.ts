@@ -311,3 +311,14 @@ describe('graph capture readiness follows connections instead of storage order',
     expect(blocking(bypass)).toContainEqual(expect.objectContaining({ path: [0], check: 'words' }));
   });
 });
+
+/** Unit words are optional (ADR 0159): a countdown loses words on a switch only when it holds some. */
+describe('a role-less countdown', () => {
+  it('loses nothing while it holds no words, and warns once it does', async () => {
+    const { losesWordsOnSwitch } = await import('../../resources/admin/src/builder/structure/catalogue');
+
+    expect(losesWordsOnSwitch({ type: 'countdown', role: null, says: null })).toBe(false);
+    expect(losesWordsOnSwitch({ type: 'countdown', role: null, says: 'Tage' })).toBe(true);
+    expect(losesWordsOnSwitch({ type: 'countdown', role: 'countdown_units', says: 'Tage' })).toBe(false);
+  });
+});

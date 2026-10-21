@@ -51,6 +51,8 @@ final class TemplateLabels
             'success_headline' => __('Headline after they submit', 'wconvert'),
             'success_body' => __('Body text after they submit', 'wconvert'),
             'success_action' => __('Action after they submit', 'wconvert'),
+            /* translators: the four words under a boxed countdown — days, hours, minutes and seconds. */
+            'countdown_units' => __('Countdown unit words', 'wconvert'),
             /* translators: the discount code shown after a visitor submits, e.g. “WELCOME10”. */
             'code_value' => __('Discount code', 'wconvert'),
             /*
@@ -503,6 +505,8 @@ final class TemplateLabels
             /* translators: how a picture fills the space it is given. */
             'image.fit' => __('Picture fit', 'wconvert'),
             'code.copy' => __('Copy button', 'wconvert'),
+            /* translators: how a countdown is drawn — as one line of digits, or as a box per unit. */
+            'countdown.layout' => __('Countdown style', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
             'field.required' => __('Required', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
@@ -558,6 +562,10 @@ final class TemplateLabels
             'question.required.true' => __('Required', 'wconvert'),
             'code.copy.false' => __('Code only', 'wconvert'),
             'code.copy.true' => __('Code and copy button', 'wconvert'),
+            /* translators: a countdown drawn as one line of digits, such as 2d 14:05:09. */
+            'countdown.layout.line' => __('One line', 'wconvert'),
+            /* translators: a countdown drawn as a box per unit — days, hours, minutes and seconds — each with its word under it. */
+            'countdown.layout.boxes' => __('Boxes', 'wconvert'),
             'heading.level.1' => __('Main heading', 'wconvert'),
             /* translators: a heading rank. This heading sits under the main one. */
             'heading.level.2' => __('Sub-heading', 'wconvert'),
@@ -731,6 +739,14 @@ final class TemplateLabels
             'copy_failed_label' => __('Message when copying is unavailable', 'wconvert'),
             'apply_label' => __('Code link text', 'wconvert'),
             'apply_href' => __('Where the code link goes', 'wconvert'),
+            /* translators: the word under the days box of a countdown. */
+            'days_label' => __('Word for days', 'wconvert'),
+            /* translators: the word under the hours box of a countdown. */
+            'hours_label' => __('Word for hours', 'wconvert'),
+            /* translators: the word under the minutes box of a countdown. */
+            'minutes_label' => __('Word for minutes', 'wconvert'),
+            /* translators: the word under the seconds box of a countdown. */
+            'seconds_label' => __('Word for seconds', 'wconvert'),
             'text' => __('Text', 'wconvert'),
             'link' => __('Link', 'wconvert'),
             /* translators: the words inside a sentence that are set in bold, where the sentence carries %b. */
@@ -823,6 +839,18 @@ final class TemplateLabels
             /* translators: how long the design takes to animate — its entry, and its button on hover. */
             'motion' => __('Animation speed', 'wconvert'),
             'backdrop' => __('Backdrop', 'wconvert'),
+            /* translators: the colour of the × that closes a popup. */
+            'close-fg' => __('Close button icon', 'wconvert'),
+            /* translators: the colour of the circle or square behind the × that closes a popup. */
+            'close-bg' => __('Close button background', 'wconvert'),
+            /* translators: the colour of the outline around the button that closes a popup. */
+            'close-border' => __('Close button outline', 'wconvert'),
+            /* translators: the shape of the button that closes a popup — round, rounded square or square. */
+            'close-radius' => __('Close button shape', 'wconvert'),
+            /* translators: the colour of the message shown when a visitor's entry is refused, such as an invalid email. */
+            'error-fg' => __('Error text', 'wconvert'),
+            /* translators: the colour of the box behind the message shown when a visitor's entry is refused. */
+            'error-bg' => __('Error background', 'wconvert'),
         ];
     }
 
@@ -1016,6 +1044,13 @@ final class TemplateLabels
             'shadow.0 18px 50px -12px rgba(15, 23, 42, 0.35)' => __('Lifted', 'wconvert'),
             /* translators: a shadow depth — the design floats well above the page behind it. */
             'shadow.0 32px 80px -16px rgba(15, 23, 42, 0.5)' => __('Floating', 'wconvert'),
+
+            /* translators: the shape of the button that closes a popup — a circle. */
+            'close-radius.50%' => __('Round', 'wconvert'),
+            /* translators: the shape of the button that closes a popup — a square with softened corners. */
+            'close-radius.0.375rem' => __('Rounded square', 'wconvert'),
+            /* translators: the shape of the button that closes a popup — a square with sharp corners. */
+            'close-radius.0' => __('Square', 'wconvert'),
         ];
     }
 

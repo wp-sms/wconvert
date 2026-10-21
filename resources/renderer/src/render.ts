@@ -4,6 +4,7 @@ import type {
   ButtonNode,
   CodeNode,
   ConsentNode,
+  CountdownNode,
   EyebrowNode,
   FieldNode,
   FollowupNode,
@@ -167,7 +168,7 @@ export const REFERABLE = ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 
  * it and nothing outside, at no runtime cost beyond the `setProperty` calls
  * (ADR 0062).
  *
- * **Nothing here checks the names.** The 22 are closed and
+ * **Nothing here checks the names.** They are closed and
  * `TemplateVocabulary` drops anything outside them on the way in, at both
  * scopes, through one private `tokens()`. This module is handed a bag that has
  * already been through it — the same bargain the whole renderer takes with the
@@ -284,7 +285,7 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
     case 'divider':
       return divider();
     case 'countdown':
-      return countdown();
+      return countdown(node as CountdownNode);
     case 'code':
       return code(node as CodeNode, at);
     case 'rating':
@@ -446,7 +447,7 @@ function into(at: string | null, key: string, index: number): string | null {
  * has had to know — with the narrow bag written over the top. The remap then
  * always finds a value and needs no fallback.
  *
- * It costs 24 `setProperty` calls on a retuned box and nothing at all on every
+ * It costs one `setProperty` call per token on a retuned box and nothing at all on every
  * other box, and it costs the PAYLOAD nothing: what is stored is the narrow
  * bag the author wrote.
  */
@@ -682,12 +683,38 @@ export const COUNTDOWN_SLOT = 'wc-count';
  * **It renders the shape and no time**, because `render()` asks nothing of the
  * world it will be attached to — including what time it is. `shell()` fills it
  * and keeps filling it.
+ *
+ * `boxes` is four slots, one per unit, each marked with the unit it holds, so
+ * the same paint fills either layout from one calculation (ADR 0159). Still
+ * one timer around all four: four timers would be four things a screen reader
+ * lists, for one deadline.
  */
-function countdown(): HTMLElement {
-  const value = document.createElement('span');
+function countdown(node: CountdownNode): HTMLElement {
+  const slot = (unit?: string): HTMLElement => {
+    const value = document.createElement('span');
 
-  value.className = COUNTDOWN_SLOT;
-  const element = wrap('div', 'wc-countdown', value);
+    value.className = COUNTDOWN_SLOT;
+    if (unit !== undefined) value.dataset.unit = unit;
+
+    return value;
+  };
+  const element = document.createElement('div');
+
+  element.className = 'wc-countdown';
+
+  if (node.layout === 'boxes') {
+    element.classList.add('wc-boxes');
+    for (const [unit, label] of [['d', node.days_label || 'Days'], ['h', node.hours_label || 'Hours'], ['m', node.minutes_label || 'Mins'], ['s', node.seconds_label || 'Secs']]) {
+      const word = document.createElement('small');
+
+      word.textContent = label;
+      element.append(wrap('span', 'wc-unit', slot(unit)));
+      element.lastElementChild!.append(word);
+    }
+  } else {
+    element.append(slot());
+  }
+
   element.setAttribute('role', 'timer');
   element.setAttribute('aria-atomic', 'true');
   element.setAttribute('aria-label', 'Time remaining');

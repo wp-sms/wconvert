@@ -1,0 +1,47 @@
+{
+  "id": "spare-parts-advice",
+  "revision": "97d0105a1d12ef8a451cacda2a1ef1aef3b38a0b7667bbaed8d571df0274e68d",
+  "base_id": "28760088ae1a7f3c35ae6d4c61e9f63d1187b5d1de82e675ac7e246733e2cce3",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at HEAD, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T08:27:39Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/spare-parts-advice-320.png",
+          "sha256": "84332ab30610c3a244b8c433ba8a8c6676cacfbda6c70b01f6368b90aff890ba"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/spare-parts-advice-1440.png",
+          "sha256": "72d055746644c1c6a05f0fb99395f11c91b0167e9d64de5cae2f0b9d3341b300"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "d15f684df39fe0b0a5119e64bdbba1f0d3c255b249d0ef1732f4de09e54bed44"
+}

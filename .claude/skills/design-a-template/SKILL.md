@@ -314,7 +314,15 @@ so `clamp()` widths, asymmetric `pad`, arbitrary radii, gradients through
 - **A `countdown` counts to the Optin's `ends_at` and nothing else** (ADR
   0052). With no end date it draws its shape and no time, and the builder says
   so. That is honest, not broken — but a design built around a clock needs a
-  Playbook whose notes tell the merchant to set one.
+  Playbook whose notes tell the merchant to set one. `"layout": "boxes"` draws a
+  box per unit; give it `"role": "countdown_units"` and its four words come
+  from the Playbook under that Role (`days_label` …), never from the Template
+  (ADR 0159).
+- **The close × and the error box are coloured by the design's tokens**
+  (`close-fg`, `close-bg`, `close-border`, `close-radius`, `error-fg`,
+  `error-bg`; ADR 0159). On a dark card use a bare × pointing at `fg`; over a
+  photograph a soft dark disc with a white ×. GUIDELINES.md §1.8 has the values.
+  The catalogue gate fails a × under 3:1 or an error under 4.5:1.
 
 ## Before opening a PR
 

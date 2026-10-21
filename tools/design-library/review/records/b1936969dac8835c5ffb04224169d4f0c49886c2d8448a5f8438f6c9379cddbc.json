@@ -1,0 +1,55 @@
+{
+  "id": "release-notes-signup",
+  "revision": "97179d77cdc087be5ad43c62b4aacb0ee0f2ad738088c35c0aa5048f0b31e450",
+  "base_id": "20bac02c294e6c9e88161d9c370870f09e81df228be0b7e4aa4b7a0ae63c3ad1",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Bare square × and dark error keep the terminal look through refusal.",
+  "at": "2026-10-21T09:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/release-notes-signup-320.png",
+          "sha256": "750f6e4fbc9c5483926728aad37cad2d3629dc4f34e0a26d1bf938de153fffde"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/release-notes-signup-1440.png",
+          "sha256": "dcc3b2cfdbc776497a66ec2dd0c2f91e28c8be8727a2861379bc3fbb151f9b0f"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+          "sha256": "e7c08ae50a19a4e33968879273468ff16ee71a16b3945ae3cffbfa1bbcb1135b"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    }
+  },
+  "record_id": "b1936969dac8835c5ffb04224169d4f0c49886c2d8448a5f8438f6c9379cddbc"
+}

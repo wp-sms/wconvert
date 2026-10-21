@@ -1,0 +1,103 @@
+{
+  "id": "consultation-invitation",
+  "revision": "b55fc2d97cb4c34a2197f1e2349dd292eca00f7422ffe62b8fcb57ad093f9223",
+  "base_id": "26c9b3cc30145496682c0559041414f33390724aa9b7f9b5a461839f1f92d334",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at main, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T07:59:17Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-03.png",
+          "sha256": "470c488ff45a89a43939b4c069328818ece94c7e263ee778bbd52e723ae14a72"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-03.png",
+          "sha256": "82347aa29517d30b1c2a1d01827f6ef52281943ce332348196ebeb99bf8e904e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-03.png",
+          "sha256": "0011211c8ed4bd99eb5de895a5e0bfcf8d07b9a8339c6771bb80d6d9fa675088"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-1280-0.png",
+          "sha256": "4c6d35298352a12a7c70e8923057baa76377c9ef6259b65bba6d79fb6e9f6e63"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-1280-1.png",
+          "sha256": "f2e28d89bbc2f59006edd02e02d893312d8b5b21534b76f49d7c4fbf64cab2dc"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-320-0.png",
+          "sha256": "a81ff55d9e0019f0bf2024563774fb63b56c348f137e1a936a0ae2094aecc254"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/consultation-invitation-320-1.png",
+          "sha256": "a3920c26b358353abb8aaf9c7bf84133c944e7bea0d3faa7864b4e9f57f47810"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "7c281f2ec9f7846abad646367df38d3e73a51055a4c527a598a7b7da58c8d978"
+}

@@ -1,6 +1,6 @@
 # 0152: A coupon link applies a code a published campaign shows
 
-**Shared control amendment — [ADR 0155](0155-visitor-controls-use-font-independent-geometry.md):** Free now caps at 14,896 B and Pro at 27,872 B gzip-9. Earlier byte measurements below are historical.
+**Shared control amendment — [ADR 0155](0155-visitor-controls-use-font-independent-geometry.md):** Free now caps at 14,896 B and Pro at 27,872 B gzip-9 (*amended by [ADR 0158](0158-a-close-control-takes-room-only-beside-what-it-covers.md): Pro 28,160 B; by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): Free 17,456 B, Pro 30,720 B*). Earlier byte measurements below are historical.
 
 
 Date: 2026-10-17. Status: accepted.

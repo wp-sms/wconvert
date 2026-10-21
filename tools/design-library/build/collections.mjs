@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadReviews, reviewQueue } from './reviews.mjs';
+import { latestReview, loadReviews, reviewQueue } from './reviews.mjs';
 import { designSource, designSources, setupSource } from './sources.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -26,6 +26,46 @@ export function validateCollection(collection) {
   }
 }
 
+/** What a Collection is reviewed as: its own source, and what each of its setups is. */
+export const collectionRevision = (collection, revisions) => hash(JSON.stringify([collection, revisions]));
+
+/**
+ * Carry the decision on every Collection that moved only because its setups'
+ * revisions did, where every one of those setups was itself carried as
+ * pixel-identical (ADR 0156, ADR 0159).
+ *
+ * A Collection's revision hashes its setups' revisions, so a renderer change
+ * that draws nothing differently stales every Collection with no change to its
+ * items, order, words or screens. `previous` gives each setup's revisions as
+ * they were under the base renderer — one per identity scheme it may have been
+ * reviewed under — and a Collection is carried only where its latest decision
+ * was current against one of them. Anything else is left for a person.
+ *
+ * Returns the chained records; writing them is the caller's.
+ */
+export function carryCollections({ source, entries, store, carried, previous, at, evidence = [] }) {
+  const byId = new Map(entries.map(entry => [entry.id, entry])), moved = new Set(carried), records = [];
+  for (const collection of source.collections) {
+    const latest = latestReview(store, `collection-${collection.id}`);
+    const items = collection.items.map(item => byId.get(item.setup_id));
+    if (!latest || items.some(entry => !entry)) continue;
+    const now = collectionRevision(collection, items.map(entry => entry.revision));
+    if (latest.revision === now) continue;
+    const schemes = Math.max(...items.map(entry => previous.get(entry.id)?.length ?? 0));
+    const wasCurrent = Array.from({ length: schemes }, (_, scheme) => collectionRevision(collection, items.map(entry => previous.get(entry.id)?.[scheme])))
+      .includes(latest.revision);
+    // Every setup either carried as pixel-identical, or exactly what it was.
+    const unchanged = items.every(entry => moved.has(entry.id) || previous.get(entry.id)?.includes(entry.revision));
+    if (!wasCurrent || !unchanged) continue;
+    const checks = structuredClone(latest.checks);
+    for (const file of evidence) if (!checks.visual.evidence.some(item => item.path === file.path)) checks.visual.evidence.push(file);
+    const body = { id: latest.id, revision: now, base_id: latest.record_id, decision: latest.decision, reviewer: 'Renderer carry (ADR 0156)',
+      note: 'Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.', at, checks };
+    records.push({ ...body, record_id: hash(JSON.stringify(body)) });
+  }
+  return records;
+}
+
 export function buildCollections(root, source, entries, setupQueue, reviews) {
   if (source.schema !== 1 || !Array.isArray(source.collections) || source.collections.length > 100) throw new Error('Invalid collection source');
   const byId = new Map(entries.map(entry => [entry.id, entry])); const seen = new Set(); const designs = designSources(root);
@@ -41,7 +81,7 @@ export function buildCollections(root, source, entries, setupQueue, reviews) {
       return { revision: entry.revision, current: approval.state === 'approved' };
     });
     // Keyed on what the setups are, not on which record approved them: carrying an approval does not stale a collection.
-    return { ...collection, dependencies_current: dependencies.every(item => item.current), revision: hash(JSON.stringify([collection, dependencies.map(item => item.revision)])) };
+    return { ...collection, dependencies_current: dependencies.every(item => item.current), revision: collectionRevision(collection, dependencies.map(item => item.revision)) };
   });
   const queue = reviewQueue(reviews, compiled.map(collection => ({ id: `collection-${collection.id}`, revision: collection.revision })), root);
   return { compiled: compiled.map((collection, at) => ({ ...collection, status: collection.dependencies_current && queue[at].state === 'approved' ? 'published' : 'draft' })), queue };

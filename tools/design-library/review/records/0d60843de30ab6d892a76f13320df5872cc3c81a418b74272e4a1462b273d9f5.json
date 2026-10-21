@@ -1,0 +1,47 @@
+{
+  "id": "reader-question",
+  "revision": "71a59ca37a73f1ab137e964d77479e3badb30b30f579b04a348094255e9e4cd2",
+  "base_id": "fba11dee6f4fcc5292b9b322862809c36df847c7388c298c518b0701ea798a92",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at main, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T07:59:17Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/reader-question-320.png",
+          "sha256": "37cdcc6b009447b521a029bfa33d9745f2c7bfe192cfa0c9e134acb4742bc985"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/reader-question-1440.png",
+          "sha256": "17bfd93ba10865aa4f2db5651a24e63280987d28fac45c58e49cafd7043a0482"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "0d60843de30ab6d892a76f13320df5872cc3c81a418b74272e4a1462b273d9f5"
+}

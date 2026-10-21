@@ -29,6 +29,8 @@ a long headline or a merchant's own rating line ran under the X;
 
 - Phone bars are 35–36 px shorter; no bar or slide-in has text under its X.
 - The Pro loader budget rises by 288 B to 28,160 B (`bin/check-loader.mjs`).
+  *Amended by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): 30,720 B, and Free 17,456 B; the phone ceilings
+  follow.*
   The reserve is about 245 B gzipped and Pro had 48 B left. The Pro phone
   page's combined ceiling (`bin/check-phone.mjs`) rises by the same 288 B.
   Free's budgets rise by nothing: its 39 B for the shared rule fits.

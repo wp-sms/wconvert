@@ -367,6 +367,16 @@ export interface RatingNode extends HideableNode {
  */
 export interface CountdownNode extends HideableNode {
   readonly type: 'countdown';
+  /**
+   * One line of digits, or a box per unit with its word under it (ADR 0159).
+   * Absent is `line`, so every countdown drawn before boxes existed is unchanged.
+   */
+  readonly layout?: 'line' | 'boxes';
+  /** The words under the boxes. A Playbook translates them; English otherwise. */
+  readonly days_label?: string;
+  readonly hours_label?: string;
+  readonly minutes_label?: string;
+  readonly seconds_label?: string;
 }
 
 /**

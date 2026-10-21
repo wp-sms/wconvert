@@ -3,7 +3,7 @@ import { Button } from '../components/ui/button';
 import { ClipboardCopy, ClipboardPaste, Monitor, RotateCcw, Smartphone, TriangleAlert } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { PanelHint, PanelSection } from './PanelSection';
-import { PAIR_READERS, READABLE_PAIRS, pairKey, readability, readableFix } from './contrast';
+import { DESIGN_ONLY_PAIRS, PAIR_READERS, READABLE_PAIRS, pairKey, readableFix, verdictOf } from './contrast';
 import { useAdvanced } from './advanced';
 import { nodesOf } from './structure/tree';
 import { TokenField, groupName } from './Tokens';
@@ -302,14 +302,15 @@ function ScopeContrast({
     .filter((block) => block.path.length >= here.length && here.every((step, at) => block.path[at] === step))
     .map((block) => block.type);
 
-  const wrong = READABLE_PAIRS.flatMap(([fg, bg]) => {
+  const wrong = READABLE_PAIRS.flatMap((pair) => {
+    const [fg, bg] = pair;
     const readers = PAIR_READERS[pairKey(fg, bg)] ?? [];
 
-    if (readers.length > 0 && !readers.some((type) => inside.includes(type))) {
+    if (DESIGN_ONLY_PAIRS.has(pairKey(fg, bg)) || (readers.length > 0 && !readers.some((type) => inside.includes(type)))) {
       return [];
     }
 
-    const verdict = readability(value(fg), value(bg));
+    const verdict = verdictOf(value, pair);
 
     return verdict.readable === false ? [{ fg, bg, verdict }] : [];
   });

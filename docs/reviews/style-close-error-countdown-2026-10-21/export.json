@@ -1,0 +1,104 @@
+{
+  "schema": 2,
+  "reviews": [
+    {
+      "id": "final-hours-sale",
+      "revision": "b3728a1dfd5ce60d66a62015392a16e3ff6f9c89febbf1c7da10634c5f2f9c1e",
+      "base_id": "c4491bc67617e0b8db39252f4beb109e08ec7173fbe5e620baec07e4507e7590",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Boxed countdown with Playbook unit words; bare \u00d7 and dark error fit the black card; days hide at zero.",
+      "at": "2026-10-21T09:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/final-hours-sale-320.png",
+            "docs/reviews/style-close-error-countdown-2026-10-21/final-hours-sale-1440.png",
+            "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+            "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+            "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "early-access-launch",
+      "revision": "1fa99887336402019eab2f5121b78ab0bbd0173ab074d1134c83f106774d658c",
+      "base_id": "33b02240143d51be217001c6221ecdf5637c7bb8af1b277b58e1d3731344ee5c",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Soft dark disc \u00d7 reads over the photograph on a phone and on the cream panel at desktop.",
+      "at": "2026-10-21T09:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-320.png",
+            "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-1440.png",
+            "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+            "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+            "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "release-notes-signup",
+      "revision": "97179d77cdc087be5ad43c62b4aacb0ee0f2ad738088c35c0aa5048f0b31e450",
+      "base_id": "20bac02c294e6c9e88161d9c370870f09e81df228be0b7e4aa4b7a0ae63c3ad1",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Bare square \u00d7 and dark error keep the terminal look through refusal.",
+      "at": "2026-10-21T09:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/release-notes-signup-320.png",
+            "docs/reviews/style-close-error-countdown-2026-10-21/release-notes-signup-1440.png",
+            "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+            "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+            "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -888,3 +888,46 @@ describe('the shipped trees', () => {
     expect(files.filter((file) => IMPORTS_THE_MANIFEST.test(readFileSync(resolve(root, file), 'utf8')))).toEqual([]);
   });
 });
+
+/**
+ * The close control and the error message are drawn by the loader, and a
+ * design may colour them from closed tokens without being able to remove them
+ * (ADR 0159). Each fallback is the literal it replaced, so a design that sets
+ * none renders exactly as before.
+ */
+describe('the chrome a design may colour', () => {
+  it.each([
+    ['.wc-close', 'color', 'close-fg'],
+    ['.wc-close', 'background', 'close-bg'],
+    ['.wc-close', 'border', 'close-border'],
+    ['.wc-close', 'border-radius', 'close-radius'],
+    ['.wc-error', 'color', 'error-fg'],
+    ['.wc-error', 'background', 'error-bg'],
+  ] as const)('%s reads %s from %s, falling back to the manifest default', (selector, property, token) => {
+    const rule = new RegExp(`(?:^|[}\\s])${selector.replace('.', '\\.')}\\{([^}]*)\\}`).exec(CSS)?.[1] ?? '';
+    const fallback = (manifest.tokens as Record<string, string>)[token];
+
+    expect(rule).toMatch(new RegExp(`(^|;)${property}:[^;]*var\\(--wc-${token},${fallback.replace(/[.%]/g, '\\$&')}\\)`));
+  });
+
+  it('keeps the invalid ring its own red unless the design sets an error colour', () => {
+    expect(CSS).toContain('.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px var(--wc-error-fg,#b91c1c)}');
+  });
+
+  it('draws an edge on the close control in forced colours', () => {
+    expect(CSS).toMatch(/@media \(forced-colors:active\)\{\.wc-close\{border-color:CanvasText\}\}/);
+  });
+
+  it('lets the close icon follow the design colour it points at', () => {
+    const root = render(treeFixture({ steps: [{ type: 'stack', children: [] }] }) as TemplateTree, { 'close-fg': 'fg', 'close-bg': 'transparent', fg: '#f8fafc' });
+
+    expect(root.style.getPropertyValue('--wc-close-fg')).toBe(`var(--wc-fg,${manifest.tokens.fg})`);
+    expect(root.style.getPropertyValue('--wc-close-bg')).toBe('transparent');
+  });
+});
+
+describe('the boxed countdown', () => {
+  it('keeps three boxes on one row once the days box hides', () => {
+    expect(CSS).toContain('.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}');
+  });
+});

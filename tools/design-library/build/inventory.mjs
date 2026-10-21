@@ -19,7 +19,7 @@ export function readDesigns(root) {
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const sort = value => Array.isArray(value) ? value.map(sort) : value && typeof value === 'object'
   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, sort(value[key])])) : value;
-const COPY = new Set(['text', 'label', 'placeholder', 'help', 'src', 'alt', 'href', 'link_label', 'heading', 'body', 'emphasis', 'italic', 'details_note', 'copy_label', 'copied_label', 'copy_failed_label']);
+const COPY = new Set(['text', 'label', 'placeholder', 'help', 'src', 'alt', 'href', 'link_label', 'heading', 'body', 'emphasis', 'italic', 'details_note', 'copy_label', 'copied_label', 'copy_failed_label', 'days_label', 'hours_label', 'minutes_label', 'seconds_label']);
 
 /** IDs are renamed consistently, including conditional and submission references. */
 export function canonicalDesign(design, includeStyle = false) {

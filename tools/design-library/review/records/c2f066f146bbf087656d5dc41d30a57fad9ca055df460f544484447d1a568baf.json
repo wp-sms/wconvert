@@ -1,0 +1,99 @@
+{
+  "id": "weeknight-recipe-sample",
+  "revision": "b52381aaf437f6b15abffe6514dd9030dde2e1c13e3741154191932e4f495bf1",
+  "base_id": "d38647c15827c3fcb26d0698b64cd9b81d1665d1d74da897603b06a2c3401051",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at HEAD, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T08:27:39Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/review.md",
+          "sha256": "a6fa951c9550742190dda74900e1129d64dac48b30228889cd766748b289de19"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/proof.json",
+          "sha256": "67ed5939fed6c10f46c238b15e6250762de9a0bea50064e59a9e8a2156fbc403"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/layout.json",
+          "sha256": "c5b80ecc1195442a9b9cee14c070182b629d980b8d4f81d46c200d068b963702"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-results.json",
+          "sha256": "0229a14d2e6099d0ddb8d385ecc2a3ae3fd081d89bae4a0a569a782fdb1a6aab"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/simulated-journeys.json",
+          "sha256": "3ad2602949aaf9e9383a7b140358e17a8181e4587ec51af9a23c6e9e57031747"
+        },
+        {
+          "path": "docs/reviews/creative-editions-2026-10-20/native-links.json",
+          "sha256": "d856f35bb1f835520e52842400112c439de24dce28a691b20ffac40bec2a208e"
+        }
+      ]
+    }
+  },
+  "record_id": "c2f066f146bbf087656d5dc41d30a57fad9ca055df460f544484447d1a568baf"
+}
