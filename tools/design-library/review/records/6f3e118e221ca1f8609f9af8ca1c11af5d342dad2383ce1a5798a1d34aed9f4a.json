@@ -1,0 +1,47 @@
+{
+  "id": "gift-wrap-details",
+  "revision": "fa8b9cae39b92a77a507ffe7b97a68a3406bbad86701feeebf1a037551d7b80f",
+  "base_id": "b2c8e48d2206c99bbb758f51e08edd19dd2612cad9db0244f4c068ab410ec94f",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/gift-wrap-details-320.png",
+          "sha256": "a1b8737114ac2c882b1ba571fc86779236365216586d0c50c22c45857f3a4aa8"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/gift-wrap-details-1440.png",
+          "sha256": "e3cc27df20685da58d4efa246e9f01791c71009579c106b9abb6025069422523"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "6f3e118e221ca1f8609f9af8ca1c11af5d342dad2383ce1a5798a1d34aed9f4a"
+}

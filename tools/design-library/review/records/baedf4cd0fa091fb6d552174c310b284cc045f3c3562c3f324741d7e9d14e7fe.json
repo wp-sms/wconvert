@@ -1,0 +1,95 @@
+{
+  "id": "add-useful-extras",
+  "revision": "cd7cbba651a6ad4525214bd05f9be8d00809d53118e909358191ca487e0297b9",
+  "base_id": "3cd6df6d291b12954cf921640c0af8370557071335536eed90e96061d13d4eaf",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-01.png",
+          "sha256": "45078631ffe05c4a05ac5f296761f1c4f9103094d86ac8918139ae2f4e70f1fd"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-01.png",
+          "sha256": "88612e2d7febdf6571e7d107ea73001b794adbdf6cdb4c6dcbe5ef82c882ffa2"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/add-useful-extras-1280.png",
+          "sha256": "fee73878b10a60de285c428b64771f44f349760b4d62862fdf2aa91bf1bcc7a4"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/add-useful-extras-320.png",
+          "sha256": "bb24d54984b09146658b41ffccce1547c270fb68e49386876e12cb5e9277e6b8"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "baedf4cd0fa091fb6d552174c310b284cc045f3c3562c3f324741d7e9d14e7fe"
+}

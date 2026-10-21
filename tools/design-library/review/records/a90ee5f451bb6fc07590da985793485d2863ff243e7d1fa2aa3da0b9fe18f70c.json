@@ -1,0 +1,47 @@
+{
+  "id": "fitness-introduction",
+  "revision": "d2595b89fc74594ad928455e2290787ba9f7d3ccbc41800d1d623122b13aae9c",
+  "base_id": "90b7ad93b0553c11b112fee5ec71c1bf751bfdfdc3a70b15d7aeb5ae3db8ceb3",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/fitness-introduction-320.png",
+          "sha256": "18978a7368585a0a1c4e36974cf95e6e9beb997e8a9663250e5d1093e46658ff"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/fitness-introduction-1440.png",
+          "sha256": "811c41fe502b793e5ed30d7b05a26478e52d47daf5b147b8c01012b87148dbd3"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "a90ee5f451bb6fc07590da985793485d2863ff243e7d1fa2aa3da0b9fe18f70c"
+}

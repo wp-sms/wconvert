@@ -1,0 +1,47 @@
+{
+  "id": "sizing-guide",
+  "revision": "77941d2a00324feb1536d87b3fbca70729dcc18961e8247d7807041ecbc35d7f",
+  "base_id": "a946cc3e7d8d7fe993d97da40a42f3c6382b396056ca3d250c0d21b2adb327c1",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/sizing-guide-320.png",
+          "sha256": "4c9f3d0df08a62fa4c2a4178a8262c9221dd1f8a7b92c3e5002886590e14dea4"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/sizing-guide-1440.png",
+          "sha256": "cb2117e5e928832fab41411c090d744680c471ab9a0b7142336517c1b0b04351"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "ac8cddc43afafee3c11e2772b833be8d7a1a34248df7e334d458f003248e663c"
+}
