@@ -1,10 +1,9 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { globSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { loadReviews, reviewQueue } from './reviews.mjs';
-import { designSource } from './sources.mjs';
+import { designSource, setupSource } from './sources.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(value);
@@ -36,7 +35,7 @@ export function buildCollections(root, source, entries, setupQueue, reviews) {
     const dependencies = collection.items.map(item => {
       const entry = byId.get(item.setup_id); const approval = setupQueue.find(row => row.id === item.setup_id);
       if (!entry || !approval) throw new Error(`Missing reviewed setup reference: ${item.setup_id}`);
-      const setupFile = globSync([`resources/playbooks/${entry.id}.php`, `pro/modules/*/playbooks/${entry.id}.php`], { cwd: root }).map(file => resolve(root, file))[0];
+      const setupFile = setupSource(root, entry.id);
       const designFile = designSource(root, entry.template_id);
       if (hash(readFileSync(setupFile)) !== item.setup_hash || hash(readFileSync(designFile)) !== item.design_hash) throw new Error(`Stale collection dependency: ${item.setup_id}`);
       return { revision: entry.revision, current: approval.state === 'approved' };

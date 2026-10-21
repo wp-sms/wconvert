@@ -83,7 +83,14 @@
     "opening-hours-signpost",
     "edition-sample-signup",
     "checklist-download",
-    "consultation-invitation"
+    "consultation-invitation",
+    "final-hours-sale",
+    "early-access-launch",
+    "monthly-planting-letter",
+    "new-batch-first-look",
+    "finish-the-set",
+    "release-notes-signup",
+    "bakery-first-loaf"
   ],
   "bundled_only": [
     {
@@ -187,7 +194,13 @@
       "reason": "Design session-card: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     }
   ],
-  "designs": [],
+  "designs": [
+    "big-number",
+    "glacier",
+    "kind-words",
+    "ribbon-tag",
+    "ticker-line"
+  ],
   "collections": [
     "service-enquiries",
     "reader-relationships",
@@ -221,6 +234,41 @@
       "reviewedBy": "Codex — provenance and raster review, 2026-10-20",
       "access": "free",
       "kind": "original"
+    },
+    "69014598a8bce96b7d0eaf2574637ffb0b3c584032b44198975f6cc0caebdadc": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by lookbook; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: full-bleed background photograph for a fashion boutique's fullscreen signup overlay; a wordmark sits over the top band and a short email form over the bottom band | Scene/backdrop: a quiet atelier with a warm off-white lime-plaster wall and pale oak floorboards, late-afternoon sun from a tall window out of frame on the left | Subject: a camel wool overcoat and a cream silk scarf hanging from a simple blackened-steel clothes rail, a pair of brown leather loafers on the floor below | Style/medium: photorealistic editorial fashion still life, shot on 35mm film, Kodak Portra 400 colour, fine natural film grain | Composition/framing: wide landscape frame, subject centred and occupying the middle third of the height; calm, empty plaster wall in the top quarter and plain floor in the bottom quarter as negative space for overlaid text | Lighting/mood: soft raking window light with a long gentle shadow on the wall, warm, unhurried, expensive but understated | Materials/textures: visible wool weave and brushed nap on the coat, sheen and soft folds in the silk, mottled plaster, oak grain, creased leather | Constraints: no people, no faces, no mannequins, no text, no logos, no labels, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "premium"
+    },
+    "6800e61f09ab44bc873e8b18c7fac5cdc128f3045b623ce050a9dc8f1324ab32": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by field-guide; encoded to WebP q72-74. Prompt: Use case: illustration-story | Asset type: square picture pane of a signup form for a garden and plant shop, shown beside a cream form panel and above it on phones | Scene/backdrop: plain warm cream paper with a faint deckled texture, evenly toned to all four edges, no vignette, no background scenery | Subject: a botanical plate of a single foxglove stem with pink spotted bell flowers and buds, two broad basal leaves at its foot, a small separate seed head on the left and one unfurling fern frond on the right | Style/medium: traditional botanical illustration, fine sepia ink linework with transparent watercolour washes on cold-press paper, in the manner of a 19th-century field guide plate | Composition/framing: square frame; the whole plant fits inside the frame from flower tip to leaf base, occupying about 80 percent of the height, centred, with even cream margins on every side; nothing touches or is cut by an edge | Lighting/mood: even, calm, scholarly and warm | Color palette: muted sage and moss greens, dusty rose and mauve flowers, sepia ink, cream paper | Materials/textures: visible paper tooth, soft watercolour blooms and granulation, hairline ink hatching | Constraints: no text, no labels, no numbers, no captions, no signature, no border, no logos, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "premium"
+    },
+    "6bb6a3076864e0040894f08ba20ec2b3726536d650a843778ff751863c293bd9": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by polaroid; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: small snapshot photograph shown inside a white instant-photo style frame on a homewares shop's corner signup card | Scene/backdrop: a deep windowsill with a whitewashed wall behind, late-afternoon golden sun | Subject: three handmade stoneware vases of different heights, glazes in speckled oatmeal, deep teal and matte terracotta, one holding a single dried grass stem | Style/medium: photorealistic candid snapshot, 35mm film, slightly warm colour, gentle natural film grain, shallow depth of field | Composition/framing: landscape frame, vases grouped slightly left of centre at eye level, soft out-of-focus wall on the right | Lighting/mood: warm low sun casting long soft shadows across the sill, homely and calm | Materials/textures: glaze pooling and speckles, raw clay at the foot of each vase, flaking whitewash, dust motes in the light | Constraints: no people, no faces, no text, no logos, no labels, no watermark, no photo border (the frame is drawn by the page)",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "premium"
+    },
+    "48da7011bbbf0239de68a92f713d32d766e383262017aa2286d4feeba774c598": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by tasting-card (cropped to 5:4 from the 1024x1536 output); encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: picture pane of a split signup popup for a bakery and deli, shown beside a cream form panel | Scene/backdrop: overhead view of a worn grey-green linen cloth on a rustic table | Subject: a dark-crusted sourdough loaf with one thick slice cut, a small ceramic dish of olive oil, a wedge of aged hard cheese, a few green olives and a scattering of crumbs and flour | Style/medium: photorealistic food photography, top-down, natural light | Composition/framing: tall portrait frame, food arranged through the centre, a little empty linen at the top and bottom edges | Lighting/mood: soft daylight from one side, appetising, warm, rustic and generous | Materials/textures: blistered crackling crust, open glossy crumb, flour dust, olive-oil sheen, crumbly cheese rind, linen weave and creases | Constraints: no people, no hands, no faces, no text, no logos, no labels, no cutlery brand marks, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "free"
+    },
+    "e3af8f4dec889fa40a36a1fad85ca79705bef0741784771a69181b7f4adf7585": {
+      "kind": "ai-generated",
+      "source": "gpt-image-2 via Codex CLI $imagegen (built-in image_gen, ChatGPT plan), 2026-10-20; used by glacier; encoded to WebP q72-74. Prompt: Use case: photorealistic-natural | Asset type: full-width background photograph behind a frosted signup panel embedded in a travel company's article page | Scene/backdrop: a still glacial lake in a high mountain valley at dawn, low mist on the water, snow-capped peaks and a blue-white glacier tongue in the distance | Subject: the landscape itself; a few pale icebergs floating near the far shore | Style/medium: photorealistic landscape photography, wide-angle lens, crisp but soft | Composition/framing: wide landscape frame, horizon slightly above centre, calm uncluttered water and mist across the middle where a panel will sit | Lighting/mood: cold early light, pale blue and soft pink sky, serene, quiet, airy | Color palette: glacier blue, slate, pale teal, soft dawn pink | Materials/textures: mirror-still water with faint ripples, translucent ice, granite scree, wisps of mist | Constraints: no people, no boats, no buildings, no text, no logos, no watermark",
+      "redistribution": true,
+      "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
+      "access": "free"
     }
   },
   "artwork_exports": {

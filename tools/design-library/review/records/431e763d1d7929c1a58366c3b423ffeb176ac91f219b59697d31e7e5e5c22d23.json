@@ -1,0 +1,47 @@
+{
+  "id": "bakery-first-loaf",
+  "revision": "4a5e7e29a7bedd7385104e6f4df103938efe2411c9ee19dc2feedb71ceb7936e",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Hosted setup (ADR 0157): photograph leads on phone and fills its pane on desktop; code screen keeps the card; notes ask where the code works.",
+  "at": "2026-10-21T04:05:44Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-320.png",
+          "sha256": "e18d53207810948b2784751cd85e5b4d371f34cc7ed30923a3c4cc56f315e1f3"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-1440.png",
+          "sha256": "176a655ad23cbd61d7e3e3d92e779af49605b75fc070eff679312a759591a9f7"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "431e763d1d7929c1a58366c3b423ffeb176ac91f219b59697d31e7e5e5c22d23"
+}

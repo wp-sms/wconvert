@@ -1,0 +1,47 @@
+{
+  "id": "final-hours-sale",
+  "revision": "0e31ec8c63524b0aaebdafb42fb1751188c7a766d24171b78a6646a736cd897d",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Countdown leads; code only after signup; empty countdown until a real end date is set (notes say so).",
+  "at": "2026-10-21T04:05:44Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/final-hours-sale-320.png",
+          "sha256": "f604eccaa109a892d034d2a820f99e76fc8b23fa571c9316c1146471fdaee049"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/final-hours-sale-1440.png",
+          "sha256": "c0da90f1672115d99bb11c6790ebe56db67b926a5bdffc22ae09a7a386847eb0"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "c4491bc67617e0b8db39252f4beb109e08ec7173fbe5e620baec07e4507e7590"
+}

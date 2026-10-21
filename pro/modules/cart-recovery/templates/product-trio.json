@@ -1,0 +1,115 @@
+{
+  "id": "product-trio",
+  "name": "Product trio",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#151515",
+    "muted": "#545454",
+    "accent": "#151515",
+    "accent-fg": "#ffffff",
+    "border": "#151515",
+    "font": "'Helvetica Neue', Helvetica, Arial, sans-serif",
+    "heading-font": "'Helvetica Neue', Helvetica, Arial, sans-serif",
+    "heading-size": "2.5rem",
+    "heading-weight": "800",
+    "tracking": "-0.045em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0",
+    "pad": "0",
+    "gap": "0",
+    "width": "50rem",
+    "align": "start",
+    "shadow": "0 32px 80px -24px rgba(21, 21, 21, 0.5)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Suggestions",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "edges": "block-start",
+              "tokens": {
+                "pad": "2rem 2rem 1.5rem",
+                "gap": "0.75rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.75rem 1.25rem 1.25rem",
+                "heading-size": "1.875rem"
+              },
+              "children": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "0.5rem",
+                    "text-size": "1.1667rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "Goes well with it"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "level": 1,
+                      "role": "headline",
+                      "text": "Finish the set."
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Three pieces picked to go with this one.\nAdd any of them from here.",
+                  "tokens": {
+                    "fg": "muted"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n4"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.5rem 2rem 2rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              },
+              "children": [
+                {
+                  "type": "products",
+                  "id": "n5",
+                  "action": "add_to_cart",
+                  "source": "selected",
+                  "product_ids": [],
+                  "exclude_cart": true,
+                  "context": "product",
+                  "main_product_id": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

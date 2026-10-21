@@ -4054,6 +4054,188 @@
         ],
         "reason": "A small arched cut-paper floral postcard pairs large expressive serif type with one clear workshop handoff; designed for a corner rather than a miniature generic popup."
       }
+    },
+    {
+      "id": "final-hours-sale",
+      "audience": "stores",
+      "family": "Last call",
+      "visitor_need": "Use a genuine sale before it ends.",
+      "difference": "A near-black fullscreen whose centrepiece is the live countdown in poster type; the code appears only after signup.",
+      "requirements": [
+        "Set the real sale end date in Schedule and create a valid 30% code before publishing; the countdown stays empty without an end date."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Show on exit intent during the sale only; exclude checkout.",
+        "Set the real sale end date in Schedule and create a valid 30% code before publishing; the countdown stays empty without an end date."
+      ],
+      "measure": "Email signups during the sale; not purchases or code redemptions.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cream-coupon",
+          "bar-countdown"
+        ],
+        "reason": "A near-black fullscreen whose centrepiece is the live countdown in poster type; the code appears only after signup."
+      }
+    },
+    {
+      "id": "early-access-launch",
+      "audience": "stores",
+      "family": "Lookbook",
+      "visitor_need": "See a new collection before everyone else.",
+      "difference": "An editorial spread: a large fashion photograph beside Didone type, with the wordmark aligned to the top of the photo and the form to its foot.",
+      "requirements": [
+        "Replace the photograph and wordmark, and send early-access requests the link before the collection opens."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use on collection and home pages; exclude checkout.",
+        "Replace the photograph and wordmark, and send early-access requests the link before the collection opens."
+      ],
+      "measure": "Early-access signups; not visits on launch day or orders.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-photo",
+          "inline-split"
+        ],
+        "reason": "An editorial spread: a large fashion photograph beside Didone type, with the wordmark aligned to the top of the photo and the form to its foot."
+      }
+    },
+    {
+      "id": "monthly-planting-letter",
+      "audience": "stores",
+      "family": "Field guide",
+      "visitor_need": "Know what to do in the garden this month.",
+      "difference": "A watercolour botanical plate and an old-style form card as two matched rounded cards, for a calm monthly letter.",
+      "requirements": [
+        "Connect an email service and keep the letter monthly, as the words promise."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Show after half the page is read; exclude checkout.",
+        "Connect an email service and keep the letter monthly, as the words promise."
+      ],
+      "measure": "Signups for the monthly letter; not opens or sales.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-photo",
+          "callback-notes"
+        ],
+        "reason": "A watercolour botanical plate and an old-style form card as two matched rounded cards, for a calm monthly letter."
+      }
+    },
+    {
+      "id": "new-batch-first-look",
+      "audience": "stores",
+      "family": "Polaroid",
+      "visitor_need": "Hear about a small-batch release before it sells out.",
+      "difference": "A corner card with a framed snapshot and handwritten caption; the close control has its own band above the print.",
+      "requirements": [
+        "Replace the photograph with your own work and email this list before each batch goes on sale."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use on shop and product pages; exclude checkout.",
+        "Replace the photograph with your own work and email this list before each batch goes on sale."
+      ],
+      "measure": "Signups for new-batch emails; not sales of a batch.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "cream-coupon",
+          "slide-in-photo"
+        ],
+        "reason": "A corner card with a framed snapshot and handwritten caption; the close control has its own band above the print."
+      }
+    },
+    {
+      "id": "finish-the-set",
+      "audience": "stores",
+      "family": "Product trio",
+      "visitor_need": "Find what goes with the product being viewed.",
+      "difference": "A black-and-white cross-sell popup with a heavy grotesque headline and three products with add-to-basket buttons; no products design interrupted before.",
+      "requirements": [
+        "Pick three products in the products block and show it on the product pages they suit. Needs WooCommerce and Pro."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Show on matching product pages after 20 seconds; exclude checkout and the basket.",
+        "Pick three products in the products block and show it on the product pages they suit. Needs WooCommerce and Pro."
+      ],
+      "measure": "Confirmed additions to the basket; not orders.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "collection-poster",
+          "split-notice"
+        ],
+        "reason": "A black-and-white cross-sell popup with a heavy grotesque headline and three products with add-to-basket buttons; no products design interrupted before."
+      }
+    },
+    {
+      "id": "release-notes-signup",
+      "audience": "services",
+      "family": "Changelog",
+      "visitor_need": "Hear about each release without checking the changelog.",
+      "difference": "A dark terminal-style popup in monospace with a diff-style list of what each email covers; served from the catalogue only.",
+      "requirements": [
+        "Connect an email service and send only when you release."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use on changelog, docs and blog pages after half the page is read.",
+        "Connect an email service and send only when you release."
+      ],
+      "measure": "Release-notes signups; not product usage.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "inline-quiet",
+          "margin-note"
+        ],
+        "reason": "A dark terminal-style popup in monospace with a diff-style list of what each email covers; served from the catalogue only."
+      }
+    },
+    {
+      "id": "bakery-first-loaf",
+      "audience": "stores",
+      "family": "Tasting card",
+      "visitor_need": "Try the bakery with a free first loaf.",
+      "difference": "A bakery photograph beside a sage panel in a humanist face, with the free-loaf code on the success screen; served from the catalogue only.",
+      "requirements": [
+        "Create a valid single-use code, say where it works (shop, online or both) and connect an email service."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
+      "suggested_setup": [
+        "Use on shop and menu pages; exclude checkout.",
+        "Create a valid single-use code, say where it works (shop, online or both) and connect an email service."
+      ],
+      "measure": "Signups for the Friday list; not loaves claimed or orders.",
+      "batch": "new-designs-batch",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-photo",
+          "photo-offer"
+        ],
+        "reason": "A bakery photograph beside a sage panel in a humanist face, with the free-loaf code on the success screen; served from the catalogue only."
+      }
     }
   ],
   "batches": [
@@ -4120,6 +4302,10 @@
     {
       "id": "expressive-directions",
       "name": "Expressive directions: six original concepts"
+    },
+    {
+      "id": "new-designs-batch",
+      "name": "New designs: seven setups from the twelve-design batch"
     }
   ]
 }

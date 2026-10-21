@@ -2532,6 +2532,150 @@
           "note": "Polished final controls, spacing and responsive artwork; desktop/phone studio and native review evidence in expressive-directions-2026-10-20."
         }
       ]
+    },
+    {
+      "id": "ticker-line",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "f14808b076a7914014e6cc06dbf4e9e95c46f0e4bfdc7830b644a711e9396dfe",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "ribbon-tag",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "892024d172e9ffb9ca9b1952e728381b2d472b3bfa1a1519abe3bcb5453a0f01",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "last-call",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "e2b6386fcfc7d299392b48f4e8cda16a947539b7b61fe6bf8bbf15bb63806da4",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "lookbook",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "d0d3b35b8140a06facd9623bcde254ffab8136bba920cf37111a1bc65850238d",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "field-guide",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "d7ca426e2819b1fc05bedc1a7f28a311afc0d5e08c79dc253bb48d85d942df55",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "kind-words",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "be508b6c7b45beb9aa3476f6d444c859c3ea83d37c3aa35845a9aa4c9ccf73b8",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "polaroid",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "ad94e55ca40d590c7dfe5ad143491b3e75f392cc88edbf3a04843879c01b9c97",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "product-trio",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "36ca62e99b750d1c58c509fc0a6b71875187894919135c887462a8d46c9d80ea",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "changelog",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "bfae7707c2eb1e5016c6df6d0a5bb12a4e0d7f85ee769849096e1d5690f2f0f5",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "big-number",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "1e95e953fd19f397057b6db1b81e597ba114b97ca232575f080c7f08cf351464",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "tasting-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "a6e483be97c6839177b9c3fa7fabb4fc8d8b40f82d3d2cadf77ff89a8b451584",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
+    },
+    {
+      "id": "glacier",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-21",
+          "revision": "4f9332e9e6246cc3349708d1d856ecc450ae86c7ae6627493906ae2f29994389",
+          "note": "New design from the 12-design batch; approved in the Phase 1 preview (claude.ai/artifact/NfNziR1aM1t6wTuWiNDjsF, version 4)."
+        }
+      ]
     }
   ]
 }

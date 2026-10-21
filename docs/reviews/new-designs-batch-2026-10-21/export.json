@@ -1,0 +1,226 @@
+{
+  "schema": 2,
+  "reviews": [
+    {
+      "id": "final-hours-sale",
+      "revision": "0e31ec8c63524b0aaebdafb42fb1751188c7a766d24171b78a6646a736cd897d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Countdown leads; code only after signup; empty countdown until a real end date is set (notes say so).",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/final-hours-sale-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/final-hours-sale-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "early-access-launch",
+      "revision": "ee2be8ca4cbd0a8cfbc2e74ec7df7123890e076b444cda800ee5af540382475c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Wordmark and button align to the photograph on desktop; headline holds two lines at 320; acknowledgement claims a request only.",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/early-access-launch-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/early-access-launch-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "monthly-planting-letter",
+      "revision": "1171af4d829b389db0ab5b2a13fdde3fcf110cad24493708cc10465503ce9b3d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Plate and form are matched cards on desktop; plate then form at 320 without crowding.",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/monthly-planting-letter-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/monthly-planting-letter-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "new-batch-first-look",
+      "revision": "f2c6329c4e53913ecd09dbf9df8bdebf568e7a47f392882bed7c8c9b331ae046",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Close control has its own band above the print; caption and acknowledgement fit their lines at 288 px.",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/new-batch-first-look-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "finish-the-set",
+      "revision": "71e0f51bc75f6074cd7496228bd8ba38542024fb9067683f3fee5ce273667a1e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Real product page: products shown, one added (server-confirmed), no overflow at 320; needs main product and picks before publishing.",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-commerce.json",
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-desktop.png",
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-phone.png"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-commerce.json",
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-desktop.png",
+            "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-phone.png"
+          ]
+        }
+      }
+    },
+    {
+      "id": "release-notes-signup",
+      "revision": "44792a03e47494c5587a70fe185c99f4d17fb934cbdfba6f9f033001e7d9e625",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Hosted setup (ADR 0157): headline and list keep their lines at 288; words promise one email per release only.",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/release-notes-signup-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/release-notes-signup-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "bakery-first-loaf",
+      "revision": "4a5e7e29a7bedd7385104e6f4df103938efe2411c9ee19dc2feedb71ceb7936e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Hosted setup (ADR 0157): photograph leads on phone and fills its pane on desktop; code screen keeps the card; notes ask where the code works.",
+      "at": "2026-10-21T04:05:44Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-320.png",
+            "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-1440.png",
+            "docs/reviews/new-designs-batch-2026-10-21/review.md"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/new-designs-batch-2026-10-21/results.json"
+          ]
+        }
+      }
+    }
+  ]
+}

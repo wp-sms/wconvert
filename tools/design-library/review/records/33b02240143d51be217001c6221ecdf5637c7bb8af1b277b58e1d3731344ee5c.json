@@ -1,0 +1,47 @@
+{
+  "id": "early-access-launch",
+  "revision": "ee2be8ca4cbd0a8cfbc2e74ec7df7123890e076b444cda800ee5af540382475c",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Wordmark and button align to the photograph on desktop; headline holds two lines at 320; acknowledgement claims a request only.",
+  "at": "2026-10-21T04:36:36Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/early-access-launch-320.png",
+          "sha256": "8d9a2c898d7a6f3d9dcb135e49da6738f96e61611a2df81e8a913d8e33258e33"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/early-access-launch-1440.png",
+          "sha256": "11ac2d1200162e559fc0f7779028049d44af339c3bff7a357e6de725aa433cc0"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "34448f0b6163aaa22b35f265fff3f5378e31b9aad07018e5deb77266f8889da4"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "7dad411cb9b0672dfcd877ec1d152afa43199fbd4ddd2c96cc761d84ad743423"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "7dad411cb9b0672dfcd877ec1d152afa43199fbd4ddd2c96cc761d84ad743423"
+        }
+      ]
+    }
+  },
+  "record_id": "33b02240143d51be217001c6221ecdf5637c7bb8af1b277b58e1d3731344ee5c"
+}

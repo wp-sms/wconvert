@@ -29,6 +29,15 @@ exporter, the pilot and `bin/verify-templates.php` add the same folder. One id
 authored in two folders is refused, so copying a hosted design into a bundled
 folder fails instead of shipping it twice.
 
+**Hosted setups live beside them.** `tools/design-library/hosted/playbooks/`
+holds the Playbooks for hosted designs, read by the same three tools
+(`build/sources.mjs` `setupSource()`). A bundled Playbook must not name a
+hosted design: the ZIP carrying the Playbook would lack its design.
+`HostedPlaybooksTest` registers each hosted Playbook against the designs a
+Free site can hold, and on the disposable review site
+`tools/visual-tests/mu/hosted.php` composes both folders into the libraries as
+an installed catalogue setup would be.
+
 **A hosted design is numbered, exported and reviewed like a bundled one.** It
 has a revision in `publishing/revisions.json`, a history record, a rights
 record for each image, catalogue words, and the same near-duplicate, contrast,

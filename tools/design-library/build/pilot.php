@@ -46,7 +46,8 @@ $source = new class($root) implements TemplateSource {
 };
 $templates = TemplateLibrary::from($vocabulary, $source);
 $rules = RuleVocabulary::fromManifest($root);
-$additional = array_map(static fn ($file) => require $file, glob($root . '/pro/modules/*/playbooks/*.php') ?: []);
+$additional = array_map(static fn ($file) => require $file, array_merge(glob($root . '/pro/modules/*/playbooks/*.php') ?: [],
+    glob($root . '/tools/design-library/hosted/playbooks/*.php') ?: []));
 $playbooks = PlaybookLibrary::fromDirectory($templates, $vocabulary, $rules, $root, $additional);
 $site = new class implements SitePresence { public function has(SiteDependency $dependency): bool { return true; } };
 $supplied = new SuppliedRules();

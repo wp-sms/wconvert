@@ -47,6 +47,8 @@ final class FreshSetupTest extends TestCase
         // The main product, which both checks read as the one missing choice.
         'recommend-accessory' => ['commerce_products', 'Use a design whose button links to your offer or content before publishing.'],
         'add-useful-extras' => ['commerce_products'],
+        // The merchant picks the three products that go with each product page.
+        'finish-the-set' => ['commerce_products'],
         'product-finder' => ['products'],
         'coffee-taste-finder' => ['products'],
         'explore-compatible-extras' => ['commerce_products', 'Use a design whose button links to your offer or content before publishing.'],

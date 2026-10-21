@@ -39,6 +39,17 @@ export function designSources(root) {
   return sources;
 }
 
+/** Where setups (Playbooks) are authored; a hosted one ships in neither ZIP either. */
+export const HOSTED_PLAYBOOKS = 'tools/design-library/hosted/playbooks';
+
+/** The absolute path of one setup's Playbook file. */
+export function setupSource(root, id) {
+  const modules = existsSync(resolve(root, 'pro/modules')) ? readdirSync(resolve(root, 'pro/modules')).map(module => `pro/modules/${module}/playbooks`) : [];
+  const files = ['resources/playbooks', ...modules, HOSTED_PLAYBOOKS].map(dir => resolve(root, dir, id + '.php')).filter(existsSync);
+  if (files.length !== 1) throw new Error(`Missing or ambiguous setup: ${id}`);
+  return files[0];
+}
+
 /** The absolute path of one design's source file. */
 export function designSource(root, id) {
   const source = designSources(root).get(id);

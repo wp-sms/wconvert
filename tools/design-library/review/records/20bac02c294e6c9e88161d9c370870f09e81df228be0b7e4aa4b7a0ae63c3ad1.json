@@ -1,0 +1,47 @@
+{
+  "id": "release-notes-signup",
+  "revision": "44792a03e47494c5587a70fe185c99f4d17fb934cbdfba6f9f033001e7d9e625",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Hosted setup (ADR 0157): headline and list keep their lines at 288; words promise one email per release only.",
+  "at": "2026-10-21T04:05:44Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/release-notes-signup-320.png",
+          "sha256": "232c2d11c6b69f30242a84a8636abbdcccbca32b71b12593488fc10d11c3cce5"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/release-notes-signup-1440.png",
+          "sha256": "39cd6314b34ab7a7647ed983815261c39ea499b6458f31cafdfd4888dbee982d"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "20bac02c294e6c9e88161d9c370870f09e81df228be0b7e4aa4b7a0ae63c3ad1"
+}

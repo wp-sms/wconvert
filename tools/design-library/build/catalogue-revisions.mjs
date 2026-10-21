@@ -30,6 +30,10 @@ export function computeRevisions(root, implementationRoot = root) {
   });
   const blocking = exported.failures.filter(failure => failure.kind === 'setup');
   if (blocking.length) throw new Error('Planned setups cannot be exported:\n' + blocking.map(f => `  ${f.id}: ${f.reason}`).join('\n'));
+  // A bundled design that cannot be exported still ships in its ZIP; a hosted
+  // one would reach nobody, so it is a failure rather than a note (ADR 0157).
+  const stranded = exported.failures.filter(failure => failure.kind === 'design' && authored.get(failure.id)?.ships === 'hosted');
+  if (stranded.length) throw new Error('Hosted designs cannot be exported:\n' + stranded.map(f => `  ${f.id}: ${f.reason}`).join('\n'));
   const numbered = assignRevisions(retireMissing(registry, { designs: new Set(authored.keys()), setups: new Set(plan.setups) }), exported);
   return { ...numbered, failures: exported.failures, files: bundledRevisionFiles(root, numbered.registry) };
 }
