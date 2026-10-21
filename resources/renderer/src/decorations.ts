@@ -47,8 +47,8 @@ export function decorate(parent: HTMLElement, group?: Decorations): void {
 
 export const DECORATION_CSS = `
 .wc-decorated{position:relative;isolation:isolate}
-.wc-decorated>:not(.wc-decorations){position:relative;z-index:1}
-.wc-decorations{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;border-radius:inherit}
+.wc-decorated>:not(.wc-decorations){z-index:1}
+.wc-decorated>.wc-decorations{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;border-radius:inherit}
 .wc-decoration{position:absolute;left:var(--dec-x);top:var(--dec-y);width:var(--dec-size);transform:translate(-50%,-50%)}
 .wc-decoration-motion,.wc-decoration svg{display:block;width:100%}
 .wc-decoration-motion[data-motion=float],.wc-decoration-motion[data-motion=flap]{animation:wc-float 5s ease-in-out infinite}

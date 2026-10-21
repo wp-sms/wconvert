@@ -275,9 +275,10 @@ export function Tokens({
       value={template.tokens[token.name] ?? ''}
       open={openToken === token.name}
       onOpenChange={(open) => onOpenToken(open ? token.name : null)}
-      onChange={(value) =>
-        onChange({ ...template, tokens: withToken(template.tokens, token.name, value) }, tokenCoalesce(token.name))
-      }
+      onChange={(value, font) => {
+        try { onChange(withGoogleFont({ ...template, tokens: withToken(template.tokens, token.name, value) }, font), tokenCoalesce(token.name)); }
+        catch (cause) { onError(cause); }
+      }}
       paint={(shown) => paintOf(template.tokens, shown)}
       clearable={CLEARABLE.includes(token.name)}
     />
@@ -1101,7 +1102,7 @@ function FontField({
 
             </div>
 
-            {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
+            {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack), ...GOOGLE_FONTS.map(([family]) => family)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
             {/*
               **The escape hatch, inside the thing you opened — and OUTSIDE the
               scroller.** `choices` is what the panel offers and never what is

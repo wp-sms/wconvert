@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import type { GoogleFont, Template } from '@renderer/types';
 import { usedGoogleFonts } from '@renderer/fonts';
 
@@ -18,8 +19,9 @@ export function withGoogleFont(template: Template, font?: GoogleFont): Template 
   const fonts = [...(template.tree.fonts ?? []).filter(item => item.family !== font?.family), ...(font ? [font] : [])];
   const next = { ...template, tree: { ...template.tree, fonts } };
   const used = usedGoogleFonts(next);
+  if (used.length > 4) throw new Error(__('A design can use up to four Google font families. Reuse one already selected, or install the additional font in WordPress.', 'wconvert'));
   if (used.length) return { ...next, tree: { ...next.tree, fonts: used } };
-  const tree = { ...next.tree };
+  const tree = { ...template.tree };
   delete tree.fonts;
   return { ...next, tree };
 }

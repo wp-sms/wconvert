@@ -953,6 +953,18 @@ describe('the font picker', () => {
     expect(screen.queryByText('nope')).toBeNull();
   });
 
+  it('writes a selected Google family and its requirement in the same edit', async () => {
+    const changed = look();
+    await userEvent.click(trigger());
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Find a font' }), 'Creepster');
+    expect(screen.queryByText('No matching fonts.')).toBeNull();
+    await userEvent.click(await screen.findByRole('radio', { name: 'Creepster' }));
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({
+      tokens: expect.objectContaining({ font: "'Creepster', cursive" }),
+      tree: expect.objectContaining({ fonts: [{ family: 'Creepster', faces: [{ weight: 400, italic: false }] }] }),
+    }), expect.any(String));
+  });
+
   it('writes the stack, which is what the renderer resolves', async () => {
     api.getThemeTokens.mockResolvedValue({
       tokens: {},

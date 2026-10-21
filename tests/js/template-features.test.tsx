@@ -46,6 +46,15 @@ it('rejects arbitrary font URLs and keeps template permission separate from fami
   const next = withGoogleFont({ ...template, tokens: { 'heading-font': "'Eater', cursive" } }, { family: 'Eater', faces: [{ weight: 400 }] });
   expect(next.tree.fonts?.map(font => font.family)).toEqual(['Eater']);
 });
+it('rejects a fifth used Google family instead of losing a requirement during save', () => {
+  const families = ['Creepster', 'Eater', 'Nosifer', 'Inter', 'Lato'];
+  const template: Template = { tokens: {}, tree: {
+    ...treeFixture({ steps: families.map(family => ({ type: 'stack', tokens: { font: `'${family}', serif` }, children: [] })) }),
+    fonts: families.slice(0, 4).map(family => ({ family, faces: [{ weight: 400 }] })),
+  } };
+  expect(() => withGoogleFont(template, { family: 'Lato', faces: [{ weight: 400 }] })).toThrow('up to four');
+  expect(template.tree.fonts).toHaveLength(4);
+});
 it('keeps decorations out of accessibility and layout flow, pauses them on close and removes them when hidden', () => {
   const template = fixture();
   const mounted = mount({ displayType: 'popup', template });
