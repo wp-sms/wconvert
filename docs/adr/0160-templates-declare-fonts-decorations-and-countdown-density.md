@@ -100,7 +100,10 @@ Look's Picture section reads a screen root's own background when it declares
 one, labels it as this screen's picture, and writes back to that scope. Mobile
 reads its override (or desktop) and writes only the mobile bag. Designs whose
 picture lives in the shared tokens keep the shared control. Replacing or
-removing artwork must not flatten the tree or alter the other screens.
+removing artwork must not flatten the tree or alter the other screens. The
+shared style resolver applies the renderer’s image/overlay resets at every
+painted panel/media boundary, including nested element inspectors; Look has
+no separate inheritance algorithm.
 
 Simple Gap and Corner rounding presets compare numeric lengths, so `.8rem`
 and `0.80rem` match `0.8rem`. A visible Current value accompanies the buttons,
@@ -110,5 +113,15 @@ The countdown inspector offers a date/time field that edits the same campaign
 `ends_at` as Display rules. It states the site timezone and that the campaign
 stops showing at that time, warns about an end before the start, and supports
 clearing the deadline. No node deadline or new storage is introduced. The
-canvas remains a design sample and the inspector explicitly labels its sample
-time; the visitor timer continues to use PHP's resolved schedule deadline.
+canvas, flow thumbnails and Preview & test use the campaign's actual remaining
+time whenever `ends_at` is set, including unsaved edits. They share one resolved
+deadline through a campaign preview context. A manage-only, read-only
+`GET /schedule/resolve` calls the same PHP `Schedule` converter as published
+campaigns, so fixed offsets and both sides of daylight-saving changes agree
+with the visitor timer. An expired deadline displays zero. Only an absent end
+uses sample time (also used by gallery previews outside a campaign). While a
+new date is resolving, the previous countdown is cleared; a failed request
+shows an error with Retry and never substitutes samples. Stale responses cannot
+restore an earlier date. Preview & test waits for resolution before exposing
+editable inputs, so a late response cannot erase typing, and renders loading
+and Retry inside its modal. Each mount still owns and cleans up its one timer.

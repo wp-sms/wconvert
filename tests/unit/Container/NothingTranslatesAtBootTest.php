@@ -100,6 +100,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         \WConvert\Rest\TemplateTransferController::class => '/template-transfer',
         RuleController::class => '/rules',
         ThemeController::class => '/theme',
+        \WConvert\Rest\ScheduleController::class => '/schedule/resolve',
         GoalController::class => '/goals',
         PlaybookController::class => '/playbooks',
         PickerController::class => '/picker',

@@ -845,6 +845,11 @@ export function sourceOfToken(
 
       return { from: narrow ? 'narrow' : 'here', value: held };
     }
+    // Painted boxes reset these inherited layers before applying their own bags
+    // (render.ts). This applies to roots, nested boxes and mobile resets alike.
+    if (scope && ['panel', 'media'].includes(scope.type) && ['bg-image', 'overlay'].includes(name)) {
+      return { from: 'default', value: name === 'bg-image' ? 'none' : '#0000' };
+    }
   }
 
   const design = tokens[name];

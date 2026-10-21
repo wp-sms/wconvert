@@ -1,9 +1,11 @@
+import { JourneyTest } from '../../resources/admin/src/builder/JourneyTest';
+import { CampaignPreviewDeadline } from '../../resources/admin/src/builder/PreviewDeadline';
 import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { fireEvent, render, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { keyOfElement } from '../../resources/admin/src/builder/slots';
 import type { Mounted } from '../../resources/renderer/src/mount';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
@@ -28,6 +30,9 @@ import type { TemplateEntry } from '../../resources/admin/src/templates/api';
  * stopped being enough, these tests would fail for the same reason the feature
  * would.
  */
+
+const deadlineRequest = vi.hoisted(() => vi.fn());
+vi.mock('@wordpress/api-fetch', () => ({ default: deadlineRequest }));
 
 const mounts = vi.hoisted(() => [] as Mounted[]);
 
@@ -537,4 +542,61 @@ describe('visitor preview', () => {
     expect(submit.defaultPrevented).toBe(true);
     expect(next).toHaveBeenCalledTimes(1);
   });
+});
+
+
+describe('scheduled countdowns use the shared editor deadline', () => {
+  it.each(['popup', 'floating_bar', 'slide_in', 'inline'])('updates every clock in a %s preview and shows zero after expiry', async displayType => {
+    const now = Date.UTC(2026, 9, 21, 12);
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(now);
+    onTestFinished(() => clock.mockRestore());
+    deadlineRequest.mockResolvedValueOnce({ ends_at: now + 3661000 }).mockResolvedValueOnce({ ends_at: now - 1000 });
+    const template = { ...ENTRY, tree: { ...ENTRY.tree, steps: ENTRY.tree.steps.map((step, index) => index === 0
+      ? { ...step, content: { type: 'stack', children: [{ type: 'countdown' }, { type: 'countdown', layout: 'boxes' }] } } : step) } };
+    const view = render(<CampaignPreviewDeadline endsAt="2026-10-21 13:01"><Preview template={template} displayType={displayType} /></CampaignPreviewDeadline>);
+    await waitFor(() => expect(drawn().querySelector('[role="timer"]')).toHaveTextContent('01:01:01'));
+    expect([...drawn().querySelectorAll('[data-unit]')].map(node => node.textContent)).toEqual(['0', '01', '01', '01']);
+    view.rerender(<CampaignPreviewDeadline endsAt="2026-10-20 12:00"><Preview template={template} displayType={displayType} /></CampaignPreviewDeadline>);
+    await waitFor(() => expect(drawn().querySelector('[role="timer"]')).toHaveTextContent('00:00:00'));
+    expect([...drawn().querySelectorAll('[data-unit]')].map(node => node.textContent)).toEqual(['0', '00', '00', '00']);
+    view.rerender(<CampaignPreviewDeadline><Preview template={template} displayType={displayType} /></CampaignPreviewDeadline>);
+    expect(drawn().querySelector('[role="timer"]')).not.toHaveTextContent('00:00:00');
+  });
+});
+
+
+it('uses the same live deadline in Preview & test', async () => {
+  const now = Date.now();
+  deadlineRequest.mockResolvedValueOnce({ ends_at: now + 60 * 60 * 1000 + 30000 });
+  const template = { ...ENTRY, tree: { ...ENTRY.tree, steps: ENTRY.tree.steps.map((step, index) => index === 0
+    ? { ...step, content: { type: 'stack', children: [{ type: 'countdown' }] } } : step) } };
+  render(<CampaignPreviewDeadline endsAt="2026-10-31 23:59"><JourneyTest template={template} onEdit={vi.fn()} /></CampaignPreviewDeadline>);
+  await waitFor(() => expect(drawn().querySelector('[role="timer"]')?.textContent).toMatch(/^01:00:/));
+});
+
+
+it('waits for a slow deadline before exposing editable test inputs', async () => {
+  let resolve!: (value: { ends_at: number }) => void;
+  deadlineRequest.mockImplementationOnce(() => new Promise(done => { resolve = done; }));
+  const view = render(<CampaignPreviewDeadline endsAt="2026-10-31 23:59"><JourneyTest template={ENTRY} onEdit={vi.fn()} /></CampaignPreviewDeadline>);
+  expect(within(screen.getByRole('region', { name: 'Interactive preview' })).getByRole('status')).toHaveTextContent('Loading countdown deadline');
+  expect(mounts).toHaveLength(0);
+  expect(view.container.querySelector('input[type="email"]')).toBeNull();
+  await act(async () => resolve({ ends_at: Date.now() + 3600000 }));
+  expect(mounts).toHaveLength(1);
+  const input = drawn().querySelector<HTMLInputElement>('input[type="email"]')!;
+  await userEvent.type(input, 'test@example.com');
+  expect(input).toHaveValue('test@example.com');
+  expect(mounts).toHaveLength(1);
+});
+
+it('offers recovery inside the interactive preview when deadline loading fails', async () => {
+  deadlineRequest.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce({ ends_at: Date.now() + 3600000 });
+  render(<CampaignPreviewDeadline endsAt="2026-10-31 23:59"><JourneyTest template={ENTRY} onEdit={vi.fn()} /></CampaignPreviewDeadline>);
+  const preview = within(screen.getByRole('region', { name: 'Interactive preview' }));
+  await waitFor(() => expect(preview.getByRole('alert')).toHaveTextContent('Could not load the countdown deadline'));
+  expect(mounts).toHaveLength(0);
+  await userEvent.click(preview.getByRole('button', { name: 'Try again' }));
+  await waitFor(() => expect(mounts).toHaveLength(1));
+  expect(preview.queryByRole('alert')).toBeNull();
 });

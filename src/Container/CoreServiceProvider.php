@@ -135,6 +135,7 @@ final class CoreServiceProvider implements ServiceProvider
         TemplateTransferController::class,
         RuleController::class,
         ThemeController::class,
+        \WConvert\Rest\ScheduleController::class,
         GoalController::class,
         PlaybookController::class,
         \WConvert\Rest\PickerController::class,
@@ -756,6 +757,7 @@ final class CoreServiceProvider implements ServiceProvider
 
         // Theme inheritance is an opt-in VALUE COPY, so this reads the site's
         // palette and nothing stores where a token came from.
+        $container->register(\WConvert\Rest\ScheduleController::class, static fn () => new \WConvert\Rest\ScheduleController());
         $container->register(ThemeController::class, static fn (): ThemeController => new ThemeController());
     }
 

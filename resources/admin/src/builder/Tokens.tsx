@@ -255,10 +255,7 @@ export function Tokens({
   const pictureScope = pictureChain[0];
   const scopedPicture = pictureScope !== undefined &&
     (Object.hasOwn(pictureScope.tokens, 'bg-image') || Object.hasOwn(pictureScope.narrow, 'bg-image'));
-  // Match render.ts: painted boxes reset inherited artwork and its wash.
-  const pictureDefaults = pictureScope && ['panel', 'media'].includes(pictureScope.type)
-    ? { ...template.tokens, 'bg-image': 'none', overlay: '#0000' } : template.tokens;
-  const pictureValue = (name: string) => sourceOfToken(pictureChain, pictureDefaults, name, pictureWidth).value;
+  const pictureValue = (name: string) => sourceOfToken(pictureChain, template.tokens, name, pictureWidth).value;
   const isPictureToken = (name: string) => scopedPicture && ['bg-image', 'image-position', 'overlay'].includes(name);
 
   const write = (tokens: Readonly<Record<string, string>>) =>

@@ -1,3 +1,4 @@
+import { PreviewDeadlineNote } from './PreviewDeadline';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { endsBeforeStart } from './rules/sentence';
@@ -673,10 +674,8 @@ function Glyph({ name }: { name: string }) {
  * also said on the *How often* summary now, which is where a merchant reading
  * their rules meets it; this is where a merchant looking at the clock does.
  *
- * **The preview keeps its fake deadline.** `Preview.tsx`'s `A_PREVIEW_DEADLINE`
- * argues its own case and it holds: a dead clock is a preview of nothing, and
- * the preview is a picture of the DESIGN the same way the placeholder headline
- * beside it is. The truth about this Optin belongs in the inspector.
+ * The preview resolves this deadline through WordPress's Schedule, so it
+ * uses the same absolute instant as visitors. Only an absent end uses samples.
  *
  * **The date is a wall time and is never `new Date(stored)`** — see
  * {@see momentOf} for what that shape does on the wrong engine.
@@ -711,7 +710,7 @@ function Countdown({
           : __('Times use your WordPress site’s timezone.', 'wconvert')}</PanelHint>
         {invalidWindow && <p id={`${field}-error`} role="alert" className="wconvert-panel-warn">{__('Choose an end date and time after the start.', 'wconvert')}</p>}
       </div>}
-      <PanelHint>{__('The design preview uses sample time. Visitors count down to the date below.', 'wconvert')}</PanelHint>
+      <PreviewDeadlineNote />
       <FactList>
         <FactRow label={__('Counts to', 'wconvert')} action={spelled === null ? __('Set an end date', 'wconvert') : __('Change the end date', 'wconvert')} onAction={onSetEndDate}>
           {spelled ?? __('No end date', 'wconvert')}

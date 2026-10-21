@@ -1,3 +1,4 @@
+import { PreviewDeadlineStatus, usePreviewDeadline } from './PreviewDeadline';
 import { LiveProductMatches } from './ResultProductFilter';
 import { ArrowLeft, ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -50,6 +51,8 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
   onClose?(): void; active?: boolean;
   template: Template; onEdit(step: number, focus?: 'condition'): void; onShowPath?(screens: readonly number[], edges: readonly string[]): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string; changeToCheck?: JourneyChange;
 }) {
+  const { deadline, mode: deadlineMode } = usePreviewDeadline();
+  const deadlineReady = deadlineMode === 'sample' || deadlineMode === 'live';
   const tree = template.tree;
   const entry = tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0;
   const anchor = useRef<HTMLDivElement>(null);
@@ -96,8 +99,10 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
   }, [tree.steps, tree.graph, visited, step, entry]);
   useEffect(() => {
     const target = anchor.current;
-    if (!target) return;
-    const mounted = mount({ displayType: 'inline', template, anchor: target, shadowMode: 'open' });
+    // Do not expose editable inputs until resolution finishes; remounting them
+    // when a late response arrives would discard unsent test input.
+    if (!target || !deadlineReady) return;
+    const mounted = mount({ displayType: 'inline', template, anchor: target, shadowMode: 'open', endsAt: deadline });
     if (!mounted.mounted) return;
     mounted.show(); mounted.showStep(step);
     const root = mounted.root;
@@ -239,7 +244,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     root.querySelectorAll('a').forEach(link => link.addEventListener('click', event => event.preventDefault()));
     return () => { cancelAnimationFrame(focusFrame); mounted.close(); };
   // Remount when the preview path or its answers change; this never sends data.
-  }, [template, step, entry, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode, visited]);
+  }, [template, step, entry, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode, visited, deadline, deadlineReady]);
   const nodes = tree.steps.flatMap(screen => walkNodes(screen.content));
   const nodeLabel = (id: string) => {
     const node = nodes.find(item => 'id' in item && item.id === id);
@@ -296,6 +301,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       <div className="wconvert-preview-test__toolbar"><span>{sprintf(
         /* translators: 1: how many screens this run has reached, 2: the screen on show, e.g. “Your result”. */
         __('Screen %1$d · %2$s', 'wconvert'), visited.length, tree.steps[step].name)}</span><PreviewWidth mobile={mobile} onChange={setMobile} /></div>
+      <PreviewDeadlineStatus />
       <div className="wconvert-journey-test__canvas"><div ref={anchor} data-mobile={mobile} className="wconvert-journey-test__stage" /></div>
       {feedback && <p className="wconvert-journey-test__feedback" role="status">{feedback}</p>}
       <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" size="sm" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" size="sm" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button></div>

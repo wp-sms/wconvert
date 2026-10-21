@@ -1,3 +1,4 @@
+import { CampaignPreviewDeadline } from './PreviewDeadline';
 import { CampaignAnalytics } from '../analyticsIntegration';
 import { CampaignOccasion } from '../occasions/CampaignOccasion';
 import { useCompactEditor } from '../hooks/useCompactEditor';
@@ -842,6 +843,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   </>;
 
   return (
+    <CampaignPreviewDeadline endsAt={displayRules.schedule.ends_at}>
     <Tabs
       value={tab}
       onValueChange={(value) => {
@@ -1201,6 +1203,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         }}
       />
     </Tabs>
+    </CampaignPreviewDeadline>
   );
 }
 
