@@ -74,6 +74,7 @@ export const proPresenter: Presenter = {
       // helper for the same reason the other four are: this branch is as narrow
       // as it can be, and everything else is free's code doing it.
       endsAt: entry.ends_at,
+      googleFonts: document.getElementById('wconvert-payload')?.getAttribute('data-google-fonts') === '1',
       // Called rather than handed over: `controls` is the shell's object and a
       // bare reference to a method on it is a `this` waiting to be lost.
       onDismiss: () => controls.dismiss(),

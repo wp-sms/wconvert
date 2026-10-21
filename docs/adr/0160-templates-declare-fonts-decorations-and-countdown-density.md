@@ -60,7 +60,7 @@ listeners are cleaned up. No animation framework is added.
 
 `countdown.density: compact` modifies `layout: boxes`; omitted/regular preserves
 existing output. The template chooses it; `choices` deliberately exposes no
-new editor control. Fixed cell widths (52px wide, 44px in narrow containers)
+new editor control. Fixed cell widths (52px wide, 35px in narrow containers)
 and tabular numbers prevent digit changes from resizing the row. Labels wrap
 inside their allotted cells. Unit labels, colors and deadline remain editable.
 The fixed end time, hiding zero days and one silent timer retain ADR 0052/0159.
@@ -74,3 +74,21 @@ closed nested input, snapshot survival, font request timing/deduplication,
 decoration hiding/lifecycle and editor confirmation. Browser review additionally
 checks real WordPress saves, phone dimensions and reduced motion. Existing
 loader budgets remain unchanged; no new runtime dependency was added.
+
+## Library examples
+
+The five Halloween prototypes now have bundled library counterparts: midnight
+print, treat with teeth (including its acknowledgement), after dark, midnight
+flight and drop countdown. The first four are Free popups; the countdown is a
+Pro floating bar. They declare DM Sans plus Archivo Black or Instrument Serif,
+retain system fallbacks, and never enable Google delivery themselves. Midnight
+flight declares a Flying bats group. The bar retains its small pumpkin and uses
+compact boxes; its cells are 35px through 32rem containers to fit beside the action and the bar’s dismiss control on phones.
+
+Original prototype raster backgrounds are encoded to WebP and shipped under
+content hashes. The existing bundled artwork resolver now handles exact
+`bg-image` raster values as well as image leaves, keeping campaign snapshots
+small without adding a token or restricting ordinary image replacement.
+Unknown or altered files are never substituted. These bundled examples do not
+publish a hosted catalogue release or change the catalogue asset-binding schema.
+Review evidence lives in `docs/reviews/halloween-library-2026-10-21`.

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "halloween-bats",
+    "transitions": [
+      {
+        "longer": false,
+        "before": 655,
+        "after": 656,
+        "from": "stack",
+        "to": "side"
+      },
+      {
+        "longer": true,
+        "before": 655,
+        "after": 656,
+        "from": "stack",
+        "to": "side"
+      }
+    ]
+  },
+  {
+    "id": "halloween-forest",
+    "transitions": [
+      {
+        "longer": false,
+        "before": 655,
+        "after": 656,
+        "from": "stack",
+        "to": "side"
+      },
+      {
+        "longer": true,
+        "before": 655,
+        "after": 656,
+        "from": "stack",
+        "to": "side"
+      }
+    ]
+  },
+  {
+    "id": "halloween-countdown",
+    "transitions": [
+      {
+        "longer": false,
+        "before": 682,
+        "after": 683,
+        "from": "stack|side|side",
+        "to": "side|side|side"
+      },
+      {
+        "longer": true,
+        "before": 404,
+        "after": 405,
+        "from": "stack|side|stack",
+        "to": "stack|side|side"
+      },
+      {
+        "longer": true,
+        "before": 785,
+        "after": 786,
+        "from": "stack|side|side",
+        "to": "side|side|side"
+      }
+    ]
+  }
+]

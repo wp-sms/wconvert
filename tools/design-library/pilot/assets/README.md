@@ -49,3 +49,20 @@ Trail prompt:
 `after-hours-record.svg`, `gift-orbit.svg`, `night-observatory.svg` and `bloom-postcard.svg` are original WConvert geometric drawings, provided under the repository GPL-2.0-or-later licence. They contain shapes only: no third-party assets, text, fonts, scripts or external references. The night scene is not a sky chart or phase forecast. These illustrations do not claim actual products, performers or workshop outcomes. Exact SVG sources are embedded; a hosted raster derivative is not published in this batch. All headlines and controls remain editable separately from artwork.
 
 For installed Free campaigns, the two new JPEGs also ship under their SHA-256 filenames in `resources/template-artwork/`. `BundledArtwork` replaces only byte-matching embedded sources with the installation's own plugin URL; portable studio/pack exports retain embedded originals. This avoids raster bytes in page JSON while preserving the reviewed artwork. Keep old hash-named files when updating the sample imagery.
+
+## Halloween prototypes promoted to bundled designs · 21 October 2026
+
+`halloween-engraved.webp`, `halloween-monster.webp` and `halloween-forest.webp`
+are original AI-generated illustrations from this project's Halloween prototype
+exploration. No competitor artwork was reused. Full original prompts and exact
+raster SHA-256 rights records are in `publishing/catalog.json`. Delivery-only
+WebP derivatives use cwebp quality 80, proportionally resized to 800px wide for
+the two portraits and 1280px for the forest. Their composition is unchanged.
+Byte-identical copies ship under hash filenames in `resources/template-artwork`.
+
+`halloween-pumpkin.svg` is the prototype's original geometric drawing, provided
+under GPL-2.0-or-later. It contains no text, scripts, links or external assets.
+Its inline source keeps the small Pro countdown bar self-contained. Monster
+eyes and printed scenery are part of their bitmap; Midnight flight's three
+moving bats are independent built-in renderer decorations. Text, forms, codes,
+background replacement and button colors remain editable.

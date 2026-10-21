@@ -61,6 +61,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   const mounted = (entry.display_type === 'slide_in' ? mountPopover : mount)({
     ...campaignLifecycle(entry),
     displayType: entry.display_type, placement: entry.placement, template: entry.template, endsAt: entry.ends_at,
+    googleFonts: document.getElementById('wconvert-payload')?.getAttribute('data-google-fonts') === '1',
     onDismiss: () => { expanded = false; if (completed) { removed = true; hide(); } else { recovery?.minimized(); once('dismiss'); remind(); if (returnFocus) button.focus(); } },
     onConvert: convert,
   });

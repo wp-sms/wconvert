@@ -64,6 +64,10 @@
       {
         "id": "evergreen",
         "label": "Any time"
+      },
+      {
+        "id": "halloween",
+        "label": "Halloween"
       }
     ],
     "style": [
@@ -2313,6 +2317,88 @@
       ],
       "colour": [
         "light"
+      ]
+    },
+    "halloween-engraved": {
+      "description": "An engraved orange Halloween frame around a cream coupon and shopping offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "halloween",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm"
+      ]
+    },
+    "halloween-monster": {
+      "description": "A purple monster frames a playful email signup and matching discount-code acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "halloween",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
+    "halloween-forest": {
+      "description": "A cinematic midnight forest with editorial type and a separate shopping offer panel.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "halloween",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "green"
+      ],
+      "family": "halloween-forest"
+    },
+    "halloween-bats": {
+      "description": "Moving bats above a forest offer, with a simple switch to hide the decorations.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "halloween",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "green"
+      ],
+      "family": "halloween-forest"
+    },
+    "halloween-countdown": {
+      "description": "A compact orange Halloween bar with a small pumpkin, stable countdown boxes and shopping action.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "halloween",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "warm"
       ]
     }
   }

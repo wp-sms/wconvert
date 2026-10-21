@@ -62,11 +62,23 @@ const controls = (): OptinControls & { impressions: number; dismissals: number; 
 
 afterEach(() => {
   document.body.innerHTML = '';
+  document.querySelectorAll('link[data-wc-font]').forEach(link => link.remove());
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
   document.documentElement.style.removeProperty('--wconvert-top-bar-offset');
 });
 
 const popover = () => document.querySelector<HTMLElement>('[popover]');
+
+it.each(['floating_bar', 'slide_in', 'fullscreen', 'popup'])('honors site font permission when showing %s', displayType => {
+  const template = { ...TEMPLATE, tokens: { font: 'DM Sans, sans-serif' }, tree: {
+    ...TEMPLATE.tree, fonts: [{ family: 'DM Sans', faces: [{ weight: 400 }] }],
+  } };
+  proPresenter.show(entry({ display_type: displayType, template }), controls());
+  expect(document.querySelector('link[data-wc-font]')).toBeNull();
+  document.body.innerHTML = '<script id="wconvert-payload" data-google-fonts="1"></script>';
+  proPresenter.show(entry({ display_type: displayType, template }), controls());
+  expect(document.querySelector('link[data-wc-font]')?.getAttribute('data-wc-font')).toBe('DM Sans');
+});
 
 it('carries a published placement from the payload into the container', () => {
   proPresenter.show(entry({ display_type: 'floating_bar', placement: 'block_start' }), controls());

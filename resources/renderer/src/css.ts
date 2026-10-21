@@ -416,7 +416,7 @@ export const SHADOW_CSS = [
   `.wc-compact>.wc-unit{flex:0 0 auto!important;inline-size:3.25rem;max-inline-size:none;padding:.3rem .15rem;min-inline-size:0}`,
   `.wc-compact>.wc-unit>.wc-count{font-size:1.35rem;line-height:1.15;letter-spacing:normal}`,
   `.wc-compact>.wc-unit>small{font-size:.75rem;max-inline-size:100%;overflow-wrap:anywhere;text-align:center}`,
-  `@container (max-width:24rem){.wc-compact>.wc-unit{inline-size:2.75rem}.wc-compact>.wc-unit>.wc-count{font-size:1.15rem}}`,
+  `@container (max-width:32rem){.wc-compact>.wc-unit{inline-size:2.1875rem}.wc-compact>.wc-unit>.wc-count{font-size:1.15rem}}`,
 
   /*
    * ==========================================================================

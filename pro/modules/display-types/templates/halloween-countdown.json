@@ -1,0 +1,197 @@
+{
+  "id": "halloween-countdown",
+  "name": "Halloween drop countdown",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"Archivo Black\", Arial, sans-serif",
+    "heading-weight": "400",
+    "heading-size": "1rem",
+    "text-size": ".875rem",
+    "leading": "1.3",
+    "gap": ".65rem",
+    "radius": "0",
+    "align": "center",
+    "shadow": "0 3px 0 #17140d",
+    "backdrop": "#15120f99",
+    "input-bg": "#17140d",
+    "border": "#dff75b",
+    "width": "100%",
+    "pad": "0",
+    "bg": "#fa6027",
+    "fg": "#17140d",
+    "muted": "#fff8dd",
+    "accent": "#dff75b",
+    "accent-fg": "#14160c",
+    "close-fg": "fg",
+    "close-bg": "accent",
+    "close-border": "border",
+    "close-radius": ".375rem",
+    "error-fg": "#991b1b",
+    "error-bg": "#fef2f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "panel",
+                      "children": [],
+                      "tokens": {
+                        "bg-image": "url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2250%22%20fill%3D%22%23dcf75b%22%2F%3E%3Cpath%20d%3D%22M49%2027Q45%2012%2060%2012L58%2020Q50%2017%2055%2030%22%20fill%3D%22%2339452b%22%2F%3E%3Cellipse%20cx%3D%2238%22%20cy%3D%2256%22%20rx%3D%2223%22%20ry%3D%2229%22%20fill%3D%22%23c94c1c%22%2F%3E%3Cellipse%20cx%3D%2263%22%20cy%3D%2256%22%20rx%3D%2223%22%20ry%3D%2229%22%20fill%3D%22%23dc601f%22%2F%3E%3Cellipse%20cx%3D%2251%22%20cy%3D%2256%22%20rx%3D%2222%22%20ry%3D%2231%22%20fill%3D%22%23f98629%22%2F%3E%3Cpath%20d%3D%22M27%2049L42%2040L41%2053ZM61%2040L76%2049L62%2053ZM47%2058L53%2058L50%2051ZM28%2063Q50%2086%2076%2061L65%2069L60%2064L54%2074L46%2071L41%2064L36%2068Z%22%20fill%3D%22%23241810%22%2F%3E%3Cpath%20d%3D%22M36%2032Q24%2044%2027%2056%22%20fill%3D%22none%22%20stroke%3D%22%23ffad55%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E\")",
+                        "bg": "transparent",
+                        "pad": "1.5rem",
+                        "radius": "50%"
+                      }
+                    },
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "badge",
+                          "id": "n28",
+                          "text": "HALLOWEEN",
+                          "role": "badge",
+                          "tokens": {
+                            "accent": "input-bg",
+                            "accent-fg": "border",
+                            "text-size": ".65rem",
+                            "radius": ".2rem"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "id": "n30",
+                          "text": "31% off sitewide",
+                          "role": "headline"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n29",
+                          "text": "Code NIGHT31",
+                          "role": "body",
+                          "tokens": {
+                            "text-size": ".875rem"
+                          }
+                        }
+                      ],
+                      "tokens": {
+                        "gap": ".2rem",
+                        "align": "start"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".6rem",
+                    "align": "center"
+                  }
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "countdown",
+                      "id": "n31",
+                      "tokens": {
+                        "fg": "muted",
+                        "border": "input-bg",
+                        "radius": ".25rem",
+                        "font": "\"DM Sans\", Arial, sans-serif",
+                        "heading-weight": "700"
+                      },
+                      "layout": "boxes",
+                      "density": "compact",
+                      "role": "countdown_units",
+                      "days_label": "Days",
+                      "hours_label": "Hrs",
+                      "minutes_label": "Mins",
+                      "seconds_label": "Secs"
+                    },
+                    {
+                      "type": "button",
+                      "id": "n32",
+                      "label": "Shop now",
+                      "role": "cta_label",
+                      "action": "link",
+                      "tokens": {
+                        "accent": "input-bg",
+                        "accent-fg": "muted",
+                        "text-size": ".875rem",
+                        "radius": ".3rem",
+                        "shadow": "none"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".85rem",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "gap": ".35rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "1.25rem",
+                "align": "center"
+              },
+              "narrow": {
+                "gap": ".6rem",
+                "align": "start"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": ".6rem clamp(.75rem, calc(35cqi - 10.5rem), 3.5rem)",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": ".6rem .75rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 600,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Archivo Black",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          }
+        ]
+      }
+    ]
+  }
+}
