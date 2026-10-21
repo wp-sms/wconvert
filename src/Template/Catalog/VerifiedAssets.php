@@ -17,6 +17,8 @@ defined('ABSPATH') || exit;
 final class VerifiedAssets
 {
     public const MAX_BYTES = 5242880;
+    /** Images one design may carry. The catalogue Worker refuses more with the same number. */
+    public const MAX_ASSETS = 16;
     private const TYPES = ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp'];
 
     public function __construct(private readonly string $directory, private readonly string $baseUrl) {}
@@ -137,7 +139,7 @@ final class VerifiedAssets
     /** @param list<array<string, mixed>> $assets */
     public static function validate(array $assets): void
     {
-        PackValidator::check(array_is_list($assets) && count($assets) <= 16, __('Invalid image manifest.', 'wconvert'));
+        PackValidator::check(array_is_list($assets) && count($assets) <= self::MAX_ASSETS, __('Invalid image manifest.', 'wconvert'));
         $ids = []; $bytes = 0;
         foreach ($assets as $asset) {
             PackValidator::check(is_array($asset), __('Invalid image manifest.', 'wconvert'));

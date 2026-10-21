@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import { publicPreview } from './public-preview.mjs';
 import { cacheKey, cached, codeOf, remember } from './cache.mjs';
 
-const CODE = codeOf(import.meta.url) + codeOf(new URL('./public-preview.mjs', import.meta.url)) + codeOf(new URL('./preview-controls.mjs', import.meta.url));
+const CODE = codeOf(import.meta.url) + codeOf(new URL('./public-preview.mjs', import.meta.url)) + codeOf(new URL('./design-images.mjs', import.meta.url)) + codeOf(new URL('./preview-controls.mjs', import.meta.url));
 
 /** The website's largest card; 2× is twice that, and Open Graph is its own fixed frame. */
 export const THUMB_WIDTH = 600;
@@ -57,11 +57,14 @@ export async function galleryArtwork(designs, renderer) {
       const embed = publicPreview(entry.pack, renderer, previewMedia, { designId: design.id, embed: true });
       await page.setContent(embed);
       await page.evaluate(async () => { await document.fonts.ready; });
-      // Shadow DOM images are data URLs. Wait for decoding, not an arbitrary delay.
+      // Shadow DOM pictures are data URLs, as images and as backgrounds. Wait
+      // for decoding, not an arbitrary delay.
       await page.evaluate(async () => {
         const templates = [...document.querySelectorAll('template')];
-        await Promise.all(templates.flatMap(t => [...t.content.querySelectorAll('img')]).map(image => {
-          const probe = new Image(); probe.src = image.src; return probe.decode();
+        const sources = templates.flatMap(t => [...t.content.querySelectorAll('img')].map(image => image.src)
+          .concat([...t.content.querySelectorAll('[style]')].flatMap(node => [...node.getAttribute('style').matchAll(/url\(["']?(data:image\/[^"')]+)["']?\)/g)].map(match => match[1]))));
+        await Promise.all(sources.map(source => {
+          const probe = new Image(); probe.src = source; return probe.decode();
         }));
       });
       const sample = page.locator('#sample');

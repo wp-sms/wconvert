@@ -27,7 +27,7 @@ final class DesignObject
 {
     public const SCHEMA = 3;
     /** The minor version this reader was built for; a higher one is still read. */
-    public const MINOR = 0;
+    public const MINOR = 1;
 
     private const DESIGN_KEYS = ['schema', 'minor', 'id', 'revision', 'name', 'display_type', 'tier', 'family', 'meta', 'requires', 'assets', 'image_bindings', 'tree', 'tokens'];
     private const SETUP_KEYS = ['schema', 'minor', 'id', 'revision', 'name', 'tier', 'design', 'requires', 'playbook'];
@@ -49,7 +49,7 @@ final class DesignObject
         $bindings = [];
         foreach (is_array($object['image_bindings'] ?? null) ? $object['image_bindings'] : [] as $binding) {
             PackValidator::check(is_array($binding), __('Invalid image binding.', 'wconvert'));
-            PackValidator::keys($binding, ['node_id', 'asset_id']);
+            PackValidator::keys($binding, ['slot', 'asset_id']);
             $bindings[] = ['template_id' => $object['id']] + $binding;
         }
         $pack = ['schema' => 2, 'id' => $object['id'], 'version' => '1.0.0', 'name' => $object['name'], 'description' => '',

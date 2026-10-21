@@ -151,13 +151,13 @@ An i18n sidecar is `{"schema": 3, "designs": {"<id>": {"name", "description"}}}`
 
 ```json
 {
-  "schema": 3, "minor": 0,
+  "schema": 3, "minor": 1,
   "id": "reading-slip", "revision": 3, "name": "Reading slip",
   "display_type": "popup", "tier": "free", "family": "reading",
   "meta": {"description": "…", "slug": "reading-slip", "industries": ["books"], "occasions": [], "style": ["editorial"], "colour": ["warm"]},
   "requires": {"plugin": "1.0.0", "tree": 2, "capabilities": ["capture-journey:1", "template-tree:2"]},
   "assets": [{"id": "image-…", "sha256": "…", "mime": "image/png", "bytes": 1234, "width": 800, "height": 600, "access": "free"}],
-  "image_bindings": [{"node_id": "n7", "asset_id": "image-…"}],
+  "image_bindings": [{"slot": "tree/steps/0/content/tokens/bg-image", "asset_id": "image-…"}],
   "tree": {"v": 2, "steps": []},
   "tokens": {}
 }
@@ -166,11 +166,24 @@ An i18n sidecar is `{"schema": 3, "designs": {"<id>": {"name", "description"}}}`
 Free designs may bind only `access: free` images. Authored links and picture
 URLs are empty; the merchant supplies them after installing.
 
+**Image bindings name a slot, not a node** (minor 1, ADR 0162). A slot is the
+`/`-joined path to a picture in `{"tree", "tokens"}`, exactly as merchant
+transfer names it (`DesignImages::slots`): an image's `src`
+(`tree/steps/0/content/children/2/src`), or a `bg-image` in design, node or
+`narrow` tokens (`tokens/bg-image`, `tree/steps/1/content/narrow/bg-image`).
+Layout nodes carry no `id`, so this is the only way a background can be bound.
+The tree leaves every bound slot empty — `""` for an image, `"none"` for a
+background — and a gradient is a style, never a slot. The reader
+(`pack-images:1`) refuses a binding to an unknown or non-empty slot, the same
+slot twice, an image nothing binds, and a premium image in a Free design. On
+install it writes the verified local URL into each slot, wrapped as
+`url("…")` for a background. One image may fill several slots.
+
 ### Setup object — `v3/setups/<sha>.json`
 
 ```json
 {
-  "schema": 3, "minor": 0,
+  "schema": 3, "minor": 1,
   "id": "welcome-discount", "revision": 1, "name": "Welcome discount", "tier": "free",
   "design": {"id": "reading-slip", "revision": 3},
   "requires": {"plugin": "1.0.0", "capabilities": ["campaign-starts:1"]},

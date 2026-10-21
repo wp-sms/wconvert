@@ -47,7 +47,9 @@ A higher `minor` is read.
 design and setup envelopes and `meta` drop keys they do not know. The tree,
 tokens, images, bindings and a setup's playbook stay strict: that is 0082's
 security boundary, now `DesignObject` wrapped around the unchanged
-`PackValidator`. An unknown plan, format, capability or newer `requires.plugin`
+`PackValidator`. *Amended by [0162](0162-the-delivery-plan-is-derived.md):*
+`image_bindings` rows are `{slot, asset_id}` (minor 1), so a background picture
+downloads like an image. An unknown plan, format, capability or newer `requires.plugin`
 means "update the plugin", never "free". A failure costs one design.
 
 **4. Requirements are computed.** Every manifest node, param, content key,

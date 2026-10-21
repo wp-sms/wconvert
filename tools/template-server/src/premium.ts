@@ -92,7 +92,8 @@ async function files(env: NexusEnv, designs: string[], setups: string[]): Promis
       if (kind === 'setups') continue;
       let assets: unknown;
       try { assets = JSON.parse(new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(bytes)).assets; } catch { throw new Refusal(503, 'storage_unavailable'); }
-      requireThat(Array.isArray(assets) && assets.length <= 50, 503, 'storage_unavailable');
+      // VerifiedAssets::MAX_ASSETS: the plugin refuses a design with more.
+      requireThat(Array.isArray(assets) && assets.length <= 16, 503, 'storage_unavailable');
       for (const asset of assets) {
         const ext = EXTENSIONS[asset?.mime];
         requireThat(ext && typeof asset.sha256 === 'string' && HEX.test(asset.sha256) && ['free', 'premium'].includes(asset.access) && Number.isInteger(asset.bytes) && asset.bytes > 0 && asset.bytes <= 5242880, 503, 'storage_unavailable');

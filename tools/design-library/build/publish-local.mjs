@@ -16,6 +16,7 @@ import { contrastReport } from './catalogue-contrast.mjs';
 import { copyIssues } from './catalogue-copy.mjs';
 import { designSource } from './sources.mjs';
 import { delivery, releaseCollections, staleApprovals } from './delivery.mjs';
+import { withPictures } from './design-images.mjs';
 import { FIX } from './releasable.mjs';
 
 /**
@@ -87,7 +88,7 @@ const bundledArtwork = [...new Set(online.held.map(row => row.design))].map(id =
 });
 await galleryArtwork([...artwork, ...bundledArtwork], renderer);
 // Text measured against the pixels actually behind it, pictures included (WCAG AA).
-const contrast = [...await contrastReport(designs.map(design => JSON.parse(design.json)), renderer)].filter(([, failures]) => failures.length);
+const contrast = [...await contrastReport(designs.map(design => withPictures(JSON.parse(design.json), media(design))), renderer)].filter(([, failures]) => failures.length);
 if (contrast.length) throw new Error('These designs have text a visitor cannot read against what is behind it:\n'
   + contrast.flatMap(([id, failures]) => failures.map(failure => `  ${id} ${failure.screen}: “${failure.text}” ${failure.ratio}:1`)).join('\n'));
 for (const design of designs) Object.assign(design, { gallery: artwork.find(item => item.id === design.id).gallery, media: media(design) });

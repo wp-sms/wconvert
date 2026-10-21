@@ -52,8 +52,9 @@ and refuses the whole release on the first gap:
   `tier` must match the entry. Design ids are unique across pages, and an alias
   is never a live id;
 - every image a design object lists in `assets`: Free images public, premium
-  images private, at most 50 per design and 20 MiB in total. A Free design binds
-  only Free images, and every `image_bindings` row names a listed image;
+  images private, at most 16 per design (the plugin's `VerifiedAssets::MAX_ASSETS`)
+  and 20 MiB in total. A Free design binds only Free images, and every
+  `image_bindings` row names a slot and a listed image;
 - each design entry's `thumb` as both `v3/thumbs/<sha>.webp` (verified by
   digest) and `v3/thumbs/<sha>@2x.webp` (present and within budget);
 - every setup's object, and the exact design `{id, revision}` it pins among the

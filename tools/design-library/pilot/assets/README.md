@@ -66,3 +66,7 @@ Its inline source keeps the small Pro countdown bar self-contained. Monster
 eyes and printed scenery are part of their bitmap; Midnight flight's three
 moving bats are independent built-in renderer decorations. Text, forms, codes,
 background replacement and button colors remain editable.
+
+`halloween-pumpkin.png` is the pumpkin's reviewed 256 × 256 raster export for the
+catalogue download, made once in Chromium; the bundled design keeps the vector.
+See `docs/reviews/halloween-library-2026-10-21/pumpkin-export.md`.

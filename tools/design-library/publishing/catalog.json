@@ -86,6 +86,13 @@
       "redistribution": true,
       "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
       "access": "free"
+    },
+    "68c32e754d49688bec1b2300742ce76107200bd762ee0ace581c5f8622e4c078": {
+      "redistribution": true,
+      "source": "Original WConvert halloween-pumpkin.svg, the Halloween prototype's geometric drawing; GPL-2.0-or-later. Reviewed 256 × 256 raster export: halloween-pumpkin.png. See pilot/assets/README.md.",
+      "reviewedBy": "Claude — provenance and raster review, 2026-10-21",
+      "access": "premium",
+      "kind": "original"
     }
   },
   "artwork_exports": {
@@ -114,6 +121,15 @@
       "evidence": {
         "path": "docs/reviews/hosted-practical-2026-10-20/task-lamp-export.md",
         "sha256": "705ded592cd5af6cbc10f068e3d3e6239b59c6e82f8b4233b80f6ba1aaa7472c"
+      }
+    },
+    "7c94f14e30d748ce7f4e540082fd27f184b294cf5c96f17ad91abbce885e6bc6": {
+      "path": "tools/design-library/pilot/assets/halloween-pumpkin.png",
+      "sha256": "68c32e754d49688bec1b2300742ce76107200bd762ee0ace581c5f8622e4c078",
+      "mime": "image/png",
+      "evidence": {
+        "path": "docs/reviews/halloween-library-2026-10-21/pumpkin-export.md",
+        "sha256": "71a62f1a398bfd3b5d81ac174a7c45b4f3b0fdda15d1f9d6381541d6733be116"
       }
     }
   }
