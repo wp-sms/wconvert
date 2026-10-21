@@ -185,6 +185,7 @@ function recipientRows(data: DataMap): Recipient[] {
       </span>
     ) : destination.fields.map((field) => labelOf(field, fields, __('Other answers', 'wconvert'))).join(', '),
   }));
+  if (data.google_fonts) rows.push({ key: 'google-fonts', name: 'Google Fonts', receives: __('IP address and request information when a campaign needs a remotely hosted font. No form answers.', 'wconvert') });
   const analytics = data.analytics_integration;
   if (analytics?.configured) {
     rows.push({

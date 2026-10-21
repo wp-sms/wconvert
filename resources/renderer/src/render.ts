@@ -1,3 +1,4 @@
+import { decorate } from './decorations';
 import { controlIcon, strokeIcon } from './stroke-icon';
 import type {
   BadgeNode,
@@ -316,6 +317,7 @@ function layout(
     edges?: string;
     min?: string | number;
     notch?: boolean;
+    decorations?: import('./types').Decorations;
   },
   scoped: Tokens,
   at: string | null,
@@ -401,6 +403,7 @@ function layout(
     appendNode(element, child, here, into(at, 'children', index));
   }
 
+  if (node.type === 'panel' || node.type === 'media') decorate(element, node.decorations);
   return element;
 }
 
@@ -704,6 +707,7 @@ function countdown(node: CountdownNode): HTMLElement {
 
   if (node.layout === 'boxes') {
     element.classList.add('wc-boxes');
+    if (node.density === 'compact') element.classList.add('wc-compact');
     for (const [unit, label] of [['d', node.days_label || 'Days'], ['h', node.hours_label || 'Hours'], ['m', node.minutes_label || 'Mins'], ['s', node.seconds_label || 'Secs']]) {
       const word = document.createElement('small');
 

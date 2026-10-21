@@ -69,7 +69,8 @@
         "min",
         "notch",
         "tokens",
-        "narrow"
+        "narrow",
+        "decorations"
       ],
       "choices": {
         "edges": [
@@ -110,7 +111,8 @@
       "params": [
         "min",
         "tokens",
-        "narrow"
+        "narrow",
+        "decorations"
       ],
       "choices": {
         "min": [
@@ -411,7 +413,8 @@
         "layout",
         "hidden",
         "tokens",
-        "narrow"
+        "narrow",
+        "density"
       ],
       "roles": [
         "countdown_units"
@@ -962,5 +965,29 @@
       "max_pre_acknowledgement_screens": 6,
       "max_submissions": 2
     }
+  },
+  "decorations": {
+    "kinds": [
+      "bat",
+      "eyes",
+      "sparkle"
+    ],
+    "motions": [
+      "none",
+      "float",
+      "flap",
+      "blink"
+    ],
+    "colors": [
+      "fg",
+      "accent",
+      "muted",
+      "accent-fg"
+    ],
+    "max_items": 8
+  },
+  "google_fonts": {
+    "max_families": 4,
+    "max_faces": 12
   }
 }

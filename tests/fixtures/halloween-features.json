@@ -1,0 +1,22 @@
+{
+  "tokens": {"bg":"#151b18","fg":"#fff2d5","muted":"#c0c7b7","accent":"#ffac4b","accent-fg":"#22130a","input-bg":"#253329","border":"#445445","radius":".6rem","pad":"0","gap":"1rem","align":"center","width":"30rem","font":"system-ui, sans-serif","heading-font":"'Creepster', cursive","heading-size":"3.2rem","close-fg":"#fff2d5","close-bg":"transparent","close-border":"transparent"},
+  "tree": {
+    "v":2,
+    "fonts":[{"family":"Creepster","faces":[{"weight":400,"italic":false}]}],
+    "steps":[{"id":"offer","name":"Halloween offer","kind":"content","content":{
+      "type":"panel","tokens":{"pad":"3.5rem 2rem 2rem","gap":"1rem"},"narrow":{"pad":"3rem 1rem 1.5rem","heading-size":"2.4rem"},
+      "decorations":{"label":"Flying bats","hidden":false,"items":[
+        {"kind":"bat","x":12,"y":12,"size":60,"motion":"flap","color":"accent","narrow":{"x":13,"y":10,"size":42}},
+        {"kind":"bat","x":84,"y":22,"size":44,"motion":"float","color":"muted","narrow":{"x":87,"y":12,"size":30}}
+      ]},
+      "children":[
+        {"type":"eyebrow","id":"n1","role":"eyebrow","text":"THE HALLOWEEN DROP"},
+        {"type":"heading","id":"n2","role":"headline","text":"Treat yourself.","level":"2"},
+        {"type":"text","id":"n3","role":"body","text":"A little mischief. A limited-time offer."},
+        {"type":"countdown","id":"n4","role":"countdown_units","layout":"boxes","density":"compact","days_label":"Days","hours_label":"Hours","minutes_label":"Mins","seconds_label":"Secs"},
+        {"type":"button","id":"n5","role":"cta_label","action":"link","label":"Explore the treats","href":"https://example.com/halloween"}
+      ]
+    }}],
+    "submissions":[]
+  }
+}

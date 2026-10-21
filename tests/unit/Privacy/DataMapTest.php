@@ -32,6 +32,7 @@ final class DataMapTest extends TestCase
         );
 
         $this->assertSame([
+            'google_fonts' => false,
             'analytics_integration' => null,
             'retention_days' => null,
             'destinations' => [],

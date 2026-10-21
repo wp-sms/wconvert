@@ -61,6 +61,7 @@ export function createTemplatePresenter(bind: typeof captureInto): Presenter { r
       // (ADR 0052). Absent where the merchant set no end, which draws a clock
       // with nothing in it rather than inventing one.
       endsAt: entry.ends_at,
+      googleFonts: document.getElementById('wconvert-payload')?.getAttribute('data-google-fonts') === '1',
       // Called rather than handed over: `controls` is the shell's object and
       // a bare reference to a method on it is a `this` waiting to be lost.
       onDismiss: () => controls.dismiss(),

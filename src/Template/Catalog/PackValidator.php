@@ -132,7 +132,8 @@ final class PackValidator
                 $requiredCapabilities[] = 'question-journey:1';
             }
             $graph = TemplateTree::isGraph($tree);
-            $this->keys($tree, $graph ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
+            $this->keys($tree, $graph ? ['v', 'steps', 'submissions', 'graph', 'fonts'] : ['v', 'steps', 'submissions', 'fonts']);
+            if (isset($tree['fonts'])) self::check(\WConvert\Template\DesignFeatures::fonts($tree['fonts']) === $tree['fonts'], __('This design has invalid font requirements.', 'wconvert'));
             // `v` is the vocabulary version; a flow is said by `graph` (ADR 0156).
             self::check(($tree['v'] ?? null) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
             self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
@@ -271,6 +272,10 @@ final class PackValidator
                 foreach ($value as $child) $this->node($child, $depth + 1, $ids, $count, $requiredCapabilities);
             } elseif (in_array($key, ['tokens', 'narrow'], true)) {
                 $this->bag($value);
+            } elseif ($key === 'decorations') {
+                self::check(\WConvert\Template\DesignFeatures::decorations($value) === $value, __('This design has invalid decorations.', 'wconvert'));
+            } elseif ($type === 'countdown' && $key === 'density') {
+                self::check(in_array($value, ['regular', 'compact'], true), __('This design has an invalid countdown size.', 'wconvert'));
             } elseif ($key === 'link') {
                 self::check(is_array($value), __('This design has an invalid link label.', 'wconvert'));
                 $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);

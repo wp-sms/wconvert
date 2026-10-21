@@ -164,7 +164,7 @@ final class SlotRoles
      *
      * @param mixed $tree
      * @param array<string, mixed> $copy Role => the words, as a Playbook carries them.
-     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, fonts?: list<array{family: string, faces: list<array{weight: int, italic: bool}>}>}
      */
     public static function bind($tree, array $copy, TemplateVocabulary $vocabulary): array
     {
@@ -175,7 +175,7 @@ final class SlotRoles
                 $words = $copy['screens'][$scope] ?? (!isset($copy['screens']) && ($index === CaptureJourney::submitScreen($tree, $tree['submissions'][0]['id'] ?? '') || $screen['kind'] === 'acknowledgement') ? $copy : []);
                 $steps[] = self::bind(['steps' => [$screen], 'submissions' => []], is_array($words) ? $words : [], $vocabulary)['steps'][0];
             }
-            return TemplateTree::stamped(['steps' => $steps, 'submissions' => $tree['submissions'] ?? []]);
+            return TemplateTree::stamped(['steps' => $steps, 'submissions' => $tree['submissions'] ?? []] + array_intersect_key($tree, ['fonts' => true]));
         }
         /** @var array<string, int> $bound How many nodes have already taken each Role. */
         $bound = [];
@@ -392,7 +392,7 @@ final class SlotRoles
      *
      * @param mixed $tree
      * @param callable(array<string, mixed>, array<string, list<string>>): array<string, mixed> $visit
-     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, fonts?: list<array{family: string, faces: list<array{weight: int, italic: bool}>}>}
      */
     private static function walk($tree, TemplateVocabulary $vocabulary, callable $visit): array
     {
@@ -406,7 +406,7 @@ final class SlotRoles
             }
         }
 
-        return TemplateTree::stamped(['steps' => $visited, 'submissions' => $tree['submissions'] ?? []]);
+        return TemplateTree::stamped(['steps' => $visited, 'submissions' => $tree['submissions'] ?? []] + array_intersect_key($tree, ['fonts' => true]));
     }
 
     /**

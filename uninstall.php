@@ -62,6 +62,8 @@ $wconvertOptions = [
     'wconvert_retention_days',
     // Privacy\PrivacyGuidance::OPTION — authoring help for new Campaign drafts.
     'wconvert_privacy_guidance',
+    // Template\GoogleFonts::OPTION — optional remote font delivery.
+    'wconvert_google_fonts',
     // Optin\SiteFrequency::OPTION — the allowance the whole site shares.
     'wconvert_site_frequency',
     // Stats\MonthlyTargets::OPTION — optional site-owned monthly benchmarks.

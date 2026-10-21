@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { ConfirmDialog } from './ConfirmDialog';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import {
@@ -30,6 +31,7 @@ export function SwitchSetting({
   read,
   save: write,
   children,
+  enableConfirmation,
   onEditingStateChange,
 }: {
   title: string;
@@ -42,8 +44,11 @@ export function SwitchSetting({
   save: (enabled: boolean) => Promise<{ enabled: boolean }>;
   /** Under the switch: a guide link, a note. */
   children?: ReactNode;
+  enableConfirmation?: { title: string; description: string; confirm: string; cancel: string };
   onEditingStateChange?: SettingsEditing;
 }) {
+  const [confirm, setConfirm] = useState(false);
+  const saveButton = useRef<HTMLButtonElement>(null);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [draft, setDraft] = useState<boolean | null>(null);
   const [loadingError, setLoadingError] = useState<string | null>(null);
@@ -103,6 +108,9 @@ export function SwitchSetting({
 
   return (
     <Region>
+      {enableConfirmation && <ConfirmDialog open={confirm} onOpenChange={open => { setConfirm(open); if (!open) setDraft(saved); }} title={enableConfirmation.title} description={enableConfirmation.description}
+        confirmLabel={enableConfirmation.confirm} cancelLabel={enableConfirmation.cancel} returnFocusTo={saveButton}
+        onConfirm={() => { setConfirm(false); void save(); }} />}
       <RegionHeader title={title} />
       <RegionBody>
         <CheckRow
@@ -135,7 +143,7 @@ export function SwitchSetting({
             {__('Cancel changes', 'wconvert')}
           </Button>
         )}
-        <Button type="button" disabled={!dirty || saving} onClick={() => void save()}>
+        <Button ref={saveButton} type="button" disabled={!dirty || saving} onClick={() => { if (enableConfirmation && draft && !saved) setConfirm(true); else void save(); }}>
           {saving ? __('Saving…', 'wconvert') : saveLabel}
         </Button>
       </RegionFooter>

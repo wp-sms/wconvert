@@ -985,6 +985,14 @@ one is checked once.
 
 ### Template
 
+A Template may declare optional decorative groups on panels/media and Google
+font requirements. The Look panel offers only each declared group's visibility;
+placement and motion remain authored. Remote font delivery is a separate,
+default-off site option with merchant acknowledgment. Imported designs never
+turn it on; WordPress Font Library remains the local-hosting route. Countdown
+boxes may use an author-chosen compact density. See
+[ADR 0160](docs/adr/0160-templates-declare-fonts-decorations-and-countdown-density.md).
+
 A merchant may export one current design and import it into another campaign as
 an owned snapshot, with supported local images. File import defaults to the file's
 content, previews explicit link decisions, and applies one undoable draft change.

@@ -50,6 +50,7 @@ export function settingsIndex(): SettingEntry[] {
   const analyticsOn = setting('analytics-enabled');
   const provider = setting('protection-provider');
   return [
+    { key: 'google-fonts', group: 'data', label: __('Google Fonts', 'wconvert'), terms: __('fonts typography remote google privacy', 'wconvert'), find: [setting('google-fonts')] },
     { key: 'add-destination', group: 'connections', label: __('Add a destination', 'wconvert'), terms: __('send leads mailchimp brevo email list provider route new', 'wconvert'), find: [control(__('Add a destination', 'wconvert')), destinations] },
     { key: 'connect-account', group: 'connections', label: __('Connect an account', 'wconvert'), terms: __('account api key credentials sign in mailchimp brevo', 'wconvert'),
       find: [control(__('Connect an account', 'wconvert'), `${__('Connect', 'wconvert')} `), heading(__('Accounts', 'wconvert')), destinations] },

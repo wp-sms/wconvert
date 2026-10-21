@@ -1,5 +1,7 @@
 # Templates are configuration, not documents
 
+**Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): the closed vocabulary now includes explicit font requirements and optional, bounded decorative groups. These accept no arbitrary markup, CSS or scripts.**
+
 **Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
 
 **Further amended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** paid loader caps are now 24,064 / 25,088 / 25,344 B for Basic / Pro / Elite. The Free loader and page/design caps above are unchanged. The JSON vocabulary now includes bounded questions, flat conditions, and result variants; executable journey behavior remains in the paid module.

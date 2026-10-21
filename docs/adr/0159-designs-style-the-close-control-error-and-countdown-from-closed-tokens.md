@@ -1,5 +1,7 @@
 # 0159: Designs style the close control, error and countdown from closed tokens
 
+**Extended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): boxed countdowns can use an author-only compact density with fixed cell widths. The same clock and labels remain.**
+
 Date: 2026-10-21. Status: accepted (approved by the user).
 Amends [0155](0155-visitor-controls-use-font-independent-geometry.md),
 [0158](0158-a-close-control-takes-room-only-beside-what-it-covers.md),

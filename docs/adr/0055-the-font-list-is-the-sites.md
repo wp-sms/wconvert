@@ -1,5 +1,7 @@
 # The font list is the site's, and WConvert loads no face
 
+**Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): site fonts remain supported; an explicit, default-off Google Fonts option can now load declared font requirements at document level after merchant acknowledgment. The earlier absolute refusal below is historical.**
+
 The Design panel offered four typefaces: *System*, *Sans serif*, *Serif*,
 *Monospace*. A merchant whose theme ships Inter could not pick Inter — while
 the family was sitting in their `theme.json` all along, already served on every

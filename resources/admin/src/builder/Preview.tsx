@@ -1,3 +1,5 @@
+import { getThemeTokens } from './api';
+import { firstFamily, loadFontFaces, usedGoogleFonts } from '@renderer/fonts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
@@ -191,6 +193,18 @@ export interface PreviewProps {
 }
 
 export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance, result }: PreviewProps) {
+  // A copy or color edit should not repeat the site-font lookup.
+  const fontRequest = JSON.stringify(usedGoogleFonts(template));
+  const fontPreview = onSelect !== undefined;
+  // Only the active editor preview requests faces; gallery cards remain request-free.
+  useEffect(() => {
+    if (!fontPreview || fontRequest === '[]') return;
+    let active = true;
+    getThemeTokens().then(site => {
+      if (active) loadFontFaces(JSON.parse(fontRequest) as import('@renderer/types').GoogleFont[], site.google_fonts_enabled === true, (site.fonts ?? []).map(font => firstFamily(font.stack)));
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [fontRequest, fontPreview]);
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again

@@ -1,3 +1,4 @@
+import { loadGoogleFonts } from './fonts';
 import { controlIcon } from './stroke-icon';
 import type { Template } from './types';
 import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS, mountedStyles } from './css';
@@ -76,6 +77,8 @@ const DIALOG_ARMOUR: Readonly<Record<string, string>> = {
 };
 
 export interface MountOptions {
+  readonly googleFonts?: boolean;
+  readonly siteFontFamilies?: readonly string[];
   /** `popup` or `inline`. Anything else mounts nothing rather than guessing. */
   readonly displayType?: string;
   /** Runs for each rendered step once its close control is attached (Pro's bars and slide-ins). */
@@ -222,6 +225,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
   let root = render(template.tree, template.tokens, 0, { paths: options.paths });
 
+  root.dataset.motion = 'paused';
   shadow.appendChild(root);
   bind(root);
 
@@ -318,6 +322,21 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
    * string once a second is a timer running on every page view of every Optin
    * nobody scheduled.
    */
+  let active = false;
+  let motionCleanup: (() => void) | undefined;
+  const watchMotion = () => {
+    motionCleanup?.();
+    if (!root.querySelector('.wc-decorations')) return;
+    let visible = true;
+    const update = () => { root.dataset.motion = active && visible && !document.hidden ? 'running' : 'paused'; };
+    const observer = typeof IntersectionObserver === 'undefined' ? undefined : new IntersectionObserver(entries => {
+      visible = entries.some(entry => entry.isIntersecting); update();
+    });
+    observer?.observe(host);
+    document.addEventListener('visibilitychange', update);
+    update();
+    motionCleanup = () => { observer?.disconnect(); document.removeEventListener('visibilitychange', update); };
+  };
   let ticking = options.endsAt === undefined ? undefined : setInterval(() => paint(root), 1000);
 
   return {
@@ -331,16 +350,26 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
       root.dispatchEvent(new Event('wconvert:closed'));
       root.replaceWith(next);
       root = next;
+      root.dataset.motion = active ? 'running' : 'paused';
       bind(next);
+      if (active) watchMotion();
 
       return next;
     },
     resume(): void {
+      active = true;
+      root.dataset.motion = 'running';
+      watchMotion();
+      loadGoogleFonts(template, options.googleFonts === true, options.siteFontFamilies);
       root.dispatchEvent(new Event('wconvert:shown'));
       paint(root);
       if (options.endsAt !== undefined && ticking === undefined) ticking = setInterval(() => paint(root), 1000);
     },
     stop(): void {
+      active = false;
+      motionCleanup?.();
+      motionCleanup = undefined;
+      root.dataset.motion = 'paused';
       root.dispatchEvent(new Event('wconvert:closed'));
       clearInterval(ticking);
       ticking = undefined;
@@ -538,6 +567,7 @@ function inline(options: MountOptions, anchor: Element): Mounted {
     show() {
       documentStyle();
       anchor.appendChild(parts.host);
+      parts.resume();
     },
     showStep: (step) => void parts.step(step),
     close() {

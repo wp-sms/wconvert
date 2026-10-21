@@ -1,3 +1,5 @@
+import { withGoogleFont } from './googleFonts';
+import type { GoogleFont } from '@renderer/types';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { ClipboardCopy, ClipboardPaste, Monitor, RotateCcw, Smartphone, TriangleAlert } from 'lucide-react';
@@ -72,8 +74,8 @@ export function ScopeStyle({
     return <NoScope chain={chain} labels={labels} onSelect={onSelect} />;
   }
 
-  const write = (name: string, coalesce?: string) => (value: string) =>
-    onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, coalesce);
+  const write = (name: string, coalesce?: string) => (value: string, font?: GoogleFont) =>
+    onChange(withGoogleFont({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, font), coalesce);
 
   const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);

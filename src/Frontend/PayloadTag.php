@@ -130,6 +130,15 @@ final class PayloadTag
         // becomes markup. JSON_UNESCAPED_SLASHES and _UNICODE are there for
         // the byte budget: a URL and a non-ASCII headline are otherwise
         // escaped into two and six bytes per character.
+        // Site policy is evaluated at delivery, not frozen in a campaign snapshot.
+        $googleFonts = \WConvert\Template\GoogleFonts::enabled();
+        $siteFamilies = $googleFonts ? \WConvert\Template\GoogleFonts::siteFamilies(\WConvert\Template\ThemeTokens::fontsFromSite()) : [];
+        foreach ($entries as &$entry) {
+            if (!isset($entry['template']['tree']['fonts'])) continue;
+            $fonts = \WConvert\Template\DesignFeatures::fonts($entry['template']['tree']['fonts']);
+            $entry['template']['tree']['fonts'] = $googleFonts ? array_values(array_filter($fonts, static fn (array $font): bool => !in_array(strtolower($font['family']), $siteFamilies, true))) : [];
+        }
+        unset($entry);
         $entries = apply_filters('wconvert_payload_entries', $entries);
         $json = wp_json_encode($entries, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
@@ -150,6 +159,8 @@ final class PayloadTag
             self::BEACON_ATTRIBUTE => esc_url_raw($beaconUrl),
             self::TIMEZONE_ATTRIBUTE => $timezone,
         ];
+
+        if ($googleFonts) $attributes['data-google-fonts'] = '1';
 
         $allowance = self::siteAllowanceJson($siteAllowance);
         if ($allowance !== null) {

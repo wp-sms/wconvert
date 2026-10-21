@@ -1,3 +1,6 @@
+import { firstFamily } from '@renderer/fonts';
+import { GOOGLE_FONTS, withGoogleFont } from './googleFonts';
+import type { GoogleFont } from '@renderer/types';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '../shell/Region';
@@ -411,8 +414,8 @@ function Palette({
   onChange: (template: Template, coalesce?: string) => void;
 }) {
   const hasDesign = Object.keys(design).length > 0;
-  const write = (name: string) => (value: string) =>
-    onChange({ ...template, tokens: withToken(template.tokens, name, value) }, tokenCoalesce(name));
+  const write = (name: string) => (value: string, font?: GoogleFont) =>
+    onChange(withGoogleFont({ ...template, tokens: withToken(template.tokens, name, value) }, font), tokenCoalesce(name));
 
   const field = (token: { name: string; fallback: string }) => (
     <TokenField
@@ -510,7 +513,7 @@ export function TokenField({
   /** Whether THIS token's picker is the one the panel has open. */
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChange: (value: string) => void;
+  onChange: (value: string, font?: GoogleFont) => void;
   /**
    * What the reset control SAYS, where "back to the design's own" is not what
    * pressing it does.
@@ -983,7 +986,7 @@ function FontField({
   reset: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChange: (value: string) => void;
+  onChange: (value: string, font?: GoogleFont) => void;
 }) {
   const named = `${id}-name`;
   const [site, setSite] = useState<readonly SiteFont[] | null>(null);
@@ -1025,7 +1028,7 @@ function FontField({
       {/* A Google Font is a question asked once: an InfoTip, not a block in every font popover (ADR 0136). */}
       <FieldHeading as="span" label={label} labelId={named} tipLabel={__('Want a Google Font?', 'wconvert')}
         tip={<>
-          <p>{__('Install it in the WordPress Font Library, then save your draft and reload. Fonts are hosted on your site.', 'wconvert')}</p>
+          <p>{__('Install it in the WordPress Font Library to host it on your site, or enable optional Google Fonts in Settings → Data & privacy. Selecting a font does not enable remote loading.', 'wconvert')}</p>
           <p><a href={libraryUrl ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{libraryUrl ? __('Open Font Library ↗', 'wconvert') : __('Font Library instructions ↗', 'wconvert')}</a></p>
         </>}>{reset}</FieldHeading>
       <span className="wconvert-token__row">
@@ -1054,7 +1057,7 @@ function FontField({
           </PopoverTrigger>
 
           <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-font-popover">
-            <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search site and system fonts…', 'wconvert')} /></label>
+            <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search fonts…', 'wconvert')} /></label>
             {site === null && <p role="status">{__('Loading site fonts…', 'wconvert')}</p>}
             {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <TryAgain onClick={read} /></p>}
             <div className="wconvert-fonts" role="group" aria-labelledby={named}>
@@ -1076,6 +1079,12 @@ function FontField({
                 </>
               )}
 
+              <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">{__('Google Fonts', 'wconvert')}</p>
+              {GOOGLE_FONTS.filter(([family]) => family.toLowerCase().includes(search.toLowerCase()) && !(site ?? []).some(font => firstFamily(font.stack) === family.toLowerCase())).map(([family, fallback, weights]) => {
+                const stack = `'${family}', ${fallback}`;
+                return <FontRow key={family} name={id} stack={stack} label={family} checked={shown === stack}
+                  onChange={value => onChange(value, { family, faces: weights.map(weight => ({ weight, italic: false })) })} />;
+              })}
               <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">
                 {__('On every device', 'wconvert')}
               </p>

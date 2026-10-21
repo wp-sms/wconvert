@@ -49,6 +49,7 @@ final class DataMap
     public function summary(): array
     {
         return [
+            'google_fonts' => \WConvert\Template\GoogleFonts::enabled(),
             'analytics_integration' => apply_filters('wconvert_analytics_privacy', null),
             'retention_days' => $this->retention->days(),
             'destinations' => $this->configuredDestinations(),

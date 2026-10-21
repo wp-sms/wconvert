@@ -220,6 +220,27 @@ Guide: [Deactivate or uninstall WConvert](https://wconvert.io/docs/deactivate-or
 
 == External services ==
 
+= Optional Google Fonts =
+
+Remote Google Fonts are disabled by default. In Settings → Data & privacy,
+the site owner can enable them after acknowledging the browser connection.
+When an eligible campaign is shown, WConvert requests only its declared, used
+fonts that are not provided by the site's font list. The active editor preview
+also loads these fonts when enabled. Selecting or importing a design does not
+enable this setting. Gallery cards do not initiate font requests.
+
+Stylesheets are requested from fonts.googleapis.com and font files from
+fonts.gstatic.com. Google receives the browser's IP address and HTTP request
+information. WConvert sends no form answers to this service. Installing fonts
+in the WordPress Font Library is the locally hosted alternative. Disabling
+remote delivery prevents new requests on freshly served pages; clear host/CDN
+page caches after changing the setting. Existing browser caches may retain fonts.
+
+Service: https://fonts.google.com/
+Terms: https://policies.google.com/terms
+Privacy: https://policies.google.com/privacy
+
+
 WConvert works without an account or any external service, and nothing below is
 contacted unless an administrator turns it on. There are two optional services.
 

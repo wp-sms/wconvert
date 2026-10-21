@@ -476,7 +476,29 @@ Ranked by how long each one costs before you notice.
 before believing a design exists.
 `;
 
-writeFileSync(resolve(OUT, 'VOCABULARY.md'), out);
+writeFileSync(resolve(OUT, 'VOCABULARY.md'), out + `
+
+## Optional authored features
+
+A panel/media may carry decorations: {label, hidden, items}. The label names its
+editor visibility switch; hidden defaults false. At most ${manifest.decorations.max_items}
+items, each {kind, x, y, size, motion?, color?, narrow?}. Kinds:
+${manifest.decorations.kinds.join(', ')}. Motions: ${manifest.decorations.motions.join(', ')}.
+Colors: ${manifest.decorations.colors.join(', ')}. x/y are percentages 0–100;
+size is 12–160 pixels. narrow repeats {x,y,size}. These built-in shapes accept
+no arbitrary SVG, scripts or uploaded images. Ordinary artwork remains an image
+or panel background. Decorations do not add layout height.
+
+A boxed countdown may carry density: "compact". It uses stable, smaller cells;
+no sizing control is added to the editor. Omit for the existing regular boxes.
+
+The tree may carry fonts: [{family, faces: [{weight, italic}]}], at most
+${manifest.google_fonts.max_families} families and ${manifest.google_fonts.max_faces}
+faces each. Weight is an integer from 100–900; italic is boolean. Family names
+contain ASCII letters, digits and spaces (maximum 80 characters, start with a
+letter), never URLs. Keep a fallback in font/heading-font tokens. Site permission
+is separate and off by default: a template cannot enable remote requests.
+`);
 
 console.log(
   `  VOCABULARY.md (${Object.keys(manifest.layouts).length} layouts, ${Object.keys(manifest.nodes).length} leaves, ${Object.keys(manifest.tokens).length} tokens, ${manifest.roles.length} Slot Roles)`,

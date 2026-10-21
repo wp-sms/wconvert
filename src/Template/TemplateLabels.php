@@ -326,12 +326,14 @@ final class TemplateLabels
             /* translators: whether the coloured box has a rule above it, a border all round, or neither. */
             'panel.edges' => __('Border', 'wconvert'),
             /* translators: the least tall the coloured box may be, so a box holding only a picture does not collapse. */
+            'panel.decorations' => __('Decorations', 'wconvert'),
             'panel.min' => __('Minimum height', 'wconvert'),
             /* translators: whether two circles are punched out of the box's top corners, like a torn ticket, so the page shows through. */
             'panel.notch' => __('Punched corners', 'wconvert'),
             /* translators: the colours, spacing and type this box sets for itself and everything inside it. */
             'media.tokens' => __('Style for this box', 'wconvert'),
             /* translators: the least tall the picture may be, so it does not collapse to the two lines written on it. */
+            'media.decorations' => __('Decorations', 'wconvert'),
             'media.min' => __('Minimum height', 'wconvert'),
 
             /*

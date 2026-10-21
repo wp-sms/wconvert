@@ -1,3 +1,5 @@
+import { DecorationsSettings } from './DecorationsSettings';
+import { FontNotice } from './FontNotice';
 import { ReopenSettings } from '../reopenControls';
 import { useState, type Ref } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
@@ -81,6 +83,8 @@ export function DesignSettings({
         onChange={onChange}
         onError={onError}
       />
+      <FontNotice template={template} />
+      <DecorationsSettings template={template} onChange={onChange} />
       <PanelSection title={__('Format and position', 'wconvert')}>
         <FactList>
           <FactRow label={__('Format', 'wconvert')}>
