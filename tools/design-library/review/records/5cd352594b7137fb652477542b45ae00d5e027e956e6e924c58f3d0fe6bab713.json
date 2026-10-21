@@ -1,0 +1,47 @@
+{
+  "id": "rereading-essay",
+  "revision": "3f1a81505548e6818d413a8be59bab2bd8be4c2ab7e3ff76a7d45633bc6bc06f",
+  "base_id": "202df3d215a754e7cb77f672c4010b404ec44fd2c9c488ca1d695d13244a4c68",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/rereading-essay-320.png",
+          "sha256": "c8fd6b3de70c2d96117771638db49c5283f380ccd221da85e819c35a53e11c6e"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/rereading-essay-1440.png",
+          "sha256": "032c0cb5eb3b693654d6de8ebce75cbfe5febb7b80466d9680661d4d3879a05c"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "5cd352594b7137fb652477542b45ae00d5e027e956e6e924c58f3d0fe6bab713"
+}

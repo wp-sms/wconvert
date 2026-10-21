@@ -1,0 +1,103 @@
+{
+  "id": "collection-explain-the-service",
+  "revision": "a09999cd859f8da73c5301e55902b86d42a2566e40b84a31aaa4253bc5a644b7",
+  "base_id": "724535e9083f77173351f917a91e5ed6393c1fa434adc5855bbd14fb5ad24d6a",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup pixel-identical under this branch's renderer (templates:visual-diff carried all 148); items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-21T04:37:03Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+          "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+          "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+          "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+          "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/collections-carry.md",
+          "sha256": "74838d57a2255dec3e580f90acb415247f7560c45937b3fe68e4cfdd48433a7c"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+          "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+          "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+          "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+          "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections.md",
+          "sha256": "8c1e09e82e6ee4c3471a33cf2152ccd941fad0152d852ba22cd2a422456a51a2"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collection-contexts.json",
+          "sha256": "17e22fea7e00d4f71d8f9396367e5a4dcab496356b8e51e261638c4f757748ae"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-free.png",
+          "sha256": "4ad031de09f356c597f081f7922ad960c487f9de7b34c3b186d5ad693dd2e120"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/collections-pro.png",
+          "sha256": "12b6dc84af1dee2a6bb766abdda632b8534949bbc5a26c36e562b149fb81b7ee"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/review.md",
+          "sha256": "32cf05d5bb0e8d4724fff6ddf1665d69f91dde34dbcbfa6be4c75e3bebcafb17"
+        },
+        {
+          "path": "docs/reviews/hosted-practical-2026-10-20/proof.json",
+          "sha256": "9e7b428f69008f6a94812df89d394a5c2a0d0c6f63a00131f0f95ae16aee94f0"
+        }
+      ]
+    }
+  },
+  "record_id": "5c910360c046327da1e2e46ebaaec80a941793b175abb2feb422e667dd6c1105"
+}

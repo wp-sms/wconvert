@@ -1,0 +1,47 @@
+{
+  "id": "maintenance-letter",
+  "revision": "3bfffc90cea51d35b876b1ae21d2331fd829e502d2bef02b065fd7146b4e812b",
+  "base_id": "ac9a2b1ac76ec5f59f9fb5b66c9941f1eb33e8606d10d1a771547e94357c5df6",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/maintenance-letter-320.png",
+          "sha256": "574b0341e37e40098f637c14b587d3bfc2cff647e7465a8382af6daf2950402a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/maintenance-letter-1440.png",
+          "sha256": "752ade39b4ab2642c9bfd4b9c46181a05e286a011c298154c635465abb40eb1f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "b09d1200c656bd44facde026c4fbd29d3438a79a7a5e3d90ca971f2c26142004"
+}

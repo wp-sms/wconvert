@@ -24,7 +24,7 @@
  * rules to remember. One global, `WConvertRenderer`, works in both.
  */
 
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
@@ -41,13 +41,19 @@ const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
  */
 const entry = resolve(OUT, 'renderer-entry.ts');
 
+// `visual-diff.mjs` builds an older tree with this script, so an export newer
+// than that tree is named only where its source provides it.
+const mount = resolve(PLUGIN, 'resources/renderer/src/mount');
+const mountExports = ['render', 'closeButton',
+  ...(readFileSync(mount + '.ts', 'utf8').includes('export function reserveBesideClose(') ? ['reserveBesideClose'] : [])];
+
 writeFileSync(
   entry,
   [
     `export { prepareControls, readFields, restoreFields, disposePreview, validQuestions } from '${resolve(PLUGIN, 'tools/design-library/preview/controls')}';`,
     `export { previewResult } from '${resolve(PLUGIN, 'tools/design-library/preview/results')}';`,
     `export { graphTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-graph')}';`,
-    `export { render, closeButton } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    `export { ${mountExports.join(', ')} } from '${mount}';`,
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
     `registerPremiumJourneyRenderer();`,

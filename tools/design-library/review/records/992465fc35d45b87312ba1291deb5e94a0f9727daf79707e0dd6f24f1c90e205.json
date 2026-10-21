@@ -1,0 +1,47 @@
+{
+  "id": "photography-enquiry",
+  "revision": "5c7a8b04e841ec768b7e92eba82dbfcab1807d1e4f1c1ab7ad74fd6fe8fd9799",
+  "base_id": "981a6effe4c0004abb6a335d7a1576628fce7e3b58d23d1ce7066cd96a508517",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/photography-enquiry-320.png",
+          "sha256": "b730da10f2ba353c5c897837bcea8279ce33b747f5ae1b102bfe073a803a90b8"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/photography-enquiry-1440.png",
+          "sha256": "a665e1d5378adeaddac369020f10c2bc17744f007c211a94b4b8a607fdf26a59"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "992465fc35d45b87312ba1291deb5e94a0f9727daf79707e0dd6f24f1c90e205"
+}

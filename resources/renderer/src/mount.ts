@@ -250,6 +250,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     }
     if (chrome !== null) {
       element.appendChild(chrome);
+      if (options.displayType === 'floating_bar') {
+        chrome.dataset.bar = '';
+        reserveBesideClose(element, chrome);
+      }
     }
 
     element.addEventListener('submit', (event) => event.preventDefault());
@@ -529,6 +533,69 @@ function inline(options: MountOptions, anchor: Element): Mounted {
  * script on the page for one string. Esc and the backdrop are unlabelled
  * routes to the same act, so a visitor is never trapped by it.
  */
+/** What a bar's close control must never sit over. */
+const BESIDE_CLOSE = '.wc-heading,.wc-text,.wc-eyebrow,.wc-badge,.wc-rating,.wc-code,.wc-countdown,.wc-field,.wc-button';
+
+/**
+ * Room beside a bar's close control for exactly the lines it would cover.
+ *
+ * A phone-width bar stacks and its control keeps the top corner. A band of
+ * padding above everything costs the bar a row of nothing, and a column
+ * beside everything pushes a field and its button onto two lines, so only the
+ * text the control actually overlaps gets `padding-inline-end`; a field or
+ * button keeps its shape and the layout holding it takes the room instead,
+ * so the row re-wraps short of the control. Logical
+ * padding, so a right-to-left bar reserves the other side with no second
+ * rule. Measured after layout, again when the bar's width changes, and once
+ * more when web fonts settle, because each moves where the text wraps.
+ */
+export function reserveBesideClose(root: HTMLElement, close: HTMLElement): void {
+  const gap = 8;
+  let width = -1;
+
+  const measure = (): void => {
+    if (!root.isConnected) {
+      observer?.disconnect();
+      return;
+    }
+    if (root.clientWidth === width) return;
+    width = root.clientWidth;
+
+    for (const element of root.querySelectorAll<HTMLElement>('[data-beside-close]')) {
+      element.style.removeProperty('padding-inline-end');
+      delete element.dataset.besideClose;
+    }
+
+    // Reserving room re-wraps that text, which can move what follows it under
+    // the control; a few passes settle any bar the vocabulary can build.
+    for (let pass = 0; pass < 3; pass++) {
+      const control = close.getBoundingClientRect();
+      let moved = false;
+      for (const element of root.querySelectorAll<HTMLElement>(BESIDE_CLOSE)) {
+        const target = element.matches('.wc-field,.wc-button')
+          ? element.parentElement?.closest<HTMLElement>('.wc-row,.wc-stack,.wc-grid,.wc-pane,.wc-panel,.wc-media') ?? element
+          : element;
+        if (target.dataset.besideClose !== undefined) continue;
+        const box = element.getBoundingClientRect();
+        if (box.top < control.bottom + gap && box.bottom > control.top && box.right > control.left - gap && box.left < control.right + gap) {
+          target.style.setProperty('padding-inline-end', `${close.offsetWidth + gap}px`);
+          target.dataset.besideClose = '';
+          moved = true;
+        }
+      }
+      if (!moved) break;
+    }
+  };
+
+  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
+  observer?.observe(root);
+  requestAnimationFrame(measure);
+  void document.fonts?.ready.then(() => {
+    width = -1;
+    measure();
+  });
+}
+
 export function closeButton(onClick: () => void): HTMLElement {
   const button = document.createElement('button');
 

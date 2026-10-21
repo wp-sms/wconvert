@@ -1,0 +1,47 @@
+{
+  "id": "tutoring-introduction",
+  "revision": "851fbd6b16b7c13f62805db61aea3a6443d79a5df33bec069c430f646c446129",
+  "base_id": "04a55c25b74ad06151b6e9dfada91f6621f855a4ea6e924a08704acd6193f57a",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/tutoring-introduction-320.png",
+          "sha256": "9e57af66f601c16fde8783fc17776aa2b736b0ef7c5ef18f3cefc7244733237b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/tutoring-introduction-1440.png",
+          "sha256": "ebeadda84db0ba8cd6e0489a2302aa60491333ed848cc53b2355c800591873fb"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "91e0db1b2291aea9c4144251b21b076bb7dd845fd6e2b0dc7240fb384754864b"
+}
