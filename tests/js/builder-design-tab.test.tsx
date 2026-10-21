@@ -1021,3 +1021,55 @@ describe('the font picker', () => {
     expect(screen.getByRole('button', { name: 'Body text' })).toHaveTextContent('Playfair Display');
   });
 });
+
+
+describe('Look reads the current screen background', () => {
+  const halloween = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/halloween-engraved.json'), 'utf8')) as TemplateEntry;
+  it('shows the authored midnight print and removes it at its own scope', async () => {
+    const changed = vi.fn();
+    const view = render(<Tokens template={halloween} labels={{ ...LABELS, tokens: { ...LABELS.tokens, 'bg-image': 'Background image' } }}
+      design={halloween.tokens} pictureStep={0} openToken={null} onOpenToken={vi.fn()} onChange={changed} onError={vi.fn()} />);
+    const input = screen.getByLabelText('Background image');
+    expect((input as HTMLInputElement).value).toContain('data:image/webp');
+    expect(view.container.querySelector('.wconvert-media-preview')).toHaveAttribute('src', expect.stringContaining('data:image/webp'));
+    fireEvent.change(input, { target: { value: 'https://example.test/replacement.webp' } });
+    fireEvent.blur(input);
+    expect(changed.mock.calls.at(-1)![0].tree.steps[0].content.tokens['bg-image']).toContain('https://example.test/replacement.webp');
+    const picture = input.closest('section')!;
+    await userEvent.click(within(picture).getByRole('button', { name: 'Remove' }));
+    const next = changed.mock.calls.at(-1)![0] as TemplateEntry;
+    expect(next.tree.steps[0].content).toMatchObject({ tokens: { 'bg-image': 'none' } });
+    expect(next.tokens).toEqual(halloween.tokens);
+    expect(next.tree.steps.slice(1)).toEqual(halloween.tree.steps.slice(1));
+  });
+  it('reads and edits mobile artwork without changing desktop or another screen', async () => {
+    const mobile = { ...halloween, tree: { ...halloween.tree, steps: halloween.tree.steps.map((step, index) => index === 0
+      ? { ...step, content: { ...step.content, narrow: { 'bg-image': 'url(https://example.test/mobile.webp)' } } }
+      : step) } };
+    const changed = vi.fn();
+    const props = { template: mobile, labels: { ...LABELS, tokens: { ...LABELS.tokens, 'bg-image': 'Background image' } },
+      design: halloween.tokens, openToken: null, onOpenToken: vi.fn(), onChange: changed, onError: vi.fn() };
+    const view = render(<Tokens {...props} pictureStep={0} pictureWidth="narrow" />);
+    expect(screen.getByLabelText('Background image')).toHaveValue('https://example.test/mobile.webp');
+    fireEvent.change(screen.getByLabelText('Background image'), { target: { value: 'https://example.test/new-mobile.webp' } });
+    fireEvent.blur(screen.getByLabelText('Background image'));
+    const next = changed.mock.calls.at(-1)![0];
+    expect(next.tree.steps[0].content.narrow['bg-image']).toContain('new-mobile.webp');
+    expect(next.tree.steps[0].content.tokens).toEqual((halloween.tree.steps[0].content as { tokens?: unknown }).tokens);
+    expect(next.tree.steps.slice(1)).toEqual(halloween.tree.steps.slice(1));
+    view.rerender(<AdvancedContext.Provider value><Tokens {...props} pictureStep={1} pictureWidth="tokens" /></AdvancedContext.Provider>);
+    expect((screen.getByLabelText('Background image') as HTMLInputElement).value).not.toBe('https://example.test/mobile.webp');
+  });
+
+  it('reflects a painted screen’s reset of shared artwork and overlay', () => {
+    const template = { ...halloween, tokens: { ...halloween.tokens, 'bg-image': 'url(https://example.test/shared.webp)', overlay: '#000000b3' },
+      tree: { ...halloween.tree, steps: halloween.tree.steps.map((step, index) => index === 0
+        ? { ...step, content: { type: 'panel', narrow: { 'bg-image': 'url(https://example.test/mobile.webp)' }, children: [] } }
+        : step) } };
+    render(<Tokens template={template} labels={{ ...LABELS, tokens: { ...LABELS.tokens, 'bg-image': 'Background image', overlay: 'Wash' } }}
+      pictureStep={0} openToken={null} onOpenToken={vi.fn()} onChange={vi.fn()} onError={vi.fn()} />);
+    expect(screen.getByLabelText('Background image')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Wash #0000 Choose a color for Wash' })).toBeInTheDocument();
+  });
+
+});

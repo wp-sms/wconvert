@@ -8,6 +8,7 @@ import { SpacingField } from './SpacingField';
 import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
+import { scopeChainOf, sourceOfToken, withScopeToken, type WidthBag } from './panel';
 import { styleTokens } from './styleTokens';
 import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
@@ -177,6 +178,8 @@ export function Tokens({
   template,
   labels,
   design = {},
+  pictureStep,
+  pictureWidth = 'tokens',
   openToken,
   onOpenToken,
   onChange,
@@ -202,6 +205,9 @@ export function Tokens({
    * somewhere else.
    */
   design?: TokenMap;
+  /** The visible screen may own artwork independently of the shared look. */
+  pictureStep?: number;
+  pictureWidth?: WidthBag;
   /**
    * ==========================================================================
    * WHICH PICKER IS OPEN IS THE **SCREEN's** STATE, NOT THIS PANEL's.
@@ -245,6 +251,15 @@ export function Tokens({
   const advanced = useAdvanced();
   const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
+  const pictureChain = pictureStep === undefined ? [] : scopeChainOf(template.tree, [pictureStep]);
+  const pictureScope = pictureChain[0];
+  const scopedPicture = pictureScope !== undefined &&
+    (Object.hasOwn(pictureScope.tokens, 'bg-image') || Object.hasOwn(pictureScope.narrow, 'bg-image'));
+  // Match render.ts: painted boxes reset inherited artwork and its wash.
+  const pictureDefaults = pictureScope && ['panel', 'media'].includes(pictureScope.type)
+    ? { ...template.tokens, 'bg-image': 'none', overlay: '#0000' } : template.tokens;
+  const pictureValue = (name: string) => sourceOfToken(pictureChain, pictureDefaults, name, pictureWidth).value;
+  const isPictureToken = (name: string) => scopedPicture && ['bg-image', 'image-position', 'overlay'].includes(name);
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -269,14 +284,19 @@ export function Tokens({
       token={token.name}
       label={label}
       labels={labels}
-      fallback={design[token.name] ?? token.fallback}
+      fallback={isPictureToken(token.name) ? pictureValue(token.name) : design[token.name] ?? token.fallback}
       standard={token.fallback}
-      design={hasDesign ? (design[token.name] ?? '') : undefined}
-      value={template.tokens[token.name] ?? ''}
+      design={isPictureToken(token.name) ? undefined : hasDesign ? (design[token.name] ?? '') : undefined}
+      value={isPictureToken(token.name) ? pictureValue(token.name) : template.tokens[token.name] ?? ''}
       open={openToken === token.name}
       onOpenChange={(open) => onOpenToken(open ? token.name : null)}
       onChange={(value, font) => {
-        try { onChange(withGoogleFont({ ...template, tokens: withToken(template.tokens, token.name, value) }, font), tokenCoalesce(token.name)); }
+        try {
+          const next = isPictureToken(token.name) && pictureScope
+            ? { ...template, tree: withScopeToken(template.tree, pictureScope.path, token.name, value, pictureWidth) }
+            : { ...template, tokens: withToken(template.tokens, token.name, value) };
+          onChange(withGoogleFont(next, font), isPictureToken(token.name) ? `picture:${pictureStep}:${pictureWidth}:${token.name}` : tokenCoalesce(token.name));
+        }
         catch (cause) { onError(cause); }
       }}
       paint={(shown) => paintOf(template.tokens, shown)}
@@ -285,7 +305,7 @@ export function Tokens({
   );
 
   // A background picture's position and wash mean nothing until there is a picture.
-  const pictured = !['', 'none'].includes((template.tokens['bg-image'] ?? design['bg-image'] ?? 'none').trim());
+  const pictured = !['', 'none'].includes((scopedPicture ? pictureValue('bg-image') : template.tokens['bg-image'] ?? design['bg-image'] ?? 'none').trim());
   const shown = (name: string) => advanced || PLAIN_TOKENS.includes(name) || (pictured && name === 'image-position');
 
   return (
@@ -319,6 +339,9 @@ export function Tokens({
         const placed = new Set(section.rows.flat());
         const rows = [...section.rows.map(row => row.filter(name => byName.has(name))), ...tokens.filter(token => !placed.has(token.name)).map(token => [token.name])].filter(row => row.length > 0);
         return <PanelSection key={section.id} title={section.title()}>
+          {section.id === 'image' && scopedPicture && <PanelHint>{pictureWidth === 'narrow'
+            ? __('This screen’s picture · Mobile. Follows desktop unless changed.', 'wconvert')
+            : __('This screen’s picture · Desktop.', 'wconvert')}</PanelHint>}
           {rows.map(row => row.length === 1
             ? <div key={row[0]} className="wconvert-fields__item">{field(byName.get(row[0])!, section.labels?.()[row[0]])}</div>
             : <div key={row.join()} className="wconvert-panel-pair">{row.map(name => <div key={name} className="wconvert-fields__item">{field(byName.get(name)!, section.labels?.()[name])}</div>)}</div>)}
@@ -561,7 +584,12 @@ export function TokenField({
       [1.2, /* translators: short for “Larger”, on a 30px button. */ __('L', 'wconvert'), __('Larger', 'wconvert')],
     ];
     const presets = steps.map(([factor, short, long]) => ({ value: factor === 0 ? '0' : presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), short, long }));
-    const at = presets.findIndex(preset => preset.value === shown || (preset.value === '0' && measuresOf(shown)?.every(part => part.amount === 0)));
+    const actual = measuresOf(shown);
+    const at = presets.findIndex(preset => {
+      const parts = measuresOf(preset.value);
+      return actual && parts && ((actual.every(part => part.amount === 0) && parts.every(part => part.amount === 0)) ||
+        (actual.length === parts.length && actual.every((part, index) => part.amount === parts[index].amount && part.unit === parts[index].unit)));
+    });
     return <div className="wconvert-token">
       <FieldHeading as="span" label={label} labelId={`${field}-label`}>{reset}</FieldHeading>
       <span role="radiogroup" aria-labelledby={`${field}-label`} className="wconvert-choice-set wconvert-choice-set--fill">
@@ -575,6 +603,7 @@ export function TokenField({
           <span className="wconvert-choice__label">{__('Custom', 'wconvert')}</span>
         </label>}
       </span>
+      <PanelHint>{sprintf(/* translators: %s: the current spacing or rounding, e.g. “0.8rem”. */ __('Current: %s', 'wconvert'), shown)}</PanelHint>
     </div>;
   }
   if (simple && ['heading-size', 'text-size', 'width', 'pad'].includes(token) && presetBase) {

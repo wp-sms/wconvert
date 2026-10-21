@@ -1,3 +1,6 @@
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { endsBeforeStart } from './rules/sentence';
 import { StyleValueInput } from './StyleValueInput';
 import { CheckRow } from '../shell/CheckRow';
 import { SentenceEditor } from './SentenceEditor';
@@ -73,12 +76,12 @@ export interface SlotFieldsProps {
    *
    * **Read by two block types and passed to all of them**, because a
    * `countdown` counts to the Optin's `ends_at` and to nothing else (ADR 0052)
-   * and therefore has no setting of its own to draw. What it needs is the
-   * sentence saying what it counts to, and the deadline is not this block's to
-   * hold ({@see Countdown}). A `code` block's Pro panel compares its coupon's
-   * expiry against it (#287).
+   * and edits that same campaign deadline here, without a node-level date.
+   * A `code` block's Pro panel compares its coupon's expiry against it (#287).
    */
   readonly endsAt?: string;
+  readonly startsAt?: string;
+  readonly onEndDateChange?: (value: string) => void;
   /** Take the merchant to the field that sets it. */
   readonly onSetEndDate?: () => void;
   /**
@@ -97,6 +100,8 @@ export function SlotFields({
   onParam,
   onHidden,
   endsAt,
+  startsAt,
+  onEndDateChange,
   onSetEndDate,
   showVisibility = false,
 }: SlotFieldsProps) {
@@ -259,13 +264,10 @@ export function SlotFields({
         A CONTROL THAT DEPENDS ON A VALUE EDITED ELSEWHERE NAMES IT AND POINTS
         AT IT (ADR 0054 rule 4).
         ======================================================================
-        A `countdown`'s inspector is one *Show this* switch, because the node
-        declares no settings — correct under ADR 0052 and not what to change.
-        What was missing is the sentence: a merchant looking at a clock counting
-        to nothing, on a tab with no field that could change it, and nothing
-        saying where the deadline lives.
+        The clock edits the campaign end here. It still has no node-level
+        deadline: Display rules and this field write the same ends_at.
       */}
-      {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
+      {slot.type === 'countdown' && <Countdown endsAt={endsAt} startsAt={startsAt} onEndDateChange={onEndDateChange} onSetEndDate={onSetEndDate} />}
 
 
       {/*
@@ -681,17 +683,35 @@ function Glyph({ name }: { name: string }) {
  */
 function Countdown({
   endsAt,
+  startsAt,
+  onEndDateChange,
   onSetEndDate,
 }: {
   readonly endsAt?: string;
+  readonly startsAt?: string;
+  readonly onEndDateChange?: (value: string) => void;
   readonly onSetEndDate?: () => void;
 }) {
+  const field = useId();
+  const timezone = adminSettings()?.timezone;
+  const invalidWindow = endsBeforeStart({ starts_at: startsAt, ends_at: endsAt });
   const spelled = readable(endsAt);
   const finished = hasScheduleEnded(endsAt, adminSettings()?.timezone);
 
   // A fact and the way to change it (ADR 0136); a clock with nothing to count to says so in one line.
   return (
     <div className="wconvert-slot__note wconvert-panel-field">
+      {onEndDateChange && <div className="wconvert-panel-field">
+        <Label htmlFor={field}>{__('Countdown date and time', 'wconvert')}</Label>
+        <Input id={field} type="datetime-local" value={(endsAt ?? '').replace(' ', 'T')}
+          onChange={event => onEndDateChange(event.target.value.replace('T', ' ').slice(0, 16))}
+          aria-invalid={invalidWindow || undefined} aria-describedby={`${field}-help${invalidWindow ? ` ${field}-error` : ''}`} />
+        <PanelHint id={`${field}-help`}>{__('Also sets when this campaign stops showing.', 'wconvert')} {timezone
+          ? sprintf(/* translators: %s: the site's timezone. */ __('Times use %s.', 'wconvert'), timezone)
+          : __('Times use your WordPress site’s timezone.', 'wconvert')}</PanelHint>
+        {invalidWindow && <p id={`${field}-error`} role="alert" className="wconvert-panel-warn">{__('Choose an end date and time after the start.', 'wconvert')}</p>}
+      </div>}
+      <PanelHint>{__('The design preview uses sample time. Visitors count down to the date below.', 'wconvert')}</PanelHint>
       <FactList>
         <FactRow label={__('Counts to', 'wconvert')} action={spelled === null ? __('Set an end date', 'wconvert') : __('Change the end date', 'wconvert')} onAction={onSetEndDate}>
           {spelled ?? __('No end date', 'wconvert')}

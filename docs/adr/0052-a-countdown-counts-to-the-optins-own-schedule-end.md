@@ -71,7 +71,10 @@ is no such value to bake.
 
 It also costs nothing new anywhere:
 
-- **No stored field and no control.** `HowOften.tsx` already edits `ends_at`.
+- **No additional stored field.** Display rules edits `ends_at`.
+  *Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md):
+  the countdown inspector also edits that same date/time, with site timezone
+  and schedule validation; there is still only one deadline.*
 - **No second timezone conversion**, and no way for a timer and a schedule to
   disagree.
 
@@ -106,8 +109,8 @@ publishes, and the clock is empty.
 
 That is a builder problem rather than a crash, and it is a fifth entry in
 `builder/structure/problems.ts` — which reports what is wrong as sentences with
-a way to the block. The fix is on a **different tab** from the design, so the
-sentence names it.
+a way to the block. The inspector edits the shared deadline directly and retains a route to
+Display rules (*amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md)*).
 
 ## Evergreen stays refused, not deferred
 

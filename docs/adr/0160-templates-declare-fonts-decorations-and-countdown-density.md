@@ -92,3 +92,23 @@ small without adding a token or restricting ordinary image replacement.
 Unknown or altered files are never substituted. These bundled examples do not
 publish a hosted catalogue release or change the catalogue asset-binding schema.
 Review evidence lives in `docs/reviews/halloween-library-2026-10-21`.
+
+
+## The editor reads the artwork and edits the shared deadline
+
+Look's Picture section reads a screen root's own background when it declares
+one, labels it as this screen's picture, and writes back to that scope. Mobile
+reads its override (or desktop) and writes only the mobile bag. Designs whose
+picture lives in the shared tokens keep the shared control. Replacing or
+removing artwork must not flatten the tree or alter the other screens.
+
+Simple Gap and Corner rounding presets compare numeric lengths, so `.8rem`
+and `0.80rem` match `0.8rem`. A visible Current value accompanies the buttons,
+including Custom values; reading a value never rewrites the document.
+
+The countdown inspector offers a date/time field that edits the same campaign
+`ends_at` as Display rules. It states the site timezone and that the campaign
+stops showing at that time, warns about an end before the start, and supports
+clearing the deadline. No node deadline or new storage is introduced. The
+canvas remains a design sample and the inspector explicitly labels its sample
+time; the visitor timer continues to use PHP's resolved schedule deadline.
