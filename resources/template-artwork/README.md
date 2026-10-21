@@ -5,3 +5,14 @@ The two JPEG files in this directory are byte-identical copies of `tools/design-
 `BundledTemplates` substitutes a matching, verified JPEG data URI with this installation's plugin URL when a site loads its bundled library. This keeps binary photos out of campaign JSON and lets the browser cache them. Portable studio and hosted-package exports retain the source bytes; hosted publishing continues through its reviewed asset-binding workflow. Missing or altered files are not substituted. No file is generated and no external request is made during registration.
 
 Retain content-addressed files when updating artwork: existing campaign snapshots may still reference an earlier filename. Use the existing import/media workflow for merchant-owned replacements. The photographs remain public sample artwork, not premium downloadable originals.
+
+## Halloween backgrounds
+
+Three WebP files are exact derivatives of the original Halloween prototype
+artwork (`halloween-engraved.webp`, `halloween-monster.webp`,
+`halloween-forest.webp` in the design-library asset folder). The forest is shared
+by After dark and Midnight flight. `BundledArtwork` also resolves exact raster
+`url(...)` values in root, layout and narrow `bg-image` bags. This keeps the
+main picture editable in its existing scope and out of visitor JSON; unknown
+bytes, gradients and merchant URLs remain untouched. The small pumpkin is an
+original inline SVG in the Pro bar, not a remote asset.

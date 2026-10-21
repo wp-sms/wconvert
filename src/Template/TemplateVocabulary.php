@@ -318,6 +318,7 @@ final class TemplateVocabulary
         if (TemplateTree::isGraph($tree)) {
             $storedTree['graph'] = self::graph($tree['graph'] ?? null);
         }
+        if (($fonts = DesignFeatures::fonts($tree['fonts'] ?? null)) !== []) $storedTree['fonts'] = $fonts;
         self::remapJourneyReferences($storedTree, $ids);
         return [
             // Stamped with the vocabulary version that produced it, so a
@@ -367,6 +368,7 @@ final class TemplateVocabulary
         if (TemplateTree::isGraph($tree)) {
             $storedTree['graph'] = self::graph($tree['graph'] ?? null);
         }
+        if (($fonts = DesignFeatures::fonts($tree['fonts'] ?? null)) !== []) $storedTree['fonts'] = $fonts;
         return $storedTree;
     }
 
@@ -530,6 +532,15 @@ final class TemplateVocabulary
                 continue;
             }
             if ($type === 'products' && $key === 'exclude_cart') { $kept[$key] = $node[$key] !== false; continue; }
+            if ($key === 'decorations') {
+                $decoration = DesignFeatures::decorations($node[$key]);
+                if ($decoration !== null) $kept[$key] = $decoration;
+                continue;
+            }
+            if ($type === 'countdown' && $key === 'density') {
+                if (in_array($node[$key], ['regular', 'compact'], true)) $kept[$key] = $node[$key];
+                continue;
+            }
             if ($key === 'options') {
                 if (($type === 'field' && ($node['name'] ?? null) === 'interest') || $type === 'question') {
                     $kept[$key] = $this->choiceOptions($node[$key]);

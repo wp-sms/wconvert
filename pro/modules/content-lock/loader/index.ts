@@ -2,7 +2,7 @@ import { notifyCampaign } from '@loader/events';
 import type { LoaderModule, PayloadEntry, PresentationSession } from '@loader/types';
 import { decide, audienceAnswer, rulesOf, type Decision } from '@loader/decide';
 import { isWithinWindow } from '@loader/schedule';
-import { captureEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
+import { captureEndpoint, googleFontsAllowed, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import { bindJourney } from '@loader/journey';
 import { whenInViewport } from '@loader/present';
 import { mount, type Mounted } from '@renderer/mount';
@@ -110,7 +110,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
       const reveal = (status: string) => { if (active?.entry.id === entry.id) open(status); };
       let mounted: Mounted | undefined;
       try {
-        mounted = mount({ displayType: 'inline', template: entry.template, anchor, endsAt: entry.ends_at });
+        mounted = mount({ displayType: 'inline', template: entry.template, anchor, endsAt: entry.ends_at, googleFonts: googleFontsAllowed() });
         if (!mounted.mounted || entry.template.tree.submissions.length === 0) { mounted.close(); return false; }
         const view = mounted;
         if (!view.root || !captureEndpoint()) { view.close(); return false; }

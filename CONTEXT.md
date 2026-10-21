@@ -985,6 +985,14 @@ one is checked once.
 
 ### Template
 
+A Template may declare optional decorative groups on panels/media and Google
+font requirements. The Look panel offers only each declared group's visibility;
+placement and motion remain authored. Remote font delivery is a separate,
+default-off site option with merchant acknowledgment. Imported designs never
+turn it on; WordPress Font Library remains the local-hosting route. Countdown
+boxes may use an author-chosen compact density. See
+[ADR 0160](docs/adr/0160-templates-declare-fonts-decorations-and-countdown-density.md).
+
 A merchant may export one current design and import it into another campaign as
 an owned snapshot, with supported local images. File import defaults to the file's
 content, previews explicit link decisions, and applies one undoable draft change.
@@ -1170,6 +1178,11 @@ or a setup is an explicit action; installed copies are local, keep working
 offline, and never change an existing Optin's snapshot. Some Free designs exist
 only here: authored in the repository but bundled in neither ZIP, so a Free
 site offers them to install ([ADR 0157](docs/adr/0157-free-designs-may-be-served-without-being-bundled.md)).
+Bundled and downloaded raster artwork is added to WordPress Media Library when
+a campaign is created or its design is saved, with existing copies reused.
+Browsing, previewing and installing alone create no media items. Campaigns keep
+attachment URLs; decorations remain authored template data. See
+[ADR 0161](docs/adr/0161-used-template-artwork-belongs-in-media-library.md).
 Not to be confused with a [[Collection]], which is a list, or a former
 *template pack*, which no longer exists.
 

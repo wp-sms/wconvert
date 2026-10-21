@@ -382,6 +382,56 @@
           "design_hash": "a0711e013569b987f3c12ee6637c86d8ff62b551a237420993ef240f9a0761c3"
         }
       ]
+    },
+    {
+      "id": "halloween-2026",
+      "name": "Prepare for Halloween",
+      "description": "Choose a Halloween signup, illustrated offer or compact countdown. Review the sample discount, coupon, shop link and your own campaign dates.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 85,
+      "items": [
+        {
+          "setup_id": "halloween-midnight-offer",
+          "stage": "any",
+          "setup_hash": "1d310b32caae86f204a0b55e817ab715d14735cbe0a16aeb6a26a2409528f783",
+          "design_hash": "85aa58eca3d7b444ee8c2447a0f704c9c60cf1965fa75986e5552762a5d0538d"
+        },
+        {
+          "setup_id": "halloween-treat-signup",
+          "stage": "any",
+          "setup_hash": "88f10429c378b9f9827cee475625f943cf0dcde0ec404e09b5b624cc4385cdd6",
+          "design_hash": "168079199716df05034cd1ff54f3dd8c7125d776fc4dfd8b2c50feb7734cb241"
+        },
+        {
+          "setup_id": "halloween-after-dark-offer",
+          "stage": "any",
+          "setup_hash": "cb7849ae3bd8c34563af658979c97267f45c88a5beef7f459c0c2c5fb0936649",
+          "design_hash": "e7ab886a0d8325c52f19afa22eeb792bcafd3a225018a54c37c66b9b3acde5ec"
+        },
+        {
+          "setup_id": "halloween-midnight-flight-offer",
+          "stage": "any",
+          "setup_hash": "3d83a0ecf8240dcd9b8f8212a56f3fef5ed86b6dbc095023eab4af8636697a8d",
+          "design_hash": "11312f12063c2057f96e4e9c599b2ba6641acd4fdafbe8047b82a9800ff83b02"
+        },
+        {
+          "setup_id": "halloween-sale-countdown",
+          "stage": "any",
+          "setup_hash": "df569ec8a5abeb3ffc2507ddc4be949892383f4a16ed502efc9432e6c351becb",
+          "design_hash": "f1def6a2fe51ff56bf6ebfd5f296db37d8a2e134dcaf366a4bbf78ab5d33b665"
+        }
+      ],
+      "event": {
+        "family": "halloween",
+        "start": "2026-10-31",
+        "end_exclusive": "2026-11-01",
+        "feature_start": "2026-09-01",
+        "feature_end_exclusive": "2026-11-01"
+      }
     }
   ]
 }

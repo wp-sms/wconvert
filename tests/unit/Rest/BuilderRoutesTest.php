@@ -60,10 +60,15 @@ final class BuilderRoutesTest extends TestCase
 
     public function testBothAreReadsUnderOneNamespaceAndOneCapability(): void
     {
-        $this->assertSame(['/rules', '/theme'], array_column(self::routes(), 'route'));
+        $this->assertSame(['/rules', '/theme/google-fonts', '/theme'], array_column(self::routes(), 'route'));
 
         foreach (self::routes() as $registered) {
             $this->assertSame(Routes::NAMESPACE, $registered['namespace']);
+            if ($registered['route'] === '/theme/google-fonts') {
+                $this->assertSame(['GET', 'POST'], array_column($registered['args'], 'methods'));
+                foreach ($registered['args'] as $handler) $this->assertSame([Routes::class, 'canManage'], $handler['permission_callback']);
+                continue;
+            }
             $this->assertCount(1, $registered['args'], $registered['route'] . ' registers more than one handler');
             $this->assertSame('GET', $registered['args'][0]['methods'], $registered['route'] . ' is not a read');
             $this->assertSame([Routes::class, 'canManage'], $registered['args'][0]['permission_callback']);

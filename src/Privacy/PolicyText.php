@@ -55,6 +55,7 @@ final class PolicyText
             '<p class="privacy-policy-tutorial">' . __('Before publishing, explain why each WConvert form collects information and which legal basis you rely on. Add a privacy contact, links to the privacy notices of configured services, and any international-transfer safeguards that apply to your site.', 'wconvert') . '</p>',
             '<strong class="privacy-policy-tutorial">' . __('Suggested text:', 'wconvert') . '</strong>',
             '<h2>' . __('WConvert forms and campaigns', 'wconvert') . '</h2>',
+            ...(!empty($summary['google_fonts']) ? ['<p>' . __('Some campaign fonts are loaded from Google. Your browser sends Google your IP address and request information to retrieve these fonts.', 'wconvert') . '</p>'] : []),
             '<p>' . __('We use WConvert to display campaigns, including forms and messages, on this website. When a campaign includes a form, we use the information you submit for the purpose described in that form, such as responding to a request, providing a resource or managing a subscription.', 'wconvert') . '</p>',
             '<h3>' . __('Information we collect', 'wconvert') . '</h3>',
             '<p>' . __('When you submit a WConvert form, we collect the information shown in that form. Depending on the form, this may include your name, email address, phone number, selections and messages. We also record which campaign received the submission and the date and time it was submitted.', 'wconvert') . '</p>',

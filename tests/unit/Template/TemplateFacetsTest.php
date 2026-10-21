@@ -138,11 +138,14 @@ final class TemplateFacetsTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('entries')]
     public function testAPictureChipMeansAPictureInTheTree(string $id, array $entry): void
     {
+        $picture = self::hasNode($entry['tree'], 'image') || str_contains($entry['tokens']['bg-image'] ?? '', 'url(');
+        self::each($entry['tree'], static function (array $node) use (&$picture): void {
+            // Halloween uses editable painted backgrounds, not image leaves.
+            if (!in_array($node['type'] ?? '', ['panel', 'media'], true)) return;
+            foreach (['tokens', 'narrow'] as $bag) $picture = $picture || str_contains($node[$bag]['bg-image'] ?? '', 'url(');
+        });
         $this->assertSame(
-            // Bundled pictures use image nodes. Fieldwork now has a gradient
-            // placeholder, which must not claim a picture in the gallery.
-            // URL backgrounds are exercised independently below.
-            self::hasNode($entry['tree'], 'image'),
+            $picture,
             $entry['facets']['has_image'],
             $id . ' disagrees with its own tree about whether it has a picture'
         );

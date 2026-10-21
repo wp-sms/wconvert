@@ -1,3 +1,6 @@
+import { usePreviewDeadline } from './PreviewDeadline';
+import { getThemeTokens } from './api';
+import { firstFamily, loadFontFaces, usedGoogleFonts } from '@renderer/fonts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
@@ -143,31 +146,6 @@ function nextInChain(chain: readonly SlotKey[]): SlotKey | null {
   return chain[chain.length - 1] ?? null;
 }
 
-/**
- * What a countdown counts to on THIS side of the boundary.
- *
- * ============================================================================
- * THE PREVIEW IS AN INPUT, AND A DEAD CLOCK IS A PREVIEW OF NOTHING.
- * ============================================================================
- * On a real page a `countdown` counts to the Optin's `ends_at` and to nothing
- * else (ADR 0052). The builder has no such instant — the schedule lives on the
- * Rules tab and may well be empty while the merchant is choosing a design — and
- * a preview showing `00:00:00` would tell them their design is broken when it
- * is the schedule that is missing. `structure/problems.ts` is where that is
- * said, in a sentence with a way to the tab that fixes it.
- *
- * So the preview counts to a plausible two days and fourteen hours out — days
- * included, so a `boxes` countdown shows all four of its boxes rather than
- * hiding the one it drops at zero (ADR 0159). It is a PICTURE of the design,
- * exactly as the placeholder headline beside it is a picture of a headline —
- * nobody reads a gallery card's copy as their own words either.
- *
- * **Module scope, so it does not move.** Computed per render it would change
- * identity on every keystroke and remount the preview each time; computed once
- * per page load it ticks down honestly for as long as the screen is open.
- */
-const A_PREVIEW_DEADLINE = Date.now() + (2 * 24 + 14) * 60 * 60 * 1000;
-
 export interface PreviewProps {
   readonly displayType?: string;
   readonly template: Template;
@@ -191,6 +169,19 @@ export interface PreviewProps {
 }
 
 export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance, result }: PreviewProps) {
+  const { deadline } = usePreviewDeadline();
+  // A copy or color edit should not repeat the site-font lookup.
+  const fontRequest = JSON.stringify(usedGoogleFonts(template));
+  const fontPreview = onSelect !== undefined;
+  // Only the active editor preview requests faces; gallery cards remain request-free.
+  useEffect(() => {
+    if (!fontPreview || fontRequest === '[]') return;
+    let active = true;
+    getThemeTokens().then(site => {
+      if (active) loadFontFaces(JSON.parse(fontRequest) as import('@renderer/types').GoogleFont[], site.google_fonts_enabled === true, (site.fonts ?? []).map(font => firstFamily(font.stack)));
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [fontRequest, fontPreview]);
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -295,7 +286,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
       displayType: 'inline',
       template: drawn,
       anchor: anchor.current,
-      endsAt: A_PREVIEW_DEADLINE,
+      endsAt: deadline,
       paths: selectable,
     });
 
@@ -318,7 +309,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
       mounted.close();
       setRoot(null);
     };
-  }, [drawn, step, selectable, displayType]);
+  }, [drawn, step, selectable, displayType, deadline]);
 
   useEffect(() => {
     if (root === null || onSelect === undefined) {

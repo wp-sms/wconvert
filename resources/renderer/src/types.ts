@@ -372,6 +372,8 @@ export interface CountdownNode extends HideableNode {
    * Absent is `line`, so every countdown drawn before boxes existed is unchanged.
    */
   readonly layout?: 'line' | 'boxes';
+  /** Authored by the design, not another editor sizing control. */
+  readonly density?: 'regular' | 'compact';
   /** The words under the boxes. A Playbook translates them; English otherwise. */
   readonly days_label?: string;
   readonly hours_label?: string;
@@ -710,6 +712,7 @@ export interface GridNode {
  * > on a picture IS. {@see MediaNode}, and ADR 0062's amendment.
  */
 export interface PanelNode {
+  readonly decorations?: Decorations;
   readonly type: 'panel';
   readonly children?: readonly TemplateNode[];
   /**
@@ -786,6 +789,7 @@ export interface PanelNode {
  * markup.
  */
 export interface MediaNode {
+  readonly decorations?: Decorations;
   readonly type: 'media';
   readonly children?: readonly TemplateNode[];
   /**
@@ -846,7 +850,24 @@ export interface CaptureSubmission {
   readonly fields: readonly string[];
   readonly consents: readonly string[];
 }
+export interface GoogleFont {
+  readonly family: string;
+  readonly faces: readonly { readonly weight: number; readonly italic?: boolean }[];
+}
+export interface DecorationPlacement { readonly x: number; readonly y: number; readonly size: number; }
+export interface Decoration extends DecorationPlacement {
+  readonly kind: 'bat' | 'eyes' | 'sparkle';
+  readonly motion?: 'none' | 'float' | 'flap' | 'blink';
+  readonly color?: 'fg' | 'accent' | 'muted' | 'accent-fg';
+  readonly narrow?: DecorationPlacement;
+}
+export interface Decorations {
+  readonly label: string;
+  readonly hidden?: boolean;
+  readonly items: readonly Decoration[];
+}
 export interface TemplateTree {
+  readonly fonts?: readonly GoogleFont[];
   readonly v: number;
   readonly steps: readonly TemplateScreen[];
   readonly submissions: readonly CaptureSubmission[];

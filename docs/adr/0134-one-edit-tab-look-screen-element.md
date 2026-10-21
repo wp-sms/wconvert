@@ -65,7 +65,9 @@ you could not reorder — so Edit is one left tree, the canvas and one side pane
 - **The Look** (`DesignSettings`): the ready-made looks, shown as a grid rather
   than behind a toolbar button, the design's colors and fonts, format and
   position, the reopen button, then the design's name and
-  "Browse designs and formats". An inline or content-lock campaign states
+  "Browse designs and formats". *Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md):
+  Picture also exposes the visible screen root’s own artwork when set, labelled
+  with its screen/device scope, instead of showing an empty shared field.* An inline or content-lock campaign states
   "Where on the page: …" and links to Display rules, which owns placement.
 - **The screen panel is what only a screen can answer** (`ScreenPanel`). Its
   issues; **Then →** — read-only on Free and for a screen whose answers decide

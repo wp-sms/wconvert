@@ -16,7 +16,7 @@ final class BundledArtworkTest extends TestCase
             $source = file_get_contents($file);
             self::assertIsString($source);
             $entry = json_decode($source, true);
-            if (in_array($entry['id'], ['citrus-sunrise', 'trail-window'], true)) {
+            if (in_array($entry['id'], ['citrus-sunrise', 'trail-window', 'halloween-engraved', 'halloween-monster', 'halloween-forest', 'halloween-bats'], true)) {
                 continue;
             }
             self::assertSame(
@@ -64,6 +64,21 @@ final class BundledArtworkTest extends TestCase
             'https://shop.example/plugins/wconvert-pro/resources/template-artwork/' . $hash . '.webp',
             $resolved['tree']['steps'][0]['content']['children'][0]['children'][0]['src']
         );
+    }
+
+    public function testHalloweenBackgroundsBecomeLocalWithoutChangingTheirEditableScope(): void
+    {
+        $root = dirname(__DIR__, 3);
+        foreach (['engraved', 'monster', 'forest', 'bats'] as $name) {
+            $entry = json_decode((string) file_get_contents($root . '/resources/templates/library/halloween-' . $name . '.json'), true);
+            $resolved = BundledArtwork::forSite($entry, $root, 'https://shop.example/custom/wconvert/');
+            foreach ($resolved['tree']['steps'] as $step) {
+                self::assertStringStartsWith('url("https://shop.example/custom/wconvert/resources/template-artwork/', $step['content']['tokens']['bg-image']);
+            }
+            self::assertSame($entry, BundledArtwork::forSite($entry, $root, ''));
+            self::assertSame($entry, BundledArtwork::forSite($entry, $root . '/missing', 'https://shop.example/'));
+            self::assertSame($entry['tree']['fonts'], $resolved['tree']['fonts']);
+        }
     }
 
     public function testUnrecognisedArtworkAndMerchantUrlsAreNeverRewritten(): void

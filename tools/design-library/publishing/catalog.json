@@ -269,6 +269,27 @@
       "redistribution": true,
       "reviewedBy": "Claude — provenance and raster review (no text, logos or faces; artefacts checked at full size), 2026-10-21",
       "access": "free"
+    },
+    "04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5": {
+      "kind": "ai-generated",
+      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-engraved.webp. Prompt: Create an original Halloween decorative background illustration for an upscale popup campaign. Portrait 4:5 composition, full bleed warm vermilion orange paper, fine black antique woodcut / copperplate engraved linework of bats, a crescent moon, mushrooms, a pumpkin, moths, botanical vines and small stars concentrated at the outer edges. Center 65 percent width and 72 percent height remains plain orange negative space because a cream panel with LIVE text will be placed on top later. Sophisticated folk horror printmaking, imperfect ink, restrained paper grain, strong detailed perimeter and calm center. No words, no letters, no numbers, no typography, no UI, no border frame, no watermarks. Original composition not a copy of any existing template.",
+      "redistribution": true,
+      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
+      "access": "free"
+    },
+    "b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01": {
+      "kind": "ai-generated",
+      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-monster.webp. Prompt: Create an original Halloween monster-mouth decorative background for a playful premium sale popup. Portrait 4:5 image, flat full bleed. A mischievous midnight-purple monster face frames the canvas: two oversized expressive pale lime eyes and arched purple brows in the top 23 percent, irregular ivory fangs along upper and lower edges. Bright acid-chartreuse and lilac accents. Central 65 percent of the image is a very dark midnight purple open mouth with generous completely empty negative space, where LIVE offer text and a button will later go. Bottom 15 percent has playful lower jaw and a couple of teeth. Bold polished editorial cut-paper illustration, graphic screenprinted texture, charming rather than scary, asymmetric original character, visually crisp. No words, no lettering, no numbers, no text, no UI controls, no watermark. Keep teeth away from the central text-safe region.",
+      "redistribution": true,
+      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
+      "access": "free"
+    },
+    "728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e": {
+      "kind": "ai-generated",
+      "source": "Original Halloween prototype artwork generated with OpenAI, 2026-10-21. WebP derivative: tools/design-library/pilot/assets/halloween-forest.webp. Prompt: Create an original panoramic 3:2 Halloween campaign background illustration: a moody cinematic midnight forest, gnarled oak branches forming a natural arch at the top and sides, a tiny warm amber lantern and two small carved pumpkins near the lower right corner, soft silver mist along the ground, subtle distant crescent moon upper right. Near-black forest green and deep teal palette with warm copper highlights. Left central 55 percent should be calm dark negative space for large LIVE cream typography; right central area also relatively calm for a coupon panel. Extremely atmospheric, refined painterly realism, premium autumn editorial campaign, textured natural detail concentrated toward perimeter. No people, no writing, no letters, no numbers, no text, no watermark, no UI. Do not make it a screenshot or mockup, only background artwork.",
+      "redistribution": true,
+      "reviewedBy": "Codex — prototype provenance and derivative review, 2026-10-21",
+      "access": "free"
     }
   },
   "artwork_exports": {

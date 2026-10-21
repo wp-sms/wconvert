@@ -1,0 +1,47 @@
+{
+  "id": "halloween-sale-countdown",
+  "revision": "eb4bb8e307004e9554a1764a1e3e93ef9f189bce8abad295f733a61339a08a1d",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed the prepared Halloween setup on phone and desktop, plus normal/long-copy audits and native WordPress journey checks. See the per-setup judgement in review.md.",
+  "at": "2026-10-21T14:02:54.771Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-sale-countdown-320.png",
+          "sha256": "5ffff8813bb0c415825d8c60f01c2bbffe28eec0937436cc873bd5eae5dc3a52"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-sale-countdown-1440.png",
+          "sha256": "ad6e730bba3eab08d4e4320980af0ef6e4adb0aeb4603d991e3f25ff57957063"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "33d9d971eabd246950064e6321feb7fa6aae00be4f7c7a38dab0bcf93c7ac18f"
+}

@@ -1,3 +1,5 @@
+import type { WidthBag } from './panel';
+import { DecorationsSettings } from './DecorationsSettings';
 import { ReopenSettings } from '../reopenControls';
 import { useState, type Ref } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
@@ -18,6 +20,8 @@ export function DesignSettings({
   labels,
   name,
   design,
+  pictureStep,
+  pictureWidth,
   openToken,
   onOpenToken,
   onChange,
@@ -36,6 +40,8 @@ export function DesignSettings({
   labels: TemplateLabels;
   name: string;
   design: TokenBag;
+  pictureStep?: number;
+  pictureWidth?: WidthBag;
   openToken: string | null;
   onOpenToken: (name: string | null) => void;
   /** `coalesce` is {@see Tokens}'s: which token a burst of changes belongs to. */
@@ -70,17 +76,20 @@ export function DesignSettings({
         screens" is the InfoTip's, not a line of its own.
       */}
       <PanelHeader icon={<Palette />} title={<h3>{__('Look', 'wconvert')}</h3>}
-        tip={{ label: __('How the look applies', 'wconvert'), content: __('Applies to all screens. Elements with their own styles keep them; reset an element to follow the look again.', 'wconvert') }} />
+        tip={{ label: __('How the look applies', 'wconvert'), content: __('Shared styles apply to all screens. A screen’s own picture is labelled below. Elements with their own styles keep them; reset an element to follow the look again.', 'wconvert') }} />
       <Themes template={template} onChange={onChange} />
       <Tokens
         template={template}
         labels={labels}
         design={design}
+        pictureStep={pictureStep}
+        pictureWidth={pictureWidth}
         openToken={openToken}
         onOpenToken={onOpenToken}
         onChange={onChange}
         onError={onError}
       />
+      <DecorationsSettings template={template} onChange={onChange} />
       <PanelSection title={__('Format and position', 'wconvert')}>
         <FactList>
           <FactRow label={__('Format', 'wconvert')}>

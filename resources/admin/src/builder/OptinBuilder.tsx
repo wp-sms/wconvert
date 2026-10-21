@@ -1,3 +1,4 @@
+import { CampaignPreviewDeadline } from './PreviewDeadline';
 import { CampaignAnalytics } from '../analyticsIntegration';
 import { CampaignOccasion } from '../occasions/CampaignOccasion';
 import { useCompactEditor } from '../hooks/useCompactEditor';
@@ -842,6 +843,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   </>;
 
   return (
+    <CampaignPreviewDeadline endsAt={displayRules.schedule.ends_at}>
     <Tabs
       value={tab}
       onValueChange={(value) => {
@@ -988,6 +990,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onClearElement={() => setSelection(null)}
             look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates), chosenName(templateId, templates)) }}
             lookPanel={<DesignSettings
+                            pictureStep={shownStep}
+                            pictureWidth={width === 'narrow' ? 'narrow' : 'tokens'}
                             browseRef={browse}
                             template={entry}
                             labels={gallery.labels}
@@ -1017,7 +1021,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onSelectElement={chooseFromTree}
             elementPanel={!lookOpen && selection && selection.path.length > 1 ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act} onBack={() => setSelection(null)}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={(next, said) => { edit({ template: next }); setSwapSaid(current => ({ said, serial: (current?.serial ?? 0) + 1 })); }}
-              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
+              endsAt={displayRules.schedule.ends_at} startsAt={displayRules.schedule.starts_at} onEndDateChange={value => edit({ ends_at: value || undefined }, 'schedule:ends_at')} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
               placement={displayTypeOf(config, templates) === 'inline' ? inlineSummary : undefined}
               onDesign={openLook}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
@@ -1199,6 +1203,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         }}
       />
     </Tabs>
+    </CampaignPreviewDeadline>
   );
 }
 

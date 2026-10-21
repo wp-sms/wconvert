@@ -3,6 +3,9 @@
 namespace WConvert\Rest;
 
 use WConvert\Template\ThemeTokens;
+use WConvert\Template\GoogleFonts;
+use WP_REST_Request;
+use WP_Error;
 use WP_REST_Response;
 
 defined('ABSPATH') || exit;
@@ -27,6 +30,11 @@ final class ThemeController implements RestController
 {
     public function registerRoutes(): void
     {
+        register_rest_route(Routes::NAMESPACE, '/theme/google-fonts', [
+            ['methods' => 'GET', 'callback' => [$this, 'fonts'], 'permission_callback' => [Routes::class, 'canManage']],
+            ['methods' => 'POST', 'callback' => [$this, 'saveFonts'], 'permission_callback' => [Routes::class, 'canManage'],
+                'args' => ['enabled' => ['type' => 'boolean', 'required' => true], 'acknowledged' => ['type' => 'boolean', 'default' => false]]],
+        ]);
         register_rest_route(Routes::NAMESPACE, '/theme', [
             [
                 'methods' => 'GET',
@@ -34,6 +42,21 @@ final class ThemeController implements RestController
                 'permission_callback' => [Routes::class, 'canManage'],
             ],
         ]);
+    }
+
+    public function fonts(): WP_REST_Response
+    {
+        return new WP_REST_Response(['enabled' => GoogleFonts::enabled()]);
+    }
+
+    public function saveFonts(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $enabled = (bool) $request->get_param('enabled');
+        if ($enabled && !GoogleFonts::enabled() && $request->get_param('acknowledged') !== true) {
+            return new WP_Error('wconvert_font_acknowledgment', __('Confirm that browsers will connect to Google to load fonts.', 'wconvert'), ['status' => 400]);
+        }
+        GoogleFonts::set($enabled);
+        return $this->fonts();
     }
 
     public function index(): WP_REST_Response
@@ -54,6 +77,7 @@ final class ThemeController implements RestController
         return new WP_REST_Response([
             'tokens' => ThemeTokens::fromSite(),
             'fonts' => ThemeTokens::fontsFromSite(),
+            'google_fonts_enabled' => GoogleFonts::enabled(),
             'font_library_url' => current_user_can('edit_theme_options') && version_compare(get_bloginfo('version'), '6.5', '>=')
                 ? (version_compare(get_bloginfo('version'), '7.0', '>=')
                     ? admin_url('font-library.php')

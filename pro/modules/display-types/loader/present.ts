@@ -2,6 +2,7 @@ import { observePresentation } from '../../analytics/loader/bridge';
 import { campaignLifecycle } from '@loader/events';
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { createTemplatePresenter } from '@loader/present';
+import { googleFontsAllowed } from '@loader/payload';
 import { premiumCaptureInto } from '../../journeys/loader';
 import { mountPopover } from './popover';
 import { mountFullscreen } from './fullscreen';
@@ -74,6 +75,7 @@ export const proPresenter: Presenter = {
       // helper for the same reason the other four are: this branch is as narrow
       // as it can be, and everything else is free's code doing it.
       endsAt: entry.ends_at,
+      googleFonts: googleFontsAllowed(),
       // Called rather than handed over: `controls` is the shell's object and a
       // bare reference to a method on it is a `this` waiting to be lost.
       onDismiss: () => controls.dismiss(),

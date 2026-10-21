@@ -1,7 +1,9 @@
+import { withGoogleFont } from './googleFonts';
+import type { GoogleFont } from '@renderer/types';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { ClipboardCopy, ClipboardPaste, Monitor, RotateCcw, Smartphone, TriangleAlert } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { PanelHint, PanelSection } from './PanelSection';
 import { DESIGN_ONLY_PAIRS, PAIR_READERS, READABLE_PAIRS, pairKey, readableFix, verdictOf } from './contrast';
 import { useAdvanced } from './advanced';
@@ -62,6 +64,7 @@ export function ScopeStyle({
   footerEnd?: ReactNode;
 }) {
   const advanced = useAdvanced();
+  const [fontError, setFontError] = useState('');
   const chain = path === null ? [] : scopeChainOf(template.tree, path);
   const here =
     chain.length > 0 && path !== null && chain[chain.length - 1]?.path.length === path.length
@@ -72,8 +75,13 @@ export function ScopeStyle({
     return <NoScope chain={chain} labels={labels} onSelect={onSelect} />;
   }
 
-  const write = (name: string, coalesce?: string) => (value: string) =>
-    onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, coalesce);
+  const write = (name: string, coalesce?: string) => (value: string, font?: GoogleFont) => {
+    try {
+      const next = withGoogleFont({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, font);
+      setFontError('');
+      onChange(next, coalesce);
+    } catch (cause) { setFontError(cause instanceof Error ? cause.message : String(cause)); }
+  };
 
   const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
@@ -84,6 +92,7 @@ export function ScopeStyle({
     : sprintf(/* translators: %d: how many style settings were copied. */ _n('Paste %d setting', 'Paste %d settings', Object.keys(copied).length, 'wconvert'), Object.keys(copied).length);
   return (
     <div className="wconvert-scope">
+      {fontError && <p role="alert">{fontError}</p>}
       {/*
         **One line for the device being edited** (ADR 0136): which one, what
         differs on mobile, and the way to the other. It was a disclosure whose

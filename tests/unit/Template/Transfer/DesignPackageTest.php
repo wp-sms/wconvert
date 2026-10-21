@@ -18,6 +18,32 @@ final class DesignPackageTest extends TestCase
         Journeys::off();
     }
 
+    public function testFontsDecorationsAndCompactTimerSurvivePortableTransferWithAuthoredDefaults(): void
+    {
+        $design = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/halloween-features.json'), true);
+        $design += ['name' => 'Halloween', 'display_type' => 'popup'];
+        // Object key order and omitted optional defaults are valid authored JSON.
+        $design['tree']['fonts'][0] = ['faces' => [['italic' => false, 'weight' => 400], ['weight' => 700]], 'family' => 'Creepster'];
+        $group = &$design['tree']['steps'][0]['content']['decorations'];
+        unset($group['hidden']);
+        $group['items'][0] = array_reverse($group['items'][0], true);
+        $path = tempnam(sys_get_temp_dir(), 'wc-features-');
+        try {
+            $package = new DesignPackage(PackValidator::shipping());
+            $package->write($path, $design, fn () => null);
+            $read = $package->read($path)['design'];
+            self::assertSame('Creepster', $read['tree']['fonts'][0]['family']);
+            self::assertFalse($read['tree']['fonts'][0]['faces'][1]['italic']);
+            self::assertFalse($read['tree']['steps'][0]['content']['decorations']['hidden']);
+            self::assertSame('flap', $read['tree']['steps'][0]['content']['decorations']['items'][0]['motion']);
+            self::assertSame('compact', $read['tree']['steps'][0]['content']['children'][3]['density']);
+            self::assertFalse(\WConvert\Template\GoogleFonts::enabled());
+        } finally { unlink($path); }
+        $design['tree']['fonts'][0]['faces'][0]['italic'] = 'false';
+        $this->expectException(\RuntimeException::class);
+        PackValidator::shipping()->portable($design);
+    }
+
     public function testProductReferencesAreClearedAndFreeCannotImportCommerceDesigns(): void
     {
         add_filter('wconvert_commerce', static fn (): bool => true);

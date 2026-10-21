@@ -4,7 +4,7 @@ import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -1883,6 +1883,33 @@ describe('a countdown’s inspector', () => {
     await structure();
     await userEvent.click(within(row('Countdown')).getAllByRole('button')[0]);
   };
+
+  it('edits the campaign end from the clock and reads the same value in Display rules and on save', async () => {
+    builder.getOptin.mockResolvedValue(withClock({ ends_at: '2099-11-27 09:00' }));
+    await openTheClock();
+    const deadline = screen.getByLabelText('Countdown date and time');
+    expect(deadline).toHaveValue('2099-11-27T09:00');
+    fireEvent.change(deadline, { target: { value: '2099-10-31T23:30' } });
+    await userEvent.click(screen.getByRole('button', { name: 'Change the end date' }));
+    expect(screen.getByLabelText('Stop showing it on')).toHaveValue('2099-10-31T23:30');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(builder.saveOptin.mock.calls.at(-1)?.[2].ends_at).toBe('2099-10-31 23:30');
+    expect(JSON.stringify(savedTree())).not.toContain('2099-10-31');
+  });
+
+  it('warns about an end before the start and clears the shared end date', async () => {
+    builder.getOptin.mockResolvedValue(withClock({ starts_at: '2099-10-30 12:00', ends_at: '2099-10-31 23:30' }));
+    await openTheClock();
+    fireEvent.change(screen.getByLabelText('Countdown date and time'), { target: { value: '2099-10-29T12:00' } });
+    expect(screen.getByLabelText('Countdown date and time')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByText('Choose an end date and time after the start.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Countdown date and time'), { target: { value: '' } });
+    expect(screen.getByText('Without an end date the clock is empty on the page.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Set an end date' }));
+    expect(screen.getByLabelText('Stop showing it on')).toHaveValue('');
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(builder.saveOptin.mock.calls.at(-1)?.[2].ends_at).toBeUndefined();
+  });
 
   it('names the date it counts to, and what happens then', async () => {
     builder.getOptin.mockResolvedValue(withClock({ ends_at: '2099-11-27 09:00' }));

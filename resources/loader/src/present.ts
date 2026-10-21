@@ -4,6 +4,7 @@ import { mount } from '@renderer/mount';
 import { bindJourney } from './journey';
 import { isOverlay } from './decide';
 import { campaignLifecycle, notifyCampaign } from './events';
+import { googleFontsAllowed } from './payload';
 
 /**
  * The presenter: the join between deciding WHETHER to show an Optin and
@@ -61,6 +62,7 @@ export function createTemplatePresenter(bind: typeof captureInto): Presenter { r
       // (ADR 0052). Absent where the merchant set no end, which draws a clock
       // with nothing in it rather than inventing one.
       endsAt: entry.ends_at,
+      googleFonts: googleFontsAllowed(),
       // Called rather than handed over: `controls` is the shell's object and
       // a bare reference to a method on it is a `this` waiting to be lost.
       onDismiss: () => controls.dismiss(),

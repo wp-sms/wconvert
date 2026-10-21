@@ -364,7 +364,7 @@ export interface SiteFont {
 }
 
 export const getThemeTokens = () =>
-  apiFetch<{ tokens: Record<string, string>; fonts?: readonly SiteFont[]; font_library_url?: string | null }>({
+  apiFetch<{ tokens: Record<string, string>; fonts?: readonly SiteFont[]; font_library_url?: string | null; google_fonts_enabled?: boolean }>({
     path: '/wconvert/v1/theme',
   });
 

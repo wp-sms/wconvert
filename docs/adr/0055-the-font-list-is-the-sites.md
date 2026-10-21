@@ -1,5 +1,7 @@
 # The font list is the site's, and WConvert loads no face
 
+**Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): site fonts remain supported; an explicit, default-off Google Fonts option can now load declared font requirements at document level after merchant acknowledgment. The earlier absolute refusal below is historical.**
+
 The Design panel offered four typefaces: *System*, *Sans serif*, *Serif*,
 *Monospace*. A merchant whose theme ships Inter could not pick Inter — while
 the family was sitting in their `theme.json` all along, already served on every
@@ -77,6 +79,8 @@ guard is gone — it was checking for a function every supported WordPress has.*
 That call prints the **site's** faces, or none; it fetches nothing.
 
 > Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): the site-font picker adds search and a capability/version-aware route to the WordPress Font Library for installing locally hosted Google Fonts. WConvert still loads no face of its own.
+>
+> _Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): with the default-off Google Fonts setting enabled, WConvert does load a design's declared faces from Google; with it off, this still holds._
 
 ## The control changes shape, and that is rule 5 rather than a new treatment
 
@@ -150,6 +154,8 @@ now; it is not a reason to stop being radios.
 
 **Loading from `fonts.googleapis.com`.** Three reasons, any one of which is
 enough:
+
+> _Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): now offered as an opt-in, not a default. The setting is off until the owner acknowledges the visitor-IP disclosure, which answers the liability point with consent rather than refusal; the shadow-root problem is solved by hoisting `<link>`s into the document `<head>`. The reasons below still decide why it is off by default._
 
 - **It makes the merchant liable.** The Munich Regional Court (LG München I,
   20 January 2022, 3 O 17493/20) awarded damages against a site operator for

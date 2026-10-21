@@ -236,3 +236,19 @@ describe('the plain style view', () => {
       .toEqual(['Small', 'Medium', 'Large', 'Extra large']);
   });
 });
+
+
+describe('authored compact spacing in the simple editor', () => {
+  it.each(['.8rem', '0.80rem'])('recognises %s as the design default and shows its actual value', value => {
+    render(<TokenField simple label="Gap" token="gap" labels={labels} value={value} fallback=".8rem" standard="1rem"
+      design=".8rem" open={false} onOpenChange={vi.fn()} onChange={vi.fn()} />);
+    expect(screen.getByRole('radio', { name: 'Design default' })).toBeChecked();
+    expect(screen.getByText(`Current: ${value}`)).toBeInTheDocument();
+  });
+  it('shows an arbitrary gap without requiring a hover or Advanced', () => {
+    render(<TokenField simple label="Gap" token="gap" labels={labels} value="13px" fallback=".8rem" standard="1rem"
+      design=".8rem" open={false} onOpenChange={vi.fn()} onChange={vi.fn()} />);
+    expect(screen.getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(screen.getByText('Current: 13px')).toBeInTheDocument();
+  });
+});

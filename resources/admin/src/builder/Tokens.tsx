@@ -1,3 +1,7 @@
+import { firstFamily } from '@renderer/fonts';
+import { GOOGLE_FONTS, withGoogleFont } from './googleFonts';
+import { FontNotice } from './FontNotice';
+import type { GoogleFont } from '@renderer/types';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { TryAgain } from '../shell/Region';
@@ -5,6 +9,7 @@ import { SpacingField } from './SpacingField';
 import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
+import { scopeChainOf, sourceOfToken, withScopeToken, type WidthBag } from './panel';
 import { styleTokens } from './styleTokens';
 import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
@@ -174,6 +179,8 @@ export function Tokens({
   template,
   labels,
   design = {},
+  pictureStep,
+  pictureWidth = 'tokens',
   openToken,
   onOpenToken,
   onChange,
@@ -199,6 +206,9 @@ export function Tokens({
    * somewhere else.
    */
   design?: TokenMap;
+  /** The visible screen may own artwork independently of the shared look. */
+  pictureStep?: number;
+  pictureWidth?: WidthBag;
   /**
    * ==========================================================================
    * WHICH PICKER IS OPEN IS THE **SCREEN's** STATE, NOT THIS PANEL's.
@@ -242,6 +252,12 @@ export function Tokens({
   const advanced = useAdvanced();
   const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
+  const pictureChain = pictureStep === undefined ? [] : scopeChainOf(template.tree, [pictureStep]);
+  const pictureScope = pictureChain[0];
+  const scopedPicture = pictureScope !== undefined &&
+    (Object.hasOwn(pictureScope.tokens, 'bg-image') || Object.hasOwn(pictureScope.narrow, 'bg-image'));
+  const pictureValue = (name: string) => sourceOfToken(pictureChain, template.tokens, name, pictureWidth).value;
+  const isPictureToken = (name: string) => scopedPicture && ['bg-image', 'image-position', 'overlay'].includes(name);
 
   const write = (tokens: Readonly<Record<string, string>>) =>
     onChange({
@@ -266,22 +282,28 @@ export function Tokens({
       token={token.name}
       label={label}
       labels={labels}
-      fallback={design[token.name] ?? token.fallback}
+      fallback={isPictureToken(token.name) ? pictureValue(token.name) : design[token.name] ?? token.fallback}
       standard={token.fallback}
-      design={hasDesign ? (design[token.name] ?? '') : undefined}
-      value={template.tokens[token.name] ?? ''}
+      design={isPictureToken(token.name) ? undefined : hasDesign ? (design[token.name] ?? '') : undefined}
+      value={isPictureToken(token.name) ? pictureValue(token.name) : template.tokens[token.name] ?? ''}
       open={openToken === token.name}
       onOpenChange={(open) => onOpenToken(open ? token.name : null)}
-      onChange={(value) =>
-        onChange({ ...template, tokens: withToken(template.tokens, token.name, value) }, tokenCoalesce(token.name))
-      }
+      onChange={(value, font) => {
+        try {
+          const next = isPictureToken(token.name) && pictureScope
+            ? { ...template, tree: withScopeToken(template.tree, pictureScope.path, token.name, value, pictureWidth) }
+            : { ...template, tokens: withToken(template.tokens, token.name, value) };
+          onChange(withGoogleFont(next, font), isPictureToken(token.name) ? `picture:${pictureStep}:${pictureWidth}:${token.name}` : tokenCoalesce(token.name));
+        }
+        catch (cause) { onError(cause); }
+      }}
       paint={(shown) => paintOf(template.tokens, shown)}
       clearable={CLEARABLE.includes(token.name)}
     />
   );
 
   // A background picture's position and wash mean nothing until there is a picture.
-  const pictured = !['', 'none'].includes((template.tokens['bg-image'] ?? design['bg-image'] ?? 'none').trim());
+  const pictured = !['', 'none'].includes((scopedPicture ? pictureValue('bg-image') : template.tokens['bg-image'] ?? design['bg-image'] ?? 'none').trim());
   const shown = (name: string) => advanced || PLAIN_TOKENS.includes(name) || (pictured && name === 'image-position');
 
   return (
@@ -315,9 +337,13 @@ export function Tokens({
         const placed = new Set(section.rows.flat());
         const rows = [...section.rows.map(row => row.filter(name => byName.has(name))), ...tokens.filter(token => !placed.has(token.name)).map(token => [token.name])].filter(row => row.length > 0);
         return <PanelSection key={section.id} title={section.title()}>
+          {section.id === 'image' && scopedPicture && <PanelHint>{pictureWidth === 'narrow'
+            ? __('This screen’s picture · Mobile. Follows desktop unless changed.', 'wconvert')
+            : __('This screen’s picture · Desktop.', 'wconvert')}</PanelHint>}
           {rows.map(row => row.length === 1
             ? <div key={row[0]} className="wconvert-fields__item">{field(byName.get(row[0])!, section.labels?.()[row[0]])}</div>
             : <div key={row.join()} className="wconvert-panel-pair">{row.map(name => <div key={name} className="wconvert-fields__item">{field(byName.get(name)!, section.labels?.()[name])}</div>)}</div>)}
+          {section.id === 'fonts' && <FontNotice template={template} />}
         </PanelSection>;
       })}
     </>
@@ -411,8 +437,8 @@ function Palette({
   onChange: (template: Template, coalesce?: string) => void;
 }) {
   const hasDesign = Object.keys(design).length > 0;
-  const write = (name: string) => (value: string) =>
-    onChange({ ...template, tokens: withToken(template.tokens, name, value) }, tokenCoalesce(name));
+  const write = (name: string) => (value: string, font?: GoogleFont) =>
+    onChange(withGoogleFont({ ...template, tokens: withToken(template.tokens, name, value) }, font), tokenCoalesce(name));
 
   const field = (token: { name: string; fallback: string }) => (
     <TokenField
@@ -510,7 +536,7 @@ export function TokenField({
   /** Whether THIS token's picker is the one the panel has open. */
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChange: (value: string) => void;
+  onChange: (value: string, font?: GoogleFont) => void;
   /**
    * What the reset control SAYS, where "back to the design's own" is not what
    * pressing it does.
@@ -557,7 +583,12 @@ export function TokenField({
       [1.2, /* translators: short for “Larger”, on a 30px button. */ __('L', 'wconvert'), __('Larger', 'wconvert')],
     ];
     const presets = steps.map(([factor, short, long]) => ({ value: factor === 0 ? '0' : presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), short, long }));
-    const at = presets.findIndex(preset => preset.value === shown || (preset.value === '0' && measuresOf(shown)?.every(part => part.amount === 0)));
+    const actual = measuresOf(shown);
+    const at = presets.findIndex(preset => {
+      const parts = measuresOf(preset.value);
+      return actual && parts && ((actual.every(part => part.amount === 0) && parts.every(part => part.amount === 0)) ||
+        (actual.length === parts.length && actual.every((part, index) => part.amount === parts[index].amount && part.unit === parts[index].unit)));
+    });
     return <div className="wconvert-token">
       <FieldHeading as="span" label={label} labelId={`${field}-label`}>{reset}</FieldHeading>
       <span role="radiogroup" aria-labelledby={`${field}-label`} className="wconvert-choice-set wconvert-choice-set--fill">
@@ -571,6 +602,7 @@ export function TokenField({
           <span className="wconvert-choice__label">{__('Custom', 'wconvert')}</span>
         </label>}
       </span>
+      <PanelHint>{sprintf(/* translators: %s: the current spacing or rounding, e.g. “0.8rem”. */ __('Current: %s', 'wconvert'), shown)}</PanelHint>
     </div>;
   }
   if (simple && ['heading-size', 'text-size', 'width', 'pad'].includes(token) && presetBase) {
@@ -936,7 +968,8 @@ function ChoiceField({
  * (`resources/renderer/src/css.ts`). This avoids the problem rather than
  * working around it. See
  * `docs/adr/0055-the-font-list-is-the-sites.md`, which also records why Google
- * Fonts is refused.
+ * Fonts is off by default; ADR 0160 adds the opt-in that hoists them into the
+ * document `<head>`.
  *
  * ============================================================================
  * A POPOVER, AND NATIVE RADIOS INSIDE IT.
@@ -983,7 +1016,7 @@ function FontField({
   reset: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChange: (value: string) => void;
+  onChange: (value: string, font?: GoogleFont) => void;
 }) {
   const named = `${id}-name`;
   const [site, setSite] = useState<readonly SiteFont[] | null>(null);
@@ -1025,7 +1058,7 @@ function FontField({
       {/* A Google Font is a question asked once: an InfoTip, not a block in every font popover (ADR 0136). */}
       <FieldHeading as="span" label={label} labelId={named} tipLabel={__('Want a Google Font?', 'wconvert')}
         tip={<>
-          <p>{__('Install it in the WordPress Font Library, then save your draft and reload. Fonts are hosted on your site.', 'wconvert')}</p>
+          <p>{__('Install it in the WordPress Font Library to host it on your site, or enable optional Google Fonts in Settings → Data & privacy. Selecting a font does not enable remote loading.', 'wconvert')}</p>
           <p><a href={libraryUrl ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{libraryUrl ? __('Open Font Library ↗', 'wconvert') : __('Font Library instructions ↗', 'wconvert')}</a></p>
         </>}>{reset}</FieldHeading>
       <span className="wconvert-token__row">
@@ -1054,7 +1087,7 @@ function FontField({
           </PopoverTrigger>
 
           <PopoverContent align="end" side="left" collisionPadding={12} className="wconvert-font-popover">
-            <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search site and system fonts…', 'wconvert')} /></label>
+            <label className="wconvert-font-search">{__('Find a font', 'wconvert')}<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={__('Search fonts…', 'wconvert')} /></label>
             {site === null && <p role="status">{__('Loading site fonts…', 'wconvert')}</p>}
             {fontError && <p role="status">{__('Site fonts could not load.', 'wconvert')} <TryAgain onClick={read} /></p>}
             <div className="wconvert-fonts" role="group" aria-labelledby={named}>
@@ -1076,6 +1109,12 @@ function FontField({
                 </>
               )}
 
+              <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">{__('Google Fonts', 'wconvert')}</p>
+              {GOOGLE_FONTS.filter(([family]) => family.toLowerCase().includes(search.toLowerCase()) && !(site ?? []).some(font => firstFamily(font.stack) === family.toLowerCase())).map(([family, fallback, weights]) => {
+                const stack = `'${family}', ${fallback}`;
+                return <FontRow key={family} name={id} stack={stack} label={family} checked={shown === stack}
+                  onChange={value => onChange(value, { family, faces: weights.map(weight => ({ weight, italic: false })) })} />;
+              })}
               <p className="wconvert-fonts__group text-micro uppercase text-muted-foreground">
                 {__('On every device', 'wconvert')}
               </p>
@@ -1092,7 +1131,7 @@ function FontField({
 
             </div>
 
-            {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
+            {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack), ...GOOGLE_FONTS.map(([family]) => family)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
             {/*
               **The escape hatch, inside the thing you opened — and OUTSIDE the
               scroller.** `choices` is what the panel offers and never what is

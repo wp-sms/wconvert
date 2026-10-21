@@ -54,6 +54,59 @@ final class PackValidator
         return array_intersect_key($pack['templates'][0], array_flip(['name', 'display_type', 'tree', 'tokens']));
     }
 
+    /** Validate authored data before normalization; JSON object order is immaterial. */
+    private function fonts(mixed $fonts): void
+    {
+        $error = __('This design has invalid font requirements.', 'wconvert');
+        self::check(is_array($fonts) && array_is_list($fonts) && count($fonts) <= 4, $error);
+        foreach ($fonts as $font) {
+            self::check(is_array($font), $error);
+            $this->keys($font, ['family', 'faces']);
+            self::check(is_string($font['family'] ?? null) && preg_match('/^[A-Za-z][A-Za-z0-9 ]{0,79}$/D', $font['family']) === 1, $error);
+            $faces = $font['faces'] ?? null;
+            self::check(is_array($faces) && array_is_list($faces) && count($faces) >= 1 && count($faces) <= 12, $error);
+            foreach ($faces as $face) {
+                self::check(is_array($face), $error);
+                $this->keys($face, ['weight', 'italic']);
+                self::check(is_int($face['weight'] ?? null) && $face['weight'] >= 100 && $face['weight'] <= 900, $error);
+                if (array_key_exists('italic', $face)) self::check(is_bool($face['italic']), $error);
+            }
+        }
+    }
+
+    private function decorations(mixed $group): void
+    {
+        $error = __('This design has invalid decorations.', 'wconvert');
+        self::check(is_array($group), $error);
+        $this->keys($group, ['label', 'hidden', 'items']);
+        $this->words($group['label'] ?? null, 80);
+        if (array_key_exists('hidden', $group)) self::check(is_bool($group['hidden']), $error);
+        $items = $group['items'] ?? null;
+        self::check(is_array($items) && array_is_list($items) && count($items) >= 1 && count($items) <= 8, $error);
+        foreach ($items as $item) {
+            self::check(is_array($item), $error);
+            $this->keys($item, ['kind', 'x', 'y', 'size', 'motion', 'color', 'narrow']);
+            self::check(in_array($item['kind'] ?? null, ['bat', 'eyes', 'sparkle'], true), $error);
+            $this->placement($item, $error);
+            if (array_key_exists('motion', $item)) self::check(in_array($item['motion'], ['none', 'float', 'flap', 'blink'], true), $error);
+            if (array_key_exists('color', $item)) self::check(in_array($item['color'], ['fg', 'accent', 'muted', 'accent-fg'], true), $error);
+            if (array_key_exists('narrow', $item)) {
+                self::check(is_array($item['narrow']), $error);
+                $this->keys($item['narrow'], ['x', 'y', 'size']);
+                $this->placement($item['narrow'], $error);
+            }
+        }
+    }
+
+    /** @param array<string, mixed> $value */
+    private function placement(array $value, string $error): void
+    {
+        foreach (['x' => [0, 100], 'y' => [0, 100], 'size' => [12, 160]] as $key => [$min, $max]) {
+            $number = $value[$key] ?? null;
+            self::check((is_int($number) || is_float($number)) && is_finite((float) $number) && $number >= $min && $number <= $max, $error);
+        }
+    }
+
     /** Only typed merchant action URLs are permitted, never markup or controls. */
     public static function portableUrl(mixed $value): void
     {
@@ -132,7 +185,8 @@ final class PackValidator
                 $requiredCapabilities[] = 'question-journey:1';
             }
             $graph = TemplateTree::isGraph($tree);
-            $this->keys($tree, $graph ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
+            $this->keys($tree, $graph ? ['v', 'steps', 'submissions', 'graph', 'fonts'] : ['v', 'steps', 'submissions', 'fonts']);
+            if (isset($tree['fonts'])) $this->fonts($tree['fonts']);
             // `v` is the vocabulary version; a flow is said by `graph` (ADR 0156).
             self::check(($tree['v'] ?? null) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
             self::check(count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && $graph ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
@@ -271,6 +325,10 @@ final class PackValidator
                 foreach ($value as $child) $this->node($child, $depth + 1, $ids, $count, $requiredCapabilities);
             } elseif (in_array($key, ['tokens', 'narrow'], true)) {
                 $this->bag($value);
+            } elseif ($key === 'decorations') {
+                $this->decorations($value);
+            } elseif ($type === 'countdown' && $key === 'density') {
+                self::check(in_array($value, ['regular', 'compact'], true), __('This design has an invalid countdown size.', 'wconvert'));
             } elseif ($key === 'link') {
                 self::check(is_array($value), __('This design has an invalid link label.', 'wconvert'));
                 $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);

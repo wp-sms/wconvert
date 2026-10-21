@@ -11,4 +11,5 @@ return [
     'prepare-a-visit' => ['name' => __('Help visitors plan a visit', 'wconvert'), 'description' => __('Show event and arrival details, explain the consultation or invite a callback. Choose the relevant starting point; these are alternatives, not an automatic sequence.', 'wconvert')],
     'useful-store-details' => ['name' => __('Help shoppers feel informed', 'wconvert'), 'description' => __('Explain a product, announce a collection, share useful maker updates or help a customer prepare a return. Review product facts, destinations and delivery before publishing.', 'wconvert')],
     'explain-the-service' => ['name' => __('Explain a service before an enquiry', 'wconvert'), 'description' => __('Show the process or separate included work from work agreed later. An enquiry starts a conversation; it does not book or quote a job.', 'wconvert')],
+    'halloween-2026' => ['name' => __('Prepare for Halloween', 'wconvert'), 'description' => __('Choose a Halloween signup, illustrated offer or compact countdown. Review the sample discount, coupon, shop link and your own campaign dates.', 'wconvert')],
 ];

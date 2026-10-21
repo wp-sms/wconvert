@@ -28,7 +28,7 @@ The stored model is still `text` with `%b`/`%s`, `emphasis`, and `link`. No HTML
 
 ## Site fonts and supporting panels
 
-The font list becomes searchable and names both site and system fonts. The theme response provides a Font Library URL only for users who can edit theme options, with a version/theme-aware route and documentation fallback. Google Fonts are installed through WordPress and hosted by WordPress. Saving and reloading the editor refreshes font-face declarations; WConvert still loads no remote font stylesheet.
+The font list becomes searchable and names both site and system fonts. The theme response provides a Font Library URL only for users who can edit theme options, with a version/theme-aware route and documentation fallback. Google Fonts are installed through WordPress and hosted by WordPress. Saving and reloading the editor refreshes font-face declarations; WConvert still loads no remote font stylesheet. *Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): a default-off Google Fonts setting, enabled only after the owner acknowledges the visitor-IP disclosure, can load a design's declared fonts from Google.*
 
 Starting points retain their before/after confirmation and draft Undo semantics, with an icon, readable title, affected-section metadata and explicit review affordance. Optin details groups publication/draft status, goal and performance; draft-history explanation moves into a disclosure. Developer tools remain developer-only.
 

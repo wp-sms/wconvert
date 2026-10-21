@@ -1415,12 +1415,12 @@ if (!function_exists('human_time_diff')) {
 if (!function_exists('wp_timezone')) {
     function wp_timezone(): DateTimeZone
     {
-        return new DateTimeZone('UTC');
+        return new DateTimeZone($GLOBALS['wconvertTestTimezoneString'] ?? 'UTC');
     }
 }
 
 // Admin settings serialize the site's timezone label; this configurable value
-// tests that handoff only, not WordPress's timezone or date calculations.
+// also drives wp_timezone() above, as it does in WordPress.
 if (!function_exists('wp_timezone_string')) {
     function wp_timezone_string(): string
     {

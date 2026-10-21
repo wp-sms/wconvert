@@ -1,0 +1,626 @@
+[
+  {
+    "name": "engraved",
+    "width": 288,
+    "dir": "ltr",
+    "height": 515.296875,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 320
+  },
+  {
+    "name": "engraved",
+    "width": 288,
+    "dir": "rtl",
+    "height": 515.296875,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 320
+  },
+  {
+    "name": "engraved",
+    "width": 358,
+    "dir": "ltr",
+    "height": 447.921875,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 390
+  },
+  {
+    "name": "engraved",
+    "width": 358,
+    "dir": "rtl",
+    "height": 447.921875,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 390
+  },
+  {
+    "name": "engraved",
+    "width": 496,
+    "dir": "ltr",
+    "height": 509.640625,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 768
+  },
+  {
+    "name": "engraved",
+    "width": 496,
+    "dir": "rtl",
+    "height": 509.640625,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 768
+  },
+  {
+    "name": "engraved",
+    "width": 496,
+    "dir": "ltr",
+    "height": 509.640625,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 1440
+  },
+  {
+    "name": "engraved",
+    "width": 496,
+    "dir": "rtl",
+    "height": 509.640625,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/04eeb5b460c1ceeef47849b15949c39c1430918214cc85115c7a2f32dfba7df5.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": [],
+    "viewport": 1440
+  },
+  {
+    "name": "forest",
+    "viewport": 320,
+    "dir": "ltr",
+    "height": 620.359375,
+    "width": 288,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 320,
+    "dir": "rtl",
+    "height": 620.359375,
+    "width": 288,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 390,
+    "dir": "ltr",
+    "height": 598.328125,
+    "width": 358,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 390,
+    "dir": "rtl",
+    "height": 598.328125,
+    "width": 358,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 768,
+    "dir": "ltr",
+    "height": 472.15625,
+    "width": 736,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 768,
+    "dir": "rtl",
+    "height": 472.15625,
+    "width": 736,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 1440,
+    "dir": "ltr",
+    "height": 472.15625,
+    "width": 832,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "forest",
+    "viewport": 1440,
+    "dir": "rtl",
+    "height": 472.15625,
+    "width": 832,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 320,
+    "dir": "ltr",
+    "height": 714.15625,
+    "width": 288,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 320,
+    "dir": "rtl",
+    "height": 714.15625,
+    "width": 288,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 390,
+    "dir": "ltr",
+    "height": 668.9375,
+    "width": 358,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 390,
+    "dir": "rtl",
+    "height": 668.9375,
+    "width": 358,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 768,
+    "dir": "ltr",
+    "height": 528.15625,
+    "width": 736,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 768,
+    "dir": "rtl",
+    "height": 528.15625,
+    "width": 736,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 1440,
+    "dir": "ltr",
+    "height": 528.15625,
+    "width": 832,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "bats",
+    "viewport": 1440,
+    "dir": "rtl",
+    "height": 528.15625,
+    "width": 832,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/728bd892d77f4e979df9e87cc23f6e41e6f5d13a5a66300074b49ae314c9d36e.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 320,
+    "dir": "ltr",
+    "height": 606.109375,
+    "width": 288,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": true,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 320,
+    "dir": "rtl",
+    "height": 606.109375,
+    "width": 288,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 390,
+    "dir": "ltr",
+    "height": 584.828125,
+    "width": 358,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 390,
+    "dir": "rtl",
+    "height": 584.828125,
+    "width": 358,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 768,
+    "dir": "ltr",
+    "height": 610.734375,
+    "width": 432,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 768,
+    "dir": "rtl",
+    "height": 610.734375,
+    "width": 432,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 1440,
+    "dir": "ltr",
+    "height": 610.734375,
+    "width": 432,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": true,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "monster",
+    "viewport": 1440,
+    "dir": "rtl",
+    "height": 610.734375,
+    "width": 432,
+    "overflow": false,
+    "units": [],
+    "assetBackground": [
+      "linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url(\"http://127.0.0.1:9462/wp-content/plugins/wconvert/resources/template-artwork/b8bde52b7523376ced8d5bf8a1a3f538e390cf1f453f7145c6eddeb908664a01.webp\")"
+    ],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 320,
+    "dir": "ltr",
+    "height": 143.1875,
+    "width": 320,
+    "overflow": false,
+    "units": [
+      35,
+      35,
+      35,
+      35
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 320,
+    "dir": "rtl",
+    "height": 143.1875,
+    "width": 320,
+    "overflow": false,
+    "units": [
+      35,
+      35,
+      35,
+      35
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 390,
+    "dir": "ltr",
+    "height": 153.59375,
+    "width": 390,
+    "overflow": false,
+    "units": [
+      35,
+      35,
+      35,
+      35
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 390,
+    "dir": "rtl",
+    "height": 153.59375,
+    "width": 390,
+    "overflow": false,
+    "units": [
+      35,
+      35,
+      35,
+      35
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 768,
+    "dir": "ltr",
+    "height": 85.25,
+    "width": 768,
+    "overflow": false,
+    "units": [
+      52,
+      52,
+      52,
+      52
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 768,
+    "dir": "rtl",
+    "height": 85.25,
+    "width": 768,
+    "overflow": false,
+    "units": [
+      52,
+      52,
+      52,
+      52
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 1440,
+    "dir": "ltr",
+    "height": 85.25,
+    "width": 1440,
+    "overflow": false,
+    "units": [
+      52,
+      52,
+      52,
+      52
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  },
+  {
+    "name": "countdown",
+    "viewport": 1440,
+    "dir": "rtl",
+    "height": 85.25,
+    "width": 1440,
+    "overflow": false,
+    "units": [
+      52,
+      52,
+      52,
+      52
+    ],
+    "assetBackground": [],
+    "captured": false,
+    "errors": [],
+    "badAssets": []
+  }
+]

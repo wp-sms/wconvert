@@ -1,3 +1,4 @@
+import { GoogleFontSettings } from './GoogleFontSettings';
 import { AnalyticsIntegrationSettings } from '../analyticsIntegration';
 import { isFreeInstall } from '../goals/availability';
 import { MoreWithPro } from './MoreWithPro';
@@ -210,7 +211,8 @@ function VisitorExperienceSettings({ onEditingStateChange }: { onEditingStateCha
  */
 function DataPrivacySettings({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing }) {
   const [retention, rest] = usePairedEditing(onEditingStateChange);
-  const [guidance, library] = usePairedEditing(rest);
+  const [guidance, external] = usePairedEditing(rest);
+  const [library, fonts] = usePairedEditing(external);
 
   return (
     <div className="flex flex-col gap-4">
@@ -255,6 +257,7 @@ function DataPrivacySettings({ onEditingStateChange }: { onEditingStateChange?: 
         </RegionBody>
       </Region>
       <PrivacyGuidanceSettings onEditingStateChange={guidance} />
+      <GoogleFontSettings onEditingStateChange={fonts} />
       {catalogConfigured() && <LibrarySettings onEditingStateChange={library} />}
     </div>
   );

@@ -103,3 +103,15 @@ describe('field order stays useful and stable', () => {
     expect(ids(photo)).toEqual(ids(empty));
   });
 });
+
+it('resets inherited artwork for nested painted boxes as well as the screen root', () => {
+  const value: Template = { tokens: { 'bg-image': 'url(global.jpg)', overlay: '#000a' }, tree: treeFixture({ steps: [
+    { type: 'panel', tokens: { 'bg-image': 'url(outer.jpg)' }, children: [
+      { type: 'panel', narrow: { 'bg-image': 'url(mobile.jpg)' }, children: [] },
+    ] },
+  ] }) };
+  const chain = scopeChainOf(value.tree, [0, 'children', 0]);
+  expect(inheritedStyle(chain, value, 'bg-image', 'tokens')).toBe('none');
+  expect(inheritedStyle(chain, value, 'overlay', 'tokens')).toBe('#0000');
+  expect(inheritedStyle(chain, value, 'bg-image', 'narrow')).toBe('none');
+});

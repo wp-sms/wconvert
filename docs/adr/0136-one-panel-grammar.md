@@ -82,7 +82,9 @@ with one change: field hints one step smaller.
      its action), Fonts (body and headings, each beside its size), Size and
      space, Picture, Effects, Format and position, Reopen button, Design. Gap
      and corner rounding are None · S · M · L buttons, not 72px selects that
-     read "Cu". Shadows are drawn. The mobile note is gone.
+     read "Cu". *Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md):
+     the buttons also show the actual Current value, and compare numeric
+     lengths rather than their textual spelling.* Shadows are drawn. The mobile note is gone.
    - Screen: facts first; the form as one compact list of fields; "Shown if"
      is a fact row with the rule as its summary and one line about the skip.
      Results show the rule on one line, and move and remove are one ⋯.

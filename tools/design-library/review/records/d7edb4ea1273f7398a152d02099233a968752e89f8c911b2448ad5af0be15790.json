@@ -1,0 +1,47 @@
+{
+  "id": "halloween-treat-signup",
+  "revision": "deba1feef4b4d9cb613fcac4e14bb8dbe1f5019825a279e1275d196a70a33321",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed the prepared Halloween setup on phone and desktop, plus normal/long-copy audits and native WordPress journey checks. See the per-setup judgement in review.md.",
+  "at": "2026-10-21T14:02:54.771Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-treat-signup-320.png",
+          "sha256": "5507ea3efd6fa250af0b6fbdce780f77bdc6eb0cbcd7fbf2a3f2d4f550009e4f"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/halloween-treat-signup-1440.png",
+          "sha256": "e864050219344791b04241153a9918e4bdd4ed555a6247f042e02a014a855c5b"
+        },
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/review.md",
+          "sha256": "ef35ba6c37ecb334228f59a65f5a6cc2b9d0288a28c7be3ebfbbd1b6c712aa4d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-collection-2026-10-21/results.json",
+          "sha256": "402c3d44b9b37fac483320a2b09b33b4ddf782431f7e7095c4f478614447b64b"
+        }
+      ]
+    }
+  },
+  "record_id": "d7edb4ea1273f7398a152d02099233a968752e89f8c911b2448ad5af0be15790"
+}

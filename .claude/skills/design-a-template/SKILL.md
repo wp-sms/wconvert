@@ -222,7 +222,7 @@ Every design is published as its own object with its own **revision**
 ## What cannot be imported, and why there is no mapper
 
 HTML from anywhere — a competitor, a canvas, a generator — **cannot cross**.
-Positioned badges, decorative shapes and second CTAs have no home in the
+Arbitrary positioned badges, imported decorative shapes and second CTAs have no home in the
 vocabulary and `TemplateVocabulary::normalize()` drops them **silently**.
 Per-node colours DO have a home — a layout or leaf's `tokens` bag — using the
 declared token names. A value affects the elements that read that token.
@@ -339,3 +339,15 @@ in a `requestAnimationFrame` or a timer is reported below it.
 
 And per `AGENTS.md`: **verify on a real WordPress.** A green suite is not a
 booting plugin. Use the Playground one-liner in `README.md`.
+
+## Optional template features (ADR 0160)
+
+Panels/media may declare bounded `decorations` groups with an authored label,
+visibility and built-in bat/eyes/sparkle items. The editor offers only the
+group's visibility. Use `density: "compact"` on boxed countdowns for bars;
+keep ordinary image replacement independent of animated decoration groups.
+`tree.fonts` declares Google families and `faces` (weight/italic); font tokens
+retain fallback stacks. A design cannot enable remote delivery: it requires a
+separate site acknowledgment and defaults off. Read the generated vocabulary
+for the closed choices and bounds. `tests/fixtures/halloween-features.json`
+is a review example, not a published catalogue design.

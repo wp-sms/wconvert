@@ -1,3 +1,4 @@
+import { DECORATION_CSS } from './decorations';
 /**
  * Every line of the vocabulary's stylesheet, in two halves.
  *
@@ -75,6 +76,7 @@ export const A_DESIGNS_OWN_WIDTH = '28rem';
 export const A_NARROW_DESIGN = '24rem';
 
 export const SHADOW_CSS = [
+  DECORATION_CSS,
   `:host{all:initial!important;display:block!important}`,
   `*,::before,::after{box-sizing:border-box}`,
 
@@ -410,6 +412,11 @@ export const SHADOW_CSS = [
   `.wc-unit>small{font-size:max(.8125rem,.35em);font-weight:400;letter-spacing:normal;color:var(--wc-muted,#6b7280)}`,
   `.wc-unit[hidden]{display:none}`,
   `.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}`,
+  `.wc-boxes.wc-compact{gap:.375rem;flex-wrap:nowrap}`,
+  `.wc-compact>.wc-unit{flex:0 0 auto!important;inline-size:3.25rem;max-inline-size:none;padding:.3rem .15rem;min-inline-size:0}`,
+  `.wc-compact>.wc-unit>.wc-count{font-size:1.35rem;line-height:1.15;letter-spacing:normal}`,
+  `.wc-compact>.wc-unit>small{font-size:.75rem;max-inline-size:100%;overflow-wrap:anywhere;text-align:center}`,
+  `@container (max-width:32rem){.wc-compact>.wc-unit{inline-size:2.1875rem}.wc-compact>.wc-unit>.wc-count{font-size:1.15rem}}`,
 
   /*
    * ==========================================================================

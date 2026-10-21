@@ -33,6 +33,17 @@ it('restores only the reminder on the next page even when automatic impressions 
   expect(beacon.report).not.toHaveBeenCalled();
 });
 
+it('loads permitted template fonts when showing a popup with a reminder', () => {
+  document.body.innerHTML = '<script id="wconvert-payload" data-google-fonts="1"></script>';
+  const template = { ...campaign.template!, tokens: { font: 'DM Sans, sans-serif' }, tree: {
+    ...campaign.template!.tree, fonts: [{ family: 'DM Sans', faces: [{ weight: 400 }] }],
+  } };
+  const configured = { ...campaign, template } as PayloadEntry;
+  stop = start(optionsFor([configured]));
+  expect(document.querySelector('link[data-wc-font]')?.getAttribute('data-wc-font')).toBe('DM Sans');
+  document.querySelectorAll('link[data-wc-font]').forEach(link => link.remove());
+});
+
 it('offers the same popup after dismissal, retaining inputs without counting another view', () => {
   const shadows: ShadowRoot[] = [];
   const attach = Element.prototype.attachShadow;

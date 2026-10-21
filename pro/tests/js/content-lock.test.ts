@@ -37,6 +37,17 @@ function submit(form: HTMLFormElement) {
   form.querySelector('input')!.value = 'reader@example.com';
   form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 }
+it.each([['loads', '1', 'DM Sans'], ['does not load', null, undefined]])('%s permitted template fonts when gating content', (_label, flag, family) => {
+  const content = page();
+  if (flag) document.getElementById('wconvert-payload')!.setAttribute('data-google-fonts', flag);
+  run({ ...campaign, template: { ...campaign.template!, tokens: { font: 'DM Sans, sans-serif' }, tree: {
+    ...campaign.template!.tree, fonts: [{ family: 'DM Sans', faces: [{ weight: 400 }] }],
+  } } });
+  expect(content.hidden).toBe(true);
+  expect(document.querySelector('link[data-wc-font]')?.getAttribute('data-wc-font')).toBe(family);
+  document.querySelectorAll('link[data-wc-font]').forEach(link => link.remove());
+});
+
 it('reveals only after acknowledged capture and remembers this campaign across documents without another conversion', async () => {
   const roots: ShadowRoot[] = [];
   const attach = Element.prototype.attachShadow;

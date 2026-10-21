@@ -1,5 +1,7 @@
 # A token bag is scoped to the box that carries it
 
+**Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): panels and media may contain authored decorative groups positioned independently of content. Merchants can hide/show a group; normal content keeps the layout vocabulary.**
+
 **Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
 
 Any layout node may re-declare the design's tokens for itself and everything

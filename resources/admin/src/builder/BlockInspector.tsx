@@ -43,6 +43,8 @@ export interface BlockInspectorProps {
   readonly onSwap: (template: Template, said: string) => void;
 
   readonly endsAt?: string;
+  readonly startsAt?: string;
+  readonly onEndDateChange?: (value: string) => void;
 
   readonly onSetEndDate?: () => void;
   readonly onPlacement?: () => void;
@@ -69,6 +71,8 @@ export function BlockInspector({
   onChange,
   onSwap,
   endsAt,
+  startsAt,
+  onEndDateChange,
   onSetEndDate,
   onPlacement,
   placement,
@@ -118,6 +122,8 @@ export function BlockInspector({
     slot,
     onChange,
     endsAt,
+    startsAt,
+    onEndDateChange,
     onSetEndDate,
     onPlacement,
     placement,
@@ -258,6 +264,8 @@ function contentBody({
   slot,
   onChange,
   endsAt,
+  startsAt,
+  onEndDateChange,
   onSetEndDate,
   onPlacement,
   placement,
@@ -269,6 +277,8 @@ function contentBody({
   slot: Slot | null;
   onChange: (template: Template, coalesce?: string) => void;
   endsAt?: string;
+  startsAt?: string;
+  onEndDateChange?: (value: string) => void;
   onSetEndDate?: () => void;
   onPlacement?: () => void;
   placement?: string;
@@ -348,6 +358,8 @@ function contentBody({
             )
           }
           endsAt={endsAt}
+          startsAt={startsAt}
+          onEndDateChange={onEndDateChange}
           onSetEndDate={onSetEndDate}
           onParam={(param, value) =>
             onChange({ ...template, tree: withValue(template.tree, slot.path, param, value) })
