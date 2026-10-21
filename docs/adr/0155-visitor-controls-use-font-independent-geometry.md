@@ -23,6 +23,7 @@ remain configuration and cannot supply SVG markup or arbitrary paths.
 Node 22.23.2 gzip-9 measures the updated loaders at 14,852 B Free and 27,840 B Pro.
 These exceed the previous 14,768 / 27,712 B ceilings. Allocate 128 B more to Free
 and 160 B more to Pro: **14,896 / 27,872 B**, retaining the hard, flagless gate.
+*Amended by [ADR 0158](0158-a-close-control-takes-room-only-beside-what-it-covers.md): Pro is 28,160 B for the close reserve on bars and slide-ins.*
 The same Pro base applies to analytics/commerce combined checks. The optional
 phone asset and phone-page ceilings do not increase. This pays for a common
 rendering correction, with no new dependency or network request.

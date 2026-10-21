@@ -1,5 +1,6 @@
 import type { MountOptions, Mounted } from '@renderer/mount';
 import { NOTHING, closeButton, documentStyle, shell } from '@renderer/mount';
+import { reserveBesideClose } from './close-reserve';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 
 /**
@@ -367,7 +368,10 @@ export function mountPopover(options: MountOptions): Mounted {
   element.className = 'wcv-p';
 
   const chrome = closeButton(() => close(true));
-  const parts = shell(options.template, chrome, options);
+  // A bar's control is centred on a wide bar (`.wc-close[data-bar]`); on bars
+  // and corner cards alike it never sits over what it would cover.
+  if (displayType === 'floating_bar') chrome.dataset.bar = '';
+  const parts = shell(options.template, chrome, { ...options, decorate: reserveBesideClose });
   let releaseReservation: (() => void) | null = null;
 
   element.appendChild(parts.host);

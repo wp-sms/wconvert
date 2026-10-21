@@ -78,6 +78,8 @@ const DIALOG_ARMOUR: Readonly<Record<string, string>> = {
 export interface MountOptions {
   /** `popup` or `inline`. Anything else mounts nothing rather than guessing. */
   readonly displayType?: string;
+  /** Runs for each rendered step once its close control is attached (Pro's bars and slide-ins). */
+  readonly decorate?: (root: HTMLElement, chrome: HTMLElement) => void;
   /** Non-default viewport edge or corner for Pro's non-modal containers. */
   readonly placement?: string;
   readonly template: Template;
@@ -250,9 +252,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     }
     if (chrome !== null) {
       element.appendChild(chrome);
-      if (options.displayType === 'floating_bar') chrome.dataset.bar = '';
-      // A bar's or corner card's words can reach the control's corner.
-      if (options.displayType === 'floating_bar' || options.displayType === 'slide_in') reserveBesideClose(element, chrome);
+      options.decorate?.(element, chrome);
     }
 
     element.addEventListener('submit', (event) => event.preventDefault());
@@ -521,73 +521,6 @@ function inline(options: MountOptions, anchor: Element): Mounted {
       parts.host.remove();
     },
   };
-}
-
-/** What a bar's or slide-in's close control must never sit over. */
-const BESIDE_CLOSE = '.wc-heading,.wc-text,.wc-eyebrow,.wc-badge,.wc-rating,.wc-code,.wc-countdown,.wc-field,.wc-button';
-
-/**
- * Room beside a bar's or slide-in's close control for exactly the lines it
- * would cover.
- *
- * A phone-width bar stacks and its control keeps the top corner, as a
- * slide-in's always does. A band of
- * padding above everything costs the bar a row of nothing, and a column
- * beside everything pushes a field and its button onto two lines, so only the
- * text the control actually overlaps gets `padding-inline-end`; a field or
- * button keeps its shape and the row holding it takes the room instead, so
- * the row re-wraps short of the control. Logical
- * padding, so a right-to-left bar reserves the other side with no second
- * rule. Measured after layout, again when the bar's width changes, and once
- * more when web fonts settle, because each moves where the text wraps.
- */
-export function reserveBesideClose(root: HTMLElement, close: HTMLElement): void {
-  const gap = 8;
-  let width = -1;
-
-  const measure = (): void => {
-    // Not yet on the page: wait for the observer's first callback. Once it has
-    // been measured and then leaves the page, a step swap replaced it.
-    if (!root.isConnected) {
-      if (width !== -1) observer?.disconnect();
-      return;
-    }
-    if (root.clientWidth === width) return;
-    width = root.clientWidth;
-
-    for (const element of root.querySelectorAll<HTMLElement>('[data-beside-close]')) {
-      element.style.removeProperty('padding-inline-end');
-      delete element.dataset.besideClose;
-    }
-
-    // Reserving room re-wraps that text, which can move what follows it under
-    // the control; a few passes settle any bar the vocabulary can build.
-    for (let pass = 0; pass < 3; pass++) {
-      const control = close.getBoundingClientRect();
-      let moved = false;
-      for (const element of root.querySelectorAll<HTMLElement>(BESIDE_CLOSE)) {
-        // A field or button keeps its shape; the row holding it re-wraps short
-        // of the control. Outside a row the field's own wrapper takes the room.
-        const target = element.matches('.wc-field,.wc-button') ? element.closest<HTMLElement>('.wc-row') ?? element : element;
-        if (target.dataset.besideClose !== undefined) continue;
-        const box = element.getBoundingClientRect();
-        if (box.top < control.bottom + gap && box.bottom > control.top && box.right > control.left - gap && box.left < control.right + gap) {
-          target.style.setProperty('padding-inline-end', `${close.offsetWidth + gap}px`);
-          target.dataset.besideClose = '';
-          moved = true;
-        }
-      }
-      if (!moved) break;
-    }
-  };
-
-  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
-  observer?.observe(root);
-  requestAnimationFrame(measure);
-  void document.fonts?.ready.then(() => {
-    width = -1;
-    measure();
-  });
 }
 
 /**

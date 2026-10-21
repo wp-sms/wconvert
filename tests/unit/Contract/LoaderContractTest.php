@@ -268,7 +268,7 @@ final class LoaderContractTest extends TestCase
         ]));
 
         $this->assertSame(1, $result['status'], $result['output']);
-        $this->assertStringContainsString('27872', $result['output']);
+        $this->assertStringContainsString('28160', $result['output']);
     }
 
     /**
