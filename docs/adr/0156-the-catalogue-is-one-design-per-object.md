@@ -145,6 +145,10 @@ these only refuse what is objectively wrong or make review cheaper:
   evidence file no longer stales a decision (a missing one does); collections
   are keyed on setup revisions, not record ids. `visual-diff` also writes the
   changed screens before beside after, so a re-review judges the change.
+  *Amended by [0162](0162-the-delivery-plan-is-derived.md):* the key still
+  hashes the whole stylesheet, so a CSS edit that draws nothing differently
+  stales every approval. `templates:releasable` fails the pull request until
+  `templates:visual-diff -- --apply` has carried them.
 - **Two of the three checks are run by a machine.** `setup-checks.mjs` walks
   every setup to review as a visitor on a disposable WordPress and writes
   `results.json` (`journey`, `wordpress`); the reviewer judges contact sheets

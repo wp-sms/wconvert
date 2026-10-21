@@ -9,10 +9,12 @@ import { SAMPLE_DEADLINE, SAMPLE_ERROR, SAMPLE_NOW, drawWithChrome } from './chr
  *
  * Approval used to be bound to the renderer's bytes, so any renderer change —
  * a refactor, a studio control, a comment — staled every approval in the
- * library. Bound to this instead, a change that draws the same markup and
- * styles leaves an approval current, and one that draws something different
- * stales exactly the campaigns it touched. `visual-diff.mjs` then compares
- * those pixel for pixel before anyone is asked to look again.
+ * library. Bound to this instead, a change that draws the same markup leaves
+ * an approval current — **but the whole stylesheet is part of the digest**, so
+ * any edit to it, even whitespace, stales every campaign at once. jsdom cannot
+ * say which campaigns a rule reaches; `visual-diff.mjs` compares them pixel
+ * for pixel and carries the identical ones, and `templates:releasable` fails
+ * the pull request until that has been run (ADR 0162).
  *
  * **Version 2 draws what the loader adds too** — the close control, a refused
  * field and a painted countdown ({@link drawWithChrome}) — because a design

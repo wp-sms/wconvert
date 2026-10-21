@@ -150,7 +150,9 @@ See [the review report](../../docs/reviews/template-visual-audit-2026-09-29.md).
    decisions but does not record them. Import with
    `npm run templates:review -- /path/to/export.json`;
    commit the shared records and evidence together. Campaign, renderer or evidence
-   changes invalidate the shared approval. Run `npm run templates:gate -- BATCH_ID`
+   changes invalidate the shared approval; after any stylesheet edit,
+   `npm run templates:releasable` (run by CI) fails until
+   `npm run templates:visual-diff -- --apply` has carried what looks the same. Run `npm run templates:gate -- BATCH_ID`
    locally. See [the shared-review workflow](review/README.md). Editorial review is
    separate from release approval. Publish through the normal branch/PR process.
 

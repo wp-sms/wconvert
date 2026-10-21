@@ -50,6 +50,7 @@
     "templates:revisions": "node tools/design-library/build/catalogue-revisions.mjs",
     "templates:visual-diff": "npm run templates:pilot && node tools/design-library/build/visual-diff.mjs",
     "templates:revisions:check": "node tools/design-library/build/catalogue-revisions.mjs --check",
+    "templates:releasable": "bash tools/design-library/build.sh renderer pilot && node tools/design-library/build/releasable.mjs",
     "build:analytics": "vite build -c vite.config.analytics.mjs",
     "test:visual:analytics": "playwright test -c tools/visual-tests/analytics.config.mjs",
     "test:visual:flow": "playwright test -c tools/visual-tests/flow.config.mjs",

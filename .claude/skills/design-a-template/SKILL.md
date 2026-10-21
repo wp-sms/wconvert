@@ -208,8 +208,10 @@ Every design is published as its own object with its own **revision**
   `setup-checks.mjs` records the visitor route and the configured WordPress run;
   you judge the contact sheets from `batch-audit.mjs queue --capture` and write
   only what is specific to each setup. After a renderer change run
-  `templates:visual-diff --apply` first and judge only what it lists. An
-  approval goes stale only when what ships changes, not when the brief does.
+  `templates:visual-diff -- --apply` first and judge only what it lists. An
+  approval goes stale only when what ships changes, not when the brief does —
+  but any stylesheet edit counts, so `templates:releasable` (CI) fails until
+  that command has run.
 - **Publishing is a plan entry.** Add the setup to `publishing/catalog.json`
   `setups` once it is approved; `npm run templates:release:local` exports it,
   renders its thumbnails and previews, and runs the shipping PHP reader over
