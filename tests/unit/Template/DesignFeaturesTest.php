@@ -6,6 +6,7 @@ use WConvert\Template\DesignFeatures;
 use WConvert\Template\GoogleFonts;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Frontend\PayloadTag;
 use WConvert\Rest\ThemeController;
 use WP_REST_Request;
 use WP_Error;
@@ -30,6 +31,26 @@ final class DesignFeaturesTest extends TestCase
         $request->set_param('acknowledged', false);
         $controller->saveFonts($request);
         $this->assertFalse(GoogleFonts::enabled());
+    }
+
+    /** The page, not the editor, is what talks to Google: off means no font list and no permission flag reach it. */
+    public function testThePageCarriesGoogleFontsOnlyWhileTheSiteAllowsThem(): void
+    {
+        $font = ['family' => 'Creepster', 'faces' => [['weight' => 400, 'italic' => false]]];
+        $entries = [['id' => '01A', 'template' => ['tokens' => [], 'tree' => ['fonts' => [$font], 'steps' => []]]]];
+        $fontsIn = static function (string $tag): mixed {
+            preg_match('/<script[^>]*>(.*)<\/script>/s', $tag, $json);
+            return json_decode($json[1] ?? 'null', true)[0]['template']['tree']['fonts'] ?? null;
+        };
+
+        $off = PayloadTag::render($entries, 'https://example.test/capture', 'https://example.test/beacon', null, 'UTC');
+        $this->assertStringNotContainsString('data-google-fonts', $off);
+        $this->assertSame([], $fontsIn($off));
+
+        GoogleFonts::set(true);
+        $on = PayloadTag::render($entries, 'https://example.test/capture', 'https://example.test/beacon', null, 'UTC');
+        $this->assertStringContainsString('data-google-fonts="1"', $on);
+        $this->assertSame([$font], $fontsIn($on));
     }
 
     public function testNestedConfigurationIsClosedAndBounded(): void
