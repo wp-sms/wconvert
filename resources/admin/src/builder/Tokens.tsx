@@ -1,5 +1,6 @@
 import { firstFamily } from '@renderer/fonts';
 import { GOOGLE_FONTS, withGoogleFont } from './googleFonts';
+import { FontNotice } from './FontNotice';
 import type { GoogleFont } from '@renderer/types';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
@@ -342,6 +343,7 @@ export function Tokens({
           {rows.map(row => row.length === 1
             ? <div key={row[0]} className="wconvert-fields__item">{field(byName.get(row[0])!, section.labels?.()[row[0]])}</div>
             : <div key={row.join()} className="wconvert-panel-pair">{row.map(name => <div key={name} className="wconvert-fields__item">{field(byName.get(name)!, section.labels?.()[name])}</div>)}</div>)}
+          {section.id === 'fonts' && <FontNotice template={template} />}
         </PanelSection>;
       })}
     </>
@@ -966,7 +968,8 @@ function ChoiceField({
  * (`resources/renderer/src/css.ts`). This avoids the problem rather than
  * working around it. See
  * `docs/adr/0055-the-font-list-is-the-sites.md`, which also records why Google
- * Fonts is refused.
+ * Fonts is off by default; ADR 0160 adds the opt-in that hoists them into the
+ * document `<head>`.
  *
  * ============================================================================
  * A POPOVER, AND NATIVE RADIOS INSIDE IT.

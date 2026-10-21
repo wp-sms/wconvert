@@ -99,6 +99,17 @@ export function beaconEndpoint(): string | null {
 }
 
 /**
+ * Whether the owner has allowed Google Fonts on this site (ADR 0160).
+ *
+ * `PayloadTag` prints the attribute only when the setting is on, and has
+ * already emptied every design's font list when it is off — so this is the
+ * renderer's second lock, not its only one.
+ */
+export function googleFontsAllowed(): boolean {
+  return document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-google-fonts') === '1';
+}
+
+/**
  * The site's own allowance, or **undefined where this page carries none**.
  *
  * Undefined is the shipped default and not an error: the attribute is printed

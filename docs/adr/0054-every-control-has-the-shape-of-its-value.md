@@ -196,6 +196,9 @@ Two things this deliberately does not do:
   is a preview of nothing, and the preview is a picture of the *design* the same
   way the placeholder headline beside it is. The inspector is where the truth
   about this Optin belongs.
+  *Amended by [ADR 0160](0160-templates-declare-fonts-decorations-and-countdown-density.md): `A_PREVIEW_DEADLINE` is gone. The canvas, flow
+  thumbnails and Preview & test count to the campaign's real end date, show
+  zero once it has passed, and use sample time only when there is no end date.*
 - **`ends_at` is formatted as wall time.** It is stored as `Y-m-d H:i` with no
   zone on it — the trap ADR 0050 already names — so `new Date(stored)` reads it
   as UTC or as the browser's zone depending on its shape and puts the wrong hour

@@ -1,5 +1,5 @@
 import { campaignLifecycle } from '@loader/events';
-import { PAYLOAD_ELEMENT_ID } from '@loader/payload';
+import { googleFontsAllowed, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import type { OptinControls, PayloadEntry } from '@loader/types';
 import { mount } from '@renderer/mount';
 import { premiumCaptureInto } from '../../journeys/loader';
@@ -61,7 +61,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   const mounted = (entry.display_type === 'slide_in' ? mountPopover : mount)({
     ...campaignLifecycle(entry),
     displayType: entry.display_type, placement: entry.placement, template: entry.template, endsAt: entry.ends_at,
-    googleFonts: document.getElementById('wconvert-payload')?.getAttribute('data-google-fonts') === '1',
+    googleFonts: googleFontsAllowed(),
     onDismiss: () => { expanded = false; if (completed) { removed = true; hide(); } else { recovery?.minimized(); once('dismiss'); remind(); if (returnFocus) button.focus(); } },
     onConvert: convert,
   });

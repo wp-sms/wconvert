@@ -2,7 +2,7 @@
 
 Accepted 2026-10-21. Implements the Halloween design exploration without adding
 position, animation or countdown sizing controls to the merchant editor.
-Amends 0010, 0055, 0062 and 0159.
+Amends 0010, 0052, 0054, 0055, 0062, 0077, 0134, 0136 and 0159.
 
 ## Font requirements and site permission are separate
 
