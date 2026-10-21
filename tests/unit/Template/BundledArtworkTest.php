@@ -44,6 +44,28 @@ final class BundledArtworkTest extends TestCase
         self::assertSame($entry, BundledArtwork::forSite($entry, $root . '/missing', 'https://shop.example/'));
     }
 
+    /**
+     * Pro's bundled photographs are WebP and live under Pro's own directory; a
+     * campaign made from one must carry a cacheable URL, not the photo itself.
+     */
+    public function testAShippedProWebpBecomesAUrlUnderProsOwnDirectory(): void
+    {
+        $pro = dirname(__DIR__, 3) . '/pro';
+        $json = file_get_contents($pro . '/modules/display-types/templates/polaroid.json');
+        self::assertIsString($json);
+        $entry = json_decode($json, true);
+        $source = $entry['tree']['steps'][0]['content']['children'][0]['children'][0]['src'];
+        self::assertStringStartsWith('data:image/webp;base64,', $source);
+        $hash = hash('sha256', base64_decode(explode(',', $source, 2)[1]));
+
+        $resolved = BundledArtwork::forSite($entry, $pro, 'https://shop.example/plugins/wconvert-pro/');
+
+        self::assertSame(
+            'https://shop.example/plugins/wconvert-pro/resources/template-artwork/' . $hash . '.webp',
+            $resolved['tree']['steps'][0]['content']['children'][0]['children'][0]['src']
+        );
+    }
+
     public function testUnrecognisedArtworkAndMerchantUrlsAreNeverRewritten(): void
     {
         foreach (['data:image/jpeg;base64,' . base64_encode('unrecognised'), 'https://merchant.example/photo.jpg', 'data:image/jpeg;base64,???'] as $source) {

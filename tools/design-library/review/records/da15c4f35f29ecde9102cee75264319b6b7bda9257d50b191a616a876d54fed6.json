@@ -1,0 +1,95 @@
+{
+  "id": "basket-cross-sells",
+  "revision": "68634290564cbfb4dbe58c79fb2eab7ac13148519e85f8bd7665dcd9989721a7",
+  "base_id": "9ede86e116b9a23fe117f41291d47640db2677967b6b792f01981b7c5bbc8827",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/manifest.json",
+          "sha256": "6dd3fba4f860426a7a049450a7e9d857f884309b2e843f6b0b57b5e01f8af228"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/controls.json",
+          "sha256": "36acba6b17c47b9179b415c8c4fbc40d11f983d1a4c2ce9cd4e211b704740047"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/visual/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/middle/board-01.png",
+          "sha256": "45078631ffe05c4a05ac5f296761f1c4f9103094d86ac8918139ae2f4e70f1fd"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wide/board-01.png",
+          "sha256": "45dd627adee56e0cace6a9b66e0613c26b1a7a369f8b9f97ace64167ef85bccf"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/stress/board-01.png",
+          "sha256": "88612e2d7febdf6571e7d107ea73001b794adbdf6cdb4c6dcbe5ef82c882ffa2"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/basket-cross-sells-1280.png",
+          "sha256": "7147276e590b68b81e26a7dbd5aa68e7b92215e2413e8ba354566ff3fa69111a"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/basket-cross-sells-320.png",
+          "sha256": "2099706cbd9e0ab889fb16bcbcea88d5e3dbd1cc4227680b4d72905171e1895f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/studio-journeys.json",
+          "sha256": "1a4c5a60530bc2541a495eecc08dfe2d2d1cadc4c053556065876c9aa9058ee3"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/cart-check.json",
+          "sha256": "a508e656f1d3d009a7c35599ec9b1f17f0e14ae7396e8f2920560c8e254eeced"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/coupon.json",
+          "sha256": "2cf4d1f1d5a6c9a0051a0707585e9e7c4bbd314b48b67a14ffe8ffd22ee66744"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/wordpress-summary.json",
+          "sha256": "1db99fe79d1b1cb461faa693c8273ed0a868c4d909173e84c4967e347c6c87e2"
+        }
+      ]
+    }
+  },
+  "record_id": "da15c4f35f29ecde9102cee75264319b6b7bda9257d50b191a616a876d54fed6"
+}

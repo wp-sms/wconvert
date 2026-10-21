@@ -22,7 +22,7 @@ add_action('template_redirect', static function (): void {
         }
         wp_send_json(['php' => PHP_VERSION, 'root' => WCONVERT_DIR, 'prepared' => count($checks), 'setups' => $checks]);
     }
-    $ids = ['add-useful-extras', 'recommend-accessory', 'shopping-guidance', 'explore-compatible-extras', 'basket-cross-sells', 'coffee-taste-finder'];
+    $ids = ['add-useful-extras', 'recommend-accessory', 'shopping-guidance', 'explore-compatible-extras', 'basket-cross-sells', 'coffee-taste-finder', 'finish-the-set'];
     if (!in_array($selection, $ids, true)) wp_die('Unknown review setup');
     $saved = get_option('wconvert_template_refresh', []);
     foreach ($repository->summaries() as $row) {
@@ -48,6 +48,8 @@ add_action('template_redirect', static function (): void {
         }
 
         $config['inline_placement'] = ['position' => 'manual'];
+        // A popup's own delay is not what this review checks; show it on arrival.
+        if ($selection === 'finish-the-set') $config['display_rules'] = \WConvert\Rules\DisplayPlan::immediate();
         $config['template']['tree'] = \WConvert\Template\TemplateTree::rewrittenIn(['template' => ['tree' => $config['template']['tree']]], static function (array $node) use ($fixture): array {
             if (($node['type'] ?? '') === 'products') {
                 if (($node['context'] ?? '') === 'product' || array_key_exists('main_product_id', $node)) $node['main_product_id'] = $fixture['products'][0];

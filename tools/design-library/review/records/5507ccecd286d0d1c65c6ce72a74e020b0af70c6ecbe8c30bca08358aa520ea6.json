@@ -1,0 +1,47 @@
+{
+  "id": "service-open-day",
+  "revision": "5fcaf7645ef73b199b7236ade4a1efad3cab0065cb9b2ff9c4261a0fb480bd61",
+  "base_id": "a9be02a5c9a14b6562c158bf328e19a49382d9f45ed6e18a0df3a45ad5ea666d",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-open-day-320.png",
+          "sha256": "d2b084570aae631dea7ca8ea9330316d396771db7205a825f7e94df36cfa2752"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/service-open-day-1440.png",
+          "sha256": "70af98361952cd225d8e5ba5c8e5366fd1d4e0ab5352c28416cf479e2587b579"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "5507ccecd286d0d1c65c6ce72a74e020b0af70c6ecbe8c30bca08358aa520ea6"
+}

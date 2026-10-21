@@ -24,10 +24,10 @@ final class BundledArtwork
         $walk = static function (array $node) use (&$walk, $pluginDir, $pluginUrl): array {
             $source = $node['src'] ?? '';
             if (($node['type'] ?? '') === 'image' && is_string($source)
-                && preg_match('#^data:image/jpeg;base64,([A-Za-z0-9+/=]+)$#D', $source, $match)) {
-                $bytes = base64_decode($match[1], true);
+                && preg_match('#^data:image/(jpeg|webp);base64,([A-Za-z0-9+/=]+)$#D', $source, $match)) {
+                $bytes = base64_decode($match[2], true);
                 if ($bytes !== false) {
-                    $relative = 'resources/template-artwork/' . hash('sha256', $bytes) . '.jpg';
+                    $relative = 'resources/template-artwork/' . hash('sha256', $bytes) . ($match[1] === 'jpeg' ? '.jpg' : '.webp');
                     $file = rtrim($pluginDir, '/') . '/' . $relative;
                     if (is_file($file) && hash_file('sha256', $file) === hash('sha256', $bytes)) {
                         $node['src'] = rtrim($pluginUrl, '/') . '/' . $relative;

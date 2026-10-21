@@ -39,13 +39,15 @@ $vocabulary = TemplateVocabulary::fromManifest($root);
 $source = new class($root) implements TemplateSource {
     public function __construct(private readonly string $root) {}
     public function entries(): array {
-        $files = array_merge(glob($this->root . '/resources/templates/library/*.json') ?: [], glob($this->root . '/pro/modules/*/templates/*.json') ?: []);
+        $files = array_merge(glob($this->root . '/resources/templates/library/*.json') ?: [], glob($this->root . '/pro/modules/*/templates/*.json') ?: [],
+            glob($this->root . '/tools/design-library/hosted/templates/*.json') ?: []);
         return array_map(static fn ($file) => json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR), $files);
     }
 };
 $templates = TemplateLibrary::from($vocabulary, $source);
 $rules = RuleVocabulary::fromManifest($root);
-$additional = array_map(static fn ($file) => require $file, glob($root . '/pro/modules/*/playbooks/*.php') ?: []);
+$additional = array_map(static fn ($file) => require $file, array_merge(glob($root . '/pro/modules/*/playbooks/*.php') ?: [],
+    glob($root . '/tools/design-library/hosted/playbooks/*.php') ?: []));
 $playbooks = PlaybookLibrary::fromDirectory($templates, $vocabulary, $rules, $root, $additional);
 $site = new class implements SitePresence { public function has(SiteDependency $dependency): bool { return true; } };
 $supplied = new SuppliedRules();

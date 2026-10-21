@@ -2,6 +2,7 @@
 
 namespace WConvert\Pro\Template;
 
+use WConvert\Template\BundledArtwork;
 use WConvert\Template\JsonFile;
 use WConvert\Template\TemplateSource;
 
@@ -87,7 +88,9 @@ final class ProTemplates implements TemplateSource
             $decoded = JsonFile::read($file);
 
             if ($decoded !== null) {
-                $entries[] = $decoded;
+                // Pro's photographs ship as files beside its designs, so a
+                // campaign carries a cacheable URL rather than the photo.
+                $entries[] = BundledArtwork::forSite($decoded, $this->pluginDir, defined('WCONVERT_PRO_URL') ? WCONVERT_PRO_URL : '');
             }
         }
 

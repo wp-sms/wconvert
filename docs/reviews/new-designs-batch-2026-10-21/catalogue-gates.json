@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "at": "2026-10-21T05:26:38.288Z",
+  "compared_against": "103 exportable designs",
+  "exported": [
+    "ticker-line",
+    "ribbon-tag",
+    "last-call",
+    "lookbook",
+    "field-guide",
+    "kind-words",
+    "polaroid",
+    "product-trio",
+    "changelog",
+    "big-number",
+    "tasting-card",
+    "glacier"
+  ],
+  "near_duplicates": [],
+  "contrast_failures": {
+    "big-number": [],
+    "changelog": [],
+    "field-guide": [],
+    "glacier": [],
+    "kind-words": [],
+    "last-call": [],
+    "lookbook": [],
+    "polaroid": [],
+    "product-trio": [],
+    "ribbon-tag": [],
+    "tasting-card": [],
+    "ticker-line": []
+  },
+  "copy_issues": {
+    "big-number": [],
+    "changelog": [],
+    "field-guide": [],
+    "glacier": [],
+    "kind-words": [],
+    "last-call": [],
+    "lookbook": [],
+    "polaroid": [],
+    "product-trio": [],
+    "ribbon-tag": [],
+    "tasting-card": [],
+    "ticker-line": []
+  },
+  "literal_colours_in_node_bags": 0
+}

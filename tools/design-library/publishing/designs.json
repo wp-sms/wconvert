@@ -323,6 +323,24 @@
         "light"
       ]
     },
+    "big-number": {
+      "description": "A two-tone popup where the discount figure fills a cobalt panel beside a short signup form.",
+      "slug": "big-number",
+      "industries": [
+        "retail",
+        "general"
+      ],
+      "occasions": [
+        "sale",
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "cool"
+      ]
+    },
     "bloom-postcard": {
       "slug": "bloom-postcard",
       "industries": [
@@ -431,6 +449,24 @@
       ],
       "colour": [
         "light"
+      ]
+    },
+    "changelog": {
+      "description": "A dark terminal-style popup for release-notes signups, set in monospace with a short list of what each email covers.",
+      "slug": "changelog",
+      "industries": [
+        "professional-services",
+        "general"
+      ],
+      "occasions": [
+        "evergreen",
+        "launch"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "dark"
       ]
     },
     "citrus-sunrise": {
@@ -625,6 +661,24 @@
         "light"
       ]
     },
+    "field-guide": {
+      "description": "A fullscreen botanical plate beside a rounded form, for a monthly planting letter from a garden shop.",
+      "slug": "field-guide",
+      "industries": [
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft",
+        "editorial"
+      ],
+      "colour": [
+        "warm",
+        "green"
+      ]
+    },
     "fieldwork": {
       "slug": "fieldwork",
       "industries": [
@@ -732,6 +786,24 @@
       ],
       "colour": [
         "cool"
+      ]
+    },
+    "glacier": {
+      "description": "An inline card on a cool gradient with a landscape photograph and a signup for a monthly trip report.",
+      "slug": "glacier",
+      "industries": [
+        "travel-places"
+      ],
+      "occasions": [
+        "evergreen",
+        "summer"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "cool",
+        "light"
       ]
     },
     "ink-split": {
@@ -1047,6 +1119,24 @@
         "light"
       ]
     },
+    "kind-words": {
+      "description": "A soft corner card that leads with stars and a customer review, then offers a first-order code.",
+      "slug": "kind-words",
+      "industries": [
+        "retail",
+        "general"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm",
+        "light"
+      ]
+    },
     "kit-workbench": {
       "slug": "kit-workbench",
       "industries": [
@@ -1061,6 +1151,25 @@
       ],
       "colour": [
         "light"
+      ]
+    },
+    "last-call": {
+      "description": "A near-black fullscreen countdown in poster type for the last hours of a sale, with the code shown after signup.",
+      "slug": "last-call",
+      "industries": [
+        "retail",
+        "fashion",
+        "general"
+      ],
+      "occasions": [
+        "sale",
+        "black-friday"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "dark"
       ]
     },
     "launch-checklist": {
@@ -1107,6 +1216,24 @@
         "crisp"
       ],
       "colour": [
+        "light"
+      ]
+    },
+    "lookbook": {
+      "description": "A fullscreen editorial spread for a fashion launch: a large photograph, a Didone headline and an early-access signup.",
+      "slug": "lookbook",
+      "industries": [
+        "fashion",
+        "retail"
+      ],
+      "occasions": [
+        "launch"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "warm",
         "light"
       ]
     },
@@ -1302,6 +1429,26 @@
         "dark"
       ]
     },
+    "polaroid": {
+      "description": "A corner card with a framed snapshot and handwritten caption, inviting visitors to see each new batch first.",
+      "slug": "polaroid",
+      "industries": [
+        "home-garden",
+        "arts-events",
+        "retail"
+      ],
+      "occasions": [
+        "launch",
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "warm",
+        "neutral"
+      ]
+    },
     "popup-editorial": {
       "slug": "popup-editorial",
       "industries": [
@@ -1411,6 +1558,26 @@
       ],
       "colour": [
         "light"
+      ]
+    },
+    "product-trio": {
+      "description": "A black-and-white cross-sell popup that shows three products you choose, each with an add-to-basket button.",
+      "slug": "product-trio",
+      "industries": [
+        "retail",
+        "fashion",
+        "home-garden"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "minimal",
+        "crisp"
+      ],
+      "colour": [
+        "light",
+        "neutral"
       ]
     },
     "programme-board": {
@@ -1655,6 +1822,26 @@
       ],
       "colour": [
         "light"
+      ]
+    },
+    "ribbon-tag": {
+      "description": "A deep green bar with a notched paper price tag for a first-order discount, and the code on the success screen.",
+      "slug": "ribbon-tag",
+      "industries": [
+        "retail",
+        "fashion",
+        "general"
+      ],
+      "occasions": [
+        "sale",
+        "evergreen"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark",
+        "green"
       ]
     },
     "room-checklist": {
@@ -2026,6 +2213,42 @@
       "colour": [
         "warm",
         "light"
+      ]
+    },
+    "tasting-card": {
+      "description": "A bakery photograph beside a sage panel offering a free loaf for joining a weekly list, with the code on success.",
+      "slug": "tasting-card",
+      "industries": [
+        "food-drink"
+      ],
+      "occasions": [
+        "evergreen"
+      ],
+      "style": [
+        "soft"
+      ],
+      "colour": [
+        "green",
+        "warm"
+      ]
+    },
+    "ticker-line": {
+      "description": "A dark announcement bar in monospace that reads like a typed prompt, with the email field and button on one line.",
+      "slug": "ticker-line",
+      "industries": [
+        "professional-services",
+        "general"
+      ],
+      "occasions": [
+        "evergreen",
+        "launch"
+      ],
+      "style": [
+        "minimal"
+      ],
+      "colour": [
+        "dark",
+        "cool"
       ]
     },
     "trail-window": {

@@ -4,8 +4,10 @@ namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
+use WConvert\Template\BundledTemplates;
 use WConvert\Template\DesignBudget;
 use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateSource;
 use WConvert\Template\TemplateVocabulary;
 
 /**
@@ -130,8 +132,39 @@ final class LibraryLintTest extends TestCase
      */
     public function testNoShippedDesignIsOverItsOwnByteCap(): void
     {
-        $vocabulary = TemplateVocabulary::fromManifest(dirname(self::SCRIPT, 2));
-        $library = TemplateLibrary::fromDirectory($vocabulary, dirname(self::SCRIPT, 2));
+        $root = dirname(self::SCRIPT, 2);
+        $vocabulary = TemplateVocabulary::fromManifest($root);
+        // A Free design the catalogue alone serves installs onto a site and owes
+        // the same budget as one in the ZIP (ADR 0157). Measured as installed:
+        // PackImages::hydrate binds each picture to a verified local URL, just
+        // as BundledArtwork does for a bundled JPEG.
+        $hosted = new class ($root . '/tools/design-library/hosted/templates') implements TemplateSource {
+            public function __construct(private readonly string $directory)
+            {
+            }
+
+            public function entries(): array
+            {
+                return array_map(
+                    fn (string $file): mixed => $this->installed(json_decode((string) file_get_contents($file), true)),
+                    glob($this->directory . '/*.json') ?: []
+                );
+            }
+
+            private function installed(mixed $node): mixed
+            {
+                if (!is_array($node)) {
+                    return $node;
+                }
+                if (($node['type'] ?? '') === 'image' && str_starts_with((string) ($node['src'] ?? ''), 'data:')) {
+                    $node['src'] = 'https://example.test/wp-content/uploads/wconvert/catalog/' . hash('sha256', (string) $node['src'])
+                        . '/image-' . substr(hash('sha256', (string) $node['src']), 0, 24) . '.webp';
+                }
+
+                return array_map(fn (mixed $child): mixed => $this->installed($child), $node);
+            }
+        };
+        $library = TemplateLibrary::from($vocabulary, new BundledTemplates($root), $hosted);
 
         $entries = $library->all();
 

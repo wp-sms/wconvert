@@ -1,0 +1,63 @@
+{
+  "id": "finish-the-set",
+  "revision": "d6a118f7b59d7329e7b6ffb5674e47ea535f64299e686da4fa0b2efa08e5ef7b",
+  "base_id": "ce99870dd5dbefb078dbfceae2ff4e28488728b864c97c8027fe9245756f0482",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Notes now say one campaign covers one product page (ADR 0120 product context). Rechecked at 1280 and 320: products shown, addition server-confirmed, close works, no overflow.",
+  "at": "2026-10-21T05:10:36Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-320.png",
+          "sha256": "aa0a657ad8372ef39de1757f557b89006f8f392101be9d044169d819e087b62a"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-1440.png",
+          "sha256": "522968096daa8f3d0cf2f5c02c717b9f8a51719ddab0df3525d63747d97b73db"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "140e76d093b8c095a439d158284e3f748d49cce9c448a96887b4add54613694f"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-commerce.json",
+          "sha256": "de099bc206a74d5cefb9848af85f3987edb8712fa148453901a2d3e224d7b8bc"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-desktop.png",
+          "sha256": "e9d5eb9ef068967785ceac882ff8d72bf5d1546519acc524255718f7cb648363"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-phone.png",
+          "sha256": "de0f0a98011b46b0f9b286234086d45189ead96e1a7f43a81cbce884a2d0bf19"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-commerce.json",
+          "sha256": "de099bc206a74d5cefb9848af85f3987edb8712fa148453901a2d3e224d7b8bc"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-desktop.png",
+          "sha256": "e9d5eb9ef068967785ceac882ff8d72bf5d1546519acc524255718f7cb648363"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/finish-the-set-phone.png",
+          "sha256": "de0f0a98011b46b0f9b286234086d45189ead96e1a7f43a81cbce884a2d0bf19"
+        }
+      ]
+    }
+  },
+  "record_id": "3542c1e8e784f22b5e9453a91c697234c9e81d37a1ad7a2aa022e408ce68b8cc"
+}

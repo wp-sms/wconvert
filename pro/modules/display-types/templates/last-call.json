@@ -1,0 +1,212 @@
+{
+  "id": "last-call",
+  "name": "Last call",
+  "display_type": "fullscreen",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#121012",
+    "fg": "#f3eee6",
+    "muted": "#bdb5aa",
+    "accent": "#f3eee6",
+    "accent-fg": "#121012",
+    "border": "#8d857b",
+    "input-bg": "#1d1a1d",
+    "font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "heading-font": "Impact, Haettenschweiler, 'Arial Narrow Bold', 'Franklin Gothic Bold', sans-serif",
+    "heading-size": "3.25rem",
+    "heading-weight": "400",
+    "tracking": "0",
+    "text-size": "1.0625rem",
+    "leading": "1.5",
+    "radius": "0",
+    "pad": "3rem",
+    "gap": "2rem",
+    "width": "36rem",
+    "align": "center",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.5rem",
+                "text-size": "1.1667rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "Last call"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "level": 1,
+                  "role": "headline",
+                  "text": "30% off everything\nends in",
+                  "narrow": {
+                    "heading-size": "2.125rem"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0",
+                "text-size": "7rem",
+                "font": "Impact, Haettenschweiler, 'Arial Narrow Bold', 'Franklin Gothic Bold', sans-serif",
+                "leading": "1"
+              },
+              "narrow": {
+                "text-size": "3.75rem"
+              },
+              "children": [
+                {
+                  "type": "countdown",
+                  "id": "n3"
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n4"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "body",
+                  "text": "Leave your email and your code\nappears on the next screen."
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "0.625rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "id": "n6",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true
+                    },
+                    {
+                      "type": "button",
+                      "id": "n7",
+                      "role": "cta_label",
+                      "label": "Show my code",
+                      "action": "submit",
+                      "submission": "primary"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n8",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Code",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.5rem",
+                "text-size": "1.1667rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n9",
+                  "role": "eyebrow",
+                  "text": "Last call"
+                },
+                {
+                  "type": "heading",
+                  "id": "n10",
+                  "level": 1,
+                  "role": "success_headline",
+                  "text": "Here is your code",
+                  "narrow": {
+                    "heading-size": "2.125rem"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.75rem"
+              },
+              "children": [
+                {
+                  "type": "code",
+                  "id": "n11",
+                  "role": "code_value",
+                  "text": "LASTCALL30",
+                  "copy": true,
+                  "tokens": {
+                    "text-size": "1.375rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n12",
+                  "role": "success_body",
+                  "text": "Use it at the checkout\nbefore the timer runs out.",
+                  "tokens": {
+                    "fg": "muted"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n6"
+        ],
+        "consents": [
+          "n8"
+        ]
+      }
+    ]
+  }
+}

@@ -13,6 +13,7 @@ Amends [0010](0010-templates-are-configuration-not-documents.md),
 [0116](0116-free-shows-nothing-it-cannot-run.md) §1 and
 [0147](0147-free-names-what-pro-adds-where-it-is-wanted.md) rule 3. The wire
 contract is [docs/template-discovery-api.md](../template-discovery-api.md).
+Amended by [0157](0157-free-designs-may-be-served-without-being-bundled.md) (§5).
 
 ## Context
 
@@ -59,6 +60,11 @@ declares exactly the capabilities a design uses and the newest stamp as
 `aliases`. Revisions are integers from `tools/design-library/publishing/revisions.json`,
 a content-hash registry that also writes each ZIP's
 `resources/templates/revisions.json`; the release build refuses a stale one.
+*Amended by [0157](0157-free-designs-may-be-served-without-being-bundled.md):*
+a third source, `tools/design-library/hosted/templates/`, holds Free designs
+the catalogue alone serves, and `tools/design-library/hosted/playbooks/` their
+setups. They are numbered in the registry like any other and listed in neither
+ZIP's file, because neither ZIP carries them.
 Across bundled, installed and hosted copies **the highest revision wins**,
 replacing first-source-wins. Undo a bad design with a newer revision; pointer
 rollback is for a broken index.

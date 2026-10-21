@@ -521,6 +521,20 @@ final class ArtifactContractTest extends TestCase
     // =========================================================================
 
     /**
+     * A design served only from the catalogue is authored under /tools (ADR
+     * 0157). `.distignore` drops that folder; this is what fails if it stops.
+     */
+    public function testFailsWhenTheFreeTreeCarriesTheHostedDesignFolder(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'tools/design-library/hosted/templates/changelog.json' => '{"id":"changelog","tier":"free"}',
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('unexpected entry at the free artifact\'s root: tools', $result['output']);
+    }
+
+    /**
      * The leak in its plainest form: the stage did not strip `pro/`.
      */
     public function testFailsWhenTheFreeTreeCarriesProsDirectory(): void

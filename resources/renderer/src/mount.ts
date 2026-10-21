@@ -78,6 +78,8 @@ const DIALOG_ARMOUR: Readonly<Record<string, string>> = {
 export interface MountOptions {
   /** `popup` or `inline`. Anything else mounts nothing rather than guessing. */
   readonly displayType?: string;
+  /** Runs for each rendered step once its close control is attached (Pro's bars and slide-ins). */
+  readonly decorate?: (root: HTMLElement, chrome: HTMLElement) => void;
   /** Non-default viewport edge or corner for Pro's non-modal containers. */
   readonly placement?: string;
   readonly template: Template;
@@ -250,6 +252,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     }
     if (chrome !== null) {
       element.appendChild(chrome);
+      options.decorate?.(element, chrome);
     }
 
     element.addEventListener('submit', (event) => event.preventDefault());

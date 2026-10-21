@@ -24,7 +24,7 @@
  * rules to remember. One global, `WConvertRenderer`, works in both.
  */
 
-import { writeFileSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'vite';
@@ -41,6 +41,11 @@ const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
  */
 const entry = resolve(OUT, 'renderer-entry.ts');
 
+// tools/visual-tests/close-reserve.mjs drives Pro's close reserve. visual-diff.mjs
+// also builds an older tree with this script, so it is exported only where
+// that tree has it.
+const closeReserve = resolve(PLUGIN, 'pro/modules/display-types/loader/close-reserve');
+
 writeFileSync(
   entry,
   [
@@ -48,6 +53,7 @@ writeFileSync(
     `export { previewResult } from '${resolve(PLUGIN, 'tools/design-library/preview/results')}';`,
     `export { graphTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-graph')}';`,
     `export { render, closeButton } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    ...(existsSync(`${closeReserve}.ts`) ? [`export { reserveBesideClose } from '${closeReserve}';`] : []),
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
     `registerPremiumJourneyRenderer();`,

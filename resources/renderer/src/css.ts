@@ -665,6 +665,13 @@ export const SHADOW_CSS = [
    * more findable ×, it is a louder one.
    */
   `@media (pointer:coarse){.wc-close{inline-size:2.75rem;block-size:2.75rem}}`,
+  /*
+   * A bar wider than 24rem is one compact line, so its way out sits on that
+   * line's centre rather than in its corner. Narrower, the bar stacks and the
+   * control keeps the corner; `reserveBesideClose` (mount.ts) gives the lines
+   * it would cover room beside it instead of a band above everything.
+   */
+  `@container wc (min-width:24.0625rem){.wc-close[data-bar]{inset-block:0;margin-block:auto}}`,
 
   // One visible focus ring for everything focusable, so the keyboard path
   // `showModal()` supplies for free is actually followable.

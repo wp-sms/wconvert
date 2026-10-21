@@ -455,6 +455,66 @@
       "revision": 1,
       "content": "7a8486b00b22a5dace580c902ba3b1ea02a31a747479d8067de113b418fe221f",
       "added": 91
+    },
+    "big-number": {
+      "revision": 1,
+      "content": "9ea4b9be08f3935cf61c57c938a27924403b3204f3487ae638630934b2d8abb0",
+      "added": 174
+    },
+    "changelog": {
+      "revision": 1,
+      "content": "41703a2b71e8ae4d69f45466e9838183b5bf4dd107526fcdabf10062a68178db",
+      "added": 175
+    },
+    "field-guide": {
+      "revision": 1,
+      "content": "81abdc6d69b9d566c834493ee8266d3e7c045fa6d98e42ee245e3c463e104259",
+      "added": 176
+    },
+    "glacier": {
+      "revision": 1,
+      "content": "93f270a51aa2bfa2e906e473c66bab9268e680dd7127ee245f5b648fd8a8fb24",
+      "added": 177
+    },
+    "kind-words": {
+      "revision": 1,
+      "content": "1009f67c7f544f10b05a33bb549ee28955c5c68986749aca2a57764a34d543e8",
+      "added": 178
+    },
+    "last-call": {
+      "revision": 1,
+      "content": "f74b55701ba3df9f665cb1880dd6f3e7c769080bcd39efb4eed4abbe7d10df84",
+      "added": 179
+    },
+    "lookbook": {
+      "revision": 1,
+      "content": "672fb44cff3d4cdf319023ec32a4c8374df97c367ae28f0eb96dd83d580fe1cf",
+      "added": 180
+    },
+    "polaroid": {
+      "revision": 1,
+      "content": "de2ddd61a74d14b3f9182cfea6a01ea7cc9a7969879f1c3566a79aec22934455",
+      "added": 181
+    },
+    "product-trio": {
+      "revision": 1,
+      "content": "4e24f7907c62f9ab919cad52793cc618d7b61bc4b9704870b0e2048d10428ca8",
+      "added": 182
+    },
+    "ribbon-tag": {
+      "revision": 1,
+      "content": "18a65c8240828f04fedd79649dbb8acf4b5d4db5aa5c4115e0777b2895717f66",
+      "added": 183
+    },
+    "tasting-card": {
+      "revision": 1,
+      "content": "98fb31cc461f4a65e8b80b1d790a2d9f49686c092ac15bb689d5a670ee30ff61",
+      "added": 184
+    },
+    "ticker-line": {
+      "revision": 1,
+      "content": "b72daed3934b5d5f27647525170ec81565a808b1caa40cfc7cebac0edd2fee79",
+      "added": 185
     }
   },
   "setups": {
@@ -867,6 +927,41 @@
       "revision": 1,
       "content": "bafbe7310cff8c7748df8a6b092d17a2c7d0fd28bc1e61c7099dd3167f9118e9",
       "added": 173
+    },
+    "final-hours-sale": {
+      "revision": 1,
+      "content": "cb89add6d735ef668865113e0b022035956746dad82a1c266e20b358c6f64515",
+      "added": 186
+    },
+    "early-access-launch": {
+      "revision": 1,
+      "content": "01cec4b59cce84980305d7a289364c0039118f47031e9a5282c2c6af283fa52d",
+      "added": 187
+    },
+    "monthly-planting-letter": {
+      "revision": 1,
+      "content": "0066e04b6b98b54d567f565b2c5f71cc924b70e7d5b99c41df77353401151bed",
+      "added": 188
+    },
+    "new-batch-first-look": {
+      "revision": 1,
+      "content": "d446199dff8188a70c1cf88315133424d613f6a066c86430ab318feef29eed50",
+      "added": 189
+    },
+    "finish-the-set": {
+      "revision": 1,
+      "content": "d76d1df1e2affaad5f3b5bb952b19f998de68eda3f88cbb3c8f0abf4fc5290b8",
+      "added": 190
+    },
+    "release-notes-signup": {
+      "revision": 1,
+      "content": "6d9ecfaa5d3e51c5d12be2cd25ba89bfdaee09f6697e78061e8417bab80411f5",
+      "added": 191
+    },
+    "bakery-first-loaf": {
+      "revision": 1,
+      "content": "0711647d0607024efd0aaca359c8e1cf064ec6cd4a3b8e0e511c187c94c7dc3d",
+      "added": 192
     }
   },
   "retired": []

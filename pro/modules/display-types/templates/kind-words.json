@@ -1,0 +1,205 @@
+{
+  "id": "kind-words",
+  "name": "Kind words",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#fbf1ec",
+    "fg": "#3b2431",
+    "muted": "#6c4d5c",
+    "accent": "#7c3a5f",
+    "accent-fg": "#ffffff",
+    "border": "#a07f8d",
+    "input-bg": "#ffffff",
+    "font": "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "heading-font": "ui-rounded, 'SF Pro Rounded', 'Arial Rounded MT Bold', Nunito, system-ui, sans-serif",
+    "heading-size": "1.375rem",
+    "heading-weight": "700",
+    "tracking": "-0.02em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.875rem",
+    "pad": "1.375rem",
+    "gap": "1.25rem",
+    "width": "23rem",
+    "align": "start",
+    "shadow": "0 24px 60px -20px rgba(59, 36, 49, 0.4)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.625rem"
+              },
+              "children": [
+                {
+                  "type": "rating",
+                  "id": "n1",
+                  "value": 5,
+                  "role": "rating_text",
+                  "text": "Your rating summary"
+                },
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "bg": "input-bg",
+                    "pad": "1rem 1.125rem",
+                    "gap": "0.5rem",
+                    "radius": "1rem"
+                  },
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n2",
+                      "role": "body",
+                      "text": "“Paste a real review here, in the customer’s own words.”",
+                      "tokens": {
+                        "text-size": "1.0625rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "role": "fine_print",
+                      "size": "s",
+                      "text": "Customer name, town",
+                      "tokens": {
+                        "fg": "muted"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.875rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "level": 1,
+                  "role": "headline",
+                  "text": "Join them and take\n10% off your first order"
+                },
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "0.625rem"
+                  },
+                  "children": [
+                    {
+                      "type": "field",
+                      "id": "n5",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true
+                    },
+                    {
+                      "type": "button",
+                      "id": "n6",
+                      "role": "cta_label",
+                      "label": "Send me my 10% code",
+                      "action": "submit",
+                      "submission": "primary"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n7",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Code",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.625rem"
+              },
+              "children": [
+                {
+                  "type": "rating",
+                  "id": "n8",
+                  "value": 5,
+                  "role": "rating_text",
+                  "text": "Welcome aboard"
+                },
+                {
+                  "type": "heading",
+                  "id": "n9",
+                  "level": 1,
+                  "role": "success_headline",
+                  "text": "Here is your code"
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.625rem"
+              },
+              "children": [
+                {
+                  "type": "code",
+                  "id": "n10",
+                  "role": "code_value",
+                  "text": "WELCOME10",
+                  "copy": true
+                },
+                {
+                  "type": "text",
+                  "id": "n11",
+                  "role": "success_body",
+                  "text": "Use it at the checkout.",
+                  "tokens": {
+                    "fg": "muted"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ]
+  }
+}

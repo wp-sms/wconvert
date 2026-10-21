@@ -22,6 +22,9 @@ research marks P0. A Playbook is that.
 ## The shape
 
 One PHP file per entry in `resources/playbooks/`, each `return`ing an array.
+A Pro Playbook goes in its module's `playbooks/`; a Playbook for a hosted Free
+design goes in `tools/design-library/hosted/playbooks/` and ships in neither
+ZIP (ADR 0157).
 
 **PHP and not JSON**, which is the whole reason this directory is not
 `*.json` beside `resources/templates/library/*.json`: `wp i18n make-pot` cannot

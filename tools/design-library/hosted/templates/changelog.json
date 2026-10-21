@@ -1,0 +1,199 @@
+{
+  "id": "changelog",
+  "name": "Changelog",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#15171a",
+    "fg": "#e8e4da",
+    "muted": "#aaa59a",
+    "accent": "#f2c14e",
+    "accent-fg": "#15171a",
+    "border": "#7f7a6f",
+    "input-bg": "#1d2024",
+    "font": "ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
+    "heading-font": "ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
+    "heading-size": "1.625rem",
+    "heading-weight": "700",
+    "tracking": "-0.02em",
+    "text-size": "1rem",
+    "leading": "1.6",
+    "radius": "0",
+    "pad": "1.5rem",
+    "gap": "1.5rem",
+    "width": "30rem",
+    "align": "start",
+    "shadow": "0 32px 80px -20px rgba(10, 11, 13, 0.7)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "narrow": {
+            "heading-size": "1.25rem"
+          },
+          "children": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.75rem",
+                "text-size": "1.1667rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "~/changelog"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "level": 1,
+                  "role": "headline",
+                  "text": "Every release,\nin one short email."
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.375rem"
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "+ what shipped"
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "+ what changed, and why"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "body",
+                  "text": "+ one thing to try first"
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n6"
+            },
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.625rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n7",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "role": "cta_label",
+                  "label": "Subscribe ↵",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "role": "fine_print",
+              "size": "s",
+              "text": "# One email per release.\n# Unsubscribe any time.",
+              "tokens": {
+                "fg": "muted"
+              }
+            },
+            {
+              "type": "consent",
+              "id": "n10",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me release notes. %s",
+              "link": {
+                "label": "Privacy Policy"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "narrow": {
+            "heading-size": "1.25rem"
+          },
+          "children": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "0.75rem",
+                "text-size": "1.1667rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n11",
+                  "role": "eyebrow",
+                  "text": "~/changelog"
+                },
+                {
+                  "type": "heading",
+                  "id": "n12",
+                  "level": 1,
+                  "role": "success_headline",
+                  "text": "$ request received"
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n13"
+            },
+            {
+              "type": "text",
+              "id": "n14",
+              "role": "success_body",
+              "text": "Thanks for asking for the release notes."
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n7"
+        ],
+        "consents": [
+          "n10"
+        ]
+      }
+    ]
+  }
+}

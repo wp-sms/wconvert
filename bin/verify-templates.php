@@ -427,7 +427,11 @@ if ($roots === []) {
      */
     $proLibraries = glob(dirname(__DIR__) . '/pro/modules/*/templates');
 
-    $roots = [dirname(__DIR__), ...($proLibraries === false ? [] : array_map('dirname', $proLibraries))];
+    // Free designs the catalogue alone serves are held to the same reader (ADR
+    // 0157). Absent until the first one is authored, like a Pro tree.
+    $hosted = glob(dirname(__DIR__) . '/tools/design-library/hosted/templates');
+
+    $roots = [dirname(__DIR__), ...array_map('dirname', [...($proLibraries ?: []), ...($hosted ?: [])])];
 }
 
 /** @var array<string, mixed> $manifest */

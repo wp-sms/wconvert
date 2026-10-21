@@ -147,7 +147,8 @@ against what survived, node for node.
 ## 1. The entry
 
 Six keys, exactly. One JSON file per design, in
-\`resources/templates/library/\` (free) or
+\`resources/templates/library/\` (free),
+\`tools/design-library/hosted/templates/\` (free, served only by the catalogue) or
 \`pro/modules/display-types/templates/\` (Pro).
 
 \`\`\`json

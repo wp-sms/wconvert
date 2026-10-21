@@ -41,26 +41,15 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { containerCss } from './containers.mjs';
+import { designDirectories } from './sources.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../out');
 const PREVIEWS = resolve(OUT, 'previews');
 const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
 
-/** Free's one library, and every Pro module that keeps designs (ADR 0056). */
-const LIBRARIES = [
-  resolve(PLUGIN, 'resources/templates/library'),
-  ...readdirSync(resolve(PLUGIN, 'pro/modules'), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => resolve(PLUGIN, 'pro/modules', entry.name, 'templates'))
-    .filter((path) => {
-      try {
-        return readdirSync(path).length > 0;
-      } catch {
-        return false;
-      }
-    }),
-];
+/** Every folder designs are authored in: Free, each Pro module, hosted (sources.mjs). */
+const LIBRARIES = designDirectories(PLUGIN).map(({ dir }) => resolve(PLUGIN, dir));
 
 mkdirSync(PREVIEWS, { recursive: true });
 

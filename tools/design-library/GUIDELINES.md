@@ -386,11 +386,17 @@ sample content** (ADR 0075), so it teaches the house style and must be truthful.
 
 ## 5. Where a design lives
 
-| | Free | Pro |
-|---|---|---|
-| Path | `resources/templates/library/*.json` | `pro/modules/display-types/templates/*.json` |
-| `tier` | `free` | `pro` |
-| Display Types | `popup`, `inline` | any, and the only home of `floating_bar` and `slide_in` |
+| | Free | Free, hosted only | Pro |
+|---|---|---|---|
+| Path | `resources/templates/library/*.json` | `tools/design-library/hosted/templates/*.json` | `pro/modules/display-types/templates/*.json` |
+| Ships in | the Free ZIP | neither ZIP; the catalogue serves it | the Pro ZIP |
+| `tier` | `free` | `free` | `pro` |
+| Display Types | `popup`, `inline` | `popup`, `inline` | any, and the only home of `floating_bar` and `slide_in` |
+
+**A hosted design costs the Free ZIP nothing** (ADR 0157). A Free site offers
+it as an install from the catalogue. It is numbered, reviewed and published
+exactly like a bundled design; `build/sources.mjs` is the one list of folders
+every tool reads.
 
 **A Pro design costs a free site nothing.** Free ships no card for it; a free
 install where Pro hints are wanted meets it only as a hosted catalogue entry —
@@ -398,7 +404,7 @@ the publisher's thumbnail, the plan's name and a link to its page on
 wconvert.io (ADR 0156). Its catalogue words and family go in
 `publishing/designs.json` like any other design's.
 
-`id` must be unique across **both** libraries.
+`id` must be unique across **every** folder; one id authored twice is refused.
 
 ## Internal studio interface
 

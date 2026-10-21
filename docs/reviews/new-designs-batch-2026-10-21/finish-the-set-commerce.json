@@ -1,0 +1,22 @@
+{
+  "id": "finish-the-set",
+  "site": "disposable WordPress, WooCommerce fixture, main product = fixture product 1",
+  "widths": {
+    "320": {
+      "products_shown": 2,
+      "overflow": false,
+      "added_confirmed": true,
+      "cart_count_after": 1,
+      "closed": true,
+      "errors": []
+    },
+    "1280": {
+      "products_shown": 2,
+      "overflow": false,
+      "added_confirmed": true,
+      "cart_count_after": 1,
+      "closed": true,
+      "errors": []
+    }
+  }
+}

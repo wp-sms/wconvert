@@ -1,0 +1,47 @@
+{
+  "id": "return-policy-guide",
+  "revision": "eb5464973875f92b6b59b86ef4f747f568007fe014e45c9a38b2ce97b0e9c8f0",
+  "base_id": "85a9363567778b9cf9058e4598b65d0beca2ffb4b657183e1d0304df250193cb",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at origin/main, every screen at 1200 and 375 px; content unchanged. Not a new review.",
+  "at": "2026-10-21T03:44:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/return-policy-guide-320.png",
+          "sha256": "7198c4faf11aa3846e1e9866b19c52beae1a548f252de317837a372d61c06436"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/return-policy-guide-1440.png",
+          "sha256": "618a5354ec94e1e54d3857d58bc6131afe6804a2fc81b0fc5a068ee932cc6559"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "b3af2ed7ee32beefce4062c5f353c42a0e07c8a3e7a3e95ac0c97bbf09c5c99f"
+}
