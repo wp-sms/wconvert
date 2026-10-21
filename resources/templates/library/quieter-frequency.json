@@ -23,7 +23,12 @@
     "gap": "0",
     "width": "28rem",
     "shadow": "0 25px 50px -30px rgba(35, 22, 60, 0.6)",
-    "backdrop": "rgba(24, 25, 41, 0.62)"
+    "backdrop": "rgba(24, 25, 41, 0.62)",
+    "close-fg": "fg",
+    "close-bg": "transparent",
+    "close-border": "transparent",
+    "error-fg": "#ffb1a8",
+    "error-bg": "#3a2533"
   },
   "tree": {
     "steps": [

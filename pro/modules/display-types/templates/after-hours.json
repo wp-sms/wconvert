@@ -20,7 +20,11 @@
     "gap": "1rem",
     "radius": "0",
     "width": "66rem",
-    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)"
+    "shadow": "0 20px 64px -24px rgba(20,30,25,.28)",
+    "close-fg": "fg",
+    "close-bg": "transparent",
+    "close-border": "transparent",
+    "close-radius": "0"
   },
   "tree": {
     "v": 2,

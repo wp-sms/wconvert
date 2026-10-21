@@ -32,8 +32,8 @@
       "added": 6
     },
     "bar-code": {
-      "revision": 1,
-      "content": "91385e9b068d6cfb9a6b4024421b2ffeb7ae55c705123bba04b4b9c30c2b7519",
+      "revision": 2,
+      "content": "2b9a25aae5241f2b5cea0dd80159e957baee9c43aef5591f67a06c909bf6c751",
       "added": 7
     },
     "basket-companion": {
@@ -312,8 +312,8 @@
       "added": 62
     },
     "quieter-frequency": {
-      "revision": 1,
-      "content": "e48f5415303dd801e6f8a7c08e533df8af3bb072e7a885b6a434332288ae7a21",
+      "revision": 2,
+      "content": "405a57169471521a8cdad630430d95fa7105f9203ec51421d50b95d6163bf1c1",
       "added": 63
     },
     "reading-cover": {
@@ -402,8 +402,8 @@
       "added": 80
     },
     "slide-in-nudge": {
-      "revision": 1,
-      "content": "6200d1ff1edd469bd62ccac39c9c8e4212cf68af7d21e76eaa46b1ab71102c2e",
+      "revision": 2,
+      "content": "feab1c4df46b24eb8d1d1479f3245aa4375c043c2f9050a15284e5e2a0b0e1ca",
       "added": 81
     },
     "slide-in-question": {
@@ -502,8 +502,8 @@
       "added": 182
     },
     "ribbon-tag": {
-      "revision": 1,
-      "content": "18a65c8240828f04fedd79649dbb8acf4b5d4db5aa5c4115e0777b2895717f66",
+      "revision": 2,
+      "content": "4d7a545ce618e20932127a70028316e395305370786d4f4dcb34f836b41cbc27",
       "added": 183
     },
     "tasting-card": {
@@ -609,8 +609,8 @@
       "added": 109
     },
     "maker-notes": {
-      "revision": 1,
-      "content": "7a92dee313c692b93b609ff994255ce0a7088a90c822eb505afef711caa3b512",
+      "revision": 2,
+      "content": "6c515710d7ccfd17e3a5d5a8732a971e4e824a5cd03d0370a27da8b26629e1ee",
       "added": 110
     },
     "product-detail-sheet": {
@@ -759,8 +759,8 @@
       "added": 139
     },
     "seasonal-service-link": {
-      "revision": 1,
-      "content": "5b0e21a7493f3fbb137bf86904088ca22c58871cc471528af405f346d0323d44",
+      "revision": 2,
+      "content": "41a9d7775448d004d9e491b61cfd2ac104c4560a1aa8a94f2c499c9842d6301a",
       "added": 140
     },
     "event-registration-link": {
@@ -834,8 +834,8 @@
       "added": 154
     },
     "return-policy-guide": {
-      "revision": 1,
-      "content": "0438cdd47fde4fec2f83675e0bc459eface57c01187f24742e736cb3259fce3b",
+      "revision": 2,
+      "content": "cf216d1f939b1c8d946be788a3c8356c6d37acef92df40e0aa7163b21ba23627",
       "added": 155
     },
     "group-training-enquiry": {
@@ -859,8 +859,8 @@
       "added": 159
     },
     "series-start": {
-      "revision": 1,
-      "content": "0b36f26104216816eb5d80321bf9ea38e6458e96e1ce0d0d65a2fb7484f0ee93",
+      "revision": 2,
+      "content": "1dfbedd9c1e84a7c728e003f5ed79c8ec49ceac88e5b924d48c6c3f30992c63e",
       "added": 160
     },
     "reader-format-choice": {

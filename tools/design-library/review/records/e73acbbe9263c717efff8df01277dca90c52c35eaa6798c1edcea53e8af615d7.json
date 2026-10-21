@@ -1,0 +1,55 @@
+{
+  "id": "listening-night-invitation",
+  "revision": "d691f24af8afe26bcf4f3404aea79deae01dd44e3bff9232e6544ec4b5f47255",
+  "base_id": "e94bafe46841f7f4026d870abea0e2ebf02fb8daca3295d65c34502ce55986fb",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Bare square X in the neon text colour matches the poster.",
+  "at": "2026-10-21T11:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/listening-night-invitation-320.png",
+          "sha256": "4c676eca0debfefc614eb661bc6b7099eef98ead7aff99c04230ad7806410a0f"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/listening-night-invitation-1440.png",
+          "sha256": "1027239a5b04040ec5285ade3ee54d1af62f4b895ac58a394b57cc7568f8880b"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "e73acbbe9263c717efff8df01277dca90c52c35eaa6798c1edcea53e8af615d7"
+}
