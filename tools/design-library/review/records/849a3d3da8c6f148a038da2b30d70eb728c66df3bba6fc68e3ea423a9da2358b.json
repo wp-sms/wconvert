@@ -1,0 +1,55 @@
+{
+  "id": "seasonal-service-link",
+  "revision": "107d64e42369668a7af17d0d9391617be0ecc22d756c22d5720c5e008ef937a1",
+  "base_id": "6fcf48a2e6d46d84b12350a269d57fe9d59910333206cc18b4c06d584041144c",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Bare X on the navy slide-in; nothing else changed.",
+  "at": "2026-10-21T11:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-320.png",
+          "sha256": "c092a39a7ca7616dc415db70ebd6449711328a49d9d4483779195fbd148ba1fd"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-1440.png",
+          "sha256": "1eaeef3e74b2d6048274531bec0230e99d759401a28f5ac592f01924f465a8d6"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "849a3d3da8c6f148a038da2b30d70eb728c66df3bba6fc68e3ea423a9da2358b"
+}

@@ -1,0 +1,55 @@
+{
+  "id": "series-start",
+  "revision": "2921c910adba47b5c0d35af722d6e5ff970a50d2fbbd2d12b31d29d68e979d4c",
+  "base_id": "7347bc3ff5902377684165ae336bffdbc8e89023b055772753a078156a6fedc6",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Bare X on the navy slide-in; nothing else changed.",
+  "at": "2026-10-21T11:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/series-start-320.png",
+          "sha256": "1d53a219410c9016fd9abaf682723eb44e4cdaf42f454cb9ab733c2ed8deab10"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/series-start-1440.png",
+          "sha256": "ba13832083fa5a67ec8cee0d6bbdd8227518bcc569272b9558afd327f7ecaa68"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "343514f0d87f81f13866a8b18b999412fa40035e12007184d66aed80d791c352"
+}

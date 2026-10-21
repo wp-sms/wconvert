@@ -1,0 +1,55 @@
+{
+  "id": "collection-useful-store-details",
+  "revision": "e078ed2fa03c29ae15f8018ad926346d146d54bc209f7025d2bcd5602a34344b",
+  "base_id": "50c09045685cde7a0c4975dfe979858d41437e88535923a70ba521d195308dee",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Only the maker-notes design pin moved (bare X, dark error); items, order and words unchanged.",
+  "at": "2026-10-21T11:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-320.png",
+          "sha256": "d10911966f7c2449c215ca7e3f3f0e83446f14c954415efc1cb229d446d02af9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-1440.png",
+          "sha256": "1fdffc1068544b0c4ca9afb78cc62d4df472319e0dbac038f51a973a848ca60d"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+          "sha256": "83d5e893a7999c3cfde4ef3519dc791cdad0ab7005efba425467d5e085687ae0"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+          "sha256": "bf614c2913787167fbf45e1727ec5715a1ac8e50417c53b4627aa04595f761c9"
+        },
+        {
+          "path": "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json",
+          "sha256": "3722746304da03cb7f7e8ff6c411258f6f132c7f1949503691e30d7344ef0370"
+        }
+      ]
+    }
+  },
+  "record_id": "885de54caaa6d95ecb055dc5c72940e7c3e3d90f971ccc0db068f00b9abf0400"
+}

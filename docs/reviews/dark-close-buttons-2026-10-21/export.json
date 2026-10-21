@@ -1,0 +1,203 @@
+{
+  "schema": 2,
+  "reviews": [
+    {
+      "id": "seasonal-service-link",
+      "revision": "107d64e42369668a7af17d0d9391617be0ecc22d756c22d5720c5e008ef937a1",
+      "base_id": "6fcf48a2e6d46d84b12350a269d57fe9d59910333206cc18b4c06d584041144c",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Bare X on the navy slide-in; nothing else changed.",
+      "at": "2026-10-21T11:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-320.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/seasonal-service-link-1440.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "maker-notes",
+      "revision": "6361cec857b41be182dfe3fe3a68a49d727ab5334b2ba3bb0666f4c2811ec978",
+      "base_id": "f7f717035209602664045b8e7e9586f553871b3cbdd260aa7f9c734803bcb111",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Bare X and dark error fit the plum card; journey unchanged.",
+      "at": "2026-10-21T11:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-320.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-1440.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "return-policy-guide",
+      "revision": "b3222bb166a79e65fb945c6bf7caaaa4357dfe829816d663b4cb8b38e2941fe1",
+      "base_id": "4cd442b6927121b47ff563558a7df1adc59176fcc3f2ae241722bef98911f42e",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Bare X on the navy slide-in; nothing else changed.",
+      "at": "2026-10-21T11:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/return-policy-guide-320.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/return-policy-guide-1440.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "series-start",
+      "revision": "2921c910adba47b5c0d35af722d6e5ff970a50d2fbbd2d12b31d29d68e979d4c",
+      "base_id": "7347bc3ff5902377684165ae336bffdbc8e89023b055772753a078156a6fedc6",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Bare X on the navy slide-in; nothing else changed.",
+      "at": "2026-10-21T11:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/series-start-320.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/series-start-1440.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "listening-night-invitation",
+      "revision": "d691f24af8afe26bcf4f3404aea79deae01dd44e3bff9232e6544ec4b5f47255",
+      "base_id": "e94bafe46841f7f4026d870abea0e2ebf02fb8daca3295d65c34502ce55986fb",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Bare square X in the neon text colour matches the poster.",
+      "at": "2026-10-21T11:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/listening-night-invitation-320.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/listening-night-invitation-1440.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "collection-useful-store-details",
+      "revision": "e078ed2fa03c29ae15f8018ad926346d146d54bc209f7025d2bcd5602a34344b",
+      "base_id": "50c09045685cde7a0c4975dfe979858d41437e88535923a70ba521d195308dee",
+      "decision": "approved",
+      "reviewer": "Claude (agent review)",
+      "note": "Only the maker-notes design pin moved (bare X, dark error); items, order and words unchanged.",
+      "at": "2026-10-21T11:00:00Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-320.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/maker-notes-1440.png",
+            "docs/reviews/dark-close-buttons-2026-10-21/review.md",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json"
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            "docs/reviews/dark-close-buttons-2026-10-21/results.json",
+            "docs/reviews/dark-close-buttons-2026-10-21/designs/results.json"
+          ]
+        }
+      }
+    }
+  ]
+}

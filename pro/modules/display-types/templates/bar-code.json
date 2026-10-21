@@ -22,7 +22,12 @@
     "radius": "0.375rem",
     "shadow": "0 0 36px -10px rgba(15, 23, 42, 0.35)",
     "tracking": "-0.01em",
-    "input-bg": "#fffef8"
+    "input-bg": "#fffef8",
+    "close-fg": "fg",
+    "close-bg": "transparent",
+    "close-border": "transparent",
+    "error-fg": "#ffb1a8",
+    "error-bg": "#33204a"
   },
   "tree": {
     "steps": [

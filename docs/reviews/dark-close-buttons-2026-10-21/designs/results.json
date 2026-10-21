@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "site": "disposable local WordPress (Playground, Pro), loaders built from main after PR #315",
+  "note": "Each design published from its library entry and walked at 320 and 1280: computed close-control colours and size, a server refusal of the address drawn where there is a field, close clicked.",
+  "designs": [
+    {
+      "id": "quieter-frequency",
+      "width": 320,
+      "close": {
+        "fg": "rgb(252, 249, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 177, 168)",
+        "bg": "rgb(58, 37, 51)",
+        "ring": "rgb(255, 177, 168) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "quieter-frequency",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(252, 249, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 177, 168)",
+        "bg": "rgb(58, 37, 51)",
+        "ring": "rgb(255, 177, 168) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "after-hours",
+      "width": 320,
+      "close": {
+        "fg": "rgb(228, 255, 106)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          44,
+          44
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": null,
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "after-hours",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(228, 255, 106)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          44,
+          44
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": null,
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "bar-code",
+      "width": 320,
+      "close": {
+        "fg": "rgb(238, 242, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 177, 168)",
+        "bg": "rgb(51, 32, 74)",
+        "ring": "rgb(255, 177, 168) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "bar-code",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(238, 242, 255)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 177, 168)",
+        "bg": "rgb(51, 32, 74)",
+        "ring": "rgb(255, 177, 168) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ribbon-tag",
+      "width": 320,
+      "close": {
+        "fg": "rgb(244, 236, 219)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 177, 168)",
+        "bg": "rgb(53, 37, 37)",
+        "ring": "rgb(255, 177, 168) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ribbon-tag",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(244, 236, 219)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 177, 168)",
+        "bg": "rgb(53, 37, 37)",
+        "ring": "rgb(255, 177, 168) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "slide-in-nudge",
+      "width": 320,
+      "close": {
+        "fg": "rgb(248, 250, 252)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": null,
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "slide-in-nudge",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(248, 250, 252)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": null,
+      "closed": true,
+      "errors": []
+    }
+  ]
+}

@@ -20,7 +20,10 @@
     "pad": "3.5rem 1.25rem 1.25rem",
     "gap": ".875rem",
     "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
-    "tracking": "-0.01em"
+    "tracking": "-0.01em",
+    "close-fg": "fg",
+    "close-bg": "transparent",
+    "close-border": "transparent"
   },
   "tree": {
     "steps": [
