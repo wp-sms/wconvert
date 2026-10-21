@@ -55,7 +55,7 @@ For installed Free campaigns, the two new JPEGs also ship under their SHA-256 fi
 `halloween-engraved.webp`, `halloween-monster.webp` and `halloween-forest.webp`
 are original AI-generated illustrations from this project's Halloween prototype
 exploration. No competitor artwork was reused. Full original prompts and exact
-raster SHA-256 rights records are in `publishing/catalog.json`. Delivery-only
+raster SHA-256 rights records are in `publishing/catalog.json` → `image_rights`. Delivery-only
 WebP derivatives use cwebp quality 80, proportionally resized to 800px wide for
 the two portraits and 1280px for the forest. Their composition is unchanged.
 Byte-identical copies ship under hash filenames in `resources/template-artwork`.

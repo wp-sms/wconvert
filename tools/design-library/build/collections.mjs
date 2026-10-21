@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { latestReview, loadReviews, reviewQueue } from './reviews.mjs';
@@ -93,15 +93,26 @@ export function collectionLabels(compiled) {
   return "<?php\n// Generated from the reviewed collection source.\ndefined('ABSPATH') || exit;\nreturn [\n" + compiled.map(collection => `    ${php(collection.id)} => ['name' => __(${php(collection.name)}, 'wconvert'), 'description' => __(${php(collection.description)}, 'wconvert')],`).join('\n') + "\n];\n";
 }
 
+/**
+ * A Collection never approved is a draft: it ships nowhere until it is. One
+ * already shipped that has lost its approval is refused, so a stale review
+ * cannot ship or drop silently (ADR 0162).
+ */
+function shippedDrafts(root, compiled) {
+  return compiled.filter(collection => collection.status !== 'published' && existsSync(resolve(root, 'resources/collections', `${collection.id}.json`)));
+}
+
 export function checkRuntimeCollections(root, compiled) {
-  if (compiled.some(collection => collection.status !== 'published')) throw new Error('Collection or setup review is missing or stale');
+  const unapproved = shippedDrafts(root, compiled);
+  if (unapproved.length) throw new Error(`Collection or setup review is missing or stale: ${unapproved.map(collection => collection.id).join(', ')}`);
+  const published = compiled.filter(collection => collection.status === 'published');
   const destination = resolve(root, 'resources/collections');
-  const expected = new Set(compiled.map(collection => `${collection.id}.json`));
+  const expected = new Set(published.map(collection => `${collection.id}.json`));
   if (readdirSync(destination).some(file => file.endsWith('.json') && !expected.has(file))) throw new Error('Retire obsolete runtime collections explicitly');
-  for (const collection of compiled) {
+  for (const collection of published) {
     if (readFileSync(resolve(destination, `${collection.id}.json`), 'utf8') !== JSON.stringify(collection, null, 2) + '\n') throw new Error(`Runtime collection differs from its reviewed revision: ${collection.id}`);
   }
-  if (readFileSync(resolve(destination, 'labels.php'), 'utf8') !== collectionLabels(compiled)) throw new Error('Collection labels differ from their reviewed source');
+  if (readFileSync(resolve(destination, 'labels.php'), 'utf8') !== collectionLabels(published)) throw new Error('Collection labels differ from their reviewed source');
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -113,13 +124,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (process.argv.includes('--check')) checkRuntimeCollections(root, result.compiled);
   // Preview candidates stay in /tools until the shared review approves them.
   if (process.argv.includes('--publish')) {
-    if (result.compiled.some(collection => collection.status !== 'published')) throw new Error('Review every collection revision before generating runtime data');
+    if (shippedDrafts(root, result.compiled).length) throw new Error('Review every collection revision before generating runtime data');
+    const published = result.compiled.filter(collection => collection.status === 'published');
     const destination = resolve(root, 'resources/collections'); mkdirSync(destination, { recursive: true });
-    const expected = new Set(result.compiled.map(collection => `${collection.id}.json`));
+    const expected = new Set(published.map(collection => `${collection.id}.json`));
     if (readdirSync(destination).some(file => file.endsWith('.json') && !expected.has(file))) throw new Error('Retire obsolete runtime collections explicitly');
-    for (const collection of result.compiled) writeFileSync(resolve(destination, `${collection.id}.json`), JSON.stringify(collection, null, 2) + '\n');
+    for (const collection of published) writeFileSync(resolve(destination, `${collection.id}.json`), JSON.stringify(collection, null, 2) + '\n');
     // Generated literals let WordPress extract bundled collection translations.
-    writeFileSync(resolve(destination, 'labels.php'), collectionLabels(result.compiled));
+    writeFileSync(resolve(destination, 'labels.php'), collectionLabels(published));
   }
   const coverage = entries => {
     const matrix = new Map();

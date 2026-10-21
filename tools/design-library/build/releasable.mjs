@@ -2,19 +2,11 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildCollections, checkRuntimeCollections } from './collections.mjs';
+import { staleApprovals } from './delivery.mjs';
 import { loadReviews, reviewQueue } from './reviews.mjs';
 
 /** The one command that carries what only the renderer moved, and lists the rest. */
 export const FIX = 'npm run templates:visual-diff -- --apply';
-
-/**
- * Setups whose latest decision was an approval of a version that is no longer
- * current. A setup still waiting for a first approval, or last sent back for
- * revision, is not one: it was never on the website.
- */
-export function staleApprovals(queue) {
-  return queue.filter(row => row.state === 'stale' && row.record?.decision === 'approved');
-}
 
 /**
  * Could `main` publish the catalogue as it stands (ADR 0156, ADR 0162)?

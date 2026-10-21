@@ -962,6 +962,241 @@
       "revision": 1,
       "content": "0711647d0607024efd0aaca359c8e1cf064ec6cd4a3b8e0e511c187c94c7dc3d",
       "added": 192
+    },
+    "announcement-bar": {
+      "revision": 1,
+      "content": "60fbf9ccf0ac3b6ffc4102ef0b1899de70ca82d12add9874b135945df5b1bb68",
+      "added": 193
+    },
+    "article-end-newsletter": {
+      "revision": 1,
+      "content": "0f0815c9daff7cd6636980ec77c6f1e2118dbc78375f60852ba23044c90f161c",
+      "added": 194
+    },
+    "assembly-guidance": {
+      "revision": 1,
+      "content": "7baa5e4c516cf642540fc4a8f1b222bb528a756c134395208614dad9c400eb2e",
+      "added": 195
+    },
+    "basket-product-help": {
+      "revision": 1,
+      "content": "8ad4e23109d6f00d0919afd66228392fcd51989c9250d804771165240685dcd2",
+      "added": 196
+    },
+    "care-clinic-request": {
+      "revision": 1,
+      "content": "ab2288fa0cfdbed11b281265cfe3e9731d7ae0e45f693069f5f5718303cd80ff",
+      "added": 197
+    },
+    "cart-after-a-while": {
+      "revision": 1,
+      "content": "add2944943ab37df3c9f02a99f7dd414a4d258ab23c6015948cec734d2e4fe6c",
+      "added": 198
+    },
+    "cart-on-the-way-out": {
+      "revision": 1,
+      "content": "3d6607ecbf42abbf7120ea83864b6ff156433935c31cce9e957cb1bbc0d2dfa1",
+      "added": 199
+    },
+    "collection-interest": {
+      "revision": 1,
+      "content": "93954fd000d1369588adf687b4f40a0b82aa94a002ee2a367de7f71bb9582e8e",
+      "added": 200
+    },
+    "coupon-ticket": {
+      "revision": 1,
+      "content": "446a57f414524179d0492d09829b8da214212ffc5de5cfc759245d2b7f82d3f1",
+      "added": 201
+    },
+    "drop-alerts": {
+      "revision": 1,
+      "content": "7f90aabee94c423c9d679074bdee2794a77b3441364e53ce52c76aec46392d0a",
+      "added": 202
+    },
+    "experience-kit-finder": {
+      "revision": 1,
+      "content": "c71b8ca6b6028d295989107e25e4b25b4d30002cca85115a45bdee661b824ede",
+      "added": 203
+    },
+    "fullscreen-guide": {
+      "revision": 1,
+      "content": "ac592589926bec236b2347ae0398f707121090f285223b564d29114c718b72a5",
+      "added": 204
+    },
+    "fullscreen-newsletter": {
+      "revision": 1,
+      "content": "810ef804b9fa6fbeffcbae5de69c124b124238698619016dbeab79fde6e3a9bc",
+      "added": 205
+    },
+    "gift-finder": {
+      "revision": 1,
+      "content": "01a741b8989af72fcb58f27e0a17fabe9951af3457048d8fa40c3f41a7a6a199",
+      "added": 206
+    },
+    "gift-message-enquiry": {
+      "revision": 1,
+      "content": "6fdffe36d70244d8e6614dbb95668e9f90c15df907f5a970f31591a3a45080ea",
+      "added": 207
+    },
+    "guide-download": {
+      "revision": 1,
+      "content": "8e79040706114ff1a6377b50f326b289a3adb789f87b57f01443a7d661f93024",
+      "added": 208
+    },
+    "journey-enquiry": {
+      "revision": 1,
+      "content": "4d5d24fbd3987f9aca335fe790f827e5517462bb2de2c046fc28f5c933138343",
+      "added": 209
+    },
+    "landscaping-enquiry": {
+      "revision": 1,
+      "content": "62fc72fc494b97421395af1b958960bcc817d61122ff393b457afcee514ee90f",
+      "added": 210
+    },
+    "language-support-enquiry": {
+      "revision": 1,
+      "content": "b8d1127249bb0c666beba27eb526600adc090bba7dd51bb85106862b02c3c880",
+      "added": 211
+    },
+    "launch-checklist": {
+      "revision": 1,
+      "content": "f76ac1c0a20651a9442dfc3da0c386d35e5bf2580e06c074c865e755bf49c9ec",
+      "added": 212
+    },
+    "launch-interest": {
+      "revision": 1,
+      "content": "c0f3a2b7bccb1494bd058361697c84713ac314a9c28c1ac020e4e8c269fc13b6",
+      "added": 213
+    },
+    "one-line-invite": {
+      "revision": 1,
+      "content": "f860038cf7f74413d86d569a27063ef26663fd3e568c2bca873105c50ac6f24f",
+      "added": 214
+    },
+    "portfolio-feedback-request": {
+      "revision": 1,
+      "content": "960b19d938235d1898b240f8a11d054b5ecf2e0f3cd13022329930f9c6dfb824",
+      "added": 215
+    },
+    "product-advice-request": {
+      "revision": 1,
+      "content": "e9a9c0a09721097af97b9c80ac528c2422199b8f6f159f762accbb21cfd5ac87",
+      "added": 216
+    },
+    "product-finder": {
+      "revision": 1,
+      "content": "d969ac4ec51be5b5ae453852355451c093a1d2fcb9686091e00b5d28d38f3a0d",
+      "added": 217
+    },
+    "project-readiness-guide": {
+      "revision": 1,
+      "content": "bf4f6d5c05fb010a87234702c40c5504927786b5f3bef54c46d2602aabe8e139",
+      "added": 218
+    },
+    "project-stage-finder": {
+      "revision": 1,
+      "content": "21d20abd960e543c63ce7b7ff44574b57014abbea5706ba65cc2eb9b9918a4eb",
+      "added": 219
+    },
+    "read-to-the-end": {
+      "revision": 1,
+      "content": "3d9340e73446015c686c045d592d9df826e1f159ad6e9bf8d2d963c7e80a2604",
+      "added": 220
+    },
+    "reading-path-finder": {
+      "revision": 1,
+      "content": "5d9128f32b0fca7e353d35cd046366c7810755fe6625b6796d1c380167dcde40",
+      "added": 221
+    },
+    "reading-recommendation": {
+      "revision": 1,
+      "content": "45e4f76b55f3071d7d49677bdd381ad9f12f974fa90190b07a1920ebd2940534",
+      "added": 222
+    },
+    "related-essay": {
+      "revision": 1,
+      "content": "686bdd2ae4c71ad23667bda27b5b7b83f396ba70863d422e44760c7f3d51c5e6",
+      "added": 223
+    },
+    "remote-walkthrough-request": {
+      "revision": 1,
+      "content": "0356ebc8e979bec535219cd716b4b1a15d6e35c0d55e12e54b68a9a109ab2442",
+      "added": 224
+    },
+    "request-a-callback": {
+      "revision": 1,
+      "content": "ba269dfb4c24b8840bda5bba6fa47310e9da711db01e2569d0c3b4e0c4fcee50",
+      "added": 225
+    },
+    "request-a-quote": {
+      "revision": 1,
+      "content": "77b4b3c12c666b1e814a8fe43df3352411b26c2cdb1c9644ef7d7d239470d8c5",
+      "added": 226
+    },
+    "rereading-essay": {
+      "revision": 1,
+      "content": "32ab0d6a51a18b601290e1d2941484b65fec8251fd3ac73d95b37be41cff2747",
+      "added": 227
+    },
+    "restyling-notes": {
+      "revision": 1,
+      "content": "f43e0809d3eda1b18c2ac156e72878fa6fea870e85918ac8ba39817c816ec3bb",
+      "added": 228
+    },
+    "returns-deadline-notice": {
+      "revision": 1,
+      "content": "6473d955a5bd66623d6fb25bcc3461b6ffae72d87f69b37bcf2cbaed2e05ddd9",
+      "added": 229
+    },
+    "sale-announcement": {
+      "revision": 1,
+      "content": "3fc932fe541dbbd69e4bd55550463bba1dea0303b07384da44e58b398ce650ff",
+      "added": 230
+    },
+    "service-enquiry": {
+      "revision": 1,
+      "content": "413eb33bc156d15c1c98b1e593e89e2f2756e33d91e2b9eaf7e26027bbf87791",
+      "added": 231
+    },
+    "service-finder": {
+      "revision": 1,
+      "content": "d2c6594b5b460b669a7fbf368d686346b46dfbfccde1e4af023edf5683e7e339",
+      "added": 232
+    },
+    "service-text-updates": {
+      "revision": 1,
+      "content": "9e9e1f961b42f0baa4e1d1c5f741570ffa94288a384afaca345fc0a59b70872b",
+      "added": 233
+    },
+    "space-fit-finder": {
+      "revision": 1,
+      "content": "db693186947a53ea06769b2e951d9e386f527c8e78d91f1522a272fcb20cef4e",
+      "added": 234
+    },
+    "spare-parts-advice": {
+      "revision": 1,
+      "content": "b01e8fef56fc06fa19187862b08cbca2fa8cfa1d93b580d9707b7f59a228dce0",
+      "added": 235
+    },
+    "translation-project-enquiry": {
+      "revision": 1,
+      "content": "6a9979c423b4a00959280b6e75e27153164ce38b00fef22c1313cf34d220d5a9",
+      "added": 236
+    },
+    "vip-early-access": {
+      "revision": 1,
+      "content": "7272988426c2247a3d06381b513e95be4d8bbcf35ad31a2c19e5c108ac1e5788",
+      "added": 237
+    },
+    "visiting-details": {
+      "revision": 1,
+      "content": "5847a32e07eae47f91450eb13c89eeefcf370114a1ac8a430f7997b6a5e6a78f",
+      "added": 238
+    },
+    "welcome-discount": {
+      "revision": 1,
+      "content": "374d03014a1dfc5989150bafbf22367a98a9d8992ccaed4e9ae8f8b3f538e8fa",
+      "added": 239
     }
   },
   "retired": []

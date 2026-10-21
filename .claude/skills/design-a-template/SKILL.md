@@ -193,7 +193,7 @@ Every design is published as its own object with its own **revision**
   keyed by the raster's SHA-256: `kind` (`original`, `ai-generated` or
   `licensed` — then `licence` too), `source`, `redistribution: true`,
   `reviewedBy`, `access`. Bundled designs included. A design with an image and
-  no record cannot be exported; it stays `bundled_only`.
+  no record cannot be exported; its approved setups are shown bundled-only.
 - **Colour lives in the top-level tokens.** A literal colour in a node's
   `tokens` or `narrow` bag is counted against
   `publishing/colour-baseline.json`; a new design starts at zero and an
@@ -212,11 +212,12 @@ Every design is published as its own object with its own **revision**
   approval goes stale only when what ships changes, not when the brief does —
   but any stylesheet edit counts, so `templates:releasable` (CI) fails until
   that command has run.
-- **Publishing is a plan entry.** Add the setup to `publishing/catalog.json`
-  `setups` once it is approved; `npm run templates:release:local` exports it,
-  renders its thumbnails and previews, and runs the shipping PHP reader over
-  the whole release. A design that cannot be exported yet goes in
-  `bundled_only` with the exporter's reason.
+- **Approval is publication.** There is no list to edit (ADR 0162): every
+  setup with a current approval that exports is published by
+  `npm run templates:release:local`, which renders its thumbnails and previews
+  and runs the shipping PHP reader over the whole release. One that cannot
+  export yet is shown bundled-only with the exporter's reason; the studio's
+  held panel lists them.
 - **Undo is a new revision**, or a `withdrawn` row with a reason (`rights`,
   `quality`, `broken`, `other`) — never a deleted design. A release that drops
   a live design without withdrawing it is refused.

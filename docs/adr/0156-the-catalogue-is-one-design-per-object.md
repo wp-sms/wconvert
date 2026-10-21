@@ -173,6 +173,10 @@ these only refuse what is objectively wrong or make review cheaper:
   with no rights record or an out-of-vocabulary setting are `bundled_only`:
   shown on the website from the bundled source, not downloadable, until the
   reason is fixed.
+  *Amended by [0162](0162-the-delivery-plan-is-derived.md):* there is no
+  plan list of setups, bundled-only setups or Collections any more. Each is
+  derived from current approvals and the exporter's result, and a held setup
+  carries the exporter's own reason.
 - The v2 public routes stayed readable until the website read v3 detail pages
   (wconvert-website PR 4, 20 October); since then every v2 route is gone.
 - Accepted residual risk, recorded by the owner: approval stays agent review;

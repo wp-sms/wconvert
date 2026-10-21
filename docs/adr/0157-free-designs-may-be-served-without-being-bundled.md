@@ -45,6 +45,8 @@ copy, literal-colour and per-design byte checks. The byte budget measures it
 as installed, with each picture bound to a local URL (`PackImages::hydrate`).
 It is listed in **neither** bundled `revisions.json`, because neither ZIP
 carries it.
+*Amended by [0162](0162-the-delivery-plan-is-derived.md):* it is published
+once one of its setups has a current approval; no plan list names it.
 
 ## Consequences
 
