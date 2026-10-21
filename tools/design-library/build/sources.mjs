@@ -43,12 +43,22 @@ export function designSources(root) {
 /** Where setups (Playbooks) are authored; a hosted one ships in neither ZIP either. */
 export const HOSTED_PLAYBOOKS = 'tools/design-library/hosted/playbooks';
 
-/** The absolute path of one setup's Playbook file. */
-export function setupSource(root, id) {
+function setupDirectories(root) {
   const modules = existsSync(resolve(root, 'pro/modules'))
     ? readdirSync(resolve(root, 'pro/modules'), { withFileTypes: true }).filter(entry => entry.isDirectory()).map(entry => `pro/modules/${entry.name}/playbooks`)
     : [];
-  const files = ['resources/playbooks', ...modules, HOSTED_PLAYBOOKS].map(dir => resolve(root, dir, id + '.php')).filter(existsSync);
+  return ['resources/playbooks', ...modules, HOSTED_PLAYBOOKS];
+}
+
+/** Every authored setup's id, sorted: what the catalogue numbers and may publish (ADR 0162). */
+export function setupIds(root) {
+  return [...new Set(setupDirectories(root).filter(dir => existsSync(resolve(root, dir)))
+    .flatMap(dir => readdirSync(resolve(root, dir)).filter(name => name.endsWith('.php')).map(name => name.slice(0, -4))))].sort();
+}
+
+/** The absolute path of one setup's Playbook file. */
+export function setupSource(root, id) {
+  const files = setupDirectories(root).map(dir => resolve(root, dir, id + '.php')).filter(existsSync);
   if (files.length !== 1) throw new Error(`Missing or ambiguous setup: ${id}`);
   return files[0];
 }

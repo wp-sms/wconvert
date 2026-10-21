@@ -29,7 +29,9 @@ http://127.0.0.1:9452/ — `index.html` sends you to the studio. It has four tab
 **Setups** opens on a row of clickable numbers: all, approved, needs fix
 (`revise`), held back, to review (unreviewed or stale) and online. The review
 states come from the shared queue (`out/review-queue.json`); held back and
-online come from the delivery plan in `publishing/catalog.json`. Clicking a
+online are derived from them and the exporter (`build/delivery.mjs`, ADR 0162):
+an approved setup that exports is online, one that does not is held back with
+the exporter's reason. Clicking a
 number filters the list. Rows put what needs work first and show a live
 thumbnail of the first screen, the design, format, plan, goal, status and the
 first line of the reviewer's note or the held-back reason. Filters live in the
@@ -150,7 +152,9 @@ See [the review report](../../docs/reviews/template-visual-audit-2026-09-29.md).
    decisions but does not record them. Import with
    `npm run templates:review -- /path/to/export.json`;
    commit the shared records and evidence together. Campaign, renderer or evidence
-   changes invalidate the shared approval. Run `npm run templates:gate -- BATCH_ID`
+   changes invalidate the shared approval; after any stylesheet edit,
+   `npm run templates:releasable` (run by CI) fails until
+   `npm run templates:visual-diff -- --apply` has carried what looks the same. Run `npm run templates:gate -- BATCH_ID`
    locally. See [the shared-review workflow](review/README.md). Editorial review is
    separate from release approval. Publish through the normal branch/PR process.
 

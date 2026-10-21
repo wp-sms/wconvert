@@ -15,6 +15,9 @@ import { allowedPairs, nearDuplicates } from './near-duplicates.mjs';
 import { contrastReport } from './catalogue-contrast.mjs';
 import { copyIssues } from './catalogue-copy.mjs';
 import { designSource } from './sources.mjs';
+import { delivery, releaseCollections, staleApprovals } from './delivery.mjs';
+import { withPictures } from './design-images.mjs';
+import { FIX } from './releasable.mjs';
 
 /**
  * Build a catalogue v3 release from reviewed repository sources into a local
@@ -37,25 +40,27 @@ if (origin.protocol !== 'https:' || origin.pathname !== '/' || origin.search || 
 
 execFileSync('bash', [resolve(root, 'tools/design-library/build.sh'), 'renderer', 'pilot'], { cwd: root, stdio: 'inherit' });
 const plan = readJson(root, 'tools/design-library/publishing/catalog.json');
-if (plan.schema !== 2) throw new Error('Unsupported delivery plan');
+if (plan.schema !== 3) throw new Error('Unsupported delivery plan');
 const metadata = readJson(root, 'tools/design-library/publishing/designs.json');
 const entries = readJson(root, 'tools/design-library/out/pilot.json'), reviews = loadReviews(root);
 const queue = reviewQueue(reviews, entries, root);
+// A stale approval would drop a live setup from the website with nobody
+// having decided to, so it refuses the release (ADR 0162).
+const stale = staleApprovals(queue);
+if (stale.length) throw new Error(`These approvals are stale:\n${stale.map(row => `  ${row.id}`).join('\n')}\nRun ${FIX}, and review what it lists.`);
 const { compiled } = buildCollections(root, readJson(root, 'tools/design-library/collections/source.json'), entries, queue, reviews);
 checkRuntimeCollections(root, compiled);
-
-// The approval process is unchanged: only a current approval publishes.
-const bundledOnly = plan.bundled_only.map(row => row.setup);
-for (const id of [...plan.setups, ...bundledOnly]) {
-  if (queue.find(row => row.id === id)?.state !== 'approved') throw new Error(`Missing current approval: ${id}`);
-}
 
 // Revisions come from the committed registry; publishing never renumbers.
 const numbered = computeRevisions(root, implementationRoot);
 const registry = readJson(root, 'tools/design-library/publishing/revisions.json');
 if (JSON.stringify(numbered.registry) !== JSON.stringify(registry)) throw new Error('Catalogue revisions are stale. Run npm run templates:revisions, review and commit the result.');
-const setups = numbered.setups.filter(setup => plan.setups.includes(setup.id));
-const wanted = new Set([...setups.map(setup => JSON.parse(setup.json).design.id), ...plan.designs]);
+
+// The approval process is unchanged: only a current approval publishes, and
+// what is online follows from it (ADR 0162).
+const online = delivery({ entries, queue, exported: numbered, compiled, designs: plan.designs, withdrawn: plan.withdrawn });
+const setups = numbered.setups.filter(setup => online.published.includes(setup.id));
+const wanted = new Set([...setups.map(setup => JSON.parse(setup.json).design.id), ...online.designs]);
 const designs = numbered.designs.filter(design => wanted.has(design.id));
 guardFreeMajority(designs);
 for (const id of wanted) if (!designs.some(design => design.id === id)) throw new Error(`${id} cannot be exported: ${numbered.failures.find(f => f.id === id)?.reason ?? 'unknown design'}`);
@@ -77,14 +82,13 @@ const previewPack = (object, setupWords) => ({
 });
 const artwork = designs.map(design => ({ id: design.id, pack: previewPack(JSON.parse(design.json)), media: media(design) }));
 // A bundled-only design is shown from its bundled source: it is not downloadable.
-const setupDesign = new Map(entries.map(entry => [entry.id, entry.template_id]));
-const bundledArtwork = [...new Set(bundledOnly.map(id => setupDesign.get(id)))].map(id => {
+const bundledArtwork = [...new Set(online.held.map(row => row.design))].map(id => {
   const source = JSON.parse(readFileSync(designSource(root, id), 'utf8'));
   return { id, pack: previewPack({ ...source, revision: 0, meta: { description: metadata.designs?.[id]?.description } }), media: [] };
 });
 await galleryArtwork([...artwork, ...bundledArtwork], renderer);
 // Text measured against the pixels actually behind it, pictures included (WCAG AA).
-const contrast = [...await contrastReport(designs.map(design => JSON.parse(design.json)), renderer)].filter(([, failures]) => failures.length);
+const contrast = [...await contrastReport(designs.map(design => withPictures(JSON.parse(design.json), media(design))), renderer)].filter(([, failures]) => failures.length);
 if (contrast.length) throw new Error('These designs have text a visitor cannot read against what is behind it:\n'
   + contrast.flatMap(([id, failures]) => failures.map(failure => `  ${id} ${failure.screen}: “${failure.text}” ${failure.ratio}:1`)).join('\n'));
 for (const design of designs) Object.assign(design, { gallery: artwork.find(item => item.id === design.id).gallery, media: media(design) });
@@ -94,16 +98,7 @@ const duplicates = nearDuplicates(designs.map(design => JSON.parse(design.json))
 if (duplicates.length) throw new Error('These published designs are near-duplicates; change one, or list the pair with its reason in publishing/near-duplicates.json:\n'
   + duplicates.map(pair => `  ${pair.a} ~ ${pair.b} (structure ${pair.structure}%, palette ${pair.palette}, picture ${pair.picture ?? 'n/a'} bits)`).join('\n'));
 
-const known = new Set([...setups.map(setup => setup.id), ...bundledOnly]);
-const collections = plan.collections.map(id => {
-  const collection = compiled.find(item => item.id === id);
-  if (!collection || collection.status !== 'published') throw new Error(`Collection lacks current approval: ${id}`);
-  return { id: collection.id, revision: collection.revision, name: collection.name, description: collection.description, cover: collection.cover,
-    priority: collection.priority, business_types: collection.business_types, markets: collection.markets,
-    items: collection.items.filter(item => known.has(item.setup_id)).map(item => setups.some(setup => setup.id === item.setup_id)
-      ? { setup: item.setup_id, stage: item.stage } : { design: setupDesign.get(item.setup_id), stage: item.stage, bundled_only: true }),
-    ...(collection.event ? { event: collection.event } : {}) };
-});
+const collections = releaseCollections(compiled, online);
 const release = buildRelease({
   designs, setups, collections, withdrawn: plan.withdrawn,
   taxonomy: metadata.taxonomy, bundledOnly: bundledArtwork.map(item => ({ id: item.id, gallery: item.gallery, name: item.pack.name, format: item.pack.templates[0].display_type, tier: item.pack.templates[0].tier, meta: metadata.designs?.[item.id] ?? {} })),

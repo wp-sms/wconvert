@@ -47,7 +47,9 @@ A higher `minor` is read.
 design and setup envelopes and `meta` drop keys they do not know. The tree,
 tokens, images, bindings and a setup's playbook stay strict: that is 0082's
 security boundary, now `DesignObject` wrapped around the unchanged
-`PackValidator`. An unknown plan, format, capability or newer `requires.plugin`
+`PackValidator`. *Amended by [0162](0162-the-delivery-plan-is-derived.md):*
+`image_bindings` rows are `{slot, asset_id}` (minor 1), so a background picture
+downloads like an image. An unknown plan, format, capability or newer `requires.plugin`
 means "update the plugin", never "free". A failure costs one design.
 
 **4. Requirements are computed.** Every manifest node, param, content key,
@@ -145,6 +147,10 @@ these only refuse what is objectively wrong or make review cheaper:
   evidence file no longer stales a decision (a missing one does); collections
   are keyed on setup revisions, not record ids. `visual-diff` also writes the
   changed screens before beside after, so a re-review judges the change.
+  *Amended by [0162](0162-the-delivery-plan-is-derived.md):* the key still
+  hashes the whole stylesheet, so a CSS edit that draws nothing differently
+  stales every approval. `templates:releasable` fails the pull request until
+  `templates:visual-diff -- --apply` has carried them.
 - **Two of the three checks are run by a machine.** `setup-checks.mjs` walks
   every setup to review as a visitor on a disposable WordPress and writes
   `results.json` (`journey`, `wordpress`); the reviewer judges contact sheets
@@ -169,6 +175,10 @@ these only refuse what is objectively wrong or make review cheaper:
   with no rights record or an out-of-vocabulary setting are `bundled_only`:
   shown on the website from the bundled source, not downloadable, until the
   reason is fixed.
+  *Amended by [0162](0162-the-delivery-plan-is-derived.md):* there is no
+  plan list of setups, bundled-only setups or Collections any more. Each is
+  derived from current approvals and the exporter's result, and a held setup
+  carries the exporter's own reason.
 - The v2 public routes stayed readable until the website read v3 detail pages
   (wconvert-website PR 4, 20 October); since then every v2 route is gone.
 - Accepted residual risk, recorded by the owner: approval stays agent review;

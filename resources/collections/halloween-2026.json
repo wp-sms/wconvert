@@ -19,7 +19,7 @@
       "setup_id": "halloween-treat-signup",
       "stage": "any",
       "setup_hash": "88f10429c378b9f9827cee475625f943cf0dcde0ec404e09b5b624cc4385cdd6",
-      "design_hash": "168079199716df05034cd1ff54f3dd8c7125d776fc4dfd8b2c50feb7734cb241"
+      "design_hash": "9f470e414dbadbb47d15efae46003b0b67c1607ad7f894fffa35189e4ba4f5c5"
     },
     {
       "setup_id": "halloween-after-dark-offer",
@@ -48,6 +48,6 @@
     "feature_end_exclusive": "2026-11-01"
   },
   "dependencies_current": true,
-  "revision": "36d5adb49494042dd917c8d74eb19fbcb98b02a1d01f4e7fdcd982bc228f4317",
+  "revision": "8056c1bee9f4a3d441db09f8d9f39787eda1008c5678d9ff7872ebf5e17268e9",
   "status": "published"
 }

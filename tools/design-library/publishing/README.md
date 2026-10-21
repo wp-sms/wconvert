@@ -11,7 +11,7 @@ moves a verified directory to the hosted service.
 
 | File | Who writes it | What it is |
 | --- | --- | --- |
-| `catalog.json` | author | The delivery plan: `setups` to publish (their designs follow), extra `designs`, `collections`, `withdrawn`, `bundled_only` with reasons, `image_rights`, `artwork_exports`. |
+| `catalog.json` | author | Editorial and rights data: extra `designs` published with no setup, `withdrawn`, `image_rights`, `artwork_exports`. What is published is derived, not listed ([ADR 0162](../../../docs/adr/0162-the-delivery-plan-is-derived.md)). |
 | `designs.json` | author | Catalogue words per design — `description`, `slug`, `industries`, `occasions`, `style`, `colour`, `family`, `aliases` — and the `taxonomy` (ids and labels) those words come from. |
 | `revisions.json` | `npm run templates:revisions` | The registry: each design's and setup's revision, content hash and first-publication order, and every retired id. |
 | `colour-baseline.json` | `node build/catalogue-lint.mjs --record` | How many literal colours each existing design has in node tokens. It only goes down. |
@@ -31,8 +31,9 @@ npm run templates:release:local -- \
   --expected none   # or the current release id
 ```
 
-The command rebuilds the renderer and studio, requires a current approval for
-every planned setup, exports every design and setup through the shipping PHP
+The command rebuilds the renderer and studio, refuses any approval that has
+gone stale, publishes every setup with a current approval that exports and
+every Collection with a current review, exports every design and setup through the shipping PHP
 validator (`build/export-designs.php`), renders WebP thumbnails (1× and 2×), an
 Open Graph image and inert previews in a network-blocked browser — premium
 pictures downscaled — then runs the shipping `TemplateCatalog` over an
@@ -55,7 +56,8 @@ public/v3/previews/<sha>.html      inert website previews
 ## Rules the build enforces
 
 - **Approval is unchanged**: an agent-reviewed, current approval for every
-  published setup. Nothing here approves anything.
+  published setup. Nothing here approves anything, and nothing needs listing:
+  an approval is the decision to publish.
 - **Exactly what a design needs.** `requires.plugin` is the newest `since` stamp
   it uses; `capabilities` is what the reader counts.
 - **Never drop a live design silently.** A release that leaves out a design the
@@ -65,8 +67,9 @@ public/v3/previews/<sha>.html      inert website previews
 - **Literal colours only go down** against `colour-baseline.json`.
 - **The index fits the reader's budget**: at most 16 pages and 1 MiB, listed
   oldest first so an outgrown reader loses the newest designs, not the oldest.
-- `bundled_only` setups are shown on the website from the bundled source and
-  are not downloadable until their reason is fixed.
+- An approved setup that cannot export is shown on the website from the
+  bundled source, not downloadable, with the exporter's reason, until that is
+  fixed. The studio's held panel lists them.
 
 The build reports how many published designs still lack a `description`.
 

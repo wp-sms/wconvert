@@ -222,19 +222,22 @@ final class TemplateCatalogTest extends TestCase
 
     public function testTheHighestRevisionWinsAcrossBundledInstalledAndRemoteCopies(): void
     {
-        $this->service->design(self::FREE_DESIGN, 'reading-slip', 2, ['tokens' => ['bg' => '#ffeeaa'] + json_decode((string) file_get_contents(WCONVERT_DIR . self::FREE_DESIGN), true)['tokens']]);
+        // One above whatever the Free ZIP carries, so the hosted copy is newer.
+        $bundled = \WConvert\Template\BundledRevisions::read(WCONVERT_DIR . 'resources/templates/revisions.json')['reading-slip'] ?? 1;
+        $hosted = $bundled + 1;
+        $this->service->design(self::FREE_DESIGN, 'reading-slip', $hosted, ['tokens' => ['bg' => '#ffeeaa'] + json_decode((string) file_get_contents(WCONVERT_DIR . self::FREE_DESIGN), true)['tokens']]);
         $this->service->publish();
-        $catalog = $this->catalog(Tier::Free, null, null, [], ['reading-slip' => 1]);
+        $catalog = $this->catalog(Tier::Free, null, null, [], ['reading-slip' => $bundled]);
         $catalog->refresh();
         $card = $this->cards($catalog)['reading-slip'];
-        self::assertSame(['install', 1], [$card['state'], $card['local_revision']], 'A bundled revision 1 is older than hosted revision 2');
+        self::assertSame(['install', $bundled], [$card['state'], $card['local_revision']], 'The bundled revision is older than the hosted one');
         $catalog->install('reading-slip', $card['sha256']);
 
         $library = TemplateLibrary::from(TemplateVocabulary::fromManifest(), new BundledTemplates(WCONVERT_DIR), $this->archive());
         self::assertFalse($library->find('reading-slip')['catalog_current'], 'The bundled copy stays resolvable but is no longer offered');
-        self::assertTrue($library->find('design-2-reading-slip')['catalog_current']);
-        self::assertSame('#ffeeaa', $library->find('design-2-reading-slip')['tokens']['bg']);
-        self::assertSame('ready', $this->cards($this->catalog(Tier::Free, null, null, [], ['reading-slip' => 1]))['reading-slip']['state']);
+        self::assertTrue($library->find('design-' . $hosted . '-reading-slip')['catalog_current']);
+        self::assertSame('#ffeeaa', $library->find('design-' . $hosted . '-reading-slip')['tokens']['bg']);
+        self::assertSame('ready', $this->cards($this->catalog(Tier::Free, null, null, [], ['reading-slip' => $bundled]))['reading-slip']['state']);
     }
 
     public function testCleanupKeepsEveryRevisionAnOptinRowStillNames(): void

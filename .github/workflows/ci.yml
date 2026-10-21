@@ -173,11 +173,18 @@ jobs:
               - 'tiers.json'
               - '.github/workflows/frontend-tests.yml'
               - '.github/workflows/ci.yml'
+            # Everything a setup's revision is computed from, so a change
+            # that stales an approval meets `templates:releasable`.
             service:
               - 'tools/template-server/**'
               - 'tools/design-library/**'
               - 'resources/templates/**'
               - 'resources/collections/**'
+              - 'resources/renderer/**'
+              - 'resources/playbooks/**'
+              - 'pro/modules/*/templates/**'
+              - 'pro/modules/*/playbooks/**'
+              - 'src/Template/**'
               - '.github/workflows/ci.yml'
 
   php-tests:
@@ -238,6 +245,11 @@ jobs:
       # Bundled revision files must match the registry (ADR 0156).
       - name: Catalogue revisions
         run: npm run templates:revisions:check
+
+      # A renderer edit stales every approval, even one that draws nothing
+      # differently; the failure names the one command that carries them.
+      - name: Approvals current
+        run: npm run templates:releasable
 
       - name: Worker
         working-directory: tools/template-server

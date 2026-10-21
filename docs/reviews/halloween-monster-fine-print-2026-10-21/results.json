@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "at": "2026-10-21T17:20:46.434Z",
+  "site": "disposable local WordPress",
+  "checks": [
+    "journey",
+    "wordpress"
+  ],
+  "setups": [
+    {
+      "id": "halloween-treat-signup",
+      "revision": "87cda1efe6ec2774aadfe37e4e288cbbecdcd3a2066f42979bb454fa7a47e483",
+      "width": 320,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    },
+    {
+      "id": "halloween-treat-signup",
+      "revision": "87cda1efe6ec2774aadfe37e4e288cbbecdcd3a2066f42979bb454fa7a47e483",
+      "width": 1280,
+      "passed": true,
+      "screens": 2,
+      "validation": true,
+      "consentChecked": true,
+      "backChecked": false,
+      "simulatedFailureRetry": true,
+      "localLeadSaved": true,
+      "configuredResource": 200,
+      "actualCtaOpened": false,
+      "couponChecked": false,
+      "copiedCode": false,
+      "localResourceEmail": false
+    }
+  ]
+}

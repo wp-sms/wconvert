@@ -4,38 +4,49 @@ import { fileURLToPath } from 'node:url';
 import { artworkExports } from './artwork.mjs';
 import { assignRevisions, bundledRevisionFiles, exportObjects, metadataFor, readJson, retireMissing, writeJson } from './catalogue.mjs';
 import { writeFileSync } from 'node:fs';
-import { designSources } from './sources.mjs';
+import { designSources, setupIds } from './sources.mjs';
 
 /**
- * Number every exportable design and every planned setup (ADR 0156).
+ * Number every exportable design and every authored setup (ADR 0156, ADR 0162).
  *
  *   npm run templates:revisions            write the registry and both bundled revision files
  *   npm run templates:revisions -- --check fail if either is stale (CI)
  *
  * Hosted designs are numbered like bundled ones; only the two bundled
- * revision files leave them out (ADR 0157). A design whose source cannot be
+ * revision files leave them out (ADR 0157). A design or setup that cannot be
  * exported yet (an unconverted SVG, a site-specific link) is left unnumbered;
- * it is still bundled.
+ * the exporter's reason travels with `failures`, and an approved setup among
+ * them is shown bundled-only ({@link delivery}).
  */
 export function computeRevisions(root, implementationRoot = root) {
-  const plan = readJson(root, 'tools/design-library/publishing/catalog.json');
-  if (plan.schema !== 2) throw new Error('Unsupported delivery plan');
-  const metadata = readJson(root, 'tools/design-library/publishing/designs.json');
   const registry = readJson(root, 'tools/design-library/publishing/revisions.json');
-  const authored = designSources(root);
+  const { authored, setups, exported } = exportAuthored(root, implementationRoot);
+  refuseStranded(authored, exported.failures);
+  const numbered = assignRevisions(retireMissing(registry, { designs: new Set(authored.keys()), setups: new Set(setups) }), exported);
+  return { ...numbered, failures: exported.failures, files: bundledRevisionFiles(root, numbered.registry) };
+}
+
+/**
+ * A bundled design that cannot be exported still ships in its ZIP; a hosted
+ * one would reach nobody, so it is a failure rather than a note (ADR 0157).
+ */
+export function refuseStranded(authored, failures) {
+  const stranded = failures.filter(failure => failure.kind === 'design' && authored.get(failure.id)?.ships === 'hosted');
+  if (stranded.length) throw new Error('Hosted designs cannot be exported:\n' + stranded.map(f => `  ${f.id}: ${f.reason}`).join('\n'));
+}
+
+/** Every authored design and setup through the shipping exporter, unnumbered. */
+export function exportAuthored(root, implementationRoot = root) {
+  const plan = readJson(root, 'tools/design-library/publishing/catalog.json');
+  if (plan.schema !== 3) throw new Error('Unsupported delivery plan');
+  const metadata = readJson(root, 'tools/design-library/publishing/designs.json');
+  const authored = designSources(root), setups = setupIds(root);
   const exported = exportObjects(root, implementationRoot, {
     designs: [...authored.keys()].sort().map(id => ({ id, revision: 1, ...metadataFor(metadata, id) })),
-    setups: plan.setups.map(id => ({ id, revision: 1 })),
+    setups: setups.map(id => ({ id, revision: 1 })),
     raster_sources: artworkExports(root, plan.artwork_exports), image_rights: plan.image_rights,
   });
-  const blocking = exported.failures.filter(failure => failure.kind === 'setup');
-  if (blocking.length) throw new Error('Planned setups cannot be exported:\n' + blocking.map(f => `  ${f.id}: ${f.reason}`).join('\n'));
-  // A bundled design that cannot be exported still ships in its ZIP; a hosted
-  // one would reach nobody, so it is a failure rather than a note (ADR 0157).
-  const stranded = exported.failures.filter(failure => failure.kind === 'design' && authored.get(failure.id)?.ships === 'hosted');
-  if (stranded.length) throw new Error('Hosted designs cannot be exported:\n' + stranded.map(f => `  ${f.id}: ${f.reason}`).join('\n'));
-  const numbered = assignRevisions(retireMissing(registry, { designs: new Set(authored.keys()), setups: new Set(plan.setups) }), exported);
-  return { ...numbered, failures: exported.failures, files: bundledRevisionFiles(root, numbered.registry) };
+  return { plan, authored, setups, exported };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

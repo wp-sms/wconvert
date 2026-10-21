@@ -5,7 +5,14 @@ use WConvert\Template\Catalog\PackValidator;
 
 defined('ABSPATH') || exit;
 
-/** Image addresses stay outside the inert package tree. Paths refer to validated slots only. */
+/**
+ * Image addresses stay outside the inert package tree. Paths refer to validated slots only.
+ *
+ * One walker for every picture a design carries — an image's `src`, and a
+ * `bg-image` in design, node or `narrow` tokens — shared by merchant transfer
+ * and the catalogue's image bindings (ADR 0162). A slot whose value is empty
+ * is one a binding may fill.
+ */
 final class DesignImages
 {
     /**
@@ -35,8 +42,10 @@ final class DesignImages
             if (in_array($key, ['tokens', 'narrow'], true) && is_array($value) && isset($value['bg-image'])) {
                 $raw = $value['bg-image'];
                 PackValidator::check(is_string($raw), __('This design has an invalid background image.', 'wconvert'));
-                $url = $raw === 'none' || $raw === '' ? '' : $raw;
-                if (preg_match('/^url\([\'"]?(.*?)[\'"]?\)$/s', $url, $match)) $url = $match[1];
+                if ($raw === 'none' || $raw === '') $url = '';
+                elseif (preg_match('/^url\([\'"]?(.*?)[\'"]?\)$/s', $raw, $match)) $url = $match[1];
+                // A gradient is a style, not a picture: it stays a token.
+                else continue;
                 $address = [...$path, $key, 'bg-image'];
                 $found[implode('/', $address)] = ['path' => $address, 'url' => $url, 'background' => true];
             } elseif (is_array($value)) self::walk($value, [...$path, $key], $found);

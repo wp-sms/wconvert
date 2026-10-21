@@ -1,0 +1,43 @@
+{
+  "id": "collection-halloween-2026",
+  "revision": "8056c1bee9f4a3d441db09f8d9f39787eda1008c5678d9ff7872ebf5e17268e9",
+  "base_id": "cc3070624bc685f868077f014725b845fcae66d1c6e3c62a29ecc84abdebe8f2",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Only halloween-treat-signup changed (fine print reordered, re-reviewed); items, order, stages, words and dates unchanged. See review.md.",
+  "at": "2026-10-21T17:21:25.562Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/review.md",
+          "sha256": "f5c33606941725460619fa279739a733bbb864b57ac7f076ffe8b03bbe540558"
+        },
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/halloween-treat-signup-1440.png",
+          "sha256": "8f060f62f4eb59eb6a1a130cc82c434044e34ce902fe459c1dd97753d7036835"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/results.json",
+          "sha256": "e8925828f590eeda4cda71a621c399bfad8cd0e54b3a764ca99d445f62d41897"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/results.json",
+          "sha256": "e8925828f590eeda4cda71a621c399bfad8cd0e54b3a764ca99d445f62d41897"
+        }
+      ]
+    }
+  },
+  "record_id": "5ebad681c5f796e7483a49700d03c815057883a744a0f855ba4d659100ede589"
+}

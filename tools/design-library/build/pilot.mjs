@@ -11,6 +11,8 @@ import { campaignRevision } from './revision.mjs';
 import { renderedIdentities } from './rendered-identity.mjs';
 import { maintenanceReport, editorialFindings } from './maintenance.mjs';
 import { validateBacklog } from './backlog.mjs';
+import { exportAuthored } from './catalogue-revisions.mjs';
+import { delivery } from './delivery.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.WCONVERT_PLUGIN ?? resolve(here, '../../..');
@@ -40,10 +42,10 @@ const lifecycle = JSON.parse(readFileSync(resolve(root, 'tools/design-library/re
 const maintenance = maintenanceReport(designs, usage, entries, lifecycle);
 const editorial = entries.flatMap(editorialFindings);
 writeFileSync(resolve(out, 'maintenance.json'), JSON.stringify({ maintenance, editorial }, null, 2) + '\n');
-// What the delivery plan puts online, and what it holds back and why (ADR 0156).
-const catalog = JSON.parse(readFileSync(resolve(root, 'tools/design-library/publishing/catalog.json'), 'utf8'));
-const delivery = { online: catalog.setups, held: catalog.bundled_only.map(({ setup, reason }) => ({ setup, reason })) };
-const data = { maintenance, editorial, queue, delivery, entries, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
+// What the catalogue puts online, and what it holds back and why (ADR 0162).
+const derived = delivery({ entries, queue, exported: exportAuthored(root, resolve(here, '../../..')).exported });
+const online = { online: derived.published, held: derived.held.map(({ setup, reason }) => ({ setup, reason })) };
+const data = { maintenance, editorial, queue, delivery: online, entries, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
 writeFileSync(resolve(out, 'coverage.json'), JSON.stringify(data.coverage, null, 2) + '\n');
 writeFileSync(resolve(out, 'inventory.json'), JSON.stringify(inventory, null, 2) + '\n');
 writeFileSync(resolve(out, 'pilot.json'), JSON.stringify(entries, null, 2) + '\n');

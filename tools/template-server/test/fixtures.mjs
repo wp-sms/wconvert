@@ -24,7 +24,7 @@ export function catalogue({ designs = [{ id: 'reading-slip' }], setups = [], wit
     const object = json({ schema: 3, minor: 0, id, revision, name: id, display_type: 'popup', tier, family: id,
       meta: { description: 'A design.', slug: id, industries: [], occasions: [], style: [], colour: [] },
       requires: { plugin: '1.0.0', tree: 2, capabilities: [] }, assets,
-      image_bindings: assets.map((asset, n) => ({ node_id: `n${n}`, asset_id: asset.id })), tree: { v: 2, steps: [] }, tokens: {} });
+      image_bindings: assets.map((asset, n) => ({ slot: `tree/steps/0/content/children/${n}/src`, asset_id: asset.id })), tree: { v: 2, steps: [] }, tokens: {} });
     const digest = put(tier === 'free' ? 'public' : 'private', `v3/designs/${hash(object)}.json`, object);
     objects[id] = { sha256: digest, bytes: object, assets };
     const thumb = put('public', `v3/thumbs/${hash(Buffer.from(`thumb ${id}@${revision}`))}.webp`, Buffer.from(`thumb ${id}@${revision}`));

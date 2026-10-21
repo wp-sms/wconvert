@@ -1,6 +1,7 @@
 import { JSDOM } from 'jsdom';
 import { previewController } from './preview-controls.mjs';
 import { createHash } from 'node:crypto';
+import { put, slots } from './design-images.mjs';
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /** Build inert rendered screens, never publish editable trees, original premium images or the premium renderer. */
@@ -18,8 +19,12 @@ export function publicPreview(pack, renderer, media = [], { designId, embed = fa
       // cannot match the original's digest; every other image must.
       if (!asset || !Buffer.isBuffer(bytes) || (item.verified !== false && createHash('sha256').update(bytes).digest('hex') !== asset.sha256)) throw new Error('Public preview needs verified image bytes');
       if (asset.access === 'premium' && item.verified !== false) throw new Error('A public preview never embeds an original premium image');
-      const walk = node => { if (node.id === binding.node_id) node.src = `data:${item.mime ?? asset.mime};base64,${bytes.toString('base64')}`; for (const key of ['children','start','end']) for (const child of node[key] ?? []) walk(child); };
-      for (const step of pack.templates.find(item => item.id === binding.template_id).tree.steps) walk(step.content);
+      const template = pack.templates.find(item => item.id === binding.template_id), design = { tree: template.tree, tokens: template.tokens ?? {} };
+      const slot = slots(design)[binding.slot];
+      if (!slot || slot.url !== '') throw new Error('Public preview binds an empty picture slot only');
+      const uri = `data:${item.mime ?? asset.mime};base64,${bytes.toString('base64')}`;
+      put(design, slot.path, slot.background ? `url("${uri}")` : uri);
+      template.tokens = design.tokens;
     }
     const screens = [];
     if (designId && !pack.templates.some(design => design.id === designId)) throw new Error("Unknown preview design");

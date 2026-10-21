@@ -55,7 +55,7 @@ For installed Free campaigns, the two new JPEGs also ship under their SHA-256 fi
 `halloween-engraved.webp`, `halloween-monster.webp` and `halloween-forest.webp`
 are original AI-generated illustrations from this project's Halloween prototype
 exploration. No competitor artwork was reused. Full original prompts and exact
-raster SHA-256 rights records are in `publishing/catalog.json`. Delivery-only
+raster SHA-256 rights records are in `publishing/catalog.json` → `image_rights`. Delivery-only
 WebP derivatives use cwebp quality 80, proportionally resized to 800px wide for
 the two portraits and 1280px for the forest. Their composition is unchanged.
 Byte-identical copies ship under hash filenames in `resources/template-artwork`.
@@ -66,3 +66,7 @@ Its inline source keeps the small Pro countdown bar self-contained. Monster
 eyes and printed scenery are part of their bitmap; Midnight flight's three
 moving bats are independent built-in renderer decorations. Text, forms, codes,
 background replacement and button colors remain editable.
+
+`halloween-pumpkin.png` is the pumpkin's reviewed 256 × 256 raster export for the
+catalogue download, made once in Chromium; the bundled design keeps the vector.
+See `docs/reviews/halloween-library-2026-10-21/pumpkin-export.md`.

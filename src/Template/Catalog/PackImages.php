@@ -1,9 +1,18 @@
 <?php
 namespace WConvert\Template\Catalog;
 
+use WConvert\Template\Transfer\DesignImages;
+
 defined('ABSPATH') || exit;
 
-/** Image bindings are separate from inert design trees. Only verified local URLs enter runtime trees. */
+/**
+ * Image bindings are separate from inert design trees. Only verified local URLs enter runtime trees.
+ *
+ * A binding names a picture slot by its path ({@see DesignImages}): an image's
+ * `src`, or a `bg-image` in design, node or `narrow` tokens, the same slots
+ * merchant transfer uses (ADR 0162). A slot is bound only where the design
+ * leaves it empty, and only once.
+ */
 final class PackImages
 {
     /** @param array<string, mixed> $pack */
@@ -12,20 +21,18 @@ final class PackImages
         $bindings = $pack['image_bindings'] ?? [];
         PackValidator::check(is_array($bindings) && array_is_list($bindings) && count($bindings) <= 96, __('Invalid image bindings.', 'wconvert'));
         if ($pack['assets'] !== []) PackValidator::check(in_array('pack-images:1', $pack['requires']['capabilities'], true), __('This pack does not declare image support.', 'wconvert'));
-        $assets = array_column($pack['assets'], null, 'id'); $targets = []; $used = [];
-        foreach ($pack['templates'] as $template) foreach ($template['tree']['steps'] as $step) {
-            self::walk($step['content'], static function (array $node) use (&$targets, $template): array {
-                if (($node['type'] ?? '') === 'image') $targets[$template['id'] . ':' . $node['id']] = $template['tier'];
-                return $node;
-            });
-        }
+        $assets = array_column($pack['assets'], null, 'id'); $templates = array_column($pack['templates'], null, 'id'); $slots = []; $used = [];
         foreach ($bindings as $binding) {
             PackValidator::check(is_array($binding), __('Invalid image binding.', 'wconvert'));
-            PackValidator::keys($binding, ['template_id', 'node_id', 'asset_id']);
-            foreach (['template_id', 'node_id', 'asset_id'] as $key) PackValidator::check(PackValidator::identifier($binding[$key] ?? null), __('Invalid image binding.', 'wconvert'));
-            $target = $binding['template_id'] . ':' . $binding['node_id'];
-            PackValidator::check(isset($targets[$target], $assets[$binding['asset_id']]) && !isset($used[$target]), __('Image binding is missing or repeated.', 'wconvert'));
-            PackValidator::check($targets[$target] !== 'free' || $assets[$binding['asset_id']]['access'] === 'free', __('Free designs cannot reference premium images.', 'wconvert'));
+            PackValidator::keys($binding, ['template_id', 'slot', 'asset_id']);
+            foreach (['template_id', 'asset_id'] as $key) PackValidator::check(PackValidator::identifier($binding[$key] ?? null), __('Invalid image binding.', 'wconvert'));
+            PackValidator::check(is_string($binding['slot'] ?? null) && isset($templates[$binding['template_id']]), __('Invalid image binding.', 'wconvert'));
+            $template = $templates[$binding['template_id']];
+            $slots[$template['id']] ??= DesignImages::slots(self::design($template));
+            $slot = $slots[$template['id']][$binding['slot']] ?? null;
+            $target = $template['id'] . ':' . $binding['slot'];
+            PackValidator::check($slot !== null && $slot['url'] === '' && isset($assets[$binding['asset_id']]) && !isset($used[$target]), __('Image binding is missing or repeated.', 'wconvert'));
+            PackValidator::check($template['tier'] !== 'free' || $assets[$binding['asset_id']]['access'] === 'free', __('Free designs cannot reference premium images.', 'wconvert'));
             $used[$target] = true;
         }
         PackValidator::check(array_diff(array_keys($assets), array_column($bindings, 'asset_id')) === [], __('This pack contains unused images.', 'wconvert'));
@@ -36,26 +43,27 @@ final class PackImages
      * @return array<string, mixed> */
     public static function hydrate(array $pack, array $urls): array
     {
-        $bindings = [];
-        foreach ($pack['image_bindings'] ?? [] as $binding) {
-            PackValidator::check(isset($urls[$binding['asset_id']]), __('Required pack images are missing.', 'wconvert'));
-            $bindings[$binding['template_id']][$binding['node_id']] = $urls[$binding['asset_id']];
-        }
-        foreach ($pack['templates'] as &$template) foreach ($template['tree']['steps'] as &$step) {
-            $step['content'] = self::walk($step['content'], static function (array $node) use ($bindings, $template): array {
-                if (isset($bindings[$template['id']][$node['id'] ?? ''])) $node['src'] = $bindings[$template['id']][$node['id']];
-                return $node;
-            });
+        foreach ($pack['image_bindings'] ?? [] as $binding) PackValidator::check(isset($urls[$binding['asset_id']]), __('Required pack images are missing.', 'wconvert'));
+        foreach ($pack['templates'] as &$template) {
+            $design = self::design($template);
+            $slots = DesignImages::slots($design);
+            foreach ($pack['image_bindings'] ?? [] as $binding) {
+                if ($binding['template_id'] !== $template['id']) continue;
+                $slot = $slots[$binding['slot']];
+                $url = $urls[$binding['asset_id']];
+                DesignImages::put($design, $slot['path'], $slot['background'] ? 'url("' . $url . '")' : $url);
+            }
+            $template['tree'] = $design['tree'];
+            $template['tokens'] = $design['tokens'];
         }
         return $pack;
     }
 
-    /** @param array<string, mixed> $node
-     * @param callable(array<string, mixed>): array<string, mixed> $visit
-     * @return array<string, mixed> */
-    private static function walk(array $node, callable $visit): array
+    /** The part of a template that holds pictures, so slot paths start at `tree` or `tokens`.
+     * @param array<string, mixed> $template
+     * @return array{tree: mixed, tokens: mixed} */
+    private static function design(array $template): array
     {
-        foreach (['children', 'start', 'end'] as $key) if (isset($node[$key])) $node[$key] = array_map(static fn (array $child): array => self::walk($child, $visit), $node[$key]);
-        return $visit($node);
+        return ['tree' => $template['tree'], 'tokens' => $template['tokens'] ?? []];
     }
 }

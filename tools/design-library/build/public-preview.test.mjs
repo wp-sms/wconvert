@@ -66,10 +66,27 @@ test('a public preview never embeds an original premium image, only a downscaled
   entry.tree.steps[0].content.start.push({ type: 'image', id: 'n90', src: '', alt: 'Pixel' });
   const original = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA1sAAAAASUVORK5CYII=', 'base64');
   const asset = { id: 'pixel', sha256: createHash('sha256').update(original).digest('hex'), mime: 'image/png', bytes: original.length, width: 1, height: 1, access: 'premium' };
-  const pack = { name: 'Pro', description: '', version: 'r1', assets: [asset], image_bindings: [{ template_id: entry.id, node_id: 'n90', asset_id: 'pixel' }], templates: [{ ...entry, tier: 'pro' }] };
+  const pack = { name: 'Pro', description: '', version: 'r1', assets: [asset], image_bindings: [{ template_id: entry.id, slot: 'tree/steps/0/content/start/' + (entry.tree.steps[0].content.start.length - 1) + '/src', asset_id: 'pixel' }], templates: [{ ...entry, tier: 'pro' }] };
   assert.throws(() => publicPreview(pack, renderer, [{ id: 'pixel', bytes: original }]), /never embeds an original premium image/);
   const small = Buffer.from('small-webp');
   const markup = publicPreview(pack, renderer, [{ id: 'pixel', bytes: small, mime: 'image/webp', verified: false }], { designId: entry.id });
   assert.match(markup, new RegExp('data:image/webp;base64,' + small.toString('base64')));
   assert.doesNotMatch(markup, new RegExp(original.toString('base64').slice(0, 24)));
+});
+
+test('C13: a background picture bound by slot shows in the preview, on every screen that shares it', () => {
+  const design = JSON.parse(readFileSync(new URL('../../../resources/templates/library/halloween-monster.json', import.meta.url)));
+  const bytes = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jA1sAAAAASUVORK5CYII=', 'base64');
+  const asset = { id: 'monster', sha256: createHash('sha256').update(bytes).digest('hex'), mime: 'image/png', bytes: bytes.length, width: 1, height: 1, access: 'free' };
+  const slots = ['tree/steps/0/content/tokens/bg-image', 'tree/steps/1/content/tokens/bg-image'];
+  for (const step of design.tree.steps) step.content.tokens['bg-image'] = 'none';
+  const pack = { name: 'Halloween', description: '', version: 'r1', assets: [asset], image_bindings: slots.map(slot => ({ template_id: design.id, slot, asset_id: 'monster' })), templates: [design] };
+  const markup = publicPreview(pack, renderer, [{ id: 'monster', bytes }], { designId: design.id });
+  const dom = new JSDOM(markup);
+  const painted = [...dom.window.document.querySelectorAll('template')].map(template => [...template.content.querySelectorAll('[style]')]
+    .some(node => node.getAttribute('style').includes(`url("data:image/png;base64,${bytes.toString('base64')}")`)));
+  assert.deepEqual(painted, [true, true]);
+  dom.window.close();
+  const filled = structuredClone(pack); filled.templates[0].tree.steps[0].content.tokens['bg-image'] = 'url("data:image/png;base64,AAAA")';
+  assert.throws(() => publicPreview(filled, renderer, [{ id: 'monster', bytes }]), /empty picture slot/);
 });

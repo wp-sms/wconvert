@@ -39,6 +39,7 @@ use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\VocabularySince;
 use WConvert\Template\TemplateManifest;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Template\Transfer\DesignImages;
 
 const FLAGS = JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
 const RIGHTS_KINDS = ['original', 'ai-generated', 'licensed'];
@@ -72,39 +73,39 @@ function prerequisites(array $template): array
 }
 
 /**
- * Bind each image node to a reviewed raster asset. The bundled source may stay
- * a compact vector; only an explicitly reviewed derivative, bound to its exact
- * source URI and bytes, is exported. Every image needs a rights record.
+ * Bind each picture slot to a reviewed raster asset: an image's `src`, or a
+ * `bg-image` in design, node or `narrow` tokens ({@see DesignImages}, ADR 0162).
+ * The bundled source may stay a compact vector; only an explicitly reviewed
+ * derivative, bound to its exact source URI and bytes, is exported. Every
+ * image needs a rights record. The exported tree keeps each slot empty, as a
+ * merchant transfer does: `''` for an image, `none` for a background.
  *
  * @return array{0: array<string, mixed>, 1: list<array<string, mixed>>, 2: list<array<string, mixed>>, 3: list<array<string, mixed>>}
  */
 function images(array $template, array $input): array
 {
     $assets = []; $bindings = []; $media = [];
-    $walk = function (array &$node) use (&$walk, &$assets, &$bindings, &$media, $template, $input): void {
-        if (($node['type'] ?? '') === 'image' && ($node['src'] ?? '') !== '') {
-            $raster = $input['raster_sources'][hash('sha256', $node['src'])] ?? $node['src'];
-            if (!preg_match('#^data:(image/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$#D', $raster, $match)) throw new RuntimeException('Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review.');
-            $bytes = base64_decode($match[2], true);
-            if ($bytes === false) throw new RuntimeException('Invalid artwork encoding');
-            $info = getimagesizefromstring($bytes); $hash = hash('sha256', $bytes); $id = 'image-' . substr($hash, 0, 24);
-            $rights = $input['image_rights'][$hash] ?? null;
-            if (!$info || $info['mime'] !== $match[1] || !is_array($rights) || ($rights['redistribution'] ?? false) !== true || empty($rights['source']) || empty($rights['reviewedBy'])
-                || !in_array($rights['kind'] ?? null, RIGHTS_KINDS, true) || (($rights['kind'] ?? null) === 'licensed' && empty($rights['licence']))) {
-                throw new RuntimeException('Record the image kind (original, ai-generated or licensed), source, redistribution rights and reviewer before export.');
-            }
-            $access = $rights['access'] ?? 'premium';
-            if ($template['tier'] === 'free' && $access !== 'free') throw new RuntimeException('A Free design cannot use a premium image.');
-            $assets[$id] = ['id' => $id, 'sha256' => $hash, 'mime' => $match[1], 'bytes' => strlen($bytes), 'width' => $info[0], 'height' => $info[1], 'access' => $access];
-            $media[$id] = ['id' => $id, 'base64' => $match[2], 'rights' => $rights];
-            $bindings[] = ['node_id' => $node['id'], 'asset_id' => $id];
-            $node['src'] = '';
+    $design = ['tree' => $template['tree'], 'tokens' => $template['tokens']];
+    foreach (DesignImages::slots($design) as $key => $slot) {
+        DesignImages::put($design, $slot['path'], $slot['background'] ? 'none' : '');
+        if ($slot['url'] === '') continue;
+        $raster = $input['raster_sources'][hash('sha256', $slot['url'])] ?? $slot['url'];
+        if (!preg_match('#^data:(image/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$#D', $raster, $match)) throw new RuntimeException('Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review.');
+        $bytes = base64_decode($match[2], true);
+        if ($bytes === false) throw new RuntimeException('Invalid artwork encoding');
+        $info = getimagesizefromstring($bytes); $hash = hash('sha256', $bytes); $id = 'image-' . substr($hash, 0, 24);
+        $rights = $input['image_rights'][$hash] ?? null;
+        if (!$info || $info['mime'] !== $match[1] || !is_array($rights) || ($rights['redistribution'] ?? false) !== true || empty($rights['source']) || empty($rights['reviewedBy'])
+            || !in_array($rights['kind'] ?? null, RIGHTS_KINDS, true) || (($rights['kind'] ?? null) === 'licensed' && empty($rights['licence']))) {
+            throw new RuntimeException('Record the image kind (original, ai-generated or licensed), source, redistribution rights and reviewer before export.');
         }
-        foreach (['children', 'start', 'end'] as $key) if (isset($node[$key])) foreach ($node[$key] as &$child) $walk($child);
-    };
-    foreach ($template['tree']['steps'] as &$step) $walk($step['content']);
-    unset($step);
-    return [$template, array_values($assets), $bindings, array_values($media)];
+        $access = $rights['access'] ?? 'premium';
+        if ($template['tier'] === 'free' && $access !== 'free') throw new RuntimeException('A Free design cannot use a premium image.');
+        $assets[$id] = ['id' => $id, 'sha256' => $hash, 'mime' => $match[1], 'bytes' => strlen($bytes), 'width' => $info[0], 'height' => $info[1], 'access' => $access];
+        $media[$id] = ['id' => $id, 'base64' => $match[2], 'rights' => $rights];
+        $bindings[] = ['slot' => $key, 'asset_id' => $id];
+    }
+    return [['tree' => $design['tree'], 'tokens' => $design['tokens']] + $template, array_values($assets), $bindings, array_values($media)];
 }
 
 if (($input['mode'] ?? '') === 'designs') {
@@ -137,6 +138,8 @@ if (($input['mode'] ?? '') === 'designs') {
             $validated = $validator->validate($unwrapped['pack']);
             $packs[$id] = $unwrapped['pack'];
             $facets = $validated['templates'][0]['facets'];
+            // The tree's picture slots are empty until a site installs it; a bound background is still a picture.
+            $facets['has_image'] = $facets['has_image'] || $bindings !== [];
             $output['designs'][] = [
                 'id' => $id, 'revision' => $request['revision'], 'tier' => $template['tier'], 'json' => $json, 'media' => $media,
                 'entry' => ['id' => $id, 'revision' => $request['revision'], 'name' => $template['name'], 'format' => $template['display_type'], 'tier' => $template['tier']]

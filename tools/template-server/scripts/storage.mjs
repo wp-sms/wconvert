@@ -104,7 +104,8 @@ export async function releaseClosure(id, read, { withPrivate = true } = {}) {
     if (premium) { await absent(key); if (!withPrivate) continue; }
     const design = parse(await load(premium ? 'private' : 'public', key, entry.sha256, entry.bytes), key);
     check(design?.schema === 3 && design.id === entry.id && design.revision === entry.revision && design.tier === entry.tier, `Design object differs from its entry: ${entry.id}`);
-    check(Array.isArray(design.assets) && design.assets.length <= 50, `Invalid image list: ${entry.id}`);
+    // VerifiedAssets::MAX_ASSETS: the plugin refuses a design with more.
+    check(Array.isArray(design.assets) && design.assets.length <= 16, `Invalid image list: ${entry.id}`);
     const assets = new Set(); let images = 0;
     for (const asset of design.assets) {
       const extension = EXTENSIONS[asset?.mime];
@@ -117,7 +118,7 @@ export async function releaseClosure(id, read, { withPrivate = true } = {}) {
       else { await absent(image); await load('private', image, asset.sha256, asset.bytes); }
     }
     check(images <= 20971520, `Images exceed 20 MiB: ${entry.id}`);
-    check(Array.isArray(design.image_bindings ?? []) && (design.image_bindings ?? []).every(binding => assets.has(binding?.asset_id)), `An image binding names an unlisted image: ${entry.id}`);
+    check(Array.isArray(design.image_bindings ?? []) && (design.image_bindings ?? []).every(binding => typeof binding?.slot === 'string' && assets.has(binding.asset_id)), `An image binding names an unlisted image: ${entry.id}`);
   }
   for (const entry of setups.values()) {
     const design = designs.get(entry.design?.id);
