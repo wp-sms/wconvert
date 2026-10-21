@@ -1436,6 +1436,10 @@ that Role cannot. See [ADR 0076](docs/adr/0076-an-enquiry-captures-one-optional-
 `code_value` also carries optional copy-button and outcome messages, while old
 string bindings still fill the code itself. These words use the existing stable
 leaf identity and translation path.
+`countdown_units` carries a boxed countdown's four unit words — days, hours,
+minutes, seconds — as one Role, so a Playbook translates them together; with
+none, the renderer's English stands. See
+[ADR 0159](docs/adr/0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md).
 
 > **~~One Role exists~~ Two Roles exist that a [[Playbook]] can never fill.**
 > `code_value` holds the static shared discount code, and a coupon code names a

@@ -1,6 +1,6 @@
 # Pro replaces the loader rather than augmenting it
 
-**Shared control amendment — [ADR 0155](0155-visitor-controls-use-font-independent-geometry.md):** Free now caps at 14,896 B and Pro at 27,872 B gzip-9. Earlier byte measurements below are historical.
+**Shared control amendment — [ADR 0155](0155-visitor-controls-use-font-independent-geometry.md):** Free now caps at 14,896 B and Pro at 27,872 B gzip-9 (*amended by [ADR 0158](0158-a-close-control-takes-room-only-beside-what-it-covers.md): Pro 28,160 B; by [ADR 0159](0159-designs-style-the-close-control-error-and-countdown-from-closed-tokens.md): Free 17,456 B, Pro 30,720 B*). Earlier byte measurements below are historical.
 
 
 **Current loader byte limits — [ADR 0146](0146-pro-is-one-tier.md):** Pro is one tier. Free caps at 14,720 B and Pro at 27,712 B gzip-9 (the old Elite figure), measured on Node 22. *Amended by [ADR 0152](0152-a-coupon-link-applies-a-code-a-published-campaign-shows.md): Free caps at 14,768 B.* The per-rung figures below are historical.

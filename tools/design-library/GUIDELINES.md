@@ -70,6 +70,13 @@ and the words beside them are the merchant's to make true.
 Competitor teardowns put this exact failure on the avoid list:
 *"false urgency, raw visitor counts or unverified purchase claims"*.
 
+A countdown is `line` by default (`2d 14:05:09`), which suits a bar or a
+sentence. Set `"layout": "boxes"` where the clock is the design's centre — a
+final-hours sale — give the node `"role": "countdown_units"`, and give the four
+words through the Playbook as that Role (`days_label`, `hours_label`,
+`minutes_label`, `seconds_label`, each `__()`), since a Template carries no copy. The boxes take `input-bg`, `border` and
+`radius`, so they match the form beside them; the days box hides at zero.
+
 ### 1.5 The success step is a screen
 
 A capture journey ends with an acknowledgement, and **that is a real screen a
@@ -178,6 +185,24 @@ where the consent wording lives.
 Check field labels, typed text and browser placeholder text separately. A label
 may sit on a dark panel while its input has a light background. Solid-colour
 measurements do not establish contrast over a later photograph or gradient.
+
+**The × and the error box are the design's to colour, never to remove**
+(ADR 0159). Leave them at their defaults on a light card. Otherwise:
+
+- **Dark or flat-colour card:** a bare ×, `"close-bg": "transparent"`,
+  `"close-border": "transparent"`, `"close-fg": "fg"`. Pointing at `fg` rather
+  than a hex is what lets the × follow a theme the merchant applies later.
+- **Over a photograph:** a soft disc, `"close-bg": "rgba(0, 0, 0, 0.45)"`,
+  `"close-border": "transparent"`, `"close-fg": "#ffffff"`. A bare × over a
+  photograph vanishes on the next photograph the merchant swaps in.
+- **The corner follows the design:** `close-radius` `0.375rem` or `0` beside
+  square buttons; round otherwise.
+- **The error box on a dark card:** a light red on a slightly lighter ground,
+  for example `"error-fg": "#fca5a5"`, `"error-bg": "rgba(255, 255, 255, 0.06)"`.
+  The invalid field's ring follows `error-fg`.
+
+The catalogue gate measures the × at 3:1 against the pixels inside its button
+and the error at 4.5:1, and blocks a design below either.
 
 ### 1.9 The fine print is load-bearing
 
