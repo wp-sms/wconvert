@@ -18,6 +18,16 @@ return [
         ],
         'headline' => __('30% off everything
 ends in', 'wconvert'),
+        'countdown_units' => [
+            /* translators: the word under the days box of a countdown. */
+            'days_label' => __('Days', 'wconvert'),
+            /* translators: the word under the hours box of a countdown. */
+            'hours_label' => __('Hours', 'wconvert'),
+            /* translators: the word under the minutes box of a countdown; short, it sits under two digits. */
+            'minutes_label' => __('Mins', 'wconvert'),
+            /* translators: the word under the seconds box of a countdown; short, it sits under two digits. */
+            'seconds_label' => __('Secs', 'wconvert'),
+        ],
         'body' => __('Leave your email and your code
 appears on the next screen.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),

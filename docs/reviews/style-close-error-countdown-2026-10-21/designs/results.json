@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "site": "disposable local WordPress (Playground, Pro), loaders rebuilt from this branch (loader.js?ver checked)",
+  "note": "Each changed design published (lookbook and last-call through their setups) and walked at 320 and 1280: computed close-control colours and size, countdown slots read twice a second apart, a server refusal of the address drawn, close clicked.",
+  "designs": [
+    {
+      "id": "changelog",
+      "width": 320,
+      "close": {
+        "fg": "rgb(232, 228, 218)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 163, 155)",
+        "bg": "rgb(42, 28, 29)",
+        "ring": "rgb(255, 163, 155) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "changelog",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(232, 228, 218)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 163, 155)",
+        "bg": "rgb(42, 28, 29)",
+        "ring": "rgb(255, 163, 155) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ticker-line",
+      "width": 320,
+      "close": {
+        "fg": "rgb(228, 237, 247)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 168, 160)",
+        "bg": "rgb(42, 29, 36)",
+        "ring": "rgb(255, 168, 160) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ticker-line",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(228, 237, 247)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 168, 160)",
+        "bg": "rgb(42, 29, 36)",
+        "ring": "rgb(255, 168, 160) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "deadline-panel",
+      "width": 320,
+      "close": {
+        "fg": "rgb(250, 250, 249)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [
+        "2d 14:04:32"
+      ],
+      "ticked": true,
+      "error": null,
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "deadline-panel",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(250, 250, 249)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          32,
+          32
+        ],
+        "inView": true
+      },
+      "units": [
+        "2d 14:04:29"
+      ],
+      "ticked": true,
+      "error": null,
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "lookbook",
+      "width": 320,
+      "close": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0.45)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          44,
+          44
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(153, 27, 27)",
+        "bg": "rgb(254, 242, 242)",
+        "ring": "rgb(185, 28, 28) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "lookbook",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgba(0, 0, 0, 0.45)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "50%",
+        "size": [
+          44,
+          44
+        ],
+        "inView": true
+      },
+      "units": [],
+      "ticked": null,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(153, 27, 27)",
+        "bg": "rgb(254, 242, 242)",
+        "ring": "rgb(185, 28, 28) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "last-call",
+      "width": 320,
+      "close": {
+        "fg": "rgb(243, 238, 230)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          44,
+          44
+        ],
+        "inView": true
+      },
+      "units": [
+        "2",
+        "14",
+        "04",
+        "20"
+      ],
+      "ticked": true,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 163, 155)",
+        "bg": "rgb(42, 28, 29)",
+        "ring": "rgb(255, 163, 155) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "last-call",
+      "width": 1280,
+      "close": {
+        "fg": "rgb(243, 238, 230)",
+        "bg": "rgba(0, 0, 0, 0)",
+        "border": "rgba(0, 0, 0, 0)",
+        "radius": "0px",
+        "size": [
+          44,
+          44
+        ],
+        "inView": true
+      },
+      "units": [
+        "2",
+        "14",
+        "04",
+        "17"
+      ],
+      "ticked": true,
+      "error": {
+        "text": "Enter a valid email address.",
+        "fg": "rgb(255, 163, 155)",
+        "bg": "rgb(42, 28, 29)",
+        "ring": "rgb(255, 163, 155) 0px 0px 0px 2px inset"
+      },
+      "closed": true,
+      "errors": []
+    }
+  ]
+}

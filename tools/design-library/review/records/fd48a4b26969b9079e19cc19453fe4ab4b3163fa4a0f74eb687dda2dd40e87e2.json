@@ -1,0 +1,143 @@
+{
+  "id": "collection-service-enquiries",
+  "revision": "a632e8772ff1aa9b513c2d65ee5c2d1a11bf82d1c836bb1f281cd9b16240b3b8",
+  "base_id": "f3fa2d457005696711fc82feab4b39edb7891951112f84c1b22ad8bfb8328800",
+  "decision": "approved",
+  "reviewer": "Renderer carry (ADR 0156)",
+  "note": "Every setup in it pixel-identical under the new renderer and carried by templates:visual-diff; items, order and words unchanged; only setup revisions moved. Not a new review.",
+  "at": "2026-10-21T07:59:17Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections.md",
+          "sha256": "d86cf90b04a0c58daf89a60851d0ee5c09cc2f00bb745e6d02178562b7f63ae6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collection-revisions.json",
+          "sha256": "66877cf6c8abaa260094425e80c202da4de695e6d033ddbbf5ac68424707e1fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-free.png",
+          "sha256": "7ab46ed95eba031f1fec848d3dfde87cbd865a0dfba28f4a37b8bd62a6cc0551"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-pro.png",
+          "sha256": "f83c37015163283573d5da70877758e1601e78abb7d2a307b045b3bd9377409e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-free.json",
+          "sha256": "cd75b97af47b3cf1da2daac1fad8c85aa39b5a28a32e4d260d4a70b256279fd8"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-pro.json",
+          "sha256": "6a1fbaebb906a9965ddda6be6339311b11e19e4acd7a8ca91cc76c698804eeb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/collections-carry.md",
+          "sha256": "74838d57a2255dec3e580f90acb415247f7560c45937b3fe68e4cfdd48433a7c"
+        },
+        {
+          "path": "docs/reviews/visual-diff-2026-10-21/collections-carry-main.md",
+          "sha256": "d3b2b3885e2cbb7269ee5c9886519bca38bd6b34846276174c25a286f62b01d5"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections.md",
+          "sha256": "d86cf90b04a0c58daf89a60851d0ee5c09cc2f00bb745e6d02178562b7f63ae6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collection-revisions.json",
+          "sha256": "66877cf6c8abaa260094425e80c202da4de695e6d033ddbbf5ac68424707e1fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-free.png",
+          "sha256": "7ab46ed95eba031f1fec848d3dfde87cbd865a0dfba28f4a37b8bd62a6cc0551"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-pro.png",
+          "sha256": "f83c37015163283573d5da70877758e1601e78abb7d2a307b045b3bd9377409e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-free.json",
+          "sha256": "cd75b97af47b3cf1da2daac1fad8c85aa39b5a28a32e4d260d4a70b256279fd8"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-pro.json",
+          "sha256": "6a1fbaebb906a9965ddda6be6339311b11e19e4acd7a8ca91cc76c698804eeb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections.md",
+          "sha256": "d86cf90b04a0c58daf89a60851d0ee5c09cc2f00bb745e6d02178562b7f63ae6"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collection-revisions.json",
+          "sha256": "66877cf6c8abaa260094425e80c202da4de695e6d033ddbbf5ac68424707e1fb"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/README.md",
+          "sha256": "a3f080374e42769acd79f87c17aa1e0e3f0bacd0bf585b5147c31d97076fcdb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-free.png",
+          "sha256": "7ab46ed95eba031f1fec848d3dfde87cbd865a0dfba28f4a37b8bd62a6cc0551"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/collections-pro.png",
+          "sha256": "f83c37015163283573d5da70877758e1601e78abb7d2a307b045b3bd9377409e"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-free.json",
+          "sha256": "cd75b97af47b3cf1da2daac1fad8c85aa39b5a28a32e4d260d4a70b256279fd8"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/discovery-pro.json",
+          "sha256": "6a1fbaebb906a9965ddda6be6339311b11e19e4acd7a8ca91cc76c698804eeb3"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/native/results.json",
+          "sha256": "f3f738860a223a3ad9ff8cb108ebbfcc7eb4dccc8101beb9a196b3e79bfc8e88"
+        },
+        {
+          "path": "docs/reviews/pr300-approvals-2026-10-20/commerce/results.json",
+          "sha256": "9487e0f5236e4aba0b8913e723ddc46d46be07ab8221e4a8d81312d36f0f0e99"
+        }
+      ]
+    }
+  },
+  "record_id": "fd48a4b26969b9079e19cc19453fe4ab4b3163fa4a0f74eb687dda2dd40e87e2"
+}

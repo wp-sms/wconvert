@@ -23,7 +23,13 @@
     "gap": "2rem",
     "width": "36rem",
     "align": "center",
-    "shadow": "none"
+    "shadow": "none",
+    "close-fg": "fg",
+    "close-bg": "transparent",
+    "close-border": "transparent",
+    "close-radius": "0",
+    "error-fg": "#ffa39b",
+    "error-bg": "#2a1c1d"
   },
   "tree": {
     "v": 2,
@@ -64,17 +70,19 @@
               "type": "stack",
               "tokens": {
                 "gap": "0",
-                "text-size": "7rem",
+                "text-size": "2.5rem",
                 "font": "Impact, Haettenschweiler, 'Arial Narrow Bold', 'Franklin Gothic Bold', sans-serif",
                 "leading": "1"
               },
               "narrow": {
-                "text-size": "3.75rem"
+                "text-size": "1.5rem"
               },
               "children": [
                 {
                   "type": "countdown",
-                  "id": "n3"
+                  "id": "n3",
+                  "layout": "boxes",
+                  "role": "countdown_units"
                 }
               ]
             },

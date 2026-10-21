@@ -23,7 +23,10 @@
     "gap": "0",
     "width": "72rem",
     "align": "start",
-    "shadow": "none"
+    "shadow": "none",
+    "close-fg": "#ffffff",
+    "close-bg": "rgba(0, 0, 0, 0.45)",
+    "close-border": "transparent"
   },
   "tree": {
     "v": 2,

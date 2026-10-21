@@ -1,0 +1,55 @@
+{
+  "id": "early-access-launch",
+  "revision": "1fa99887336402019eab2f5121b78ab0bbd0173ab074d1134c83f106774d658c",
+  "base_id": "33b02240143d51be217001c6221ecdf5637c7bb8af1b277b58e1d3731344ee5c",
+  "decision": "approved",
+  "reviewer": "Claude (agent review)",
+  "note": "Soft dark disc × reads over the photograph on a phone and on the cream panel at desktop.",
+  "at": "2026-10-21T09:00:00Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-320.png",
+          "sha256": "afd40bdbe08cf505deec4c44eb09c8c6626034b4182ac4a48134a97d682746bc"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/early-access-launch-1440.png",
+          "sha256": "d5cd094f5fa3afc0514d245ca7f17c30b2c909b46b9537c85e6548d0103a5cb9"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+          "sha256": "e7c08ae50a19a4e33968879273468ff16ee71a16b3945ae3cffbfa1bbcb1135b"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    }
+  },
+  "record_id": "b0f1110947d008aed45f42b4581ff677f184f7a913f014d101bf0f3eae9881de"
+}

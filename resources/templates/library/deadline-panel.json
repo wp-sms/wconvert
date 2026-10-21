@@ -20,7 +20,11 @@
     "align": "center",
     "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
     "backdrop": "rgba(0, 0, 0, 0.72)",
-    "text-size": "1rem"
+    "text-size": "1rem",
+    "close-fg": "fg",
+    "close-bg": "transparent",
+    "close-border": "transparent",
+    "close-radius": "0"
   },
   "tree": {
     "steps": [
