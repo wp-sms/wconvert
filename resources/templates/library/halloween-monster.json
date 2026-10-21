@@ -90,14 +90,6 @@
               "hidden": true
             },
             {
-              "type": "button",
-              "id": "n13",
-              "label": "Reveal my treat",
-              "role": "cta_label",
-              "action": "submit",
-              "submission": "primary"
-            },
-            {
               "type": "text",
               "id": "n20",
               "role": "fine_print",
@@ -109,6 +101,14 @@
               "tokens": {
                 "text-size": ".875rem"
               }
+            },
+            {
+              "type": "button",
+              "id": "n13",
+              "label": "Reveal my treat",
+              "role": "cta_label",
+              "action": "submit",
+              "submission": "primary"
             }
           ],
           "tokens": {
@@ -152,19 +152,19 @@
               "role": "success_body"
             },
             {
+              "type": "text",
+              "id": "n18",
+              "text": "First order only. Selected items.",
+              "role": "fine_print",
+              "size": "s"
+            },
+            {
               "type": "code",
               "id": "n17",
               "text": "TREAT25",
               "role": "code_value",
               "copy": false,
               "copy_label": "Copy code"
-            },
-            {
-              "type": "text",
-              "id": "n18",
-              "text": "First order only. Selected items.",
-              "role": "fine_print",
-              "size": "s"
             }
           ],
           "tokens": {

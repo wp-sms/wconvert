@@ -1,0 +1,47 @@
+{
+  "id": "halloween-treat-signup",
+  "revision": "87cda1efe6ec2774aadfe37e4e288cbbecdcd3a2066f42979bb454fa7a47e483",
+  "base_id": "d7edb4ea1273f7398a152d02099233a968752e89f8c911b2448ad5af0be15790",
+  "decision": "approved",
+  "reviewer": "Claude",
+  "note": "Fine print moved one place up on both screens so it no longer sits over the cream lower teeth (contrast 1.15:1 and 1.18:1 with the picture bound; now passes). Padding, words and artwork unchanged. The code box now meets the teeth at its lower corners, with the code on dark. See review.md.",
+  "at": "2026-10-21T17:21:25.562Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/halloween-treat-signup-320.png",
+          "sha256": "de35a2797bd060f8206ea86fc02c2b1396c597a9e99208c2aa268975266019a6"
+        },
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/halloween-treat-signup-1440.png",
+          "sha256": "8f060f62f4eb59eb6a1a130cc82c434044e34ce902fe459c1dd97753d7036835"
+        },
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/review.md",
+          "sha256": "f5c33606941725460619fa279739a733bbb864b57ac7f076ffe8b03bbe540558"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/results.json",
+          "sha256": "e8925828f590eeda4cda71a621c399bfad8cd0e54b3a764ca99d445f62d41897"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/halloween-monster-fine-print-2026-10-21/results.json",
+          "sha256": "e8925828f590eeda4cda71a621c399bfad8cd0e54b3a764ca99d445f62d41897"
+        }
+      ]
+    }
+  },
+  "record_id": "1b47805e7536d019968c0be81a3531463e568b11e09e8052ffa1c9589d686b9d"
+}
