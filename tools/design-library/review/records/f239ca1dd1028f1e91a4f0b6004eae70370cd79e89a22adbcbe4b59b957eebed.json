@@ -1,0 +1,47 @@
+{
+  "id": "space-fit-finder",
+  "revision": "3996a8367817287355bf8aed2031c44893e87e3b892d6095ded80af973ed8b3b",
+  "base_id": "0660820437da43a0fe1bda16a45f32dfa590f5fe8d7505e349f9561b829104b9",
+  "decision": "revise",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "failed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/space-fit-finder-320.png",
+          "sha256": "d3d285fa0cda1b6cc270f4fb77e20e1da183087a7535dae2094825adb4abb1af"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/space-fit-finder-1440.png",
+          "sha256": "8edf7bb5645bd0e0f7c18ba8ae0486a2da81423ee4d1449f251107cb9b50d95d"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "f239ca1dd1028f1e91a4f0b6004eae70370cd79e89a22adbcbe4b59b957eebed"
+}

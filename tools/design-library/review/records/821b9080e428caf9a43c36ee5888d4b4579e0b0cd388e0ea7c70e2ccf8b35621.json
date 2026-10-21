@@ -1,0 +1,55 @@
+{
+  "id": "final-hours-sale",
+  "revision": "fea61aad2b41e329c7d35eada5431c67b96c38ee0fcaac0eef3da2a01cabd02d",
+  "base_id": "65afe31bef40e96ff9135b6478938140a085161db37d8d9c4a27350e83b6e23c",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/final-hours-sale-320.png",
+          "sha256": "2dfe3bfd98ee68a3e2ea0ff9f28e6f494418247d7fa9de9cfc9c66d76d50fe73"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/final-hours-sale-1440.png",
+          "sha256": "8a184c0951ade314ded027ebd3293118cd57f310d52b906d4c0dfce59e3d4a1b"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/review.md",
+          "sha256": "e7c08ae50a19a4e33968879273468ff16ee71a16b3945ae3cffbfa1bbcb1135b"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/results.json",
+          "sha256": "b6bd565e28976921f8f73e46ecab6e7f021bda9c004fc0d7fea33edf35743771"
+        },
+        {
+          "path": "docs/reviews/style-close-error-countdown-2026-10-21/designs/results.json",
+          "sha256": "c56e8792fa0161e92bb86016923dfeff54e672e577b24e98ee52560d4e84576d"
+        }
+      ]
+    }
+  },
+  "record_id": "821b9080e428caf9a43c36ee5888d4b4579e0b0cd388e0ea7c70e2ccf8b35621"
+}

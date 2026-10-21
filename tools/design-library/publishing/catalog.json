@@ -193,6 +193,27 @@
       "setup": "writing-session-details",
       "reason": "Design session-card: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
     }
+,
+    {
+      "setup": "halloween-midnight-offer",
+      "reason": "Design halloween-engraved: Its picture is a screen background, and catalogue image bindings reach image elements only."
+    },
+    {
+      "setup": "halloween-treat-signup",
+      "reason": "Design halloween-monster: Its picture is a screen background, and catalogue image bindings reach image elements only."
+    },
+    {
+      "setup": "halloween-after-dark-offer",
+      "reason": "Design halloween-forest: Its picture is a screen background, and catalogue image bindings reach image elements only."
+    },
+    {
+      "setup": "halloween-midnight-flight-offer",
+      "reason": "Design halloween-bats: Its picture is a screen background, and catalogue image bindings reach image elements only."
+    },
+    {
+      "setup": "halloween-sale-countdown",
+      "reason": "Design halloween-countdown: Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review."
+    }
   ],
   "designs": [
     "big-number",
@@ -210,7 +231,8 @@
     "explain-the-service",
     "sale-planning",
     "launch-a-collection",
-    "black-friday-2026"
+    "black-friday-2026",
+    "halloween-2026"
   ],
   "withdrawn": [],
   "image_rights": {

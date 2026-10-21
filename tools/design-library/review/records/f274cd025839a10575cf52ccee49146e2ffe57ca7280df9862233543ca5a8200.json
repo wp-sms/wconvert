@@ -1,0 +1,47 @@
+{
+  "id": "project-planning-guide",
+  "revision": "9e4b1225a51bbd9e51c947312b59b98dd35016cdc0d659bfb236e14f7b430814",
+  "base_id": "e2a5e158389384c6678ce34fc2a2fd67d43b0ed0c3106467763c4e435b89ef09",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-planning-guide-320.png",
+          "sha256": "ba243d7cbb85cdbd756862874c0aa3cedc759fd5e1b5d81021112047f800ad4b"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/project-planning-guide-1440.png",
+          "sha256": "687e763f91557b5ca560286182fdab3d1f5e92350498bf874760e6dac2e0367a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "f274cd025839a10575cf52ccee49146e2ffe57ca7280df9862233543ca5a8200"
+}

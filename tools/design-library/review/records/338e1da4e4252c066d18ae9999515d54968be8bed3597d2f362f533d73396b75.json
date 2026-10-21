@@ -1,0 +1,47 @@
+{
+  "id": "material-comparison",
+  "revision": "e989e2894b0254b2a6d755b77d7d5a9b71f0427b3595228ed3f87804f8833e8d",
+  "base_id": "48644c69b132ca1edd9310966d719e40fc8705acda2b008cb3614f261abf76ab",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/material-comparison-320.png",
+          "sha256": "993704fd3a1a17235765074bbcf9bb3c208399d984d372f88962a3ad38ec4f5f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/material-comparison-1440.png",
+          "sha256": "f7a04a81cb306ab12a64ac76f738c6875334fa9fe6ca51ba665c9998ea321ce6"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "338e1da4e4252c066d18ae9999515d54968be8bed3597d2f362f533d73396b75"
+}

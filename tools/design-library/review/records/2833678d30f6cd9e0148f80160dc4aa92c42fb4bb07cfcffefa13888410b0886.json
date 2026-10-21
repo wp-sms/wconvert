@@ -1,0 +1,47 @@
+{
+  "id": "furniture-fit-guide",
+  "revision": "4092c99a96a27ce8f5268d1a883418895978fbcbc5ddd4c0fba2fe1ce6e3228f",
+  "base_id": "9c3d125521b639d82de6805840ed3e87b2a4675488f0c3b799e532621fe606e2",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/furniture-fit-guide-320.png",
+          "sha256": "f94f03c1cc76ae592679bd90686afb3f97739de15a87967d9a07da0f43b68edf"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/furniture-fit-guide-1440.png",
+          "sha256": "a198d8c65ec633384132716607304dfc4959d4f9bed2c9b51e33a17a0bcc9b4f"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "2833678d30f6cd9e0148f80160dc4aa92c42fb4bb07cfcffefa13888410b0886"
+}

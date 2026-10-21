@@ -1,0 +1,47 @@
+{
+  "id": "bakery-first-loaf",
+  "revision": "6729cf074899f8e39fbe3d76f6bf4c256b87f517f56440ba196acfb393bdb337",
+  "base_id": "7d5b6e2063642a1ee789a71bd9e9866c9ae66aee4e1ee0bc968a45c92254ef8b",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at 93a9b9e1, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T16:08:14Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-320.png",
+          "sha256": "e18d53207810948b2784751cd85e5b4d371f34cc7ed30923a3c4cc56f315e1f3"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/bakery-first-loaf-1440.png",
+          "sha256": "176a655ad23cbd61d7e3e3d92e779af49605b75fc070eff679312a759591a9f7"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "52b020fd1a2d1c1cab7f716a8c8b869d79e4c84f50db2fee3f91520c4d96107e"
+}
