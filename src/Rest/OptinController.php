@@ -34,6 +34,7 @@ use WConvert\Targeting\Targeting;
 use WConvert\Template\ConvertingAct;
 use WConvert\Template\TemplateFacets;
 use WConvert\Template\TemplateLibrary;
+use WConvert\Template\TemplateMedia;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Template\TemplateTree;
 use WP_Error;
@@ -73,6 +74,7 @@ final class OptinController implements RestController
         private readonly DestinationStore $destinations,
         private readonly DestinationRegistry $destinationTypes,
         private readonly OccasionStore $occasions,
+        private readonly TemplateMedia $media = new TemplateMedia(),
     ) {
         $this->readiness = new PublishReadiness($optins, $vocabulary, $destinations, $destinationTypes);
     }
@@ -419,6 +421,9 @@ final class OptinController implements RestController
             return $refusal;
         }
 
+        $normalized = $this->adoptTemplateMedia($normalized);
+        if ($normalized instanceof WP_Error) return $normalized;
+
         $optin = $this->optins->create((string) $request->get_param('name'), $goal->value, $normalized);
 
         return new WP_REST_Response($optin->toArray(), 201);
@@ -529,6 +534,12 @@ final class OptinController implements RestController
             }
         }
 
+        if ($stored === null) return self::notFound();
+        if ($normalized !== null) {
+            $normalized = $this->adoptTemplateMedia($normalized);
+            if ($normalized instanceof WP_Error) return $normalized;
+        }
+
         $optin = $this->optins->saveDraft(
             $id,
             self::optionalString($request->get_param('name')),
@@ -543,6 +554,15 @@ final class OptinController implements RestController
         $this->recordTheFirstOverride($stored, $optin);
 
         return new WP_REST_Response($optin->toArray());
+    }
+
+    /** @param array<string, mixed> $config
+     * @return array<string, mixed>|WP_Error */
+    private function adoptTemplateMedia(array $config): array|WP_Error
+    {
+        $id = self::optionalString($config['template_id'] ?? null);
+        $entry = $id !== null ? $this->library->find($id) : null;
+        return $this->media->adopt($config, $entry['name'] ?? __('Template artwork', 'wconvert'));
     }
 
     /**

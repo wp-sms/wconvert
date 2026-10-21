@@ -473,7 +473,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(MilestoneStore::class),
                 $c->resolve(DestinationStore::class),
                 $c->resolve(DestinationRegistry::class),
-                $c->resolve(\WConvert\Discovery\OccasionStore::class)
+                $c->resolve(\WConvert\Discovery\OccasionStore::class),
+                \WConvert\Template\TemplateMedia::forSite()
             )
         );
 

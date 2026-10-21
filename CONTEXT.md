@@ -1178,6 +1178,11 @@ or a setup is an explicit action; installed copies are local, keep working
 offline, and never change an existing Optin's snapshot. Some Free designs exist
 only here: authored in the repository but bundled in neither ZIP, so a Free
 site offers them to install ([ADR 0157](docs/adr/0157-free-designs-may-be-served-without-being-bundled.md)).
+Bundled and downloaded raster artwork is added to WordPress Media Library when
+a campaign is created or its design is saved, with existing copies reused.
+Browsing, previewing and installing alone create no media items. Campaigns keep
+attachment URLs; decorations remain authored template data. See
+[ADR 0161](docs/adr/0161-used-template-artwork-belongs-in-media-library.md).
 Not to be confused with a [[Collection]], which is a list, or a former
 *template pack*, which no longer exists.
 

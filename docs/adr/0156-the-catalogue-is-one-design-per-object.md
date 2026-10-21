@@ -81,6 +81,10 @@ the installed plan, journey and commerce support, the plugin version and the
 vocabulary, so deactivating Pro is a fresh validation. Cleanup keeps every
 revision any row's `config` or `published_config` names (drafts, trashed, A/B
 variants) and every setup pin; images are never deleted. No table or column.
+*Amended by [0161](0161-used-template-artwork-belongs-in-media-library.md):*
+preview/install keep using this verified cache; creating or saving a campaign
+copies the artwork actually used into Media Library, reuses existing copies,
+and saves attachment URLs in that draft.
 
 **8. Fetching.** The library is on by default and asks first: a one-time card
 in the picker, kept as an option and a Settings toggle, plus the
