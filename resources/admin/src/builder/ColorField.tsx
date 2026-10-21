@@ -41,6 +41,8 @@ export function ColorField({
   label,
   fallback,
   value,
+  paint = (shown: string) => shown,
+  clearable = false,
   open,
   onOpenChange,
   onChange,
@@ -48,6 +50,10 @@ export function ColorField({
   label: string;
   fallback: string;
   value: string;
+  /** What the swatch and picker show for a value: a design-colour reference, resolved. */
+  paint?: (shown: string) => string;
+  /** Offers None, which writes `transparent` (ADR 0159). */
+  clearable?: boolean;
   /**
    * **Controlled, and the panel is what holds it** — so the effect in
    * {@see Tokens} can close it when `<Activity>` hides the tab. An uncontrolled
@@ -61,7 +67,9 @@ export function ColorField({
   // Empty means "whatever the design says", so the swatch and the picker both
   // open on the design's own value while the STORED value stays empty.
   const shown = value === '' ? fallback : value;
-  const pickerColor = rgbaForPicker(shown);
+  const painted = paint(shown);
+  const pickerColor = rgbaForPicker(painted);
+  const clear = pickerColor?.endsWith(', 0)') === true;
   // The plain view names the color; the hex is Advanced's (ADR 0135).
   const advanced = useAdvanced();
   const designColors = useContext(DesignColors).filter((color, at, all) => all.indexOf(color) === at);
@@ -79,11 +87,11 @@ export function ColorField({
           <span
             aria-hidden="true"
             className="wconvert-swatch__chip"
-            style={{ '--wconvert-chip': shown } as CSSProperties}
+            style={{ '--wconvert-chip': painted } as CSSProperties}
           />
           <span className="wconvert-swatch__text">
             <span className="wconvert-swatch__name">{label}</span>
-            <span className="wconvert-swatch__value" data-code={advanced || undefined}>{advanced ? shown : colorName(shown)}</span>
+            <span className="wconvert-swatch__value" data-code={advanced || undefined}>{advanced ? shown : clear ? __('None', 'wconvert') : colorName(painted)}</span>
           </span>
           <span className="sr-only">
             {sprintf(
@@ -102,9 +110,10 @@ export function ColorField({
           <strong>{label}</strong>
           {designColors.length > 0 && <div className="wconvert-color-picker__design" role="group" aria-label={__('This design’s colors', 'wconvert')}>
             <span aria-hidden="true">{__('This design’s colors', 'wconvert')}</span>
-            <div>{designColors.map(color => <button key={color} type="button" className="wconvert-color-picker__dot" aria-pressed={color.toLowerCase() === shown.toLowerCase()}
+            <div>{designColors.map(color => <button key={color} type="button" className="wconvert-color-picker__dot" aria-pressed={color.toLowerCase() === painted.toLowerCase()}
               title={colorName(color)} aria-label={colorName(color)} style={{ '--wconvert-chip': color } as CSSProperties} onClick={() => onChange(color)} />)}</div>
           </div>}
+          {clearable && <button type="button" className="wconvert-panel-link" aria-pressed={clear} onClick={() => onChange('transparent')}>{__('None', 'wconvert')}</button>}
           {pickerColor !== null ? <RgbaStringColorPicker color={pickerColor} onChange={onChange} />
             : <p>{advanced ? __('Use a hex or RGB color to get the picker.', 'wconvert') : cssOnlyNote()}</p>}
 

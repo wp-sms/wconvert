@@ -128,3 +128,17 @@ it('reports an impression once shown, not for a missing design or unavailable di
   expect(document.documentElement.style.overflow).toBe('');
   expect(document.querySelectorAll('dialog')).toHaveLength(1);
 });
+
+it('carries the design close colours to the control it moves outside the root (ADR 0159)', () => {
+  const styled = { ...template, tokens: { ...template.tokens, fg: '#f3eee6', 'close-fg': 'fg', 'close-bg': 'transparent', 'close-radius': '0' } } as Template;
+  const shown = mountFullscreen({ template: styled });
+  shown.show();
+  const close = shadow(shown.root).querySelector<HTMLButtonElement>('.wc-close')!;
+  expect(close.style.getPropertyValue('--wc-close-fg')).toBe('var(--wc-fg,#111827)');
+  expect(close.style.getPropertyValue('--wc-fg')).toBe('#f3eee6');
+  expect(close.style.getPropertyValue('--wc-close-bg')).toBe('transparent');
+  expect(close.style.getPropertyValue('--wc-close-radius')).toBe('0');
+  // Unset, the border keeps the fullscreen literal it always had.
+  expect(close.style.getPropertyValue('--wc-close-border')).toBe('#6b7280');
+  expect(close.style.color).toBe('');
+});

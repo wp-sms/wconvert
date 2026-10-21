@@ -276,12 +276,27 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
    * between a pure `render()` and a live clock — and it is here rather than in
    * a container because all three containers share this function and none of
    * them should have to know what a countdown is.
+   *
+   * A slot marked with a unit is one box of the `boxes` layout and takes its
+   * own part: `00` rather than nothing when there is no deadline, so a box is
+   * never empty, and the days box hidden at zero rather than reading
+   * "00 Days" for the last day of every sale (ADR 0159).
    */
   function paint(element: HTMLElement): void {
     const left = options.endsAt === undefined ? null : options.endsAt - Date.now();
+    const parts = partsOf(left ?? 0);
 
-    for (const slot of element.querySelectorAll(`.${COUNTDOWN_SLOT}`)) {
-      slot.textContent = left === null ? '' : remaining(left);
+    for (const slot of element.querySelectorAll<HTMLElement>(`.${COUNTDOWN_SLOT}`)) {
+      const unit = slot.dataset.unit as keyof Parts | undefined;
+
+      if (unit === undefined) {
+        slot.textContent = left === null ? '' : remaining(parts);
+      } else if (unit === 'd') {
+        slot.textContent = String(parts.d);
+        slot.parentElement!.hidden = parts.d === 0;
+      } else {
+        slot.textContent = pad(parts[unit]);
+      }
     }
   }
 
@@ -340,21 +355,30 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
  * saying nothing on the overwhelming majority of offers — and a bar has one
  * line to work with (its whole design constraint is staying under about 15% of
  * a phone's viewport).
+ */
+function remaining(parts: Parts): string {
+  return (parts.d > 0 ? `${parts.d}d ` : '') + [parts.h, parts.m, parts.s].map(pad).join(':');
+}
+
+interface Parts { readonly d: number; readonly h: number; readonly m: number; readonly s: number }
+
+/**
+ * The one calculation both layouts paint from. Days are not capped: a long
+ * sale runs to three digits.
  *
  * **It floors at zero rather than going negative.** A window that has shut
  * takes the Optin off the page entirely (ADR 0050), so a negative number is
  * only reachable on a page cached WHILE the window was open, where the honest
  * reading is that the offer is over.
  */
-function remaining(ms: number): string {
+function partsOf(ms: number): Parts {
   const total = Math.max(Math.floor(ms / 1000), 0);
-  const days = Math.floor(total / 86400);
-  const pad = (part: number): string => String(part).padStart(2, '0');
 
-  return (
-    (days > 0 ? `${days}d ` : '') +
-    [Math.floor(total / 3600) % 24, Math.floor(total / 60) % 60, total % 60].map(pad).join(':')
-  );
+  return { d: Math.floor(total / 86400), h: Math.floor(total / 3600) % 24, m: Math.floor(total / 60) % 60, s: total % 60 };
+}
+
+function pad(part: number): string {
+  return String(part).padStart(2, '0');
 }
 
 /** Shared modal lifecycle. Pro supplies its own geometry and step decoration. */

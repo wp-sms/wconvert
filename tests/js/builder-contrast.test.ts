@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { AA_NORMAL, contrastOf, luminanceOf, meetsAA, readability, readableOn } from '../../resources/admin/src/builder/contrast';
+import { AA_NORMAL, NON_TEXT, READABLE_PAIRS, contrastOf, groundOf, luminanceOf, meetsAA, readability, readableFix, readableOn, verdictOf } from '../../resources/admin/src/builder/contrast';
+import { resolvedToken } from '../../resources/admin/src/builder/panel';
 import { axesOf, measuresOf, rangeFor } from '../../resources/admin/src/builder/themes';
 
 /**
@@ -257,5 +258,59 @@ describe('readability', () => {
     expect(readableOn('#ffffff', ['#dddddd', '#18181b'])).toBe('#18181b');
     expect(readableOn('#ffffff', ['#dddddd', '#eeeeee'])).toBe('#000000');
     expect(readableOn('#0b1020', ['#111111'])).toBe('#ffffff');
+  });
+});
+
+/**
+ * The close × and the error message are drawn by the loader and coloured by
+ * the design (ADR 0159), so the merchant can make either hard to see. The ×
+ * is a shape and is held to 3:1 (WCAG 1.4.11); the error is words, at 4.5.
+ */
+describe('the chrome a design colours', () => {
+  const resolve = (tokens: Record<string, string>) => (name: string) => resolvedToken(tokens, name);
+  const pair = (fg: string) => READABLE_PAIRS.find(([ink]) => ink === fg)!;
+
+  it('measures the × at the non-text floor and the error at AA', () => {
+    expect(pair('close-fg')).toEqual(['close-fg', 'close-bg', NON_TEXT]);
+    expect(pair('error-fg')).toEqual(['error-fg', 'error-bg']);
+  });
+
+  it('passes both at the manifest defaults', () => {
+    expect(verdictOf(resolve({}), pair('close-fg')).readable).toBe(true);
+    expect(verdictOf(resolve({}), pair('error-fg')).readable).toBe(true);
+  });
+
+  it('holds a grey × to 3:1, not to 4.5', () => {
+    // #8a8a8a on white is 3.4:1: under AA for words, enough for a shape.
+    expect(verdictOf(resolve({ 'close-fg': '#8a8a8a' }), pair('close-fg'))).toMatchObject({ readable: true, said: 'Easy to see' });
+    expect(verdictOf(resolve({ 'close-fg': '#cccccc' }), pair('close-fg'))).toMatchObject({ readable: false, said: expect.stringContaining('Hard to see') });
+  });
+
+  it('reads a bare × against the design ground behind it', () => {
+    const tokens = { bg: '#0f172a', 'close-bg': 'transparent', 'close-fg': 'fg', fg: '#f8fafc' };
+
+    expect(groundOf(resolve(tokens), 'close-bg')).toBe('#0f172a');
+    expect(verdictOf(resolve(tokens), pair('close-fg')).readable).toBe(true);
+    // The same bare × on a design whose ink matches its ground has vanished.
+    expect(verdictOf(resolve({ ...tokens, fg: '#1e293b' }), pair('close-fg')).readable).toBe(false);
+  });
+
+  it.each(['transparent', '#0000', '#ffffff00', 'rgba(0, 0, 0, 0)', 'rgb(0 0 0 / 0)'])('treats %s as no ground of its own', (clear) => {
+    expect(groundOf(resolve({ bg: '#123456', 'error-bg': clear }), 'error-bg')).toBe('#123456');
+  });
+
+  it('keeps an opaque rgb ground that happens to end in 0', () => {
+    expect(groundOf(resolve({ 'error-bg': 'rgb(10, 20, 0)' }), 'error-bg')).toBe('rgb(10, 20, 0)');
+  });
+
+  it('follows a design colour reference, and survives a cycle', () => {
+    expect(resolvedToken({ 'close-fg': 'accent', accent: '#38bdf8' }, 'close-fg')).toBe('#38bdf8');
+    expect(resolvedToken({ fg: 'bg', bg: 'fg' }, 'fg')).toMatch(/^#/);
+  });
+
+  it('offers a Fix that reads on the ground actually behind a bare ×', () => {
+    const value = resolve({ bg: '#0f172a', fg: '#f8fafc', 'close-bg': 'transparent', 'close-fg': '#1e293b' });
+
+    expect(readableFix(value, 'close-bg')).toBe('#f8fafc');
   });
 });

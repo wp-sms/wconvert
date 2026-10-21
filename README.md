@@ -178,7 +178,7 @@ reaches for first.
 
 `npm run check:loader` and `npm run check:admin` are the **builds a pull
 request pays for**, and they earn it: every assertion is about build output. Free's and Pro's
-loader, gzip -9 on Node 22, hard-fail at 14,896 / 28,160 bytes for Free / Pro (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155; ADR 0158); and free's loader is scanned for
+loader, gzip -9 on Node 22, hard-fail at 17,456 / 30,720 bytes for Free / Pro (ADR 0139, amended; ADR 0146; ADR 0152; ADR 0155; ADR 0158; ADR 0159); and free's loader is scanned for
 every rule identifier the manifest calls premium. Free's *admin* bundle is
 never scanned for identifiers, because its Pro hints name Pro's rules on
 purpose. `check:admin` scans free's admin and inspector instead for Pro's admin

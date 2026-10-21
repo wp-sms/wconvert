@@ -30,8 +30,18 @@
 
 import { __ } from '@wordpress/i18n';
 
-/** The AA floor for body text, which is what every pair measured here is. */
+/** The AA floor for body text, which is what every text pair measured here is. */
 export const AA_NORMAL = 4.5;
+
+/**
+ * The floor for a control's own edge or glyph against its ground — WCAG 1.4.11,
+ * non-text contrast. The close × is the one pair measured against it: it is a
+ * shape, not words, and holding it to 4.5 would warn about every soft disc.
+ */
+export const NON_TEXT = 3;
+
+/** One pair: the ink, its ground, and the floor it is held to where that is not AA for text. */
+export type ReadablePair = readonly [fg: string, bg: string, floor?: number];
 
 /**
  * Every place the renderer paints words on a surface.
@@ -52,7 +62,7 @@ export const AA_NORMAL = 4.5;
  * `"{fg}/{bg}"`. `backdrop` is deliberately absent: it sits behind the popup
  * rather than behind text, so a ratio for it would be a number about nothing.
  */
-export const READABLE_PAIRS: readonly (readonly [fg: string, bg: string])[] = [
+export const READABLE_PAIRS: readonly ReadablePair[] = [
   ['fg', 'bg'],
   ['muted', 'bg'],
   ['accent-fg', 'accent'],
@@ -63,7 +73,35 @@ export const READABLE_PAIRS: readonly (readonly [fg: string, bg: string])[] = [
    * on.
    */
   ['fg', 'input-bg'],
+  // The loader draws these two, and a design may colour both (ADR 0159), so a
+  // merchant can make either hard to see. Warned, never blocked, as text is.
+  ['error-fg', 'error-bg'],
+  ['close-fg', 'close-bg', NON_TEXT],
 ];
+
+/**
+ * Pairs a box's own bag never reaches: the close control is appended to the
+ * root by the container, outside every box, so measuring it at a scope would be
+ * a warning about a colour that box cannot change.
+ */
+export const DESIGN_ONLY_PAIRS: ReadonlySet<string> = new Set(['close-fg/close-bg']);
+
+/**
+ * What a pair's ground resolves to for measuring. A ground with nothing in it —
+ * a bare ×, an error box set to `transparent` — shows the design's own
+ * background, so that is the surface the ink is read against.
+ */
+export function groundOf(value: (token: string) => string, bg: string): string {
+  const held = value(bg).trim();
+  const parts = /^rgba?\(([^()]*)\)$/i.exec(held)?.[1].trim().split(/[\s,/]+/) ?? [];
+  const clear = /^transparent$/i.test(held) || /^#(?:[0-9a-f]{3}0|[0-9a-f]{6}00)$/i.test(held) || (parts.length === 4 && parseFloat(parts[3]) === 0);
+
+  return clear && bg !== 'bg' ? value('bg') : held;
+}
+
+/** The verdict on one pair, read the way the renderer paints it. */
+export const verdictOf = (value: (token: string) => string, [fg, bg, floor]: ReadablePair): Readability =>
+  readability(value(fg), groundOf(value, bg), floor);
 
 /** A pair's key in the per-screen maps that hang words or a sample off it. */
 export const pairKey = (fg: string, bg: string): string => `${fg}/${bg}`;
@@ -103,6 +141,7 @@ export const PAIR_READERS: Readonly<Record<string, readonly string[]>> = {
   [pairKey('muted', 'bg')]: ['text', 'eyebrow', 'field', 'consent', 'rating'],
   [pairKey('accent-fg', 'accent')]: ['button', 'badge'],
   [pairKey('fg', 'input-bg')]: ['field'],
+  [pairKey('error-fg', 'error-bg')]: ['field', 'consent'],
 };
 
 /**
@@ -148,7 +187,7 @@ export interface Readability {
   readonly ratio: string | null;
 }
 
-export function readability(fg: string, bg: string): Readability {
+export function readability(fg: string, bg: string, floor: number = AA_NORMAL): Readability {
   const ratio = contrastOf(fg, bg);
   const ground = luminanceOf(bg);
 
@@ -159,8 +198,8 @@ export function readability(fg: string, bg: string): Readability {
   // Shown rounded down, so a pair just under the floor never reads "4.5:1" beside "Hard to read".
   const shown = (Math.floor(ratio * 10) / 10).toFixed(1);
 
-  if (ratio >= AA_NORMAL) {
-    return { readable: true, direction: null, ratio: shown, said: __('Easy to read', 'wconvert') };
+  if (ratio >= floor) {
+    return { readable: true, direction: null, ratio: shown, said: floor < AA_NORMAL ? __('Easy to see', 'wconvert') : __('Easy to read', 'wconvert') };
   }
 
   // 0.179 is where black and white read equally well: above it, dark text wins.
@@ -170,9 +209,13 @@ export function readability(fg: string, bg: string): Readability {
     readable: false,
     direction,
     ratio: shown,
-    said: direction === 'darker'
-      ? __('Hard to read on this background. Choose a darker color.', 'wconvert')
-      : __('Hard to read on this background. Choose a lighter color.', 'wconvert'),
+    said: floor < AA_NORMAL
+      ? direction === 'darker'
+        ? __('Hard to see on this background. Choose a darker color.', 'wconvert')
+        : __('Hard to see on this background. Choose a lighter color.', 'wconvert')
+      : direction === 'darker'
+        ? __('Hard to read on this background. Choose a darker color.', 'wconvert')
+        : __('Hard to read on this background. Choose a lighter color.', 'wconvert'),
   };
 }
 
@@ -191,7 +234,7 @@ export function readableOn(bg: string, candidates: readonly string[]): string {
 }
 
 /** What Fix writes for a pair on `bg`, given how the panel resolves a token: the look's text, then background, then black or white. */
-export const readableFix = (value: (token: string) => string, bg: string): string => readableOn(value(bg), [value('fg'), value('bg')]);
+export const readableFix = (value: (token: string) => string, bg: string): string => readableOn(groundOf(value, bg), [value('fg'), value('bg')]);
 
 /**
  * WCAG relative luminance, or null for a colour this cannot honestly read.

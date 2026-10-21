@@ -393,6 +393,84 @@ describe('a countdown', () => {
   });
 });
 
+/**
+ * The boxes layout paints from the same calculation as the line, one box per
+ * unit, inside the same single timer (ADR 0159).
+ */
+describe('a countdown drawn as boxes', () => {
+  const NOW = Date.UTC(2026, 10, 27, 9, 0, 0);
+  const boxed = (node: Record<string, unknown> = {}, endsAt?: number) => {
+    const anchor = document.createElement('div');
+
+    document.body.appendChild(anchor);
+    const mounted = mount({
+      displayType: 'inline',
+      template: { tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'countdown', layout: 'boxes', ...node }] }] }), tokens: {} },
+      anchor,
+      endsAt,
+    });
+
+    mounted.show();
+
+    return mounted.root!;
+  };
+  const units = (root: HTMLElement) =>
+    [...root.querySelectorAll<HTMLElement>('.wc-count')].map((slot) => [slot.dataset.unit, slot.textContent, slot.parentElement!.hidden]);
+  const at = <T>(run: () => T): T => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    try {
+      return run();
+    } finally {
+      vi.useRealTimers();
+    }
+  };
+
+  it('gives each unit its own two-digit part', () => {
+    expect(at(() => units(boxed({}, NOW + (2 * 86400 + 4 * 3600 + 5 * 60 + 9) * 1000)))).toEqual([
+      ['d', '2', false], ['h', '04', false], ['m', '05', false], ['s', '09', false],
+    ]);
+  });
+
+  it('hides the days box when there are no days left', () => {
+    expect(at(() => units(boxed({}, NOW + 90_000)))[0]).toEqual(['d', '0', true]);
+  });
+
+  it('lets a long sale run to three digits of days', () => {
+    expect(at(() => units(boxed({}, NOW + 120 * 86400 * 1000)))[0]).toEqual(['d', '120', false]);
+  });
+
+  it('shows 00 rather than empty boxes when there is no deadline', () => {
+    expect(units(boxed()).slice(1).map(([, text]) => text)).toEqual(['00', '00', '00']);
+  });
+
+  it('reads 00 everywhere once the deadline has passed', () => {
+    expect(at(() => units(boxed({}, NOW - 60_000))).map(([, text]) => text)).toEqual(['0', '00', '00', '00']);
+  });
+
+  it('labels the units in English unless the design says otherwise', () => {
+    const words = (root: HTMLElement) => [...root.querySelectorAll('.wc-unit small')].map((word) => word.textContent);
+
+    expect(words(boxed())).toEqual(['Days', 'Hours', 'Mins', 'Secs']);
+    expect(words(boxed({ days_label: 'Tage', hours_label: 'Std', minutes_label: 'Min', seconds_label: 'Sek' }))).toEqual(['Tage', 'Std', 'Min', 'Sek']);
+  });
+
+  it('is still one silent timer, read whole', () => {
+    const root = boxed();
+
+    expect(root.querySelectorAll('[role="timer"]')).toHaveLength(1);
+    expect(root.querySelector('[role="timer"]')?.getAttribute('aria-atomic')).toBe('true');
+    expect(root.querySelector('[aria-live]')).toBeNull();
+  });
+
+  it('leaves the line layout as it was', () => {
+    const root = boxed({ layout: undefined });
+
+    expect(root.querySelector('.wc-countdown')?.className).toBe('wc-countdown');
+    expect(root.querySelectorAll('.wc-count')).toHaveLength(1);
+  });
+});
+
 describe('the visitor acting on a mounted Optin', () => {
   it('cannot navigate the page away by submitting the form', () => {
     const submitting = {

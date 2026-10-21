@@ -6,6 +6,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popove
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
 import { resolvedPlacement } from './PlacementControl';
+import { resolvedToken } from './panel';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
 
@@ -160,6 +161,15 @@ export function EditorCanvas({
                   <button
                     type="button"
                     className="wconvert-canvas__close"
+                    // Drawn in the design's own close colours and shape (ADR 0159),
+                    // so a change in the Look's Close button section shows here.
+                    style={{
+                      color: resolvedToken(template.tokens, 'close-fg'),
+                      background: resolvedToken(template.tokens, 'close-bg'),
+                      border: `1px solid ${resolvedToken(template.tokens, 'close-border')}`,
+                      borderRadius: resolvedToken(template.tokens, 'close-radius'),
+                      boxShadow: 'none',
+                    }}
                     aria-label={__('Close preview', 'wconvert')}
                     onClick={() => setMessage(__('Visitors can always close this campaign.', 'wconvert'))}
                   >

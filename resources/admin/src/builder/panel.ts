@@ -1,5 +1,6 @@
 import vocabulary from '../../../templates/manifest.json';
 import { isBareNumber, isColor, isFontStack, measuresOf } from './themes';
+import { REFERABLE } from '@renderer/render';
 import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
 
 /**
@@ -284,8 +285,15 @@ const FALLS_BACK_TO: Readonly<Record<string, string>> = {
  * literal. This is what a check must read: a ratio computed from an empty
  * control is a verdict on a colour nobody chose.
  */
-export function resolvedToken(tokens: Readonly<Record<string, string>>, name: string): string {
+export function resolvedToken(tokens: Readonly<Record<string, string>>, name: string, seen: readonly string[] = []): string {
   const held = tokens[name];
+
+  // `{"close-fg":"fg"}` follows the design's own text colour, as the renderer
+  // draws it ({@see REFERABLE}); a name naming itself is a value, as there,
+  // and a cycle is one CSS discards, so it falls to the manifest's literal.
+  if (held !== undefined && held !== name && REFERABLE.includes(held)) {
+    return seen.includes(held) ? (TOKENS.find((token) => token.name === name)?.fallback ?? '') : resolvedToken(tokens, held, [...seen, name]);
+  }
 
   if (held !== undefined && held !== '') {
     return held;
@@ -295,7 +303,18 @@ export function resolvedToken(tokens: Readonly<Record<string, string>>, name: st
 
   return chained === undefined
     ? (TOKENS.find((token) => token.name === name)?.fallback ?? '')
-    : resolvedToken(tokens, chained);
+    : resolvedToken(tokens, chained, seen);
+}
+
+/**
+ * What a colour control paints for a stored value: a reference to one of the
+ * design's colours resolved, and `transparent` as a clear colour the picker can
+ * hold. For the swatch only — the value written back is the merchant's.
+ */
+export function paintOf(tokens: Readonly<Record<string, string>>, value: string): string {
+  if (/^transparent$/i.test(value.trim())) return '#00000000';
+
+  return REFERABLE.includes(value) ? resolvedToken(tokens, value) : value;
 }
 
 /**
@@ -338,7 +357,7 @@ export const CHOICES = vocabulary.choices as Readonly<Record<string, readonly st
  * That is ADR 0010's *"a token added to the manifest appears in the editor with
  * no change to this bundle"*, kept literally.
  */
-export const TOKEN_GROUPS = ['color', 'type', 'heading', 'space', 'image', 'effects', 'other'] as const;
+export const TOKEN_GROUPS = ['color', 'type', 'heading', 'space', 'image', 'effects', 'close', 'other'] as const;
 
 export type TokenGroupId = (typeof TOKEN_GROUPS)[number];
 

@@ -410,7 +410,10 @@ export function freeRoleFor(tree: TemplateTree, type: string): string | null {
  * derived from what it captures — both are carried, by `MerchantsOwn` and by
  * the derived Roles respectively.
  */
-export function losesWordsOnSwitch(block: { type: string; role: string | null }): boolean {
+export function losesWordsOnSwitch(block: { type: string; role: string | null; says?: string | null }): boolean {
+  // A countdown's unit words are optional — the renderer draws English without
+  // them (ADR 0159) — so one that holds none has nothing to lose.
+  if (block.type === 'countdown' && !block.says) return false;
   return block.role === null && (LEAVES[block.type]?.roles.length ?? 0) > 0;
 }
 

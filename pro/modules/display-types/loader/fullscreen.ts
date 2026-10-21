@@ -1,4 +1,5 @@
 import { mountModal, type MountOptions, type Mounted } from '@renderer/mount';
+import { REFERABLE } from '@renderer/render';
 import { decorateFullscreen } from './surface';
 
 /** The viewport belongs to the container; template width remains the content measure. */
@@ -38,8 +39,15 @@ export function mountFullscreen(options: MountOptions): Mounted {
           position: 'fixed', insetBlockStart: 'max(.75rem, env(safe-area-inset-top))',
           insetInlineEnd: 'max(.75rem, env(safe-area-inset-left), env(safe-area-inset-right))',
           inlineSize: '44px', blockSize: '44px', zIndex: '1',
-          color: '#111827', background: '#fff', border: '1px solid #6b7280',
         });
+        // Outside the root it no longer inherits the design's tokens, so it
+        // carries them: its own four and the colours they may name (ADR 0159).
+        // A design that sets none keeps the fullscreen look it always had.
+        const fallback: Readonly<Record<string, string>> = { 'close-fg': '#111827', 'close-bg': '#fff', 'close-border': '#6b7280' };
+        for (const name of [...REFERABLE, 'close-fg', 'close-bg', 'close-border', 'close-radius']) {
+          const value = root.style.getPropertyValue(`--wc-${name}`) || fallback[name];
+          if (value) close.style.setProperty(`--wc-${name}`, value);
+        }
       }
     },
     opened() {

@@ -333,3 +333,16 @@ describe('writing a token onto one box', () => {
     expect(panel).not.toHaveProperty('tokens');
   });
 });
+
+/** A countdown is edited like any other leaf: its words are content, its layout a choice (ADR 0159). */
+describe('a countdown slot', () => {
+  const [slot] = slotsOf(treeFixture({ steps: [{ type: 'stack', children: [{ type: 'countdown', layout: 'boxes' }] }] }));
+
+  it('offers the four unit words as content', () => {
+    expect(slot?.keys).toEqual(['days_label', 'hours_label', 'minutes_label', 'seconds_label']);
+  });
+
+  it('offers Line or Boxes, holding what the design chose', () => {
+    expect(slot?.settings.find((setting) => setting.param === 'layout')).toMatchObject({ offered: ['line', 'boxes'], held: 'boxes', fallback: 'line' });
+  });
+});

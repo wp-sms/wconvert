@@ -394,6 +394,20 @@ export const SHADOW_CSS = [
   // Tabular figures so the digits do not jitter as they tick — the one thing a
   // countdown does that nothing else in this vocabulary does.
   `.wc-countdown{font-variant-numeric:tabular-nums;font-weight:var(--wc-heading-weight,700);letter-spacing:var(--wc-tracking,normal)}`,
+  /*
+   * The boxes layout: a unit per box, its word under it (ADR 0159). The boxes
+   * are drawn from tokens a design already has — the field ground, the border
+   * and the corner — so a countdown matches the form beside it with no colour
+   * of its own. The basis is a quarter of the row, and half of it once the
+   * row is under 16rem — so a 288px slide-in gets two by two rather than three
+   * and an orphan. Sizes are in `em`, so a bar's smaller type draws smaller
+   * boxes with no rule of its own.
+   */
+  `.wc-countdown.wc-boxes{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:var(--wc-align,start)}`,
+  `.wc-unit{flex:1 0 max(calc(25% - .375rem),min(calc(50% - .25rem),calc((16rem - 100%)*999)));max-inline-size:6em;display:grid;justify-items:center;padding:.5rem .25rem;background:var(--wc-input-bg,var(--wc-bg,#fff));border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-unit>.wc-count{font-size:1.75em;line-height:1.1}`,
+  `.wc-unit>small{font-size:max(.8125rem,.35em);font-weight:400;letter-spacing:normal;color:var(--wc-muted,#6b7280)}`,
+  `.wc-unit[hidden]{display:none}`,
 
   /*
    * ==========================================================================
@@ -635,19 +649,30 @@ export const SHADOW_CSS = [
 
   // A refused capture, drawn by the loader rather than by the vocabulary — for
   // the same reason the close button is: a template must not be able to omit
-  // the way out, and it must not be able to make the reason its form was
-  // refused invisible. So the colour is a literal and not a token.
-  `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:max(.875rem,.875em);font-weight:600;text-align:start}`,
+  // the reason its form was refused. A design may COLOUR it, so a dark card
+  // need not carry a pink box, but cannot remove it; the editor's contrast
+  // warning and the catalogue's 4.5:1 gate are what keep it readable
+  // (ADR 0159). The fallbacks are the literals it had before it was a token.
+  `.wc-error{margin:0;color:var(--wc-error-fg,#991b1b);background:var(--wc-error-bg,#fef2f2);border-radius:.25rem;padding:.375rem .5rem;font-size:max(.875rem,.875em);font-weight:600;text-align:start}`,
   // Form-wide refusals sit outside the template's stack and need their own gap.
   // Keep their focus visible without the template accent overlapping the CTA.
   `.wc-root>.wc-error{margin-block-start:.75rem;outline-color:currentColor;outline-offset:0}`,
   // Follows the ring above. `border-color` styled a border this no longer
   // draws, so the invalid state was silently invisible the moment the field
-  // changed shape — which is the one state that must not be.
-  `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px #b91c1c}`,
+  // changed shape — which is the one state that must not be. It follows the
+  // design's error colour, so a dark card does not get a red ring it cannot
+  // show; a design that sets none keeps the red it always had.
+  `.wc-input[aria-invalid]{box-shadow:inset 0 0 0 2px var(--wc-error-fg,#b91c1c)}`,
 
-  // Container chrome, not vocabulary: a template cannot omit the way out.
-  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;cursor:pointer;color:#1f2937;background:#ffffff;border:1px solid #64748b;border-radius:50%;display:grid;place-items:center;padding:0;z-index:1}`,
+  // Container chrome, not vocabulary: a template cannot omit the way out. It
+  // may colour and shape it from closed tokens — a bare × on a dark card, a
+  // soft disc over a photograph — but its size, place, label and glyph stay
+  // here (ADR 0155, ADR 0159). The fallbacks are today's literals, so a design
+  // that sets none draws exactly what it always did.
+  `.wc-close{position:absolute;inset-block-start:.5rem;inset-inline-end:.5rem;inline-size:2rem;block-size:2rem;cursor:pointer;color:var(--wc-close-fg,#1f2937);background:var(--wc-close-bg,#ffffff);border:1px solid var(--wc-close-border,#64748b);border-radius:var(--wc-close-radius,50%);display:grid;place-items:center;padding:0;z-index:1}`,
+  // A bare × has no edge of its own once forced colours drop its background.
+  // The system's own ink draws one, so the way out is still a visible target.
+  `@media (forced-colors:active){.wc-close{border-color:CanvasText}}`,
   /*
    * ==========================================================================
    * 24×24 IS THE FLOOR. IT IS NOT THE TARGET SIZE FOR A THUMB.
@@ -733,7 +758,7 @@ export const SHADOW_CSS = [
    * desktop, and the viewport would call it wide. `.wc-root` is the container,
    * declared above.
    * --------------------------------------------------------------------- */
-  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
+  `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop close-fg close-bg close-border close-radius error-fg error-bg'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');
 
 let premiumStyles = '';
