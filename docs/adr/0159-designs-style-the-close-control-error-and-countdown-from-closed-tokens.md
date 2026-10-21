@@ -47,7 +47,7 @@ the gzip ceilings sat within a few dozen bytes of the bundles.
   were all carried, and republishes the runtime Collections.
 - **Budget headroom: +2,560 B on each loader.** Free 14,896 → 17,456 B and Pro
   28,160 → 30,720 B gzip-9, with the phone, analytics and commerce bases that
-  follow them. This change measured Free 15,282 B and Pro 28,632 B (gzip -9, Node 24 locally). The reason
+  follow them. This change measured Free 15,309 B and Pro 28,656 B (gzip -9, Node 24 locally; CI gates on Node 22). The reason
   is the approval cost, not this change: a hard gate stays, and the headroom
   stops each few-hundred-byte addition from needing its own yes.
 

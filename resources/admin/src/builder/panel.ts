@@ -599,7 +599,8 @@ function collect(node: TemplateNode, path: Path, slots: Slot[]): void {
       type: node.type,
       role: typeof role === 'string' ? role : null,
       captures: node.type === 'field' && typeof captures === 'string' ? captures : null,
-      keys: leaf.content,
+      // A line countdown draws no unit words, so it offers none to fill (ADR 0159).
+      keys: node.type === 'countdown' && (node as { layout?: string }).layout !== 'boxes' ? [] : leaf.content,
       values,
       hideable: leaf.params.includes('hidden'),
       hidden: (node as { hidden?: boolean }).hidden === true,

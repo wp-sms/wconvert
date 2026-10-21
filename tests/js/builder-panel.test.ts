@@ -346,3 +346,11 @@ describe('a countdown slot', () => {
     expect(slot?.settings.find((setting) => setting.param === 'layout')).toMatchObject({ offered: ['line', 'boxes'], held: 'boxes', fallback: 'line' });
   });
 });
+
+describe('a line countdown slot', () => {
+  it('offers no unit words, because it draws none', () => {
+    const [slot] = slotsOf(treeFixture({ steps: [{ type: 'stack', children: [{ type: 'countdown' }] }] }));
+
+    expect(slot?.keys).toEqual([]);
+  });
+});

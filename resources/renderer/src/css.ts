@@ -400,14 +400,16 @@ export const SHADOW_CSS = [
    * and the corner — so a countdown matches the form beside it with no colour
    * of its own. The basis is a quarter of the row, and half of it once the
    * row is under 16rem — so a 288px slide-in gets two by two rather than three
-   * and an orphan. Sizes are in `em`, so a bar's smaller type draws smaller
-   * boxes with no rule of its own.
+   * and an orphan — and a third once the days box hides, so three stay on one
+   * row. The digits and words are in `em`, so a bar's smaller type draws
+   * smaller boxes; their padding is not.
    */
   `.wc-countdown.wc-boxes{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:var(--wc-align,start)}`,
   `.wc-unit{flex:1 0 max(calc(25% - .375rem),min(calc(50% - .25rem),calc((16rem - 100%)*999)));max-inline-size:6em;display:grid;justify-items:center;padding:.5rem .25rem;background:var(--wc-input-bg,var(--wc-bg,#fff));border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
   `.wc-unit>.wc-count{font-size:1.75em;line-height:1.1}`,
   `.wc-unit>small{font-size:max(.8125rem,.35em);font-weight:400;letter-spacing:normal;color:var(--wc-muted,#6b7280)}`,
   `.wc-unit[hidden]{display:none}`,
+  `.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}`,
 
   /*
    * ==========================================================================

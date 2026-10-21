@@ -1,0 +1,47 @@
+{
+  "id": "monthly-planting-letter",
+  "revision": "00005e65c49cf95f2c9dd0cb83b94128bd746c01044be971ce0b10b4808aff6e",
+  "base_id": "064cbe87cb74b8f8ee56b2422512e00cf15789173a2a4a7ebb4ae02c2ccb8138",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at HEAD, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T08:27:39Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/monthly-planting-letter-320.png",
+          "sha256": "3b8f6db3aa6380f4144b160d4eb2f433f2dc46d87d7a002658b830b716303b40"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/monthly-planting-letter-1440.png",
+          "sha256": "7498bdfc0bf0d1e96d81c8add894e7da72c3c13e64fb26695175f72f39c9cb82"
+        },
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/review.md",
+          "sha256": "de10b9e52b18a25d1a2a2141034132a8661bb20452e5b49ab2b99129c08792ed"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/new-designs-batch-2026-10-21/results.json",
+          "sha256": "a7427fb3737d6699cfc42b06595915a3e9ba372ae13085006fd7b3779788327e"
+        }
+      ]
+    }
+  },
+  "record_id": "898eda9352f28dab298912bd14abaddf5763f4a7d6e8e053048c7a0c28119638"
+}

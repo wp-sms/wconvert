@@ -28,7 +28,8 @@ import {
   urlIn,
   type Axis,
 } from './themes';
-import { AA_NORMAL, READABLE_PAIRS, pairKey, readableFix, verdictOf } from './contrast';
+import { AA_NORMAL, READABLE_PAIRS, drawsPair, pairKey, readableFix, verdictOf } from './contrast';
+import { nodesOf } from './structure/tree';
 import { cssOnlyNote, useAdvanced } from './advanced';
 import { FieldHeading, PanelHint, PanelSection } from './PanelSection';
 import { nameOf, type TemplateLabels } from '../templates/api';
@@ -1253,7 +1254,8 @@ function Contrast({ template, labels, onChange }: { template: Template; labels: 
   // implies ({@see resolvedToken}).
   const value = (name: string) => resolvedToken(template.tokens, name);
 
-  const read = READABLE_PAIRS.map(([fg, bg, floor]) => ({
+  const types = nodesOf(template.tree).map((block) => block.type);
+  const read = READABLE_PAIRS.filter(([fg, bg]) => drawsPair(pairKey(fg, bg), types)).map(([fg, bg, floor]) => ({
     key: pairKey(fg, bg),
     fg,
     bg,

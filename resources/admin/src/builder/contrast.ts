@@ -141,8 +141,16 @@ export const PAIR_READERS: Readonly<Record<string, readonly string[]>> = {
   [pairKey('muted', 'bg')]: ['text', 'eyebrow', 'field', 'consent', 'rating'],
   [pairKey('accent-fg', 'accent')]: ['button', 'badge'],
   [pairKey('fg', 'input-bg')]: ['field'],
-  [pairKey('error-fg', 'error-bg')]: ['field', 'consent'],
+  [pairKey('error-fg', 'error-bg')]: ['field', 'consent', 'question'],
 };
+
+/**
+ * Whether a design draws a pair at all. Every pair is drawn somewhere in any
+ * design except the error, which only a design that asks for something can
+ * show — so a link-only design is never warned about a message it cannot draw.
+ */
+export const drawsPair = (key: string, types: readonly string[]): boolean =>
+  key !== pairKey('error-fg', 'error-bg') || PAIR_READERS[key].some((type) => types.includes(type));
 
 /**
  * The contrast ratio between two colours, or null where either cannot be read.

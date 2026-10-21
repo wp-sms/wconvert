@@ -1,0 +1,47 @@
+{
+  "id": "maker-session-invitation",
+  "revision": "fb066c3f49e2ce22c0259e637414146c9cad5a20f7f4c3291bc7b19b12b3bc68",
+  "base_id": "125698cbc6b4e3690cf094de365fd5298ac8c8dcc2c99f35105dd47c7c9f215d",
+  "decision": "approved",
+  "reviewer": "Visual diff (ADR 0156)",
+  "note": "Pixel-identical to the decision this follows under the renderer at HEAD, every screen at 1200 and 375 px with the close control, an error and the countdown drawn; content unchanged. Not a new review.",
+  "at": "2026-10-21T08:27:39Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/maker-session-invitation-320.png",
+          "sha256": "e904bcd76e63334825386bb681e84a71e755194b75072be9a9dc5fe8adda0107"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/maker-session-invitation-1440.png",
+          "sha256": "e4391874c9da6ceb95dfdfdfbac46988f2cf831355bcba67fc01d3eb2d5f9f5a"
+        },
+        {
+          "path": "docs/reviews/backlog-2026-10-20/review.md",
+          "sha256": "18abf0e5e843d04d419a02d6e7ba48d7e37da8f4409144f9822f92bfde1c42ba"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/backlog-2026-10-20/results.json",
+          "sha256": "9cdc7af51abacd43d6877545a29e21b80e6c0d879d4d81928e4c9585dafe9f8f"
+        }
+      ]
+    }
+  },
+  "record_id": "a8b98c1a8bb5f61bf03821a8ae27a2ae1c6effc89886067684cadfd897499e31"
+}

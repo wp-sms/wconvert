@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { READABLE_PAIRS, pairKey, verdictOf } from '../contrast';
+import { READABLE_PAIRS, drawsPair, pairKey, verdictOf } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
 import { losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
@@ -356,19 +356,21 @@ function whatLosesWords(template: Template): Problem[] {
  * Colour pairs a visitor may not be able to read.
  *
  * The places the renderer paints words on a surface, against AA for body
- * text, and the close ×, against the non-text floor (ADR 0159). `backdrop` is deliberately absent: it sits behind the popup rather than
- * behind text. A pair {@see contrastOf} cannot read is not reported — a
+ * text, and the close ×, against the non-text floor (ADR 0159). `backdrop`
+ * is deliberately absent: it sits behind the popup rather than behind text. A pair {@see contrastOf} cannot read is not reported — a
  * translucent colour has no ratio of its own, and a guess here would be a
  * warning about nothing or a silence about something.
  */
 function whatCannotBeRead(template: Template): Problem[] {
   const value = (name: string) => resolvedToken(template.tokens, name);
 
+  const types = nodesOf(template.tree).map((block) => block.type);
+
   return READABLE_PAIRS.flatMap((pair) => {
     // The same verdict the Look's readout gives (ADR 0135), so the review and the panel never disagree.
     const said = SAID[pairKey(pair[0], pair[1])];
 
-    return verdictOf(value, pair).readable !== false || said === undefined
+    return verdictOf(value, pair).readable !== false || said === undefined || !drawsPair(pairKey(pair[0], pair[1]), types)
       ? []
       : [{ said: said(), path: null, check: 'readable' as const }];
   });

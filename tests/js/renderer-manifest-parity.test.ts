@@ -925,3 +925,9 @@ describe('the chrome a design may colour', () => {
     expect(root.style.getPropertyValue('--wc-close-bg')).toBe('transparent');
   });
 });
+
+describe('the boxed countdown', () => {
+  it('keeps three boxes on one row once the days box hides', () => {
+    expect(CSS).toContain('.wc-boxes:has(>.wc-unit[hidden])>.wc-unit{flex-basis:calc(33.33% - .34rem)}');
+  });
+});

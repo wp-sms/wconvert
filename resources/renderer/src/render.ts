@@ -168,7 +168,7 @@ export const REFERABLE = ['bg', 'fg', 'muted', 'accent', 'accent-fg', 'border', 
  * it and nothing outside, at no runtime cost beyond the `setProperty` calls
  * (ADR 0062).
  *
- * **Nothing here checks the names.** The 22 are closed and
+ * **Nothing here checks the names.** They are closed and
  * `TemplateVocabulary` drops anything outside them on the way in, at both
  * scopes, through one private `tokens()`. This module is handed a bag that has
  * already been through it — the same bargain the whole renderer takes with the
@@ -447,7 +447,7 @@ function into(at: string | null, key: string, index: number): string | null {
  * has had to know — with the narrow bag written over the top. The remap then
  * always finds a value and needs no fallback.
  *
- * It costs 24 `setProperty` calls on a retuned box and nothing at all on every
+ * It costs one `setProperty` call per token on a retuned box and nothing at all on every
  * other box, and it costs the PAYLOAD nothing: what is stored is the narrow
  * bag the author wrote.
  */

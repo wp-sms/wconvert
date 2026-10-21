@@ -163,13 +163,7 @@ export function EditorCanvas({
                     className="wconvert-canvas__close"
                     // Drawn in the design's own close colours and shape (ADR 0159),
                     // so a change in the Look's Close button section shows here.
-                    style={{
-                      color: resolvedToken(template.tokens, 'close-fg'),
-                      background: resolvedToken(template.tokens, 'close-bg'),
-                      border: `1px solid ${resolvedToken(template.tokens, 'close-border')}`,
-                      borderRadius: resolvedToken(template.tokens, 'close-radius'),
-                      boxShadow: 'none',
-                    }}
+                    style={closeLook(template.tokens)}
                     aria-label={__('Close preview', 'wconvert')}
                     onClick={() => setMessage(__('Visitors can always close this campaign.', 'wconvert'))}
                   >
@@ -194,4 +188,11 @@ export function EditorCanvas({
       </div>
     </section>
   );
+}
+
+/** The design's own close colours and shape, resolved as the renderer draws them. */
+function closeLook(tokens: Template['tokens']) {
+  const look = (part: string) => resolvedToken(tokens, `close-${part}`);
+
+  return { color: look('fg'), background: look('bg'), border: `1px solid ${look('border')}`, borderRadius: look('radius'), boxShadow: 'none' };
 }

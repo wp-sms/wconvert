@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AA_NORMAL, NON_TEXT, READABLE_PAIRS, contrastOf, groundOf, luminanceOf, meetsAA, readability, readableFix, readableOn, verdictOf } from '../../resources/admin/src/builder/contrast';
+import { AA_NORMAL, NON_TEXT, READABLE_PAIRS, contrastOf, drawsPair, groundOf, luminanceOf, meetsAA, readability, readableFix, readableOn, verdictOf } from '../../resources/admin/src/builder/contrast';
 import { resolvedToken } from '../../resources/admin/src/builder/panel';
 import { axesOf, measuresOf, rangeFor } from '../../resources/admin/src/builder/themes';
 
@@ -312,5 +312,13 @@ describe('the chrome a design colours', () => {
     const value = resolve({ bg: '#0f172a', fg: '#f8fafc', 'close-bg': 'transparent', 'close-fg': '#1e293b' });
 
     expect(readableFix(value, 'close-bg')).toBe('#f8fafc');
+  });
+});
+
+describe('which pairs a design draws', () => {
+  it('measures the error only where the design asks for something', () => {
+    expect(drawsPair('error-fg/error-bg', ['stack', 'heading', 'button'])).toBe(false);
+    expect(drawsPair('error-fg/error-bg', ['stack', 'field'])).toBe(true);
+    expect(drawsPair('fg/bg', ['stack'])).toBe(true);
   });
 });
