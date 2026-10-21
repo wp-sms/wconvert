@@ -62,8 +62,9 @@ a content-hash registry that also writes each ZIP's
 `resources/templates/revisions.json`; the release build refuses a stale one.
 *Amended by [0157](0157-free-designs-may-be-served-without-being-bundled.md):*
 a third source, `tools/design-library/hosted/templates/`, holds Free designs
-the catalogue alone serves. They are numbered in the registry like any other
-and listed in neither ZIP's file, because neither ZIP carries them.
+the catalogue alone serves, and `tools/design-library/hosted/playbooks/` their
+setups. They are numbered in the registry like any other and listed in neither
+ZIP's file, because neither ZIP carries them.
 Across bundled, installed and hosted copies **the highest revision wins**,
 replacing first-source-wins. Undo a bad design with a newer revision; pointer
 rollback is for a broken index.

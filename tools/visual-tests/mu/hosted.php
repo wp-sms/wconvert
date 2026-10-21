@@ -6,8 +6,11 @@
  * Composed like Pro's own libraries, with the hosted folders last.
  */
 declare(strict_types=1);
-$wconvertHosted = static function (): void {
-    $hosted = WP_CONTENT_DIR . '/plugins/wconvert/tools/design-library/hosted';
+// Free registers its libraries at plugins_loaded:10 and Pro at 20, so composing
+// at 30 comes after both, with or without Pro.
+add_action('plugins_loaded', static function (): void {
+    if (!defined('WCONVERT_DIR')) return;
+    $hosted = WCONVERT_DIR . 'tools/design-library/hosted';
     if (!is_dir($hosted . '/templates')) return;
     $container = \WConvert\Bootstrap::container();
     $designs = new class ($hosted . '/templates') implements \WConvert\Template\TemplateSource {
@@ -39,8 +42,4 @@ $wconvertHosted = static function (): void {
             )
         )
     ));
-};
-// Pro registers its own libraries at plugins_loaded:20, after `wconvert_loaded`,
-// so compose after it when it is present and after free when it is not.
-add_action('wconvert_pro_loaded', $wconvertHosted, 100);
-add_action('plugins_loaded', static fn () => defined('WCONVERT_PRO_DIR') || $wconvertHosted(), 30);
+}, 30);

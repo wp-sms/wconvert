@@ -9,9 +9,10 @@ import { bundledRevisionFiles } from './catalogue.mjs';
 function tree(t, files) {
   const root = mkdtempSync(join(tmpdir(), 'wconvert-sources-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  for (const [path, id] of Object.entries(files)) {
+  for (const [path, design] of Object.entries(files)) {
+    const { id, tier } = typeof design === 'string' ? { id: design, tier: path.startsWith('pro/') ? 'pro' : 'free' } : design;
     mkdirSync(join(root, path, '..'), { recursive: true });
-    writeFileSync(join(root, path), JSON.stringify({ id, tree: { v: 2, steps: [] } }));
+    writeFileSync(join(root, path), JSON.stringify({ id, tier, tree: { v: 2, steps: [] } }));
   }
   return root;
 }
@@ -41,4 +42,10 @@ test('a design copied from the hosted folder into a bundled one is refused, not 
   });
 
   assert.throws(() => designSources(root), /on-server is authored twice/);
+});
+
+test('a Pro design in the hosted folder is refused: the catalogue would serve it to Free sites for free', t => {
+  const root = tree(t, { 'tools/design-library/hosted/templates/premium.json': { id: 'premium', tier: 'pro' } });
+
+  assert.throws(() => designSources(root), /premium is hosted but not tier free/);
 });

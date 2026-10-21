@@ -41,11 +41,11 @@ const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
  */
 const entry = resolve(OUT, 'renderer-entry.ts');
 
-// `visual-diff.mjs` builds an older tree with this script, so an export newer
-// than that tree is named only where its source provides it.
+// tools/visual-tests/bar-close.mjs drives the bar close reserve. visual-diff.mjs
+// also builds an older tree with this script, so that export is named only
+// where the tree's mount.ts declares it.
 const mount = resolve(PLUGIN, 'resources/renderer/src/mount');
-const mountExports = ['render', 'closeButton',
-  ...(readFileSync(mount + '.ts', 'utf8').includes('export function reserveBesideClose(') ? ['reserveBesideClose'] : [])];
+const reserves = /^export function reserveBesideClose\(/m.test(readFileSync(`${mount}.ts`, 'utf8'));
 
 writeFileSync(
   entry,
@@ -53,7 +53,7 @@ writeFileSync(
     `export { prepareControls, readFields, restoreFields, disposePreview, validQuestions } from '${resolve(PLUGIN, 'tools/design-library/preview/controls')}';`,
     `export { previewResult } from '${resolve(PLUGIN, 'tools/design-library/preview/results')}';`,
     `export { graphTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-graph')}';`,
-    `export { ${mountExports.join(', ')} } from '${mount}';`,
+    `export { render, closeButton${reserves ? ', reserveBesideClose' : ''} } from '${mount}';`,
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
     `registerPremiumJourneyRenderer();`,

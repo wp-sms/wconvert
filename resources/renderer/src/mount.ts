@@ -250,10 +250,9 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     }
     if (chrome !== null) {
       element.appendChild(chrome);
-      if (options.displayType === 'floating_bar') {
-        chrome.dataset.bar = '';
-        reserveBesideClose(element, chrome);
-      }
+      if (options.displayType === 'floating_bar') chrome.dataset.bar = '';
+      // A bar's or corner card's words can reach the control's corner.
+      if (options.displayType === 'floating_bar' || options.displayType === 'slide_in') reserveBesideClose(element, chrome);
     }
 
     element.addEventListener('submit', (event) => event.preventDefault());
@@ -524,27 +523,20 @@ function inline(options: MountOptions, anchor: Element): Mounted {
   };
 }
 
-/**
- * The way out, supplied by the container rather than by the vocabulary — a
- * template must not be able to omit it.
- *
- * The label is English here because the loader carries no i18n runtime: it is
- * a raw IIFE with no `wp.i18n` dependency, and adding one would put a second
- * script on the page for one string. Esc and the backdrop are unlabelled
- * routes to the same act, so a visitor is never trapped by it.
- */
-/** What a bar's close control must never sit over. */
+/** What a bar's or slide-in's close control must never sit over. */
 const BESIDE_CLOSE = '.wc-heading,.wc-text,.wc-eyebrow,.wc-badge,.wc-rating,.wc-code,.wc-countdown,.wc-field,.wc-button';
 
 /**
- * Room beside a bar's close control for exactly the lines it would cover.
+ * Room beside a bar's or slide-in's close control for exactly the lines it
+ * would cover.
  *
- * A phone-width bar stacks and its control keeps the top corner. A band of
+ * A phone-width bar stacks and its control keeps the top corner, as a
+ * slide-in's always does. A band of
  * padding above everything costs the bar a row of nothing, and a column
  * beside everything pushes a field and its button onto two lines, so only the
  * text the control actually overlaps gets `padding-inline-end`; a field or
- * button keeps its shape and the layout holding it takes the room instead,
- * so the row re-wraps short of the control. Logical
+ * button keeps its shape and the row holding it takes the room instead, so
+ * the row re-wraps short of the control. Logical
  * padding, so a right-to-left bar reserves the other side with no second
  * rule. Measured after layout, again when the bar's width changes, and once
  * more when web fonts settle, because each moves where the text wraps.
@@ -554,8 +546,10 @@ export function reserveBesideClose(root: HTMLElement, close: HTMLElement): void 
   let width = -1;
 
   const measure = (): void => {
+    // Not yet on the page: wait for the observer's first callback. Once it has
+    // been measured and then leaves the page, a step swap replaced it.
     if (!root.isConnected) {
-      observer?.disconnect();
+      if (width !== -1) observer?.disconnect();
       return;
     }
     if (root.clientWidth === width) return;
@@ -572,9 +566,9 @@ export function reserveBesideClose(root: HTMLElement, close: HTMLElement): void 
       const control = close.getBoundingClientRect();
       let moved = false;
       for (const element of root.querySelectorAll<HTMLElement>(BESIDE_CLOSE)) {
-        const target = element.matches('.wc-field,.wc-button')
-          ? element.parentElement?.closest<HTMLElement>('.wc-row,.wc-stack,.wc-grid,.wc-pane,.wc-panel,.wc-media') ?? element
-          : element;
+        // A field or button keeps its shape; the row holding it re-wraps short
+        // of the control. Outside a row the field's own wrapper takes the room.
+        const target = element.matches('.wc-field,.wc-button') ? element.closest<HTMLElement>('.wc-row') ?? element : element;
         if (target.dataset.besideClose !== undefined) continue;
         const box = element.getBoundingClientRect();
         if (box.top < control.bottom + gap && box.bottom > control.top && box.right > control.left - gap && box.left < control.right + gap) {
@@ -596,6 +590,15 @@ export function reserveBesideClose(root: HTMLElement, close: HTMLElement): void 
   });
 }
 
+/**
+ * The way out, supplied by the container rather than by the vocabulary — a
+ * template must not be able to omit it.
+ *
+ * The label is English here because the loader carries no i18n runtime: it is
+ * a raw IIFE with no `wp.i18n` dependency, and adding one would put a second
+ * script on the page for one string. Esc and the backdrop are unlabelled
+ * routes to the same act, so a visitor is never trapped by it.
+ */
 export function closeButton(onClick: () => void): HTMLElement {
   const button = document.createElement('button');
 

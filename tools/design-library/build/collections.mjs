@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadReviews, reviewQueue } from './reviews.mjs';
-import { designSource, setupSource } from './sources.mjs';
+import { designSource, designSources, setupSource } from './sources.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(value);
@@ -28,7 +28,7 @@ export function validateCollection(collection) {
 
 export function buildCollections(root, source, entries, setupQueue, reviews) {
   if (source.schema !== 1 || !Array.isArray(source.collections) || source.collections.length > 100) throw new Error('Invalid collection source');
-  const byId = new Map(entries.map(entry => [entry.id, entry])); const seen = new Set();
+  const byId = new Map(entries.map(entry => [entry.id, entry])); const seen = new Set(); const designs = designSources(root);
   const compiled = source.collections.map(collection => {
     validateCollection(collection);
     if (seen.has(collection.id)) throw new Error('Duplicate collection'); seen.add(collection.id);
@@ -36,7 +36,7 @@ export function buildCollections(root, source, entries, setupQueue, reviews) {
       const entry = byId.get(item.setup_id); const approval = setupQueue.find(row => row.id === item.setup_id);
       if (!entry || !approval) throw new Error(`Missing reviewed setup reference: ${item.setup_id}`);
       const setupFile = setupSource(root, entry.id);
-      const designFile = designSource(root, entry.template_id);
+      const designFile = designSource(root, entry.template_id, designs);
       if (hash(readFileSync(setupFile)) !== item.setup_hash || hash(readFileSync(designFile)) !== item.design_hash) throw new Error(`Stale collection dependency: ${item.setup_id}`);
       return { revision: entry.revision, current: approval.state === 'approved' };
     });

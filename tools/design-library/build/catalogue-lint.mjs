@@ -25,24 +25,26 @@ export function literalColours(design) {
   return count;
 }
 
-function sourceOf(root, id) {
-  return JSON.parse(readFileSync(designSource(root, id), 'utf8'));
+function sourceOf(root, id, sources) {
+  return JSON.parse(readFileSync(designSource(root, id, sources), 'utf8'));
 }
 
 export function literalColourReport(root, ids) {
   const baseline = existsSync(resolve(root, BASELINE)) ? JSON.parse(readFileSync(resolve(root, BASELINE), 'utf8')).designs : {};
-  const rows = ids.map(id => ({ id, count: literalColours(sourceOf(root, id)), baseline: baseline[id] ?? 0 }));
+  const sources = designSources(root);
+  const rows = ids.map(id => ({ id, count: literalColours(sourceOf(root, id, sources)), baseline: baseline[id] ?? 0 }));
   return { total: rows.reduce((sum, row) => sum + row.count, 0), increased: rows.filter(row => row.count > row.baseline) };
 }
 
 // `node catalogue-lint.mjs --record` lowers (never raises) the baseline to today's counts.
 if (process.argv[1] === fileURLToPath(import.meta.url) && process.argv.includes('--record')) {
   const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
-  const ids = [...designSources(root).keys()].sort();
+  const sources = designSources(root);
+  const ids = [...sources.keys()].sort();
   const previous = existsSync(resolve(root, BASELINE)) ? JSON.parse(readFileSync(resolve(root, BASELINE), 'utf8')).designs : null;
   const designs = {};
   for (const id of ids) {
-    const count = literalColours(sourceOf(root, id));
+    const count = literalColours(sourceOf(root, id, sources));
     const allowed = previous === null ? count : Math.min(count, previous[id] ?? 0);
     if (allowed > 0) designs[id] = allowed;
   }
