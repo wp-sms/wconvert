@@ -1,92 +1,228 @@
-[
-  {
-    "id": "ticker-line",
-    "width": 1280,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "ticker-line",
-    "width": 360,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "ribbon-tag",
-    "width": 1280,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "ribbon-tag",
-    "width": 360,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "kind-words",
-    "width": 1280,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "kind-words",
-    "width": 360,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "big-number",
-    "width": 1280,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "big-number",
-    "width": 360,
-    "overlap": "none",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": true,
-    "errors": []
-  },
-  {
-    "id": "glacier",
-    "width": 1280,
-    "overlap": "no close (inline)",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": "inline",
-    "errors": []
-  },
-  {
-    "id": "glacier",
-    "width": 360,
-    "overlap": "no close (inline)",
-    "overflow": false,
-    "acknowledged": true,
-    "closed": "inline",
-    "errors": []
-  }
-]
+{
+  "schema": 1,
+  "at": "2026-10-21T05:24:13.088Z",
+  "site": "disposable local WordPress (Pro, WooCommerce), loader rebuilt from this branch",
+  "note": "Each design published from its library entry with its own sample words; consent shown and ticked as Prefill does for a marketing list.",
+  "designs": [
+    {
+      "id": "ticker-line",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ticker-line",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ribbon-tag",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "ribbon-tag",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "last-call",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "last-call",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "lookbook",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "lookbook",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "field-guide",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "field-guide",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "kind-words",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "kind-words",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "polaroid",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "polaroid",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "changelog",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "changelog",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "big-number",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "big-number",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "tasting-card",
+      "width": 1280,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "tasting-card",
+      "width": 320,
+      "overlap": "none",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "none",
+      "closed": true,
+      "errors": []
+    },
+    {
+      "id": "glacier",
+      "width": 1280,
+      "overlap": "no close (inline)",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "no close (inline)",
+      "closed": "inline (no close control)",
+      "errors": []
+    },
+    {
+      "id": "glacier",
+      "width": 320,
+      "overlap": "no close (inline)",
+      "overflow": false,
+      "acknowledged": true,
+      "ack_overlap": "no close (inline)",
+      "closed": "inline (no close control)",
+      "errors": []
+    }
+  ]
+}

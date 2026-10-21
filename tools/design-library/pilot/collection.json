@@ -4166,13 +4166,13 @@
       "visitor_need": "Find what goes with the product being viewed.",
       "difference": "A black-and-white cross-sell popup with a heavy grotesque headline and three products with add-to-basket buttons; no products design interrupted before.",
       "requirements": [
-        "Pick three products in the products block and show it on the product pages they suit. Needs WooCommerce and Pro."
+        "Choose the main product and up to three items to suggest with it; one campaign covers one product page. Needs WooCommerce and Pro."
       ],
       "status": "review",
       "source": "Original WConvert composition, 20 October 2026; pictures generated with gpt-image-2 and recorded in publishing/catalog.json image_rights. No imported competitor artwork or layout.",
       "suggested_setup": [
-        "Show on matching product pages after 20 seconds; exclude checkout and the basket.",
-        "Pick three products in the products block and show it on the product pages they suit. Needs WooCommerce and Pro."
+        "Shows after 20 seconds on the chosen product's page; exclude checkout and the basket.",
+        "Choose the main product and up to three items to suggest with it; one campaign covers one product page. Needs WooCommerce and Pro."
       ],
       "measure": "Confirmed additions to the basket; not orders.",
       "batch": "new-designs-batch",

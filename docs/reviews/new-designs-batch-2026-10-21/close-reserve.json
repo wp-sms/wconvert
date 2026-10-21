@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "at": "2026-10-21T05:11:11.439Z",
+  "widths": {
+    "floating_bar": "320–1440 px",
+    "slide_in": "288–416 px",
+    "step": "16 px"
+  },
+  "designs": [
+    {
+      "id": "availability-note",
+      "display_type": "slide_in",
+      "cases": 36,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "bar-announcement",
+      "display_type": "floating_bar",
+      "cases": 284,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "bar-code",
+      "display_type": "floating_bar",
+      "cases": 568,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "bar-countdown",
+      "display_type": "floating_bar",
+      "cases": 284,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "bar-email-capture",
+      "display_type": "floating_bar",
+      "cases": 568,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "bloom-postcard",
+      "display_type": "slide_in",
+      "cases": 36,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "callback-slip",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "conversation-note",
+      "display_type": "slide_in",
+      "cases": 108,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "inline-signpost",
+      "display_type": "floating_bar",
+      "cases": 284,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "kind-words",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "launch-index",
+      "display_type": "floating_bar",
+      "cases": 284,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "margin-note",
+      "display_type": "slide_in",
+      "cases": 36,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "polaroid",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "ribbon-tag",
+      "display_type": "floating_bar",
+      "cases": 568,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "sample-envelope",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "session-card",
+      "display_type": "slide_in",
+      "cases": 36,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "slide-in-benefits",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "slide-in-code",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "slide-in-nudge",
+      "display_type": "slide_in",
+      "cases": 36,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "slide-in-photo",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "slide-in-question",
+      "display_type": "slide_in",
+      "cases": 72,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "split-notice",
+      "display_type": "floating_bar",
+      "cases": 284,
+      "overlaps": [],
+      "overflows": []
+    },
+    {
+      "id": "ticker-line",
+      "display_type": "floating_bar",
+      "cases": 568,
+      "overlaps": [],
+      "overflows": []
+    }
+  ]
+}

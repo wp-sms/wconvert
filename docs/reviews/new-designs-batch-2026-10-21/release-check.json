@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "release": "7a1c9af6b8ed731d409f9410c419fc8ab6fcb0743e8353455be7108d6098a8a7",
+  "objects": {
+    "glacier": {
+      "scope": "public",
+      "tier": "free",
+      "revision": 1,
+      "object": "v3/designs/6586fd2cf53daf66f4e80595a80bbb9e04c8bdc702a96dcb6ff2d19563cecbaa.json"
+    },
+    "changelog": {
+      "scope": "public",
+      "tier": "free",
+      "revision": 1,
+      "object": "v3/designs/76a384d1099274c69ae4e9ef293497c376842163e7edabe188f4f613e0cfe329.json"
+    },
+    "tasting-card": {
+      "scope": "public",
+      "tier": "free",
+      "revision": 1,
+      "object": "v3/designs/344d7e30cae9592c95b6199b069e048dc9ce7edbc30d5ed31cc954988dc47f35.json"
+    },
+    "big-number": {
+      "scope": "public",
+      "tier": "free",
+      "revision": 1,
+      "object": "v3/designs/d4a1249a471f68317ee9c1c692933d839ab8ff9ed43b587a1e4cac418d9e9273.json"
+    },
+    "lookbook": {
+      "scope": "private",
+      "tier": "pro",
+      "revision": 1,
+      "object": "v3/designs/2fb00109b119640cee5318c9a38352c1e05b8e8b72af12635becda9ac5a72afc.json"
+    },
+    "product-trio": {
+      "scope": "private",
+      "tier": "pro",
+      "revision": 1,
+      "object": "v3/designs/9475bca745569aee2bd86792957db9c44b2288a8ce65ecd4a39679e6be2b9fac.json"
+    }
+  },
+  "verify_template_release": {
+    "pro_woocommerce": {
+      "tier": "pro",
+      "woocommerce": true,
+      "release": "7a1c9af6b8ed731d409f9410c419fc8ab6fcb0743e8353455be7108d6098a8a7",
+      "designs": 66,
+      "setups": 89,
+      "images": 8,
+      "skipped": [],
+      "offline_designs": 66,
+      "keyed_names": true,
+      "result": "pass"
+    },
+    "free_only": {
+      "tier": "free",
+      "woocommerce": true,
+      "release": "7a1c9af6b8ed731d409f9410c419fc8ab6fcb0743e8353455be7108d6098a8a7",
+      "designs": 43,
+      "setups": 61,
+      "images": 4,
+      "skipped": {
+        "locked": [
+          "accessory-workbench",
+          "availability-note",
+          "basket-companion",
+          "callback-slip",
+          "cart-accessories",
+          "cart-additions",
+          "coffee-finder-board",
+          "conversation-note",
+          "inline-cart-nudge",
+          "inline-signpost",
+          "launch-index",
+          "sample-envelope",
+          "slide-in-nudge",
+          "slide-in-question",
+          "split-notice",
+          "field-guide",
+          "kind-words",
+          "last-call",
+          "lookbook",
+          "polaroid",
+          "product-trio",
+          "ribbon-tag",
+          "ticker-line"
+        ],
+        "setup:locked": [
+          "accessible-visit-note",
+          "add-useful-extras",
+          "basket-cross-sells",
+          "callback-slip",
+          "coffee-taste-finder",
+          "explore-compatible-extras",
+          "launch-index",
+          "recommend-accessory",
+          "shopping-guidance",
+          "studio-conversation",
+          "upholstery-samples",
+          "cart-straight-away",
+          "cart-delivery-help",
+          "seasonal-service-link",
+          "return-policy-guide",
+          "series-start",
+          "trade-account-enquiry",
+          "access-enquiry",
+          "equipment-hire-enquiry",
+          "reader-panel-interest",
+          "product-demo-enquiry",
+          "furniture-fit-guide",
+          "opening-hours-signpost",
+          "final-hours-sale",
+          "early-access-launch",
+          "monthly-planting-letter",
+          "new-batch-first-look",
+          "finish-the-set"
+        ]
+      },
+      "offline_designs": 43,
+      "keyed_names": true,
+      "result": "pass"
+    }
+  },
+  "hosted_installed_on_free": [
+    "bakery-first-loaf",
+    "big-number",
+    "changelog",
+    "glacier",
+    "release-notes-signup",
+    "tasting-card"
+  ],
+  "hosted_skipped_on_free": []
+}

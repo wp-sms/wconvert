@@ -1,11 +1,22 @@
 {
   "id": "finish-the-set",
-  "shown": {
-    "cards": 2,
-    "text": "GOES WELL WITH IT\n\nFinish the set.\n\nThree pieces picked to go with this one.\nAdd any of them from here.\n\nReusable coffee filters\n$15.00\nAdd to cart\nView product"
-  },
-  "overflow": false,
-  "added": true,
-  "cart_count_after": 1,
-  "errors": []
+  "site": "disposable WordPress, WooCommerce fixture, main product = fixture product 1",
+  "widths": {
+    "320": {
+      "products_shown": 2,
+      "overflow": false,
+      "added_confirmed": true,
+      "cart_count_after": 1,
+      "closed": true,
+      "errors": []
+    },
+    "1280": {
+      "products_shown": 2,
+      "overflow": false,
+      "added_confirmed": true,
+      "cart_count_after": 1,
+      "closed": true,
+      "errors": []
+    }
+  }
 }
