@@ -1,0 +1,53 @@
+{
+  "release": "26b88f20bbe723dfe7e023d50a847399b728bed1cee1617582db7991f932d903",
+  "installed": [
+    "bf-acid-markdown",
+    "bf-early-list",
+    "bf-weekend-edition",
+    "cm-cyber-club",
+    "cm-digital-after-hours"
+  ],
+  "collection": {
+    "id": "catalog-black-friday-cyber-monday-2026",
+    "revision": "1ebe2cc847d79d113be35acc46491b129bc21f417466af8c4819eed58fb05412",
+    "name": "Black Friday & Cyber Monday",
+    "description": "Build your early-access list, reveal a sale offer or count down to closing time. Twenty designs across five formats. Set your own discount, coupon, shop link and campaign end date.",
+    "cover": "sale",
+    "priority": 90,
+    "business_types": [
+      "stores"
+    ],
+    "markets": [],
+    "items": [
+      {
+        "setup_id": "setup-4-bf-acid-markdown",
+        "stage": "during"
+      },
+      {
+        "setup_id": "setup-5-bf-early-list",
+        "stage": "before"
+      },
+      {
+        "setup_id": "setup-1-bf-weekend-edition",
+        "stage": "during"
+      },
+      {
+        "setup_id": "setup-7-cm-cyber-club",
+        "stage": "before"
+      },
+      {
+        "setup_id": "setup-1-cm-digital-after-hours",
+        "stage": "during"
+      }
+    ],
+    "event": {
+      "family": "black-friday",
+      "start": "2026-11-27",
+      "end_exclusive": "2026-12-01",
+      "feature_start": "2026-10-16",
+      "feature_end_exclusive": "2026-12-01"
+    }
+  },
+  "campaignsUnchanged": true,
+  "passed": true
+}

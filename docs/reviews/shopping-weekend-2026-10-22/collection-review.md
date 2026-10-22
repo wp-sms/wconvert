@@ -11,3 +11,13 @@ Member-level WordPress and visual evidence remains current: `results.json` cover
 The publisher now supports `catalogue_only` editorial metadata so this mixed Free/Pro collection is served as a complete online collection rather than bundled as a partial list. Collection tests cover exclusion from bundled snapshots, preservation of hosted membership and rejection of accidental bundled copies. Existing collection checks and reviews remain current.
 
 Validation: all 90 design-library tool tests passed, including hosted delivery and stale approval regressions. All eleven collections have current approvals. Catalogue revision and source-contract checks passed. Both final ZIP artifact contracts passed; `collection-packaging.json` confirms fifteen designs in Pro, none of these twenty in Free, and no bundled collection snapshot.
+
+## Live publication
+
+Published release `26b88f20bbe723dfe7e023d50a847399b728bed1cee1617582db7991f932d903` to `https://templates.wconvert.io`. The previous release remains retained. An initial R2 read failure left its pointer untouched; after inspecting status, immutable files were read twice with bounded parallelism and publication resumed through the repository's unchanged conditional publisher. The final pointer was read back successfully.
+
+`server-release.json` records byte-exact live HTTPS checks for 569 public files, all twenty new design/setup entries, ten Free design/setup downloads, and thirty anonymous Pro refusals with private responses. No live design was removed or downgraded. Existing catalogue entries were retained.
+
+`collection-wordpress.json` records a real WordPress catalogue refresh from the live HTTPS server (91 designs, no skipped entries) and successful installation of all five Free setups. The native picker returns the collection with those five installed setup references; no campaign was created or changed. The existing hosted-collection behavior lists installed online setups, not every remote member or a matching bundled Playbook. Thus the live catalogue/website has all twenty members, while the editor's collection grows as its online setups are installed. This work does not change that discovery behavior. Licensed Pro downloads were not exercised; their anonymous protection and the fifteen native Pro designs were checked separately.
+
+Inspected `collection-wordpress-desktop.png` and `collection-wordpress-phone.png`: the title, description, dates and matching-setup count fit the native card at 1440px and 390px. The phone shelf scrolls horizontally as designed and its controls remain reachable. Opening the card in the offer goal lists the three installed Free offers; the other two installed members belong to email signup. Counts reflect the chosen goal, not all catalogue members.
