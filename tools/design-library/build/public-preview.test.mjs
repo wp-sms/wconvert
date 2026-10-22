@@ -33,6 +33,42 @@ test('includes each result variant and labels countdowns as examples', () => {
   dom.window.close();
 });
 
+test('public countdown samples preserve the renderer’s boxes, density and authored unit labels', () => {
+  const design = JSON.parse(readFileSync(new URL('../../../pro/modules/display-types/templates/halloween-countdown.json', import.meta.url)));
+  for (const options of [{}, { designId: design.id, designOnly: true }]) {
+    const markup = publicPreview({ name: 'Countdown', templates: [design] }, renderer, [], options);
+    const dom = new JSDOM(markup);
+    const timer = dom.window.document.querySelector('template').content.querySelector('[role=timer]');
+    assert.equal(timer.classList.contains('wc-boxes'), true);
+    assert.equal(timer.classList.contains('wc-compact'), true);
+    assert.deepEqual([...timer.querySelectorAll('.wc-unit')].map(unit => ({
+      value: unit.querySelector('.wc-count')?.textContent,
+      label: unit.querySelector('small')?.textContent,
+    })), [
+      { value: '2', label: 'Days' },
+      { value: '14', label: 'Hrs' },
+      { value: '00', label: 'Mins' },
+      { value: '00', label: 'Secs' },
+    ]);
+    assert.equal(timer.getAttribute('aria-label'), 'Example countdown, not a live deadline');
+    assert.equal(timer.getAttribute('aria-atomic'), 'true');
+    assert.doesNotMatch(markup, /setInterval|Date\.now|endsAt/);
+    dom.window.close();
+  }
+});
+
+test('plain countdown samples keep the inline slot and renderer time format', () => {
+  const design = JSON.parse(readFileSync(new URL('../../../pro/modules/display-types/templates/bar-countdown.json', import.meta.url)));
+  const markup = publicPreview({ templates: [design] }, renderer, [], { designId: design.id, designOnly: true });
+  const dom = new JSDOM(markup);
+  const timer = dom.window.document.querySelector('template').content.querySelector('[role=timer]');
+  assert.equal(timer.classList.contains('wc-boxes'), false);
+  assert.equal(timer.querySelectorAll('.wc-count').length, 1);
+  assert.equal(timer.querySelector('.wc-count').textContent, '2d 14:00:00');
+  assert.equal(timer.getAttribute('aria-label'), 'Example countdown, not a live deadline');
+  dom.window.close();
+});
+
 test('design-only v1 omits chrome and applies screen/device fragments without resetting the screen', () => {
   const design = JSON.parse(readFileSync(new URL('../../../resources/templates/library/excerpt-window.json', import.meta.url)));
   // A slash is part of the authored result ID as well as the step/result delimiter.

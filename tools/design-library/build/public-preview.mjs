@@ -37,7 +37,16 @@ export function publicPreview(pack, renderer, media = [], { designId, embed = fa
         if (body) body.textContent = variant.body;
         if (link) { link.hidden = !variant.href; link.textContent = variant.link_label || ''; }
       }
-      for (const timer of node.querySelectorAll('[role=timer]')) { timer.textContent = '02d 14h 00m'; timer.setAttribute('aria-label', 'Example countdown, not a live deadline'); timer.setAttribute('title', 'Example countdown. Set your own campaign deadline.'); }
+      for (const timer of node.querySelectorAll('[role=timer]')) {
+        // Fill the renderer's slots without replacing its boxes or authored labels.
+        // Fixed sample values keep public previews and thumbnail captures deterministic.
+        const parts = { d: '2', h: '14', m: '00', s: '00' };
+        for (const slot of timer.querySelectorAll('.wc-count')) {
+          slot.textContent = parts[slot.dataset.unit] ?? '2d 14:00:00';
+        }
+        timer.setAttribute('aria-label', 'Example countdown, not a live deadline');
+        timer.setAttribute('title', 'Example countdown. Set your own campaign deadline.');
+      }
       // All actions stay in the showcase toolbar. Samples cannot navigate or submit.
       for (const control of node.querySelectorAll('input,select,textarea,button')) { control.disabled = true; control.removeAttribute('name'); }
       for (const link of node.querySelectorAll('a')) { link.removeAttribute('href'); link.removeAttribute('target'); }
