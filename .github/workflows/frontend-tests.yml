@@ -63,7 +63,10 @@ jobs:
         with:
           php-version: '8.1'
           coverage: none
-      - run: composer install --no-progress
+      # The verifier boots the unit suite's bootstrap, which loads Pro's autoloader.
+      - run: |
+          composer install --no-progress
+          composer install --working-dir=pro --no-progress
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

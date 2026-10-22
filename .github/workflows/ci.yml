@@ -255,6 +255,7 @@ jobs:
       # A design change can break the form switch on it (ADR 0163).
       - name: Converted designs
         run: |
+          composer install --working-dir=pro --no-progress
           WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npx vitest run tests/js/capture-conversion-designs.test.ts
           php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
 
