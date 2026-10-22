@@ -337,6 +337,10 @@ npm test                    # renderer-manifest-parity, builder-gallery — READ
 composer verify:source      # no Pro tree in the free tree
 ```
 
+**A design must still look right with and without a form** (ADR 0163): the
+editor's form switch turns an offer into a signup and back, and
+`tests/js/capture-conversion-designs.test.ts` checks every design both ways.
+
 `npm test` can print a green summary and **still exit 1**: an unhandled error
 in a `requestAnimationFrame` or a timer is reported below it.
 

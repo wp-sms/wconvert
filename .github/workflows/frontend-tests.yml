@@ -52,6 +52,29 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  # The form switch's output against the PHP rules a publish applies (ADR 0163).
+  converted-designs:
+    name: 'Converted designs'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+      # The verifier boots the unit suite's bootstrap, which loads Pro's autoloader.
+      - run: |
+          composer install --no-progress
+          composer install --working-dir=pro --no-progress
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npx vitest run tests/js/capture-conversion-designs.test.ts
+      - run: php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
+
   typecheck:
     name: 'TypeScript'
     runs-on: ubuntu-latest

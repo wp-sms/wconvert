@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogContent } from '../components/ui/alert-dialog';
 import { EditTree, screenIconOf, type EditTreeLook, type EditTreeRow } from './EditTree';
 import { FactList, FactRow, PanelHeader, PanelSection } from './PanelSection';
 import { QuestionPanelContext, ScreenAnswers, ScreenChips, ScreenIssues, ScreenThen } from './ScreenPanel';
+import { contactWording, privacyLink } from './structure/captureWording';
 import { nodesOf } from './structure/tree';
 import type { Path } from './panel';
 import type { JourneyChange } from './structure/changeTestGuide';
@@ -325,8 +326,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
       { type: 'heading', text: __('Your signup was received', 'wconvert'), role: 'headline' },
       ...rewards,
       { type: 'text', text: channel === 'email' ? __('Would you also like email updates?', 'wconvert') : __('Would you also like text updates?', 'wconvert'), role: 'body' },
-      { type: 'field', name: channel, required: true, label: channel === 'email' ? __('Email address', 'wconvert') : __('Phone number', 'wconvert') },
-      { type: 'consent', text: channel === 'email' ? __('Send me email updates. %s', 'wconvert') : __('Send me text updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
+      { type: 'field', name: channel, required: true, label: contactWording(channel).label },
+      { type: 'consent', text: contactWording(channel).optionalConsent, link: privacyLink(), hidden: false, role: 'consent_text' },
       { type: 'button', label: channel === 'email' ? __('Sign up for email', 'wconvert') : __('Sign up for SMS', 'wconvert'), action: 'submit', submission: id },
       { type: 'button', label: __('No thanks', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': 'fg' }, action: 'skip', submission: id },
       { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },

@@ -2,9 +2,10 @@
 
 Accepted 2026-10-22. Amends 0010, 0020, 0059, 0080, 0085 and 0099.
 
-Delivered in four PRs. §2 lands first; §1, §3 and §4 arrive with the
-conversion engine, the editor switch and the gallery, and until then they
-describe the decision, not the code. Issue #322; the approved
+Delivered in four PRs. §2 and the engine behind §1 and §3 have landed
+(`builder/structure/captureConversion.ts`); the switch, the box and §4 arrive
+with the editor and the gallery, and until then they describe the decision,
+not the code. Issue #322; the approved
 prototype is <https://claude.ai/artifact/DJJhMNevHZbXfqMha2DiPs>.
 
 Merchants pick a design for how it looks, then decide whether to show the offer
@@ -23,10 +24,13 @@ it and show the same short "what changes" box. One Undo reverts the design and
 the Goal together.
 
 - **Adding a form** turns the offer screen into the form screen. Its headline and
-  artwork stay; a field, a visible consent and a submit button are added in the
-  counted link's place. A thank-you screen cloned from the offer gets the code and
+  artwork stay; a field and a submit button take the counted link's place, and
+  a visible consent follows the button (after its row, where the button sits
+  beside other things), as in every library form. A thank-you screen cloned from the offer gets the code and
   the old link as a `followup` (§3). Only the one email or phone field is added.
-- **Removing a form** keeps the form screen's words and artwork, moves the code
+- **Removing a form** keeps the form's first screen (where a form over two
+  screens has its headline and artwork; the submit screen's words are listed as
+  removed), keeps its words and artwork, moves the code
   and any `followup` onto it, and drops everything else the form owned: fields,
   consent, buttons, the thank-you screen, intro screens, optional signups,
   destinations and field mappings. Each is named in the box first. Saved Leads
@@ -35,8 +39,12 @@ the Goal together.
   Goal, and clears destinations for the old channel.
 
 Quizzes, lead magnets, product blocks, content locks, cart Goals and branching
-journeys are refused with one plain line. Designs the template sweep finds
-cannot carry a form are marked `"form_switch": false`.
+journeys are refused with one plain line. A per-design opt-out
+(`"form_switch": false`) was planned for designs with no room for a form; the
+screenshot sweep of every design at 1440 and 390 px found none, so there is no
+such flag. `tests/js/capture-conversion-designs.test.ts` keeps checking that
+every design converts and passes the publish contracts; how it looks is
+checked only by repeating that sweep.
 
 Form-owned text (field label, consent, submit, thank-you headline) uses defaults
 when added and is listed when removed. Re-adding regenerates the defaults; only

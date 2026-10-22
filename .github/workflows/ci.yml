@@ -153,6 +153,7 @@ jobs:
               - '.github/workflows/ci.yml'
             js:
               - 'src/**'
+              - 'bin/verify-converted-designs.php'
               - 'tools/visual-tests/**'
               - 'tools/design-system/seed/**'
               - 'composer.*'
@@ -250,6 +251,13 @@ jobs:
       # differently; the failure names the one command that carries them.
       - name: Approvals current
         run: npm run templates:releasable
+
+      # A design change can break the form switch on it (ADR 0163).
+      - name: Converted designs
+        run: |
+          composer install --working-dir=pro --no-progress
+          WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npx vitest run tests/js/capture-conversion-designs.test.ts
+          php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
 
       - name: Worker
         working-directory: tools/template-server

@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 import { graphEdgeId } from './graph';
 import { graphInsertionLocations } from './graphInsertion';
+import { contactWording, privacyLink, type ContactChannel } from './captureWording';
 import { freshScreen, referencedJourney, walkNodes } from './journey';
 
 /** Check acceptance, including hidden exits, rather than just passing a card. */
@@ -27,7 +28,7 @@ function acceptedBeforeEdge(tree: TemplateTree, submission: string, target: stri
 }
 
 export function graphCaptureInsertion(tree: TemplateTree, primaryChannel: string | null | undefined) {
-  const channel = (primaryChannel === 'sms' || primaryChannel === 'phone') ? 'email' : 'phone';
+  const channel: ContactChannel = (primaryChannel === 'sms' || primaryChannel === 'phone') ? 'email' : 'phone';
   const reason = !tree.graph || !['email', 'phone', 'sms'].includes(primaryChannel ?? '')
     ? __('Optional second signups are available for email or SMS list campaigns.', 'wconvert')
     : tree.submissions.length !== 1 || !tree.submissions[0].required
@@ -58,8 +59,8 @@ export function addGraphCapture(tree: TemplateTree, primaryChannel: string | nul
     content: { type: 'stack' as const, children: [
       { type: 'heading', text: __('Your signup was received', 'wconvert'), role: 'headline' }, ...rewards,
       { type: 'text', text: channel === 'email' ? __('Would you also like email updates?', 'wconvert') : __('Would you also like text updates?', 'wconvert'), role: 'body' },
-      { type: 'field', name: channel, required: true, label: channel === 'email' ? __('Email address', 'wconvert') : __('Phone number', 'wconvert') },
-      { type: 'consent', text: channel === 'email' ? __('Send me email updates. %s', 'wconvert') : __('Send me text updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
+      { type: 'field', name: channel, required: true, label: contactWording(channel).label },
+      { type: 'consent', text: contactWording(channel).optionalConsent, link: privacyLink(), hidden: false, role: 'consent_text' },
       { type: 'button', label: channel === 'email' ? __('Sign up for email', 'wconvert') : __('Sign up for SMS', 'wconvert'), action: 'submit', submission: submissionId },
       { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId, tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
       { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
