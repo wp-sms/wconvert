@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import type { Template, TemplateNode, TemplateScreen, TemplateTree } from '@renderer/types';
 import type { GoalEntry } from '../../goals/api';
+import { LAYOUTS, childKeysOf } from '../panel';
 import { contactWording, privacyLink, type ContactChannel } from './captureWording';
 import { referencedJourney, submissionScreen, walkNodes } from './journey';
 import { isRefusal, straightenedJourney } from './straighten';
@@ -20,11 +21,14 @@ import { isRefusal, straightenedJourney } from './straighten';
 type Config = Readonly<Record<string, unknown>>;
 type Node = Record<string, unknown>;
 
-export type CaptureTarget = { readonly capture: ContactChannel } | { readonly capture: 'none'; readonly link?: { readonly label: string; readonly href: string } };
+/** A counted link the box offers to add where the form was. */
+export interface OfferLink { readonly label: string; readonly href: string }
+
+export type CaptureTarget = { readonly capture: ContactChannel } | { readonly capture: 'none'; readonly link?: OfferLink };
 
 export interface ConversionContext {
   readonly goals: readonly GoalEntry[];
-  /** The site's services, with the contact channels each takes, to name what stops. */
+  /** The site's Destinations, with the contact channels each takes, to name what stops. */
   readonly destinations?: readonly { readonly id: string; readonly label: string; readonly channels: readonly string[] }[];
 }
 
@@ -38,7 +42,7 @@ export type ChangeItem =
 
 /** What the box lists. Data only; the box words it. */
 export type Change =
-  | { readonly kind: 'screen-gets'; readonly screen: string; readonly gets: readonly ChangeItem[]; readonly loses: readonly ChangeItem[] }
+  | { readonly kind: 'screen-changes'; readonly screen: string; readonly gets: readonly ChangeItem[]; readonly loses: readonly ChangeItem[] }
   | { readonly kind: 'new-screen'; readonly screen: string; readonly shows: readonly ChangeItem[] }
   | { readonly kind: 'field-swap'; readonly screen: string; readonly from: string; readonly to: string; readonly consent: string }
   | { readonly kind: 'removed-screens'; readonly screens: readonly { readonly name: string; readonly words: readonly string[] }[] }
@@ -52,14 +56,18 @@ export interface Conversion {
   readonly changes: readonly Change[];
 }
 
-export interface Refusal { readonly reason: string }
+/** Why the switch cannot convert this campaign, in one plain line. */
+export interface NotConverted { readonly reason: string }
 
-const LIST_KEYS = ['children', 'start', 'end'] as const;
-const LAYOUTS = new Set(['stack', 'row', 'split', 'grid', 'panel', 'media']);
+/** What a conversion builds before the Goal is chosen: the tree, its rows in the box, and the counted link left. */
+interface Converted { readonly tree: TemplateTree; readonly changes: readonly Change[]; readonly link: string | null }
 
-const isLayout = (node: TemplateNode) => LAYOUTS.has(node.type);
-const isCountedLink = (node: TemplateNode) => node.type === 'button' && 'action' in node && node.action === 'link';
+const isLayout = (node: TemplateNode) => LAYOUTS[node.type] !== undefined;
+const isButton = (node: TemplateNode, action: string) => node.type === 'button' && 'action' in node && node.action === action;
+const isCountedLink = (node: TemplateNode) => isButton(node, 'link');
 const text = (node: TemplateNode | undefined, key = 'text'): string => node ? String((node as unknown as Node)[key] ?? '') : '';
+/** A node's child lists, whichever keys its layout declares. */
+const listsOf = (node: TemplateNode): TemplateNode[][] => childKeysOf(node.type).map(key => ((node as unknown as Node)[key] as TemplateNode[] | undefined) ?? []);
 
 /**
  * The code and, when it sits in a small group of its own (a label and a styled
@@ -69,17 +77,16 @@ const text = (node: TemplateNode | undefined, key = 'text'): string => node ? St
 function codeGroupOf(root: TemplateNode): TemplateNode | null {
   const code = walkNodes(root).find(node => node.type === 'code');
   if (!code) return null;
-  const parent = walkNodes(root).find(node => isLayout(node) && node !== root
-    && LIST_KEYS.some(key => ((node as unknown as Node)[key] as TemplateNode[] | undefined)?.includes(code)));
+  const parent = walkNodes(root).find(node => isLayout(node) && node !== root && listsOf(node).some(list => list.includes(code)));
   if (!parent) return code;
-  const siblings = LIST_KEYS.flatMap(key => ((parent as unknown as Node)[key] as TemplateNode[] | undefined) ?? []);
+  const siblings = listsOf(parent).flat();
   return siblings.every(node => node.type === 'code' || (node.type === 'text' && !['headline', 'body'].includes(text(node, 'role')))) ? parent : code;
 }
 
 /** Rebuild one node's lists, child by child. `each` returns what replaces the child. */
 function mapLists(node: TemplateNode, each: (child: TemplateNode, parent: TemplateNode) => TemplateNode[]): TemplateNode {
   const copy = { ...node } as Node;
-  for (const key of LIST_KEYS) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).flatMap(child => each(child, node));
+  for (const key of childKeysOf(node.type)) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).flatMap(child => each(child, node));
   return copy as unknown as TemplateNode;
 }
 
@@ -89,7 +96,7 @@ const withoutIds = (node: TemplateNode): TemplateNode => {
   return copy as unknown as TemplateNode;
 };
 
-const emptyLayout = (node: TemplateNode) => isLayout(node) && LIST_KEYS.every(key => (((node as unknown as Node)[key] as unknown[] | undefined) ?? []).length === 0);
+const emptyLayout = (node: TemplateNode) => isLayout(node) && listsOf(node).every(list => list.length === 0);
 
 function freshId(tree: TemplateTree, base: string): string {
   let id = base, serial = 2;
@@ -97,7 +104,7 @@ function freshId(tree: TemplateTree, base: string): string {
   return id;
 }
 
-/** The goal this design now fits: the current one when it still does (A6), else the one its outcome names. */
+/** The goal this design now fits: the current one when it still does, else the one its outcome names. */
 function goalFor(goals: readonly GoalEntry[], current: string, target: CaptureTarget, link: boolean): GoalEntry | undefined {
   const fits = (entry: GoalEntry) => {
     const outcome = entry.outcome;
@@ -110,8 +117,8 @@ function goalFor(goals: readonly GoalEntry[], current: string, target: CaptureTa
   return goals.find(entry => fits(entry) && (target.capture === 'none' || entry.outcome.audience_channel === target.capture));
 }
 
-/** The offer screen becomes the form; a thank-you screen styled like it gets the code and the link (A1–A3). */
-function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: boolean, tokens: Readonly<Record<string, string>>) {
+/** The offer screen becomes the form; a thank-you screen styled like it gets the code and the link. */
+function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: boolean, tokens: Readonly<Record<string, string>>): Converted {
   const offer = tree.steps[0];
   const link = walkNodes(offer.content).find(isCountedLink);
   const group = codeGroupOf(offer.content);
@@ -143,15 +150,15 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
   });
   let content = form(offer.content);
   if (!link) {
-    // Nothing to replace: the form follows the headline's words.
-    const headline = walkNodes(offer.content).find(node => node.type === 'heading');
+    // Nothing to replace: the form follows the headline's words. The headline
+    // is found by its id, because `form` has already copied every layout above it.
+    const headline = walkNodes(offer.content).find(node => node.type === 'heading' && text(node, 'id') !== '');
     const append = (node: TemplateNode): TemplateNode => {
-      // Found by its id: `form` has already copied every layout above it.
-      const holds = LIST_KEYS.find(key => ((node as unknown as Node)[key] as TemplateNode[] | undefined)?.some(child => child.type === 'heading' && text(child, 'id') === text(headline, 'id')));
+      const holds = childKeysOf(node.type).find(key => ((node as unknown as Node)[key] as TemplateNode[] | undefined)?.some(child => child.type === 'heading' && text(child, 'id') === text(headline, 'id')));
       if (holds) return { ...node, [holds]: [...((node as unknown as Node)[holds] as TemplateNode[]), field, submit, consent] } as unknown as TemplateNode;
       return mapLists(node, child => [append(child)]);
     };
-    const rootList = LIST_KEYS.find(key => Array.isArray((content as unknown as Node)[key]));
+    const rootList = childKeysOf(content.type).find(key => Array.isArray((content as unknown as Node)[key]));
     content = headline ? append(content)
       : rootList ? { ...content, [rootList]: [...((content as unknown as Node)[rootList] as TemplateNode[]), field, submit, consent] } as unknown as TemplateNode
         : { type: 'stack', children: [content, field, submit, consent] } as unknown as TemplateNode;
@@ -168,7 +175,7 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
       const kept = mapLists(node, child => thanks(child)) as unknown as Node;
       delete kept.id;
       // A rule only separates things: none at either end of a list, never two together.
-      for (const key of LIST_KEYS) if (Array.isArray(kept[key])) {
+      for (const key of childKeysOf(node.type)) if (Array.isArray(kept[key])) {
         kept[key] = (kept[key] as TemplateNode[]).filter((child, at, list) => child.type !== 'divider'
           || (at > 0 && at < list.length - 1 && list[at - 1].type !== 'divider'));
       }
@@ -205,7 +212,7 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
   ];
   const next = referencedJourney({ ...tree, steps: screens, submissions: [{ id: 'primary', required: true, fields: [], consents: [] }] });
   const changes: Change[] = [
-    { kind: 'screen-gets', screen: offer.name, gets: [{ kind: 'field', label: words.label }, { kind: 'consent' }, { kind: 'button', label }], loses: [] },
+    { kind: 'screen-changes', screen: offer.name, gets: [{ kind: 'field', label: words.label }, { kind: 'consent' }, { kind: 'button', label }], loses: [] },
     { kind: 'new-screen', screen: next.steps[1].name, shows: [
       ...(code ? [{ kind: 'code', text: text(code) } as const] : []),
       ...(link ? [{ kind: 'link', label: text(link, 'label') } as const] : []),
@@ -217,28 +224,30 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
 /** Form-owned nodes: they go with the form. */
 const FORM_ACTIONS = new Set(['submit', 'skip', 'back', 'next']);
 const formOwned = (node: TemplateNode) => node.type === 'field' || node.type === 'consent'
-  || (node.type === 'button' && 'action' in node && FORM_ACTIONS.has(String(node.action)));
+  || [...FORM_ACTIONS].some(action => isButton(node, action));
 const same = (a: TemplateNode, b: TemplateNode) => JSON.stringify(withoutIds(a)) === JSON.stringify(withoutIds(b));
 
 /**
  * The form screen becomes the offer: its words and artwork stay, the code and
  * the success link come back from the thank-you screen, and every other
- * screen goes (R1–R4). A no-form campaign is one screen.
+ * screen goes. A no-form campaign is one screen. Null where the form has no
+ * button that sends it, which only an unfinished draft can have.
  */
-function removeForm(tree: TemplateTree, link: { readonly label: string; readonly href: string } | undefined) {
+function removeForm(tree: TemplateTree, link: OfferLink | undefined): Converted | null {
   const at = submissionScreen(tree, tree.submissions[0]?.id);
   // A form over several screens keeps its first: that is where its headline
   // and artwork are. An intro before it is a message, not the form, and goes.
   const first = tree.steps.findIndex((step, index) => index <= at && step.kind === 'input');
+  if (at < 0 || first < 0) return null;
   const screen = tree.steps[first];
   const thanks = tree.steps.find(step => step.kind === 'acknowledgement');
   const followup = thanks ? walkNodes(thanks.content, false).find(node => node.type === 'followup') : undefined;
   const group = thanks ? codeGroupOf(thanks.content) : null;
   const code = group ? walkNodes(group).find(node => node.type === 'code') : undefined;
-  const submitted = walkNodes(tree.steps[at].content).find(node => node.type === 'button' && 'action' in node && node.action === 'submit');
+  const submitted = walkNodes(tree.steps[at].content).find(node => isButton(node, 'submit'));
+  if (!submitted) return null;
   // The button's place on the kept screen: its submit, or the Continue that led to it.
-  const submit = first === at ? submitted
-    : walkNodes(screen.content).find(node => node.type === 'button' && 'action' in node && node.action === 'next');
+  const submit = first === at ? submitted : walkNodes(screen.content).find(node => isButton(node, 'next'));
 
   // The counted link takes the submit's place, with the submit's look: the
   // success link it was turned into (ADR 0080), or the one the box offered.
@@ -249,9 +258,7 @@ function removeForm(tree: TemplateTree, link: { readonly label: string; readonly
   // follows it there, found here by its words. Where nothing matches, it goes
   // in the submit's place, above the button.
   const moving = group && !walkNodes(screen.content).some(node => node.type === 'code') ? group : null;
-  const siblings = moving ? walkNodes(thanks!.content).filter(isLayout)
-    .flatMap(node => LIST_KEYS.map(key => ((node as unknown as Node)[key] as TemplateNode[] | undefined) ?? []))
-    .find(list => list.includes(moving)) ?? [] : [];
+  const siblings = moving ? walkNodes(thanks!.content).filter(isLayout).flatMap(listsOf).find(list => list.includes(moving)) ?? [] : [];
   const after = moving ? siblings.slice(siblings.indexOf(moving) + 1) : [];
   const anchor = (candidate: TemplateNode) => after.some(next => next.type === 'followup' ? candidate === button : same(candidate, next));
   const anchored = !!moving && (after.some(next => next.type === 'followup') && button !== null
@@ -282,10 +289,10 @@ function removeForm(tree: TemplateTree, link: { readonly label: string; readonly
   const loses: ChangeItem[] = [
     ...shown.filter(node => node.type === 'field').map(node => ({ kind: 'field', label: text(node, 'label') } as const)),
     ...(shown.some(node => node.type === 'consent') ? [{ kind: 'consent' } as const] : []),
-    ...(submitted ? [{ kind: 'button', label: text(submitted, 'label') } as const] : []),
+    { kind: 'button', label: text(submitted, 'label') } as const,
   ];
   const others = tree.steps.filter(step => step !== screen);
-  const changes: Change[] = [{ kind: 'screen-gets', screen: screen.name,
+  const changes: Change[] = [{ kind: 'screen-changes', screen: screen.name,
     gets: [...(code ? [{ kind: 'code', text: text(code) } as const] : []), ...(button ? [{ kind: 'link', label: text(button as unknown as TemplateNode, 'label') } as const] : [])],
     loses }];
   if (others.length > 0) changes.push({ kind: 'removed-screens', screens: others.map(step => ({ name: step.name,
@@ -303,15 +310,18 @@ export function captureState(tree: TemplateTree): 'none' | 'email' | 'phone' | '
   return asks('email') ? 'email' : asks('phone') ? 'phone' : 'other';
 }
 
-/** The field and consent change channel; every screen and word stays (S1). */
+/** The field and consent change channel; every screen and word stays. */
 function swapChannel(tree: TemplateTree, from: ContactChannel, to: ContactChannel, consentShown: boolean) {
   const primary = tree.submissions[0];
   const words = contactWording(to);
-  let screen = '', before = '';
+  // The one field that changes, found by id: every node below is a copy.
+  const swapped = tree.steps.flatMap(step => walkNodes(step.content))
+    .find(node => node.type === 'field' && primary.fields.includes(text(node, 'id')) && text(node, 'name') === from);
+  const swappedId = text(swapped, 'id');
+  const screen = tree.steps.find(step => walkNodes(step.content).includes(swapped as TemplateNode))?.name ?? '';
   const swap = (node: TemplateNode): TemplateNode => {
     const own = 'id' in node && typeof node.id === 'string';
-    if (node.type === 'field' && own && primary.fields.includes(String(node.id)) && text(node, 'name') === from) {
-      before = text(node, 'label');
+    if (node.type === 'field' && own && node.id === swappedId) {
       const field = { ...node, name: to, label: words.label, placeholder: words.placeholder } as Node;
       if (to === 'email') { delete field.phone_country; delete field.phone_dropdown; }
       return field as unknown as TemplateNode;
@@ -319,26 +329,20 @@ function swapChannel(tree: TemplateTree, from: ContactChannel, to: ContactChanne
     if (node.type === 'consent' && own && primary.consents[0] === node.id) {
       return { ...node, text: words.consent, link: privacyLink(), ...(consentShown ? { hidden: false } : {}) } as TemplateNode;
     }
-    // A list always shows a consent (G4); a form that had none gets one after its field.
-    return mapLists(node, child => {
-      const swapped = swap(child);
-      return addConsent && child.type === 'field' && swapped !== child
-        ? [swapped, { type: 'consent', role: 'consent_text', text: words.consent, link: privacyLink(), hidden: false } as TemplateNode] : [swapped];
-    });
+    // A list always shows a consent; a form that had none gets one after its field.
+    return mapLists(node, child => addConsent && child.type === 'field' && text(child, 'id') === swappedId
+      ? [swap(child), { type: 'consent', role: 'consent_text', text: words.consent, link: privacyLink(), hidden: false } as TemplateNode] : [swap(child)]);
   };
   const addConsent = consentShown && primary.consents.length === 0;
-  const steps = tree.steps.map(step => {
-    const content = swap(step.content);
-    if (content !== step.content && before && !screen) screen = step.name;
-    return { ...step, content };
-  });
-  return { tree: addConsent ? referencedJourney({ ...tree, steps }) : { ...tree, steps }, change: { kind: 'field-swap', screen, from: before, to: words.label, consent: words.consent } as Change };
+  const steps = tree.steps.map(step => ({ ...step, content: swap(step.content) }));
+  return { tree: addConsent ? referencedJourney({ ...tree, steps }) : { ...tree, steps },
+    change: { kind: 'field-swap', screen, from: text(swapped, 'label'), to: words.label, consent: words.consent } as Change };
 }
 
 /**
  * The tree as screens one after another, or null where it branches. A flow
  * whose every screen leads to at most one other is a straight campaign drawn
- * as a map, and converts as one (G2).
+ * as a map, and converts as one.
  */
 function simpleShape(tree: TemplateTree): TemplateTree | null {
   if (tree.steps.some(step => step.when || step.paths?.length)) return null;
@@ -353,8 +357,8 @@ export type SwitchOffer = { readonly offered: true; readonly state: 'none' | Con
 
 /**
  * Whether this campaign can add, remove or change its contact form, or the
- * one plain line saying why not (G1, G2). The screenshot sweep found no design
- * without room for a form, so there is no per-design opt-out (A4).
+ * one plain line saying why not. The screenshot sweep found no design
+ * without room for a form, so there is no per-design opt-out.
  */
 export function captureSwitch(config: Config, goal: string, goals: readonly GoalEntry[]): SwitchOffer {
   const tree = (config.template as Template | undefined)?.tree;
@@ -377,7 +381,7 @@ export function captureSwitch(config: Config, goal: string, goals: readonly Goal
   return { offered: true, state };
 }
 
-/** Every service any form here sends to, once each. */
+/** Every Destination any form here sends to, once each. */
 function boundDestinations(config: Config): string[] {
   const settings = Object.values((config.submission_settings ?? {}) as Record<string, { destination_ids?: unknown }>);
   return [...new Set([
@@ -386,11 +390,12 @@ function boundDestinations(config: Config): string[] {
   ].filter((id): id is string => typeof id === 'string' && id !== ''))];
 }
 
-export function convertCapture(draft: { readonly config: Config; readonly goal: string }, target: CaptureTarget, context: ConversionContext): Conversion | Refusal {
+export function convertCapture(draft: { readonly config: Config; readonly goal: string }, target: CaptureTarget, context: ConversionContext): Conversion | NotConverted {
   const offer = captureSwitch(draft.config, draft.goal, context.goals);
   if (!offer.offered) return { reason: offer.reason };
   const held = draft.config.template as Template;
-  // A simple flow converts as the straight campaign it draws (G2).
+  const destinationName = (id: string) => context.destinations?.find(item => item.id === id)?.label ?? id;
+  // A simple flow converts as the straight campaign it draws.
   const template = { ...held, tree: simpleShape(held.tree)! };
   const from = context.goals.find(entry => entry.id === draft.goal);
   const done = (tree: TemplateTree, goal: GoalEntry, changes: readonly Change[], link: string | null): Conversion => ({
@@ -401,15 +406,16 @@ export function convertCapture(draft: { readonly config: Config; readonly goal: 
   if (target.capture === 'none') {
     if (offer.state === 'none') return { reason: __('This campaign has no form.', 'wconvert') };
     const removed = removeForm(template.tree, target.link);
+    if (!removed) return { reason: __('This form has no button that sends it. Add one, then try again.', 'wconvert') };
     const goal = goalFor(context.goals, draft.goal, target, removed.link !== null);
     if (!goal) return { reason: __('No goal fits this design.', 'wconvert') };
     // Nothing is captured, so nothing is sent: every route and mapping goes.
-    // Saved Leads and their consent records are another table and stay (R5).
+    // Saved Leads and their consent records are another table and stay.
     const bound = boundDestinations(draft.config);
     const mappings = Object.values((draft.config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>)
       .some(byDestination => Object.values(byDestination).some(mapping => Object.keys(mapping).length > 0));
     const result = done(removed.tree, goal, [...removed.changes,
-      { kind: 'stops-sending', destinations: bound.map(id => context.destinations?.find(item => item.id === id)?.label ?? id), mappings },
+      { kind: 'stops-sending', destinations: bound.map(destinationName), mappings },
       { kind: 'leads-stay' }], removed.link);
     const config = { ...result.config };
     for (const key of ['destinations', 'capture_mode', 'submission_settings', 'integration_mappings']) delete config[key];
@@ -424,14 +430,16 @@ export function convertCapture(draft: { readonly config: Config; readonly goal: 
     if (asked) return { reason: target.capture === 'phone'
       ? __('This campaign already asks for a phone number. Edit its screens directly.', 'wconvert')
       : __('This campaign already asks for an email address. Edit its screens directly.', 'wconvert') };
-    const swapped = swapChannel(template.tree, state, target.capture, goal.outcome.audience_channel !== null);
-    // A service that cannot take the new channel stops; the rest stay bound.
+    // A swap changes one field, so a flow keeps its map; only adding or
+    // removing a form needs screens one after another.
+    const swapped = swapChannel(held.tree, state, target.capture, goal.outcome.audience_channel !== null);
+    // A Destination that cannot take the new channel stops; the rest stay bound.
     const fits = (id: string) => context.destinations?.find(item => item.id === id)?.channels.includes(target.capture) ?? true;
     const dropped = boundDestinations(draft.config).filter(id => !fits(id));
     const keep = (ids: unknown) => (Array.isArray(ids) ? ids : []).filter(id => !dropped.includes(id));
     const maps = (draft.config.integration_mappings ?? {}) as Record<string, Record<string, unknown>>;
     const hadMappings = Object.values(maps).some(byDestination => dropped.some(id => id in byDestination));
-    const result = done(swapped.tree, goal, [swapped.change], null);
+    const result = { ...done(swapped.tree, goal, [swapped.change], null), config: { ...draft.config, template: { ...held, tree: swapped.tree } } };
     const config: Record<string, unknown> = { ...result.config };
     if (Array.isArray(draft.config.destinations)) config.destinations = keep(draft.config.destinations);
     if (draft.config.submission_settings) config.submission_settings = Object.fromEntries(Object.entries(draft.config.submission_settings as Record<string, Record<string, unknown>>)
@@ -439,7 +447,7 @@ export function convertCapture(draft: { readonly config: Config; readonly goal: 
     if (draft.config.integration_mappings) config.integration_mappings = Object.fromEntries(Object.entries(maps)
       .map(([id, byDestination]) => [id, Object.fromEntries(Object.entries(byDestination).filter(([destination]) => !dropped.includes(destination)))]));
     return { ...result, config, changes: [...result.changes,
-      ...(dropped.length ? [{ kind: 'stops-sending', destinations: dropped.map(id => context.destinations?.find(item => item.id === id)?.label ?? id), mappings: hadMappings } as const] : []),
+      ...(dropped.length ? [{ kind: 'stops-sending', destinations: dropped.map(destinationName), mappings: hadMappings } as const] : []),
       { kind: 'leads-stay' } as const] };
   }
   const added = addForm(template.tree, target.capture, goal.outcome.audience_channel !== null, template.tokens ?? {});

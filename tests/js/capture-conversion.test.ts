@@ -109,7 +109,7 @@ describe('removing every form from a longer campaign (R3–R5)', () => {
     expect(result.config).not.toHaveProperty('capture_mode');
     expect(result.config).not.toHaveProperty('submission_settings');
     expect(result.config).not.toHaveProperty('integration_mappings');
-    expect(result.changes).toContainEqual({ kind: 'screen-gets', screen: 'Email signup', gets: [],
+    expect(result.changes).toContainEqual({ kind: 'screen-changes', screen: 'Email signup', gets: [],
       loses: [{ kind: 'field', label: 'Email address' }, { kind: 'consent' }, { kind: 'button', label: 'Sign up for email' }] });
     expect(result.changes).toContainEqual({ kind: 'removed-screens', screens: [
       { name: 'Intro', words: ['Wait! Before you go…'] },
@@ -277,5 +277,23 @@ describe('what the screenshot sweep caught', () => {
   it('says thanks at the design’s heading size, not the offer’s giant number', () => {
     const result = converted(convertCapture({ config: offer('offer-receipt'), goal: 'promote_offer' }, { capture: 'email' }, { goals: GOALS }));
     expect(ofType(treeOf(result), 1, 'heading')[0].tokens).not.toHaveProperty('heading-size');
+  });
+});
+
+describe('what the switch never touches', () => {
+  const rules = { display_rules: { opening: { mode: 'automatic', rules: [{ type: 'exit_intent' }] } }, frequency: { maxPerSession: 1 },
+    targeting: { include: ['/shop/*'] }, starts_at: '2026-11-27 00:00', ends_at: '2026-12-01 23:59', priority: 3, inline_placement: { after: 'p' } };
+
+  it.each(['email', 'none'] as const)('keeps display rules, triggers, frequency, dates and placement as they were (%s)', (capture) => {
+    const start = capture === 'email' ? { ...offer('offer-receipt'), ...rules } : { template_id: 'centred-card', template: design('centred-card'), ...rules };
+    const result = converted(convertCapture({ config: start, goal: capture === 'email' ? 'promote_offer' : 'grow_email_list' }, { capture }, { goals: GOALS }));
+    for (const [key, value] of Object.entries(rules)) expect(result.config[key]).toEqual(value);
+  });
+
+  it('keeps a flow a flow when only the channel changes', () => {
+    const flow = upgradeToGraph(design('centred-card').tree);
+    const result = converted(convertCapture({ config: { template: { ...design('centred-card'), tree: flow } }, goal: 'grow_email_list' }, { capture: 'phone' }, { goals: GOALS }));
+    expect(treeOf(result).graph).toEqual(flow.graph);
+    expect(ofType(treeOf(result), 0, 'field')).toMatchObject([{ name: 'phone' }]);
   });
 });

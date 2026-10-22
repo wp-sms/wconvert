@@ -153,6 +153,7 @@ jobs:
               - '.github/workflows/ci.yml'
             js:
               - 'src/**'
+              - 'bin/verify-converted-designs.php'
               - 'tools/visual-tests/**'
               - 'tools/design-system/seed/**'
               - 'composer.*'
