@@ -1219,6 +1219,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           bound: bound.length > 0,
           sibling: siblingAct,
           act,
+          capture: goal && goalList ? { goal, goals: goalList } : undefined,
         }}
         goalLabel={entryOfGoal?.label}
         busy={busy}

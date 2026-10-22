@@ -159,6 +159,29 @@ final class TemplateRoutesTest extends TestCase
         $this->assertFalse($consent['hidden'] ?? true);
     }
 
+    /** Taken for Show a message, a click design leaves its counted link behind (ADR 0163). */
+    public function testPreparingADesignForAMessageTakesItsCountedLinkOut(): void
+    {
+        $template = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest(self::PLUGIN_DIR), self::PLUGIN_DIR)->find('offer-panel');
+        $this->assertNotNull($template);
+        $request = new WP_REST_Request();
+        $request->set_param('id', 'offer-panel');
+        $request->set_param('source', 'offer-panel');
+        $request->set_param('template', ['tree' => $template['tree'], 'tokens' => $template['tokens']]);
+
+        $request->set_param('goal', 'show_message');
+        $prepared = self::controller()->snapshot($request);
+        $this->assertInstanceOf(\WP_REST_Response::class, $prepared);
+        $message = $prepared->get_data();
+        $this->assertSame([], \WConvert\Template\ConvertingAct::offeredIn($message['tree']));
+
+        $request->set_param('goal', 'promote_offer');
+        $prepared = self::controller()->snapshot($request);
+        $this->assertInstanceOf(\WP_REST_Response::class, $prepared);
+        $offer = $prepared->get_data();
+        $this->assertSame([\WConvert\Template\ConvertingAct::Click], \WConvert\Template\ConvertingAct::offeredIn($offer['tree']));
+    }
+
     public function testAnUnavailableTemplateCannotBePrepared(): void
     {
         $request = new WP_REST_Request();

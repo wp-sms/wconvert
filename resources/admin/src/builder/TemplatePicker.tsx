@@ -12,7 +12,7 @@ import { PickerSettings } from '../discovery/PickerSettings';
 import { EmptyState } from '../shell/EmptyState';
 import { CheckRow } from '../shell/CheckRow';
 import { RegionError } from '../shell/Region';
-import { Gallery, type Fit } from './Gallery';
+import { Gallery, counterpartOf, type Fit } from './Gallery';
 import { DesignComparison } from './DesignComparison';
 import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
 import { facetOptions, narrow, toggled, TAG_FACET, type Chosen } from './facets';
@@ -141,9 +141,9 @@ export function TemplatePicker({
   );
   const available = useMemo(
     () => forType.filter((entry) => (!availableOnly || usable(entry))
-      && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets))
+      && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets) || counterpartOf(entry, fit) !== null)
       && (!savedOnly || saved.has(designKey(entry)))),
-    [forType, availableOnly, goalFitOnly, fit.outcome, savedOnly, saved],
+    [forType, availableOnly, goalFitOnly, fit, savedOnly, saved],
   );
   const shown = useMemo(
     () => {

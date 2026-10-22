@@ -1,5 +1,5 @@
 import { contentLockDesignCompatible } from '../inlinePlacement';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, ClipboardList, MousePointerClick, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -12,7 +12,10 @@ import { TryAgain } from '../shell/Region';
 import { PreviewControls, usePreviewView } from '../discovery/PreviewControls';
 import { FactList, type Fact } from '../shell/FactList';
 import { PreviewFrame } from '../discovery/PreviewFrame';
-import { actChangeOf, refusalFor, type Fit } from './Gallery';
+import { actChangeOf, asConverted, counterpartAction, counterpartOf, refusalFor, type Fit } from './Gallery';
+import { CaptureChangeDialog } from './CaptureChangeDialog';
+import { convertCapture, convertedFor, type CaptureTarget } from './structure/captureConversion';
+import { adminSettings } from '../settings';
 import { dropsFieldMappings } from './destinations';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
@@ -103,14 +106,27 @@ export function TemplateDesignDetail({
   // render before the next request effect runs. Late responses are ignored.
   const candidate = prepared?.sample === sample && prepared?.mode === mode
     && prepared?.prepare === onPrepare ? prepared : null;
-  const template = prepares ? candidate?.value : sample;
+  const ready = prepares ? candidate?.value : sample;
+  // Taken for a Goal it fits once converted, the design is shown and applied
+  // with its form added or removed, as the switch would (ADR 0163).
+  const choice = counterpartOf(entry, fit);
+  const shop = adminSettings()?.offerLink;
+  const converted = useMemo(() => choice !== null && ready && fit.capture
+    ? convertedFor({ template: ready }, fit.capture.goal, fit.capture.goals, choice, shop ? { label: __('Shop now', 'wconvert'), href: shop.href } : undefined) : null,
+  [choice, ready, fit.capture, shop]);
+  const template = converted ? converted.config.template as Template : ready;
+  const [explaining, setExplaining] = useState(false);
+  const target = useMemo((): CaptureTarget => choice === null || choice === 'none' ? { capture: 'none' } : { capture: choice }, [choice]);
+  const explain = useMemo(() => (next: CaptureTarget) => ready && fit.capture
+    ? convertCapture({ config: { template: ready }, goal: fit.capture.goal }, next, { goals: fit.capture.goals })
+    : { reason: '' }, [ready, fit.capture]);
   const preparationError = candidate?.error;
   const retryPreview = preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry;
   const [step, setStep] = useState(0);
   const [resultId, setResultId] = useState('');
   const id = useId();
   const refused = refusalFor(entry, fit);
-  const changed = refused === null && !current ? actChangeOf(entry, fit) : null;
+  const changed = refused === null && !current && !converted ? actChangeOf(entry, fit) : null;
   const shown = Math.min(step, Math.max(0, (template?.tree.steps.length ?? 1) - 1));
   const relativeWidth = template?.tokens.width?.includes('%') === true;
   const resultScreen = template?.tree.steps[shown];
@@ -146,11 +162,13 @@ export function TemplateDesignDetail({
           fromFormat, toFormat,
         );
   const losesMappings = template !== undefined && !isCurrent && dropsFieldMappings(fieldMappings, template.tree);
-  const fieldNames = fieldNamesOf(entry, labels);
+  // Facts about the design as it will be applied, converted or not.
+  const facted = converted ? asConverted(entry, fit) : entry;
+  const fieldNames = fieldNamesOf(facted, labels);
   const facts: Fact[] = [
     { icon: ClipboardList, label: __('Collects', 'wconvert'), text: fieldNames.length > 0 ? fieldNames.join(', ') : __('No form fields', 'wconvert') },
-    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: entry.facets.act === 'submit' ? __('Submits a form', 'wconvert') : entry.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert') },
-    ...(entry.facets.asks_consent ? [{ icon: ShieldCheck, label: __('Consent', 'wconvert'), text: __('Includes a consent checkbox', 'wconvert') }] : []),
+    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: facted.facets.act === 'submit' ? __('Submits a form', 'wconvert') : facted.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert') },
+    ...(facted.facets.asks_consent ? [{ icon: ShieldCheck, label: __('Consent', 'wconvert'), text: __('Includes a consent checkbox', 'wconvert') }] : []),
   ];
   const describedBy = [
     `${id}-replacement`,
@@ -226,13 +244,15 @@ export function TemplateDesignDetail({
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {backLabel}
         </Button>}>
+            {converted && ready && <Button type="button" variant="outline" disabled={busy} onClick={() => setExplaining(true)}>{__('What changes', 'wconvert')}</Button>}
+            {explaining && ready && <CaptureChangeDialog open onOpenChange={setExplaining} before={ready} target={target} convert={explain} mode="preview" />}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
               {busy ? __('Applying design…', 'wconvert')
                 : isCurrent ? __('Current design', 'wconvert')
                 : changesFormat
                   ? sprintf(/* translators: %s: new campaign format. */ __('Switch to %s', 'wconvert'), toFormat)
-                  : __('Use this design', 'wconvert')}
+                  : converted && choice ? counterpartAction(choice, fit.outcome) : __('Use this design', 'wconvert')}
         </Button>
       </AdminDialogFooter>
     </section>

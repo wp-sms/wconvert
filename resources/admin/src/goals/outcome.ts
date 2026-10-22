@@ -47,7 +47,8 @@ function hasLink(node: TemplateNode | undefined): boolean {
 
 /** A library facet suggests a fit; the edited form is checked again at publication. */
 export function fitsOutcome(outcome: OutcomeContract, facets: { act: string | null; captures: readonly string[] }): boolean {
-  if (countsNothing(outcome)) return facets.act === null;
+  // A click design fits too: taken for a message, it leaves its counted link behind (ADR 0163).
+  if (countsNothing(outcome)) return facets.act === null || facets.act === 'click';
   return facets.act === outcome.action && (outcome.capture_any_of.length === 0
     || outcome.capture_any_of.some((field) => facets.captures.includes(field)));
 }

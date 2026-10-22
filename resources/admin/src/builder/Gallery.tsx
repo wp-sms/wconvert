@@ -10,6 +10,9 @@ import { CompareSelection } from '../discovery/CompareSelection';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
 import type { ConvertingAct } from './structure/catalogue';
+import type { GoalEntry } from '../goals/api';
+import { fitsOutcome } from '../goals/outcome';
+import { counterpartChoice, type CaptureChoice } from './structure/captureConversion';
 import type { Template } from '@renderer/types';
 
 /** Design grid. Goal fit is suggested by derived facets, never authored tags.
@@ -67,6 +70,41 @@ export interface Fit {
    * counted.
    */
   readonly act: ConvertingAct;
+  /** The campaign's Goal and the registry, where the form switch may convert a design to fit (ADR 0163). */
+  readonly capture?: { readonly goal: string; readonly goals: readonly GoalEntry[] };
+}
+
+/**
+ * What the form switch would do to this design so it fits the Goal, or null
+ * where it already fits or cannot be converted. Only a design whose tree is on
+ * this site: a hosted one is converted once installed.
+ */
+export function counterpartOf(entry: TemplateIndexEntry, fit: Fit): CaptureChoice | null {
+  if (!fit.capture || !fit.outcome || entry.availability !== 'ready' || entry.remote !== undefined || fitsOutcome(fit.outcome, entry.facets)) return null;
+  return counterpartChoice(fit.outcome, entry.facets);
+}
+
+/** The design as it will be once converted: what it collects and what a visitor does. */
+export function asConverted(entry: TemplateIndexEntry, fit: Fit): TemplateIndexEntry {
+  const choice = counterpartOf(entry, fit);
+  if (choice === null) return entry;
+  return { ...entry, facets: choice === 'none'
+    ? { ...entry.facets, act: fit.outcome?.action === 'none' ? null : 'click', captures: [], asks_consent: false }
+    : { ...entry.facets, act: 'submit', captures: [choice], asks_consent: fit.outcome?.audience_channel !== null } };
+}
+
+/** The card's chip for a converted design. */
+export function counterpartChip(choice: CaptureChoice, outcome: GoalEntry['outcome'] | undefined): string {
+  if (choice === 'none') return __('Form removed', 'wconvert');
+  if (!outcome?.audience_channel) return __('Enquiry form added', 'wconvert');
+  return choice === 'phone' ? __('Phone form added', 'wconvert') : __('Email form added', 'wconvert');
+}
+
+/** The detail's action for a converted design. */
+export function counterpartAction(choice: CaptureChoice, outcome: GoalEntry['outcome'] | undefined): string {
+  if (choice === 'none') return __('Use without form', 'wconvert');
+  if (!outcome?.audience_channel) return __('Use with enquiry form', 'wconvert');
+  return choice === 'phone' ? __('Use with phone form', 'wconvert') : __('Use with email form', 'wconvert');
 }
 
 /**
@@ -142,6 +180,8 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  * cannot be applied. A change in what it counts still permits the switch.
  */
 export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null {
+  // Converted on the way in, it fits; its chip says how.
+  if (counterpartOf(entry, fit) !== null) return null;
   if (fit.outcome && (entry.facets.act !== fit.outcome.action || (fit.outcome.capture_any_of.length > 0
     && !fit.outcome.capture_any_of.some((field) => entry.facets.captures.includes(field))))) {
     return fit.outcome.requirement;
@@ -257,6 +297,7 @@ export function Gallery({
             saveAction={onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
             marks={<div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
+              {counterpartOf(entry, fit) !== null && <Badge variant="secondary">{counterpartChip(counterpartOf(entry, fit)!, fit.outcome)}</Badge>}
 
               {locked ? (
                 <Badge variant="secondary">

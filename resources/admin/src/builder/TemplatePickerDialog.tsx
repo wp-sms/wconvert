@@ -7,6 +7,7 @@ import {
 import { PickerDialogContent, PickerDialogHeader } from '../discovery/PickerDialog';
 import { TemplatePicker, type TemplatePickerProps } from './TemplatePicker';
 import { designMeta } from './TemplateDesignDetail';
+import { asConverted } from './Gallery';
 import type { TemplateIndexEntry } from '../templates/api';
 
 export interface TemplatePickerDialogProps extends TemplatePickerProps {
@@ -47,7 +48,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onLibraryCh
             <DialogTitle ref={title} tabIndex={-1}>{shown ? shown.name : __('Browse designs', 'wconvert')}</DialogTitle>
             {shown && shown.id === picker.chosen && <Badge variant="secondary">{__('Current design', 'wconvert')}</Badge>}
           </div>
-          <DialogDescription>{shown ? designMeta(shown, picker.index.labels) : __('Review a design with your content before it replaces this draft’s design.','wconvert')}</DialogDescription>
+          <DialogDescription>{shown ? designMeta(asConverted(shown, picker.fit), picker.index.labels) : __('Review a design with your content before it replaces this draft’s design.','wconvert')}</DialogDescription>
         </PickerDialogHeader>
         <div className="wconvert-picker__scroll">
           <div className="wconvert-picker__library">
