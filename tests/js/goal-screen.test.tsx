@@ -586,6 +586,24 @@ it('adds an online setup for the chosen goal without creating a draft (ADR 0156)
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
 });
+it('refreshes collection discovery after reading the online library without installing anything', async () => {
+  const { onlineCollection } = await import('./support/online-collection');
+  const data = await picker.pickerData();
+  picker.pickerData.mockResolvedValueOnce(data).mockResolvedValue({ ...data, collections: [onlineCollection()] });
+  const status = { enabled: true, consent: 'yes', checked_at: null, update_required: false, skipped: 0, taxonomy: {}, designs: [], setups: [] };
+  window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
+  onTestFinished(() => { delete window.wconvertAdmin; });
+  catalog.catalogStatus.mockResolvedValue(status); catalog.refreshCatalog.mockResolvedValue(status);
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: 'More ways to browse' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Online setups' }));
+  expect(await screen.findByText('No online setups for this goal yet')).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+  expect(await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ })).toBeVisible();
+  expect(catalog.installSetup).not.toHaveBeenCalled();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+});
+
 it('asks before the online library is used from creation', async () => {
   window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
   onTestFinished(() => { delete window.wconvertAdmin; });
@@ -867,4 +885,49 @@ it('creates a list campaign from its prefill as it is', async () => {
   await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
   await waitFor(() => expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, draft.config));
   expect(destinationsApi.readDestinations).not.toHaveBeenCalled();
+});
+
+it('browses every hosted collection member before installation and creates with the chosen member’s goal', async () => {
+  const { onlineCollection } = await import('./support/online-collection');
+  const collection = onlineCollection();
+  goals.listGoals.mockResolvedValue(GOALS.map(goal => goal.id === 'promote_offer' ? { ...goal, availability: 'ready', tier: 'free' } : goal));
+  const data = await picker.pickerData();
+  picker.pickerData.mockResolvedValue({ ...data, collections: [collection] });
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Choose: Grow my email list' }));
+  await userEvent.click(await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ }));
+  const dialog = within(screen.getByRole('dialog'));
+  expect(dialog.getAllByRole('heading', { level: 3 })).toHaveLength(20);
+  expect(dialog.getAllByText('Pro')).toHaveLength(15);
+  expect(dialog.getAllByText('Free')).toHaveLength(5);
+  expect(dialog.getAllByRole('link', { name: 'See this design' })).toHaveLength(15);
+  expect(catalog.installSetup).not.toHaveBeenCalled();
+  expect(catalog.previewDesign).not.toHaveBeenCalled();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+  catalog.installSetup.mockRejectedValueOnce(new Error('Connection interrupted'));
+  await userEvent.click(dialog.getAllByRole('button', { name: 'Install setup' })[0]);
+  expect(await dialog.findByRole('alert')).toHaveTextContent('Connection interrupted');
+  catalog.installSetup.mockResolvedValueOnce({ playbook_id: 'setup-1-sale-1', template_id: 'sale-1', status: {} });
+  await userEvent.click(dialog.getByRole('button', { name: 'Try again' }));
+  expect(await dialog.findByRole('button', { name: 'Use this setup' })).toBeVisible();
+  expect(dialog.getAllByRole('heading', { level: 3 })).toHaveLength(20);
+  expect(optins.createOptin).not.toHaveBeenCalled();
+  goals.prefill.mockResolvedValue({ ...DRAFT, goal: 'promote_offer' });
+  await userEvent.click(dialog.getByRole('button', { name: 'Use this setup' }));
+  await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith('promote_offer', 'setup-1-sale-1'));
+  expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, 'promote_offer', DRAFT.config);
+});
+
+it('uses a bundled Pro collection member without downloading it again', async () => {
+  const { onlineCollection } = await import('./support/online-collection');
+  const collection = onlineCollection();
+  collection.online![5].setup.state = 'ready';
+  collection.online![5].playbook_id = 'sale-6';
+  const data = await picker.pickerData();
+  picker.pickerData.mockResolvedValue({ ...data, collections: [collection] });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ }));
+  await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Use this setup' }));
+  expect(goals.prefill).toHaveBeenCalledWith('grow_email_list', 'sale-6');
+  expect(catalog.installSetup).not.toHaveBeenCalled();
 });

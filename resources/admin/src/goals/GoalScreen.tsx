@@ -10,6 +10,7 @@ import { PickerSearch } from '../discovery/PickerSearch';
 import { Dialog, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { PickerDialogContent, PickerDialogHeader, PickerDialogBody } from '../discovery/PickerDialog';
+import { OnlineCollection } from '../discovery/OnlineCollection';
 import { OnlineSetups } from '../templates/OnlineSetups';
 import { PinnedDesignNotice, usePinnedDesign } from '../templates/PinnedDesign';
 import { fitsOutcome } from './outcome';
@@ -114,7 +115,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   // A setup that changed or left the library since it was previewed can only be reloaded, never retried.
   const [staleSetup, setStaleSetup] = useState(false);
   const [starting, setStarting] = useState<string | null>(null);
-  const lastStart = useRef<string | undefined>(undefined);
+  const lastStart = useRef<{ playbookId?: string; goalId?: string }>({});
   const active = useRef(false);
   const operation = useRef(0);
   const busy = useRef(false);
@@ -176,16 +177,18 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     setCreateUnconfirmed(false);
   };
 
-  const start = async (playbookId?: string) => {
+  const start = async (playbookId?: string, goalId?: string) => {
     // The ref closes the same-tick double-click gap before React disables UI.
-    if (goal === null || busy.current) return;
+    if (goal === null || busy.current || createUnconfirmed) return;
+    const targetGoal = goalId ? goals.status === 'ready' ? goals.data.find(entry => entry.id === goalId) : undefined : goal;
+    if (!targetGoal || targetGoal.availability !== 'ready') return;
     // Created into an occasion, the draft needs its dates; never create it
     // unlinked because they had not arrived yet.
     if (into && !picker.data) { setError(__('Occasions are still loading. Try again in a moment.', 'wconvert')); return; }
     const choice = previewEntries.find(entry => entry.id === playbookId);
     if (choice?.availability && choice.availability !== 'ready') return;
     busy.current = true;
-    lastStart.current = playbookId;
+    lastStart.current = { playbookId, goalId };
     const request = ++operation.current;
     setStarting(playbookId ?? 'scratch');
     setError(null);
@@ -195,7 +198,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     try {
       const selected = previewEntries.find(entry => entry.id === playbookId);
       const prepared = selected && previews.previews.get(selected.id);
-      const filled = selected?.revision ? await prefill(goal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
+      const filled = selected?.revision ? await prefill(targetGoal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(targetGoal.id, playbookId);
       // Started from a linked design with no setup: the server snapshots it on create.
       const prefilled = pinned && !playbookId ? { ...filled, config: { ...filled.config, template_id: pinned.id } } : filled;
       // Leads stay in WConvert until a service is connected (ADR 0133), so
@@ -506,7 +509,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
         (choseCollection.current ? collectionPicker.current : browseTrigger.current)?.focus();
       }}>
         <AdminDialogHeader title={__('Online setups', 'wconvert')} meta={sprintf(/* translators: %s: a campaign goal. */ __('Campaign setups from the WConvert library for “%s”.', 'wconvert'), goal.label)} />
-        <PickerDialogBody><OnlineSetups goal={goal.id} onInstalled={() => setPlaybooksRetry((value) => value + 1)} /></PickerDialogBody>
+        <PickerDialogBody><OnlineSetups goal={goal.id} onLibraryChanged={picker.reload} onInstalled={() => { setPlaybooksRetry((value) => value + 1); void picker.reload(); }} /></PickerDialogBody>
       </PickerDialogContent>
     </Dialog>
     <Dialog open={settings} onOpenChange={setSettings}>
@@ -515,9 +518,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
           onPlan={id => { setOccasion(id); setSettings(false); setAllCollections(false); setEditorialCollection(null); setPage(0); }} />
       </AdminDialogContent>
     </Dialog>
-    {!inspected && error !== null && (createUnconfirmed
+    {!inspected && !editorialCollection?.online && error !== null && (createUnconfirmed
       ? <RegionError message={unconfirmed} action={checkCampaigns} />
-      : <RegionError message={error} onRetry={() => { void start(lastStart.current); }} />)}
+      : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId); }} />)}
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
     {!selectedOccasion && !editorialCollection && !allCollections && <>{setupGallery}{comparisonControls}</>}
     {/* Collections are a second way in, so the featured shelf follows the setups rather than preceding them. */}
@@ -537,7 +540,13 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
             : editorialCollection?.description}</DialogDescription>}
         </PickerDialogHeader>
         <PickerDialogBody ref={modalContent}>
-          {!inspected && !comparing && editorialCollection && <>
+          {!inspected && !comparing && editorialCollection?.online && <>
+            {error && (createUnconfirmed ? <RegionError message={unconfirmed} action={checkCampaigns} /> : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId); }} />)}
+            {starting !== null && <p role="status">{__('Creating your draft and opening the editor…', 'wconvert')}</p>}
+            <OnlineCollection key={editorialCollection.id} collection={editorialCollection} goals={goals.status === 'ready' ? goals.data : []} busy={starting !== null || createUnconfirmed}
+              onInstalled={() => { setPlaybooksRetry(value => value + 1); void picker.reload(); }} onUse={(id, goalId) => { void start(id, goalId); }} />
+          </>}
+          {!inspected && !comparing && editorialCollection && !editorialCollection.online && <>
             <div className="wconvert-collection-detail__controls">{collectionDetails}
             <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search collection setups','wconvert')} value={query} placeholder={__('Search this collection','wconvert')} onChange={value=>{setQuery(value);setPage(0);}} /></div>
               {(new Set(matchingCollection.filter(entry => editorialCollection.items.some(item => item.setup_id === entry.id)).map(startingPointDisplayType)).size > 1 || formatId !== 'all') && <OptionStrip label={__('Collection format', 'wconvert')} value={formatId}
@@ -566,8 +575,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
             </aside>
           </div>}
         </PickerDialogBody>
-        {!inspected && !comparing && editorialCollection && entries.length > 0 && <PickerPagination label={__('Setup pages', 'wconvert')} page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
-        {!inspected && !comparing && comparisonControls}
+        {!inspected && !comparing && editorialCollection && !editorialCollection.online && entries.length > 0 && <PickerPagination label={__('Setup pages', 'wconvert')} page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
+        {!inspected && !comparing && !editorialCollection?.online && comparisonControls}
         <AdminDialogFooter
           back={<Button className="wconvert-picker__back" variant="outline" disabled={starting !== null} onClick={() => {
             if (inspected) { setInspected(null); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; (detailTrigger.current?.isConnected ? detailTrigger.current : modalTitle.current)?.focus({ preventScroll: true }); }); }

@@ -18,7 +18,7 @@ import { Library } from 'lucide-react';
  * A setup this site cannot run is left out rather than drawn locked: creation
  * hides what it cannot start (ADR 0026, ADR 0116).
  */
-export function OnlineSetups({ goal, onInstalled }: { goal: string; onInstalled: () => void }) {
+export function OnlineSetups({ goal, onInstalled, onLibraryChanged }: { goal: string; onInstalled: () => void; onLibraryChanged?: () => void }) {
   const [status, setStatus] = useState<Loadable<CatalogStatus>>(LOADING);
   const [retry, setRetry] = useState(0);
   const [installing, setInstalling] = useState<string | null>(null);
@@ -27,10 +27,10 @@ export function OnlineSetups({ goal, onInstalled }: { goal: string; onInstalled:
     let current = true;
     setStatus(LOADING);
     void catalogStatus().then(async (first) => first.consent === 'yes' ? refreshCatalog(true).catch(() => first) : first)
-      .then((value) => { if (current) setStatus(ready(value)); })
+      .then((value) => { if (current) { setStatus(ready(value)); onLibraryChanged?.(); } })
       .catch((cause: unknown) => { if (current) setStatus(failed(cause)); });
     return () => { current = false; };
-  }, [retry]);
+  }, [retry, onLibraryChanged]);
   if (status.status === 'loading') return <p className="text-note">{__('Loading online setups…', 'wconvert')}</p>;
   if (status.status === 'failed') return <RegionError message={status.message} onRetry={() => setRetry((value) => value + 1)} />;
   if (!status.data.enabled) return <p className="text-note">{__('The online template library is switched off on this site.', 'wconvert')}</p>;

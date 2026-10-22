@@ -1,0 +1,138 @@
+{
+  "tier": "pro",
+  "members": [
+    {
+      "id": "bf-midnight-atelier",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-midnight-atelier"
+    },
+    {
+      "id": "bf-acid-markdown",
+      "tier": "free",
+      "state": "ready",
+      "playbook_id": "setup-4-bf-acid-markdown"
+    },
+    {
+      "id": "bf-early-list",
+      "tier": "free",
+      "state": "ready",
+      "playbook_id": "setup-5-bf-early-list"
+    },
+    {
+      "id": "bf-good-deal-receipt",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-good-deal-receipt"
+    },
+    {
+      "id": "bf-blackout-strip",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-blackout-strip"
+    },
+    {
+      "id": "bf-weekend-edition",
+      "tier": "free",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-velvet-rope",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-velvet-rope"
+    },
+    {
+      "id": "bf-little-black-gift",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-little-black-gift"
+    },
+    {
+      "id": "cm-chrome-hour",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-chrome-hour"
+    },
+    {
+      "id": "cm-system-upgrade",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-system-upgrade"
+    },
+    {
+      "id": "cm-command-save",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-command-save"
+    },
+    {
+      "id": "cm-pixel-drop",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-pixel-drop"
+    },
+    {
+      "id": "cm-electric-aisle",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-electric-aisle"
+    },
+    {
+      "id": "cm-night-shift",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-night-shift"
+    },
+    {
+      "id": "cm-cyber-club",
+      "tier": "free",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-final-markdown",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-final-markdown"
+    },
+    {
+      "id": "bf-closing-time",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-closing-time"
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "tier": "free",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "cm-midnight-transmission"
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "tier": "pro",
+      "state": "ready",
+      "playbook_id": "bf-weekend-curtain"
+    }
+  ],
+  "overflow": {
+    "client": 356,
+    "scroll": 356,
+    "body": 390,
+    "viewport": 390
+  },
+  "imageFailures": [],
+  "created": {
+    "goal": "promote_offer",
+    "published_at": null
+  },
+  "errors": [],
+  "passed": true
+}

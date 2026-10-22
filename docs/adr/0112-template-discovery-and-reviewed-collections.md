@@ -89,6 +89,12 @@ These boundaries keep page controls and inspector actions reachable in short win
 A Collection is a reviewed discovery list, separate from a delivery pack. It
 references exact campaign setups and optional before/during/after stages.
 Counts reflect available matching setups and distinct canonical designs.
+*Amended 22 October 2026 by [0156 §9](0156-the-catalogue-is-one-design-per-object.md):*
+hosted collection counts and browsing include all published members, including
+uninstalled and locked Pro designs, across Goals. They start with all stages
+and formats; installation never changes collection membership. Selecting Use
+starts the chosen member's Goal. Bundled collections retain their existing
+local matching behavior.
 Featuring applies filters, site-date windows, explicit market choices and user
 preferences before ranking. Empty matches are omitted; an empty stage falls back
 to a populated stage. Manual arrows/scrolling expose up to five featured entries,

@@ -105,6 +105,22 @@ The taxonomy's labels live here, not in the plugin, so adding an industry
 needs no plugin release. `details` pages are for the website; the plugin does
 not read them.
 
+### Native collection discovery
+
+The WordPress `GET /wconvert/v1/picker` projection prefixes hosted collection
+ids with `catalog-`. It keeps all published setup members in `items` using
+their canonical `setup_id`, and adds `online` members containing `setup`
+(catalogue metadata and state), `design` (card metadata and public thumbnail),
+`stage`, and nullable `playbook_id` (a usable archived or bundled setup).
+Neither a design tree nor a Playbook body is included. Withdrawn or missing
+dependencies are omitted; locked and uninstalled members remain discoverable.
+Reading this projection uses the consented local catalogue cache only.
+
+Install uses the existing setup endpoint and current setup digest. Use passes
+the returned or bundled `playbook_id` and the member's Goal to prefill; only
+an explicit subsequent creation writes a draft. Membership and counts do not
+depend on installation or the previously selected Goal.
+
 ### Index page — `v3/index/<sha>.json`
 
 ```json

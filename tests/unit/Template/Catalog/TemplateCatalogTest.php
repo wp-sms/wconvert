@@ -318,6 +318,59 @@ final class TemplateCatalogTest extends TestCase
         self::assertSame('unavailable', $this->cards($catalog)['odd']['state'], 'An unknown plugin is missing, not ignored');
     }
 
+    public function testCollectionsExposeUninstalledFreeAndProMembersWithoutDownloadingTheirTrees(): void
+    {
+        $free = require WCONVERT_DIR . 'resources/playbooks/reading-recommendation.php';
+        $design = $this->service->design(self::FREE_DESIGN, 'free-choice');
+        $this->service->setup('free-start', $design, $free);
+        $pro = $this->service->design(self::PRO_DESIGN, 'pro-choice');
+        $this->service->setup('pro-start', $pro, $free, 1, 'pro');
+        $this->service->collections = [['id' => 'sale', 'revision' => str_repeat('a', 64), 'name' => 'Sale', 'description' => 'All the choices.',
+            'cover' => 'sale', 'priority' => 1, 'business_types' => ['stores'], 'markets' => [],
+            'items' => [['setup' => 'free-start', 'stage' => 'before'], ['setup' => 'pro-start', 'stage' => 'during']]]];
+        $this->service->publish();
+        $catalog = $this->catalog();
+        $catalog->refresh();
+        $before = $this->http->requests;
+        $collection = $catalog->collections()[0] ?? [];
+        self::assertCount(2, $collection['items'] ?? [], 'Browsing must not require an install');
+        self::assertSame(['install', 'locked'], array_column(array_column($collection['online'], 'setup'), 'state'));
+        self::assertSame($before, $this->http->requests, 'Collection discovery reads only cached metadata');
+        self::assertArrayNotHasKey('tree', $collection['online'][1]['design']);
+        self::assertNull($collection['online'][0]['playbook_id']);
+        $catalog->installSetup('free-start', $this->service->setupSha('free-start'));
+        $after = $catalog->collections()[0];
+        self::assertCount(2, $after['items'], 'Installing does not change collection membership');
+        self::assertSame('setup-1-free-start', $after['online'][0]['playbook_id']);
+        self::assertSame('ready', $after['online'][0]['setup']['state']);
+        $this->service->withdrawn = [['id' => 'pro-choice', 'reason' => 'quality']];
+        $this->service->publish();
+        $catalog->refresh();
+        self::assertCount(1, $catalog->collections()[0]['items'], 'Withdrawn members stay hidden');
+    }
+
+    public function testCollectionUsesAnAlreadyBundledSetupWithoutInstallingItAgain(): void
+    {
+        $playbook = require WCONVERT_DIR . 'resources/playbooks/reading-recommendation.php';
+        $design = $this->service->design(self::FREE_DESIGN, $playbook['template_id']);
+        $this->service->setup($playbook['id'], $design, $playbook);
+        $this->service->collections = [['id' => 'reading', 'revision' => str_repeat('b', 64), 'name' => 'Reading', 'description' => 'Reading ideas.',
+            'cover' => 'reading', 'priority' => 1, 'business_types' => [], 'markets' => [],
+            'items' => [['setup' => $playbook['id'], 'stage' => 'any']]]];
+        $this->service->publish();
+        $catalog = $this->catalog(local: [$playbook['template_id'] => 1]);
+        $catalog->refresh();
+        $vocabulary = TemplateVocabulary::fromManifest();
+        $playbooks = \WConvert\Playbook\PlaybookLibrary::fromEntries([$playbook], TemplateLibrary::fromDirectory($vocabulary), $vocabulary, \WConvert\Rules\RuleVocabulary::fromManifest());
+        $library = new \WConvert\Discovery\CollectionLibrary(WCONVERT_DIR, $playbooks, $catalog);
+        $before = $this->http->requests;
+        $member = $library->all()[0]['online'][0];
+        self::assertSame($playbook['id'], $member['playbook_id']);
+        self::assertSame('ready', $member['setup']['state']);
+        self::assertSame($before, $this->http->requests);
+        self::assertSame([], $this->archive()->setupRevisions());
+    }
+
     public function testProInstallsASetupAndItsPinnedDesignUnderOnePass(): void
     {
         $playbook = require WCONVERT_DIR . 'pro/modules/display-types/playbooks/accessible-visit-note.php';

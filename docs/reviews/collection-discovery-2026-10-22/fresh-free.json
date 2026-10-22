@@ -1,0 +1,107 @@
+{
+  "tier": "free",
+  "before_any_installation": true,
+  "members": [
+    {
+      "id": "bf-midnight-atelier",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-acid-markdown",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-early-list",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-good-deal-receipt",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-blackout-strip",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-weekend-edition",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-velvet-rope",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-little-black-gift",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-chrome-hour",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-system-upgrade",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-command-save",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-pixel-drop",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-electric-aisle",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-night-shift",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-cyber-club",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-final-markdown",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-closing-time",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "state": "install",
+      "playbook_id": null
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "state": "locked",
+      "playbook_id": null
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "state": "locked",
+      "playbook_id": null
+    }
+  ],
+  "passed": true
+}

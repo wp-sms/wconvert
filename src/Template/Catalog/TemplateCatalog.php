@@ -243,23 +243,32 @@ final class TemplateCatalog
     }
 
     /**
-     * Collections whose installed setups this site holds. Only an installed
-     * setup can be a starting point; the rest of a collection is discovery.
+     * Complete collection discovery, including uninstalled and locked members.
+     * Metadata and public thumbnails only; browsing never fetches a design tree.
      *
      * @return list<array<string, mixed>>
      */
     public function collections(): array
     {
         if (!self::enabled($this->options) || $this->consent() !== 'yes') return [];
+        $status = $this->status();
+        $setups = array_column($status['setups'], null, 'id');
+        $designs = array_column($status['designs'], null, 'id');
         $installed = $this->archive->setupRevisions();
         $collections = [];
         foreach ($this->index()['collections'] as $collection) {
-            $items = [];
+            $items = []; $online = [];
             foreach ($collection['items'] as $item) {
-                if (isset($item['setup'], $installed[$item['setup']])) $items[] = ['setup_id' => DesignArchive::setupId($item['setup'], $installed[$item['setup']]), 'stage' => $item['stage']];
+                $setup = $setups[$item['setup'] ?? ''] ?? null;
+                $design = $setup === null ? null : ($designs[$setup['design']['id']] ?? null);
+                if ($setup === null || $design === null) continue;
+                $items[] = ['setup_id' => $setup['id'], 'stage' => $item['stage']];
+                $online[] = ['setup' => $setup, 'design' => $design, 'stage' => $item['stage'],
+                    'playbook_id' => $setup['state'] === 'ready' ? DesignArchive::setupId($setup['id'], $installed[$setup['id']]) : null];
             }
             if ($items === []) continue;
             $collection['items'] = $items;
+            $collection['online'] = $online;
             $collection['id'] = 'catalog-' . $collection['id'];
             $collections[] = $collection;
         }

@@ -17,6 +17,20 @@ final class CollectionLibrary
     public function all(): array
     {
         $collections = $this->catalog->collections();
+        // A bundled setup is usable too: it need not be downloaded a second time.
+        // Keep the hosted identity and every other member, including locked ones.
+        foreach ($collections as &$onlineCollection) {
+            foreach ($onlineCollection['online'] as &$member) {
+                if ($member['playbook_id'] !== null || !in_array($member['setup']['state'], ['install', 'ready'], true)) continue;
+                $local = $this->playbooks->find($member['setup']['id']);
+                if ($local === null || $local->templateId !== $member['design']['id']
+                    || ($member['design']['local_revision'] ?? 0) < $member['setup']['design']['revision']) continue;
+                $member['playbook_id'] = $local->id;
+                $member['setup']['state'] = 'ready';
+            }
+            unset($member);
+        }
+        unset($onlineCollection);
         $labelsFile = $this->directory . '/resources/collections/labels.php';
         $labels = is_file($labelsFile) ? require $labelsFile : [];
         foreach (glob($this->directory . '/resources/collections/*.json') ?: [] as $file) {

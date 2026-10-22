@@ -56,6 +56,11 @@ without putting Pro references into the Free ZIP. The flag is authoring metadata
 the server still exports the existing collection schema. Previously approved
 online collections with stale dependencies are refused, just as stale bundled
 collections are. The Black Friday & Cyber Monday collection uses this delivery.
+Its discovery response includes all published members and public previews before
+installation, plus each member's availability and usable local Playbook identity.
+It does not expose Pro source trees. Free/Pro labels and separate Install/Use
+actions follow [0156 §9](0156-the-catalogue-is-one-design-per-object.md).
+Installing a member changes its action, never the collection's membership.
 
 ## Consequences
 
