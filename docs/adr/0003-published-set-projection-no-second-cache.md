@@ -85,6 +85,12 @@ took a ninth option of its own instead.*
   done once at publish time rather than per request: the enqueue path then does
   no array surgery on an uncached page load, and "separably addressable" is
   literal rather than a convention someone has to keep.*
+  *Amended by [ADR 0164](0164-rewards-arrive-with-the-capture-reply.md): the
+  stored `payload` is still the whole published config, but the page no longer
+  prints all of it. A signup's codes and resource links are removed as the tag
+  is printed, because they must reach only a visitor whose signup was accepted;
+  doing it at output keeps the stored set whole for the coupon link and the
+  capture contract.*
   *Extended by [#22](https://github.com/navidkashani/wconvert/issues/22): the
   same publish-time pass now also consumes the config's flat `rules` list and
   replaces it with `triggers` and `conditions`, per

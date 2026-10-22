@@ -1,10 +1,10 @@
 import type { TemplateTree } from '@renderer/types';
 import { journeyNodes } from './journey-nodes';
 
-export type Reward = Record<string, (Record<string, string> | null)[]>;
+export type Reward = Record<string, ({ text?: string; apply_href?: string; href?: string } | null)[]>;
 
 /**
- * The codes and thank-you links the page held back, filled into the tree the
+ * The codes and resource links the page held back, filled into the tree the
  * mount draws from (ADR 0164). One entry per `code` and `followup` on a held
  * step, in tree order; `null`, or no reward at all, leaves the node hidden.
  */

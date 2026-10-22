@@ -22,9 +22,10 @@ other-channel signup screen. A promised resource must not depend on that optiona
 signup. Click-only designs and screens before primary acceptance cannot offer it. Readiness
 and server publication checks require every visible resource link to have a
 label, a normalized safe URL and that placement. Drafts may remain incomplete,
-and hidden optional links do not block publication. *(Amended by [ADR 0164](0164-rewards-arrive-with-the-capture-reply.md): the
-published page no longer carries the link's URL; it arrives with the primary
-submission's reply.)* The URL uses the vocabulary’s
+and hidden optional links do not block publication. *(Amended by [ADR 0164](0164-rewards-arrive-with-the-capture-reply.md): this
+assumed the URL ships in the page with the rest of the design. It no longer
+does: it arrives with the primary submission's reply, because a URL in the page
+source hands the resource to anyone who reads it without signing up.)* The URL uses the vocabulary’s
 existing scheme boundary. It opens a file or page; it does not promise an email,
 a forced download or a resource that the merchant has not supplied.
 

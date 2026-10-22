@@ -5,7 +5,7 @@ namespace WConvert\Template;
 defined('ABSPATH') || exit;
 
 /**
- * The codes and thank-you links a signup earns, kept out of the page until
+ * The codes and resource links a signup earns, kept out of the page until
  * the signup is accepted (ADR 0164).
  *
  * A step is **held** when the visitor can reach it only through an accepted
@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
  * where the node is not shown — switched off, or under a switched-off layout —
  * so its value is dropped from the page and never sent. The loader walks the
  * same tree, and the capture contract fingerprints its layout, so a cached
- * page whose positions differ is refused before it is rewarded (ADR 0150).
+ * page whose positions differ is refused as changed before it is rewarded.
  *
  * Pure: it reads a tree and writes nothing.
  */
@@ -33,7 +33,7 @@ final class HeldReward
      * @param array<string, mixed> $tree
      * @return array<string, mixed>
      */
-    public static function held(array $tree): array
+    public static function printed(array $tree): array
     {
         return self::walk($tree)[0];
     }
@@ -56,7 +56,7 @@ final class HeldReward
     private static function walk(array $tree): array
     {
         $rewards = [];
-        foreach (self::steps($tree) as $at) {
+        foreach (self::heldSteps($tree) as $at) {
             $reward = [];
             $tree['steps'][$at]['content'] = self::hold($tree['steps'][$at]['content'], false, $reward);
             if ($reward !== []) $rewards[$tree['steps'][$at]['id']] = $reward;
@@ -75,7 +75,7 @@ final class HeldReward
      * @param array<string, mixed> $tree
      * @return list<int>
      */
-    private static function steps(array $tree): array
+    private static function heldSteps(array $tree): array
     {
         $primary = $tree['submissions'][0] ?? null;
         $steps = $tree['steps'] ?? null;
@@ -106,9 +106,9 @@ final class HeldReward
      * @param list<array<string, mixed>|null> $reward
      * @return array<string, mixed>
      */
-    private static function hold(array $node, bool $hidden, array &$reward): array
+    private static function hold(array $node, bool $underHidden, array &$reward): array
     {
-        $hidden = $hidden || ($node['hidden'] ?? false) === true;
+        $hidden = $underHidden || ($node['hidden'] ?? false) === true;
         $keys = self::VALUES[$node['type'] ?? ''] ?? null;
         if ($keys !== null) {
             $reward[] = $hidden ? null : array_intersect_key($node, array_flip($keys));

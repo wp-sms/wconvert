@@ -40,7 +40,7 @@ final class HeldRewardTest extends TestCase
         $tree = self::tree();
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'grow_email_list', ''));
 
-        $held = HeldReward::held($tree);
+        $held = HeldReward::printed($tree);
 
         self::assertStringNotContainsString('FRIDAY25', self::json($held));
         self::assertStringNotContainsString('example.test/shop', self::json($held));
@@ -58,7 +58,7 @@ final class HeldRewardTest extends TestCase
         $tree = self::tree();
         $tree['steps'][0]['content']['children'][] = array_replace(self::CODE, ['text' => 'WELCOME10']);
 
-        self::assertSame($tree['steps'][0], HeldReward::held($tree)['steps'][0]);
+        self::assertSame($tree['steps'][0], HeldReward::printed($tree)['steps'][0]);
         self::assertArrayNotHasKey('email', HeldReward::of($tree));
     }
 
@@ -68,7 +68,7 @@ final class HeldRewardTest extends TestCase
             ['id' => 'offer', 'name' => 'Offer', 'kind' => 'content', 'content' => ['type' => 'stack', 'children' => [self::CODE]]],
         ]];
 
-        self::assertSame($tree, HeldReward::held($tree));
+        self::assertSame($tree, HeldReward::printed($tree));
         self::assertSame([], HeldReward::of($tree));
     }
 
@@ -77,7 +77,7 @@ final class HeldRewardTest extends TestCase
         $tree = self::tree();
         array_unshift($tree['steps'][1]['content']['children'], self::CODE);
 
-        self::assertStringNotContainsString('FRIDAY25', self::json(HeldReward::held($tree)));
+        self::assertStringNotContainsString('FRIDAY25', self::json(HeldReward::printed($tree)));
         self::assertSame(['text' => 'FRIDAY25', 'apply_href' => '/cart/?coupon=FRIDAY25'], HeldReward::of($tree)['sms'][0]);
     }
 
@@ -92,8 +92,8 @@ final class HeldRewardTest extends TestCase
         $tree['steps'][2]['content']['children'][2]['hidden'] = true;
         $tree['steps'][2]['content']['children'][] = ['type' => 'stack', 'hidden' => true, 'children' => [array_replace(self::SHOP, ['href' => 'https://example.test/secret'])]];
 
-        self::assertStringNotContainsString('FRIDAY25', self::json(HeldReward::held($tree)));
-        self::assertStringNotContainsString('secret', self::json(HeldReward::held($tree)));
+        self::assertStringNotContainsString('FRIDAY25', self::json(HeldReward::printed($tree)));
+        self::assertStringNotContainsString('secret', self::json(HeldReward::printed($tree)));
         self::assertSame(['received' => [null, ['href' => 'https://example.test/shop'], null]], HeldReward::of($tree));
     }
 
@@ -102,7 +102,7 @@ final class HeldRewardTest extends TestCase
         $tree = self::tree();
         $tree['submissions'][0]['required'] = false;
 
-        self::assertSame($tree, HeldReward::held($tree));
+        self::assertSame($tree, HeldReward::printed($tree));
         self::assertSame([], HeldReward::of($tree));
     }
 
@@ -112,11 +112,24 @@ final class HeldRewardTest extends TestCase
         $tree['steps'][2]['content']['children'][] = array_replace(self::CODE, ['text' => 'BEFORE']);
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
 
-        $held = HeldReward::held($tree);
+        $held = HeldReward::printed($tree);
 
         self::assertSame(['hidden' => true, 'type' => 'followup', 'id' => 'n2', 'label' => 'Get the guide'], $held['steps'][0]['content']);
         self::assertSame($tree['steps'][1], $held['steps'][1], 'the submit screen is seen before the signup');
         self::assertSame($tree['steps'][2], $held['steps'][2], 'the entry is seen before the signup');
         self::assertSame(['thanks' => [['href' => 'https://example.test/guide']]], HeldReward::of($tree));
+    }
+
+    /** A cached page printed before the code changed is refused, so it is never rewarded by position. */
+    public function testChangingAHeldCodeChangesTheCaptureContract(): void
+    {
+        $tree = self::tree();
+        $changed = $tree;
+        $changed['steps'][2]['content']['children'][2]['text'] = 'SUMMER10';
+
+        self::assertNotSame(
+            CaptureContract::fingerprint(['template' => ['tree' => $tree]], 'grow_email_list', ''),
+            CaptureContract::fingerprint(['template' => ['tree' => $changed]], 'grow_email_list', '')
+        );
     }
 }

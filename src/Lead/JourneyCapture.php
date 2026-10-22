@@ -122,19 +122,19 @@ final class JourneyCapture
                 }
             }
         }
-        return self::rewarded($result, $tree);
+        return self::withReward($result, $tree);
     }
 
     /**
      * The primary submission's reply, and its replay, carry the codes and
-     * thank-you links the page held back (ADR 0164). Read from the published
+     * resource links the page held back (ADR 0164). Read from the published
      * tree on every request, so nothing is stored.
      *
      * @param array{id: string, submission: string, first: bool, replay: bool} $result
      * @param array<string, mixed> $tree
      * @return array{id: string, submission: string, first: bool, replay: bool, reward?: array<string, list<array<string, mixed>|null>>}
      */
-    private static function rewarded(array $result, array $tree): array
+    private static function withReward(array $result, array $tree): array
     {
         $reward = $result['first'] ? \WConvert\Template\HeldReward::of($tree) : [];
 

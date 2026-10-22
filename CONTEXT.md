@@ -52,8 +52,8 @@ A submit design's success copy acknowledges the captured request. It must not
 claim that a Contact is subscribed or confirmed, or that a message or resource
 was delivered. Shipped examples follow that rule; existing merchant copy is
 not bulk rewritten. See [ADR 0073](docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md).
-Its codes and resource links are not in the page; they arrive with the primary
-submission's reply ([ADR 0164](docs/adr/0164-rewards-arrive-with-the-capture-reply.md)).
+A signup's codes and resource links (its [[Reward]]) are not in the page; they
+arrive with the primary submission's reply ([ADR 0164](docs/adr/0164-rewards-arrive-with-the-capture-reply.md)).
 
 **Independent captures are never deduplicated.** One person completing two
 separate capture journeys produces two Leads. Further submissions in one
@@ -230,6 +230,14 @@ Its address reaches the browser only with an accepted signup ([ADR 0164](docs/ad
 > [ADR 0085](docs/adr/0085-goals-have-publish-contracts-and-stable-history.md)
 > adds Goal compatibility at publication and precise labels; it does not add a
 > second runtime conversion detector.
+
+### Reward
+
+The `code` values and `followup` addresses on the screens a visitor reaches only
+after the primary submission. The page prints those screens with the values
+removed, and the accepted submission's reply carries them
+([ADR 0164](docs/adr/0164-rewards-arrive-with-the-capture-reply.md)). It is the
+same static code for every visitor, behind a signup, not a verified address.
 
 ### Impression
 
