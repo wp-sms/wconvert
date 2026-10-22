@@ -10,7 +10,7 @@ import { summarise } from '../rules/summaries';
 import { inlinePlacementLabel } from '../../inlinePlacement';
 import { destinationsSaid } from '../destinations';
 import { asksForPolicy } from '../policy';
-import { outcomeDesignIssue, outcomeHandoffIssue, type OutcomeContract } from '../../goals/outcome';
+import { countsNothing, outcomeDesignIssue, outcomeHandoffIssue, type OutcomeContract } from '../../goals/outcome';
 import type { CaptureMode } from '../captureMode';
 import type { JourneyRepair } from '../structure/journeyReadiness';
 import type { Path } from '../panel';
@@ -113,7 +113,7 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
   const captures = hasDesign ? capturesTaken(template.tree) : [];
   const screenOf = (path: Path | null | undefined): string | undefined =>
     hasDesign && path && typeof path[0] === 'number' ? template.tree.steps[path[0]]?.id : undefined;
-  const problems = hasDesign ? [...problemsIn(template, rules.schedule.ends_at, outcome?.action === 'none'), ...captureReadiness(template, outcome?.audience_channel)] : [];
+  const problems = hasDesign ? [...problemsIn(template, rules.schedule.ends_at, countsNothing(outcome)), ...captureReadiness(template, outcome?.audience_channel)] : [];
   // A product block still waiting for its products is the one thing to say: the
   // Goal's "needs a link" would be the same missing choice, said twice.
   const choosingProducts = hasDesign && problems.some(problem => problem.blocksPublish && problem.path !== null

@@ -406,6 +406,9 @@ third-party ones. Under configuration they are properties of the one renderer.
   `hidden` could not express. `OptinController::refuseADesignThatCannotConvert()`
   now refuses at the write what `TemplateLibrary::refuse()` only ever refused at
   registration, and `structure/guards.ts` prevents it on the screen.*
+  *Amended by [ADR 0163](0163-capture-toggle.md): that refusal asked no Goal.
+  It now asks the Goal being created for its outcome, and lets a Show a
+  message Optin offer no act.*
   `button` also gained `href` as CONTENT rather than a param, because a
   click-metered CTA's destination is the merchant's to type — and it is
   scheme-validated at write for the same reason a link inside a sentence is

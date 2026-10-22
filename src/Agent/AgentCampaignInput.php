@@ -84,7 +84,8 @@ final class AgentCampaignInput
     public function forCreate(array $input): array|WP_Error
     {
         $goal = Goal::tryFrom((string) ($input['goal'] ?? ''));
-        if ($goal === null) return Reply::refused(__('Give a goal: grow_email_list, grow_sms_list, increase_basket_value, recover_cart, promote_offer, show_message, deliver_lead_magnet, collect_enquiries or find_match.', 'wconvert'));
+        /* translators: %s: the goal ids, comma-separated. */
+        if ($goal === null) return Reply::refused(sprintf(__('Give a goal: %s.', 'wconvert'), implode(', ', array_map(static fn (Goal $goal): string => $goal->value, Goal::cases()))));
         if (isset($input['design_id']) === isset($input['starter_id'])) {
             return Reply::refused(__('Give either a design_id (from wconvert/find-designs) or a starter_id (from wconvert/list-starters), not both.', 'wconvert'));
         }

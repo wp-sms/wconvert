@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { Template } from '@renderer/types';
 import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
-import { fitsOutcome, outcomeDesignIssue, type OutcomeContract } from '../../resources/admin/src/goals/outcome';
+import { countsNothing, fitsOutcome, outcomeDesignIssue, type OutcomeContract } from '../../resources/admin/src/goals/outcome';
 import { removalRefusal } from '../../resources/admin/src/builder/structure/guards';
 import { problemsIn } from '../../resources/admin/src/builder/structure/problems';
 import { howOftenSummary } from '../../resources/admin/src/builder/rules/sentence';
@@ -48,6 +48,9 @@ describe('a message under its Goal', () => {
     expect(factAct(notice(words), CLICK_OUTCOME)).toBeUndefined();
     expect(factAct(notice(words, link), MESSAGE)).toBe('click');
     expect(howOftenSummary({}, 0, true, null).text).toBe('Every time, until they close it');
+    expect(countsNothing(MESSAGE)).toBe(true);
+    expect(countsNothing(CLICK_OUTCOME)).toBe(false);
+    expect(countsNothing(undefined)).toBe(false);
   });
 
   it('reports its appearances with no rate', () => {

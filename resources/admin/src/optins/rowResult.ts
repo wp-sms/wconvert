@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { formatCount, formatRate } from '../lib/format';
+import { countsNothing } from '../goals/countsNothing';
 import type { GoalReport, OptinReport } from '../stats/api';
 
 /** One campaign's numbers as its row shows them. */
@@ -14,7 +15,7 @@ export type RowResult = {
 };
 
 export function rowResultOf(goal: GoalReport, row: OptinReport): RowResult {
-  return goal.action === 'none'
+  return countsNothing(goal)
     ? { count: row.impressions, shown: row.impressions, rate: null, label: goal.result_label, capture: false, counted: false }
     : { count: row.conversions, shown: row.impressions, rate: row.conversion_rate, label: goal.result_label, capture: goal.action === 'submit', counted: true };
 }

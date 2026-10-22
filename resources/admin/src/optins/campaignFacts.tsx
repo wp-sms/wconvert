@@ -5,6 +5,7 @@ import type { Template } from '@renderer/types';
 import { summaryOf, type AxisSummaries } from '../builder/rules/summaries';
 import type { ConvertingAct } from '../builder/structure/catalogue';
 import { convertingActOf } from '../builder/structure/guards';
+import { countsNothing } from '../goals/countsNothing';
 import { nodeAt, nodesOf } from '../builder/structure/tree';
 import type { Fact } from '../shell/FactList';
 
@@ -98,7 +99,7 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
 /** The act a design offers; a design offering none is a message when its Goal counts nothing (ADR 0163). */
 export function factAct(template: Template | undefined, outcome: { readonly action: string } | undefined): ConvertingAct | 'none' | undefined {
   if (!template || template.tree.steps.length === 0) return undefined;
-  return convertingActOf(template.tree)[0] ?? (outcome?.action === 'none' ? 'none' : undefined);
+  return convertingActOf(template.tree)[0] ?? (countsNothing(outcome) ? 'none' : undefined);
 }
 
 /** The distinct targets of a design's link buttons. */

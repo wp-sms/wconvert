@@ -23,6 +23,12 @@ final class OutcomeContract
     ) {
     }
 
+    /** Show a message: nothing converts, so Impressions are the whole report (ADR 0163). */
+    public function countsNothing(): bool
+    {
+        return $this->action === 'none';
+    }
+
     /** A draft can be saved while this is incomplete. The published version cannot.
      * @param array<string, mixed> $config
      */
@@ -30,7 +36,7 @@ final class OutcomeContract
     {
         $tree = $config['template']['tree'] ?? [];
         // `none` is no ConvertingAct: one content screen offering no act at all (ADR 0163).
-        if ($this->action === 'none') {
+        if ($this->countsNothing()) {
             $steps = is_array($tree) && is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
             return count($steps) === 1 && ($steps[0]['kind'] ?? null) === 'content' && empty($tree['submissions'])
                 && ConvertingAct::offeredIn($tree) === [] ? null : $this->requirement;
@@ -80,7 +86,7 @@ final class OutcomeContract
      */
     public function fitted(array $tree): array
     {
-        if ($this->action !== 'none' || !is_array($tree['steps'] ?? null)) return $tree;
+        if (!$this->countsNothing() || !is_array($tree['steps'] ?? null)) return $tree;
         $counted = static fn ($node): bool => is_array($node) && ($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link';
         return TemplateTree::rewrittenIn(['template' => ['tree' => $tree]], static function (array $node) use ($counted): array {
             foreach (TemplateTree::CHILD_KEYS as $key) {

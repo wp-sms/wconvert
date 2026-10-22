@@ -239,7 +239,9 @@ may sit far below the fold. One name, two moments — a single definition would
 mean different things for different [[Display Type]]s while pretending not to.
 
 An Impression is the denominator of conversion rate, and nothing else in the
-system records one, which is why it is counted rather than derived.
+system records one, which is why it is counted rather than derived. Under
+**Show a message** it is also the headline, shown as "Appearances", because
+nothing else is counted ([ADR 0163](docs/adr/0163-capture-toggle.md)).
 
 ### Dismissal
 
@@ -854,15 +856,13 @@ The nine Goals stay business-oriented; their counts do not claim subscriber stat
 inbox delivery, bookings, orders or revenue that WConvert does not observe.
 
 **Show a message** is the one Goal with nothing to convert on: a notice such as
-free shipping or opening hours, reporting appearances only
+free shipping or opening hours, reporting [[Impression]]s only
 ([ADR 0163](docs/adr/0163-capture-toggle.md)).
 
 A Goal can change until first publication. After publication, including after
 unpublishing, it is fixed. **Duplicate for another goal** copies the current draft
 into a new Optin with a separate identity and zero results, leaving the original
-and its history unchanged. Variants also keep their Goal. Adding or removing the
-contact form changes the Goal with the design, as one Undo step, and on a locked
-Goal it makes a signup or offer copy instead ([ADR 0163](docs/adr/0163-capture-toggle.md)). No new storage is needed:
+and its history unchanged. Variants also keep their Goal. No new storage is needed:
 the existing published snapshot survives unpublishing.
 
 ### Outcome contract
@@ -879,7 +879,7 @@ contract checks compatibility before that design becomes live.
 | Collect enquiries | Submit form collecting email or phone | Enquiries captured |
 | Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
 | Promote an offer or content | Click design with an offer/content link | Link clicks |
-| Show a message | One content screen with no form and no counted button | Appearances (no rate) |
+| Show a message | One content screen with no form and no counted button | Appearances, its Impressions (no rate) |
 | Deliver a lead magnet | Required email plus a selected, available, configured lead-magnet email Destination | Emails accepted for sending |
 | Find a match | Pro result journey; contact is optional | Completed results |
 

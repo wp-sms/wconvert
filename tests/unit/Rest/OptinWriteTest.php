@@ -189,6 +189,7 @@ final class OptinWriteTest extends TestCase
         $response = $this->controller->update($request);
         self::assertInstanceOf(WP_Error::class, $response);
         self::assertSame('wconvert_optin_goal_locked', $response->get_error_code());
+        self::assertSame(409, $response->get_error_data()['status']);
         self::assertSame(Goal::GrowEmailList->value, $this->optins->find($draft['id'])?->goal);
     }
 

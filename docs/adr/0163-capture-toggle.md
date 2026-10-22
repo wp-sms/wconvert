@@ -1,6 +1,10 @@
 # 0163: Add or remove the contact form without changing the design
 
-Accepted 2026-10-22. Amends 0059, 0080, 0085 and 0099. Issue #322; the approved
+Accepted 2026-10-22. Amends 0010, 0020, 0059, 0080, 0085 and 0099.
+
+Delivered in four PRs. §2 lands first; §1, §3 and §4 arrive with the
+conversion engine, the editor switch and the gallery, and until then they
+describe the decision, not the code. Issue #322; the approved
 prototype is <https://claude.ai/artifact/DJJhMNevHZbXfqMha2DiPs>.
 
 Merchants pick a design for how it looks, then decide whether to show the offer

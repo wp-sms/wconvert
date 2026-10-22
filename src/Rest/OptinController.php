@@ -1197,7 +1197,7 @@ final class OptinController implements RestController
      */
     private static function refuseADesignThatCannotConvert(array $config, Goal $goal): ?WP_Error
     {
-        if ($goal->outcome()->action === 'none') {
+        if ($goal->outcome()->countsNothing()) {
             return null;
         }
 

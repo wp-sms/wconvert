@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { ChoiceCard } from '../shell/ChoiceGrid';
 import { renderingFor, tierName, tierProductName, type Surface } from './availability';
 import type { GoalEntry } from './api';
+import { countsNothing } from './countsNothing';
 
 /**
  * One [[Goal]] as a card, and the filter that decides which cards a surface
@@ -104,7 +105,7 @@ export function GoalCard({
     : goal.outcome.audience_channel === 'phone' ? MessageSquare
     : goal.outcome.destination_type !== null ? Download
     : goal.outcome.action === 'click' ? MousePointerClick
-    : goal.outcome.action === 'none' ? Megaphone : Target;
+    : countsNothing(goal.outcome) ? Megaphone : Target;
 
   return (
     <ChoiceCard

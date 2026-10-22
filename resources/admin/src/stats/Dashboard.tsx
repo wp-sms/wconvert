@@ -13,6 +13,7 @@ import {
   ArrowUpRight,
   Download,
   Mail,
+  Megaphone,
   MousePointerClick,
   ChartColumn,
 } from 'lucide-react';
@@ -36,8 +37,9 @@ import {
 import { createHref, reportHref, type ReportQuery } from '../nav';
 import { siteToday } from '../leads/calendar';
 import { formatMoney } from '../lib/format';
-import { periodOf, readReport, type DashboardPayload, type PeriodQuery } from './api';
+import { periodOf, readReport, type DashboardPayload, type GoalReport, type PeriodQuery } from './api';
 import { formatCount, formatRate } from './format';
+import { countsNothing } from '../goals/countsNothing';
 import { chooseToday, families, rangeLabel, reportCSV, todayAppearsTomorrow } from './reporting';
 import { CampaignTable, Change, changeOf, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
@@ -424,9 +426,10 @@ function DashboardContent({
           <div className="wa-goal-grid">
             {payload.goals.map((g) => {
               // Per goal only: two goals' rates measure different acts, so there is no site-wide rate (CONTEXT).
-              const goalChange = previous
-                ? changeOf(g.conversions, previous.goals.find((p) => p.goal === g.goal)?.conversions ?? 0)
-                : null;
+              // A message's result is its Impressions (ADR 0163).
+              const result = (card: GoalReport) => (countsNothing(card) ? card.impressions : card.conversions);
+              const before = previous?.goals.find((p) => p.goal === g.goal);
+              const goalChange = previous ? changeOf(result(g), before ? result(before) : 0) : null;
               return (
                 <a
                   className="wa-goal-card"
@@ -440,6 +443,8 @@ function DashboardContent({
                   <span className="wa-goal-icon">
                     {g.action === 'submit' ? (
                       <Mail aria-hidden="true" />
+                    ) : countsNothing(g) ? (
+                      <Megaphone aria-hidden="true" />
                     ) : (
                       <MousePointerClick aria-hidden="true" />
                     )}
@@ -447,13 +452,13 @@ function DashboardContent({
                   <span>
                     <b>{g.label}</b>
                     <span>
-                      <strong>{formatCount(g.conversions)}</strong>{' '}
+                      <strong>{formatCount(result(g))}</strong>{' '}
                       {g.result_label}
                     </span>
                     <small>
                       {g.impressions === 0
                         ? __('Not shown in these dates', 'wconvert')
-                        : sprintf(
+                        : countsNothing(g) ? __('Rate not counted', 'wconvert') : sprintf(
                             /* translators: 1: the goal's rate, 2: times shown. */
                             __('%1$s of %2$s shown', 'wconvert'),
                             formatRate(g.conversion_rate),

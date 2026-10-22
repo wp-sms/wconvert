@@ -58,8 +58,9 @@ copy current draft edits into a new unpublished Optin with separate counters,
 leaving the original unchanged. Before first publication, changing Goal still saves
 the entire draft and resets local Undo history only on success.
 
-> **Amended by [ADR 0163](0163-capture-toggle.md):** the Goal now travels in the
-> draft snapshot, so Undo restores it with the design; Change goal still saves
+> **Amended by [ADR 0163](0163-capture-toggle.md):** this said changing Goal
+> resets Undo. With the editor's form switch, the Goal travels in the draft
+> snapshot, so Undo restores it with the design; Change goal still saves
 > immediately. Adding or removing the form on a locked Goal makes a signup or
 > offer copy instead. A ninth Goal, Show a message, has outcome action `none`.
 

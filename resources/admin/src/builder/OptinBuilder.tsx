@@ -76,6 +76,7 @@ import { convertingActOf } from './structure/guards';
 import type { ConvertingAct } from './structure/catalogue';
 import { listGoals, listPlaybooks, type GoalEntry } from '../goals/api';
 import { offerableGoals } from '../goals/GoalCard';
+import { countsNothing } from '../goals/countsNothing';
 import { ChangeGoalDialog } from './ChangeGoalDialog';
 import { slotsOf, type Path } from './panel';
 import { validDraftInterestOptions } from './InterestOptions';
@@ -258,7 +259,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const detailResults: CampaignResults = publishedAt === null || (stats.status === 'ready' && numbers === null) ? { status: 'ready', days: 0 }
     : stats.status === 'loading' ? { status: 'loading' }
       : stats.status === 'failed' ? { status: 'failed', onRetry: () => setStatsRead((value) => value + 1) }
-        : { status: 'ready', days: numbers!.days, result: { count: numbers!.report.headline, shown: numbers!.report.impressions, rate: numbers!.report.conversion_rate, label: entryOfGoal?.headline_label ?? numbers!.label } };
+        : { status: 'ready', days: numbers!.days, result: { count: numbers!.report.headline, shown: numbers!.report.impressions, rate: numbers!.report.conversion_rate, label: entryOfGoal?.headline_label ?? numbers!.label, counted: !countsNothing(entryOfGoal?.outcome) } };
 
   const bound = Array.isArray(config?.destinations) ? (config.destinations as string[]) : [];
 
@@ -846,7 +847,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   </>;
 
   return (
-    <CountsNothing.Provider value={entryOfGoal?.outcome.action === 'none'}>
+    <CountsNothing.Provider value={countsNothing(entryOfGoal?.outcome)}>
     <CampaignPreviewDeadline endsAt={displayRules.schedule.ends_at}>
     <Tabs
       value={tab}
@@ -1031,7 +1032,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} onWidth={next => setWidth(next === 'narrow' ? 'narrow' : 'own')} />} /> : undefined}
             testRequest={journeyTestRequest} testReturnFocus={previewButton} previewTitle={name || __('Untitled campaign', 'wconvert')}
-            whoSeesIt={close => <Suspense fallback={<RowsSkeleton rows={4} />}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={act} value={displayRules} vocabulary={vocabulary}
+            whoSeesIt={close => <Suspense fallback={<RowsSkeleton rows={4} />}><SampleVisit template={template} cartRequired={entryOfGoal?.cart_required} act={offered} value={displayRules} vocabulary={vocabulary}
               onClose={close} onOpenSection={section => { close(); setTab('rules'); setRevealSection({ id: section }); }} /></Suspense>} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'edit'; setTab(returnTab); }}
             issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />

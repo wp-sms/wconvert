@@ -23,6 +23,7 @@ import { publishOptin, unpublishOptin, declareWinner } from '../optins/api';
 import { adminSettings } from '../settings';
 import { periodOf, type DashboardPayload, type GoalReport, type Numbers, type OptinReport } from './api';
 import { formatCount, formatRate } from './format';
+import { countsNothing } from '../goals/countsNothing';
 import { formatDecimal } from '../lib/format';
 import { families } from './reporting';
 import { ActivityChart } from './ActivityChart';
@@ -151,9 +152,11 @@ function Totals({
   numbers: Numbers;
   previous?: Numbers;
 }) {
+  // A message's result is its Impressions, already the Shown tile (ADR 0163).
+  const message = countsNothing(card);
   return (
     <dl className="wa-numbers">
-      <div>
+      {!message && <div>
         <dt>{card.result_label}</dt>
         <dd>{formatCount(numbers.conversions)}</dd>
         {previous && (
@@ -162,7 +165,7 @@ function Totals({
             previous={previous.conversions}
           />
         )}
-      </div>
+      </div>}
       <div>
         <dt>{__('Shown', 'wconvert')}</dt>
         <dd>{formatCount(numbers.impressions)}</dd>
@@ -178,14 +181,14 @@ function Totals({
           {card.rate_label}
         </dt>
         <dd>{formatRate(numbers.conversion_rate)}</dd>
-        <small>
+        {!message && <small>
           {sprintf(
             /* translators: 1: results, 2: times shown. */
             __('%1$s ÷ %2$s shown', 'wconvert'),
             formatCount(numbers.conversions),
             formatCount(numbers.impressions),
           )}
-        </small>
+        </small>}
       </div>
     </dl>
   );
@@ -471,7 +474,7 @@ export function CampaignTable({
                   <Status value={root.status} />
                 </DataTableCell>
                 <DataTableCell label={__('Results', 'wconvert')} numeric>
-                  {formatCount(numbers.conversions)}
+                  {formatCount(countsNothing(card) ? numbers.impressions : numbers.conversions)}
                   <small className="wa-cell-note">{card.result_label}</small>
                 </DataTableCell>
                 <DataTableCell label={__('Shown', 'wconvert')} numeric>

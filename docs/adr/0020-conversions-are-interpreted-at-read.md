@@ -135,6 +135,10 @@ see its own inline correction.*
 - **One Optin has exactly one converting act, ~~fixed by its Goal~~ fixed by
   its DESIGN**, and the renderer wires the beacon to that node alone.
 
+  > *Amended by [ADR 0163](0163-capture-toggle.md): this said "exactly one".
+  > An Optin under Show a message offers **none** and reports Impressions only,
+  > with no rate. Every other Goal still needs exactly one.*
+
   > *Amended by
   > [ADR 0059](0059-the-converting-act-belongs-to-the-design.md): this
   > originally read "fixed by its Goal". The act is **the design's**, and the

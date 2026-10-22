@@ -6,6 +6,9 @@ import type { Template } from '@renderer/types';
 import { childKeysOf } from '../builder/panel';
 import type { TemplateNode } from '@renderer/types';
 import type { CaptureMode } from '../builder/captureMode';
+import { countsNothing } from './countsNothing';
+
+export { countsNothing };
 
 /** Rules and wording are declared by PHP; the admin evaluates the current draft. */
 export interface OutcomeContract {
@@ -22,7 +25,7 @@ export interface OutcomeContract {
 
 export function outcomeDesignIssue(outcome: OutcomeContract, template: Template | undefined): string | null {
   const acts = template ? convertingActOf(template.tree) : [];
-  if (outcome.action === 'none') {
+  if (countsNothing(outcome)) {
     const steps = template?.tree.steps ?? [];
     return steps.length === 1 && steps[0].kind === 'content' && template?.tree.submissions.length === 0 && acts.length === 0 ? null : outcome.requirement;
   }
@@ -44,7 +47,7 @@ function hasLink(node: TemplateNode | undefined): boolean {
 
 /** A library facet suggests a fit; the edited form is checked again at publication. */
 export function fitsOutcome(outcome: OutcomeContract, facets: { act: string | null; captures: readonly string[] }): boolean {
-  if (outcome.action === 'none') return facets.act === null;
+  if (countsNothing(outcome)) return facets.act === null;
   return facets.act === outcome.action && (outcome.capture_any_of.length === 0
     || outcome.capture_any_of.some((field) => facets.captures.includes(field)));
 }

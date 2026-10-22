@@ -11,7 +11,8 @@ normal link styled like a button; only the existing converting `button` receives
 Copy buttons use `type=button`, so they neither submit a form nor count a click.
 Existing submit/click registration and step-count rules remain unchanged.
 
-> **Amended by [ADR 0163](0163-capture-toggle.md):** adding a contact form turns a
+> **Amended by [ADR 0163](0163-capture-toggle.md):** this said a design's link and
+> `followup` never meet. Adding a contact form turns a
 > design's counted link `button` into a `followup` on the new thank-you screen,
 > and removing the form turns the `followup` back into the counted link.
 
