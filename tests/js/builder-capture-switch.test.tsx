@@ -157,7 +157,9 @@ describe('the Contact form switch', () => {
     const onCreated = vi.fn();
     render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
     const control = await formSwitch();
-    expect(control.getByText('Published campaigns keep their goal. The copy is a new draft.')).toBeInTheDocument();
+    await userEvent.click(control.getByRole('button', { name: 'Why a copy' }));
+    expect(await screen.findByText(/Published campaigns keep their goal/)).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
     await userEvent.click(control.getByRole('button', { name: 'Make a signup copy' }));
     const box = within(await screen.findByRole('dialog', { name: 'Make a signup copy' }));
     await userEvent.click(box.getByRole('radio', { name: 'Ask for phone' }));
@@ -168,12 +170,12 @@ describe('the Contact form switch', () => {
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
 
-  it('is disabled with one plain line where the campaign cannot switch', async () => {
+  it('is not shown where the campaign cannot switch', async () => {
     builder.getOptin.mockResolvedValue(optin(SIGNUP, { goal: 'deliver_lead_magnet' }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-    const control = await formSwitch();
-    expect(control.getByRole('radio', { name: 'None' })).toBeDisabled();
-    expect(control.getByText('A lead magnet needs the email form to deliver the file.')).toBeInTheDocument();
+    await screen.findByRole('button', { name: 'Save draft' });
+    await screen.findAllByText('Screens');
+    expect(screen.queryByRole('region', { name: 'Contact form' })).toBeNull();
   });
 
   it('opens the same box when the form’s screen is deleted, rather than refusing', async () => {

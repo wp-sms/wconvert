@@ -744,7 +744,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const anyBound = bound.length > 0;
   const pickerFit = useMemo(() => ({ outcome: goalOutcome, bound: anyBound, sibling: siblingAct, act, capture: captureFit }),
     [goalOutcome, anyBound, siblingAct, act, captureFit]);
-  const formSwitch = switchOffer && <CaptureSwitch state={formState} offer={switchOffer} copy={!canChangeGoal} published={publishedAt !== null} sectionRef={captureRow}
+  const formSwitch = switchOffer?.offered && <CaptureSwitch state={switchOffer.state} copy={!canChangeGoal} published={publishedAt !== null} sectionRef={captureRow}
     onChoose={choice => { if (choice !== formState) setCapturing(choice); }} />;
 
   const leave = () => (dirty ? setLeaving(true) : onClose());

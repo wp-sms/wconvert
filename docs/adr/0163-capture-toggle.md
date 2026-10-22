@@ -43,7 +43,10 @@ under the chosen Goal. A click design taken for Show a message is prepared
 without its counted link.
 
 Quizzes, lead magnets, product blocks, content locks, cart Goals and branching
-journeys are refused with one plain line. A per-design opt-out
+journeys are refused with one plain line. *Amended after review: the switch is
+not drawn at all where it is refused, since a disabled control nobody can use
+reads as a setting; an edit that reaches the switch another way still gets the
+line.* A per-design opt-out
 (`"form_switch": false`) was planned for designs with no room for a form; the
 screenshot sweep of every design at 1440 and 390 px found none, so there is no
 such flag. `tests/js/capture-conversion-designs.test.ts` keeps checking that
