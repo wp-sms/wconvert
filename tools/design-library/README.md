@@ -57,7 +57,10 @@ serving cart recovery is correctly labelled Pro. These setups are editorial
 candidates, not measured conversion winners or automatically approved releases.
 
 Coupon codes cleared by Prefill use `YOUR CODE`; countdowns display a static sample
-so their occupied space is reviewed. Both are labelled as preview placeholders and
+so their occupied space is reviewed. Public previews fill the renderer’s existing
+number slots, retaining boxed/compact layouts and authored unit labels; they never
+replace the entire timer with text. Rebuild and publish the catalogue to update
+its immutable previews and thumbnails after a generator fix. Both are labelled as preview placeholders and
 never become campaign configuration. Submitting a preview creates no Lead and does
 not contact a Destination. Measurement images load eagerly so an offscreen lazy
 image cannot stall either audit.
