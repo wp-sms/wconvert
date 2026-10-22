@@ -55,9 +55,7 @@
                 "pad": "1.25rem 4rem 1.25rem 1.5rem",
                 "gap": "1rem",
                 "radius": "0",
-                "bg": "accent-fg",
-                "fg": "accent",
-                "muted": "accent"
+                "muted": "fg"
               },
               "narrow": {
                 "pad": "1.5rem",

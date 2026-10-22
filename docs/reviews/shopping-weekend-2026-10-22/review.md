@@ -17,10 +17,10 @@ All twenty approved prototype concepts are native designs with matching Playbook
 | 09 | `cm-chrome-hour` | Pro | Chrome sculpture without image text, electric-blue offer panel, and readable native links/copy controls. |
 | 10 | `cm-system-upgrade` | Pro | Lilac system card with an aligned header close control. Removed unexplained CM/01 notation; discount remains editable. |
 | 11 | `cm-command-save` | Pro | Lavender shortcut-inspired bar. The command-S badge is decorative text; the real button follows the configured offer link. |
-| 12 | `cm-pixel-drop` | Pro | Pixel gift and monospace headline; labelled email field, consent, retry-safe capture and separate coupon acknowledgement. |
+| 12 | `cm-pixel-drop` | Pro | Pixel gift and monospace headline; outlined email field on the dark surface, consent, retry-safe capture and separate coupon acknowledgement. |
 | 13 | `cm-electric-aisle` | Pro | Electric-blue inline offer with a cropped chrome image, editable saving and separate coupon action. |
 | 14 | `cm-night-shift` | Pro | Dark green compact countdown bar; native boxed units remain readable on phones and drop the days box in the final day. |
-| 15 | `cm-cyber-club` | Free catalogue download | Lavender club signup with a rounded editable offer panel, labelled email field and separate coupon acknowledgement. |
+| 15 | `cm-cyber-club` | Free catalogue download | Lavender club signup with an outlined editable seal, labelled email field and separate coupon acknowledgement. |
 | 16 | `bf-final-markdown` | Pro | Rust-and-cream countdown popup, with native unit labels and deadline editing. Phone layout keeps the clock between offer and action. |
 | 17 | `bf-closing-time` | Pro | Two-tone yellow/olive closing-time slide-in; line countdown and inverted call to action stay readable under preset changes. |
 | 18 | `cm-digital-after-hours` | Free catalogue download | Ice-blue inline split with a dark clock panel; stacks vertically on mobile without horizontal scrolling. |
@@ -43,7 +43,18 @@ The collection uses the requested 15 Pro / 5 Free split. The five Free designs a
 
 Built both release ZIPs with `bin/build.sh all`; both passed the artifact contract. Inspected the actual archives: no shopping-weekend design, Playbook or artwork in Free, exactly fifteen in Pro, and no hosted sources in either ZIP. See `packaging.json`. Template registration and source-boundary checks pass. All 20 WordPress journeys were rerun after relocation, giving 40 passes, and all 20 studio journeys passed again. All twelve live countdown checks also passed again. A local catalogue release passed the shipping PHP reader for 91 designs and 114 setups; its public objects contain exactly these five Free designs/setups, and its private objects contain all fifteen Pro designs/setups and premium artwork. This is a local release validation, not a production catalogue deployment.
 
-Only five design tier values changed; comparing parsed sources confirms every tree, token and copy value is unchanged. Their phone and desktop contact sheets were recaptured and reinspected with the Pro labels. The original layout/theme evidence still applies to those identical visuals. New approvals extend the existing review history; the earlier editor screenshot remains evidence of the same unchanged countdown controls.
+## Prototype fidelity follow-up
+
+Compared the approved prototype gallery and its composition/style source with the native screens. Five avoidable differences were corrected:
+
+- **02 Acid markdown:** made the editable percentage bold and larger than the surrounding heading, bounded so longer merchant copy still fits a phone.
+- **07 Behind the velvet rope / 12 Pixel drop:** removed the extra filled field wrapper and its padding. Email now sits directly on the dark surface with an outline and visible label. Field borders follow foreground contrast through theme changes.
+- **10 System upgrade:** removed the invented lime title-strip fill. It now uses the light lavender surface, with a clear aligned close control. The exact prototype's off-white title strip is simplified to the native palette.
+- **15 The cyber club:** replaced the filled card with an outlined rounded seal and a subtle introduction-pane shade. Its words and discount stay editable; it is not rotated or fixed to a circle.
+
+The four signup designs were checked against the prototype's field treatment. 03 intentionally retains its cream ticket; 15 retains its lavender form surface. The native coupon copy control, badge simplifications, image reflow and real countdown units remain editor adaptations rather than pixel-for-pixel HTML imports.
+
+Recaptured and inspected desktop and 320px phone screens, including acknowledgements. Inspected longer CTA labels immediately around the split transitions: Velvet rope at 679/680px and Cyber club at 639/640px. Reading order stays image/offer then form; the longer CTA wraps inside its column without separating the field from its action. The transition contact sheets are saved alongside the focused WordPress results. Reran normal/long-copy layout audits and Midnight/Minimal RTL checks after the final edits. The existing live countdown evidence applies unchanged: none of these styling changes alters countdown designs or runtime code. Final focused WordPress results are also saved under `../shopping-weekend-alignment-2026-10-22/results.json`.
 
 ## Native editor adaptations
 

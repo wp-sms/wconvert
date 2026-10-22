@@ -10,7 +10,7 @@
     "accent-fg": "#f6e9ff",
     "muted": "#6d527e",
     "border": "#9987a6",
-    "input-bg": "#ffffff",
+    "input-bg": "rgba(0,0,0,.1)",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"DM Sans\", Arial, sans-serif",
     "heading-size": "2.6rem",
@@ -96,22 +96,24 @@
                   "tokens": {
                     "pad": "2rem",
                     "gap": "1rem",
-                    "radius": "2rem",
+                    "radius": "50%",
                     "align": "center",
-                    "bg": "accent-fg",
-                    "fg": "accent",
-                    "muted": "accent"
+                    "border": "muted",
+                    "overlay": "input-bg"
                   },
                   "narrow": {
                     "pad": "1.5rem",
                     "gap": ".85rem"
-                  }
+                  },
+                  "edges": "all"
                 }
               ],
               "tokens": {
                 "pad": "2rem",
                 "gap": "1rem",
-                "radius": "0"
+                "radius": "0",
+                "muted": "fg",
+                "overlay": "input-bg"
               },
               "narrow": {
                 "pad": "1.5rem",

@@ -63,14 +63,15 @@
             {
               "type": "heading",
               "narrow": {
-                "heading-size": "2.6rem"
+                "heading-size": "3rem"
               },
               "text": "40%",
               "role": "headline",
               "tokens": {
-                "heading-size": "clamp(2.6rem,8cqi,6rem)",
-                "heading-weight": "400",
-                "heading-font": "\"DM Sans\", Arial, sans-serif"
+                "heading-size": "clamp(3rem,14cqi,4.2rem)",
+                "heading-weight": "700",
+                "heading-font": "\"DM Sans\", Arial, sans-serif",
+                "leading": "1"
               },
               "id": "n3"
             },

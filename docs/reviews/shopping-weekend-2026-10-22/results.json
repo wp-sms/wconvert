@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "at": "2026-10-22T07:12:28.033Z",
+  "at": "2026-10-22T07:33:23.953Z",
   "site": "disposable local WordPress",
   "checks": [
     "journey",
@@ -43,7 +43,7 @@
     },
     {
       "id": "bf-acid-markdown",
-      "revision": "b8caf79664737ef7a49dd3744a442e1c5701341a49e5f478757678ccc47d3880",
+      "revision": "4ba01730a3f29caacf162f23629151e67ec694c327c25191b9a58d9d7509ff04",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -60,7 +60,7 @@
     },
     {
       "id": "bf-acid-markdown",
-      "revision": "b8caf79664737ef7a49dd3744a442e1c5701341a49e5f478757678ccc47d3880",
+      "revision": "4ba01730a3f29caacf162f23629151e67ec694c327c25191b9a58d9d7509ff04",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -213,7 +213,7 @@
     },
     {
       "id": "bf-velvet-rope",
-      "revision": "c1520c5a9268f4ef8abfa99158494cbe6d6ddbe4cc619ee5403ef40ac0b52780",
+      "revision": "9b6feb6bc4b1857540ca89f612a9b7e70134a2879da857f0c81a326acc1dac38",
       "width": 320,
       "passed": true,
       "screens": 2,
@@ -230,7 +230,7 @@
     },
     {
       "id": "bf-velvet-rope",
-      "revision": "c1520c5a9268f4ef8abfa99158494cbe6d6ddbe4cc619ee5403ef40ac0b52780",
+      "revision": "9b6feb6bc4b1857540ca89f612a9b7e70134a2879da857f0c81a326acc1dac38",
       "width": 1280,
       "passed": true,
       "screens": 2,
@@ -315,7 +315,7 @@
     },
     {
       "id": "cm-system-upgrade",
-      "revision": "cc3dbf223f0dfbd50c7221e4805cee34e89cc322e84c668e2e9a5de1b97149c2",
+      "revision": "79c1ce87c7bae04cb1b491e81c24f09c9ebb395ba07b38f3414136f22f7b722a",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -332,7 +332,7 @@
     },
     {
       "id": "cm-system-upgrade",
-      "revision": "cc3dbf223f0dfbd50c7221e4805cee34e89cc322e84c668e2e9a5de1b97149c2",
+      "revision": "79c1ce87c7bae04cb1b491e81c24f09c9ebb395ba07b38f3414136f22f7b722a",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -383,7 +383,7 @@
     },
     {
       "id": "cm-pixel-drop",
-      "revision": "f982cd620d94f48f3260d9d9c1076ae4a90e736f49119eb5339580815aecc7e2",
+      "revision": "fa572160eb5ba81ad0a6300c85f1e5aa48b3810ef461c1f4b9ae56c8778b75eb",
       "width": 320,
       "passed": true,
       "screens": 2,
@@ -400,7 +400,7 @@
     },
     {
       "id": "cm-pixel-drop",
-      "revision": "f982cd620d94f48f3260d9d9c1076ae4a90e736f49119eb5339580815aecc7e2",
+      "revision": "fa572160eb5ba81ad0a6300c85f1e5aa48b3810ef461c1f4b9ae56c8778b75eb",
       "width": 1280,
       "passed": true,
       "screens": 2,
@@ -485,7 +485,7 @@
     },
     {
       "id": "cm-cyber-club",
-      "revision": "2b830098d689e3e3dc5d3d592498b58962ead5d45c26290c102fc0400c44997a",
+      "revision": "16b38c1da53aafa71f54acbf800a7ff39e475a96ae9b9ed18f3fc6db54712e69",
       "width": 320,
       "passed": true,
       "screens": 2,
@@ -502,7 +502,7 @@
     },
     {
       "id": "cm-cyber-club",
-      "revision": "2b830098d689e3e3dc5d3d592498b58962ead5d45c26290c102fc0400c44997a",
+      "revision": "16b38c1da53aafa71f54acbf800a7ff39e475a96ae9b9ed18f3fc6db54712e69",
       "width": 1280,
       "passed": true,
       "screens": 2,

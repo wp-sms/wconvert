@@ -10,7 +10,7 @@
     "accent-fg": "#24241b",
     "muted": "#c6ad7e",
     "border": "#968a6b",
-    "input-bg": "#ffffff",
+    "input-bg": "bg",
     "font": "\"DM Sans\", Arial, sans-serif",
     "heading-font": "\"DM Sans\", Arial, sans-serif",
     "heading-size": "2.6rem",
@@ -86,31 +86,16 @@
                   "id": "n4"
                 },
                 {
-                  "type": "panel",
-                  "children": [
-                    {
-                      "type": "field",
-                      "name": "email",
-                      "label": "Email address",
-                      "required": true,
-                      "id": "n5",
-                      "tokens": {
-                        "muted": "fg",
-                        "border": "fg",
-                        "input-bg": "bg"
-                      }
-                    }
-                  ],
+                  "type": "field",
+                  "name": "email",
+                  "label": "Email address",
+                  "required": true,
+                  "id": "n5",
                   "tokens": {
-                    "bg": "accent",
-                    "fg": "accent-fg",
-                    "pad": ".8rem",
-                    "radius": ".25rem",
-                    "gap": ".4rem",
-                    "muted": "accent-fg"
-                  },
-                  "narrow": {
-                    "pad": ".8rem"
+                    "input-bg": "bg",
+                    "radius": "0",
+                    "border": "fg",
+                    "muted": "fg"
                   }
                 },
                 {

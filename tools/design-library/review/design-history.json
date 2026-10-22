@@ -2746,6 +2746,12 @@
           "date": "2026-10-22",
           "revision": "61444f728d50a50925d5966ea54783ee9d23dff0fc0a8f4bc124d3eaf90311b3",
           "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-22",
+          "revision": "0b2f773b3ba7815ddd02627ae724b1c341379e2ecdb770ddacc1b20c3ef5470c",
+          "note": "Restore bold discount emphasis from prototype 02, bounded for longer editable copy and phones."
         }
       ]
     },
@@ -2836,6 +2842,12 @@
           "date": "2026-10-22",
           "revision": "cca7b83e41b72de125f5367d2269b460994351ee1ba1ac875ea79a7d4cc97a7c",
           "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-22",
+          "revision": "c7f2f61995b28f2d139c4a1ea16b0c1337337f1f6cd8eeb5863b55e12427f2a8",
+          "note": "Restore the outlined editable seal and a subtly shaded introduction pane from prototype 15; preserve native responsive layout and theme contrast."
         }
       ]
     },
@@ -2884,6 +2896,12 @@
           "date": "2026-10-22",
           "revision": "b72b7007d660ec48f8ac8d7bbf24652360e164487345ec1768e20bd1b5c7fe83",
           "note": "Move to Pro for the approved 15 Pro / 5 catalogue-only Free shopping-weekend split; editable design and visitor behaviour unchanged."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-22",
+          "revision": "a1006909b1474febdd216f2e3952a35989373ad9ff768ec47e002d91cf4b14fe",
+          "note": "Remove the invented lime title-strip fill from prototype 10; use the light lavender surface and retain theme-aware header contrast."
         }
       ]
     },
@@ -2944,6 +2962,12 @@
           "date": "2026-10-22",
           "revision": "a2ac2c97b512767ecddc2fce7b8454ec708f5e6a857b91e882dfa590f1f69b23",
           "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-22",
+          "revision": "0aecc37a256a71cd0dcb1286a188b4ae2aa05b2e5dd63dba6953c15fa1e24b30",
+          "note": "Remove the added filled email-field panel; restore an outlined field on the dark surface from prototype 07, with a theme-safe border."
         }
       ]
     },
@@ -3004,6 +3028,12 @@
           "date": "2026-10-22",
           "revision": "846fd21b9b76d6f9af02534751a5fc5b348fbb6a1053e4f72fe868ff0c4ce1b7",
           "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-22",
+          "revision": "4a4b98b0a7139524282c36590313cad7f3a1b6f585af154a9471179c994bc881",
+          "note": "Remove the added lime email-field panel; restore an outlined field on the dark surface from prototype 12, with a theme-safe border."
         }
       ]
     }

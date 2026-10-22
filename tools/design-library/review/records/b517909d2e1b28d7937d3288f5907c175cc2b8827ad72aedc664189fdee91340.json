@@ -1,0 +1,59 @@
+{
+  "id": "cm-cyber-club",
+  "revision": "16b38c1da53aafa71f54acbf800a7ff39e475a96ae9b9ed18f3fc6db54712e69",
+  "base_id": "90439c5a935002d1077d66091f10c2c72a98690c65277db2143b80d374972f79",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity and native WordPress review",
+  "note": "Compared with approved prototype, corrected avoidable styling differences, inspected final phone/desktop screens and acknowledgement. Final layout, theme and real WordPress capture checks pass; detailed judgement in review.md.",
+  "at": "2026-10-22T07:35:23.247Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/cm-cyber-club-320.png",
+          "sha256": "95fc0797c86e2567583d0bfac6b48ee73d55c4cf10ee067b3a9654423672d3a5"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/cm-cyber-club-1440.png",
+          "sha256": "13ef76e925c977417f83cb38353626f23910620328c243600f2ca3e6bc70ce7b"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+          "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+          "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+          "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+          "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+          "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+        }
+      ]
+    }
+  },
+  "record_id": "b517909d2e1b28d7937d3288f5907c175cc2b8827ad72aedc664189fdee91340"
+}

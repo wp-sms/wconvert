@@ -542,8 +542,8 @@
       "added": 244
     },
     "bf-acid-markdown": {
-      "revision": 2,
-      "content": "db3732a35c08b96f2cd647727a3a445180f548a962a7366d4527b52867c38939",
+      "revision": 4,
+      "content": "763b4c099b3cbc4d96d6c28d1073240fcdec50f6b8c293bd86171ffb7e6c89c7",
       "added": 250
     },
     "bf-blackout-strip": {
@@ -592,13 +592,13 @@
       "added": 259
     },
     "cm-pixel-drop": {
-      "revision": 7,
-      "content": "078390853ddbfe223f9d0740c1e670de35a671e1dd3c9d6198d56cd95a90fd63",
+      "revision": 9,
+      "content": "8b102a1c4db7ab67366b71a35776e1833d74f93bcfe8d7ed294864396b93b0af",
       "added": 260
     },
     "cm-system-upgrade": {
-      "revision": 4,
-      "content": "be2742738c7465041a36655b49005763e277764b363bb755153e99389dee6aab",
+      "revision": 6,
+      "content": "5d2ba3957591398a7faac520c03153cb990fd29ad6bf0d8d1ad2ecce1a0035e1",
       "added": 261
     },
     "bf-midnight-atelier": {
@@ -607,8 +607,8 @@
       "added": 274
     },
     "bf-velvet-rope": {
-      "revision": 5,
-      "content": "1b454ee484564c38df1209b0edffd098b9f4a18636769c5c04f7be6734419064",
+      "revision": 7,
+      "content": "15bedaed04ba147c6ff155bddc37e653967ea899bf89ac2c76da4e7ef2dc93ea",
       "added": 275
     },
     "bf-weekend-edition": {
@@ -622,8 +622,8 @@
       "added": 277
     },
     "cm-cyber-club": {
-      "revision": 4,
-      "content": "19238df53a5f223bbd82b01a5bf3c48301a5e04789f285a57cea9262f980f180",
+      "revision": 7,
+      "content": "f6f3612fb590450b4316528729f4ccb6a5512a94cd05afdf83b4b4d8b2d743ad",
       "added": 278
     },
     "cm-digital-after-hours": {
@@ -1349,8 +1349,8 @@
       "added": 249
     },
     "bf-acid-markdown": {
-      "revision": 2,
-      "content": "54ea793faa95f59457a9e595a57929bbcec7dc17d54ee1a2d8e7f91048512990",
+      "revision": 4,
+      "content": "19789d03453de2d53fac233f9fb7923bf92d13485c51c5c332a8a65b190bed3c",
       "added": 262
     },
     "bf-blackout-strip": {
@@ -1399,13 +1399,13 @@
       "added": 271
     },
     "cm-pixel-drop": {
-      "revision": 7,
-      "content": "6d2aa342b93fe645cd2792fa3a28af2cd983a7a6a1e27da616607fc22d9e005d",
+      "revision": 9,
+      "content": "2d4a27dea182dda2304801d89018d3183de229ebeac3e8345085783ca865bea9",
       "added": 272
     },
     "cm-system-upgrade": {
-      "revision": 4,
-      "content": "53010cda9406430db3f67358e3b6ddaa9a09924bbd0b9d73fa8b08d3bfa84b31",
+      "revision": 6,
+      "content": "023480d9b1bf0d77799c06bd3118d44d1b3f004239198cc76122a6748a89b5fb",
       "added": 273
     },
     "bf-midnight-atelier": {
@@ -1414,8 +1414,8 @@
       "added": 282
     },
     "bf-velvet-rope": {
-      "revision": 5,
-      "content": "62f9e80ba20dd8800c174392d3249b9ea4ba371c63d1741a2cf90eb21d9e2957",
+      "revision": 7,
+      "content": "61037a8da01d83aa629445c5cadeffb96e55980891de132262af5a2fc8ab0c6d",
       "added": 283
     },
     "bf-weekend-edition": {
@@ -1429,8 +1429,8 @@
       "added": 285
     },
     "cm-cyber-club": {
-      "revision": 4,
-      "content": "fabcc4be308b48bc36bc94846c9f14f948e00714dd118537b3330c5074a40158",
+      "revision": 7,
+      "content": "cbb6790eee6f98aeb4d76a1b596b74794586678b99ce82a00e867b4739589485",
       "added": 286
     },
     "cm-digital-after-hours": {
