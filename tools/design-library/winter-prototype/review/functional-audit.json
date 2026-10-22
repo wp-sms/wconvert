@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "Gallery totals, plan/countdown/motion filters and five theme counts",
+    "Desktop/320px viewer, acknowledgement toggle, pause control, variant select and wrapping keyboard navigation",
+    "All 14 forms require email and consent, show the matching code, copy to clipboard and return to signup; no POST requests",
+    "All 13 fixed deadlines calculate correctly; preview expiry closes offers and lets an active signup finish",
+    "Natural ticking reaches zero without negatives; elapsed offers and signups stay closed on initial load; an already-open signup can finish",
+    "Reduced motion disables all decorative animations",
+    "Close and reopen demo controls"
+  ],
+  "errors": []
+}
