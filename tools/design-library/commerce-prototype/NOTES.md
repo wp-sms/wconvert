@@ -2,7 +2,7 @@
 
 Question: which Black Friday and Cyber Monday compositions should become WConvert library designs?
 
-Fifteen distinct concepts across all five supported display formats, on one review route with a URL-driven switcher. This is a visual exploration under the existing visitor-design tooling, excluded from plugin distributions by `/tools` in `.distignore`. It deliberately does not register designs, publish collections, create Playbooks, change the renderer, or save submissions.
+Twenty distinct concepts across all five supported display formats, on one review route with a URL-driven switcher. This is a visual exploration under the existing visitor-design tooling, excluded from plugin distributions by `/tools` in `.distignore`. It deliberately does not register designs, publish collections, create Playbooks, change the renderer, or save submissions.
 
 ## Open it
 
@@ -16,9 +16,9 @@ Open http://127.0.0.1:5193/ for the gallery. Examples:
 - `/?variant=09&width=390` — Chrome hour at phone width.
 - `/?variant=03&width=320&screen=ack` — early-list acknowledgement.
 
-Filter by occasion or format. Click a design to inspect it against a neutral merchant storefront. Use the fixed previous/next switcher or left/right arrow keys. Width choices are desktop, 390px and 320px. The iframe's border can reduce its content width by 2px; direct render routes were also checked at exact viewport widths. Use Signup/Acknowledgement to compare form states, or submit a valid demo email with the visible consent box checked. Reset reopens the initial design. No form data leaves the frame or persists. Copy buttons copy the sample code to the clipboard; offer buttons display a local demo notice.
+Filter by occasion, format or With countdown. Click a design to inspect it against a neutral merchant storefront. Use the fixed previous/next switcher or left/right arrow keys. Width choices are desktop, 390px and 320px. The iframe's border can reduce its content width by 2px; direct render routes were also checked at exact viewport widths. Use Signup/Acknowledgement to compare form states, or submit a valid demo email with the visible consent box checked. Reset reopens the initial design. No form data leaves the frame or persists. Copy buttons copy the sample code to the clipboard; offer buttons display a local demo notice.
 
-All discounts, codes and offers are examples. The night-shift timer is frozen sample data, not a live deadline or an evergreen countdown. No availability or sales-performance claims are implied.
+All discounts, codes and offers are examples. All six countdowns show frozen sample values, not live deadlines or evergreen timers. Each countdown design is labelled in the gallery and has an explicit sample-clock note in its viewer. No availability or sales-performance claims are implied.
 
 ## What the Halloween collection taught this exploration
 
@@ -43,8 +43,13 @@ The useful precedent is composition variety: an engraved frame around calm copy,
 | 11 | Command + save | Cyber Monday | Floating bar | Offer |
 | 12 | Pixel drop | Cyber Monday | Slide-in | Email |
 | 13 | The electric aisle | Cyber Monday | Inline | Offer |
-| 14 | The night shift | Cyber Monday | Floating bar | Offer |
+| 14 | The night shift | Cyber Monday | Floating bar | Offer + countdown |
 | 15 | The cyber club | Cyber Monday | Inline | Email |
+| 16 | The final markdown | Black Friday | Popup | Offer + countdown |
+| 17 | Closing time | Black Friday | Slide-in | Offer + countdown |
+| 18 | Digital after hours | Cyber Monday | Inline | Offer + countdown |
+| 19 | Midnight transmission | Cyber Monday | Fullscreen | Offer + countdown |
+| 20 | The weekend curtain | Black Friday | Floating bar | Offer + countdown |
 
 The gallery data includes the intent and vocabulary mapping for each design. The four email compositions each have a matching-palette acknowledgement with their visible sample code.
 
@@ -66,13 +71,21 @@ The current editor supports a required email/SMS form followed by an acknowledge
 
 Checked against `JourneyEditor.tsx`, `structure/catalogue.ts`, `SlotFields.tsx`, `TemplateLabels.php` and the shipping renderer CSS. These are existing product capabilities, not a claim that the prototype gallery is installed in WordPress.
 
+## Countdown authoring
+
+Countdown is already a core editor element. Add element → Countdown; choose One line or Boxes; set Countdown date and time in its inspector. That date also sets when the campaign stops showing, in the WordPress site's timezone. Display rules edits the same date. There is no independent or per-visitor deadline, and a real end date is needed for a working countdown. Popup and inline countdowns do not inherently require Pro; the chosen display format still determines its tier.
+
+14 and 16–20 explore six clock compositions across all five formats. 17 and 20 use the native one-line `08:24:16` format; the others use boxes. These are visual samples to re-author with the native countdown node and its unit labels, typography, colours and density controls. Set a real deadline in every approved production setup. Checked against SlotFields.tsx and ADRs 0052, 0159 and 0160.
+
+The separate editor capability to add/remove contact capture while preserving a design is tracked in [#322](https://github.com/wp-sms/wconvert/issues/322). It is outside this template-prototype PR.
+
 ## Decision
 
 Pending visual selection. Choose IDs, combinations or changes in the review conversation. After the direction is agreed, absorb the chosen design intent into library sources and delete the throwaway implementation.
 
 ## Review evidence
 
-`preview.png` is the final gallery overview. Local detailed captures and the browser audit report are in `../out/commerce-review/` (generated, not committed). Review covers 320, 390, 768 and 1440px, LTR/RTL initial screens, all four acknowledgements, form validation and the gallery's demo interactions. `review.json` records 136 layout cases and 138 interaction checks, with no page errors, external requests, horizontal overflow or close-control overlaps. Desktop and phone contact sheets and all four acknowledgement screens were visually inspected. The final visual pass corrected the pixel acknowledgement’s narrow heading wrap; form, code and action now remain balanced. Scoped ESLint and a Vite build passed. This is prototype verification rather than production template approval.
+`preview.png` is the final gallery overview. Local detailed captures and the browser audit report are in `../out/commerce-review/` (generated, not committed). Review covers 320, 390, 768 and 1440px, LTR/RTL initial screens, all four acknowledgements, form validation and the gallery's demo interactions. `review.json` records 176 layout cases and 157 interaction checks, with no page errors, external requests, horizontal overflow or close-control overlaps. Desktop and phone contact sheets and all four acknowledgement screens were visually inspected. The final visual pass checked the five new countdown designs at desktop and 320px, corrected the inline clock eyebrow typography, matched the native one-line time format, and fitted the new popup thumbnail to its gallery card. Wide and narrow compositions retain clear offer, clock and action grouping. Thirty additional checks around the 600/800/1100px layout transitions used a longer CTA and found no overflow. Visual checks at 601px (inline and fullscreen) and 801px (bar) confirmed clear grouping and legible wrapped actions. Scoped ESLint and a Vite build passed. This is prototype verification rather than production template approval.
 
 ## Original artwork
 
