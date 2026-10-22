@@ -26,7 +26,7 @@ import { journeyAuthoring } from '../journeyAuthoring';
 import { useQuestionPanel } from './ScreenPanel';
 import { AdvancedContext, AdvancedToggle } from './advanced';
 import { CaptureOwnership } from './CaptureOwnership';
-import { submissionScreen } from './structure/journey';
+import { onlyForSignups, submissionScreen } from './structure/journey';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -365,6 +365,7 @@ function contentBody({
             onChange({ ...template, tree: withValue(template.tree, slot.path, param, value) })
           }
           onHidden={(hidden) => onChange({ ...template, tree: withHidden(template.tree, slot.path, hidden) })}
+          signupOnly={onlyForSignups(template.tree, Number(slot.path[0]))}
         />
       )}
     </>

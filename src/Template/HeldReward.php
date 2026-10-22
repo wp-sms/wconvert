@@ -66,11 +66,12 @@ final class HeldReward
     }
 
     /**
-     * The indexes of the steps reachable only after the primary submission.
+     * The indexes of the steps reachable only through the primary submit screen.
      *
-     * None where that submission is optional: a visitor who skips it reaches
-     * every later step without signing up, and holding a code there would
-     * take it from them.
+     * Held where that submission is optional too (a result-first quiz): the
+     * code is the reason to sign up, so a visitor who skips it sees the
+     * thank-you screen without it. A code meant for everyone goes before the
+     * form, on the result.
      *
      * @param array<string, mixed> $tree
      * @return list<int>
@@ -79,7 +80,7 @@ final class HeldReward
     {
         $primary = $tree['submissions'][0] ?? null;
         $steps = $tree['steps'] ?? null;
-        if (!is_array($primary) || ($primary['required'] ?? false) !== true || !is_array($steps) || !array_is_list($steps)) {
+        if (!is_array($primary) || !is_array($steps) || !array_is_list($steps)) {
             return [];
         }
         $at = CaptureJourney::submitScreen($tree, (string) ($primary['id'] ?? ''));

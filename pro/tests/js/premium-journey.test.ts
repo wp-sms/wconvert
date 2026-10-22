@@ -133,6 +133,28 @@ it('does not submit or freeze a later answer when returning to an optional graph
   expect(retained.disabled).toBe(false);
 });
 
+it.each([['skips', false], ['signs up', true]])('shows a result-first quiz’s thank-you code only to a visitor who signs up: %s', async (_, signs) => {
+  const tree = structuredClone((guide as Template).tree);
+  (tree.steps[3].content as unknown as { children: unknown[] }).children.push({ type: 'code', hidden: true });
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead', reward: { thanks: [{ text: 'GUIDE10' }] } }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(guide as Template), tree });
+  journey.choose('grow'); journey.act('next'); journey.act('next');
+  if (signs) {
+    journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+    const consent = journey.root().querySelector<HTMLInputElement>('[name="consent"]');
+    if (consent) consent.checked = true;
+    journey.act('submit');
+    await vi.waitFor(() => expect(journey.root().querySelector('.wc-code')?.textContent).toBe('GUIDE10'));
+  } else {
+    journey.act('skip');
+    expect(journey.root().textContent).toContain((tree.steps[3].content as unknown as { children: { text?: string }[] }).children[0].text);
+    expect(journey.root().querySelector('.wc-code')).toBeNull();
+    expect(fetcher).not.toHaveBeenCalled();
+  }
+});
+
 it('starts at the graph entry and submits after an unordered branch and merge', async () => {
   const base = structuredClone((service as Template).tree);
   const tree = { ...base, v: 3, steps: [base.steps[2], base.steps[3], base.steps[1], base.steps[0]], graph: {
