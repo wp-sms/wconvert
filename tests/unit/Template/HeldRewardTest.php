@@ -134,17 +134,19 @@ final class HeldRewardTest extends TestCase
         );
     }
 
-    /** A result-first quiz: the result stays public, the thank-you code waits for the signup. */
+    /** A result-first quiz: the result stays public, the thank-you code and link wait for the signup. */
     public function testAResultFirstQuizKeepsItsResultAndHoldsItsThankYouCode(): void
     {
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-content-guide.json'), true)['tree'];
         $tree['steps'][1]['content']['children'][] = ['type' => 'code', 'text' => 'EVERYONE5'];
         $tree['steps'][3]['content']['children'][] = self::CODE;
+        $tree['steps'][3]['content']['children'][] = self::SHOP;
 
         $printed = (string) wp_json_encode(HeldReward::printed($tree));
 
         self::assertStringContainsString('EVERYONE5', $printed);
         self::assertStringNotContainsString('FRIDAY25', $printed);
+        self::assertStringNotContainsString('example.test/shop', $printed);
         self::assertSame(['thanks'], array_keys(HeldReward::of($tree)));
     }
 }

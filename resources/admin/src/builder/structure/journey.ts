@@ -49,7 +49,7 @@ export function submissionScreen(tree: TemplateTree, id: string | undefined): nu
 }
 
 /**
- * Whether a code on this screen reaches only visitors who sign up, though the
+ * Whether a code or resource link on this screen reaches only visitors who sign up, though the
  * signup before it is optional. `HeldReward::heldSteps()`'s rule (ADR 0164):
  * every route to the screen passes the main signup's screen.
  */

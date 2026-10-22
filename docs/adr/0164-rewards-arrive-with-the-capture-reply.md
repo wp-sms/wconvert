@@ -21,11 +21,13 @@ linear design, and screens no route reaches without passing it in a graph
 screen is held too. A code before the form, and any design with no form, is
 printed as before: it is meant to be seen. ~~Where the primary submission is
 optional (a result-first quiz), nothing is held, because skipping it reaches
-every later step without signing up.~~ *Amended the same day: it is held there
-too, and a visitor who skips the signup sees the thank-you screen without it.
-The code is the reason to sign up, which is how Octane AI gates a quiz discount
-on its opt-in; a code meant for everyone belongs on the result, before the form.
-The editor says so on a code placed after an optional signup.*
+every later step without signing up.~~ *Amended the same day: they are held
+there too, and a visitor who skips the signup sees the thank-you screen without
+its codes and resource links. They are the reason to sign up, which is how
+Octane AI gates a quiz discount on its opt-in. A code meant for everyone belongs
+on the result, before the form; a link meant for everyone is the result's own
+Link, since a resource link may only follow the signup. The editor says so on
+each code and resource link placed after an optional signup.*
 
 **2. The primary submission's reply carries them.** `JourneyCapture` adds
 `reward: { "<stepId>": [ {text, apply_href?} | {href} | null ] }` to the primary

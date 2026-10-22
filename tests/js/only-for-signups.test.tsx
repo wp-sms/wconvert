@@ -32,3 +32,13 @@ it('tells the merchant who sees the code', () => {
   expect(screen.getByText('Only visitors who sign up see this code.')).toBeVisible();
   expect(screen.getByRole('button', { name: 'About Code' })).toBeVisible();
 });
+
+it('tells the merchant who sees a resource link, and points everyone’s link at the result', () => {
+  const tree = structuredClone(quiz) as unknown as { steps: { content: { children: unknown[] } }[] };
+  tree.steps[3].content.children.push({ type: 'followup', label: 'Get the guide', href: 'https://example.test/guide.pdf' });
+  const slot = slotsOf(tree as unknown as TemplateTree).find(item => item.type === 'followup')!;
+  const labels = { keys: { label: 'Button text', href: 'Where it goes' }, nodeParams: {}, nodeParamValues: {}, roles: {}, fields: {}, nodes: {} } as unknown as TemplateLabels;
+  render(<SlotFields slot={slot} labels={labels} signupOnly onValue={vi.fn()} onParam={vi.fn()} onHidden={vi.fn()} />);
+  expect(screen.getByText('Only visitors who sign up see this link.')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'About Where it goes' })).toBeVisible();
+});
