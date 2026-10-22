@@ -84,7 +84,7 @@ final class AgentCampaignInput
     public function forCreate(array $input): array|WP_Error
     {
         $goal = Goal::tryFrom((string) ($input['goal'] ?? ''));
-        if ($goal === null) return Reply::refused(__('Give a goal: grow_email_list, grow_sms_list, increase_basket_value, recover_cart, promote_offer, deliver_lead_magnet, collect_enquiries or find_match.', 'wconvert'));
+        if ($goal === null) return Reply::refused(__('Give a goal: grow_email_list, grow_sms_list, increase_basket_value, recover_cart, promote_offer, show_message, deliver_lead_magnet, collect_enquiries or find_match.', 'wconvert'));
         if (isset($input['design_id']) === isset($input['starter_id'])) {
             return Reply::refused(__('Give either a design_id (from wconvert/find-designs) or a starter_id (from wconvert/list-starters), not both.', 'wconvert'));
         }
@@ -122,6 +122,8 @@ final class AgentCampaignInput
         if ($goal === Goal::PromoteOffer && !isset($campaign['link']) && DesignFacts::of($config['template']['tree'] ?? null)['has_link_button']) {
             return Reply::refused(__('A promote_offer campaign sends visitors to the offer. Give link: a full address or a path like "/black-friday/".', 'wconvert'), 'wconvert_agent_needs_link');
         }
+        // A message counts nothing, so the design's counted link goes (ADR 0163).
+        if (is_array($config['template']['tree'] ?? null)) $config['template']['tree'] = $goal->outcome()->fitted($config['template']['tree']);
         $refusal = self::needs($config);
         if ($refusal !== null) return $refusal;
         return ['name' => (string) $input['name'], 'goal' => $goal->value, 'config' => $config];

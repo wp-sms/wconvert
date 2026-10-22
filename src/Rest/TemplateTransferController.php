@@ -121,7 +121,7 @@ final class TemplateTransferController implements RestController
             // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
             if ($refusal !== null) throw new \RuntimeException($refusal->get_error_message());
             $facets = TemplateFacets::of($prepared['patch']['template']['tree'], $this->vocabulary->fields());
-            if ($goal !== null && ($facets['act'] !== $goal->outcome()->action || ($goal->outcome()->captureAnyOf !== [] && array_intersect($facets['captures'], $goal->outcome()->captureAnyOf) === []))) {
+            if ($goal !== null && (($facets['act'] ?? 'none') !== $goal->outcome()->action || ($goal->outcome()->captureAnyOf !== [] && array_intersect($facets['captures'], $goal->outcome()->captureAnyOf) === []))) {
                 $prepared['notes'][] = $goal->outcome()->requirement;
             }
             $links = TransferDraft::links($prepared['patch']['template']);

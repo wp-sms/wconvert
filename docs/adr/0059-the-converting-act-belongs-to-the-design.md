@@ -61,6 +61,10 @@ the Goal's:
   rejects any tree offering two acts or none, **at registration**. So a
   registered design offers exactly one act, and the design was already the
   enforced source of truth.
+
+  > **Amended by [ADR 0163](0163-capture-toggle.md):** an Optin (not a library
+  > design) may offer **zero** acts, only under a Goal whose outcome action is
+  > `none` (Show a message). Registration still requires exactly one.
 - The loader has one `convert()` callback reporting one beacon kind
   (`resources/loader/src/beacon.ts`), and there are **zero matches for `goal` in
   `resources/loader/` or `resources/renderer/`**. The runtime has always derived

@@ -212,6 +212,12 @@ on its first selected result. A [[Template]] offering both unrelated acts is
 rejected when it is registered, not disambiguated at runtime — an Optin with two
 candidate Conversions has no honest number to report.
 
+**At most one, in fact.** An Optin whose Goal is **Show a message** offers no
+converting act at all: one content screen, no form and no counted button. It
+reports [[Impression]]s only and has no conversion rate. Library designs still
+offer exactly one act; zero is allowed only under that Goal
+([ADR 0163](docs/adr/0163-capture-toggle.md)).
+
 A `followup` resource link and a code’s optional copy button do not count. The
 resource link belongs on the capture acknowledgement; it opens a configured file
 or page without another conversion. See [ADR 0080](docs/adr/0080-success-actions-do-not-count-again.md).
@@ -844,13 +850,19 @@ negated rule is never a [[Quick pick]]. See
 
 The business outcome an [[Optin]] serves, selected before choosing a [[Playbook]].
 It remains visible in the editor alongside the precise metric WConvert can prove.
-The seven Goals stay business-oriented; their counts do not claim subscriber state,
+The nine Goals stay business-oriented; their counts do not claim subscriber state,
 inbox delivery, bookings, orders or revenue that WConvert does not observe.
+
+**Show a message** is the one Goal with nothing to convert on: a notice such as
+free shipping or opening hours, reporting appearances only
+([ADR 0163](docs/adr/0163-capture-toggle.md)).
 
 A Goal can change until first publication. After publication, including after
 unpublishing, it is fixed. **Duplicate for another goal** copies the current draft
 into a new Optin with a separate identity and zero results, leaving the original
-and its history unchanged. Variants also keep their Goal. No new storage is needed:
+and its history unchanged. Variants also keep their Goal. Adding or removing the
+contact form changes the Goal with the design, as one Undo step, and on a locked
+Goal it makes a signup or offer copy instead ([ADR 0163](docs/adr/0163-capture-toggle.md)). No new storage is needed:
 the existing published snapshot survives unpublishing.
 
 ### Outcome contract
@@ -867,6 +879,7 @@ contract checks compatibility before that design becomes live.
 | Collect enquiries | Submit form collecting email or phone | Enquiries captured |
 | Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
 | Promote an offer or content | Click design with an offer/content link | Link clicks |
+| Show a message | One content screen with no form and no counted button | Appearances (no rate) |
 | Deliver a lead magnet | Required email plus a selected, available, configured lead-magnet email Destination | Emails accepted for sending |
 | Find a match | Pro result journey; contact is optional | Completed results |
 

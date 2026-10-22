@@ -21,7 +21,8 @@ export interface DisplayRulesProps {
   readonly vocabulary: RuleVocabulary;
   readonly value: DisplayRulesValue;
   readonly overlay: boolean;
-  readonly act?: ConvertingAct;
+  /** Null for a message, which nothing a visitor does can stop (ADR 0163). */
+  readonly act?: ConvertingAct | null;
   readonly audienceRequirement?: string | null;
   readonly initialSection?: string;
   readonly onSectionChange?: (section: string) => void;

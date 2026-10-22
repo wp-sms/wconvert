@@ -182,7 +182,9 @@ final class BeaconController implements RestController
             if (in_array($event->kind, [\WConvert\Stats\StatKind::Conversion, \WConvert\Stats\StatKind::ResultClick], true)) {
                 $optin = PublishedOptin::findInSet($this->publishedSet->all(), $event->optinId);
                 $tree = $optin?->payload['template']['tree'] ?? [];
-                if (in_array(\WConvert\Template\ConvertingAct::AddToCart, \WConvert\Template\ConvertingAct::offeredIn($tree), true)) { continue; }
+                $acts = \WConvert\Template\ConvertingAct::offeredIn($tree);
+                // A message offers no act, so nothing it sends can be one (ADR 0163).
+                if ($acts === [] || in_array(\WConvert\Template\ConvertingAct::AddToCart, $acts, true)) { continue; }
                 $resultAt = array_search('result', array_column($tree['steps'] ?? [], 'kind'), true);
                 if ($event->kind === \WConvert\Stats\StatKind::ResultClick && $resultAt === false) { continue; }
                 if ($event->kind === \WConvert\Stats\StatKind::Conversion && !empty($tree['submissions']) && $resultAt === false) { continue; }

@@ -36,6 +36,10 @@ enum Goal: string
             self::PromoteOffer => new OutcomeContract('click', [],
                 __('Use a design whose button links to your offer or content before publishing.', 'wconvert'),
                 __('Counts clicks to your linked offer or content. Purchases and bookings after that click are not measured.', 'wconvert'), 'on_site_action', linkRequired: true),
+            // Nothing to convert on: a message is shown and its appearances are the whole report (ADR 0163).
+            self::ShowMessage => new OutcomeContract('none', [],
+                __('Shows a message. Remove the form and any counted button, or choose Promote an offer.', 'wconvert'),
+                __('Counts appearances only. A message has nothing to click or submit, so it has no conversion rate.', 'wconvert'), 'shown'),
             self::DeliverLeadMagnet => new OutcomeContract('submit', ['email'],
                 __('Use a form with a required email field and connect a lead magnet email destination before publishing.', 'wconvert'),
                 __('Counts lead magnet emails accepted by the site’s mail service. Inbox arrival and file downloads are not measured. Resends can count again.', 'wconvert'),
@@ -53,6 +57,8 @@ enum Goal: string
 
     case PromoteOffer = 'promote_offer';
 
+    case ShowMessage = 'show_message';
+
     case DeliverLeadMagnet = 'deliver_lead_magnet';
 
     case CollectEnquiries = 'collect_enquiries';
@@ -61,7 +67,11 @@ enum Goal: string
 
     public function headlineKind(): StatKind
     {
-        return $this === self::DeliverLeadMagnet ? StatKind::LeadMagnetDelivered : StatKind::Conversion;
+        return match ($this) {
+            self::DeliverLeadMagnet => StatKind::LeadMagnetDelivered,
+            self::ShowMessage => StatKind::Impression,
+            default => StatKind::Conversion,
+        };
     }
 
     public function headlineLabel(): string
@@ -74,6 +84,7 @@ enum Goal: string
             self::IncreaseBasketValue => __('Basket additions', 'wconvert'),
             self::RecoverCart => __('Cart return clicks', 'wconvert'),
             self::PromoteOffer => __('Link clicks', 'wconvert'),
+            self::ShowMessage => __('Appearances', 'wconvert'),
             self::DeliverLeadMagnet => __('Emails accepted for sending', 'wconvert'),
         };
     }
@@ -88,6 +99,7 @@ enum Goal: string
             self::IncreaseBasketValue => __('Basket addition rate', 'wconvert'),
             self::RecoverCart => __('Cart return click rate', 'wconvert'),
             self::PromoteOffer => __('Link click rate', 'wconvert'),
+            self::ShowMessage => __('Not counted', 'wconvert'),
             self::DeliverLeadMagnet => __('Resource request rate', 'wconvert'),
         };
     }
@@ -110,6 +122,7 @@ enum Goal: string
             self::IncreaseBasketValue => __('Increase basket value', 'wconvert'),
             self::RecoverCart => __('Bring shoppers back to their cart', 'wconvert'),
             self::PromoteOffer => __('Promote an offer or content', 'wconvert'),
+            self::ShowMessage => __('Show a message', 'wconvert'),
             self::DeliverLeadMagnet => __('Deliver a lead magnet', 'wconvert'),
             self::CollectEnquiries => __('Collect enquiries', 'wconvert'),
             self::FindMatch => __('Help visitors find a match', 'wconvert'),
@@ -125,6 +138,7 @@ enum Goal: string
             self::IncreaseBasketValue => __('Suggest useful extras while shoppers fill their cart.', 'wconvert'),
             self::RecoverCart => __('Bring shoppers with a full cart back to checkout.', 'wconvert'),
             self::PromoteOffer => __('Send visitors to a sale, an offer or a useful page.', 'wconvert'),
+            self::ShowMessage => __('Tell visitors something, like free shipping or opening hours.', 'wconvert'),
             self::DeliverLeadMagnet => __('Send a guide, file or checklist in exchange for an email.', 'wconvert'),
             self::CollectEnquiries => __('Take questions and quote requests from visitors.', 'wconvert'),
             self::FindMatch => __('Ask a few questions and suggest the right product or page.', 'wconvert'),

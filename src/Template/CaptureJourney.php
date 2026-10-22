@@ -91,8 +91,9 @@ final class CaptureJourney
                 }
                 return null;
             }
+            // Zero links is a message; whether the Goal accepts it is OutcomeContract's call (ADR 0163).
             return count($steps) === 1 && $steps[0]['kind'] === 'content'
-                && count(array_filter($buttons, static fn (array $entry): bool => $entry[0]['action'] === 'link')) === 1
+                && count(array_filter($buttons, static fn (array $entry): bool => $entry[0]['action'] === 'link')) <= 1
                 && count(array_filter($buttons, static fn (array $entry): bool => in_array($entry[0]['action'], ['submit', 'next', 'skip'], true))) === 0 ? null : 'flow';
         }
         $terminal = $steps[count($steps) - 1]['kind'];

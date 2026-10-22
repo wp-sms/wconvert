@@ -6,6 +6,7 @@ Goal's existing outcome contract does, so Privacy Guidance derives the starting
 point from that purpose:
 
 - a click-only Campaign captures no visitor data and shows no form privacy UI;
+  nor does a Show a message Campaign ([ADR 0163](0163-capture-toggle.md));
 - an enquiry or one-time lead-magnet delivery starts with a short policy notice
   and no consent checkbox;
 - an ongoing email or SMS list starts with the policy notice and an explicit,
@@ -38,7 +39,11 @@ required by tests to provide consent wording.
 ## The site preference still controls automation
 
 When Privacy Guidance is off, WConvert neither removes nor changes consent
-visibility during a later Template choice. New bundled Templates naturally keep
+visibility during a later Template choice.
+
+> **Amended by [ADR 0163](0163-capture-toggle.md):** adding a contact form for a
+> list Goal always adds a visible consent with default wording, even with
+> Privacy Guidance off, because publication requires one. New bundled Templates naturally keep
 their hidden consent default, automatic policy and consent copy are omitted at
 Playbook prefill, and the Privacy readiness section remains absent. Manual
 controls and all operational privacy infrastructure remain available.

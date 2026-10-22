@@ -29,6 +29,12 @@ final class OutcomeContract
     public function designIssue(array $config): ?string
     {
         $tree = $config['template']['tree'] ?? [];
+        // `none` is no ConvertingAct: one content screen offering no act at all (ADR 0163).
+        if ($this->action === 'none') {
+            $steps = is_array($tree) && is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
+            return count($steps) === 1 && ($steps[0]['kind'] ?? null) === 'content' && empty($tree['submissions'])
+                && ConvertingAct::offeredIn($tree) === [] ? null : $this->requirement;
+        }
         if (!is_array($tree) || ConvertingAct::offeredIn($tree) !== [ConvertingAct::from($this->action)]) {
             return $this->requirement;
         }
@@ -62,6 +68,26 @@ final class OutcomeContract
             if (array_key_exists($field, $fields) && (count($this->captureAnyOf) > 1 || $fields[$field])) return null;
         }
         return $this->requirement;
+    }
+
+    /**
+     * The tree with what this outcome cannot carry taken out: a message counts
+     * nothing, so a design's counted link buttons go. Any other outcome keeps
+     * the tree as it is.
+     *
+     * @param array<string, mixed> $tree
+     * @return array<string, mixed>
+     */
+    public function fitted(array $tree): array
+    {
+        if ($this->action !== 'none' || !is_array($tree['steps'] ?? null)) return $tree;
+        $counted = static fn ($node): bool => is_array($node) && ($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link';
+        return TemplateTree::rewrittenIn(['template' => ['tree' => $tree]], static function (array $node) use ($counted): array {
+            foreach (TemplateTree::CHILD_KEYS as $key) {
+                if (is_array($node[$key] ?? null)) $node[$key] = array_values(array_filter($node[$key], static fn ($child): bool => !$counted($child)));
+            }
+            return $node;
+        })['template']['tree'];
     }
 
     /** @return array<string, mixed> */

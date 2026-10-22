@@ -32,7 +32,8 @@ import type { Occasion } from '../discovery/api';
 import { readOccasions, type OccasionNotice } from '../occasions/api';
 import { OccasionNoticeView } from '../occasions/Notice';
 import { readDashboard, type DashboardPayload } from '../stats/api';
-import { formatCount, formatRange, formatRate, labelOf } from '../lib/format';
+import { rowResultOf, shownLine } from './rowResult';
+import { formatCount, formatRange, labelOf } from '../lib/format';
 import {
   campaignName,
   createVariant,
@@ -67,13 +68,6 @@ import { productHealthLabel, ProductHealthDetails, useProductHealth } from './Pr
 
 const Design = lazy(() => import('./CampaignDesign'));
 const PAGE_SIZE = 12;
-type RowResult = {
-  count: number;
-  shown: number;
-  rate: number | null;
-  label: string;
-  capture: boolean;
-};
 type Decision = {
   kind: DecisionKind;
   row: OptinSummary;
@@ -212,16 +206,7 @@ export function OptinList({
     () =>
       Object.fromEntries(
         (report?.goals ?? []).flatMap((g) =>
-          g.optins.map((r) => [
-            r.id,
-            {
-              count: r.conversions,
-              shown: r.impressions,
-              rate: r.conversion_rate,
-              label: g.result_label,
-              capture: g.action === 'submit',
-            } satisfies RowResult,
-          ]),
+          g.optins.map((r) => [r.id, rowResultOf(g, r)]),
         ),
       ),
     [report],
@@ -548,10 +533,7 @@ export function OptinList({
               <strong>{formatCount(result.count)}</strong>
               <span>{result.label}</span>
               {result.shown > 0 && (
-                <span>
-                  {/* translators: 1: a conversion rate such as "2.5%", 2: how many times the campaign was shown. */}
-                  {sprintf(__('%1$s of %2$s shown', 'wconvert'), formatRate(result.rate), formatCount(result.shown))}
-                </span>
+                <span>{shownLine(result)}</span>
               )}
             </a>
           ) : !reportReady && reportLoading ? (

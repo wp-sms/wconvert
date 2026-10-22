@@ -1075,6 +1075,82 @@ final class OptinWriteTest extends TestCase
 
         $this->assertInstanceOf(WP_Error::class, $refusal);
         $this->assertSame('wconvert_optin_cannot_convert', $refusal->get_error_code());
+
+        // Only a message may count nothing; an offer with its button gone still cannot (ADR 0163).
+        $offer = $this->create(Goal::PromoteOffer, ['template' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Sale']]]]]),
+            'tokens' => [],
+        ]]);
+        $this->assertInstanceOf(WP_Error::class, $offer);
+        $this->assertSame('wconvert_optin_cannot_convert', $offer->get_error_code());
+    }
+
+    /** A message counts nothing, and that is its design rather than a hole (ADR 0163). */
+    public function testAMessageIsCreatedAndPublishedWithNothingToCount(): void
+    {
+        $message = $this->create(Goal::ShowMessage, ['template' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
+                ['type' => 'stack', 'children' => [['type' => 'heading', 'role' => 'headline', 'text' => 'Free shipping all weekend']]],
+            ]]),
+            'tokens' => [],
+        ]]);
+
+        $this->assertIsArray($message);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $message['id']);
+        $this->assertNotInstanceOf(WP_Error::class, $this->controller->publish($request));
+    }
+
+    /** A counted button or a form is not a message, so either waits at publication. */
+    public function testAMessageCannotPublishALinkOrAForm(): void
+    {
+        foreach (['offer-panel', 'stacked-signup'] as $design) {
+            $draft = $this->create(Goal::ShowMessage, ['template_id' => $design]);
+            $this->assertIsArray($draft, $design);
+            $request = new WP_REST_Request();
+            $request->set_param('id', $draft['id']);
+            $this->assertInstanceOf(WP_Error::class, $this->controller->publish($request), $design);
+        }
+    }
+
+    /** The goal and the design of one edit are one row write, so Undo has one thing to restore. */
+    public function testAGoalAndItsDesignArriveInOneWrite(): void
+    {
+        $created = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+        $this->assertIsArray($created);
+        $config = $created['config'];
+        $config['template']['tree'] = Goal::ShowMessage->outcome()->fitted($config['template']['tree']);
+
+        $writes = count($this->db->writes);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $request->set_param('goal', Goal::ShowMessage->value);
+        $request->set_param('config', $config);
+        $response = $this->controller->update($request);
+
+        $this->assertInstanceOf(\WP_REST_Response::class, $response);
+        $this->assertSame('show_message', $response->get_data()['goal']);
+        $this->assertSame([], \WConvert\Template\ConvertingAct::offeredIn($response->get_data()['config']['template']['tree']));
+        $this->assertCount($writes + 1, $this->db->writes);
+    }
+
+    /** An arm counting nothing beside one counting clicks compares nothing. */
+    public function testAnArmThatCountsNothingBesideOneThatCountsIsRefused(): void
+    {
+        $parent = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+        $this->assertIsArray($parent);
+        $arm = $this->optins->createVariant((string) $parent['id']);
+        $this->assertNotNull($arm);
+
+        $config = $parent['config'];
+        $config['template']['tree'] = Goal::ShowMessage->outcome()->fitted($config['template']['tree']);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $arm->id);
+        $request->set_param('config', $config);
+        $refusal = $this->controller->update($request);
+
+        $this->assertInstanceOf(WP_Error::class, $refusal);
+        $this->assertSame('wconvert_optin_arms_are_not_comparable', $refusal->get_error_code());
     }
 
     /**

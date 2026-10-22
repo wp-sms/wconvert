@@ -42,7 +42,7 @@ final class Insights
                         $rule = 'lower_exposure';
                         $title = __('Shown less often', 'wconvert');
                         $note = __('Fewer results, with a similar rate. Check display rules and site traffic.', 'wconvert');
-                    } elseif ($relative <= -0.2) {
+                    } elseif ($relative <= -0.2 && ($goal['action'] ?? null) !== 'none') {
                         $rule = 'lower_rate';
                         /* translators: %s: the goal's rate label, e.g. “Email submission rate”. */
                         $title = sprintf(__('%s fell', 'wconvert'), $goal['rate_label']);

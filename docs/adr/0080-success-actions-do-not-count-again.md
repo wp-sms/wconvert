@@ -11,6 +11,10 @@ normal link styled like a button; only the existing converting `button` receives
 Copy buttons use `type=button`, so they neither submit a form nor count a click.
 Existing submit/click registration and step-count rules remain unchanged.
 
+> **Amended by [ADR 0163](0163-capture-toggle.md):** adding a contact form turns a
+> design's counted link `button` into a `followup` on the new thank-you screen,
+> and removing the form turns the `followup` back into the counted link.
+
 **Amended by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** the Add menu offers
 Resource link on any screen after the primary submission, including the optional
 other-channel signup screen. A promised resource must not depend on that optional

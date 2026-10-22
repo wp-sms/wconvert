@@ -14,7 +14,7 @@ import type { OptinStatus } from './api';
 export type CampaignResults =
   | { status: 'loading' }
   | { status: 'failed'; onRetry?: () => void }
-  | { status: 'ready'; days: number; from?: string; to?: string; result?: { count: number; shown: number; rate: number | null; label: string } };
+  | { status: 'ready'; days: number; from?: string; to?: string; result?: { count: number; shown: number; rate: number | null; label: string; counted?: boolean } };
 
 /**
  * **Campaign details' one body** (ADR 0138), for the list's Details and the
@@ -119,10 +119,11 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
         </div>
       ) : result ? (
         <div className="wconvert-campaign-detail-stats">
-          <p>
+          {/* A message's headline is its appearances, already the Shown tile (ADR 0163). */}
+          {result.counted !== false && <p>
             <strong>{formatCount(result.count)}</strong>
             <span>{result.label}</span>
-          </p>
+          </p>}
           <p>
             <strong>{formatCount(result.shown)}</strong>
             <span>{__('Shown', 'wconvert')}</span>
@@ -131,12 +132,16 @@ function Results({ results, status, rateLabel }: { results: CampaignResults; sta
               <small>{__('Views are counted only from the published version.', 'wconvert')}</small>
             )}
           </p>
-          <p>
+          {result.counted === false ? <p>
+            <strong>—</strong>
+            <span>{__('Rate not counted', 'wconvert')}</span>
+            <small>{__('A message has nothing to click or submit.', 'wconvert')}</small>
+          </p> : <p>
             <strong>{formatRate(result.rate)}</strong>
             {/* The Goal's own word for its rate, e.g. “Quiz completion rate” (ADR 0138). */}
             <span>{rateLabel ?? __('Conversion rate', 'wconvert')}</span>
             {result.rate === null && <small>{__('Shows once it has been shown', 'wconvert')}</small>}
-          </p>
+          </p>}
         </div>
       ) : (
         <p>{status === 'draft' ? __('No results yet.', 'wconvert') : __('No results in this period.', 'wconvert')}</p>

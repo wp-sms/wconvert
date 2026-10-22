@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { CalendarDays, Clock, ExternalLink, Inbox, LayoutTemplate, TextCursorInput, ListChecks, MapPin, MousePointerClick, Repeat, ShieldCheck, ShoppingBasket, Users } from 'lucide-react';
+import { CalendarDays, Clock, ExternalLink, Inbox, LayoutTemplate, TextCursorInput, ListChecks, MapPin, Megaphone, MousePointerClick, Repeat, ShieldCheck, ShoppingBasket, Users } from 'lucide-react';
 import type { Template } from '@renderer/types';
 import { summaryOf, type AxisSummaries } from '../builder/rules/summaries';
 import type { ConvertingAct } from '../builder/structure/catalogue';
+import { convertingActOf } from '../builder/structure/guards';
 import { nodeAt, nodesOf } from '../builder/structure/tree';
 import type { Fact } from '../shell/FactList';
 
@@ -14,7 +15,8 @@ export interface CampaignFactsInput {
   readonly rules: AxisSummaries;
   /** Where, said better than the rule summary can: the pages by name, or where an inline form is placed. */
   readonly where?: Said;
-  readonly act: ConvertingAct | undefined;
+  /** `none` is a message under a Goal that counts nothing ({@link factAct}). */
+  readonly act: ConvertingAct | 'none' | undefined;
   /** Where its leads go, for a design that captures them. */
   readonly forwarding: { readonly said: ReactNode; readonly problems: readonly string[] };
   /** The design's link targets, for one that counts a click. */
@@ -84,11 +86,19 @@ export function campaignFacts({ rules, where, act, forwarding, links, counts, pl
       label: __('Visitor action', 'wconvert'),
       text: <>{act === 'match' ? __('Shows a matching result', 'wconvert') : __('Adds to the basket', 'wconvert')}{counted}</>,
     });
+  } else if (act === 'none') {
+    facts.push({ icon: Megaphone, label: __('Visitor action', 'wconvert'), text: <>{__('Reads the message', 'wconvert')}{counted}</> });
   } else {
     facts.push({ icon: MousePointerClick, label: __('Visitor action', 'wconvert'), tone: 'warning', text: __('Choose what a visitor does in the editor.', 'wconvert') });
   }
   if (consent) facts.push(fact(ShieldCheck, __('Consent', 'wconvert'), consent));
   return facts;
+}
+
+/** The act a design offers; a design offering none is a message when its Goal counts nothing (ADR 0163). */
+export function factAct(template: Template | undefined, outcome: { readonly action: string } | undefined): ConvertingAct | 'none' | undefined {
+  if (!template || template.tree.steps.length === 0) return undefined;
+  return convertingActOf(template.tree)[0] ?? (outcome?.action === 'none' ? 'none' : undefined);
 }
 
 /** The distinct targets of a design's link buttons. */

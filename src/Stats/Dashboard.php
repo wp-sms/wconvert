@@ -137,9 +137,13 @@ final class Dashboard
         foreach ($groups as $id => $group) $impact[$id] = $group + ['id' => $id, 'count' => 0, 'goals' => []];
         foreach ($cards as $card) {
             $goal = Goal::from($card['goal']);
-            $key = $goal->outcome()->action === 'add_to_cart' ? 'additions' : ($goal->outcome()->action === 'submit' ? 'leads' : ($goal === Goal::RecoverCart ? 'carts' : 'offers'));
-            $impact[$key]['count'] += $card['conversions'];
-            $impact[$key]['goals'][] = $card['goal'];
+            $action = $goal->outcome()->action;
+            // A message converts on nothing; it adds its appearances and no result (ADR 0163).
+            if ($action !== 'none') {
+                $key = $action === 'add_to_cart' ? 'additions' : ($action === 'submit' ? 'leads' : ($goal === Goal::RecoverCart ? 'carts' : 'offers'));
+                $impact[$key]['count'] += $card['conversions'];
+                $impact[$key]['goals'][] = $card['goal'];
+            }
             $impact['impressions']['count'] += $card['impressions'];
             $impact['impressions']['goals'][] = $card['goal'];
         }
@@ -224,7 +228,7 @@ final class Dashboard
             'deliveries' => $goal->headlineKind() === StatKind::LeadMagnetDelivered ? ($totals[StatKind::LeadMagnetDelivered->value] ?? 0) : null,
             'impressions' => $impressions,
             'dismissals' => $totals[StatKind::Dismiss->value] ?? 0,
-            'conversion_rate' => $impressions === 0 ? null : round($conversions / $impressions, 4),
+            'conversion_rate' => $impressions === 0 || $goal->outcome()->action === 'none' ? null : round($conversions / $impressions, 4),
             'by_day' => self::series($goal, $range, $rows),
             'conversion_by_day' => self::kindSeries(StatKind::Conversion, $range, $rows),
             'impression_by_day' => self::kindSeries(StatKind::Impression, $range, $rows),

@@ -48,7 +48,8 @@ import { captureModeOf, routedMode } from './captureMode';
 import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
 import { CampaignSummary, HowItRuns, type CampaignResults } from '../optins/CampaignSummary';
-import { campaignFacts, linksIn } from '../optins/campaignFacts';
+import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
+import { CountsNothing } from './countsNothing';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
 import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
@@ -294,8 +295,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const templateId = typeof config?.template_id === 'string' ? config.template_id : undefined;
   const templates = gallery?.templates;
 
-  const act: ConvertingAct =
-    template === undefined ? 'submit' : (convertingActOf(template.tree)[0] ?? 'submit');
+  // A message offers no act (ADR 0163): its design edits are a formless
+  // design's, and nothing it does can stop it showing.
+  const offered: ConvertingAct | null = template === undefined ? 'submit' : (convertingActOf(template.tree)[0] ?? null);
+  const act: ConvertingAct = offered ?? 'click';
 
   // Results can stand alone, but an optional email signup after them is still
   // a marketing submission. Show the same explicit storage choice as email forms.
@@ -771,7 +774,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               audienceRequirement={entryOfGoal?.audience_requirement}
               initialSection={displaySection}
               onSectionChange={setDisplaySection}
-              act={act}
+              act={offered}
               vocabulary={vocabulary}
               value={displayRules}
               overlay={overlay}
@@ -843,6 +846,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   </>;
 
   return (
+    <CountsNothing.Provider value={entryOfGoal?.outcome.action === 'none'}>
     <CampaignPreviewDeadline endsAt={displayRules.schedule.ends_at}>
     <Tabs
       value={tab}
@@ -1076,7 +1080,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               howItRuns={displayAxes && <HowItRuns facts={campaignFacts({
                 rules: displayAxes,
                 where: displayTypeOf(config, templates) === 'inline' ? { text: config.content_lock == null && config.inline_placement == null ? __('Where you place its block or shortcode', 'wconvert') : inlineSummary } : undefined,
-                act: template ? convertingActOf(template.tree)[0] : undefined,
+                act: factAct(template, entryOfGoal?.outcome),
                 forwarding: destinationsSaid(bound, read(destinations)?.destinations ?? null, capturedFields(template)),
                 links: linksIn(template),
                 counts: entryOfGoal?.headline_label ?? null,
@@ -1204,6 +1208,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       />
     </Tabs>
     </CampaignPreviewDeadline>
+    </CountsNothing.Provider>
   );
 }
 

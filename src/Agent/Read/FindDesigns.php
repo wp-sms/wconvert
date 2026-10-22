@@ -61,7 +61,8 @@ final class FindDesigns implements Ability
             if (!(Tier::tryFrom((string) ($entry['tier'] ?? 'free')) ?? Tier::Free)->isSuppliedBy($this->pro) || !$this->builder->displayTypeRuns($type)) continue;
             if (isset($input['display_type']) && $type !== $input['display_type']) continue;
             // A design's link button has no address until the campaign gives one, so ask with one given.
-            if ($goal !== null && $goal->outcome()->designIssue(OptinConfigBuilder::linked(['template' => $entry], 'https://example.com/')) !== null) continue;
+            // A message design is any one-screen design once its counted link goes (ADR 0163).
+            if ($goal !== null && $goal->outcome()->designIssue(OptinConfigBuilder::linked(['template' => ['tree' => $goal->outcome()->fitted($entry['tree'] ?? [])] + $entry], 'https://example.com/')) !== null) continue;
             if ($search !== '' && !str_contains(mb_strtolower((string) $entry['name']), $search) && !str_contains((string) $id, $search)) continue;
             $designs[] = [
                 'design_id' => (string) $id,

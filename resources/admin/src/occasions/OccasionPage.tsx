@@ -16,6 +16,7 @@ import { campaignName, deleteOptin, duplicateCampaign, listOptins, publishOptin,
 import { CampaignMenu } from '../optins/CampaignMenu';
 import { decisionCopy, type DecisionKind } from '../optins/decisionCopy';
 import { StatusBadge } from '../optins/StatusBadge';
+import { rowResultOf, shownLine } from '../optins/rowResult';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { DateRangePicker, type DateRange } from '../shell/DateRangePicker';
@@ -186,7 +187,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
   const next = nextYearOf(occasion);
   const totals = report?.status === 'ready' ? occasionTotals(report.data, new Set(campaigns.map((row) => row.id))) : null;
   const numbers = report?.status === 'ready'
-    ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, { count: row.conversions, shown: row.impressions, rate: row.conversion_rate, label: goal.result_label, capture: goal.action === 'submit' }])))
+    ? Object.fromEntries(report.data.goals.flatMap((goal) => goal.optins.map((row) => [row.id, rowResultOf(goal, row)])))
     : {};
   const summary = query === null ? null
     : 'from' in query && query.from !== undefined && query.to !== undefined ? formatRange(query.from, query.to)
@@ -280,7 +281,7 @@ export function OccasionPage({ id, notice, onNotice, onDismissNotice, navigate, 
                       <DataTableCell label={__('Results', 'wconvert')} numeric className="wconvert-campaign-results">
                         {result && result.count > 0
                           ? <><strong>{formatCount(result.count)}</strong><span>{result.label}</span>
-                            {result.shown > 0 && <span>{sprintf(/* translators: 1: a conversion rate such as "2.5%", 2: how many times the campaign was shown. */ __('%1$s of %2$s shown', 'wconvert'), formatRate(result.rate), formatCount(result.shown))}</span>}</>
+                            {result.shown > 0 && <span>{shownLine(result)}</span>}</>
                           : <span>{status === 'draft' ? __('No results yet', 'wconvert') : __('No results in this period', 'wconvert')}</span>}
                       </DataTableCell>
                       <DataTableActions className="wconvert-campaign-row-actions">

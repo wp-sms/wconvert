@@ -110,6 +110,9 @@ final class Prefill
             );
         }
 
+        // A message counts nothing, so the design's counted link goes (ADR 0163).
+        $config['template']['tree'] = $playbook->goal->outcome()->fitted($config['template']['tree']);
+
         // Validated exactly as a save would validate it, so what prefill hands
         // back is byte-identical to what storing it produces. Anything else
         // and the preview would render one thing and the saved Optin another.

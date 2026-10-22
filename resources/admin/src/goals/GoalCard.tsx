@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowRight, Download, Lock, Mail, MessageSquare, MousePointerClick, Target } from 'lucide-react';
+import { ArrowRight, Download, Lock, Mail, Megaphone, MessageSquare, MousePointerClick, Target } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceCard } from '../shell/ChoiceGrid';
@@ -103,7 +103,8 @@ export function GoalCard({
   const Icon = goal.outcome.audience_channel === 'email' ? Mail
     : goal.outcome.audience_channel === 'phone' ? MessageSquare
     : goal.outcome.destination_type !== null ? Download
-    : goal.outcome.action === 'click' ? MousePointerClick : Target;
+    : goal.outcome.action === 'click' ? MousePointerClick
+    : goal.outcome.action === 'none' ? Megaphone : Target;
 
   return (
     <ChoiceCard

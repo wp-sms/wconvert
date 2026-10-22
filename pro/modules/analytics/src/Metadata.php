@@ -26,9 +26,19 @@ final class Metadata
             $quiz = array_filter($steps, static fn (array $step): bool => ($step['kind'] ?? '') === 'result') !== [];
             $result[$id] = ['campaign' => $family, 'goal' => (string) ($indexed[$id]['goal'] ?? ''),
                 'display' => (string) ($entry['display_type'] ?? 'popup'),
-                'outcome' => in_array(\WConvert\Template\ConvertingAct::AddToCart, \WConvert\Template\ConvertingAct::offeredIn($entry['template']['tree'] ?? []), true) ? 'addition' : ($quiz ? 'quiz' : (empty($entry['template']['tree']['submissions']) ? 'click' : 'capture')),
+                'outcome' => self::outcome($entry['template']['tree'] ?? [], $quiz),
                 'label' => $preference['label'] ?: 'Campaign ' . substr($family, -8)];
         }
         return $result;
+    }
+
+    /** A message offers no act and sends no conversion event (ADR 0163).
+     * @param array<string, mixed> $tree */
+    private static function outcome(array $tree, bool $quiz): string
+    {
+        $acts = \WConvert\Template\ConvertingAct::offeredIn($tree);
+        if ($acts === []) return 'none';
+        if (in_array(\WConvert\Template\ConvertingAct::AddToCart, $acts, true)) return 'addition';
+        return $quiz ? 'quiz' : (empty($tree['submissions']) ? 'click' : 'capture');
     }
 }

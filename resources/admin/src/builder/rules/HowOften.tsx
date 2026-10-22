@@ -15,7 +15,8 @@ export interface HowOftenProps {
   /** Custom… is chosen: draw the two pacing fields. */
   readonly custom: boolean;
   readonly reopenEnabled?: boolean;
-  readonly act?: ConvertingAct;
+  /** Null for a message, which nothing a visitor does can stop (ADR 0163). */
+  readonly act?: ConvertingAct | null;
   readonly onFrequency: (frequency: Frequency) => void;
   readonly onPriority: (priority: number) => void;
 }
@@ -60,10 +61,10 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
 
     <div className="wconvert-display-settings" role="group" aria-labelledby="wconvert-stop-heading">
       <p className="wconvert-display-settings__title" id="wconvert-stop-heading">{__('Stop showing it…', 'wconvert')}</p>
-      <label className="wconvert-display-setting">
+      {act !== null && <label className="wconvert-display-setting">
         <input type="checkbox" checked={frequency.stopAfterConversion !== false} onChange={event => setSwitch('stopAfterConversion', event.target.checked)} />
         <span>{act === 'click' ? __('after they click the main button', 'wconvert') : __('after they submit the form', 'wconvert')}</span>
-      </label>
+      </label>}
       <label className="wconvert-display-setting">
         <input type="checkbox" checked={frequency.stopAfterDismiss !== false} onChange={event => setSwitch('stopAfterDismiss', event.target.checked)} />
         <span>{__('after they close it', 'wconvert')}</span>

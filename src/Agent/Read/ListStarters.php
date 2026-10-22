@@ -35,7 +35,7 @@ final class ListStarters implements Ability
     {
         return [
             'label' => __('List starters', 'wconvert'),
-            'description' => __('Lists WConvert starters for one goal. A starter is a ready-made campaign — a design with tested words, rules and pages already filled in — that a person picks in WConvert → Add campaign. Pass a starter_id to wconvert/create-campaign instead of a design_id to begin from it; any copy you give replaces its words role by role. availability "ready" means this site can use it; "locked" needs WConvert Pro; "unavailable" needs a plugin the site does not have. Goals: grow_email_list, grow_sms_list, increase_basket_value, recover_cart, promote_offer, deliver_lead_magnet, collect_enquiries, find_match. Example: {"goal": "promote_offer"}.', 'wconvert'),
+            'description' => __('Lists WConvert starters for one goal. A starter is a ready-made campaign — a design with tested words, rules and pages already filled in — that a person picks in WConvert → Add campaign. Pass a starter_id to wconvert/create-campaign instead of a design_id to begin from it; any copy you give replaces its words role by role. availability "ready" means this site can use it; "locked" needs WConvert Pro; "unavailable" needs a plugin the site does not have. Goals: grow_email_list, grow_sms_list, increase_basket_value, recover_cart, promote_offer, show_message, deliver_lead_magnet, collect_enquiries, find_match. Example: {"goal": "promote_offer"}.', 'wconvert'),
             'input_schema' => Reply::input([
                 'goal' => ['type' => 'string', 'enum' => array_map(static fn (Goal $goal): string => $goal->value, Goal::cases()), 'description' => 'What the campaign is for.'],
             ], ['goal']),

@@ -415,7 +415,7 @@ final class OptinController implements RestController
         // parent's config — so an arm is born comparable and only an edit can
         // break it.
         $refusal = $this->refuseUnusableBindings($normalized)
-            ?? self::refuseADesignThatCannotConvert($normalized);
+            ?? self::refuseADesignThatCannotConvert($normalized, $goal);
 
         if ($refusal !== null) {
             return $refusal;
@@ -1129,6 +1129,14 @@ final class OptinController implements RestController
         $offered = ConvertingAct::offeredIn($config['template']['tree'] ?? null);
         $siblings = $this->actOfTheOtherArms($id);
 
+        // A message offers no act, and that is an act of its own here: an
+        // arm counting nothing beside one counting clicks compares nothing.
+        if ($offered === [] && $siblings !== null) {
+            return new WP_Error('wconvert_optin_arms_are_not_comparable',
+                __('This design counts nothing and the other arm of this test counts a conversion, so the two rates would not be comparable.', 'wconvert'),
+                ['status' => 400]);
+        }
+
         if (count($offered) !== 1 || $siblings === null || $offered[0] === $siblings) {
             return null;
         }
@@ -1181,15 +1189,18 @@ final class OptinController implements RestController
      * save that is about to add it. What is refused is a design that EXISTS
      * and offers nothing — steps that render, with no act among them.
      *
-     * It asks no Goal, deliberately. "Reports nothing at all" is wrong under
-     * every Goal, including one this install can no longer resolve, so making
-     * the check depend on a Goal would let it lapse on precisely the rows
-     * ADR 0026 keeps working.
+     * It asks the Goal being created only for its outcome. "Reports nothing
+     * at all" is wrong under every Goal that converts; a message's outcome
+     * converts on nothing, so its zero acts are the design (ADR 0163).
      *
      * @param array<string, mixed> $config Already normalised.
      */
-    private static function refuseADesignThatCannotConvert(array $config): ?WP_Error
+    private static function refuseADesignThatCannotConvert(array $config, Goal $goal): ?WP_Error
     {
+        if ($goal->outcome()->action === 'none') {
+            return null;
+        }
+
         $steps = $config['template']['tree']['steps'] ?? null;
 
         if (!is_array($steps) || $steps === []) {

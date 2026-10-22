@@ -1447,6 +1447,16 @@
       "revision": 1,
       "content": "557ffaac674e450a949e7fe846acf10649ab13e7409593821fb2e9c0a81420de",
       "added": 289
+    },
+    "show-message-free-shipping": {
+      "revision": 1,
+      "content": "7149db83683e0f378df6443a7deb783914a609a97c15002a3973291fa99a83fe",
+      "added": 290
+    },
+    "show-message-opening-hours": {
+      "revision": 1,
+      "content": "76036ac001128a230081865f2c72959cfb3b093610f085fc88af571dddb1c304",
+      "added": 291
     }
   },
   "retired": []

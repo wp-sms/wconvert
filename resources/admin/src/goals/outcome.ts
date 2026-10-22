@@ -9,7 +9,8 @@ import type { CaptureMode } from '../builder/captureMode';
 
 /** Rules and wording are declared by PHP; the admin evaluates the current draft. */
 export interface OutcomeContract {
-  action: 'submit' | 'click' | 'match' | 'add_to_cart';
+  /** `none` is Show a message: one content screen offering no act (ADR 0163). */
+  action: 'submit' | 'click' | 'match' | 'add_to_cart' | 'none';
   capture_any_of: readonly string[];
   requirement: string;
   measurement: string;
@@ -21,6 +22,10 @@ export interface OutcomeContract {
 
 export function outcomeDesignIssue(outcome: OutcomeContract, template: Template | undefined): string | null {
   const acts = template ? convertingActOf(template.tree) : [];
+  if (outcome.action === 'none') {
+    const steps = template?.tree.steps ?? [];
+    return steps.length === 1 && steps[0].kind === 'content' && template?.tree.submissions.length === 0 && acts.length === 0 ? null : outcome.requirement;
+  }
   if (acts.length !== 1 || acts[0] !== outcome.action) return outcome.requirement;
   if (outcome.capture_any_of.length === 0) return !outcome.link_required || (template && hasLink(template.tree.steps[0]?.content)) ? null : outcome.requirement;
   return capturedFields(template).some((field) => outcome.capture_any_of.includes(field.name)
@@ -39,6 +44,7 @@ function hasLink(node: TemplateNode | undefined): boolean {
 
 /** A library facet suggests a fit; the edited form is checked again at publication. */
 export function fitsOutcome(outcome: OutcomeContract, facets: { act: string | null; captures: readonly string[] }): boolean {
+  if (outcome.action === 'none') return facets.act === null;
   return facets.act === outcome.action && (outcome.capture_any_of.length === 0
     || outcome.capture_any_of.some((field) => facets.captures.includes(field)));
 }
