@@ -31,24 +31,35 @@ final class JourneyCaptureTest extends TestCase
     }
 
     /** @param array<string, string> $firstAnswers
-     * @return array{JourneyCapture, FakeConnection, array<string, mixed>, array{receipt: string, expires: int}, string}
+     * @param array<string, mixed>|null $tree
+     * @return array{JourneyCapture, FakeConnection, array<string, mixed>, array{receipt: string, expires: int}, string, array<string, mixed>}
      */
-    private static function firstCapture(array $firstAnswers): array
+    private static function firstCapture(array $firstAnswers, ?array $tree = null): array
     {
-        $tree = self::tree();
+        $tree ??= self::tree();
         $db = new FakeConnection();
         $key = 'receipt_test';
         $grant = ['receipt' => $key, 'expires' => time() + 3600];
         $db->rows[$key] = ['option_value' => (string) wp_json_encode(['expires' => $grant['expires'], 'lead' => null])];
         $capture = new JourneyCapture($db, new StatsRepository($db));
-        $snapshots = QuestionCapture::validate($tree, $firstAnswers, 'email-signup');
+        $first = self::primaryCapture($capture, $tree, $grant, $firstAnswers);
+        $db->rows[$key] = ['option_value' => (string) wp_json_encode(['expires' => $grant['expires'], 'lead' => $first['id']])];
+        return [$capture, $db, $tree, $grant, $first['id'], $first];
+    }
+
+    /** @param array<string, mixed> $tree
+     * @param array{receipt: string, expires: int} $grant
+     * @param array<string, string> $answers
+     * @return array<string, mixed>
+     */
+    private static function primaryCapture(JourneyCapture $capture, array $tree, array $grant, array $answers): array
+    {
+        $snapshots = QuestionCapture::validate($tree, $answers, 'email-signup');
         self::assertIsArray($snapshots);
-        $first = $capture->accept('optin_test', 'contract_test', $grant, $tree, 'email-signup',
+        return $capture->accept('optin_test', 'contract_test', $grant, $tree, 'email-signup',
             new Submission('visitor@example.com', null, ['consent_text' => 'Email consent'], $snapshots,
                 ['page_url' => '/pricing?utm_source=fb', 'utm' => ['source' => 'fb', 'medium' => null, 'campaign' => null, 'term' => null, 'content' => null]]),
             ['purpose' => 'email_marketing', 'destination_ids' => []]);
-        $db->rows[$key] = ['option_value' => (string) wp_json_encode(['expires' => $grant['expires'], 'lead' => $first['id']])];
-        return [$capture, $db, $tree, $grant, $first['id']];
     }
 
     /** @param array<string, mixed> $tree
@@ -102,5 +113,27 @@ final class JourneyCaptureTest extends TestCase
         $fields = json_decode((string) $db->rows[$leadId]['fields'], true);
         self::assertCount(2, $fields['capture']['submissions']);
         self::assertSame(['garden'], $fields['question_answers'][0]['values']);
+    }
+
+    /** The reward rides the primary signup and its replay, never the optional one (ADR 0164). */
+    public function testThePrimarySignupAndItsReplayCarryTheRewardAndTheOptionalSignupDoesNot(): void
+    {
+        $tree = self::tree();
+        $tree['steps'][2]['content']['children'][] = ['type' => 'code', 'text' => 'FRIDAY25'];
+        [$capture, , , $grant, , $first] = self::firstCapture([], $tree);
+        self::assertFalse($first['replay']);
+        self::assertSame(['received' => [['text' => 'FRIDAY25']]], $first['reward']);
+
+        $replay = self::primaryCapture($capture, $tree, $grant, []);
+        self::assertTrue($replay['replay']);
+        self::assertSame($first['reward'], $replay['reward']);
+
+        self::assertArrayNotHasKey('reward', self::secondCapture($capture, $tree, $grant, []));
+    }
+
+    public function testADesignWithNothingHeldRepliesAsBefore(): void
+    {
+        [, , , , , $first] = self::firstCapture([]);
+        self::assertArrayNotHasKey('reward', $first);
     }
 }

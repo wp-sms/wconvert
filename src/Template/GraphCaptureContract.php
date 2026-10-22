@@ -148,10 +148,11 @@ final class GraphCaptureContract
 
 
     /** True when some route reaches a target without showing the required screen.
+     * {@see HeldReward} asks it too, about the screens after the primary signup.
      * @param array<string, mixed> $graph
      * @param list<string> $targets
      */
-    private static function bypasses(array $graph, string $entry, string $required, array $targets): bool
+    public static function bypasses(array $graph, string $entry, string $required, array $targets): bool
     {
         if ($entry === $required) { return false; }
         $pending = [$entry];

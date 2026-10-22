@@ -41,7 +41,10 @@ link's code no longer matches the block's. Free's slot for this
 `CouponLink` reads `?coupon=`. It acts only when all of these hold:
 
 - the code equals, without case, the text of a visible `code` block in a
-  published, servable campaign whose schedule includes now;
+  published, servable campaign whose schedule includes now; *(amended by
+  [ADR 0164](0164-rewards-arrive-with-the-capture-reply.md): a code shown only
+  after signup is no longer printed in the page, so this reads the stored
+  published set, which still has it)*
 - WooCommerce has a coupon with that code (`wc_get_coupon_id_by_code`);
 - functional consent, by `CartAddition`'s rule.
 

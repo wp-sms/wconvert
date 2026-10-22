@@ -14,6 +14,7 @@ import { graphTrace } from '@loader/journey-graph';
 import { journeyNodes } from '@loader/journey-nodes';
 import { isResultFirst } from '@loader/journey-mode';
 import { journeyCapturePrefix } from '@loader/journey-capture';
+import { fillReward } from '@loader/reward';
 import { resultProducts } from './result-products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
@@ -245,6 +246,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
           snapshot.questionIds.forEach(id => lockedQuestions.add(id));
           release(); busy = false;
+          fillReward(tree!, result.reward);
           if (accepted.size === 1) options.onLeadAccepted?.();
           report('screen_advanced'); const target = next(step, 1); if (target !== step) { visited.push(target); show(target); }
           if (accepted.size === 1 && resultAt < 0) options.onCaptured();

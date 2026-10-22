@@ -118,6 +118,12 @@ final class PayloadTag
 
         $hasReopen = false;
         foreach ($entries as &$entry) {
+            // Codes and resource links arrive with the signup, not the page
+            // (ADR 0164). A preview has no capture to return them, so it
+            // keeps the whole design.
+            if ($captureUrl !== '' && is_array($entry['template']['tree'] ?? null)) {
+                $entry['template']['tree'] = \WConvert\Template\HeldReward::printed($entry['template']['tree']);
+            }
             if (isset($entry['teaser']) && is_array($entry['teaser'])) {
                 $entry['teaser'] = \WConvert\Optin\Teaser::forPayload($entry['teaser']);
                 $hasReopen = true;

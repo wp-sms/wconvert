@@ -8,6 +8,7 @@ import type { PayloadEntry } from './types';
 import { beaconEndpoint } from './payload';
 import { createBeacon, type BeaconKind } from './beacon';
 import { clear, pending, refuse } from './capture';
+import { fillReward } from './reward';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
@@ -146,6 +147,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
           release(); busy = false;
+          fillReward(tree!, result.reward);
           if (accepted.size === 1) options.onLeadAccepted?.();
           report('screen_advanced'); show(step + 1);
           if (accepted.size === 1) options.onCaptured();
