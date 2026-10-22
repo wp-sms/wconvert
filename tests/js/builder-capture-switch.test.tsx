@@ -120,13 +120,20 @@ describe('the Contact form switch', () => {
     expect(tree(saved).submissions).toHaveLength(1);
   });
 
-  it('takes the design and the goal back together on Undo', async () => {
+  it('takes the design and the goal back together on Undo, and both forward again on Redo', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
     await userEvent.click((await formSwitch()).getByRole('radio', { name: 'Email' }));
     await userEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Add email form' }));
+    // Said beside Undo, naming the new goal.
+    expect(await screen.findByText('Email form added. The goal is now “Grow my email list”.')).toBeVisible();
     await userEvent.click(await screen.findByRole('button', { name: 'Undo: Add email form' }));
     expect((await formSwitch()).getByRole('radio', { name: 'None' })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Redo: Add email form' }));
+    expect((await formSwitch()).getByRole('radio', { name: 'Email' })).toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    await waitFor(() => expect(builder.saveOptin).toHaveBeenCalledTimes(1));
+    expect(builder.saveOptin.mock.calls[0][3]).toBe('grow_email_list');
   });
 
   it('offers a Shop now button when removing a form with no link to bring back', async () => {
@@ -144,7 +151,8 @@ describe('the Contact form switch', () => {
   });
 
   it('makes a signup copy of a published campaign and leaves the original alone', async () => {
-    builder.getOptin.mockResolvedValue(optin(OFFER, { can_change_goal: false, published_at: '2026-10-01 10:00:00' }));
+    const published = optin(OFFER, { can_change_goal: false, published_at: '2026-10-01 10:00:00' });
+    builder.getOptin.mockResolvedValue({ ...published, config: { ...published.config, analytics: { label: 'BF popup' } } });
     copies.createOptin.mockResolvedValue({ id: 'COPIED' });
     const onCreated = vi.fn();
     render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
@@ -155,7 +163,7 @@ describe('the Contact form switch', () => {
     await userEvent.click(box.getByRole('radio', { name: 'Ask for phone' }));
     await userEvent.click(box.getByRole('button', { name: 'Create signup copy' }));
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));
-    expect(copies.createOptin).toHaveBeenCalledWith('Welcome offer (signup)', 'grow_sms_list', expect.objectContaining({ template_id: OFFER.id }));
+    expect(copies.createOptin).toHaveBeenCalledWith('Welcome offer (signup)', 'grow_sms_list', expect.objectContaining({ template_id: OFFER.id, analytics: { label: '' } }));
     expect(tree(copies.createOptin.mock.calls[0][2]).submissions).toHaveLength(1);
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
@@ -177,5 +185,16 @@ describe('the Contact form switch', () => {
     expect(item).not.toHaveAttribute('aria-disabled', 'true');
     await userEvent.click(item);
     expect(await screen.findByRole('dialog', { name: 'Remove the email form?' })).toBeInTheDocument();
+  });
+
+  it('turns adding an email field to a design with no form into the same box', async () => {
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    await formSwitch();
+    await userEvent.click(screen.getByRole('button', { name: 'Add element' }));
+    await userEvent.type(screen.getByLabelText('Find an element'), 'Email');
+    const email = within(screen.getByRole('dialog', { name: 'Add element' })).getByRole('button', { name: /^email/i });
+    expect(email).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(email);
+    expect(await screen.findByRole('dialog', { name: 'Add an email form?' })).toBeInTheDocument();
   });
 });

@@ -17,12 +17,12 @@ const same = (a: unknown, b: unknown) => a === b || JSON.stringify(a) === JSON.s
  */
 export function draftEditLabel(before: DraftSnapshot, after: DraftSnapshot): string {
   if (before.name !== after.name) return __('Rename campaign', 'wconvert');
-  const form = captureLabel(before, after);
-  if (form) return form;
-  if (before.goal !== after.goal) return __('Change goal', 'wconvert');
   const changed = [...new Set([...Object.keys(before.config), ...Object.keys(after.config)])]
     .filter(key => !same(before.config[key], after.config[key]));
   if (changed.includes('template_id')) return __('Change design', 'wconvert');
+  const form = captureLabel(before, after);
+  if (form) return form;
+  if (before.goal !== after.goal) return __('Change goal', 'wconvert');
   if (changed.length && changed.every(key => ['destinations', 'capture_mode'].includes(key))) return __('Change lead storage or destinations', 'wconvert');
   if (changed.length && changed.every(key => ['display_rules', 'rules', 'trigger', 'frequency', 'starts_at', 'ends_at'].includes(key))) return __('Change display rules', 'wconvert');
   if (!changed.includes('template') || changed.some(key => !['template', 'submission_settings'].includes(key))) return __('Edit campaign settings', 'wconvert');

@@ -67,15 +67,22 @@ function counts(change: Extract<Change, { kind: 'goal' }>): string {
     ? sprintf(__('Clicks on “%s” count.', 'wconvert'), change.link) : __('Clicks count.', 'wconvert');
   const signups = outcome.audience_channel === 'phone' ? __('Phone signups count.', 'wconvert')
     : outcome.audience_channel === 'email' ? __('Signups count.', 'wconvert') : __('Enquiries count.', 'wconvert');
-  /* translators: 1: what now counts, e.g. “Signups count.” 2: a button's label. */
-  return change.link ? sprintf(__('%1$s Clicks on “%2$s” no longer do.', 'wconvert'), signups, change.link) : signups;
+  /* translators: %s: a button's label. */
+  return change.link ? `${signups} ${sprintf(__('Clicks on “%s” no longer count.', 'wconvert'), change.link)}` : signups;
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return <div><dt>{label}</dt><dd>{children}</dd></div>;
 }
 
-function changeRows(changes: readonly Change[], copy: boolean): ReactNode[] {
+/** The rows in the prototype's order: the screens, then the Goal, then where leads go. */
+const SCREEN_ROWS: readonly Change['kind'][] = ['screen-changes', 'new-screen', 'removed-screens', 'field-swap'];
+const LEAD_ROWS: readonly Change['kind'][] = ['stops-sending', 'leads-stay'];
+
+/** For a swap: the list Goal now needs a Destination for its own channel. */
+type SwapNote = string | null;
+
+function changeRows(changes: readonly Change[], copy: boolean, swapNote: SwapNote = null): ReactNode[] {
   const leads = changes.some(change => change.kind === 'leads-stay');
   const stops = changes.some(change => change.kind === 'stops-sending');
   return changes.flatMap((change, at): ReactNode[] => {
@@ -100,13 +107,13 @@ function changeRows(changes: readonly Change[], copy: boolean): ReactNode[] {
         {/* translators: 1: the old field's label. 2: the new one. */ sprintf(__('“%1$s” becomes “%2$s”.', 'wconvert'), change.from, change.to)}
         <small>{/* translators: %s: the new consent sentence. */ sprintf(__('The consent becomes “%s”', 'wconvert'), sentence(change.consent))}</small></Row>];
       case 'goal': return [<Row key={at} label={copy ? __('Goal of the copy', 'wconvert') : __('Goal', 'wconvert')}>
-        <span className="wconvert-capture-box__goal"><span>{change.from}</span><ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100" /><span data-new>{change.to}</span></span>
+        {copy ? change.to : <span className="wconvert-capture-box__goal"><span>{change.from}</span><ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100" /><span data-new>{change.to}</span></span>}
         <small>{counts(change)}</small></Row>];
       case 'stops-sending': return [<Row key={at} label={__('Stops sending to', 'wconvert')}>
         {change.destinations.length === 0 ? __('Nothing connected. Leads stayed in WConvert.', 'wconvert')
-          : change.mappings ? sprintf(/* translators: %s: the Destinations, joined by “ · ”. */ __('%s, and their field mappings.', 'wconvert'), change.destinations.join(' · '))
-            : change.destinations.join(' · ')}
-        {leads && <small>{__('Leads already saved and their consent records stay.', 'wconvert')}</small>}</Row>];
+          : <ul>{change.destinations.map(name => <li key={name}>{name}</li>)}</ul>}
+        {change.mappings && <small>{__('Their field mappings go too.', 'wconvert')}</small>}
+        {swapNote ? <small>{swapNote}</small> : leads && <small>{__('Leads already saved and their consent records stay.', 'wconvert')}</small>}</Row>];
       case 'leads-stay': return stops ? [] : [<Row key={at} label={__('Leads', 'wconvert')}>{__('Leads already saved stay.', 'wconvert')}</Row>];
     }
   });
@@ -140,7 +147,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hrefId = useId();
-  useEffect(() => { if (open) { setChannel(target.capture === 'none' ? 'email' : target.capture); setWithLink(true); setHref(offer?.href ?? ''); setError(null); } }, [open, target, offer?.href]);
+  const radioName = useId();
 
   // The box offers a "Shop now" button only where no link comes back on its own.
   const plain = useMemo(() => target.capture === 'none' ? convert({ capture: 'none' }) : null, [convert, target]);
@@ -173,6 +180,8 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
       : removing ? (signups > 1 ? __('Remove both', 'wconvert') : __('Remove form', 'wconvert'))
         : effective.capture === 'phone' ? __('Ask for phone', 'wconvert') : __('Ask for email', 'wconvert');
 
+  // A ticked button needs somewhere to go; the box will not quietly drop it.
+  const missingLink = needsLink && withLink && href.trim() === '';
   const close = (next: boolean) => { if (!saving) onOpenChange(next); };
   const confirm = () => {
     if ('reason' in result || !onConfirm) return;
@@ -185,7 +194,12 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
   const after = 'reason' in result ? null : (result.config.template as Template);
   const changes = 'reason' in result ? [] : result.changes;
   const goalRow = changes.filter(change => change.kind === 'goal');
-  const otherRows = changes.filter(change => change.kind !== 'goal');
+  const screenRows = changes.filter(change => SCREEN_ROWS.includes(change.kind));
+  const leadRows = changes.filter(change => LEAD_ROWS.includes(change.kind));
+  const swapped = !adding && !removing ? goalRow.find(change => change.kind === 'goal')?.outcome.audience_channel ?? null : null;
+  const swapNote = swapped === 'phone' ? __('Choose an SMS destination before publishing. Leads already saved stay.', 'wconvert')
+    : swapped === 'email' ? __('Choose an email destination before publishing. Leads already saved stay.', 'wconvert') : null;
+  const kept = after?.tree.steps[0]?.id;
 
   return <AdminDialog open={open} onOpenChange={close}>
     <AdminDialogContent size="md" showCloseButton={!saving} onCloseAutoFocus={returnFocusTo ? event => { event.preventDefault(); returnFocusTo.current?.focus(); } : undefined}>
@@ -193,13 +207,14 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
       <AdminDialogBody className="wconvert-capture-box">
         {copy && adding && <div className="wconvert-capture-box__choice" role="radiogroup" aria-label={__('What the copy asks for', 'wconvert')}>
           {(['email', 'phone'] as const).map(value => <label key={value} data-checked={channel === value || undefined}>
-            <input type="radio" name="wconvert-capture-copy" checked={channel === value} onChange={() => setChannel(value)} />
+            <input type="radio" name={radioName} checked={channel === value} onChange={() => setChannel(value)} />
             {value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</label>)}
         </div>}
         {'reason' in result ? <p role="alert">{result.reason}</p> : <>
           {!copy && effective.capture !== was && (adding || removing) && after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
             {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} step={index}
-              caption={adding ? __('Now', 'wconvert') : screen.name === after.tree.steps[0].name ? __('With the form', 'wconvert') : __('Removed', 'wconvert')} />)}
+              caption={adding ? __('Now', 'wconvert') : screen.id !== kept ? __('Removed', 'wconvert')
+                : index === 0 ? __('With the form', 'wconvert') : __('Becomes the offer', 'wconvert')} />)}
             <ArrowRight aria-hidden="true" className="wconvert-capture-box__arrow rtl:-scale-x-100" />
             {after.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={after} step={index}
               caption={removing ? __('One screen', 'wconvert') : index === 0 ? __('With the form', 'wconvert') : __('New screen', 'wconvert')} />)}
@@ -207,9 +222,10 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
           <dl className="wconvert-capture-box__rows">
             {copy && <Row label={__('New draft', 'wconvert')}>{quoted(copyName ?? '')}
               <small>{__('Same design, display rules and placement. Its results start at zero.', 'wconvert')}</small></Row>}
-            {changeRows(otherRows, copy)}
-            {adding && <Row label={__('Where leads go', 'wconvert')}>{__('Kept in WConvert. You can add a service in Destinations.', 'wconvert')}</Row>}
+            {changeRows(screenRows, copy)}
             {!needsLink && changeRows(goalRow, copy)}
+            {changeRows(leadRows, copy, swapNote)}
+            {adding && <Row label={__('Where leads go', 'wconvert')}>{__('Kept in WConvert. You can add a service in Destinations.', 'wconvert')}</Row>}
             {copy && <Row label={__('Original', 'wconvert')}>{__('Stays live, unchanged.', 'wconvert')}</Row>}
           </dl>
           {needsLink && <div className="wconvert-capture-box__link">
@@ -218,7 +234,8 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
             {withLink && <div><label htmlFor={hrefId}>{__('Link', 'wconvert')}</label>
               <Input id={hrefId} type="url" dir="ltr" value={href} onChange={event => setHref(event.target.value)} />
               <small>{offer?.place === 'home' ? __('Your home page. Change it if the offer lives somewhere else.', 'wconvert')
-                : __('Your shop page. Change it if the offer lives somewhere else.', 'wconvert')}</small></div>}
+                : __('Your shop page. Change it if the offer lives somewhere else.', 'wconvert')}</small>
+              {missingLink && <small role="alert">{__('Add a link, or untick the button.', 'wconvert')}</small>}</div>}
           </div>}
           {needsLink && <dl className="wconvert-capture-box__rows">{changeRows(goalRow, copy)}</dl>}
           {hadForm && adding && !copy && <p className="wconvert-capture-box__note">{__('This campaign had a form before. A new one is built, so earlier changes to its wording come back only with Undo.', 'wconvert')}</p>}
@@ -226,7 +243,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
       </AdminDialogBody>
       <AdminDialogFooter note={mode === 'preview' ? undefined : copy ? __('Nothing is published automatically.', 'wconvert') : __('Undo reverts all of this.', 'wconvert')} error={error}>
         <Button type="button" variant="outline" disabled={saving} onClick={() => close(false)}>{mode === 'preview' ? __('Close', 'wconvert') : __('Cancel', 'wconvert')}</Button>
-        {mode !== 'preview' && <Button type="button" disabled={saving || 'reason' in result} onClick={confirm}>{confirmLabel}</Button>}
+        {mode !== 'preview' && <Button type="button" disabled={saving || 'reason' in result || missingLink} onClick={confirm}>{confirmLabel}</Button>}
       </AdminDialogFooter>
     </AdminDialogContent>
   </AdminDialog>;

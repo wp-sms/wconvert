@@ -42,7 +42,13 @@ import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, TemplateTree } from '@renderer/types';
 import { useCountsNothing } from './countsNothing';
 import { useCaptureRequest } from './CaptureSwitch';
-import { takesTheForm } from './structure/captureConversion';
+import { captureState, takesTheForm } from './structure/captureConversion';
+import type { CaptureChoice } from './CaptureSwitch';
+
+/** The channel a contact field added to a design with no form switches it to, where the switch is offered (ADR 0163). */
+function switchesTo(tree: TemplateTree, requestCapture: ((choice: CaptureChoice) => void) | null, type: string, capture: string | undefined): 'email' | 'phone' | null {
+  return requestCapture !== null && type === 'field' && (capture === 'email' || capture === 'phone') && captureState(tree) === 'none' ? capture : null;
+}
 
 /**
  * Moving, copying, removing and adding the blocks of one design, as one hook.
@@ -198,6 +204,9 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
   };
 
   const add = (at: Spot, type: string, capture?: string) => {
+    // A contact field on a design with no form adds the whole form, through the switch's box.
+    const switching = switchesTo(template.tree, requestCapture, type, capture);
+    if (switching) { requestCapture!(switching); return; }
     const bare = nodeFor(template.tree, type, at, act, capture);
 
     if (bare === null) {
@@ -409,6 +418,7 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
   block: Block; tree: TemplateTree; act: ConvertingAct; labels: TemplateLabels;
   onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {
+  const requestCapture = useCaptureRequest();
   const id = useId();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -448,7 +458,7 @@ export function AddElementPicker({ block, tree, act, labels, onAdd }: {
         search={{ value: search, onChange: setSearch, label: __('Find an element', 'wconvert'), placeholder: __('Find an element…', 'wconvert') }}>
         {sections.map(({ section, choices }) => <OptionGroup key={section} heading={elementSectionName(section)}>
           {choices.map(choice => <OptionItem key={choice.capture ?? choice.type} icon={elementIcon(choice.type, choice.capture)} name={choice.name}
-            hint={choice.hint} tip={choice.tip} refused={choice.refused} onSelect={() => {
+            hint={choice.hint} tip={choice.tip} refused={switchesTo(tree, requestCapture, choice.type, choice.capture) ? null : choice.refused} onSelect={() => {
               if (!at) return;
               added.current = true; setOpen(false); onAdd(at, choice.type, choice.capture);
             }} />)}
@@ -496,14 +506,16 @@ function AddMenu({
   onAdd: (at: Spot, type: string, capture?: string) => void;
 }) {
   const taken = capturesTaken(tree);
+  const requestCapture = useCaptureRequest();
 
   return (
     <OptionSub icon={Plus} name={label} className="wconvert-add-elements">
       {choicesAt(tree, at, act, labels, false).map(({ section, choices }) => <OptionGroup key={section} heading={elementSectionName(section)}>
-        {choices.map(choice => choice.type === 'field' && choice.refused === null ? (
+        {choices.map(choice => choice.type === 'field' && (choice.refused === null || switchesTo(tree, requestCapture, 'field', 'email')) ? (
           <OptionSub key="field" icon={elementIcon('field')} name={choice.name}>
             {FIELDS.map(capture => <OptionItem key={capture} icon={elementIcon('field', capture)} name={nameOf(labels.fields, capture)}
-              refused={taken.includes(capture) ? refusal(__('Already on this form', 'wconvert')) : null}
+              refused={choice.refused !== null && !switchesTo(tree, requestCapture, 'field', capture) ? choice.refused
+                : taken.includes(capture) ? refusal(__('Already on this form', 'wconvert')) : null}
               onSelect={() => onAdd(at, 'field', capture)} />)}
           </OptionSub>
         ) : (

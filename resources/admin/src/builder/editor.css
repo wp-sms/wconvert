@@ -2513,7 +2513,8 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-capture-box__rows dt { color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-capture-box__rows dd { display: grid; gap: 2px; margin: 0; }
 .wconvert-capture-box__rows dd small { color: var(--muted-foreground); font-size: var(--text-note); }
-.wconvert-capture-box__rows ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.wconvert-capture-box__rows ul, .wconvert-capture-box__rows li { margin: 0; padding: 0; list-style: none; }
+.wconvert-capture-box__rows ul { display: grid; gap: 4px; }
 .wconvert-capture-box__goal { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .wconvert-capture-box__goal > span { padding: 1px 8px; border-radius: 4px; background: var(--surface); font-size: var(--text-note); font-weight: 500; }
 .wconvert-capture-box__goal > span[data-new] { background: var(--secondary); color: var(--action); }

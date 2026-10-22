@@ -7,9 +7,10 @@ import type { SwitchOffer } from './structure/captureConversion';
 export type CaptureChoice = 'none' | 'email' | 'phone';
 
 /**
- * The form switch, for edits that reach it another way: deleting the form's
- * only field, its screen or the only counted link opens the same box rather
- * than refusing (ADR 0163). Null where the switch is not offered.
+ * The form switch, for edits that reach it another way: adding a contact
+ * field to a design with no form, or deleting the form's only email or phone
+ * field or its screen, opens the same box rather than refusing (ADR 0163).
+ * Null where the switch is not offered.
  */
 export const CaptureRequest = createContext<((choice: CaptureChoice) => void) | null>(null);
 

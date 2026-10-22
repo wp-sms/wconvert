@@ -626,7 +626,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
       const next = move(past);
 
-      if (next === past) {
+      // Once the Goal is fixed, Undo stops at a step that changed it: the
+      // design and its Goal travel together, and the Goal cannot go back.
+      if (next === past || (!canChangeGoal && next.present.goal !== goal)) {
         return;
       }
 
@@ -638,7 +640,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       setGoal(next.present.goal);
       setSaved(false);
     },
-    [past, busy],
+    [past, busy, canChangeGoal, goal],
   );
 
   useEffect(() => {
@@ -674,8 +676,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const historyLabels = useMemo(() => draftHistoryLabels(past), [past]);
   const history = {
     labels: historyLabels,
-    canUndo: past !== null && canUndo(past),
-    canRedo: past !== null && canRedo(past),
+    canUndo: past !== null && canUndo(past) && (canChangeGoal || past.past.at(-1)?.goal === goal),
+    canRedo: past !== null && canRedo(past) && (canChangeGoal || past.future[0]?.goal === goal),
     undo: stepping(undo),
     redo: stepping(redo),
   };
@@ -683,6 +685,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   // The form switch (ADR 0163): what it is offered on, what each choice
   // would build, and the box that applies it as one Undo step or copies it.
   const [capturing, setCapturing] = useState<CaptureChoice | null>(null);
+  const [captureSaid, setCaptureSaid] = useState<{ said: string; serial: number } | undefined>();
   const captureRow = useRef<HTMLElement | null>(null);
   const goalList = goals.status === 'ready' ? goals.data : null;
   const switchOffer = config && goal && goalList ? captureSwitch(config, goal, goalList) : null;
@@ -706,18 +709,34 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     setGoal(result.goal);
     setSaved(false);
     const after = captureState((result.config.template as Template).tree);
-    setSwapSaid(current => ({ serial: (current?.serial ?? 0) + 1,
-      said: after === 'none' ? __('Form removed. Undo reverts all of it.', 'wconvert')
-        : formState === 'none' ? __('Form added. Undo reverts all of it.', 'wconvert')
-          : __('Contact field changed. Undo reverts all of it.', 'wconvert') }));
+    const done = after === 'none' ? __('Form removed.', 'wconvert')
+      : formState === 'none' ? (after === 'phone' ? __('Phone form added.', 'wconvert') : __('Email form added.', 'wconvert'))
+        : (after === 'phone' ? __('Now asks for a phone number.', 'wconvert') : __('Now asks for an email address.', 'wconvert'));
+    const newGoal = goalList?.find(entry => entry.id === result.goal);
+    setCaptureSaid(current => ({ serial: (current?.serial ?? 0) + 1,
+      said: result.goal !== goal && newGoal
+        /* translators: 1: what changed, e.g. “Email form added.” 2: the new goal's name. */
+        ? sprintf(__('%1$s The goal is now “%2$s”.', 'wconvert'), done, newGoal.label) : done }));
   };
-  const copyCapture = (result: Conversion) => createOptin(
-    sprintf(formState === 'none' ? __('%s (signup)', 'wconvert') : __('%s (offer)', 'wconvert'), name), result.goal, copiedConfig(result.config))
-    .then((created) => {
-      onEditingStateChange?.({ dirty: false, busy: false });
-      if (onCreated) onCreated(created.id);
-      else window.location.hash = editorHref(created.id);
-    });
+  /* translators: %s: the campaign's name. A copy that asks for contact details. */
+  const signupCopy = () => sprintf(__('%s (signup)', 'wconvert'), name);
+  /* translators: %s: the campaign's name. A copy without a form. */
+  const offerCopy = () => sprintf(__('%s (offer)', 'wconvert'), name);
+  const copyName = formState === 'none' ? signupCopy() : offerCopy();
+  // The same create, confirmation and cleaning as Duplicate for another goal.
+  const copyCapture = (result: Conversion) => {
+    setBusy(true);
+    return createOptin(copyName, result.goal, copiedConfig(result.config))
+      .then((created) => {
+        onEditingStateChange?.({ dirty: false, busy: false });
+        if (onCreated) onCreated(created.id);
+        else window.location.hash = editorHref(created.id);
+      })
+      .catch((cause: unknown) => {
+        throw new Error(sprintf(__('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+      })
+      .finally(() => setBusy(false));
+  };
   const requestCapture = switchOffer?.offered && canChangeGoal ? setCapturing : null;
   const formSwitch = switchOffer && <CaptureSwitch state={formState} offer={switchOffer} copy={!canChangeGoal} published={publishedAt !== null} sectionRef={captureRow}
     onChoose={choice => { if (choice !== formState) setCapturing(choice); }} />;
@@ -1047,6 +1066,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
             formSwitch={formSwitch}
+            announce={captureSaid}
             look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates), chosenName(templateId, templates)) }}
             lookPanel={<DesignSettings
                             pictureStep={shownStep}
@@ -1249,7 +1269,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           setBusy(true);
           setError(null);
           if (canChangeGoal) return persistDraft(config ?? {}, picked).finally(() => setBusy(false));
-          return createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, config ?? {})
+          return createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, copiedConfig(config ?? {}))
             .then((created) => {
               onEditingStateChange?.({ dirty: false, busy: false });
               if (onCreated) onCreated(created.id);
@@ -1264,7 +1284,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     </Tabs>
       {template && captureTarget && <CaptureChangeDialog open onOpenChange={next => { if (!next) setCapturing(null); }}
         before={template} target={captureTarget} convert={convert} mode={canChangeGoal ? 'apply' : 'copy'} hadForm={hadForm}
-        copyName={sprintf(formState === 'none' ? __('%s (signup)', 'wconvert') : __('%s (offer)', 'wconvert'), name)}
+        copyName={copyName}
         onConfirm={canChangeGoal ? applyCapture : copyCapture} returnFocusTo={captureRow} />}
     </CampaignPreviewDeadline>
     </CaptureRequest.Provider>

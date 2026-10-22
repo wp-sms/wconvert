@@ -48,7 +48,15 @@ const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, formSwitch, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
+/** Whether a screen holds any of the main form: its fields, consent or button. */
+function holdsMainForm(tree: TemplateTree, index: number): boolean {
+  const main = tree.submissions[0];
+  if (!main?.required || !tree.steps[index]) return false;
+  return walkNodes(tree.steps[index].content).some(node => ('id' in node && typeof node.id === 'string' && [...main.fields, ...main.consents].includes(node.id))
+    || (node.type === 'button' && 'submission' in node && node.submission === main.id));
+}
+
+export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, formSwitch, announce, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
   onUndo?(): void; labels?: TemplateLabels; onResultSelect?(id: string | undefined): void; tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree;
   /** The campaign's one issue list (ADR 0133); the screens and the map show the ones about a screen. */
   issues?: readonly CampaignIssue[];
@@ -58,6 +66,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   look?: EditTreeLook; lookPanel?: ReactNode;
   /** The Contact form switch, drawn above the screens (ADR 0163). */
   formSwitch?: ReactNode;
+  /** What the form switch just changed, said in the footer beside Undo. */
+  announce?: { readonly said: string; readonly serial: number };
   /** The open screen's elements, nested under its row in the Edit tree. */
   elements?: ReactNode;
   /** Tree rows that are not screens: the reopen button, the locked content preview. */
@@ -247,6 +257,9 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
     } else selectedId.current = tree.steps[step]?.id;
     previousNotice.current = notice;
   }, [tree, step, onSelect, notice]);
+  // A change made outside this editor (the form switch) says itself here, with Undo.
+  // After the effect above, so the same render's draft change does not clear it.
+  useEffect(() => { if (announce) setSaid(announce.said, tree.steps[0]); }, [announce]); // eslint-disable-line react-hooks/exhaustive-deps -- each announcement is said once
   useEffect(() => { screenList.current?.querySelector('[data-selected="true"]')?.scrollIntoView?.({ block: 'nearest' }); }, [step]);
   const current = tree.steps[step];
   const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
@@ -365,7 +378,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   // Why Delete is refused, in two lengths for its menu row (ADR 0139).
   // Deleting the main form's screen removes the form, through the same box as
   // the Contact form switch, where the switch is offered (ADR 0163).
-  const takesForm = requestCapture !== null && !!tree.submissions[0]?.required && submissionScreen(tree, tree.submissions[0].id) === step;
+  const takesForm = requestCapture !== null && holdsMainForm(tree, step);
   const deletionRefusal = takesForm ? null : tree.graph
     ? deletionReason ? refusal((optionalRemoval ?? graphDelete)?.short ?? deletionReason, deletionReason) : null
     : removal.screens.length === 0 ? whyScreenStays(tree, step, journeys) : null;
