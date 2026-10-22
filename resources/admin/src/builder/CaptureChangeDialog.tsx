@@ -211,13 +211,16 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
             {value === 'email' ? __('Ask for email', 'wconvert') : __('Ask for phone', 'wconvert')}</label>)}
         </div>}
         {'reason' in result ? <p role="alert">{result.reason}</p> : <>
-          {!copy && effective.capture !== was && (adding || removing) && after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
+          {/* Before and after, drawn small, for every change the box describes, copies included. */}
+          {after && <div className="wconvert-capture-box__tiles" aria-hidden="true">
             {before.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={before} step={index}
-              caption={adding ? __('Now', 'wconvert') : screen.id !== kept ? __('Removed', 'wconvert')
-                : index === 0 ? __('With the form', 'wconvert') : __('Becomes the offer', 'wconvert')} />)}
+              caption={adding ? __('Now', 'wconvert') : !removing ? (index === 0 ? __('Now', 'wconvert') : __('Stays', 'wconvert'))
+                : screen.id !== kept ? __('Removed', 'wconvert') : index === 0 ? __('With the form', 'wconvert') : __('Becomes the offer', 'wconvert')} />)}
             <ArrowRight aria-hidden="true" className="wconvert-capture-box__arrow rtl:-scale-x-100" />
             {after.tree.steps.map((screen, index) => <ScreenTile key={screen.id} template={after} step={index}
-              caption={removing ? __('One screen', 'wconvert') : index === 0 ? __('With the form', 'wconvert') : __('New screen', 'wconvert')} />)}
+              caption={removing ? __('One screen', 'wconvert') : !adding ? (index === 0
+                ? (effective.capture === 'phone' ? __('Phone field', 'wconvert') : __('Email field', 'wconvert')) : __('Stays', 'wconvert'))
+                : index === 0 ? __('With the form', 'wconvert') : __('New screen', 'wconvert')} />)}
           </div>}
           <dl className="wconvert-capture-box__rows">
             {copy && <Row label={__('New draft', 'wconvert')}>{quoted(copyName ?? '')}
