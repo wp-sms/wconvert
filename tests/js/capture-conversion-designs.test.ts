@@ -13,7 +13,7 @@ import { GOALS } from './support/goals';
  * `WCONVERT_DUMP_CONVERSIONS=<file>` the converted drafts are written out for
  * `bin/verify-converted-designs.php` to check against the PHP contracts.
  */
-type Design = Template & { id: string; display_type: string; form_switch?: boolean };
+type Design = Template & { id: string; display_type: string };
 
 const roots = [resolve('resources/templates/library'), resolve('tools/design-library/hosted/templates'),
   ...readdirSync(resolve('pro/modules'), { withFileTypes: true }).filter(entry => entry.isDirectory())
@@ -45,7 +45,7 @@ const unworded = (value: unknown): unknown => Array.isArray(value) ? value.map(u
 
 const dumped: { design: string; target: string; goal: string; config: Record<string, unknown> }[] = [];
 const convert = (design: Design, config: Record<string, unknown>, goal: string, target: CaptureTarget): Conversion => {
-  const result = convertCapture({ config, goal }, target, { goals: GOALS, allowed: design.form_switch !== false });
+  const result = convertCapture({ config, goal }, target, { goals: GOALS });
   if ('reason' in result) throw new Error(`${design.id} → ${target.capture}: ${result.reason}`);
   dumped.push({ design: design.id, target: target.capture + ('link' in target && target.link ? '+link' : ''), goal: result.goal, config: result.config });
   return result;
@@ -71,7 +71,7 @@ it('reads the Free library, the hosted designs and every Pro template module', (
 
 const offered = designs.map(design => ({ design, goal: goalOf(design.tree) }))
   .filter((entry): entry is { design: Design; goal: string } => entry.goal !== null)
-  .map(entry => ({ ...entry, offer: captureSwitch(linked(entry.design), entry.goal, GOALS, entry.design.form_switch !== false) }));
+  .map(entry => ({ ...entry, offer: captureSwitch(linked(entry.design), entry.goal, GOALS) }));
 
 describe.each(offered.filter(entry => entry.offer.offered && entry.offer.state === 'none').map(entry => [entry.design.id, entry]))('%s, which has no form', (_, { design, goal }) => {
   it.each(['email', 'phone'] as const)('takes a %s form and gives it back as it was', (channel) => {
@@ -108,8 +108,8 @@ describe.each(offered.filter(entry => entry.offer.offered && entry.offer.state !
   });
 });
 
-it('offers the switch on most of the library', () => {
+it('offers the switch on every design but quizzes and product blocks', () => {
   const refused = offered.filter(entry => !entry.offer.offered).map(entry => `${entry.design.id}: ${'reason' in entry.offer ? entry.offer.reason : ''}`);
-  // Quizzes, products and designs marked "no room" are the expected refusals.
-  expect(refused.every(line => /Quizzes|Product|no room|branches/u.test(line)), refused.join('\n')).toBe(true);
+  // Quizzes and product blocks are the expected refusals.
+  expect(refused.every(line => /Quizzes|Product|branches/u.test(line)), refused.join('\n')).toBe(true);
 });

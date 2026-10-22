@@ -26,8 +26,6 @@ export interface ConversionContext {
   readonly goals: readonly GoalEntry[];
   /** The site's services, with the contact channels each takes, to name what stops. */
   readonly destinations?: readonly { readonly id: string; readonly label: string; readonly channels: readonly string[] }[];
-  /** The design's `form_switch`; false where it has no room for a form. */
-  readonly allowed?: boolean;
 }
 
 /** One thing a screen gains or loses, named the way the box says it. */
@@ -355,10 +353,10 @@ export type SwitchOffer = { readonly offered: true; readonly state: 'none' | Con
 
 /**
  * Whether this campaign can add, remove or change its contact form, or the
- * one plain line saying why not (G1, G2, A4). `allowed` is the design's own
- * `form_switch`, false where the template sweep found no room for a form.
+ * one plain line saying why not (G1, G2). The screenshot sweep found no design
+ * without room for a form, so there is no per-design opt-out (A4).
  */
-export function captureSwitch(config: Config, goal: string, goals: readonly GoalEntry[], allowed = true): SwitchOffer {
+export function captureSwitch(config: Config, goal: string, goals: readonly GoalEntry[]): SwitchOffer {
   const tree = (config.template as Template | undefined)?.tree;
   if (!tree || tree.steps.length === 0) return { offered: false, reason: __('Choose a design first.', 'wconvert') };
   const outcome = goals.find(entry => entry.id === goal)?.outcome;
@@ -371,7 +369,6 @@ export function captureSwitch(config: Config, goal: string, goals: readonly Goal
   if (outcome?.destination_type) return refuse(__('A lead magnet needs the email form to deliver the file.', 'wconvert'));
   if (outcome?.action === 'click' && !outcome.link_required) return refuse(__('Cart recovery sends shoppers to their cart, so it has no form.', 'wconvert'));
   if (config.content_lock != null) return refuse(__('A content lock always needs its form.', 'wconvert'));
-  if (!allowed) return refuse(__('This design has no room for a form. Choose another design to ask for details.', 'wconvert'));
   const flat = simpleShape(tree);
   if (!flat) return refuse(__('This campaign has branches. Edit its screens directly.', 'wconvert'));
   const state = captureState(flat);
@@ -390,7 +387,7 @@ function boundDestinations(config: Config): string[] {
 }
 
 export function convertCapture(draft: { readonly config: Config; readonly goal: string }, target: CaptureTarget, context: ConversionContext): Conversion | Refusal {
-  const offer = captureSwitch(draft.config, draft.goal, context.goals, context.allowed);
+  const offer = captureSwitch(draft.config, draft.goal, context.goals);
   if (!offer.offered) return { reason: offer.reason };
   const held = draft.config.template as Template;
   // A simple flow converts as the straight campaign it draws (G2).

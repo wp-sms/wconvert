@@ -35,8 +35,10 @@ the Goal together.
   Goal, and clears destinations for the old channel.
 
 Quizzes, lead magnets, product blocks, content locks, cart Goals and branching
-journeys are refused with one plain line. Designs the template sweep finds
-cannot carry a form are marked `"form_switch": false`.
+journeys are refused with one plain line. A per-design opt-out
+(`"form_switch": false`) was planned for designs with no room for a form; the
+screenshot sweep of every design at 1440 and 390 px found none, so there is no
+such flag. `tests/js/capture-conversion-designs.test.ts` keeps checking.
 
 Form-owned text (field label, consent, submit, thank-you headline) uses defaults
 when added and is listed when removed. Re-adding regenerates the defaults; only
