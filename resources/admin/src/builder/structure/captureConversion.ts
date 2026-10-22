@@ -300,6 +300,12 @@ function removeForm(tree: TemplateTree, link: OfferLink | undefined): Converted 
   return { tree: next, changes, link: button ? text(button as unknown as TemplateNode, 'label') : null };
 }
 
+/** Whether an edit takes the main form's email or phone away, which the form switch does whole. */
+export function takesTheForm(before: TemplateTree, after: TemplateTree): boolean {
+  const was = captureState(before), now = captureState(after);
+  return (was === 'email' || was === 'phone') && (now === 'none' || now === 'other');
+}
+
 /** What the main form asks for: nothing, a required email or phone, or something else. */
 export function captureState(tree: TemplateTree): 'none' | 'email' | 'phone' | 'other' {
   const all = tree.steps.flatMap(step => walkNodes(step.content));

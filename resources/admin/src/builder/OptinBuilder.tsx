@@ -50,6 +50,9 @@ import { ForDevelopers } from '../optins/DetailsDialog';
 import { CampaignSummary, HowItRuns, type CampaignResults } from '../optins/CampaignSummary';
 import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
 import { CountsNothing } from './countsNothing';
+import { CaptureRequest, CaptureSwitch, type CaptureChoice } from './CaptureSwitch';
+import { CaptureChangeDialog } from './CaptureChangeDialog';
+import { captureState, captureSwitch, convertCapture, type CaptureTarget, type Conversion } from './structure/captureConversion';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
 import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
@@ -101,7 +104,7 @@ import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { readDestinations, type Connection, type Destination, type DestinationsPayload } from '../destinations/api';
 import { adminSettings, catalogConfigured } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
-import { createOptin, publishOptin, statusOf } from '../optins/api';
+import { copiedConfig, createOptin, publishOptin, statusOf } from '../optins/api';
 import { editorHref, reportHref } from '../nav';
 import { BrandMark } from '../shell/Brand';
 import type { EditingState } from '../hooks/useAdminNavigation';
@@ -142,7 +145,10 @@ function typesInto(target: EventTarget | null): boolean {
 export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStateChange, onCreated }: OptinBuilderProps) {
   const [name, setName] = useState('');
   const [config, setConfig] = useState<Config | null>(null);
+  // The draft's Goal, which Undo restores with the design (ADR 0163), and the
+  // one the row holds: a save sends the Goal only when the two differ.
   const [goal, setGoal] = useState<string | null>(null);
+  const [savedGoal, setSavedGoal] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [analyticsParent, setAnalyticsParent] = useState<string | null>(null);
   const [canChangeGoal, setCanChangeGoal] = useState(true);
@@ -167,7 +173,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
   const [saved, setSaved] = useState(false);
   const [baseline, setBaseline] = useState('');
-  const dirty = config !== null && baseline !== JSON.stringify({ name, config });
+  const dirty = config !== null && baseline !== JSON.stringify({ name, config, goal });
   useEffect(() => { onEditingStateChange?.({ dirty, busy }); }, [dirty, busy, onEditingStateChange]);
   const small = useCompactEditor(640);
   const sitePreview = draftPreviewUrl(id);
@@ -347,8 +353,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       .then((optin) => {
         setName(optin.name);
         setConfig(optin.config);
-        setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
+        setBaseline(JSON.stringify({ name: optin.name, config: optin.config, goal: optin.goal }));
         setGoal(optin.goal);
+        setSavedGoal(optin.goal);
         setPublishedAt(optin.published_at);
         setCanChangeGoal(optin.can_change_goal);
         setAnalyticsParent(optin.parent_id ?? null);
@@ -438,12 +445,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     const into = key === null ? null : { key, at: Date.now() };
 
     setPast((current) => {
-      const snapshot = { name, config };
+      const snapshot = { name, config, goal };
       if (current === null) return historyOf(snapshot);
-      if (current.present.name === name && current.present.config === config) return current;
+      if (current.present.name === name && current.present.config === config && current.present.goal === goal) return current;
       return remember(current, snapshot, into);
     });
-  }, [name, config]);
+  }, [name, config, goal]);
 
   useEffect(() => {
     if (template === undefined) {
@@ -527,7 +534,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       id,
       name,
       next,
-      nextGoal,
+      // Change goal names one; otherwise a Goal the form switch changed travels too.
+      nextGoal ?? (goal !== null && goal !== savedGoal ? goal : undefined),
       typeof next.template_id === 'string' ? next.template_id : undefined,
     )
       .then((optin) => {
@@ -541,7 +549,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         // Changing an unpublished Goal saves immediately, so
         // that explicit save starts a new local history rather than offering
         // an Undo that would silently need another server write.
-        const present = { name: optin.name, config: optin.config };
+        const present = { name: optin.name, config: optin.config, goal: optin.goal };
         coalescing.current = null;
         setPast((current) => current === null || nextGoal !== undefined
           ? historyOf(present) : { ...current, present, merged: null });
@@ -549,11 +557,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         // the save actually wrote, so a refused correction leaves the band
         // saying what the Optin still holds rather than what was asked for.
         setGoal(optin.goal);
+        setSavedGoal(optin.goal);
         setCanChangeGoal(optin.can_change_goal);
         setAnalyticsParent(optin.parent_id ?? null);
         setSaved(true);
         setImported(false);
-        setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
+        setBaseline(JSON.stringify({ name: optin.name, config: optin.config, goal: optin.goal }));
       });
   };
 
@@ -617,7 +626,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
       const next = move(past);
 
-      if (next === past) {
+      // Once the Goal is fixed, Undo stops at a step that changed it: the
+      // design and its Goal travel together, and the Goal cannot go back.
+      if (next === past || (!canChangeGoal && next.present.goal !== goal)) {
         return;
       }
 
@@ -626,9 +637,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       coalescing.current = null;
       setName(next.present.name);
       setConfig(next.present.config);
+      setGoal(next.present.goal);
       setSaved(false);
     },
-    [past, busy],
+    [past, busy, canChangeGoal, goal],
   );
 
   useEffect(() => {
@@ -664,11 +676,70 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const historyLabels = useMemo(() => draftHistoryLabels(past), [past]);
   const history = {
     labels: historyLabels,
-    canUndo: past !== null && canUndo(past),
-    canRedo: past !== null && canRedo(past),
+    canUndo: past !== null && canUndo(past) && (canChangeGoal || past.past.at(-1)?.goal === goal),
+    canRedo: past !== null && canRedo(past) && (canChangeGoal || past.future[0]?.goal === goal),
     undo: stepping(undo),
     redo: stepping(redo),
   };
+
+  // The form switch (ADR 0163): what it is offered on, what each choice
+  // would build, and the box that applies it as one Undo step or copies it.
+  const [capturing, setCapturing] = useState<CaptureChoice | null>(null);
+  const [captureSaid, setCaptureSaid] = useState<{ said: string; serial: number } | undefined>();
+  const captureRow = useRef<HTMLElement | null>(null);
+  const goalList = goals.status === 'ready' ? goals.data : null;
+  const switchOffer = config && goal && goalList ? captureSwitch(config, goal, goalList) : null;
+  const formState = template ? captureState(template.tree) : 'none';
+  const loadedDestinations = read(destinations)?.destinations;
+  const destinationChannels = useMemo(() => (loadedDestinations ?? []).map(item => ({ id: item.id, label: item.label,
+    // A route that names no audience channel (a webhook, a file delivery) takes either.
+    channels: item.requirements?.audience_channels ?? ['email', 'phone'] })), [loadedDestinations]);
+  const convert = useCallback((target: CaptureTarget) => convertCapture({ config: config ?? {}, goal: goal ?? '' }, target,
+    { goals: goalList ?? [], destinations: destinationChannels }), [config, goal, goalList, destinationChannels]);
+  const captureTarget = useMemo((): CaptureTarget | null => capturing === null ? null
+    : capturing === 'none' ? { capture: 'none' } : { capture: capturing }, [capturing]);
+  // A form this draft held before comes back with default words; only Undo restores its edits.
+  const hadForm = formState === 'none' && past !== null && [...past.past, ...past.future].some(snapshot => {
+    const tree = (snapshot.config.template as Template | undefined)?.tree;
+    return tree !== undefined && ['email', 'phone'].includes(captureState(tree));
+  });
+  const applyCapture = (result: Conversion) => {
+    coalescing.current = null;
+    setConfig(result.config);
+    setGoal(result.goal);
+    setSaved(false);
+    const after = captureState((result.config.template as Template).tree);
+    const done = after === 'none' ? __('Form removed.', 'wconvert')
+      : formState === 'none' ? (after === 'phone' ? __('Phone form added.', 'wconvert') : __('Email form added.', 'wconvert'))
+        : (after === 'phone' ? __('Now asks for a phone number.', 'wconvert') : __('Now asks for an email address.', 'wconvert'));
+    const newGoal = goalList?.find(entry => entry.id === result.goal);
+    setCaptureSaid(current => ({ serial: (current?.serial ?? 0) + 1,
+      said: result.goal !== goal && newGoal
+        /* translators: 1: what changed, e.g. “Email form added.” 2: the new goal's name. */
+        ? sprintf(__('%1$s The goal is now “%2$s”.', 'wconvert'), done, newGoal.label) : done }));
+  };
+  /* translators: %s: the campaign's name. A copy that asks for contact details. */
+  const signupCopy = () => sprintf(__('%s (signup)', 'wconvert'), name);
+  /* translators: %s: the campaign's name. A copy without a form. */
+  const offerCopy = () => sprintf(__('%s (offer)', 'wconvert'), name);
+  const copyName = formState === 'none' ? signupCopy() : offerCopy();
+  // The same create, confirmation and cleaning as Duplicate for another goal.
+  const copyCapture = (result: Conversion) => {
+    setBusy(true);
+    return createOptin(copyName, result.goal, copiedConfig(result.config))
+      .then((created) => {
+        onEditingStateChange?.({ dirty: false, busy: false });
+        if (onCreated) onCreated(created.id);
+        else window.location.hash = editorHref(created.id);
+      })
+      .catch((cause: unknown) => {
+        throw new Error(sprintf(__('The copy could not be confirmed. Check the campaigns list before trying again. %s', 'wconvert'), messageOf(cause)));
+      })
+      .finally(() => setBusy(false));
+  };
+  const requestCapture = switchOffer?.offered && canChangeGoal ? setCapturing : null;
+  const formSwitch = switchOffer && <CaptureSwitch state={formState} offer={switchOffer} copy={!canChangeGoal} published={publishedAt !== null} sectionRef={captureRow}
+    onChoose={choice => { if (choice !== formState) setCapturing(choice); }} />;
 
   const leave = () => (dirty ? setLeaving(true) : onClose());
 
@@ -848,6 +919,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
   return (
     <CountsNothing.Provider value={countsNothing(entryOfGoal?.outcome)}>
+    <CaptureRequest.Provider value={requestCapture}>
     <CampaignPreviewDeadline endsAt={displayRules.schedule.ends_at}>
     <Tabs
       value={tab}
@@ -993,6 +1065,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             editorCanvas={previewPane}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
+            formSwitch={formSwitch}
+            announce={captureSaid}
             look={{ open: lookOpen, onOpen: openLook, colors: lookColors(entry), summary: lookSummary(displayTypeOf(config, templates), chosenName(templateId, templates)) }}
             lookPanel={<DesignSettings
                             pictureStep={shownStep}
@@ -1195,7 +1269,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           setBusy(true);
           setError(null);
           if (canChangeGoal) return persistDraft(config ?? {}, picked).finally(() => setBusy(false));
-          return createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, config ?? {})
+          return createOptin(sprintf(__('%s — copy', 'wconvert'), name), picked, copiedConfig(config ?? {}))
             .then((created) => {
               onEditingStateChange?.({ dirty: false, busy: false });
               if (onCreated) onCreated(created.id);
@@ -1208,7 +1282,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         }}
       />
     </Tabs>
+      {template && captureTarget && <CaptureChangeDialog open onOpenChange={next => { if (!next) setCapturing(null); }}
+        before={template} target={captureTarget} convert={convert} mode={canChangeGoal ? 'apply' : 'copy'} hadForm={hadForm}
+        copyName={copyName}
+        onConfirm={canChangeGoal ? applyCapture : copyCapture} returnFocusTo={captureRow} />}
     </CampaignPreviewDeadline>
+    </CaptureRequest.Provider>
     </CountsNothing.Provider>
   );
 }

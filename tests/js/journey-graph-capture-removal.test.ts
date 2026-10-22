@@ -16,8 +16,8 @@ it('removes an optional progressive capture without changing the earlier accepta
   const before = JSON.stringify(tree);
   const removed = removeGraphCapture(tree, optional.id)!.next;
   expect(removed.submissions).toEqual(tree.submissions.filter(sub => sub.required));
-  expect(draftEditLabel({ name: 'Signup', config: { template: { tree }, submission_settings: { [optional.id]: { destination_ids: ['sms-provider'] } } } },
-    { name: 'Signup', config: { template: { tree: removed }, submission_settings: {} } })).toBe('Remove optional signup');
+  expect(draftEditLabel({ name: 'Signup', config: { template: { tree }, submission_settings: { [optional.id]: { destination_ids: ['sms-provider'] } } }, goal: 'grow_email_list' },
+    { name: 'Signup', config: { template: { tree: removed }, submission_settings: {} }, goal: 'grow_email_list' })).toBe('Remove optional signup');
   expect(removed.steps.map(screen => screen.id)).not.toContain(save.id);
   expect(removed.steps[0]).toEqual(tree.steps[0]);
   expect(removed.graph!.edges.some(edge => edge.to === save.id || edge.from === save.id)).toBe(false);

@@ -678,12 +678,18 @@ describe('deleting a block', () => {
     expect(refused).toHaveTextContent('counts as a conversion');
   });
 
-  /** And the same refusal reaches a layout that HOLDS the only button. */
-  it('refuses to delete a row that holds the only converting act', async () => {
+  /**
+   * A layout that HOLDS the form's field and button takes the form with it, so
+   * it opens the form switch's box rather than refusing (ADR 0163).
+   */
+  it('opens the form box for a row that holds the form', async () => {
     await structure();
     await menu('Row');
 
-    expect(screen.getByRole('menuitem', { name: /Delete/ })).toHaveAttribute('aria-disabled', 'true');
+    const remove = screen.getByRole('menuitem', { name: /Delete/ });
+    expect(remove).not.toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(remove);
+    expect(await screen.findByRole('dialog', { name: /^Remove the (email|phone) form\?$/ })).toBeInTheDocument();
   });
 });
 

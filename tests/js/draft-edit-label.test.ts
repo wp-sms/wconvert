@@ -4,7 +4,7 @@ import fixture from '../fixtures/journey-graph-enquiry.json';
 import { draftEditLabel, draftHistoryLabels, type DraftSnapshot } from '../../resources/admin/src/builder/structure/draftEditLabel';
 import { historyOf, remember, undo } from '../../resources/admin/src/builder/structure/history';
 const tree = fixture as unknown as TemplateTree;
-const snapshot = (value = tree): DraftSnapshot => ({ name: 'Enquiry', config: { template: { tree: value, tokens: {} } } });
+const snapshot = (value = tree): DraftSnapshot => ({ name: 'Enquiry', config: { template: { tree: value, tokens: {} } }, goal: 'collect_enquiries' });
 
 it('names the forward action for both Undo and Redo across a coalesced rename', () => {
   const initial = snapshot();

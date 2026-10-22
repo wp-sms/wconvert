@@ -2487,3 +2487,46 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 .wconvert-screen-lines button { inline-size: 100%; padding: 4px 6px; margin-inline: -6px; border: 0; border-radius: var(--radius-sm); background: none; color: inherit; font: inherit; text-align: start; cursor: pointer; }
 .wconvert-screen-lines button:hover { background: var(--accent); }
 .wconvert-screen-lines .wconvert-flow-dot, .wconvert-journey-result-summary .wconvert-flow-dot, .wconvert-journey-arrival .wconvert-flow-dot { align-self: center; margin-inline-end: 6px; }
+
+/* The Contact form switch, between the Look and the screens (ADR 0163). */
+.wconvert-capture-switch { display: grid; gap: 8px; margin-block-end: 14px; padding-block-end: 14px; border-block-end: 1px solid var(--border); }
+.wconvert-capture-switch:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-capture-switch__heading { display: flex; justify-content: space-between; gap: 8px; padding-inline: 4px; font-size: var(--text-note); }
+.wconvert-capture-switch__heading strong { font-weight: 600; }
+.wconvert-capture-switch__heading span, .wconvert-capture-switch p { color: var(--muted-foreground); }
+.wconvert-capture-switch .wconvert-option-strip { inline-size: 100%; }
+.wconvert-capture-switch .wconvert-option-strip label { flex: 1; justify-content: center; }
+.wconvert-capture-switch p { margin: 0; padding-inline: 4px; font-size: var(--text-micro); line-height: 1.45; }
+.wconvert-capture-switch > button { justify-self: start; }
+
+/* The box every way into the switch shows. */
+.wconvert-capture-box { display: grid; gap: 14px; }
+.wconvert-capture-box__tiles { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); }
+.wconvert-capture-box__tile { display: grid; gap: 6px; inline-size: 104px; margin: 0; text-align: center; }
+.wconvert-capture-box__tile .wconvert-journey-card__preview { block-size: 78px; }
+.wconvert-capture-box__tile figcaption { display: grid; font-size: var(--text-micro); line-height: 1.3; }
+.wconvert-capture-box__tile figcaption small { color: var(--muted-foreground); }
+.wconvert-capture-box__arrow { flex: none; color: var(--muted-foreground); }
+.wconvert-capture-box__rows { display: grid; margin: 0; }
+.wconvert-capture-box__rows > div { display: grid; grid-template-columns: minmax(7rem, 9rem) 1fr; gap: 4px 16px; padding-block: 12px; border-block-start: 1px solid var(--border); }
+.wconvert-capture-box__rows > div:last-child { border-block-end: 1px solid var(--border); }
+.wconvert-capture-box__rows dt { color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-capture-box__rows dd { display: grid; gap: 2px; margin: 0; }
+.wconvert-capture-box__rows dd small { color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-capture-box__rows ul, .wconvert-capture-box__rows li { margin: 0; padding: 0; list-style: none; }
+.wconvert-capture-box__rows ul { display: grid; gap: 4px; }
+.wconvert-capture-box__goal { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.wconvert-capture-box__goal > span { padding: 1px 8px; border-radius: 4px; background: var(--surface); font-size: var(--text-note); font-weight: 500; }
+.wconvert-capture-box__goal > span[data-new] { background: var(--secondary); color: var(--action); }
+.wconvert-capture-box__link { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); }
+.wconvert-capture-box__link > label { display: flex; align-items: center; gap: 8px; }
+.wconvert-capture-box__link > div { display: grid; gap: 6px; }
+.wconvert-capture-box__link small { color: var(--muted-foreground); font-size: var(--text-micro); }
+.wconvert-capture-box__note { margin: 0; padding: 10px 12px; border-radius: var(--radius); background: var(--surface); font-size: var(--text-note); }
+.wconvert-capture-box__choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.wconvert-capture-box__choice > label { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; }
+.wconvert-capture-box__choice > label[data-checked] { border-color: var(--action); background: var(--secondary); }
+@media (max-width: 640px) {
+  .wconvert-capture-box__rows > div { grid-template-columns: 1fr; }
+  .wconvert-capture-box__choice { grid-template-columns: 1fr; }
+}

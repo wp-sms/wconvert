@@ -5,6 +5,7 @@ namespace WConvert\Admin;
 use WConvert\Assets\ViteHelper;
 use WConvert\Frontend\DraftPreview;
 use WConvert\Frontend\InspectorEnqueue;
+use WConvert\Playbook\OfferLinks;
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\TierManifest;
@@ -298,6 +299,8 @@ final class AdminMenu
             // root — which is the same `/blog/pricing` confusion half the real
             // Targeting tickets are about.
             'homeUrl' => (string) home_url('/'),
+            // Where a "Shop now" button starts when the form switch adds one (ADR 0163).
+            'offerLink' => OfferLinks::onThisSite(),
             // Shown in Help beside What's new; WCONVERT_VERSION is a public fact (constants.php).
             'version' => WCONVERT_VERSION,
             'siteName' => wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES),

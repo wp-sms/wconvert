@@ -30,9 +30,14 @@ export const readCampaignPreviews = (ids: string[]) => {
 /** Copy the saved draft through the same validated creation route as the editor. */
 export async function duplicateCampaign(id: string, name: string) {
   const saved = await apiFetch<{ goal: string; config: Record<string, unknown> }>({ path: `/wconvert/v1/optins/${id}` });
-  const config = { ...saved.config };
+  return createOptin(name, saved.goal, copiedConfig(saved.config));
+}
+
+/** A config as a copy takes it: its own analytics label, the rest unchanged. */
+export function copiedConfig(source: Record<string, unknown>): Record<string, unknown> {
+  const config = { ...source };
   if (config.analytics && typeof config.analytics === 'object') config.analytics = { ...config.analytics, label: '' };
-  return createOptin(name, saved.goal, config);
+  return config;
 }
 
 /**

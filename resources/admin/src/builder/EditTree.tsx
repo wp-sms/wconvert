@@ -72,7 +72,7 @@ export interface EditTreeRow {
  * "Only if…" says so, a screen on one path says which, and the Flow map is
  * where order is drawn.
  */
-export function EditTree({ tree, step, editingScreen = true, issues = [], onIssue, onSelect, look, elements, extraRows = [], addScreen }: {
+export function EditTree({ tree, step, editingScreen = true, issues = [], onIssue, onSelect, look, formSwitch, elements, extraRows = [], addScreen }: {
   tree: TemplateTree; step: number;
   /** Whether the open screen is what the panel shows; false while the Look or an extra row is open. */
   editingScreen?: boolean;
@@ -80,6 +80,8 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
   issues?: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void;
   onSelect(index: number): void;
   look?: EditTreeLook;
+  /** The Contact form switch, between the Look and the screens (ADR 0163). */
+  formSwitch?: ReactNode;
   /** The open screen's elements, drawn under its row. */
   elements?: ReactNode;
   /** Rows that are not screens: the reopen button, the locked content preview. */
@@ -126,6 +128,7 @@ export function EditTree({ tree, step, editingScreen = true, issues = [], onIssu
       <span className="wconvert-edit-tree__dots" aria-hidden="true">{look.colors.map((color, at) => <span key={at} style={{ background: color }} />)}</span>
       <span><strong>{__('Look', 'wconvert')}</strong><small>{look.summary}</small></span>
     </button>}
+    {formSwitch}
     <div className="wconvert-campaign-screens__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.steps.length}</span></div>
     <div className="wconvert-campaign-screens__items">{graphDisplayOrder(tree).map(index => {
       const group = groups.find(candidate => candidate.screens.includes(index));
