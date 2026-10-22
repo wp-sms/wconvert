@@ -48,6 +48,28 @@ export function submissionScreen(tree: TemplateTree, id: string | undefined): nu
     n.type === 'button' && 'action' in n && n.action === 'submit' && 'submission' in n && n.submission === id));
 }
 
+/**
+ * Whether a code or resource link on this screen reaches only visitors who sign up, though the
+ * signup before it is optional. `HeldReward::heldSteps()`'s rule (ADR 0164):
+ * every route to the screen passes the main signup's screen.
+ */
+export function onlyForSignups(tree: TemplateTree, step: number): boolean {
+  const primary = tree.submissions[0];
+  const at = submissionScreen(tree, primary?.id);
+  if (!primary || primary.required || at < 0 || step === at || !tree.steps[step]) return false;
+  if (!tree.graph) return step > at;
+  const pending = [tree.graph.entry];
+  const seen = new Set<string>();
+  while (pending.length > 0) {
+    const id = pending.pop()!;
+    if (id === tree.steps[at].id || seen.has(id)) continue;
+    if (id === tree.steps[step].id) return false;
+    seen.add(id);
+    for (const edge of tree.graph.edges) if (edge.from === id) pending.push(edge.to);
+  }
+  return true;
+}
+
 export function unreachableScreens(tree: TemplateTree): readonly string[] {
   return unreachableScreenIds(tree).map(id => tree.steps.find(screen => screen.id === id)?.name ?? id);
 }

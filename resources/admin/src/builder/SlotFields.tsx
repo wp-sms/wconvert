@@ -91,6 +91,8 @@ export interface SlotFieldsProps {
    * so it asks for the switch.
    */
   readonly showVisibility?: boolean;
+  /** A code or resource link after an optional signup: visitors who skip it never see it (ADR 0164). */
+  readonly signupOnly?: boolean;
 }
 
 export function SlotFields({
@@ -105,6 +107,7 @@ export function SlotFields({
   onEndDateChange,
   onSetEndDate,
   showVisibility = false,
+  signupOnly = false,
 }: SlotFieldsProps) {
   const fieldId = useId();
   const text = String(slot.values.text ?? '');
@@ -174,7 +177,9 @@ export function SlotFields({
         return (
           <PanelField key={key} label={label} htmlFor={id}
             tip={slot.type === 'field' && key === 'placeholder' && slot.captures !== 'interest' ? __('Disappears when visitors type. Use the label to say what to enter.', 'wconvert')
-              : slot.type === 'image' && key === 'alt' ? __('Describes the image for screen readers. Leave it empty if the image is decoration.', 'wconvert') : undefined}
+              : slot.type === 'image' && key === 'alt' ? __('Describes the image for screen readers. Leave it empty if the image is decoration.', 'wconvert')
+              : signupOnly && slot.type === 'code' && key === 'text' ? __('The signup before this screen is optional. Visitors who skip it see this screen without the code. To show a code to everyone, put it on the result screen.', 'wconvert')
+              : signupOnly && slot.type === 'followup' && key === 'href' ? __('The signup before this screen is optional. Visitors who skip it see this screen without the link. To give everyone a link, add it to the result’s Link.', 'wconvert') : undefined}
             /*
               **The mark is where the words go, and it has to be said in the
               same breath as the box that holds them.** `emphasis` is the
@@ -183,7 +188,9 @@ export function SlotFields({
               which is a control that silently does nothing, and the one thing
               ADR 0054 rule 3 says a control may not be.
             */
-            hint={key === 'emphasis' ? __('Put %b in the text above where the bold words should sit.', 'wconvert') : undefined}>
+            hint={key === 'emphasis' ? __('Put %b in the text above where the bold words should sit.', 'wconvert')
+              : signupOnly && slot.type === 'code' && key === 'text' ? __('Only visitors who sign up see this code.', 'wconvert')
+              : signupOnly && slot.type === 'followup' && key === 'href' ? __('Only visitors who sign up see this link.', 'wconvert') : undefined}>
             <KeyControl
               id={id}
               control={control}

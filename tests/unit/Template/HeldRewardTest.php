@@ -97,13 +97,14 @@ final class HeldRewardTest extends TestCase
         self::assertSame(['received' => [null, ['href' => 'https://example.test/shop'], null]], HeldReward::of($tree));
     }
 
-    public function testAnOptionalFirstSignupHoldsNothingBecauseSkippingReachesTheCode(): void
+    /** A skipper sees the thank-you screen without the code: it is the reason to sign up. */
+    public function testAnOptionalFirstSignupStillHoldsWhatComesAfterIt(): void
     {
         $tree = self::tree();
         $tree['submissions'][0]['required'] = false;
 
-        self::assertSame($tree, HeldReward::printed($tree));
-        self::assertSame([], HeldReward::of($tree));
+        self::assertStringNotContainsString('FRIDAY25', (string) wp_json_encode(HeldReward::printed($tree)));
+        self::assertSame(['text' => 'FRIDAY25', 'apply_href' => '/cart/?coupon=FRIDAY25'], HeldReward::of($tree)['received'][0]);
     }
 
     public function testAGraphHoldsOnlyTheScreensEveryRouteReachesThroughTheSignup(): void
@@ -131,5 +132,21 @@ final class HeldRewardTest extends TestCase
             CaptureContract::fingerprint(['template' => ['tree' => $tree]], 'grow_email_list', ''),
             CaptureContract::fingerprint(['template' => ['tree' => $changed]], 'grow_email_list', '')
         );
+    }
+
+    /** A result-first quiz: the result stays public, the thank-you code and link wait for the signup. */
+    public function testAResultFirstQuizKeepsItsResultAndHoldsItsThankYouCode(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-content-guide.json'), true)['tree'];
+        $tree['steps'][1]['content']['children'][] = ['type' => 'code', 'text' => 'EVERYONE5'];
+        $tree['steps'][3]['content']['children'][] = self::CODE;
+        $tree['steps'][3]['content']['children'][] = self::SHOP;
+
+        $printed = (string) wp_json_encode(HeldReward::printed($tree));
+
+        self::assertStringContainsString('EVERYONE5', $printed);
+        self::assertStringNotContainsString('FRIDAY25', $printed);
+        self::assertStringNotContainsString('example.test/shop', $printed);
+        self::assertSame(['thanks'], array_keys(HeldReward::of($tree)));
     }
 }
