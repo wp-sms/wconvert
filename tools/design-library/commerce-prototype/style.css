@@ -54,3 +54,7 @@
 @media(max-width:600px){.campaign.theme-acid{padding-top:56px}.invitation{padding-top:58px}.format-floating-bar .campaign{padding-right:62px}.campaign.theme-receipt,.campaign.theme-gift{padding-top:58px}}
 .campaign.theme-pixel.is-ack{padding:0}
 .theme-pixel .ack h1{font:700 34px/1.1 ui-monospace,monospace;letter-spacing:-2px}
+
+/* The real dismiss button belongs to the window title row, at every width. */
+.theme-system .window-title{height:56px;min-height:56px;padding:0 64px 0 18px;justify-content:flex-start;gap:18px}
+.campaign.theme-system .dismiss{top:6px;right:6px;width:44px;min-height:44px;height:44px;border-radius:2px;background:#f5f1fa}

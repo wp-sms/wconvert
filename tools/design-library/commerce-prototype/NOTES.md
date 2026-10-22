@@ -56,6 +56,16 @@ On selection, re-author the chosen trees with stable IDs and roles, palette toke
 
 No WordPress boot claim is made: this is an isolated browser prototype. A real WordPress run belongs to the subsequent production-template work.
 
+## Editor fidelity and coupon flows
+
+The image panes in 01, 07 and 09 contain no overlaid wording. System upgrade (10) keeps its real dismiss control inside the title row at phone and desktop widths; the title says Cyber Monday and there are no unexplained status identifiers.
+
+The text in 03 and 15 should remain editable when promoted. The exact rotated circular stamps are prototype CSS, not native editor controls: rounded panels and text are supported, arbitrary rotation and fixed panel aspect ratios are not. Prefer a simplified editable panel/badge rather than baking the discount into an image. In 08, the gift illustration is artwork; headline, offer and code remain editable. The ⌘ S motif in 11 is decorative and does not install a keyboard shortcut or replace the browser’s Save command.
+
+The current editor supports a required email/SMS form followed by an acknowledgement containing a Discount code with Copy button → Code and copy button. Start from a capture design for Grow my email list or Grow my SMS list; require its matching field, edit the submit label, and put the valid store coupon only on the acknowledgement. An optional introductory Message screen can precede the form. Test the complete route before publishing. Adding a Message screen to a click-only offer does not itself create the required primary form/submission; signup versions of these offer compositions must be authored deliberately. A second optional channel must not withhold a reward already earned by the first required signup.
+
+Checked against `JourneyEditor.tsx`, `structure/catalogue.ts`, `SlotFields.tsx`, `TemplateLabels.php` and the shipping renderer CSS. These are existing product capabilities, not a claim that the prototype gallery is installed in WordPress.
+
 ## Decision
 
 Pending visual selection. Choose IDs, combinations or changes in the review conversation. After the direction is agreed, absorb the chosen design intent into library sources and delete the throwaway implementation.
