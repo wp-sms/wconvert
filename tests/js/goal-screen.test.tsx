@@ -888,6 +888,8 @@ it('creates a list campaign from its prefill as it is', async () => {
 });
 
 it('browses every hosted collection member before installation and creates with the chosen member’s goal', async () => {
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'free', proHints: true };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   const { onlineCollection } = await import('./support/online-collection');
   const collection = onlineCollection();
   goals.listGoals.mockResolvedValue(GOALS.map(goal => goal.id === 'promote_offer' ? { ...goal, availability: 'ready', tier: 'free' } : goal));
@@ -930,4 +932,21 @@ it('uses a bundled Pro collection member without downloading it again', async ()
   await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Use this setup' }));
   expect(goals.prefill).toHaveBeenCalledWith('grow_email_list', 'sale-6');
   expect(catalog.installSetup).not.toHaveBeenCalled();
+});
+
+
+it('respects the server’s Pro-hint opt-out in collection cards and counts', async () => {
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'free', proHints: false };
+  onTestFinished(() => { delete window.wconvertAdmin; });
+  const { onlineCollection } = await import('./support/online-collection');
+  const data = await picker.pickerData();
+  picker.pickerData.mockResolvedValue({ ...data, collections: [onlineCollection()] });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  const open = await screen.findByRole('button', { name: /Shopping weekend Twenty sale designs/ });
+  expect(open).toHaveTextContent('5 setups');
+  await userEvent.click(open);
+  const dialog = within(screen.getByRole('dialog'));
+  expect(dialog.getAllByRole('heading', { level: 3 })).toHaveLength(5);
+  expect(dialog.queryByText('Pro')).not.toBeInTheDocument();
+  expect(dialog.queryByRole('link', { name: 'See this design' })).not.toBeInTheDocument();
 });

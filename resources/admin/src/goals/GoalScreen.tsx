@@ -40,7 +40,7 @@ import { SetupComparison } from '../discovery/SetupComparison';
 import type { Collection } from '../discovery/api';
 import { displayTypeLabel, displayTypeOptions } from '../displayTypes';
 import { renderingFor, tierProductName } from './availability';
-import { catalogConfigured } from '../settings';
+import { adminSettings, catalogConfigured } from '../settings';
 import { OptionStrip } from '../shell/OptionStrip';
 import { matchesSearch } from '../discovery/search';
 
@@ -266,8 +266,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     ? preferredStage(editorialCollection, picker.data?.today ?? '', collectionEligible, selectedOccasion) : stage;
   const collectionItems = editorialCollection?.items.filter(item => effectiveStage === 'any' || item.stage === effectiveStage);
   const entries = collectionItems ? collectionEligible.filter(entry => collectionItems.some(item => item.setup_id === entry.id)) : filtered;
-  const relevant = picker.data ? matchingCollections(picker.data, filtered, false) : [];
-  const featured = picker.data ? matchingCollections(picker.data, filtered, true) : [];
+  const showProDesigns = adminSettings()?.installedTier === 'pro' || adminSettings()?.proHints === true;
+  const relevant = picker.data ? matchingCollections(picker.data, filtered, false, showProDesigns) : [];
+  const featured = picker.data ? matchingCollections(picker.data, filtered, true, showProDesigns) : [];
   const openCollection = (collection: Collection) => {
     libraryPosition.current = { scroll: window.scrollY, trigger: document.activeElement as HTMLElement | null, page, allCollections };
     modalOrigin.current = document.activeElement as HTMLElement | null;

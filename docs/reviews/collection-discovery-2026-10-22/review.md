@@ -58,3 +58,14 @@ already contains all 20; no server republish or storage change was needed.
 
 The earlier installed-only review in
 `../shopping-weekend-2026-10-22/collection-review.md` is superseded for discovery.
+
+## Pre-merge review follow-up
+
+The two-axis review found no spec mismatch and two standards issues, both fixed:
+the runtime expiry statement in ADR 0104 now distinguishes captures from offers,
+and collection browsing respects the server's Pro-hint opt-out/capability decision.
+Normal Free administrators and active Pro sites retain all 20 members; restricted
+or opted-out Free users see Free and already usable entries with matching counts.
+The focused discovery/creation suite now passes 68 tests; TypeScript, ESLint and
+both admin builds passed. `pro-hints.json` records the actual WordPress check for
+normal Free (20), opted-out Free (5), and active Pro (20).

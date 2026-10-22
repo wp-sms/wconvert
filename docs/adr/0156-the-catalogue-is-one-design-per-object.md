@@ -106,7 +106,9 @@ design's page on wconvert.io. No Apply, no disabled control, no Pro JSON, no
 "upgrade". Free sorts what it can use first. This **supersedes 0116 §1 and
 0147 rule 3 for designs only**. **Amended 22 October 2026:** hosted collection
 browsing also shows every published member, before installation and across
-Goals, with Free/Pro labels. A seasonal collection may contain mostly Pro
+Goals, with Free/Pro labels. The existing `ProHints::shown()` gate still applies
+to paid discovery: opted-out or restricted Free users see only Free or already
+usable members, with matching counts. Pro users retain all members. A seasonal collection may contain mostly Pro
 designs. Locked members remain public image cards and external links; they
 never receive Pro trees or an install/use control. Creation itself still
 requires a usable Goal and setup. Install adds the exact hosted setup; Use
