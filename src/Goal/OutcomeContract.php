@@ -78,8 +78,8 @@ final class OutcomeContract
 
     /**
      * The tree with what this outcome cannot carry taken out: a message counts
-     * nothing, so a design's counted link buttons go. Any other outcome keeps
-     * the tree as it is.
+     * nothing, so a design's counted link buttons go, and so does a layout
+     * they leave empty. Any other outcome keeps the tree as it is.
      *
      * @param array<string, mixed> $tree
      * @return array<string, mixed>
@@ -87,13 +87,32 @@ final class OutcomeContract
     public function fitted(array $tree): array
     {
         if (!$this->countsNothing() || !is_array($tree['steps'] ?? null)) return $tree;
-        $counted = static fn ($node): bool => is_array($node) && ($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link';
-        return TemplateTree::rewrittenIn(['template' => ['tree' => $tree]], static function (array $node) use ($counted): array {
-            foreach (TemplateTree::CHILD_KEYS as $key) {
-                if (is_array($node[$key] ?? null)) $node[$key] = array_values(array_filter($node[$key], static fn ($child): bool => !$counted($child)));
-            }
-            return $node;
-        })['template']['tree'];
+        $tree['steps'] = array_map(static function ($step) {
+            if (is_array($step) && is_array($step['content'] ?? null)) $step['content'] = self::withoutLinks($step['content']) ?? $step['content'];
+            return $step;
+        }, $tree['steps']);
+        return $tree;
+    }
+
+    /**
+     * @param array<string, mixed> $node
+     * @return array<string, mixed>|null Null where nothing is left of it.
+     */
+    private static function withoutLinks(array $node): ?array
+    {
+        if (($node['type'] ?? null) === 'button' && ($node['action'] ?? null) === 'link') return null;
+        $held = false;
+        foreach (TemplateTree::CHILD_KEYS as $key) {
+            if (!is_array($node[$key] ?? null)) continue;
+            $held = $held || $node[$key] !== [];
+            $node[$key] = array_values(array_filter(array_map(
+                static fn ($child) => is_array($child) ? self::withoutLinks($child) : $child,
+                $node[$key]
+            ), static fn ($child): bool => $child !== null));
+        }
+        $empty = true;
+        foreach (TemplateTree::CHILD_KEYS as $key) if (($node[$key] ?? []) !== []) $empty = false;
+        return $held && $empty ? null : $node;
     }
 
     /** @return array<string, mixed> */

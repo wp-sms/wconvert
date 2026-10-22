@@ -86,6 +86,10 @@ final class OutcomeContractTest extends TestCase
         ]]]]]], 'submissions' => []];
 
         $fitted = Goal::ShowMessage->outcome()->fitted($tree);
+        // A row that held only the button goes with it.
+        $rowed = $tree;
+        $rowed['steps'][0]['content']['start'][] = ['type' => 'row', 'children' => [['type' => 'button', 'id' => 'n9', 'action' => 'link', 'label' => 'Go']]];
+        self::assertSame($tree['steps'][0]['content']['start'], Goal::ShowMessage->outcome()->fitted($rowed)['steps'][0]['content']['start']);
         self::assertSame([['type' => 'text', 'id' => 'n3', 'text' => 'Ends Sunday']], $fitted['steps'][0]['content']['end'][0]['children']);
         self::assertSame($tree['steps'][0]['content']['start'], $fitted['steps'][0]['content']['start']);
         self::assertNull(Goal::ShowMessage->outcome()->designIssue(['template' => ['tree' => $fitted]]));
