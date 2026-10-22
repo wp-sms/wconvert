@@ -30,7 +30,7 @@ describe('a message under its Goal', () => {
     expect(outcomeDesignIssue(MESSAGE, design('stacked-signup'))).toBe(MESSAGE.requirement);
     expect(outcomeDesignIssue(CLICK_OUTCOME, notice(words))).toBe(CLICK_OUTCOME.requirement);
     expect(fitsOutcome(MESSAGE, { act: null, captures: [] })).toBe(true);
-    expect(fitsOutcome(MESSAGE, { act: 'click', captures: [] })).toBe(false);
+    expect(fitsOutcome(MESSAGE, { act: 'click', captures: [] })).toBe(true);
   });
 
   it('lets the counted link go without calling it a hole, but only under that Goal', () => {

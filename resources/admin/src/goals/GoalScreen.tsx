@@ -18,7 +18,10 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
 import { CheckRow } from '../shell/CheckRow';
-import { GallerySkeleton } from '../builder/Gallery';
+import { GallerySkeleton, conversionWords } from '../builder/Gallery';
+import { conversionFor, otherSideOf, convertedFor, type CaptureChoice } from '../builder/structure/captureConversion';
+import { shopNowLink } from '../builder/structure/captureWording';
+import type { Template } from '@renderer/types';
 import { TemplateCard } from '../builder/TemplateCard';
 import { getRules, type RuleVocabulary } from '../builder/api';
 import { EmptyState } from '../shell/EmptyState';
@@ -106,6 +109,12 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   const [playbooks, setPlaybooks] = useState<Loadable<PlaybookEntry[]>>(LOADING);
   const previewEntries = playbooks.status === 'ready' ? playbooks.data : [];
   const previews = useSetupPreviews(goal?.id ?? '', previewEntries);
+  // Setups made for another Goal that fit this one once the form switch
+  // converts them: an offer for a list, a signup for an offer (ADR 0163).
+  const source = goal && goals.status === 'ready' ? otherSideOf(goal, goals.data) : null;
+  const convertTo = goal && source ? conversionFor(goal.outcome, { act: source.outcome.action, captures: source.outcome.capture_any_of }) : null;
+  const [otherSide, setOtherSide] = useState<PlaybookEntry[]>([]);
+  const otherSidePreviews = useSetupPreviews(source?.id ?? '', otherSide);
   const [vocabulary, setVocabulary] = useState<Loadable<RuleVocabulary>>(LOADING);
   const [goalsRetry, setGoalsRetry] = useState(0);
   const [playbooksRetry, setPlaybooksRetry] = useState(0);
@@ -115,7 +124,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   // A setup that changed or left the library since it was previewed can only be reloaded, never retried.
   const [staleSetup, setStaleSetup] = useState(false);
   const [starting, setStarting] = useState<string | null>(null);
-  const lastStart = useRef<{ playbookId?: string; goalId?: string }>({});
+  const lastStart = useRef<{ playbookId?: string; goalId?: string; convert?: CaptureChoice }>({});
   const active = useRef(false);
   const operation = useRef(0);
   const busy = useRef(false);
@@ -157,6 +166,15 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
   }, [goal, playbooksRetry]);
 
   useEffect(() => {
+    if (!source) { setOtherSide([]); return; }
+    let current = true;
+    // Optional: a failed read leaves the group out rather than the page in error.
+    void listPlaybooks(source.id).then((entries) => { if (current) setOtherSide(entries.filter(entry => (entry.availability ?? 'ready') === 'ready')); })
+      .catch(() => { if (current) setOtherSide([]); });
+    return () => { current = false; };
+  }, [source?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- the Goal's id is the whole of the question
+
+  useEffect(() => {
     let current = true;
     setVocabulary(LOADING);
     void getRules().then((rules) => { if (current) setVocabulary(ready(rules)); })
@@ -177,7 +195,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     setCreateUnconfirmed(false);
   };
 
-  const start = async (playbookId?: string, goalId?: string) => {
+  const start = async (playbookId?: string, goalId?: string, convert?: CaptureChoice) => {
     // The ref closes the same-tick double-click gap before React disables UI.
     if (goal === null || busy.current || createUnconfirmed) return;
     const targetGoal = goalId ? goals.status === 'ready' ? goals.data.find(entry => entry.id === goalId) : undefined : goal;
@@ -188,7 +206,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     const choice = previewEntries.find(entry => entry.id === playbookId);
     if (choice?.availability && choice.availability !== 'ready') return;
     busy.current = true;
-    lastStart.current = { playbookId, goalId };
+    lastStart.current = { playbookId, goalId, convert };
     const request = ++operation.current;
     setStarting(playbookId ?? 'scratch');
     setError(null);
@@ -196,9 +214,14 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     setStaleSetup(false);
     let creating = false;
     try {
-      const selected = previewEntries.find(entry => entry.id === playbookId);
-      const prepared = selected && previews.previews.get(selected.id);
-      const filled = selected?.revision ? await prefill(targetGoal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(targetGoal.id, playbookId);
+      // The other side's setups are checked against their own revisions too.
+      const selected = (convert ? otherSide : previewEntries).find(entry => entry.id === playbookId);
+      const prepared = selected && (convert ? otherSidePreviews : previews).previews.get(selected.id);
+      const asSetUp = selected?.revision ? await prefill(targetGoal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(targetGoal.id, playbookId);
+      // Another Goal's setup, converted to fit this one; it keeps this Goal (ADR 0163).
+      const converted = convert && goals.status === 'ready' ? convertedFor(asSetUp.config, goal.id, goals.data, convert, shopNowLink()) : null;
+      if (convert && !converted) throw new Error(__('This setup could not be changed for this goal. Choose another.', 'wconvert'));
+      const filled = converted ? { ...asSetUp, goal: goal.id, config: converted.config } : asSetUp;
       // Started from a linked design with no setup: the server snapshots it on create.
       const prefilled = pinned && !playbookId ? { ...filled, config: { ...filled.config, template_id: pinned.id } } : filled;
       // Leads stay in WConvert until a service is connected (ADR 0133), so
@@ -521,9 +544,29 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
     </Dialog>
     {!inspected && !editorialCollection?.online && error !== null && (createUnconfirmed
       ? <RegionError message={unconfirmed} action={checkCampaigns} />
-      : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId); }} />)}
+      : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId, lastStart.current.convert); }} />)}
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
     {!selectedOccasion && !editorialCollection && !allCollections && <>{setupGallery}{comparisonControls}</>}
+    {!selectedOccasion && !editorialCollection && !allCollections && source && convertTo && otherSide.length > 0 && <section className="wconvert-works-with" aria-labelledby="wconvert-works-with-title">
+      <RegionBody>
+        <h3 id="wconvert-works-with-title" className="wconvert-start-here__title">{__('Works with this goal', 'wconvert')}</h3>
+        <p className="text-note text-muted-foreground">{convertTo === 'none'
+          ? __('Setups made with a form. Using one removes the form, and it keeps your goal.', 'wconvert')
+          : __('Setups made without a form. Using one adds the form, and it keeps your goal.', 'wconvert')}</p>
+        <ul className="wconvert-gallery">{otherSide.slice(0, 6).map(entry => {
+          const shown = otherSidePreviews.previews.get(entry.id) ?? entry;
+          // Drawn as it would be created: with its form added or removed.
+          const drawn = shown.template && goals.status === 'ready'
+            ? convertedFor({ template: shown.template }, goal.id, goals.data, convertTo, shopNowLink())?.config.template as Template | undefined ?? shown.template : shown.template;
+          return <TemplateCard key={entry.id} id={entry.id} name={entry.name} template={drawn} displayType={startingPointDisplayType(entry)}
+            onNear={otherSidePreviews.onNear} loadError={otherSidePreviews.failed.has(entry.id)} onRetry={() => otherSidePreviews.retry(entry.id)}
+            marks={<><Badge variant="outline">{displayTypeLabel(startingPointDisplayType(entry))}</Badge><Badge variant="secondary">{conversionWords(convertTo, goal.outcome).chip}</Badge></>}
+            notes={entry.recommendation || entry.business_types?.map(item => item.label).join(' · ') || undefined}
+            action={(describedBy) => <Button aria-describedby={describedBy} disabled={starting !== null || createUnconfirmed} onClick={() => { void start(entry.id, source.id, convertTo); }}>
+              {starting === entry.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}</Button>} />;
+        })}</ul>
+      </RegionBody>
+    </section>}
     {/* Collections are a second way in, so the featured shelf follows the setups rather than preceding them. */}
     {!selectedOccasion && !editorialCollection && picker.data && (allCollections || showFeatured) && <CollectionShelf matches={allCollections ? relevant : featured} all={allCollections} disabled={starting !== null || picker.saving} onOpen={openCollection} onAll={() => setAllCollections(true)}
       onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); }}
@@ -542,7 +585,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins, occasion: i
         </PickerDialogHeader>
         <PickerDialogBody ref={modalContent}>
           {!inspected && !comparing && editorialCollection?.online && <>
-            {error && (createUnconfirmed ? <RegionError message={unconfirmed} action={checkCampaigns} /> : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId); }} />)}
+            {error && (createUnconfirmed ? <RegionError message={unconfirmed} action={checkCampaigns} /> : <RegionError message={error} onRetry={() => { void start(lastStart.current.playbookId, lastStart.current.goalId, lastStart.current.convert); }} />)}
             {starting !== null && <p role="status">{__('Creating your draft and opening the editor…', 'wconvert')}</p>}
             <OnlineCollection key={editorialCollection.id} collection={editorialCollection} goals={goals.status === 'ready' ? goals.data : []} busy={starting !== null || createUnconfirmed}
               onInstalled={() => { setPlaybooksRetry(value => value + 1); void picker.reload(); }} onUse={(id, goalId) => { void start(id, goalId); }} />

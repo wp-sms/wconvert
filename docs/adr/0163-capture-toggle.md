@@ -2,9 +2,8 @@
 
 Accepted 2026-10-22. Amends 0010, 0020, 0059, 0080, 0085 and 0099.
 
-Delivered in four PRs. §2, the engine behind §1 and §3
-(`builder/structure/captureConversion.ts`), the editor's switch and box, and
-§4 have landed; the gallery's way in arrives last. Issue #322; the approved
+Delivered in four PRs (#324, #325, #327 and the gallery's), with #326
+moving the free-shipping starter to a one-column design. Issue #322; the approved
 prototype is <https://claude.ai/artifact/DJJhMNevHZbXfqMha2DiPs>.
 
 Merchants pick a design for how it looks, then decide whether to show the offer
@@ -36,6 +35,12 @@ the Goal together.
   and consent records are untouched.
 - **Email ↔ phone** swaps the field, the consent wording and, for list Goals, the
   Goal, and clears destinations for the old channel.
+
+In the gallery, a design that fits the Goal once converted is listed with a
+chip ("Email form added", "Form removed") and applied converted; the goal
+picker's step 2 adds "Works with this goal", the other side's setups, created
+under the chosen Goal. A click design taken for Show a message is prepared
+without its counted link.
 
 Quizzes, lead magnets, product blocks, content locks, cart Goals and branching
 journeys are refused with one plain line. A per-design opt-out

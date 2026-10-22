@@ -2,9 +2,9 @@ import { createContext, useContext, type Ref } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { OptionStrip } from '../shell/OptionStrip';
-import type { SwitchOffer } from './structure/captureConversion';
+import type { CaptureChoice, SwitchOffer } from './structure/captureConversion';
 
-export type CaptureChoice = 'none' | 'email' | 'phone';
+export type { CaptureChoice };
 
 /**
  * The form switch, for edits that reach it another way: adding a contact

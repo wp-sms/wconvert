@@ -359,6 +359,54 @@ function simpleShape(tree: TemplateTree): TemplateTree | null {
   return isRefusal(straight) || straight.steps.length !== tree.steps.length ? null : straight;
 }
 
+/** What the switch can make a campaign ask for. */
+export type CaptureChoice = 'none' | ContactChannel;
+
+/**
+ * A design that fits the Goal once the switch converts it, read off its
+ * facets before its tree is loaded (ADR 0163): a click design for a Goal that
+ * collects email or phone, a form for one that does not.
+ */
+export function conversionFor(outcome: GoalEntry['outcome'] | undefined, facets: { readonly act: string | null; readonly captures: readonly string[] }): CaptureChoice | null {
+  if (!outcome) return null;
+  const channels = outcome.capture_any_of.filter((field): field is ContactChannel => field === 'email' || field === 'phone');
+  if (outcome.action === 'submit' && outcome.destination_type === null && channels.length > 0 && facets.act === 'click') {
+    return outcome.audience_channel === 'phone' || !channels.includes('email') ? 'phone' : 'email';
+  }
+  const offers = (outcome.action === 'click' && outcome.link_required) || outcome.action === 'none';
+  return offers && facets.act === 'submit' && facets.captures.some(field => field === 'email' || field === 'phone') ? 'none' : null;
+}
+
+/**
+ * The Goal whose setups fit `goal` once converted: an offer's for a Goal that
+ * collects contact details, an email list's for one that counts clicks or
+ * nothing. Null where the switch has nothing to offer the Goal.
+ */
+export function otherSideOf(goal: GoalEntry, goals: readonly GoalEntry[]): GoalEntry | null {
+  const ready = goals.filter(entry => entry.availability === 'ready' && entry.id !== goal.id);
+  const outcome = goal.outcome;
+  if (outcome.action === 'submit' && outcome.destination_type === null && outcome.capture_any_of.some(field => field === 'email' || field === 'phone')) {
+    return ready.find(entry => entry.outcome.action === 'click' && entry.outcome.link_required) ?? null;
+  }
+  if ((outcome.action === 'click' && outcome.link_required) || outcome.action === 'none') {
+    return ready.find(entry => entry.outcome.action === 'submit' && entry.outcome.audience_channel === 'email' && entry.outcome.destination_type === null) ?? null;
+  }
+  return null;
+}
+
+/**
+ * A draft converted to fit `goal`, or null where it cannot. Taken without
+ * its form for a Goal that counts clicks, it keeps a "Shop now" button.
+ */
+export function convertedFor(config: Config, goal: string, goals: readonly GoalEntry[], choice: CaptureChoice, shop: OfferLink | undefined): Conversion | null {
+  const draft = { config, goal };
+  const plain = convertCapture(draft, choice === 'none' ? { capture: 'none' } : { capture: choice }, { goals });
+  if (!('reason' in plain) && plain.goal === goal) return plain;
+  if (choice !== 'none' || !shop) return null;
+  const linked = convertCapture(draft, { capture: 'none', link: shop }, { goals });
+  return !('reason' in linked) && linked.goal === goal ? linked : null;
+}
+
 export type SwitchOffer = { readonly offered: true; readonly state: 'none' | ContactChannel } | { readonly offered: false; readonly reason: string };
 
 /**

@@ -36,6 +36,10 @@ save as drafts. Show all designs remains available, and Templates acquire no Goa
 tags. Existing unrelated structural, binding and A/B compatibility checks remain.
 **Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
 the Goal is a compact footer control, with metric detail on demand.
+*Amended by [ADR 0163](0163-capture-toggle.md): this said fit uses the
+action/capture facets alone. The gallery and goal picker also list a design or
+setup that fits once the form switch adds or removes its form, with a chip
+saying so, and apply it converted under the campaign's Goal.*
 **Discovery amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** Goal-first setup browsing adds grouped use cases and reviewed collections. Changing layout retains Goal fit, content transfer and Show all designs; event and collection changes never rewrite saved campaigns. Full setup
 facts are optional; All designs is a toolbar choice. Publication checks are unchanged.
 

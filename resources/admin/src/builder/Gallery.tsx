@@ -10,6 +10,10 @@ import { CompareSelection } from '../discovery/CompareSelection';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
 import type { ConvertingAct } from './structure/catalogue';
+import type { GoalEntry } from '../goals/api';
+import { fitsOutcome } from '../goals/outcome';
+import { captureSwitch, conversionFor, convertedFor, type CaptureChoice, type Conversion } from './structure/captureConversion';
+import { shopNowLink } from './structure/captureWording';
 import type { Template } from '@renderer/types';
 
 /** Design grid. Goal fit is suggested by derived facets, never authored tags.
@@ -67,6 +71,51 @@ export interface Fit {
    * counted.
    */
   readonly act: ConvertingAct;
+  /**
+   * The campaign's Goal, the registry and its config, where the form switch may
+   * convert a design to fit (ADR 0163). Memoised by the caller: a design's
+   * conversion is computed from it.
+   */
+  readonly capture?: { readonly goal: string; readonly goals: readonly GoalEntry[]; readonly config: Readonly<Record<string, unknown>> };
+}
+
+/**
+ * What the form switch would do to this design so it fits the Goal, or null
+ * where it already fits or cannot be converted. Read off the facets until the
+ * design's tree is known, then asked of the switch itself, so a card never
+ * promises a conversion the switch refuses. Only a design whose tree is on
+ * this site: a hosted one is converted once installed.
+ */
+export function conversionOf(entry: TemplateIndexEntry, fit: Fit, tree?: Template): CaptureChoice | null {
+  if (!fit.capture || !fit.outcome || entry.availability !== 'ready' || entry.remote !== undefined || fitsOutcome(fit.outcome, entry.facets)) return null;
+  const choice = conversionFor(fit.outcome, entry.facets);
+  if (choice === null || tree === undefined) return choice;
+  return captureSwitch({ template: tree }, fit.capture.goal, fit.capture.goals).offered ? choice : null;
+}
+
+/** The design converted for the campaign, with its config, or null where it is taken as it is. */
+export function convertedDesign(entry: TemplateIndexEntry, fit: Fit, tree: Template | undefined): Conversion | null {
+  const choice = tree ? conversionOf(entry, fit, tree) : null;
+  return choice && tree && fit.capture
+    ? convertedFor({ ...fit.capture.config, template: tree }, fit.capture.goal, fit.capture.goals, choice, shopNowLink()) : null;
+}
+
+/** The design as it will be once converted: what it collects and what a visitor does. */
+export function asConverted(entry: TemplateIndexEntry, fit: Fit, tree?: Template): TemplateIndexEntry {
+  const choice = conversionOf(entry, fit, tree);
+  if (choice === null) return entry;
+  return { ...entry, facets: choice === 'none'
+    ? { ...entry.facets, act: fit.outcome?.action === 'none' ? null : 'click', captures: [], asks_consent: false }
+    : { ...entry.facets, act: 'submit', captures: [choice], asks_consent: fit.outcome?.audience_channel !== null } };
+}
+
+/** A converted design's chip on its card and the action that applies it. */
+export function conversionWords(choice: CaptureChoice, outcome: GoalEntry['outcome'] | undefined): { readonly chip: string; readonly action: string } {
+  if (choice === 'none') return { chip: __('Form removed', 'wconvert'), action: __('Use without form', 'wconvert') };
+  if (!outcome?.audience_channel) return { chip: __('Enquiry form added', 'wconvert'), action: __('Use with enquiry form', 'wconvert') };
+  return choice === 'phone'
+    ? { chip: __('Phone form added', 'wconvert'), action: __('Use with phone form', 'wconvert') }
+    : { chip: __('Email form added', 'wconvert'), action: __('Use with email form', 'wconvert') };
 }
 
 /**
@@ -141,7 +190,10 @@ export function refusalFor(entry: TemplateIndexEntry, fit: Fit): string | null {
  * It is distinct from a refusal: a reason dims the render and says the design
  * cannot be applied. A change in what it counts still permits the switch.
  */
-export function actChangeOf(entry: TemplateIndexEntry, fit: Fit): string | null {
+export function actChangeOf(entry: TemplateIndexEntry, fit: Fit, tree?: Template): string | null {
+  // Converted on the way in by the form switch, it fits, so there is no change
+  // to warn about: its chip says what happens (ADR 0163).
+  if (conversionOf(entry, fit, tree) !== null) return null;
   if (fit.outcome && (entry.facets.act !== fit.outcome.action || (fit.outcome.capture_any_of.length > 0
     && !fit.outcome.capture_any_of.some((field) => entry.facets.captures.includes(field))))) {
     return fit.outcome.requirement;
@@ -215,7 +267,11 @@ export function Gallery({
           does not have is not one anybody is switching to — two sentences
           about one card is what ADR 0042 rule 2 forbids.
         */
-        const changes = locked || refused !== null ? null : actChangeOf(entry, fit);
+        const tree = trees.get(entry.id);
+        const changes = locked || refused !== null ? null : actChangeOf(entry, fit, tree);
+        const conversion = locked ? null : conversionOf(entry, fit, tree);
+        // The card draws the design as it would be used.
+        const drawn = conversion ? convertedDesign(entry, fit, tree)?.config.template as Template | undefined ?? tree : tree;
         const fields = entry.facets.captures.map((field) =>
           labels.fields?.[field] ?? nameOf(labels.facetValues, `captures.${field}`),
         );
@@ -234,7 +290,7 @@ export function Gallery({
             key={entry.id}
             id={entry.id}
             name={entry.name}
-            template={trees.get(entry.id)}
+            template={drawn}
             current={inUse}
             reason={refused}
             // Browse cards describe their fields; the detail explains the
@@ -257,6 +313,7 @@ export function Gallery({
             saveAction={onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
             marks={<div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
+              {conversion !== null && <Badge variant="secondary">{conversionWords(conversion, fit.outcome).chip}</Badge>}
 
               {locked ? (
                 <Badge variant="secondary">

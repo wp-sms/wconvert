@@ -738,6 +738,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       .finally(() => setBusy(false));
   };
   const requestCapture = switchOffer?.offered && canChangeGoal ? setCapturing : null;
+  // What the gallery converts designs against, kept stable between renders.
+  const captureFit = useMemo(() => goal && goalList && config ? { goal, goals: goalList, config } : undefined, [goal, goalList, config]);
+  const goalOutcome = entryOfGoal?.outcome;
+  const anyBound = bound.length > 0;
+  const pickerFit = useMemo(() => ({ outcome: goalOutcome, bound: anyBound, sibling: siblingAct, act, capture: captureFit }),
+    [goalOutcome, anyBound, siblingAct, act, captureFit]);
   const formSwitch = switchOffer && <CaptureSwitch state={formState} offer={switchOffer} copy={!canChangeGoal} published={publishedAt !== null} sectionRef={captureRow}
     onChoose={choice => { if (choice !== formState) setCapturing(choice); }} />;
 
@@ -1214,12 +1220,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         chosen={templateId}
         hasCurrentDesign={template !== undefined}
         contentLock={config.content_lock != null}
-        fit={{
-          outcome: entryOfGoal?.outcome,
-          bound: bound.length > 0,
-          sibling: siblingAct,
-          act,
-        }}
+        fit={pickerFit}
         goalLabel={entryOfGoal?.label}
         busy={busy}
         onNear={want}
@@ -1245,6 +1246,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           }
 
           if (config.content_lock != null && !contentLockDesignCompatible(chosenDesign.display_type, prepared)) changes.content_lock = null;
+          // A design taken without its form has no leads to send (ADR 0163).
+          if (captureState(prepared.tree) === 'none') { changes.destinations = []; changes.capture_mode = undefined; }
           edit(changes);
           setSelection(null);
           setStep(0);

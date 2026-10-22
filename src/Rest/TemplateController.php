@@ -285,6 +285,8 @@ final class TemplateController implements RestController
         ], is_string($source) ? $source : null);
 
         $goal = Goal::tryFrom((string) $request->get_param('goal'));
+        // A message counts nothing, so a design taken for one leaves its counted link behind (ADR 0163).
+        if ($goal !== null) $config['template']['tree'] = $goal->outcome()->fitted($config['template']['tree'] ?? []);
         if ($goal !== null && $this->privacyGuidance !== null) {
             $config['template']['tree'] = $this->privacyGuidance->treeFor(
                 $config['template']['tree'] ?? [],

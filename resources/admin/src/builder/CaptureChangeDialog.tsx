@@ -242,7 +242,7 @@ export function CaptureChangeDialog({ open, onOpenChange, before, target, conver
         </>}
       </AdminDialogBody>
       <AdminDialogFooter note={mode === 'preview' ? undefined : copy ? __('Nothing is published automatically.', 'wconvert') : __('Undo reverts all of this.', 'wconvert')} error={error}>
-        <Button type="button" variant="outline" disabled={saving} onClick={() => close(false)}>{mode === 'preview' ? __('Close', 'wconvert') : __('Cancel', 'wconvert')}</Button>
+        <Button type="button" variant="outline" disabled={saving} onClick={() => close(false)}>{mode === 'preview' ? __('Done', 'wconvert') : __('Cancel', 'wconvert')}</Button>
         {mode !== 'preview' && <Button type="button" disabled={saving || 'reason' in result || missingLink} onClick={confirm}>{confirmLabel}</Button>}
       </AdminDialogFooter>
     </AdminDialogContent>

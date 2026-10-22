@@ -410,6 +410,12 @@ final class OptinController implements RestController
 
 
 
+        // A message counts nothing, so a design created for one leaves its
+        // counted link behind, however the design arrived (ADR 0163).
+        if (is_array($normalized['template']['tree'] ?? null)) {
+            $normalized['template']['tree'] = $goal->outcome()->fitted($normalized['template']['tree']);
+        }
+
         // No arm check on a create: `POST /optins` writes no `parent_id`, and
         // {@see OptinRepository::createVariant()} makes an arm by COPYING its
         // parent's config — so an arm is born comparable and only an edit can
