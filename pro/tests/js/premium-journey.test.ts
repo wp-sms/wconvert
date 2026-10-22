@@ -157,6 +157,27 @@ it('starts at the graph entry and submits after an unordered branch and merge', 
   expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n2: 'repair' });
 });
 
+it('fills a contact-first graph’s held code from the signup reply', async () => {
+  const base = structuredClone((service as Template).tree);
+  const received = structuredClone(base.steps[3]);
+  (received.content as unknown as { children: unknown[] }).children.push({ type: 'code', hidden: true });
+  const tree = { ...base, steps: [base.steps[2], received, base.steps[1], base.steps[0]], graph: {
+    entry: 'service', edges: [
+      { id: 'start', from: 'service', to: 'repair', kind: 'default' as const },
+      { id: 'repair-next', from: 'repair', to: 'contact', kind: 'default' as const },
+      { id: 'saved', from: 'contact', to: 'received', kind: 'default' as const },
+    ],
+  } };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead', reward: { received: [{ text: 'THANKS15' }] } }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(service as Template), tree });
+  journey.choose('repair'); journey.act('next'); journey.act('next');
+  journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  journey.act('submit');
+  await vi.waitFor(() => expect(journey.root().querySelector('.wc-code')?.textContent).toBe('THANKS15'));
+});
+
 it('keeps a relevant follow-up and contact draft after changing multiple interests', async () => {
   const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
     .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });

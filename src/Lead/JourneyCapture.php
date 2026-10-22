@@ -21,7 +21,7 @@ final class JourneyCapture
     /** @param array{receipt: string, expires: int} $grant
      * @param array<string, mixed> $tree
      * @param array{purpose: string, destination_ids: list<string>} $setting
-     * @return array{id: string, submission: string, first: bool, replay: bool}
+     * @return array{id: string, submission: string, first: bool, replay: bool, reward?: array<string, list<array<string, mixed>|null>>}
      */
     public function accept(string $optinId, string $contract, array $grant, array $tree, string $submissionId, Submission $submitted, array $setting): array
     {
@@ -122,6 +122,22 @@ final class JourneyCapture
                 }
             }
         }
-        return $result;
+        return self::rewarded($result, $tree);
+    }
+
+    /**
+     * The primary submission's reply, and its replay, carry the codes and
+     * thank-you links the page held back (ADR 0164). Read from the published
+     * tree on every request, so nothing is stored.
+     *
+     * @param array{id: string, submission: string, first: bool, replay: bool} $result
+     * @param array<string, mixed> $tree
+     * @return array{id: string, submission: string, first: bool, replay: bool, reward?: array<string, list<array<string, mixed>|null>>}
+     */
+    private static function rewarded(array $result, array $tree): array
+    {
+        $reward = $result['first'] ? \WConvert\Template\HeldReward::of($tree) : [];
+
+        return $reward === [] ? $result : $result + ['reward' => $reward];
     }
 }

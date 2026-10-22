@@ -152,3 +152,32 @@ it('keeps an offer reachable after removing SMS and sends only the email signup'
   expect(fetcher).toHaveBeenCalledTimes(2);
   expect(captured).toHaveBeenCalledOnce();
 });
+
+it.each([['skips', 'skip'], ['completes', 'submit']])('shows the code and link the signup earned when the visitor %s SMS', async (_, last) => {
+  const template = structuredClone(source) as Template;
+  (template.tree.steps[2].content as unknown as { children: unknown[] }).children.push(
+    { type: 'code', hidden: true, copy: true, apply_label: 'Apply' }, { type: 'followup', hidden: true, label: 'Shop now' });
+  const reward = { received: [{ text: 'FRIDAY25', apply_href: 'https://example.com/cart/?coupon=FRIDAY25' }, { href: 'https://example.com/shop' }] };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead', reward }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
+  const { mounted } = setup(template);
+  mounted.root!.querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  mounted.root!.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true;
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="submit"]')!.click(); await settle();
+  if (last === 'submit') {
+    mounted.root!.querySelector<HTMLInputElement>('[name="phone"]')!.value = '+12025551234';
+    mounted.root!.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true;
+  }
+  mounted.root!.querySelector<HTMLButtonElement>(`[data-action="${last}"]`)!.click(); await settle();
+  const root = mounted.root!;
+  expect(root.textContent).toContain('Details received');
+  expect(root.querySelector('.wc-code')!.textContent).toBe('FRIDAY25');
+  expect([...root.querySelectorAll<HTMLAnchorElement>('a.wc-button')].map(anchor => anchor.href))
+    .toEqual(['https://example.com/cart/?coupon=FRIDAY25', 'https://example.com/shop']);
+  root.querySelector<HTMLButtonElement>('.wc-code ~ button')!.click(); await settle();
+  expect(writeText).toHaveBeenCalledWith('FRIDAY25');
+});

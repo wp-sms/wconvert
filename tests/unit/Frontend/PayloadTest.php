@@ -311,6 +311,29 @@ final class PayloadTest extends TestCase
     }
 
     /**
+     * A signup's code and thank-you links arrive with the capture reply
+     * (ADR 0164). The page keeps the screen's words and drops the values;
+     * a preview, which has no capture to return them, keeps the lot.
+     */
+    public function testASignupsCodeAndLinksAreHeldOutOfThePageButNotOutOfAPreview(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true)['tree'];
+        $tree['steps'][2]['content']['children'][] = ['type' => 'code', 'text' => 'FRIDAY25', 'apply_href' => 'https://example.test/cart/?coupon=FRIDAY25'];
+        $tree['steps'][2]['content']['children'][] = ['type' => 'followup', 'label' => 'Download the guide', 'href' => 'https://example.test/guide.pdf'];
+        $entries = [['id' => '01A', 'template' => ['tree' => $tree, 'tokens' => []]]];
+
+        $page = PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE);
+        $preview = PayloadTag::render($entries, '', '', null, self::ZONE);
+
+        foreach (['FRIDAY25', '?coupon=', 'guide.pdf'] as $held) {
+            $this->assertStringNotContainsString($held, $page);
+            $this->assertStringContainsString($held, $preview);
+        }
+        $this->assertStringContainsString('Details received', $page);
+        $this->assertStringContainsString('Download the guide', $page);
+    }
+
+    /**
      * No matching Optin means no tag — not an empty one. An Optin that does
      * not match the current page costs the page nothing (ADR 0003).
      */

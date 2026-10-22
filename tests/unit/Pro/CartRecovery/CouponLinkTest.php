@@ -99,4 +99,13 @@ final class CouponLinkTest extends TestCase
 
         $this->assertSame(['bf30' => true], CouponLink::shownCodes($set, $servable, $now));
     }
+
+    /** The page holds a signup's code back (ADR 0164); the stored set the link reads still has it. */
+    public function testACodeHeldUntilSignupStillApplies(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/journey-email-then-sms.json'), true)['tree'];
+        $tree['steps'][2]['content']['children'][] = ['type' => 'code', 'text' => 'FRIDAY25'];
+
+        $this->assertSame(['friday25' => true], CouponLink::shownCodes([['id' => 'SIGNUP', 'payload' => ['template' => ['tree' => $tree]]]], ['SIGNUP' => true], 0));
+    }
 }
