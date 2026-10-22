@@ -2736,6 +2736,246 @@
           "note": "Baseline of the reviewed Halloween prototype library design; adding campaign setups and collection metadata."
         }
       ]
+    },
+    {
+      "id": "bf-acid-markdown",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "61444f728d50a50925d5966ea54783ee9d23dff0fc0a8f4bc124d3eaf90311b3",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-early-list",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "35c7ee62d759a0836618b854114cc26302aa6b144794373424fcbc6a3bd58758",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-final-markdown",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "cdf8fafed6728f2b17d7449af0f2aab7e133f0548212a68e8414edc1dbdfc62b",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-midnight-atelier",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "4e37960a61c7ab1576ef9c7ad915ec1bf0f384d1ee75a58246d0b0c3da9b599a",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-weekend-edition",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "5fe360d54b41c096aa2c0bfb1aaae76ddb2c857dd24006dcf97c251ce20e5787",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-chrome-hour",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "873af5371bfbaea84cbc75d2f23b575ee03f470ce94f284af73bc4b2b8a596f4",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-cyber-club",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "cca7b83e41b72de125f5367d2269b460994351ee1ba1ac875ea79a7d4cc97a7c",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "f91206248d607183793545adf0f604135dcafac8147a8226d1f05a66aaf30c00",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-electric-aisle",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "704f585af186b9c45de97d369a5df423b8f84c161ca5685b35071b77e49ad1d8",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-system-upgrade",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "9f777e6eebdaf9db915fd33700782e4909ab66f2c051275b0ddc66c3c2efe51e",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-blackout-strip",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "e1248081147f6562181fafb9ccde03f496b3bd6dae6083168d88668f7bea247e",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-closing-time",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "b423da94f2cb2d7d84ee2af277a01f6fb676a6a91b12c6992ba368fa6bea6107",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-good-deal-receipt",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "48f81b6e323d7fbf3c046a3ec033bcd73edcd4a229036a3b2587b39aa45a7822",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-little-black-gift",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "0843e6935525fa64cc6a4bf3f24c44ea8a47809491a70e26e466d4601054f907",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-velvet-rope",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "a2ac2c97b512767ecddc2fce7b8454ec708f5e6a857b91e882dfa590f1f69b23",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "c6d6cc21a082e878077b84cddd013b066ef9db04abf7e57fe697f7bd36017fd5",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-command-save",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "35de6c634f59c9649b196817a2ba87c115274275de33984ad2bb23fcb9fc2733",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "f9110d32d7ecb8436168c07d46ccb70498d15fbaa6aa4e66f1f403ab3aa3c289",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-night-shift",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "447f96f0522c8b9de3cae5dffa149b7c1d15ca1a51175f7e7b714a6574ab9fa2",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
+    },
+    {
+      "id": "cm-pixel-drop",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-22",
+          "revision": "846fd21b9b76d6f9af02534751a5fc5b348fbb6a1053e4f72fe868ff0c4ce1b7",
+          "note": "Native editable adaptation of the approved shopping-weekend prototype."
+        }
+      ]
     }
   ]
 }

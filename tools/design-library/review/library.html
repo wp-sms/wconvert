@@ -75,7 +75,7 @@ function measure(root,width,displayType){
  const text=leaves.filter(e=>e.textContent.trim()&&!e.matches('input,select,textarea')&&getComputedStyle(e).position!=='absolute');
  const minText=text.length?Math.round(Math.min(...text.map(e=>parseFloat(getComputedStyle(e).fontSize)))*10)/10:null;
  const height=Math.ceil(root.scrollHeight);const viewportHeight={320:568,390:844,768:1024,1440:900}[width];
- const textRatios=text.map(el=>textContrast(el)).filter(Boolean);for(const input of inputs){for(const [kind,color] of [['Input text',getComputedStyle(input).color],['Field placeholder',getComputedStyle(input,'::placeholder').color]]){const item=textContrast(input,color);if(item)textRatios.push({...item,text:kind+': '+(input.placeholder||input.name)})}}
+ const textRatios=text.map(el=>textContrast(el)).filter(Boolean);for(const input of inputs){for(const [kind,color] of [['Input text',getComputedStyle(input).color],['Field placeholder',getComputedStyle(input,'::placeholder').color]]){if(kind==='Field placeholder'&&!input.placeholder)continue;const item=textContrast(input,color);if(item)textRatios.push({...item,text:kind+': '+(input.placeholder||input.name)})}}
  const fieldRatios=inputs.map(fieldContrast).filter(Boolean),lowContrast=textRatios.filter(c=>c.ratio<c.minimum),lowFieldContrast=fieldRatios.filter(c=>c.ratio<c.minimum);
  return {composition,lowContrast,lowFieldContrast,textRatios,fieldRatios,width:Math.round(root.getBoundingClientRect().width),height,overflow:[...new Set(overflow)],minControl,closeTarget,closeMinimum,inputSize,minText,scroll:height>viewportHeight*.85};
 }

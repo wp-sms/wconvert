@@ -1,3 +1,4 @@
+import { scheduledMount } from '@loader/scheduled-mount';
 import { observePresentation } from '../../analytics/loader/bridge';
 import { campaignLifecycle } from '@loader/events';
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
@@ -66,7 +67,7 @@ export const proPresenter: Presenter = {
       return;
     }
 
-    const mounted = (entry.display_type === 'fullscreen' ? mountFullscreen : mountPopover)({
+    const mounted = scheduledMount(entry.display_type === 'fullscreen' ? mountFullscreen : mountPopover, {
       ...campaignLifecycle(entry),
       displayType: entry.display_type,
       placement: entry.placement,

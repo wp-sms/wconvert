@@ -1,0 +1,334 @@
+{
+  "id": "cm-cyber-club",
+  "name": "The cyber club",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ded1ef",
+    "fg": "#392447",
+    "accent": "#392447",
+    "accent-fg": "#f6e9ff",
+    "muted": "#6d527e",
+    "border": "#9987a6",
+    "input-bg": "#ffffff",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "60rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Signup",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "THE CYBER MONDAY CLUB",
+                  "role": "eyebrow",
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "text": "A very good day\nto be on the list.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.7rem",
+                    "heading-weight": "400",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif"
+                  },
+                  "id": "n2",
+                  "narrow": {
+                    "heading-size": "2rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "text": "YOUR NEXT FAVOURITE",
+                      "role": "eyebrow",
+                      "id": "n3"
+                    },
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "2.6rem"
+                      },
+                      "text": "25%",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                        "heading-weight": "400",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif"
+                      },
+                      "id": "n4"
+                    },
+                    {
+                      "type": "text",
+                      "text": "A little less. A lot to love.",
+                      "role": "body",
+                      "id": "n5"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "2rem",
+                    "gap": "1rem",
+                    "radius": "2rem",
+                    "align": "center",
+                    "bg": "accent-fg",
+                    "fg": "accent",
+                    "muted": "accent"
+                  },
+                  "narrow": {
+                    "pad": "1.5rem",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "heading",
+                  "text": "Make yourself\nat home.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.6rem",
+                    "heading-weight": "400",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif"
+                  },
+                  "id": "n6",
+                  "narrow": {
+                    "heading-size": "2.15rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Join our email list and reveal 25% off selected pieces.",
+                  "role": "body",
+                  "id": "n7"
+                },
+                {
+                  "type": "field",
+                  "name": "email",
+                  "label": "Email address",
+                  "required": true,
+                  "id": "n8",
+                  "tokens": {
+                    "muted": "fg",
+                    "border": "fg",
+                    "input-bg": "bg"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "hidden": true,
+                  "text": "Email me offers and new arrivals. I can unsubscribe anytime.",
+                  "role": "consent_text",
+                  "id": "n9"
+                },
+                {
+                  "type": "button",
+                  "label": "Count me in",
+                  "action": "submit",
+                  "submission": "primary",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n10"
+                },
+                {
+                  "type": "text",
+                  "text": "Offers by email. Unsubscribe anytime. %s",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n11",
+                  "link": {
+                    "label": "Privacy Policy"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ],
+          "basis": "20rem",
+          "ratio": "0.5",
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "icon",
+              "name": "check",
+              "id": "n12"
+            },
+            {
+              "type": "eyebrow",
+              "text": "YOUR OFFER",
+              "role": "eyebrow",
+              "id": "n13"
+            },
+            {
+              "type": "heading",
+              "text": "Request received.",
+              "role": "success_headline",
+              "tokens": {
+                "heading-size": "2.5rem",
+                "heading-font": "\"Instrument Serif\", Georgia, serif",
+                "heading-weight": "400"
+              },
+              "id": "n14",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Thanks for requesting the offer. Here is your code.",
+              "role": "success_body",
+              "id": "n15"
+            },
+            {
+              "type": "code",
+              "copy": true,
+              "copy_label": "Copy code",
+              "copied_label": "Copied",
+              "copy_failed_label": "Select and copy this code",
+              "text": "CLUB25",
+              "role": "code_value",
+              "tokens": {
+                "text-size": ".875rem",
+                "radius": ".3rem"
+              },
+              "id": "n16"
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n17"
+            },
+            {
+              "type": "button",
+              "label": "Continue browsing",
+              "action": "close",
+              "role": "close_label",
+              "id": "n18"
+            }
+          ],
+          "tokens": {
+            "pad": "3.5rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0",
+            "align": "center"
+          },
+          "narrow": {
+            "pad": "1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n8"
+        ],
+        "consents": [
+          "n9"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

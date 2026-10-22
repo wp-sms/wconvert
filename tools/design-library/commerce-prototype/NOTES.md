@@ -1,5 +1,10 @@
 # The shopping weekend — throwaway visual prototype
 
+Production update, 22 October 2026: all twenty concepts were approved and authored as
+native Templates with matching Playbooks. Their final mobile, editor and WordPress
+evidence is in [the native review](../../../docs/reviews/shopping-weekend-2026-10-22/review.md).
+This prototype remains a reference for the original design intent.
+
 Question: which Black Friday and Cyber Monday compositions should become WConvert library designs?
 
 Twenty distinct concepts across all five supported display formats, on one review route with a URL-driven switcher. This is a visual exploration under the existing visitor-design tooling, excluded from plugin distributions by `/tools` in `.distignore`. It deliberately does not register designs, publish collections, create Playbooks, change the renderer, or save submissions.

@@ -1,0 +1,287 @@
+{
+  "id": "bf-early-list",
+  "name": "The early list",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#571c31",
+    "fg": "#fff0dd",
+    "accent": "#fff0dd",
+    "accent-fg": "#571c31",
+    "muted": "#f0c8c4",
+    "border": "#c39d92",
+    "input-bg": "#ffffff",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "29rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "YOU\u2019RE ON THE INVITE LIST",
+                  "role": "eyebrow",
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "text": "Black Friday.\nBefore the crowd.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.8rem",
+                    "heading-weight": "400",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif"
+                  },
+                  "id": "n2",
+                  "narrow": {
+                    "heading-size": "2.15rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Join the early list. Get 25% off selected favourites.",
+                  "role": "body",
+                  "id": "n3"
+                },
+                {
+                  "type": "badge",
+                  "text": "FIRST IN LINE",
+                  "role": "badge",
+                  "id": "n4"
+                }
+              ],
+              "tokens": {
+                "pad": "3.75rem 2rem 2rem",
+                "gap": "1rem",
+                "radius": "0",
+                "align": "center"
+              },
+              "narrow": {
+                "pad": "3.5rem 1.5rem 1.5rem",
+                "gap": ".85rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "YOUR EARLY-ACCESS PASS",
+                  "role": "eyebrow",
+                  "id": "n5"
+                },
+                {
+                  "type": "field",
+                  "name": "email",
+                  "label": "Email address",
+                  "required": true,
+                  "id": "n6",
+                  "tokens": {
+                    "muted": "fg",
+                    "border": "fg",
+                    "input-bg": "bg"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "hidden": true,
+                  "text": "Email me offers and new arrivals. I can unsubscribe anytime.",
+                  "role": "consent_text",
+                  "id": "n7"
+                },
+                {
+                  "type": "button",
+                  "label": "Get my early-access code",
+                  "action": "submit",
+                  "submission": "primary",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal",
+                    "accent": "fg",
+                    "accent-fg": "bg"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "text",
+                  "text": "Offers by email. Unsubscribe anytime. %s",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n9",
+                  "link": {
+                    "label": "Privacy Policy"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "icon",
+              "name": "check",
+              "id": "n10"
+            },
+            {
+              "type": "eyebrow",
+              "text": "YOUR OFFER",
+              "role": "eyebrow",
+              "id": "n11"
+            },
+            {
+              "type": "heading",
+              "text": "Request received.",
+              "role": "success_headline",
+              "tokens": {
+                "heading-size": "2.5rem",
+                "heading-font": "\"Instrument Serif\", Georgia, serif",
+                "heading-weight": "400"
+              },
+              "id": "n12",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Thanks for requesting the offer. Here is your code.",
+              "role": "success_body",
+              "id": "n13"
+            },
+            {
+              "type": "code",
+              "copy": true,
+              "copy_label": "Copy code",
+              "copied_label": "Copied",
+              "copy_failed_label": "Select and copy this code",
+              "text": "EARLY25",
+              "role": "code_value",
+              "tokens": {
+                "text-size": ".875rem",
+                "radius": ".3rem"
+              },
+              "id": "n14"
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n15"
+            },
+            {
+              "type": "button",
+              "label": "Continue browsing",
+              "action": "close",
+              "role": "close_label",
+              "id": "n16"
+            }
+          ],
+          "tokens": {
+            "pad": "3.5rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0",
+            "align": "center"
+          },
+          "narrow": {
+            "pad": "1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n6"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

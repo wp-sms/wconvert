@@ -54,7 +54,10 @@ not.
 Binding them makes the zombie countdown **unexpressible** rather than a setting
 somebody can misconfigure — the same move as `overlayDone` being set on show.
 At `ends_at` the Optin leaves its window, shows nothing and records no
-Impression, so the deadline gets a real consequence for free.
+Impression. Live offer-only presentations also close at that deadline without
+recording a visitor dismissal. A capture already open remains available to
+finish, as required by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md); expiry prevents its next opening.
+Editor previews do not inherit the live expiry lifecycle.
 
 ## What that buys, mechanically
 

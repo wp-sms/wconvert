@@ -1,0 +1,172 @@
+{
+  "id": "bf-acid-markdown",
+  "name": "Acid markdown",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ddfa51",
+    "fg": "#181b14",
+    "accent": "#181b14",
+    "accent-fg": "#ddfa51",
+    "muted": "#3d4725",
+    "border": "#707c35",
+    "input-bg": "#e9ffa0",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "30rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "text": "BLACK FRIDAY / BIG ENERGY",
+              "role": "eyebrow",
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "text": "SMALL PRICES.\nBIG PLANS.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "2.1rem",
+                "heading-weight": "400",
+                "heading-font": "\"DM Sans\", Arial, sans-serif"
+              },
+              "id": "n2",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "heading",
+              "narrow": {
+                "heading-size": "2.6rem"
+              },
+              "text": "40%",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                "heading-weight": "400",
+                "heading-font": "\"DM Sans\", Arial, sans-serif"
+              },
+              "id": "n3"
+            },
+            {
+              "type": "eyebrow",
+              "text": "OFF SELECTED FAVOURITES",
+              "role": "eyebrow",
+              "id": "n4"
+            },
+            {
+              "type": "divider",
+              "id": "n5"
+            },
+            {
+              "type": "text",
+              "text": "Your wishlist. Now within reach.",
+              "role": "body",
+              "id": "n6"
+            },
+            {
+              "type": "code",
+              "copy": true,
+              "copy_label": "Copy code",
+              "copied_label": "Copied",
+              "copy_failed_label": "Select and copy this code",
+              "text": "BIG40",
+              "role": "code_value",
+              "tokens": {
+                "text-size": ".875rem",
+                "radius": ".3rem"
+              },
+              "id": "n7"
+            },
+            {
+              "type": "button",
+              "label": "Go big. Spend less.",
+              "action": "link",
+              "role": "cta_label",
+              "tokens": {
+                "radius": ".25rem",
+                "text-size": "1rem",
+                "tracking": "normal"
+              },
+              "id": "n8"
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n9"
+            }
+          ],
+          "tokens": {
+            "pad": "3.75rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.5rem 1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

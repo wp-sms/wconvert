@@ -1,3 +1,4 @@
+import { scheduledMount } from '@loader/scheduled-mount';
 import { campaignLifecycle } from '@loader/events';
 import { googleFontsAllowed, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import type { OptinControls, PayloadEntry } from '@loader/types';
@@ -58,7 +59,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
     if (!expanded && !removed) { button.textContent = confirmation; remind(); }
     else hide();
   };
-  const mounted = (entry.display_type === 'slide_in' ? mountPopover : mount)({
+  const mounted = scheduledMount(entry.display_type === 'slide_in' ? mountPopover : mount, {
     ...campaignLifecycle(entry),
     displayType: entry.display_type, placement: entry.placement, template: entry.template, endsAt: entry.ends_at,
     googleFonts: googleFontsAllowed(),

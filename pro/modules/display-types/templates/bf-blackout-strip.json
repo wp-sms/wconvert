@@ -1,0 +1,131 @@
+{
+  "id": "bf-blackout-strip",
+  "name": "The blackout strip",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#151713",
+    "fg": "#f5f4e9",
+    "accent": "#e2f75d",
+    "accent-fg": "#141713",
+    "muted": "#e2f75d",
+    "border": "#9aab58",
+    "input-bg": "#151713",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "100%",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "text": "BLACK FRIDAY",
+                      "role": "eyebrow",
+                      "id": "n1"
+                    },
+                    {
+                      "type": "heading",
+                      "text": "The blackout. 30% off.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "1.25rem",
+                        "heading-weight": "400"
+                      },
+                      "id": "n2"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".25rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "label": "Shop the drop",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n3"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem",
+                "align": "center"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1rem 3.5rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": ".8rem 3.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

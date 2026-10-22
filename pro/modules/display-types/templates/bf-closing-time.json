@@ -1,0 +1,230 @@
+{
+  "id": "bf-closing-time",
+  "name": "Closing time",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f5e9a7",
+    "fg": "#393b29",
+    "accent": "#292e22",
+    "accent-fg": "#f5e9a7",
+    "muted": "#68643f",
+    "border": "#a5a77c",
+    "input-bg": "#f5e9a7",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "24rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "BLACK FRIDAY / CLOSING TIME",
+                  "role": "eyebrow",
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "text": "Goodbyes can\nbe good buys.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.7rem",
+                    "heading-weight": "400",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif"
+                  },
+                  "id": "n2",
+                  "narrow": {
+                    "heading-size": "2.15rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "One last look. A little less.",
+                  "role": "body",
+                  "id": "n3"
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "eyebrow",
+                  "text": "OFFER ENDS IN",
+                  "role": "eyebrow",
+                  "id": "n5"
+                },
+                {
+                  "type": "countdown",
+                  "layout": "line",
+                  "days_label": "Days",
+                  "hours_label": "Hrs",
+                  "minutes_label": "Mins",
+                  "seconds_label": "Secs",
+                  "narrow": {
+                    "text-size": "2rem"
+                  },
+                  "role": "countdown_units",
+                  "tokens": {
+                    "text-size": "2rem",
+                    "font": "\"DM Sans\", Arial, sans-serif",
+                    "heading-weight": "400",
+                    "tracking": "normal",
+                    "radius": ".3rem"
+                  },
+                  "id": "n6"
+                }
+              ],
+              "tokens": {
+                "pad": "3.75rem 1.75rem 1.75rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "3.5rem 1.5rem 1.5rem",
+                "gap": ".85rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "2.6rem"
+                      },
+                      "text": "25%",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                        "heading-weight": "400",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif"
+                      },
+                      "id": "n7"
+                    },
+                    {
+                      "type": "text",
+                      "text": "OFF\nSELECTED FINDS",
+                      "role": "body",
+                      "id": "n8"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "1rem"
+                  }
+                },
+                {
+                  "type": "code",
+                  "copy": true,
+                  "copy_label": "Copy code",
+                  "copied_label": "Copied",
+                  "copy_failed_label": "Select and copy this code",
+                  "text": "LAST25",
+                  "role": "code_value",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "radius": ".3rem"
+                  },
+                  "id": "n9"
+                },
+                {
+                  "type": "button",
+                  "label": "Take one last look",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal",
+                    "accent": "fg",
+                    "accent-fg": "bg"
+                  },
+                  "id": "n10"
+                },
+                {
+                  "type": "text",
+                  "text": "Selected items. Offer terms apply.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n11"
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

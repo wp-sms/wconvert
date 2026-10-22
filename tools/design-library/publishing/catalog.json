@@ -93,6 +93,48 @@
       "reviewedBy": "Claude — provenance and raster review, 2026-10-21",
       "access": "premium",
       "kind": "original"
+    },
+    "ec671c352c5d830fe8b3e2aaac306deeeb571d9c983c65ac6a5e880460d5dc87": {
+      "kind": "ai-generated",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export chrome-orbit.webp. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "free"
+    },
+    "5d290fe74f67ccc116458a6e6b29be3edd3359abb7b2d0a1d165d970424773b0": {
+      "kind": "ai-generated",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export midnight-shopping.webp. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "free"
+    },
+    "a1e5685d835038910eeeb4a0171806a4a31505c82210b2be0df865c5ad0cc231": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export pixel.png. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "free"
+    },
+    "7152b3fe4e257cfe0e34473b75e7e75c6ae427048b4e2afba3236ae0d89e27d3": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export gift.png. See pilot/assets/commerce/README.md.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "free"
+    },
+    "1104c3f31d3ec63541d18bb1bef1e6cbce4dba4108bd79d5b68c153caa2ba34c": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export gift.png. See pilot/assets/commerce/README.md. Lossless WebP derivative for bundled artwork.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "free"
+    },
+    "4a35d13fa9cfcd75e648bbaf8f27f25767b377181af2affaa642a10f8a8f7df1": {
+      "kind": "original",
+      "source": "Original WConvert shopping-weekend prototype artwork; optimised export pixel.png. See pilot/assets/commerce/README.md. Lossless WebP derivative for bundled artwork.",
+      "redistribution": true,
+      "reviewedBy": "Codex — source provenance and export review, 2026-10-22",
+      "access": "free"
     }
   },
   "artwork_exports": {

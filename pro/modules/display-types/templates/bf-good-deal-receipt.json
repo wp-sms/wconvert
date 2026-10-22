@@ -1,0 +1,213 @@
+{
+  "id": "bf-good-deal-receipt",
+  "name": "Your good-deal receipt",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f5f0e6",
+    "fg": "#28251f",
+    "accent": "#28251f",
+    "accent-fg": "#fff9ed",
+    "muted": "#715c43",
+    "border": "#9c907e",
+    "input-bg": "#fff9ed",
+    "font": "ui-monospace, SFMono-Regular, Menlo, monospace",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "24rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "text": "THE GOOD-DEAL DEPARTMENT",
+              "role": "eyebrow",
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "text": "Black Friday\nlooks good on you.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "2.25rem",
+                "heading-weight": "400",
+                "heading-font": "\"Instrument Serif\", Georgia, serif"
+              },
+              "id": "n2",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n3"
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "Your wishlist",
+                  "role": "body",
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "text": "100%",
+                  "role": "body",
+                  "id": "n5"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem",
+                "align": "center"
+              }
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "text",
+                  "text": "A little Friday magic",
+                  "role": "body",
+                  "id": "n6"
+                },
+                {
+                  "type": "text",
+                  "text": "−30%",
+                  "role": "body",
+                  "id": "n7"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem",
+                "align": "center"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "eyebrow",
+              "text": "YOUR SAVING",
+              "role": "eyebrow",
+              "id": "n9"
+            },
+            {
+              "type": "heading",
+              "narrow": {
+                "heading-size": "2.6rem"
+              },
+              "text": "30%",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                "heading-weight": "400",
+                "heading-font": "\"DM Sans\", Arial, sans-serif"
+              },
+              "id": "n10"
+            },
+            {
+              "type": "code",
+              "copy": true,
+              "copy_label": "Copy code",
+              "copied_label": "Copied",
+              "copy_failed_label": "Select and copy this code",
+              "text": "TAKE30",
+              "role": "code_value",
+              "tokens": {
+                "text-size": ".875rem",
+                "radius": ".3rem"
+              },
+              "id": "n11"
+            },
+            {
+              "type": "button",
+              "label": "Make it a good Friday",
+              "action": "link",
+              "role": "cta_label",
+              "tokens": {
+                "radius": ".25rem",
+                "text-size": "1rem",
+                "tracking": "normal"
+              },
+              "id": "n12"
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Keep the good feeling.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n13"
+            }
+          ],
+          "tokens": {
+            "pad": "3.75rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0",
+            "align": "center"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.5rem 1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

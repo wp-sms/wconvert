@@ -1,0 +1,237 @@
+{
+  "id": "bf-weekend-edition",
+  "name": "The weekend edition",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f7f1e3",
+    "fg": "#272820",
+    "accent": "#a93620",
+    "accent-fg": "#fff9ed",
+    "muted": "#675948",
+    "border": "#978a72",
+    "input-bg": "#fff9ed",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "62rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "THE WEEKEND EDITION",
+                  "role": "eyebrow",
+                  "id": "n1"
+                },
+                {
+                  "type": "eyebrow",
+                  "text": "BLACK FRIDAY SPECIAL",
+                  "role": "eyebrow",
+                  "id": "n2"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n3"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "text": "GOOD TASTE. GREAT TIMING.",
+                      "role": "eyebrow",
+                      "id": "n4"
+                    },
+                    {
+                      "type": "heading",
+                      "text": "All the things you love.\nA little less.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "3rem",
+                        "heading-weight": "400",
+                        "heading-font": "\"Instrument Serif\", Georgia, serif"
+                      },
+                      "id": "n5",
+                      "narrow": {
+                        "heading-size": "2rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "The pieces you’ll reach for long after the weekend.",
+                      "role": "body",
+                      "id": "n6"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem 0",
+                    "gap": "1rem",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "pad": ".75rem 0",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "2.6rem"
+                      },
+                      "text": "30%",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                        "heading-weight": "400",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif"
+                      },
+                      "id": "n7"
+                    },
+                    {
+                      "type": "eyebrow",
+                      "text": "OFF THE CURATED EDIT",
+                      "role": "eyebrow",
+                      "id": "n8"
+                    },
+                    {
+                      "type": "code",
+                      "copy": true,
+                      "copy_label": "Copy code",
+                      "copied_label": "Copied",
+                      "copy_failed_label": "Select and copy this code",
+                      "text": "EDIT30",
+                      "role": "code_value",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "radius": ".3rem"
+                      },
+                      "id": "n9"
+                    },
+                    {
+                      "type": "button",
+                      "label": "Read between the prices",
+                      "action": "link",
+                      "role": "cta_label",
+                      "tokens": {
+                        "radius": ".25rem",
+                        "text-size": "1rem",
+                        "tracking": "normal"
+                      },
+                      "id": "n10"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem",
+                    "gap": "1rem",
+                    "radius": "0",
+                    "align": "center"
+                  },
+                  "narrow": {
+                    "pad": ".75rem",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "basis": "20rem",
+              "ratio": "0.5",
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n11"
+            },
+            {
+              "type": "text",
+              "text": "Less impulse. More intention. Selected pieces. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n12"
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

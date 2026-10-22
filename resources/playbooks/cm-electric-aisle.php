@@ -1,0 +1,22 @@
+<?php
+
+defined('ABSPATH') || exit;
+
+return [
+    'business_types' => ['stores'],
+    'id' => 'cm-electric-aisle',
+    'name' => __('The electric aisle', 'wconvert'),
+    'goal' => 'promote_offer',
+    'template_id' => 'cm-electric-aisle',
+    'notes' => __('Present a seasonal offer without collecting details. Set the offer link and match the discount, coupon and terms to your store. Place the block or shortcode where the offer belongs.', 'wconvert'),
+    'copy' => [
+        'eyebrow' => [__('CYBER MONDAY', 'wconvert'), __('OFF. ALL ONLINE.', 'wconvert')],
+        'headline' => [__('30%', 'wconvert'), __('Out of this tab.
+Into your life.', 'wconvert')],
+        'body' => __('New favourites, one click closer.', 'wconvert'),
+        'cta_label' => __('Find your next favourite', 'wconvert'),
+        'fine_print' => __('Selected items. Offer terms apply.', 'wconvert'),
+    ],
+    'rules' => [['type' => 'page_load']],
+    'destination_hint' => ['types' => [], 'fields' => []],
+];

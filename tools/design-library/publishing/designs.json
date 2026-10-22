@@ -68,6 +68,10 @@
       {
         "id": "halloween",
         "label": "Halloween"
+      },
+      {
+        "id": "cyber-monday",
+        "label": "Cyber Monday"
       }
     ],
     "style": [
@@ -2399,6 +2403,326 @@
       ],
       "colour": [
         "warm"
+      ]
+    },
+    "bf-midnight-atelier": {
+      "description": "Midnight atelier: a Black Friday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bf-acid-markdown": {
+      "description": "Acid markdown: a Black Friday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bf-early-list": {
+      "description": "The early list: an email signup with an on-screen coupon acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "bf-good-deal-receipt": {
+      "description": "Your good-deal receipt: a Black Friday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bf-blackout-strip": {
+      "description": "The blackout strip: a Black Friday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "bf-weekend-edition": {
+      "description": "The weekend edition: a Black Friday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bf-velvet-rope": {
+      "description": "Behind the velvet rope: an email signup with an on-screen coupon acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "bf-little-black-gift": {
+      "description": "A little black gift: a Black Friday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cm-chrome-hour": {
+      "description": "Chrome hour: a Cyber Monday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "cm-system-upgrade": {
+      "description": "System upgrade: a Cyber Monday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cm-command-save": {
+      "description": "Command + save: a Cyber Monday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cm-pixel-drop": {
+      "description": "Pixel drop: an email signup with an on-screen coupon acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "cm-electric-aisle": {
+      "description": "The electric aisle: a Cyber Monday offer.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "cm-night-shift": {
+      "description": "The night shift: a Cyber Monday offer with a campaign countdown.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "cm-cyber-club": {
+      "description": "The cyber club: an email signup with an on-screen coupon acknowledgement.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bf-final-markdown": {
+      "description": "The final markdown: a Black Friday offer with a campaign countdown.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "bf-closing-time": {
+      "description": "Closing time: a Black Friday offer with a campaign countdown.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cm-digital-after-hours": {
+      "description": "Digital after hours: a Cyber Monday offer with a campaign countdown.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
+      ]
+    },
+    "cm-midnight-transmission": {
+      "description": "Midnight transmission: a Cyber Monday offer with a campaign countdown.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "cyber-monday",
+        "sale"
+      ],
+      "style": [
+        "crisp"
+      ],
+      "colour": [
+        "dark"
+      ]
+    },
+    "bf-weekend-curtain": {
+      "description": "The weekend curtain: a Black Friday offer with a campaign countdown.",
+      "industries": [
+        "retail"
+      ],
+      "occasions": [
+        "black-friday",
+        "sale"
+      ],
+      "style": [
+        "editorial"
+      ],
+      "colour": [
+        "light"
       ]
     }
   }
