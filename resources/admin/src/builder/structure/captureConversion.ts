@@ -113,7 +113,7 @@ function goalFor(goals: readonly GoalEntry[], current: string, target: CaptureTa
 }
 
 /** The offer screen becomes the form; a thank-you screen styled like it gets the code and the link (A1–A3). */
-function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: boolean) {
+function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: boolean, tokens: Readonly<Record<string, string>>) {
   const offer = tree.steps[0];
   const link = walkNodes(offer.content).find(isCountedLink);
   const group = codeGroupOf(offer.content);
@@ -121,7 +121,10 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
   const words = contactWording(channel);
   const label = code ? __('Get my code', 'wconvert') : __('Sign up', 'wconvert');
 
-  const field = { type: 'field', name: channel, required: true, label: words.label, placeholder: words.placeholder } as TemplateNode;
+  // A design made without a form names no input colour, so the field takes
+  // the card's own ground; its outline is the text colour, which reads on it.
+  const field = { type: 'field', name: channel, required: true, label: words.label, placeholder: words.placeholder,
+    ...(tokens['input-bg'] ? {} : { tokens: { border: 'fg' } }) } as TemplateNode;
   const consent = { type: 'consent', role: 'consent_text', text: words.consent, link: privacyLink(), hidden: !consentShown } as TemplateNode;
   const submit = { ...(link ?? { type: 'button' }), action: 'submit', submission: 'primary', label } as Node;
   delete submit.href;
@@ -171,7 +174,9 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
         kept[key] = (kept[key] as TemplateNode[]).filter((child, at, list) => child.type !== 'divider'
           || (at > 0 && at < list.length - 1 && list[at - 1].type !== 'divider'));
       }
-      const says = walkNodes(kept as unknown as TemplateNode).some(child => !isLayout(child) && !['divider', 'icon'].includes(child.type));
+      // A layout painted with its own picture is artwork, even with nothing in it.
+      const pictured = (child: TemplateNode) => isLayout(child) && !['', 'none'].includes(String(((child as unknown as Node).tokens as Record<string, unknown> | undefined)?.['bg-image'] ?? '').trim());
+      const says = walkNodes(kept as unknown as TemplateNode).some(child => pictured(child) || (!isLayout(child) && !['divider', 'icon'].includes(child.type)));
       return says ? [kept as unknown as TemplateNode] : [];
     }
     if (node === link) {
@@ -182,7 +187,15 @@ function addForm(tree: TemplateTree, channel: ContactChannel, consentShown: bool
     if (node.type === 'heading' && text(node, 'role') === 'headline') {
       if (headlined) return [];
       headlined = true;
-      return [{ ...withoutIds(node), role: 'success_headline', text: code ? __('Here’s your code', 'wconvert') : __('You’re in', 'wconvert') } as TemplateNode];
+      // The offer's headline may be one giant number; thanks reads at the design's size.
+      const headline = { ...withoutIds(node), role: 'success_headline', text: code ? __('Here’s your code', 'wconvert') : __('You’re in', 'wconvert') } as Node;
+      for (const key of ['tokens', 'narrow']) {
+        const bag = { ...(headline[key] as Record<string, string> | undefined) };
+        delete bag['heading-size'];
+        if (Object.keys(bag).length) headline[key] = bag; else delete headline[key];
+      }
+      delete headline.size;
+      return [headline as unknown as TemplateNode];
     }
     if (['image', 'icon', 'divider'].includes(node.type) || (node.type === 'text' && text(node, 'role') === 'fine_print')) return [withoutIds(node)];
     return [];
@@ -216,17 +229,23 @@ const same = (a: TemplateNode, b: TemplateNode) => JSON.stringify(withoutIds(a))
  */
 function removeForm(tree: TemplateTree, link: { readonly label: string; readonly href: string } | undefined) {
   const at = submissionScreen(tree, tree.submissions[0]?.id);
-  const screen = tree.steps[at];
+  // A form over several screens keeps its first: that is where its headline
+  // and artwork are. An intro before it is a message, not the form, and goes.
+  const first = tree.steps.findIndex((step, index) => index <= at && step.kind === 'input');
+  const screen = tree.steps[first];
   const thanks = tree.steps.find(step => step.kind === 'acknowledgement');
   const followup = thanks ? walkNodes(thanks.content, false).find(node => node.type === 'followup') : undefined;
   const group = thanks ? codeGroupOf(thanks.content) : null;
   const code = group ? walkNodes(group).find(node => node.type === 'code') : undefined;
-  const submit = walkNodes(screen.content).find(node => node.type === 'button' && 'action' in node && node.action === 'submit');
+  const submitted = walkNodes(tree.steps[at].content).find(node => node.type === 'button' && 'action' in node && node.action === 'submit');
+  // The button's place on the kept screen: its submit, or the Continue that led to it.
+  const submit = first === at ? submitted
+    : walkNodes(screen.content).find(node => node.type === 'button' && 'action' in node && node.action === 'next');
 
   // The counted link takes the submit's place, with the submit's look: the
   // success link it was turned into (ADR 0080), or the one the box offered.
   const kept = followup ? { label: text(followup, 'label'), href: text(followup, 'href') } : link;
-  const button = submit && kept ? { ...(submit as unknown as Node), action: 'link', label: kept.label, ...(kept.href ? { href: kept.href } : {}) } as Node : null;
+  const button = submit && kept ? { ...(submitted as unknown as Node), action: 'link', label: kept.label, ...(kept.href ? { href: kept.href } : {}) } as Node : null;
   if (button) delete button.submission;
   // The code goes back where the thank-you screen shows it: before whatever
   // follows it there, found here by its words. Where nothing matches, it goes
@@ -240,11 +259,14 @@ function removeForm(tree: TemplateTree, link: { readonly label: string; readonly
   const anchored = !!moving && (after.some(next => next.type === 'followup') && button !== null
     || walkNodes(screen.content).some(node => node !== submit && !formOwned(node) && anchor(node)));
 
-  const strip = (node: TemplateNode): TemplateNode => mapLists(node, child => {
-    if (child === submit) return [...(moving && !anchored ? [moving] : []), ...(button ? [button as unknown as TemplateNode] : [])];
+  // A row holds a button beside a field; the code goes above the row instead.
+  const unplaced = moving && !anchored;
+  const strip = (node: TemplateNode): TemplateNode => mapLists(node, (child, parent) => {
+    if (child === submit) return [...(unplaced && parent.type !== 'row' ? [moving] : []), ...(button ? [button as unknown as TemplateNode] : [])];
     if (formOwned(child)) return [];
     const rebuilt = strip(child);
-    return isLayout(child) && !emptyLayout(child) && emptyLayout(rebuilt) ? [] : [rebuilt];
+    const lead = unplaced && child.type === 'row' && walkNodes(child).includes(submit as TemplateNode) ? [moving] : [];
+    return isLayout(child) && !emptyLayout(child) && emptyLayout(rebuilt) ? lead : [...lead, rebuilt];
   });
   let content = strip(screen.content);
   if (moving && anchored) {
@@ -258,11 +280,11 @@ function removeForm(tree: TemplateTree, link: { readonly label: string; readonly
 
   const offer: TemplateScreen = { ...screen, kind: 'content', content };
   const next: TemplateTree = { ...tree, steps: [offer], submissions: [] };
-  const shown = walkNodes(screen.content, false);
+  const shown = tree.steps.slice(first, at + 1).flatMap(step => walkNodes(step.content, false));
   const loses: ChangeItem[] = [
     ...shown.filter(node => node.type === 'field').map(node => ({ kind: 'field', label: text(node, 'label') } as const)),
     ...(shown.some(node => node.type === 'consent') ? [{ kind: 'consent' } as const] : []),
-    ...(submit ? [{ kind: 'button', label: text(submit, 'label') } as const] : []),
+    ...(submitted ? [{ kind: 'button', label: text(submitted, 'label') } as const] : []),
   ];
   const others = tree.steps.filter(step => step !== screen);
   const changes: Change[] = [{ kind: 'screen-gets', screen: screen.name,
@@ -346,10 +368,10 @@ export function captureSwitch(config: Config, goal: string, goals: readonly Goal
     return refuse(__('Quizzes have their own result setting.', 'wconvert'));
   }
   if (outcome?.action === 'add_to_cart' || all.some(node => node.type === 'products')) return refuse(__('Product recommendations can’t take a contact form.', 'wconvert'));
-  if (outcome?.destination_type) return refuse(__('A lead magnet needs its form to send the file.', 'wconvert'));
+  if (outcome?.destination_type) return refuse(__('A lead magnet needs the email form to deliver the file.', 'wconvert'));
   if (outcome?.action === 'click' && !outcome.link_required) return refuse(__('Cart recovery sends shoppers to their cart, so it has no form.', 'wconvert'));
   if (config.content_lock != null) return refuse(__('A content lock always needs its form.', 'wconvert'));
-  if (!allowed) return refuse(__('This design has no room for a form.', 'wconvert'));
+  if (!allowed) return refuse(__('This design has no room for a form. Choose another design to ask for details.', 'wconvert'));
   const flat = simpleShape(tree);
   if (!flat) return refuse(__('This campaign has branches. Edit its screens directly.', 'wconvert'));
   const state = captureState(flat);
@@ -423,6 +445,6 @@ export function convertCapture(draft: { readonly config: Config; readonly goal: 
       ...(dropped.length ? [{ kind: 'stops-sending', destinations: dropped.map(id => context.destinations?.find(item => item.id === id)?.label ?? id), mappings: hadMappings } as const] : []),
       { kind: 'leads-stay' } as const] };
   }
-  const added = addForm(template.tree, target.capture, goal.outcome.audience_channel !== null);
+  const added = addForm(template.tree, target.capture, goal.outcome.audience_channel !== null, template.tokens ?? {});
   return done(added.tree, goal, added.changes, added.link);
 }

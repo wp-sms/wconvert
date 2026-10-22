@@ -211,7 +211,7 @@ describe('where the switch is offered (G1, G2)', () => {
 
   it('says in one line why it is not offered', () => {
     expect(ask(pro('space-planner').tree, 'find_match')).toEqual({ offered: false, reason: 'Quizzes have their own result setting.' });
-    expect(ask(design('centred-card').tree, 'deliver_lead_magnet')).toEqual({ offered: false, reason: 'A lead magnet needs its form to send the file.' });
+    expect(ask(design('centred-card').tree, 'deliver_lead_magnet')).toEqual({ offered: false, reason: 'A lead magnet needs the email form to deliver the file.' });
     expect(ask(design('offer-receipt').tree, 'recover_cart')).toEqual({ offered: false, reason: 'Cart recovery sends shoppers to their cart, so it has no form.' });
     expect(ask(design('centred-card').tree, 'grow_email_list', { content_lock: { selector: 'main' } })).toEqual({ offered: false, reason: 'A content lock always needs its form.' });
     const products = { ...design('offer-receipt').tree, steps: [{ ...design('offer-receipt').tree.steps[0], content: { type: 'products', id: 'p', action: 'link' } }] } as unknown as TemplateTree;
@@ -243,5 +243,39 @@ describe('the thank-you screen reads as one thing (screenshot sweep)', () => {
     const thanks = treeOf(result).steps[1].content;
     const layouts = walkNodes(thanks).filter(node => ['stack', 'row', 'panel', 'grid', 'split', 'media'].includes(node.type) && node !== thanks);
     for (const layout of layouts) expect(walkNodes(layout).some(node => !['stack', 'row', 'panel', 'grid', 'split', 'media', 'divider', 'icon'].includes(node.type))).toBe(true);
+  });
+});
+
+describe('what the screenshot sweep caught', () => {
+  const pro = (id: string): Template => JSON.parse(readFileSync(resolve(import.meta.dirname, `../../pro/modules/display-types/templates/${id}.json`), 'utf8'));
+
+  it('keeps the first screen of a form over two screens, where its headline is', () => {
+    const result = converted(convertCapture({ config: { template: design('request-folio') }, goal: 'collect_enquiries' },
+      { capture: 'none', link: { label: 'Shop now', href: 'https://shop.test/' } }, { goals: GOALS }));
+    const tree = treeOf(result);
+    expect(tree.steps.map(step => step.id)).toEqual(['request']);
+    expect(ofType(tree, 0, 'heading')).toMatchObject([{ text: 'Could it be repaired?' }]);
+    expect(ofType(tree, 0, 'button')).toMatchObject([{ action: 'link', label: 'Shop now' }]);
+    expect(result.changes[0]).toMatchObject({ loses: [{ kind: 'field', label: expect.stringContaining('What needs attention') }, { kind: 'field', label: 'Email address' }, { kind: 'button', label: 'Send request' }] });
+  });
+
+  it('brings a code back above a row, never into it', () => {
+    const template = pro('inline-code-strip');
+    const result = converted(convertCapture({ config: { template }, goal: 'grow_email_list' },
+      { capture: 'none', link: { label: 'Shop now', href: 'https://shop.test/' } }, { goals: GOALS }));
+    const root = treeOf(result).steps[0].content as unknown as { children: TemplateNode[] };
+    expect(root.children.map(child => child.type)).toEqual(['heading', 'code', 'row', 'text']);
+  });
+
+  it('outlines a new field in the text colour on a design that names no input colour', () => {
+    const plain = converted(convertCapture({ config: offer('reading-slip'), goal: 'promote_offer' }, { capture: 'email' }, { goals: GOALS }));
+    expect(ofType(treeOf(plain), 0, 'field')[0].tokens).toEqual({ border: 'fg' });
+    const styled = converted(convertCapture({ config: offer('offer-receipt'), goal: 'promote_offer' }, { capture: 'email' }, { goals: GOALS }));
+    expect(ofType(treeOf(styled), 0, 'field')[0]).not.toHaveProperty('tokens');
+  });
+
+  it('says thanks at the design’s heading size, not the offer’s giant number', () => {
+    const result = converted(convertCapture({ config: offer('offer-receipt'), goal: 'promote_offer' }, { capture: 'email' }, { goals: GOALS }));
+    expect(ofType(treeOf(result), 1, 'heading')[0].tokens).not.toHaveProperty('heading-size');
   });
 });
