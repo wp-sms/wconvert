@@ -9,6 +9,7 @@ const hash = value => createHash('sha256').update(value).digest('hex');
 const identifier = value => typeof value === 'string' && /^[a-z0-9][a-z0-9-]{0,63}$/.test(value);
 const date = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && new Date(`${value}T12:00:00Z`).toISOString().slice(0, 10) === value;
 export function validateCollection(collection) {
+  if (collection.catalogue_only !== undefined && typeof collection.catalogue_only !== 'boolean') throw new Error('Invalid collection delivery');
   if (!identifier(collection.id) || !collection.name || collection.name.length > 120 || !collection.description || collection.description.length > 1000
     || !['sale', 'launch', 'services', 'reading'].includes(collection.cover) || !Array.isArray(collection.items) || !collection.items.length || collection.items.length > 100
     || !Array.isArray(collection.business_types) || collection.business_types.some(id => !['stores', 'services', 'publishers'].includes(id))
@@ -99,13 +100,18 @@ export function collectionLabels(compiled) {
  * cannot ship or drop silently (ADR 0162).
  */
 function shippedDrafts(root, compiled) {
-  return compiled.filter(collection => collection.status !== 'published' && existsSync(resolve(root, 'resources/collections', `${collection.id}.json`)));
+  const reviews = loadReviews(root);
+  return compiled.filter(collection => collection.status !== 'published' && (existsSync(resolve(root, 'resources/collections', `${collection.id}.json`))
+    || (collection.catalogue_only && latestReview(reviews, `collection-${collection.id}`)?.decision === 'approved')));
 }
+
+/** Online collections may mix hosted Free and Pro members without shipping their references in Free. */
+export const bundledCollections = compiled => compiled.filter(collection => collection.status === 'published' && !collection.catalogue_only);
 
 export function checkRuntimeCollections(root, compiled) {
   const unapproved = shippedDrafts(root, compiled);
   if (unapproved.length) throw new Error(`Collection or setup review is missing or stale: ${unapproved.map(collection => collection.id).join(', ')}`);
-  const published = compiled.filter(collection => collection.status === 'published');
+  const published = bundledCollections(compiled);
   const destination = resolve(root, 'resources/collections');
   const expected = new Set(published.map(collection => `${collection.id}.json`));
   if (readdirSync(destination).some(file => file.endsWith('.json') && !expected.has(file))) throw new Error('Retire obsolete runtime collections explicitly');
@@ -125,7 +131,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // Preview candidates stay in /tools until the shared review approves them.
   if (process.argv.includes('--publish')) {
     if (shippedDrafts(root, result.compiled).length) throw new Error('Review every collection revision before generating runtime data');
-    const published = result.compiled.filter(collection => collection.status === 'published');
+    const published = bundledCollections(result.compiled);
     const destination = resolve(root, 'resources/collections'); mkdirSync(destination, { recursive: true });
     const expected = new Set(published.map(collection => `${collection.id}.json`));
     if (readdirSync(destination).some(file => file.endsWith('.json') && !expected.has(file))) throw new Error('Retire obsolete runtime collections explicitly');

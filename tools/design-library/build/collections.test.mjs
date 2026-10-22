@@ -59,3 +59,44 @@ test('a Collection is carried only when every setup in it was carried and its de
   const stale = { schema: 1, records: [record({ ...store.records[0], record_id: undefined, revision: 'f'.repeat(64) })] };
   assert.deepEqual(carryCollections({ source, entries, store: stale, carried: ['offer', 'other'], previous, at: 'now' }), []);
 });
+
+test('online-only collections publish every member without entering the bundled snapshot', async () => {
+  const { bundledCollections, checkRuntimeCollections, collectionLabels } = await import('./collections.mjs');
+  const { releaseCollections } = await import('./delivery.mjs');
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const root = mkdtempSync(join(tmpdir(), 'wconvert-online-collection-'));
+  try {
+    const online = { ...collection, catalogue_only: true, status: 'published', revision: 'c'.repeat(64) };
+    validateCollection(online);
+    assert.throws(() => validateCollection({ ...online, catalogue_only: 'true' }), /delivery/);
+    assert.deepEqual(bundledCollections([online]), []);
+    mkdirSync(join(root, 'resources/collections'), { recursive: true });
+    writeFileSync(join(root, 'resources/collections/labels.php'), collectionLabels([]));
+    checkRuntimeCollections(root, [online]);
+    const released = releaseCollections([online], { published: ['offer'], held: [], collections: ['sale'] });
+    assert.deepEqual(released[0].items, [{ setup: 'offer', stage: 'during' }]);
+    assert.equal(released[0].catalogue_only, undefined, 'Delivery is editorial metadata, not a new client protocol');
+    writeFileSync(join(root, 'resources/collections/sale.json'), JSON.stringify(online));
+    assert.throws(() => checkRuntimeCollections(root, [online]), /Retire obsolete/, 'An accidental bundled copy is refused');
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('a stale approved online collection cannot silently disappear from a release', async () => {
+  const { checkRuntimeCollections, collectionLabels } = await import('./collections.mjs');
+  const { emptyReviews, writeReviews } = await import('./reviews.mjs');
+  const { createHash } = await import('node:crypto');
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const root = mkdtempSync(join(tmpdir(), 'wconvert-stale-online-collection-'));
+  try {
+    mkdirSync(join(root, 'resources/collections'), { recursive: true });
+    writeFileSync(join(root, 'resources/collections/labels.php'), collectionLabels([]));
+    const body = { id: 'collection-sale', revision: 'c'.repeat(64), base_id: null, decision: 'approved', reviewer: 'Reviewer', note: 'Reviewed', at: '2026-10-22T00:00:00Z', checks: {} };
+    const record = { ...body, record_id: createHash('sha256').update(JSON.stringify(body)).digest('hex') };
+    writeReviews(root, emptyReviews(), { schema: 1, records: [record] });
+    assert.throws(() => checkRuntimeCollections(root, [{ ...collection, catalogue_only: true, status: 'draft', revision: 'd'.repeat(64) }]), /missing or stale: sale/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});

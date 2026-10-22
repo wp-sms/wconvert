@@ -136,6 +136,11 @@ receive published JSON plus translated labels. Runtime bundled collections also
 verify referenced source hashes. The studio reads public authored data, not
 customer accounts, campaign records or Leads.
 
+*Amended by [ADR 0157](0157-free-designs-may-be-served-without-being-bundled.md),
+22 October 2026:* a `catalogue_only` collection receives the same source-bound
+review but ships only through the hosted catalogue, without bundled JSON or
+labels. Mixed hosted Free/Pro seasonal collections use this path.
+
 *Superseded by [ADR 0156](0156-the-catalogue-is-one-design-per-object.md): the reader accepts only the v3 pointer at `/v3/manifest.json`.* The configured optional catalog additionally accepts a schema 2 immutable
 manifest and bounded, same-origin pages pinned by SHA-256. All pages and exact
 pack references validate before replacing the local cache. Normal discovery
