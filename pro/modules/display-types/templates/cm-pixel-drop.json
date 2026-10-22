@@ -1,0 +1,261 @@
+{
+  "id": "cm-pixel-drop",
+  "name": "Pixel drop",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#131714",
+    "fg": "#d9f88a",
+    "accent": "#d9f88a",
+    "accent-fg": "#131714",
+    "muted": "#d7e4c1",
+    "border": "#9cb66d",
+    "input-bg": "bg",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".2rem",
+    "width": "24rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Signup",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "text": "CYBER MONDAY / BONUS DROP",
+              "role": "eyebrow",
+              "id": "n1"
+            },
+            {
+              "type": "image",
+              "src": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4THoAAAAv48JZEBcgEEiy2B9tK4FAksP+OnMJBJIgZp1//gOqP7CKJKvRK+TgBxOoQAqfsDYv53wT0f8JMPz/2p/U7cZQt8N//9P6Fo1oOxn//ejR5DF018a0+O9fWVhTbKHJY4+qyXlLz7wYb5uP//Af/sN/+O+g4X/8j//nDg==",
+              "alt": "A green pixel-art gift",
+              "fit": "contain",
+              "tokens": {
+                "radius": "0"
+              },
+              "id": "n2"
+            },
+            {
+              "type": "heading",
+              "text": "NEW LEVEL.\nLESS SPEND.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "1.9rem",
+                "heading-weight": "400",
+                "heading-font": "ui-monospace, SFMono-Regular, Menlo, monospace"
+              },
+              "id": "n3",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Enter your email. Unlock your 20% off code.",
+              "role": "body",
+              "id": "n4"
+            },
+            {
+              "type": "field",
+              "name": "email",
+              "label": "Email address",
+              "required": true,
+              "id": "n5",
+              "tokens": {
+                "input-bg": "bg",
+                "radius": "0",
+                "border": "fg",
+                "muted": "fg"
+              }
+            },
+            {
+              "type": "consent",
+              "hidden": true,
+              "text": "Email me offers and new arrivals. I can unsubscribe anytime.",
+              "role": "consent_text",
+              "id": "n6"
+            },
+            {
+              "type": "button",
+              "label": "Unlock my bonus",
+              "action": "submit",
+              "submission": "primary",
+              "role": "cta_label",
+              "tokens": {
+                "radius": ".25rem",
+                "text-size": "1rem",
+                "tracking": "normal"
+              },
+              "id": "n7"
+            },
+            {
+              "type": "text",
+              "text": "Offers by email. Unsubscribe anytime. %s",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n8",
+              "link": {
+                "label": "Privacy Policy"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "3.75rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.5rem 1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "icon",
+              "name": "check",
+              "id": "n9"
+            },
+            {
+              "type": "eyebrow",
+              "text": "YOUR OFFER",
+              "role": "eyebrow",
+              "id": "n10"
+            },
+            {
+              "type": "heading",
+              "text": "Request received.",
+              "role": "success_headline",
+              "tokens": {
+                "heading-size": "2.5rem",
+                "heading-font": "\"Instrument Serif\", Georgia, serif",
+                "heading-weight": "400"
+              },
+              "id": "n11",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Thanks for requesting the offer. Here is your code.",
+              "role": "success_body",
+              "id": "n12"
+            },
+            {
+              "type": "code",
+              "copy": true,
+              "copy_label": "Copy code",
+              "copied_label": "Copied",
+              "copy_failed_label": "Select and copy this code",
+              "text": "PIXEL20",
+              "role": "code_value",
+              "tokens": {
+                "text-size": ".875rem",
+                "radius": ".3rem"
+              },
+              "id": "n13"
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n14"
+            },
+            {
+              "type": "button",
+              "label": "Continue browsing",
+              "action": "close",
+              "role": "close_label",
+              "id": "n15"
+            }
+          ],
+          "tokens": {
+            "pad": "3.5rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0",
+            "align": "center"
+          },
+          "narrow": {
+            "pad": "1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

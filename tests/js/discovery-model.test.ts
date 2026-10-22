@@ -84,3 +84,15 @@ it('uses custom occasion dates inclusively and falls back only to a reviewed non
   expect(preferredStage(guide, '2026-10-13', entries, occasion)).toBe('after');
   expect(preferredStage(guide, '2026-10-13', [setup('before')], occasion)).toBe('before');
 });
+
+it('counts all hosted members before any setup is installed or matches the selected goal', async () => {
+  const { onlineCollection } = await import('./support/online-collection');
+  const hosted = onlineCollection();
+  const matches = matchingCollections({ ...data, collections: [hosted] }, [], true);
+  expect(matches).toHaveLength(1);
+  expect(matches[0].setups).toHaveLength(20);
+  expect(matches[0].designs).toBe(20);
+  hosted.online![0].playbook_id = 'setup-1-sale-1';
+  hosted.online![0].setup.state = 'ready';
+  expect(matchingCollections({ ...data, collections: [hosted] }, [setup('setup-1-sale-1')], true)[0].designs).toBe(20);
+});

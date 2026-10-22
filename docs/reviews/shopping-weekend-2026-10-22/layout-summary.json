@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "kind": "designs",
+      "copy": "normal",
+      "cases": 384,
+      "failures": []
+    },
+    {
+      "kind": "campaigns",
+      "copy": "normal",
+      "cases": 384,
+      "failures": []
+    },
+    {
+      "kind": "designs",
+      "copy": "long",
+      "cases": 384,
+      "failures": []
+    },
+    {
+      "kind": "campaigns",
+      "copy": "long",
+      "cases": 384,
+      "failures": []
+    }
+  ]
+}

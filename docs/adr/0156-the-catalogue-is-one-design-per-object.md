@@ -104,9 +104,19 @@ for someone who could install Pro (`ProHints::shown()`): a server thumbnail
 loaded with `referrerpolicy="no-referrer"`, the plan's name and a link to the
 design's page on wconvert.io. No Apply, no disabled control, no Pro JSON, no
 "upgrade". Free sorts what it can use first. This **supersedes 0116 §1 and
-0147 rule 3 for designs only**: every other surface still hides what free
-cannot run. This is a case-by-case reading of wp.org Guidelines 5 and 11, so
-free designs stay the majority.
+0147 rule 3 for designs only**. **Amended 22 October 2026:** hosted collection
+browsing also shows every published member, before installation and across
+Goals, with Free/Pro labels. The existing `ProHints::shown()` gate still applies
+to paid discovery: opted-out or restricted Free users see only Free or already
+usable members, with matching counts. Pro users retain all members. A seasonal collection may contain mostly Pro
+designs. Locked members remain public image cards and external links; they
+never receive Pro trees or an install/use control. Creation itself still
+requires a usable Goal and setup. Install adds the exact hosted setup; Use
+explicitly creates a draft for that member's Goal. A bundled usable copy can
+be used immediately without downloading it again. Other creation surfaces
+continue to hide what Free cannot run. See [0157](0157-free-designs-may-be-served-without-being-bundled.md)
+for catalogue-only collections. This remains a case-by-case reading of
+wp.org Guidelines 5 and 11.
 
 **10. Withdrawal.** A withdrawn design leaves the picker and cannot be
 installed; an Optin already using one keeps its copy and its details say so.

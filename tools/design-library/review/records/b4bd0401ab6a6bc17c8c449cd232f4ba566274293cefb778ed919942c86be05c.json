@@ -1,0 +1,63 @@
+{
+  "id": "bf-weekend-curtain",
+  "revision": "47f5152ae22966e84a3c83b57bd36566251b90678af0c4fa01dff5ec54562dec",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex — native template, mobile and WordPress review",
+  "note": "Reviewed approved shopping-weekend concept as native editable screens. See the per-design composition decision and runtime evidence in review.md.",
+  "at": "2026-10-22T07:00:32.017Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/bf-weekend-curtain-320.png",
+          "sha256": "23ae098556f4537a1c14f0197acf0eb5de977328a6d4414e5d0669caddffee52"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/bf-weekend-curtain-1440.png",
+          "sha256": "94b757cb68537d2fe9eff9b57776efc98932f5001f1c91ab33610924635e3731"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+          "sha256": "0e0ff47c3ce6f5b09674b3490ad24474dbb06db35ea5932f7ccce5f1d1c0b718"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+          "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+          "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "e525f3dcec32d2b9017d0d40f6614b5bb2201296c0f49fc1e63b4c04e8ba87c4"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+          "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+        }
+      ]
+    }
+  },
+  "record_id": "b4bd0401ab6a6bc17c8c449cd232f4ba566274293cefb778ed919942c86be05c"
+}

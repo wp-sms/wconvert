@@ -1,4 +1,10 @@
 import apiFetch from '@wordpress/api-fetch';
+import type { CatalogDesign, CatalogSetup } from '../templates/catalog';
+
+export interface OnlineCollectionMember {
+  setup: CatalogSetup; design: CatalogDesign; playbook_id: string | null;
+  stage: 'before' | 'during' | 'after' | 'any';
+}
 
 export interface PickerPreferences {
   schema: 1; revision: number; saved: string[]; hidden: string[]; events: string[]; businesses: string[]; markets: string[]; show_featured?: boolean; country_suggestion_dismissed?: string;
@@ -10,6 +16,7 @@ export interface Collection {
   business_types: string[]; markets: string[]; priority: number;
   cover: 'sale' | 'launch' | 'services' | 'reading';
   items: { setup_id: string; stage: 'before' | 'during' | 'after' | 'any' }[];
+  online?: OnlineCollectionMember[];
   event?: { family: string; start: string; end_exclusive: string; feature_start: string; feature_end_exclusive: string };
 }
 export interface PickerData {

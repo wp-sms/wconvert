@@ -1,0 +1,51 @@
+{
+  "id": "collection-black-friday-cyber-monday-2026",
+  "revision": "1ebe2cc847d79d113be35acc46491b129bc21f417466af8c4819eed58fb05412",
+  "base_id": null,
+  "decision": "approved",
+  "reviewer": "Codex",
+  "note": "Reviewed twenty current members, the final collection card, Free/Pro discovery and exclusive event boundaries. Catalogue-only delivery preserves the five hosted Free designs and fifteen Pro designs.",
+  "at": "2026-10-22T07:45:35.822Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/collection.png",
+          "sha256": "37eb36662824c19d6fb829152ce87a274be2807dcfbea918b65dc3f5cf60ea32"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/collection-review.md",
+          "sha256": "95e9392446afb95a0b712c6c0157420fdf0e1df1098011685a87c1b12ed2df56"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/collection-discovery.json",
+          "sha256": "a43ace1e15786305ae27561b4ad7185a6766636bbe804aac507ea46636993e76"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "c85f03b536b7abdf7f2ed49a246b68ed4b92ed58528a36b7f8f29efff1edcaef"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/countdowns.json",
+          "sha256": "f1ad213373f5f534c0d9be636c0ee434ebcd39ec0579e8bd5f19116d82b204ee"
+        }
+      ]
+    }
+  },
+  "record_id": "c59ef9d56dfa8e190e0e5270933af153d815bb8aefa9fb2e49b44038b10423ff"
+}

@@ -1,0 +1,59 @@
+{
+  "id": "bf-velvet-rope",
+  "revision": "9b6feb6bc4b1857540ca89f612a9b7e70134a2879da857f0c81a326acc1dac38",
+  "base_id": "a56700b797f2e3ee34347cb63ca70e524cdf07c69c32c25613bbe3e6228cbc0e",
+  "decision": "approved",
+  "reviewer": "Codex — prototype fidelity and native WordPress review",
+  "note": "Compared with approved prototype, corrected avoidable styling differences, inspected final phone/desktop screens and acknowledgement. Final layout, theme and real WordPress capture checks pass; detailed judgement in review.md.",
+  "at": "2026-10-22T07:35:23.247Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/bf-velvet-rope-320.png",
+          "sha256": "2c4d2809fa3361269daeca15f63d72b2d4bb6f93035ae52fb24c0410317dca97"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/bf-velvet-rope-1440.png",
+          "sha256": "46c6d466258522b6f9bacf1a89755c9d2b9cfb7f205d7f0c9d55ed1291c1ceb3"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+          "sha256": "370f1d05a62db6399b17baa10a575f846744e0d0fb4ad4f8b670172ebc984447"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+          "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+          "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+          "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-alignment-2026-10-22/results.json",
+          "sha256": "7b0a67e151e8ca0b13fb2b0b4e11d41f649abbb1638aedf0111f66434fb7eaf8"
+        }
+      ]
+    }
+  },
+  "record_id": "3bbb689912eead409a5ac30c8159b6e9819558fb3d9f341bea57e19fd3d987c0"
+}

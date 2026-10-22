@@ -73,7 +73,7 @@ add_action('template_redirect', static function (): void {
             if (($node['type'] ?? '') === 'code') $node['text'] = 'REVIEW10';
             return $node;
         })['template'];
-        if ($id === 'sale-deadline') $config['ends_at'] = wp_date('Y-m-d\TH:i', time() + 7 * DAY_IN_SECONDS);
+        if (str_contains(wp_json_encode($config['template']), '"type":"countdown"')) $config['ends_at'] = wp_date('Y-m-d\TH:i', time() + 7 * DAY_IN_SECONDS);
         // Each run uses a new snapshot and isolates visitor display from other fixtures.
         foreach ($repository->summaries() as $row) if ($row['published_at'] !== null) $repository->unpublish($row['id']);
         $previous = get_option('wconvert_collection_approval_fixture');

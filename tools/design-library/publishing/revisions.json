@@ -540,6 +540,106 @@
       "revision": 2,
       "content": "2d75ee84ffaa6f4dcfdf2cae87fe2fa64fb4eba61527482aaa5a672fda5f1e49",
       "added": 244
+    },
+    "bf-acid-markdown": {
+      "revision": 4,
+      "content": "763b4c099b3cbc4d96d6c28d1073240fcdec50f6b8c293bd86171ffb7e6c89c7",
+      "added": 250
+    },
+    "bf-blackout-strip": {
+      "revision": 2,
+      "content": "3f1dfe74843788b7369845319bfd1cd505c894b1d1236bd690336feacb690c11",
+      "added": 251
+    },
+    "bf-closing-time": {
+      "revision": 3,
+      "content": "db34c6eff16a8fab240358952bea75fd165e31ba274cb6ecc1b6d171170ae995",
+      "added": 252
+    },
+    "bf-early-list": {
+      "revision": 5,
+      "content": "598e448ed1fc1209e3e2dd69440f342b79a01fd3fbef4113eb4c3c963ab95b4f",
+      "added": 253
+    },
+    "bf-final-markdown": {
+      "revision": 3,
+      "content": "4272ee999ff35eb99aa7b7f2473369b7b2882ce9ece3b9e7493c6087809bd4ba",
+      "added": 254
+    },
+    "bf-good-deal-receipt": {
+      "revision": 2,
+      "content": "fc30229638f774d244c2484a33fad4daa8c35ce61ba2058a725541e5f48fb944",
+      "added": 255
+    },
+    "bf-little-black-gift": {
+      "revision": 4,
+      "content": "a313dc6aea873a33ddb3c13c76dac11cec7fbe7f4dea5ce499a1d744ebac2caa",
+      "added": 256
+    },
+    "bf-weekend-curtain": {
+      "revision": 2,
+      "content": "c2fe45d9f930901c64a1ef3a9dd99b39091087082d410e28557e1f053a131991",
+      "added": 257
+    },
+    "cm-command-save": {
+      "revision": 2,
+      "content": "5a8973718531ecf6c8b9a70770f6872b04cee320c5f45c34c667e7f4337b7888",
+      "added": 258
+    },
+    "cm-night-shift": {
+      "revision": 2,
+      "content": "97d84d0ceac4ccdf5ea48dd158a9308c666cc57dba7d72df772538aaf9f49785",
+      "added": 259
+    },
+    "cm-pixel-drop": {
+      "revision": 9,
+      "content": "8b102a1c4db7ab67366b71a35776e1833d74f93bcfe8d7ed294864396b93b0af",
+      "added": 260
+    },
+    "cm-system-upgrade": {
+      "revision": 6,
+      "content": "5d2ba3957591398a7faac520c03153cb990fd29ad6bf0d8d1ad2ecce1a0035e1",
+      "added": 261
+    },
+    "bf-midnight-atelier": {
+      "revision": 2,
+      "content": "867e11e4f5abaab95db366dda192c9d9c84f9bc5785cc9be875a6ed2effcd5df",
+      "added": 274
+    },
+    "bf-velvet-rope": {
+      "revision": 7,
+      "content": "15bedaed04ba147c6ff155bddc37e653967ea899bf89ac2c76da4e7ef2dc93ea",
+      "added": 275
+    },
+    "bf-weekend-edition": {
+      "revision": 1,
+      "content": "f135bc32a71c3f8659c20e281e31f53d144eb72a587c1f91d91376f6788226c4",
+      "added": 276
+    },
+    "cm-chrome-hour": {
+      "revision": 2,
+      "content": "165713e307ded017dcd9358bdd6503e00ab664a1e7fc669f1283cf369bf41a5c",
+      "added": 277
+    },
+    "cm-cyber-club": {
+      "revision": 7,
+      "content": "f6f3612fb590450b4316528729f4ccb6a5512a94cd05afdf83b4b4d8b2d743ad",
+      "added": 278
+    },
+    "cm-digital-after-hours": {
+      "revision": 1,
+      "content": "0e913fb97e78cf56698e378ed2fe3229458b0040077dec3fa8daa26df583e326",
+      "added": 279
+    },
+    "cm-electric-aisle": {
+      "revision": 2,
+      "content": "0755801227ddca5ea34a14c547b8c637bac3fa37ba6ab5f883ef07062e509c15",
+      "added": 280
+    },
+    "cm-midnight-transmission": {
+      "revision": 1,
+      "content": "cbab6de6b4052ccdbcb38664eccf6cee924e23a142a29b2b84d4e8f22a1627a7",
+      "added": 281
     }
   },
   "setups": {
@@ -1247,6 +1347,106 @@
       "revision": 2,
       "content": "9165cc238bc775e1cc61ac711650eeb6842cc1d8341087e41bda86964fcc60dd",
       "added": 249
+    },
+    "bf-acid-markdown": {
+      "revision": 4,
+      "content": "19789d03453de2d53fac233f9fb7923bf92d13485c51c5c332a8a65b190bed3c",
+      "added": 262
+    },
+    "bf-blackout-strip": {
+      "revision": 2,
+      "content": "a8850e851dcfced16c70042e7915f1116aea3e6765211a534444a416d6cdeeb1",
+      "added": 263
+    },
+    "bf-closing-time": {
+      "revision": 3,
+      "content": "a170e86e864cc2cd9606aa85e767850812b3f51aa3ae0f09427b2a25773b5626",
+      "added": 264
+    },
+    "bf-early-list": {
+      "revision": 5,
+      "content": "9b8867bc2bcf1a04acff365497695da2514b13cb5e7f7ff1cf72c78f22f84fec",
+      "added": 265
+    },
+    "bf-final-markdown": {
+      "revision": 3,
+      "content": "feb39c7a4a1c9ac658f9292b54c479350a023be8cd6ecad0743e1e4dcb27601e",
+      "added": 266
+    },
+    "bf-good-deal-receipt": {
+      "revision": 2,
+      "content": "62104665484d881beab36af3ef17cc6439c6e3380080fe0503299dc3fd857bca",
+      "added": 267
+    },
+    "bf-little-black-gift": {
+      "revision": 4,
+      "content": "c1e83ef3ca95c6e07e3b6e794e2622761712114ddd18c92024168d8a297d3a46",
+      "added": 268
+    },
+    "bf-weekend-curtain": {
+      "revision": 2,
+      "content": "37e9e0790121117501bcb4f329dac2d4e71bb45f7e0150f616dbb252f3e0bb06",
+      "added": 269
+    },
+    "cm-command-save": {
+      "revision": 2,
+      "content": "2ce71a475765d37b2de13c86232160e572cf208cc8b4500657145595bb4e72e3",
+      "added": 270
+    },
+    "cm-night-shift": {
+      "revision": 2,
+      "content": "68bd61365e234ee2e0646d447b932d2303ad4a62cc569f487f3a2d7003cc698a",
+      "added": 271
+    },
+    "cm-pixel-drop": {
+      "revision": 9,
+      "content": "2d4a27dea182dda2304801d89018d3183de229ebeac3e8345085783ca865bea9",
+      "added": 272
+    },
+    "cm-system-upgrade": {
+      "revision": 6,
+      "content": "023480d9b1bf0d77799c06bd3118d44d1b3f004239198cc76122a6748a89b5fb",
+      "added": 273
+    },
+    "bf-midnight-atelier": {
+      "revision": 2,
+      "content": "10b764989a513f4821ae13ed7d9e71951033c4721e675ea92f1001378c94cb7c",
+      "added": 282
+    },
+    "bf-velvet-rope": {
+      "revision": 7,
+      "content": "61037a8da01d83aa629445c5cadeffb96e55980891de132262af5a2fc8ab0c6d",
+      "added": 283
+    },
+    "bf-weekend-edition": {
+      "revision": 1,
+      "content": "e4a64e2c59a1bd0abdd69e9c8bd3acc2ddaa78f45266f1b064305ee24106faa3",
+      "added": 284
+    },
+    "cm-chrome-hour": {
+      "revision": 2,
+      "content": "27977fdc590de4c7b79aa94aadcf94a3f028aa77dac9497951a44425453f5067",
+      "added": 285
+    },
+    "cm-cyber-club": {
+      "revision": 7,
+      "content": "cbb6790eee6f98aeb4d76a1b596b74794586678b99ce82a00e867b4739589485",
+      "added": 286
+    },
+    "cm-digital-after-hours": {
+      "revision": 1,
+      "content": "232c42bd423f32e6d66dddb37b48980203a325146f91e13d8a666cd0912c9b81",
+      "added": 287
+    },
+    "cm-electric-aisle": {
+      "revision": 2,
+      "content": "0a3405254d618fb9a066b1a42841722896c9f5b2111df9cad61acd59ea34f528",
+      "added": 288
+    },
+    "cm-midnight-transmission": {
+      "revision": 1,
+      "content": "557ffaac674e450a949e7fe846acf10649ab13e7409593821fb2e9c0a81420de",
+      "added": 289
     }
   },
   "retired": []

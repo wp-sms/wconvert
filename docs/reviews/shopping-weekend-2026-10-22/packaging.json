@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "checks": [
+    "Both release ZIPs passed the artifact contract",
+    "No shopping-weekend template, Playbook or artwork in Free ZIP",
+    "Exactly 15 templates and Playbooks in Pro ZIP",
+    "Exactly 5 Free templates and Playbooks hosted only",
+    "All shopping-weekend artwork has premium access",
+    "Local catalogue release validated by the shipping PHP reader: 91 designs and 114 setups",
+    "Public catalogue objects contain exactly the 5 Free shopping-weekend designs and setups",
+    "Private catalogue objects contain exactly the 15 Pro shopping-weekend designs and setups",
+    "No premium shopping-weekend artwork in public catalogue assets"
+  ],
+  "setups": [
+    {
+      "id": "bf-midnight-atelier",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "bf-acid-markdown",
+      "tier": "free",
+      "delivery": "catalogue-only",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": false
+    },
+    {
+      "id": "bf-early-list",
+      "tier": "free",
+      "delivery": "catalogue-only",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": false
+    },
+    {
+      "id": "bf-good-deal-receipt",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "bf-blackout-strip",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "bf-weekend-edition",
+      "tier": "free",
+      "delivery": "catalogue-only",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": false
+    },
+    {
+      "id": "bf-velvet-rope",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "bf-little-black-gift",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-chrome-hour",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-system-upgrade",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-command-save",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-pixel-drop",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-electric-aisle",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-night-shift",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-cyber-club",
+      "tier": "free",
+      "delivery": "catalogue-only",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": false
+    },
+    {
+      "id": "bf-final-markdown",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "bf-closing-time",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "tier": "free",
+      "delivery": "catalogue-only",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": false
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "tier": "pro",
+      "delivery": "pro-bundle",
+      "free_zip_contains_template_or_playbook": false,
+      "pro_zip_contains_template_and_playbook": true
+    }
+  ]
+}

@@ -53,19 +53,28 @@ export function preferredStage(collection: Collection, today: string, matches: r
   const stages = [preferred, 'before', 'during', 'after', 'any'] as const;
   return stages.find(stage => collection.items.some(item => item.stage === stage && available.has(item.setup_id))) ?? 'any';
 }
-export function matchingCollections(data: PickerData, entries: readonly PlaybookEntry[], featured: boolean) {
+export function matchingCollections(data: PickerData, entries: readonly PlaybookEntry[], featured: boolean, showProDesigns = true) {
   const ready = new Set(entries.filter(entry => !entry.availability || entry.availability === 'ready').map(entry => entry.id));
-  return data.collections.filter(collection => {
+  return data.collections.map(collection => {
+    // The server resolves the agency opt-out and install_plugins capability.
+    // Keep usable copies; only paid discovery cards are hints (ADR 0156 §9).
+    if (showProDesigns || !collection.online) return collection;
+    const online = collection.online.filter(member => member.setup.tier === 'free' || member.setup.state === 'ready');
+    const ids = new Set(online.map(member => member.setup.id));
+    return { ...collection, online, items: collection.items.filter(item => ids.has(item.setup_id)) };
+  }).filter(collection => {
     if (featured && data.preferences.hidden.includes(collection.id)) return false;
     if (collection.event && data.preferences.events.includes(collection.event.family)) return false;
     if (collection.markets.length && !collection.markets.some(market => data.preferences.markets.includes(market))) return false;
     if (collection.event && (data.today >= collection.event.end_exclusive || (featured
       && (data.today < collection.event.feature_start || data.today >= collection.event.feature_end_exclusive)))) return false;
-    return collection.items.some(item => ready.has(item.setup_id));
+    return collection.online ? collection.online.length > 0 : collection.items.some(item => ready.has(item.setup_id));
   }).map(collection => {
     const ids = new Set(collection.items.map(item => item.setup_id));
     const setups = entries.filter(entry => ready.has(entry.id) && ids.has(entry.id));
-    return { collection, setups, designs: new Set(setups.map(designKey)).size };
+    return collection.online
+      ? { collection, setups: collection.online.map(member => ({ id: member.setup.id })), designs: new Set(collection.online.map(member => member.design.id)).size }
+      : { collection, setups, designs: new Set(setups.map(designKey)).size };
   }).sort((a, b) => Number(b.collection.business_types.some(id => data.preferences.businesses.includes(id)))
     - Number(a.collection.business_types.some(id => data.preferences.businesses.includes(id)))
     || b.collection.priority - a.collection.priority || a.collection.id.localeCompare(b.collection.id));

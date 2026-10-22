@@ -1,0 +1,137 @@
+{
+  "id": "cm-command-save",
+  "name": "Command + save",
+  "display_type": "floating_bar",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#d6c6f1",
+    "fg": "#232727",
+    "accent": "#232727",
+    "accent-fg": "#defb84",
+    "muted": "#4f425f",
+    "border": "#82758e",
+    "input-bg": "#f5f1fa",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "100%",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "badge",
+                  "text": "⌘ S",
+                  "role": "badge",
+                  "id": "n1"
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "text": "CYBER MONDAY",
+                      "role": "eyebrow",
+                      "id": "n2"
+                    },
+                    {
+                      "type": "heading",
+                      "text": "Your shortcut to 25% off.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "1.25rem",
+                        "heading-weight": "400"
+                      },
+                      "id": "n3"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": ".2rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "label": "Save something good",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n4"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem",
+                "align": "center"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1rem 3.5rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": ".8rem 3.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

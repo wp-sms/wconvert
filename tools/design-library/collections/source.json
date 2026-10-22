@@ -432,6 +432,147 @@
         "feature_start": "2026-09-01",
         "feature_end_exclusive": "2026-11-01"
       }
+    },
+    {
+      "id": "black-friday-cyber-monday-2026",
+      "name": "Black Friday & Cyber Monday",
+      "description": "Build your early-access list, reveal a sale offer or count down to closing time. Twenty designs across five formats. Set your own discount, coupon, shop link and campaign end date.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 90,
+      "catalogue_only": true,
+      "items": [
+        {
+          "setup_id": "bf-midnight-atelier",
+          "stage": "during",
+          "setup_hash": "53794e237cffd03e0a2b706a19207448325cc427c7ceb006f57589846f2ec790",
+          "design_hash": "eb38880d7332d21eec66701e0c744fc2271d93620a2ace9e8623cc9196975d26"
+        },
+        {
+          "setup_id": "bf-acid-markdown",
+          "stage": "during",
+          "setup_hash": "c0ef30e8b7876cac5aebdd00fc6409bda21aaa7023ae04563bd185239b840187",
+          "design_hash": "ed29d7f07bccf5f823b0eafcf7c23b1da9e95e94e9885dabb5f77ed6de6fe427"
+        },
+        {
+          "setup_id": "bf-early-list",
+          "stage": "before",
+          "setup_hash": "0395f7be9fc5225da867392656f4e278adc673fe41298e70af9991085a7cc71f",
+          "design_hash": "ebd884ed4acda38e692107b50b8a7a0b3fad6718ff05592186764104ee9ba8c0"
+        },
+        {
+          "setup_id": "bf-good-deal-receipt",
+          "stage": "during",
+          "setup_hash": "c2623882cef8d0dfe87c39429a9dedee4d305051c4e5e6e614ada97be228a39b",
+          "design_hash": "69f0baf26208df4ffbe7a8778a4d3b3ff46f683a416ffcd88bd19b7b3fd487c2"
+        },
+        {
+          "setup_id": "bf-blackout-strip",
+          "stage": "during",
+          "setup_hash": "e9e07b5cab6370fdfbcf0e3d4585c484fd56a8442f1d871dcf43e3d69d823d6a",
+          "design_hash": "1d9cda9ae4d01e7a91a58551079bb6b1be1d3a412bd6d91bafb67cfe6ca643bd"
+        },
+        {
+          "setup_id": "bf-weekend-edition",
+          "stage": "during",
+          "setup_hash": "9ec726a728ea19c5248946503ea0ff145818881f8e91d3ed3ec750a7a60c79fb",
+          "design_hash": "e7e9df039a0a1a707a1b797bc4e42002c6fd63a224b9c5f79f69022517698faf"
+        },
+        {
+          "setup_id": "bf-velvet-rope",
+          "stage": "before",
+          "setup_hash": "87f0c99cd684d5f2aab0db697ccb457763bf7653d5d506cda58102baba0c1818",
+          "design_hash": "67cebadb374c5df2dd2ff7945f20af0169c013ef07826a763b7e181f8df13be4"
+        },
+        {
+          "setup_id": "bf-little-black-gift",
+          "stage": "during",
+          "setup_hash": "83259a9dce6dd1392e16b0d82af10a83497075ca49993a17bfecac4239aa98c1",
+          "design_hash": "14e4af47492d01600ce33c15310fadc5d079a9c6b5cda103822594905bba9f16"
+        },
+        {
+          "setup_id": "cm-chrome-hour",
+          "stage": "during",
+          "setup_hash": "f693dcd233a0de82646975669741dbb45ca2f612f3460caad9dec5c0709aa39c",
+          "design_hash": "6c787c954537449bf842b1167239bd8a9794d281ca3a5d43d07be494208db3b0"
+        },
+        {
+          "setup_id": "cm-system-upgrade",
+          "stage": "during",
+          "setup_hash": "de460ce242b34bc917d34cf0d2525615453e69a71e4f313451c40dfd729aedd1",
+          "design_hash": "bfde44156ffb1bc6435e6190f0f30e54047cd5c986c901fe574e95d315198679"
+        },
+        {
+          "setup_id": "cm-command-save",
+          "stage": "during",
+          "setup_hash": "7b205f29534e2a0c47d7d6fa7d939d2abbed28c44a55532db99720a5438a73a2",
+          "design_hash": "f0bf9226176c1c97839f6fde891923ea875de55bb323428dfb77988fcbaf352c"
+        },
+        {
+          "setup_id": "cm-pixel-drop",
+          "stage": "before",
+          "setup_hash": "0187c3cb0a88c86819df40510d47f19aeb1055373845bec4a7307bda92e848c0",
+          "design_hash": "06990fd40cb735584b192b0fee66b598746781db370641f6c2a935026324ff2d"
+        },
+        {
+          "setup_id": "cm-electric-aisle",
+          "stage": "during",
+          "setup_hash": "e47b8e766631fbe15f1159c23e7f066fc4de05511fd2ff8609f80fa93d8b1bd1",
+          "design_hash": "f37c8f683ec8aaffb7ab7f87cf93c5329b2674c7a23ea898bac463437085ac9c"
+        },
+        {
+          "setup_id": "cm-night-shift",
+          "stage": "during",
+          "setup_hash": "4ad39f3a92d6d1171ab32032e7eb50817a8a728dda9f36228ad999d24399fe97",
+          "design_hash": "0bfe934692db57f90583bd26ba407e9fbcb33ae5b212d0ad5b1a16cad26c9e20"
+        },
+        {
+          "setup_id": "cm-cyber-club",
+          "stage": "before",
+          "setup_hash": "da9fd5712b27a7946e54efa8c8a3a30853fc58acbff2c49060e614deed496bf8",
+          "design_hash": "433fd62dd00925527ae6df3c8b8ea9cacfb2cba3d197fb2c6d98a7186265f6ee"
+        },
+        {
+          "setup_id": "bf-final-markdown",
+          "stage": "during",
+          "setup_hash": "1dec499f3c58f1ea0ebcb9fcd9e8da1643ab59d68f6e484d70eb86d225e441ab",
+          "design_hash": "d6f566ecd6bd3f1766a6272f4938e8c929561a7432d4d735761cccf00fee32a6"
+        },
+        {
+          "setup_id": "bf-closing-time",
+          "stage": "during",
+          "setup_hash": "6d19a3aa2b93df0cb0b366edfb391f48a1a4a00514ec157f9d71535c62ae130c",
+          "design_hash": "9d7e6c2cbf2c484154e67995602feb4b144888d74488c100694b188141314079"
+        },
+        {
+          "setup_id": "cm-digital-after-hours",
+          "stage": "during",
+          "setup_hash": "e5ccefe0141c73c7ee3d180ee620df773a3eb7bc5b1623ba68e110ade79751ea",
+          "design_hash": "ec3cb145e025588d6cc37a260dc97cd0e2267d7b090783201d9180175a586347"
+        },
+        {
+          "setup_id": "cm-midnight-transmission",
+          "stage": "during",
+          "setup_hash": "12319584bb27fa0a698d61fd5f519482c2a2ff6d08ff7dbb26bf0e6d63d92bc4",
+          "design_hash": "096f8c8063e8994468cbcc6e7d6baa17095cd60727ba94002cb232e25f2a69f7"
+        },
+        {
+          "setup_id": "bf-weekend-curtain",
+          "stage": "during",
+          "setup_hash": "9a578fcdde34773cff14fcab6efae2243304ac33d91b1f8f0e8419603ef26f2a",
+          "design_hash": "50af6c1fac862e6af757b746dd5139395b3f26199b0bff519b97e7b94d7a46b5"
+        }
+      ],
+      "event": {
+        "family": "black-friday",
+        "start": "2026-11-27",
+        "end_exclusive": "2026-12-01",
+        "feature_start": "2026-10-16",
+        "feature_end_exclusive": "2026-12-01"
+      }
     }
   ]
 }

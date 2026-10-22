@@ -51,7 +51,7 @@ The manifest names threshold, state and gesture semantics. Time and scroll-depth
 
 The pure matcher reports true, false or consent-blocked per leaf. An independent ANY alternative may pass without reading a withheld rule. Missing implementations suspend the entire authored Campaign, including an unavailable leaf in an OR branch; no frontend substitution or dropping widens the policy. Restoring the dependency restores eligibility without editing saved data.
 
-Future schedule starts remain waiting and receive a wake-up. Automatic opening requires a visible document. Explicit click and Reopen share eligibility, completion and collision checks but bypass automatic pacing. A campaign already open when its schedule ends remains usable; expiry prevents later openings. Progressive capture retains its mounted journey and counted-once recovery behavior.
+Future schedule starts remain waiting and receive a wake-up. Automatic opening requires a visible document. Explicit click and Reopen share eligibility, completion and collision checks but bypass automatic pacing. An in-progress capture already open when its schedule ends remains usable; expiry prevents later openings. *Amended 22 October 2026 by [ADR 0052](0052-a-countdown-counts-to-the-optins-own-schedule-end.md): offer-only presentations close at their schedule deadline without recording a visitor dismissal; editor previews retain their editing lifecycle.* Progressive capture retains its mounted journey and counted-once recovery behavior.
 
 ## Session pacing
 

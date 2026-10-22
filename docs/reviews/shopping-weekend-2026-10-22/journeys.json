@@ -1,0 +1,166 @@
+[
+  {
+    "id": "bf-midnight-atelier",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-acid-markdown",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-early-list",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "bf-good-deal-receipt",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-blackout-strip",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-weekend-edition",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-velvet-rope",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "bf-little-black-gift",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-chrome-hour",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-system-upgrade",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-command-save",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-pixel-drop",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "cm-electric-aisle",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-night-shift",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-cyber-club",
+    "visited": [
+      "s1",
+      "s2"
+    ],
+    "finalKind": "acknowledgement",
+    "passed": true
+  },
+  {
+    "id": "bf-final-markdown",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-closing-time",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-digital-after-hours",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "cm-midnight-transmission",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  },
+  {
+    "id": "bf-weekend-curtain",
+    "visited": [
+      "s1"
+    ],
+    "finalKind": "content",
+    "passed": true
+  }
+]

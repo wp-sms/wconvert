@@ -1,0 +1,136 @@
+{
+  "results": [
+    {
+      "id": "cm-night-shift",
+      "width": 320,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": false,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "cm-night-shift",
+      "width": 1280,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": false,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "bf-final-markdown",
+      "width": 320,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "bf-final-markdown",
+      "width": 1280,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "bf-closing-time",
+      "width": 320,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "bf-closing-time",
+      "width": 1280,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "width": 320,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": false,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "width": 1280,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": false,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "width": 320,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "width": 1280,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": true,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "width": 320,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": false,
+      "expiresWhileOpen": true
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "width": 1280,
+      "passed": true,
+      "realDeadline": true,
+      "ticks": true,
+      "refreshPreservesDeadline": true,
+      "daysHide": true,
+      "copiedCode": false,
+      "expiresWhileOpen": true
+    }
+  ]
+}

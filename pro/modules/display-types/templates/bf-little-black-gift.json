@@ -1,0 +1,159 @@
+{
+  "id": "bf-little-black-gift",
+  "name": "A little black gift",
+  "display_type": "slide_in",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#f1bfc7",
+    "fg": "#2b2125",
+    "accent": "#2b2125",
+    "accent-fg": "#ffe8ec",
+    "muted": "#63444d",
+    "border": "#84606a",
+    "input-bg": "#ffe8ec",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "24rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "text": "A BLACK FRIDAY LITTLE SOMETHING",
+              "role": "eyebrow",
+              "id": "n1"
+            },
+            {
+              "type": "image",
+              "src": "data:image/webp;base64,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",
+              "alt": "A black gift box with a pink ribbon",
+              "fit": "contain",
+              "tokens": {
+                "radius": "0"
+              },
+              "id": "n2"
+            },
+            {
+              "type": "heading",
+              "text": "Good things.\nSmall packages.",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "2.6rem",
+                "heading-weight": "400",
+                "heading-font": "\"Instrument Serif\", Georgia, serif"
+              },
+              "id": "n3",
+              "narrow": {
+                "heading-size": "2.15rem"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Unwrap 25% off your next good find.",
+              "role": "body",
+              "id": "n4"
+            },
+            {
+              "type": "code",
+              "copy": true,
+              "copy_label": "Copy code",
+              "copied_label": "Copied",
+              "copy_failed_label": "Select and copy this code",
+              "text": "GIFT25",
+              "role": "code_value",
+              "tokens": {
+                "text-size": ".875rem",
+                "radius": ".3rem"
+              },
+              "id": "n5"
+            },
+            {
+              "type": "button",
+              "label": "Unwrap the offer",
+              "action": "link",
+              "role": "cta_label",
+              "tokens": {
+                "radius": ".25rem",
+                "text-size": "1rem",
+                "tracking": "normal"
+              },
+              "id": "n6"
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n7"
+            }
+          ],
+          "tokens": {
+            "pad": "3.75rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0",
+            "align": "center"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.5rem 1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -48,6 +48,20 @@ carries it.
 *Amended by [0162](0162-the-delivery-plan-is-derived.md):* it is published
 once one of its setups has a current approval; no plan list names it.
 
+**Collections may also be catalogue-only (22 October 2026).** A curated source
+with `catalogue_only: true` follows the same review and hosted publication path,
+but generates neither a bundled JSON snapshot nor a bundled translation label.
+This lets a seasonal collection include hosted Free and Pro setups together
+without putting Pro references into the Free ZIP. The flag is authoring metadata;
+the server still exports the existing collection schema. Previously approved
+online collections with stale dependencies are refused, just as stale bundled
+collections are. The Black Friday & Cyber Monday collection uses this delivery.
+Its discovery response includes all published members and public previews before
+installation, plus each member's availability and usable local Playbook identity.
+It does not expose Pro source trees. Free/Pro labels and separate Install/Use
+actions follow [0156 §9](0156-the-catalogue-is-one-design-per-object.md).
+Installing a member changes its action, never the collection's membership.
+
 ## Consequences
 
 - Free can grow its gallery without growing the ZIP. A Free site sees these

@@ -1,0 +1,23 @@
+[
+  {
+    "mode": "free",
+    "count": 20,
+    "tier": "free",
+    "proHints": true,
+    "passed": true
+  },
+  {
+    "mode": "free-optout",
+    "count": 5,
+    "tier": "free",
+    "proHints": false,
+    "passed": true
+  },
+  {
+    "mode": "pro",
+    "count": 20,
+    "tier": "pro",
+    "proHints": false,
+    "passed": true
+  }
+]

@@ -1,0 +1,225 @@
+{
+  "id": "bf-final-markdown",
+  "name": "The final markdown",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#b93220",
+    "fg": "#fff2d9",
+    "accent": "#fff2d9",
+    "accent-fg": "#9e291a",
+    "muted": "#fff2d9",
+    "border": "#c7a99a",
+    "input-bg": "#fff2d9",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "31rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "BLACK FRIDAY / THE FINAL MARKDOWN",
+                  "role": "eyebrow",
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "text": "A good thing.\nWhile it lasts.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.8rem",
+                    "heading-weight": "400",
+                    "heading-font": "\"Instrument Serif\", Georgia, serif"
+                  },
+                  "id": "n2",
+                  "narrow": {
+                    "heading-size": "2.15rem"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "narrow": {
+                    "heading-size": "2.6rem"
+                  },
+                  "text": "30%",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                    "heading-weight": "400",
+                    "heading-font": "\"DM Sans\", Arial, sans-serif"
+                  },
+                  "id": "n3"
+                },
+                {
+                  "type": "eyebrow",
+                  "text": "OFF YOUR NEXT FAVOURITE",
+                  "role": "eyebrow",
+                  "id": "n4"
+                }
+              ],
+              "tokens": {
+                "pad": "3.75rem 2rem 1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "3.5rem 1.5rem 1.5rem",
+                "gap": ".85rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "THE OFFER ENDS IN",
+                  "role": "eyebrow",
+                  "id": "n5"
+                },
+                {
+                  "type": "countdown",
+                  "layout": "boxes",
+                  "days_label": "Days",
+                  "hours_label": "Hrs",
+                  "minutes_label": "Mins",
+                  "seconds_label": "Secs",
+                  "narrow": {
+                    "text-size": "1rem"
+                  },
+                  "role": "countdown_units",
+                  "tokens": {
+                    "text-size": "1.2rem",
+                    "font": "\"DM Sans\", Arial, sans-serif",
+                    "heading-weight": "400",
+                    "tracking": "normal",
+                    "radius": ".3rem"
+                  },
+                  "id": "n6"
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0",
+                "bg": "accent",
+                "fg": "accent-fg",
+                "muted": "accent-fg",
+                "input-bg": "accent"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "code",
+                  "copy": true,
+                  "copy_label": "Copy code",
+                  "copied_label": "Copied",
+                  "copy_failed_label": "Select and copy this code",
+                  "text": "FINAL30",
+                  "role": "code_value",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "radius": ".3rem"
+                  },
+                  "id": "n7"
+                },
+                {
+                  "type": "button",
+                  "label": "Make it yours",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "text",
+                  "text": "Selected items. Offer terms apply.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n9"
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

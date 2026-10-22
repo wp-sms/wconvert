@@ -4366,6 +4366,492 @@
         ],
         "reason": "Use the reviewed Halloween prototype as a complete editable campaign starting point."
       }
+    },
+    {
+      "id": "bf-midnight-atelier",
+      "audience": "stores",
+      "family": "Midnight atelier",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 01: Midnight atelier. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-acid-markdown",
+      "audience": "stores",
+      "family": "Acid markdown",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 02: Acid markdown. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-early-list",
+      "audience": "stores",
+      "family": "The early list",
+      "visitor_need": "Reveal a coupon after a required email signup.",
+      "difference": "Production adaptation of approved shopping-weekend concept 03: The early list. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-good-deal-receipt",
+      "audience": "stores",
+      "family": "Your good-deal receipt",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 04: Your good-deal receipt. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-code"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-blackout-strip",
+      "audience": "stores",
+      "family": "The blackout strip",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 05: The blackout strip. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-countdown"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-weekend-edition",
+      "audience": "stores",
+      "family": "The weekend edition",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 06: The weekend edition. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "popup-editorial"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-velvet-rope",
+      "audience": "stores",
+      "family": "Behind the velvet rope",
+      "visitor_need": "Reveal a coupon after a required email signup.",
+      "difference": "Production adaptation of approved shopping-weekend concept 07: Behind the velvet rope. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "fullscreen-split"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-little-black-gift",
+      "audience": "stores",
+      "family": "A little black gift",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 08: A little black gift. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-code"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-chrome-hour",
+      "audience": "stores",
+      "family": "Chrome hour",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 09: Chrome hour. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-system-upgrade",
+      "audience": "stores",
+      "family": "System upgrade",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 10: System upgrade. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-command-save",
+      "audience": "stores",
+      "family": "Command + save",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 11: Command + save. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-countdown"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-pixel-drop",
+      "audience": "stores",
+      "family": "Pixel drop",
+      "visitor_need": "Reveal a coupon after a required email signup.",
+      "difference": "Production adaptation of approved shopping-weekend concept 12: Pixel drop. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-code"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-electric-aisle",
+      "audience": "stores",
+      "family": "The electric aisle",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 13: The electric aisle. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "popup-editorial"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-night-shift",
+      "audience": "stores",
+      "family": "The night shift",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 14: The night shift. The deadline anchors the composition.",
+      "requirements": [
+        "Valid offer, discount and terms",
+        "Real campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-countdown"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-cyber-club",
+      "audience": "stores",
+      "family": "The cyber club",
+      "visitor_need": "Reveal a coupon after a required email signup.",
+      "difference": "Production adaptation of approved shopping-weekend concept 15: The cyber club. Preserves the distinct visual hierarchy and format of the approved prototype.",
+      "requirements": [
+        "Valid offer, discount and terms"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Accepted email submissions.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "popup-editorial"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-final-markdown",
+      "audience": "stores",
+      "family": "The final markdown",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 16: The final markdown. The deadline anchors the composition.",
+      "requirements": [
+        "Valid offer, discount and terms",
+        "Real campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-engraved"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-closing-time",
+      "audience": "stores",
+      "family": "Closing time",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 17: Closing time. The deadline anchors the composition.",
+      "requirements": [
+        "Valid offer, discount and terms",
+        "Real campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-code"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-digital-after-hours",
+      "audience": "stores",
+      "family": "Digital after hours",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 18: Digital after hours. The deadline anchors the composition.",
+      "requirements": [
+        "Valid offer, discount and terms",
+        "Real campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "popup-editorial"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "cm-midnight-transmission",
+      "audience": "stores",
+      "family": "Midnight transmission",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 19: Midnight transmission. The deadline anchors the composition.",
+      "requirements": [
+        "Valid offer, discount and terms",
+        "Real campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "fullscreen-split"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
+    },
+    {
+      "id": "bf-weekend-curtain",
+      "audience": "stores",
+      "family": "The weekend curtain",
+      "visitor_need": "Present a seasonal offer without collecting details.",
+      "difference": "Production adaptation of approved shopping-weekend concept 20: The weekend curtain. The deadline anchors the composition.",
+      "requirements": [
+        "Valid offer, discount and terms",
+        "Real campaign end date"
+      ],
+      "status": "review",
+      "source": "User-approved WConvert shopping-weekend prototype, 22 October 2026.",
+      "suggested_setup": [
+        "Choose the actual promotion dates and review page targeting."
+      ],
+      "measure": "Offer link clicks; sales are a separate store metric.",
+      "batch": "shopping-weekend-2026",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "halloween-countdown"
+        ],
+        "reason": "Distinct approved prototype composition, re-authored with editable native elements."
+      }
     }
   ],
   "batches": [
@@ -4440,6 +4926,10 @@
     {
       "id": "halloween-2026",
       "name": "Halloween campaign collection"
+    },
+    {
+      "id": "shopping-weekend-2026",
+      "name": "Black Friday and Cyber Monday"
     }
   ]
 }

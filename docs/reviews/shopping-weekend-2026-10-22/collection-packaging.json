@@ -1,0 +1,28 @@
+{
+  "free": {
+    "designs": [],
+    "count": 0,
+    "collectionBundled": false
+  },
+  "pro": {
+    "designs": [
+      "bf-midnight-atelier",
+      "bf-good-deal-receipt",
+      "bf-blackout-strip",
+      "bf-velvet-rope",
+      "bf-little-black-gift",
+      "cm-chrome-hour",
+      "cm-system-upgrade",
+      "cm-command-save",
+      "cm-pixel-drop",
+      "cm-electric-aisle",
+      "cm-night-shift",
+      "bf-final-markdown",
+      "bf-closing-time",
+      "cm-midnight-transmission",
+      "bf-weekend-curtain"
+    ],
+    "count": 15,
+    "collectionBundled": false
+  }
+}

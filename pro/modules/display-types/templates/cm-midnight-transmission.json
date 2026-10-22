@@ -1,0 +1,287 @@
+{
+  "id": "cm-midnight-transmission",
+  "name": "Midnight transmission",
+  "display_type": "fullscreen",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#101e36",
+    "fg": "#e8f998",
+    "accent": "#e8f998",
+    "accent-fg": "#101e36",
+    "muted": "#cad8e7",
+    "border": "#7590ad",
+    "input-bg": "#1b2f4d",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": ".5rem",
+    "width": "100%",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "text": "CYBER MONDAY / MIDNIGHT TRANSMISSION",
+              "role": "eyebrow",
+              "id": "n1"
+            },
+            {
+              "type": "divider",
+              "id": "n2"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "text": "Great finds.\nFinite time.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "clamp(2.7rem,6cqi,5rem)",
+                        "heading-weight": "400",
+                        "heading-font": "\"Instrument Serif\", Georgia, serif"
+                      },
+                      "id": "n3",
+                      "narrow": {
+                        "heading-size": "2.15rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem 0",
+                    "gap": "1rem",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "pad": ".75rem 0",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "2.6rem"
+                      },
+                      "text": "40%",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                        "heading-weight": "400",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif"
+                      },
+                      "id": "n4"
+                    },
+                    {
+                      "type": "eyebrow",
+                      "text": "OFF SELECTED ONLINE FINDS",
+                      "role": "eyebrow",
+                      "id": "n5"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem 0",
+                    "gap": "1rem",
+                    "radius": "0",
+                    "align": "end"
+                  },
+                  "narrow": {
+                    "pad": ".75rem 0",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "basis": "20rem",
+              "ratio": "0.5",
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "eyebrow",
+              "text": "THE TRANSMISSION ENDS IN",
+              "role": "eyebrow",
+              "id": "n6"
+            },
+            {
+              "type": "countdown",
+              "layout": "boxes",
+              "days_label": "Days",
+              "hours_label": "Hrs",
+              "minutes_label": "Mins",
+              "seconds_label": "Secs",
+              "narrow": {
+                "text-size": "1rem"
+              },
+              "role": "countdown_units",
+              "tokens": {
+                "text-size": "3rem",
+                "font": "\"DM Sans\", Arial, sans-serif",
+                "heading-weight": "400",
+                "tracking": "normal",
+                "radius": ".3rem"
+              },
+              "id": "n7"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "text": "A brighter setup.\nA smaller total.",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "2rem",
+                        "heading-weight": "400",
+                        "heading-font": "\"Instrument Serif\", Georgia, serif"
+                      },
+                      "id": "n8",
+                      "narrow": {
+                        "heading-size": "2rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem 0",
+                    "gap": "1rem",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "pad": ".75rem 0",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "code",
+                      "copy": true,
+                      "copy_label": "Copy code",
+                      "copied_label": "Copied",
+                      "copy_failed_label": "Select and copy this code",
+                      "text": "MIDNIGHT40",
+                      "role": "code_value",
+                      "tokens": {
+                        "text-size": ".875rem",
+                        "radius": ".3rem"
+                      },
+                      "id": "n9"
+                    },
+                    {
+                      "type": "button",
+                      "label": "Catch the final transmission",
+                      "action": "link",
+                      "role": "cta_label",
+                      "tokens": {
+                        "radius": ".25rem",
+                        "text-size": "1rem",
+                        "tracking": "normal"
+                      },
+                      "id": "n10"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "1rem 0",
+                    "gap": "1rem",
+                    "radius": "0"
+                  },
+                  "narrow": {
+                    "pad": ".75rem 0",
+                    "gap": ".85rem"
+                  }
+                }
+              ],
+              "basis": "20rem",
+              "ratio": "0.5",
+              "tokens": {
+                "gap": "0"
+              }
+            },
+            {
+              "type": "text",
+              "text": "Selected items. Offer terms apply.",
+              "role": "fine_print",
+              "tokens": {
+                "text-size": ".875rem",
+                "tracking": "normal"
+              },
+              "id": "n11"
+            }
+          ],
+          "tokens": {
+            "pad": "3.75rem 2rem 2rem",
+            "gap": "1rem",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "3.5rem 1.5rem 1.5rem",
+            "gap": ".85rem"
+          }
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -191,7 +191,12 @@ and needs a real review. Nothing that was not current under the base is carried.
 A setup approval change also changes its dependent collection revision. Old
 visual evidence is not a substitute for inspecting the new output.
 
-For a release containing the bundled collections:
+For a release containing curated collections:
+
+Collections with `catalogue_only: true` follow the same review steps below but
+are published only in the hosted catalogue; `templates:collections:publish`
+deliberately omits their bundled snapshots and labels. Use this for collections
+mixing hosted Free and Pro setups, so the Free ZIP does not acquire Pro references.
 
 1. Review the current members listed in `collections/source.json`: all screens,
    phone/desktop, long copy/RTL, practical journeys and configured WordPress.

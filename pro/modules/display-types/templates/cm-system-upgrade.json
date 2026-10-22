@@ -1,0 +1,211 @@
+{
+  "id": "cm-system-upgrade",
+  "name": "System upgrade",
+  "display_type": "popup",
+  "tier": "pro",
+  "tokens": {
+    "bg": "#d6c6f1",
+    "fg": "#232727",
+    "accent": "#232727",
+    "accent-fg": "#defb84",
+    "muted": "#4f425f",
+    "border": "#82758e",
+    "input-bg": "#f5f1fa",
+    "font": "\"DM Sans\", Arial, sans-serif",
+    "heading-font": "\"DM Sans\", Arial, sans-serif",
+    "heading-size": "2.6rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.45",
+    "tracking": "-.025em",
+    "pad": "0",
+    "gap": "0",
+    "radius": "0",
+    "width": "31rem",
+    "align": "start",
+    "close-fg": "fg",
+    "close-bg": "bg",
+    "close-border": "border",
+    "close-radius": "50%",
+    "error-fg": "#991b1b",
+    "error-bg": "#fff1f2",
+    "shadow": "8px 8px 0 #232727"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "CYBER MONDAY",
+                  "role": "eyebrow",
+                  "id": "n1"
+                }
+              ],
+              "tokens": {
+                "pad": "1.25rem 4rem 1.25rem 1.5rem",
+                "gap": "1rem",
+                "radius": "0",
+                "muted": "fg"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "text": "YOUR NEXT UPGRADE",
+                  "role": "eyebrow",
+                  "id": "n2"
+                },
+                {
+                  "type": "heading",
+                  "text": "Less spend.\nMore upgrade.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.8rem",
+                    "heading-weight": "400"
+                  },
+                  "id": "n3",
+                  "narrow": {
+                    "heading-size": "2.15rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "text": "DISCOUNT INSTALLED",
+                      "role": "eyebrow",
+                      "id": "n4"
+                    },
+                    {
+                      "type": "heading",
+                      "narrow": {
+                        "heading-size": "2.6rem"
+                      },
+                      "text": "40%",
+                      "role": "headline",
+                      "tokens": {
+                        "heading-size": "clamp(2.6rem,8cqi,6rem)",
+                        "heading-weight": "400",
+                        "heading-font": "\"DM Sans\", Arial, sans-serif"
+                      },
+                      "id": "n5"
+                    }
+                  ],
+                  "tokens": {
+                    "pad": "2rem",
+                    "gap": "1rem",
+                    "radius": "0",
+                    "bg": "accent",
+                    "fg": "accent-fg",
+                    "muted": "accent-fg"
+                  },
+                  "narrow": {
+                    "pad": "1.5rem",
+                    "gap": ".85rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "Your setup called. It wants in on this.",
+                  "role": "body",
+                  "id": "n6"
+                },
+                {
+                  "type": "code",
+                  "copy": true,
+                  "copy_label": "Copy code",
+                  "copied_label": "Copied",
+                  "copy_failed_label": "Select and copy this code",
+                  "text": "UPGRADE40",
+                  "role": "code_value",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "radius": ".3rem"
+                  },
+                  "id": "n7"
+                },
+                {
+                  "type": "button",
+                  "label": "Run the upgrade",
+                  "action": "link",
+                  "role": "cta_label",
+                  "tokens": {
+                    "radius": ".25rem",
+                    "text-size": "1rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n8"
+                },
+                {
+                  "type": "text",
+                  "text": "Selected upgrades. No download required.",
+                  "role": "fine_print",
+                  "tokens": {
+                    "text-size": ".875rem",
+                    "tracking": "normal"
+                  },
+                  "id": "n9"
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.5rem",
+                "gap": ".85rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [],
+    "fonts": [
+      {
+        "family": "DM Sans",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 700,
+            "italic": false
+          }
+        ]
+      },
+      {
+        "family": "Instrument Serif",
+        "faces": [
+          {
+            "weight": 400,
+            "italic": false
+          },
+          {
+            "weight": 400,
+            "italic": true
+          }
+        ]
+      }
+    ]
+  }
+}

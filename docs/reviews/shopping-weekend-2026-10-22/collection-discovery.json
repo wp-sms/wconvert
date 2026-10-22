@@ -1,0 +1,28 @@
+{
+  "facts": "Draft · 20 of 20 setups approved · 20 designs · preferred stage before",
+  "members": 20,
+  "freeMembers": 5,
+  "calendar": [
+    {
+      "day": "2026-10-15",
+      "featured": false
+    },
+    {
+      "day": "2026-10-16",
+      "featured": true
+    },
+    {
+      "day": "2026-11-27",
+      "featured": true
+    },
+    {
+      "day": "2026-11-30",
+      "featured": true
+    },
+    {
+      "day": "2026-12-01",
+      "featured": false
+    }
+  ],
+  "passed": true
+}

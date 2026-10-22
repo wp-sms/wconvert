@@ -1,3 +1,4 @@
+import { scheduledMount } from '@loader/scheduled-mount';
 import type { OptinControls, PayloadEntry, Presenter } from './types';
 import type { Mounted } from '@renderer/mount';
 import { mount } from '@renderer/mount';
@@ -53,7 +54,7 @@ export function createTemplatePresenter(bind: typeof captureInto): Presenter { r
     // ({@link ../../../src/Optin/PublishedProjection.php}).
     const anchor = isOverlay(entry) ? null : anchorFor(entry.anchor ?? entry.id);
 
-    const mounted = mount({
+    const mounted = scheduledMount(mount, {
       ...campaignLifecycle(entry),
       displayType: entry.display_type,
       template,
