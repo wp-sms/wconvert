@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "at": "2026-10-22T07:01:11.018Z",
+  "at": "2026-10-22T07:12:28.033Z",
   "site": "disposable local WordPress",
   "checks": [
     "journey",
@@ -9,7 +9,7 @@
   "setups": [
     {
       "id": "bf-midnight-atelier",
-      "revision": "b8f6db3739e14276186459eefb538019fa8b9a9063c2af12db8366ab5cdefc4b",
+      "revision": "9e02152a1f74a870922e86c188d900de1cb4675a43a0c5befe5e36f858842c13",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -26,7 +26,7 @@
     },
     {
       "id": "bf-midnight-atelier",
-      "revision": "b8f6db3739e14276186459eefb538019fa8b9a9063c2af12db8366ab5cdefc4b",
+      "revision": "9e02152a1f74a870922e86c188d900de1cb4675a43a0c5befe5e36f858842c13",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -281,7 +281,7 @@
     },
     {
       "id": "cm-chrome-hour",
-      "revision": "3a9221f264f3aa7f61ca65d3bbaa92f28819a4bc0ac81545afc6e79b65038ba8",
+      "revision": "db883190494d3947d50e4d6979a4aff9a874623b31aa4908790d170357f9356e",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -298,7 +298,7 @@
     },
     {
       "id": "cm-chrome-hour",
-      "revision": "3a9221f264f3aa7f61ca65d3bbaa92f28819a4bc0ac81545afc6e79b65038ba8",
+      "revision": "db883190494d3947d50e4d6979a4aff9a874623b31aa4908790d170357f9356e",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -315,7 +315,7 @@
     },
     {
       "id": "cm-system-upgrade",
-      "revision": "de146995dc53473415601590d8088d4ff1d1441b3369649e8dafef8c6d365b06",
+      "revision": "cc3dbf223f0dfbd50c7221e4805cee34e89cc322e84c668e2e9a5de1b97149c2",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -332,7 +332,7 @@
     },
     {
       "id": "cm-system-upgrade",
-      "revision": "de146995dc53473415601590d8088d4ff1d1441b3369649e8dafef8c6d365b06",
+      "revision": "cc3dbf223f0dfbd50c7221e4805cee34e89cc322e84c668e2e9a5de1b97149c2",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -417,7 +417,7 @@
     },
     {
       "id": "cm-electric-aisle",
-      "revision": "38925650e0a381b124e5adb5fa7c125aada8e1a055914ceacee0f650539c0ead",
+      "revision": "bb1a477e70d2385abef1a863e8628d7526d639b1c7f8dc2cbad4228d3453464e",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -434,7 +434,7 @@
     },
     {
       "id": "cm-electric-aisle",
-      "revision": "38925650e0a381b124e5adb5fa7c125aada8e1a055914ceacee0f650539c0ead",
+      "revision": "bb1a477e70d2385abef1a863e8628d7526d639b1c7f8dc2cbad4228d3453464e",
       "width": 1280,
       "passed": true,
       "screens": 1,
@@ -519,7 +519,7 @@
     },
     {
       "id": "bf-final-markdown",
-      "revision": "1582ac9194acb3e47e9ce789eb89233794bd1a5292205c7b342104fb0275a81f",
+      "revision": "7c9ff25b3f2fb1a6752c6f01dee0ea41ad4b024aec21f428d074564384dd54e3",
       "width": 320,
       "passed": true,
       "screens": 1,
@@ -536,7 +536,7 @@
     },
     {
       "id": "bf-final-markdown",
-      "revision": "1582ac9194acb3e47e9ce789eb89233794bd1a5292205c7b342104fb0275a81f",
+      "revision": "7c9ff25b3f2fb1a6752c6f01dee0ea41ad4b024aec21f428d074564384dd54e3",
       "width": 1280,
       "passed": true,
       "screens": 1,

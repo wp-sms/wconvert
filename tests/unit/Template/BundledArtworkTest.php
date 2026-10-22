@@ -16,7 +16,7 @@ final class BundledArtworkTest extends TestCase
             $source = file_get_contents($file);
             self::assertIsString($source);
             $entry = json_decode($source, true);
-            if (in_array($entry['id'], ['citrus-sunrise', 'trail-window', 'halloween-engraved', 'halloween-monster', 'halloween-forest', 'halloween-bats', 'bf-midnight-atelier', 'cm-chrome-hour', 'cm-electric-aisle'], true)) {
+            if (in_array($entry['id'], ['citrus-sunrise', 'trail-window', 'halloween-engraved', 'halloween-monster', 'halloween-forest', 'halloween-bats'], true)) {
                 continue;
             }
             self::assertSame(

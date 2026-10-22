@@ -2,7 +2,7 @@
   "id": "cm-electric-aisle",
   "name": "The electric aisle",
   "display_type": "inline",
-  "tier": "free",
+  "tier": "pro",
   "tokens": {
     "bg": "#1534c6",
     "fg": "#ffffff",

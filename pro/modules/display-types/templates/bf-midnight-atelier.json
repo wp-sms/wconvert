@@ -2,7 +2,7 @@
   "id": "bf-midnight-atelier",
   "name": "Midnight atelier",
   "display_type": "popup",
-  "tier": "free",
+  "tier": "pro",
   "tokens": {
     "bg": "#f5f0e6",
     "fg": "#28251f",

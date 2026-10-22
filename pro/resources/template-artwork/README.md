@@ -13,7 +13,9 @@ carries a cacheable URL instead of the photo. Missing or altered files are not
 substituted. Keep content-addressed files when artwork changes: saved campaigns
 may still reference an earlier filename.
 
-Shopping-weekend additions: the shopping still life for Velvet rope and the
+Shopping-weekend additions: the shopping still life for Midnight atelier and
+Velvet rope, the chrome sculpture for Chrome hour and Electric aisle, and the
 original gift/pixel illustrations as lossless WebP. These are exact copies of
-the embedded design bytes, with rights records in the same catalogue map and
-source derivatives under `tools/design-library/pilot/assets/commerce/`.
+the embedded design bytes, with premium rights records in the same catalogue
+map and source derivatives under `tools/design-library/pilot/assets/commerce/`.
+All shopping-weekend artwork ships only in Pro.

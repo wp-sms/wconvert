@@ -16,8 +16,3 @@ by After dark and Midnight flight. `BundledArtwork` also resolves exact raster
 main picture editable in its existing scope and out of visitor JSON; unknown
 bytes, gradients and merchant URLs remain untouched. The small pumpkin is an
 original inline SVG in the Pro bar, not a remote asset.
-
-Shopping-weekend additions: exact WebP copies of the reviewed shopping still
-life and chrome sculpture used by Midnight atelier, Chrome hour and Electric
-aisle. Provenance and full prompts are recorded in the catalogue rights map;
-source derivatives are under `tools/design-library/pilot/assets/commerce/`.

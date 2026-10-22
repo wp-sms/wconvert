@@ -1,0 +1,71 @@
+{
+  "id": "cm-chrome-hour",
+  "revision": "db883190494d3947d50e4d6979a4aff9a874623b31aa4908790d170357f9356e",
+  "base_id": "f322204070d26b86f96b8d475b81bf99b8c6b068677e7ac832dd43a6f93c53ca",
+  "decision": "approved",
+  "reviewer": "Codex — tier, packaging and native WordPress review",
+  "note": "Reclassified as Pro for the requested 15 Pro / 5 hosted-only Free split. Reinspected phone and desktop contact sheets; tree, tokens and visitor copy unchanged. Fresh WordPress journey checks pass. See review.md and packaging.json.",
+  "at": "2026-10-22T07:13:00.764Z",
+  "checks": {
+    "visual": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/cm-chrome-hour-320.png",
+          "sha256": "eee585df36424840271f2c8b9de65feb73062764e0eff8f21efbc5d94eb45848"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/cm-chrome-hour-1440.png",
+          "sha256": "86961c79d87fd364e558597410803315adf59800213c12d01e2fd404fc52dacc"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/review.md",
+          "sha256": "793ac07041c09fa5f4ef6eb75bb2f81031073b4a728b2227ae6f19c1c84bc844"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/layout-summary.json",
+          "sha256": "6514c4f42215076f25424b37131174aeec9dedef36848a119772f025b7fa27e2"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/themes.json",
+          "sha256": "4da8292f2837d4e7dba887ac7a5e2779598ec22f0cf903257ff91a670ea016e7"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+          "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+        }
+      ]
+    },
+    "journey": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/journeys.json",
+          "sha256": "23bd5107945eb21aa63140fd35f439471f34d9c5749ede0aa79dddfa202a5906"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+          "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+        }
+      ]
+    },
+    "wordpress": {
+      "status": "passed",
+      "evidence": [
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/results.json",
+          "sha256": "1852311e7525a6798a9b3f7492b92d366e8aea9a146d429899fad6e393c41ef4"
+        },
+        {
+          "path": "docs/reviews/shopping-weekend-2026-10-22/packaging.json",
+          "sha256": "d78faafdae579ac76d34228c6c924a68908ca1758dc02614c83e21d9dfc5aab0"
+        }
+      ]
+    }
+  },
+  "record_id": "ba87de3c3aed78139ab29abba0f55e08b359d7c88d702c081d8227c2bfde91ab"
+}

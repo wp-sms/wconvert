@@ -2,7 +2,7 @@
   "id": "cm-system-upgrade",
   "name": "System upgrade",
   "display_type": "popup",
-  "tier": "free",
+  "tier": "pro",
   "tokens": {
     "bg": "#d6c6f1",
     "fg": "#232727",

@@ -2,7 +2,7 @@
   "id": "cm-chrome-hour",
   "name": "Chrome hour",
   "display_type": "popup",
-  "tier": "free",
+  "tier": "pro",
   "tokens": {
     "bg": "#1534c6",
     "fg": "#ffffff",

@@ -1,7 +1,8 @@
 # The shopping weekend — throwaway visual prototype
 
 Production update, 22 October 2026: all twenty concepts were approved and authored as
-native Templates with matching Playbooks. Their final mobile, editor and WordPress
+native Templates with matching Playbooks: 15 Pro and 5 Free catalogue downloads,
+with none of this collection bundled in Free. Their final mobile, editor and WordPress
 evidence is in [the native review](../../../docs/reviews/shopping-weekend-2026-10-22/review.md).
 This prototype remains a reference for the original design intent.
 
