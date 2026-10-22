@@ -158,7 +158,7 @@ describe('the Contact form switch', () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
     const control = await formSwitch();
     await userEvent.click(control.getByRole('button', { name: 'Why a copy' }));
-    expect(await screen.findByText(/Published campaigns keep their goal/)).toBeInTheDocument();
+    expect(await screen.findByText(/This campaign is published, so what it counts can’t change/)).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
     await userEvent.click(control.getByRole('button', { name: 'Make a signup copy' }));
     const box = within(await screen.findByRole('dialog', { name: 'Make a signup copy' }));

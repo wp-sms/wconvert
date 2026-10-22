@@ -41,8 +41,8 @@ export function CaptureSwitch({ state, copy, published, onChoose, sectionRef }: 
     <div className="wconvert-capture-switch__heading">
       <strong>{__('Contact form', 'wconvert')}</strong>
       {copy && <span>{named}<InfoTip label={__('Why a copy', 'wconvert')}>{published
-        ? __('Published campaigns keep their goal, so the change is made in a new draft. The original and its results stay as they are.', 'wconvert')
-        : __('A test variant keeps the test’s goal, so the change is made in a standalone draft.', 'wconvert')}</InfoTip></span>}
+        ? __('This campaign is published, so what it counts can’t change. The change goes into a new draft instead. This campaign and its results stay as they are.', 'wconvert')
+        : __('This campaign is part of an A/B test, and both versions must count the same thing. The change goes into a new, separate campaign instead. The test stays as it is.', 'wconvert')}</InfoTip></span>}
     </div>
     {copy ? <Button type="button" variant="outline" size="sm" onClick={() => onChoose(state === 'none' ? 'email' : 'none')}>
       {state === 'none' ? __('Make a signup copy', 'wconvert') : __('Make an offer copy', 'wconvert')}

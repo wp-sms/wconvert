@@ -2491,10 +2491,10 @@ button.wconvert-flow-card__foot:hover { color: var(--action); text-decoration: u
 /* The Contact form switch, between the Look and the screens (ADR 0163). */
 .wconvert-capture-switch { display: grid; gap: 8px; margin-block-end: 14px; padding-block-end: 14px; border-block-end: 1px solid var(--border); }
 .wconvert-capture-switch:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-capture-switch__heading { display: flex; justify-content: space-between; gap: 8px; padding-inline: 4px; font-size: var(--text-note); }
+.wconvert-capture-switch__heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-block-size: 28px; padding-inline: 4px; font-size: var(--text-note); }
 .wconvert-capture-switch__heading strong { font-weight: 600; }
 .wconvert-capture-switch__heading span, .wconvert-capture-switch p { color: var(--muted-foreground); }
-.wconvert-capture-switch__heading span { display: inline-flex; align-items: center; gap: 2px; }
+.wconvert-capture-switch__heading span { display: inline-flex; align-items: center; gap: 2px; margin-inline-end: -6px; }
 .wconvert-capture-switch .wconvert-option-strip { inline-size: 100%; }
 .wconvert-capture-switch .wconvert-option-strip label { flex: 1; justify-content: center; }
 .wconvert-capture-switch p { margin: 0; padding-inline: 4px; font-size: var(--text-micro); line-height: 1.45; }
