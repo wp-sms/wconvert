@@ -2,6 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { Refusal } from '../../components/ui/option-menu';
 import type { QuestionCondition, QuestionNode, TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
 import { graphEdgeId, graphReaches } from './graph';
+import { contactWording, privacyLink } from './captureWording';
 
 export function walkNodes(node: TemplateNode, includeHidden = true): TemplateNode[] {
   if (!includeHidden && 'hidden' in node && node.hidden) return [];
@@ -168,8 +169,8 @@ export function addGraphResultSignup(tree: TemplateTree): TemplateTree {
   const signup: TemplateScreen = { id: signupId, name: __('Optional email signup', 'wconvert'), kind: 'input', content: { type: 'stack', children: [
     { type: 'heading', text: __('Want more guides?', 'wconvert'), role: 'headline' },
     { type: 'text', text: __('Your result is already available. Signup is optional.', 'wconvert'), role: 'body' },
-    { type: 'field', name: 'email', required: true, label: __('Email address', 'wconvert') },
-    { type: 'consent', text: __('Send me email updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
+    { type: 'field', name: 'email', required: true, label: contactWording('email').label },
+    { type: 'consent', text: contactWording('email').optionalConsent, link: privacyLink(), hidden: false, role: 'consent_text' },
     { type: 'button', label: __('Sign up', 'wconvert'), action: 'submit', submission: submissionId },
     { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId, tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
     { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },

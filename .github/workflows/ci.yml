@@ -251,6 +251,12 @@ jobs:
       - name: Approvals current
         run: npm run templates:releasable
 
+      # A design change can break the form switch on it (ADR 0163).
+      - name: Converted designs
+        run: |
+          WCONVERT_DUMP_CONVERSIONS="$RUNNER_TEMP/conversions.json" npx vitest run tests/js/capture-conversion-designs.test.ts
+          php bin/verify-converted-designs.php "$RUNNER_TEMP/conversions.json"
+
       - name: Worker
         working-directory: tools/template-server
         run: npm run check && npm test
