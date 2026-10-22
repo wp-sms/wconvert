@@ -1105,13 +1105,31 @@ final class OptinWriteTest extends TestCase
     /** A counted button or a form is not a message, so either waits at publication. */
     public function testAMessageCannotPublishALinkOrAForm(): void
     {
-        foreach (['offer-panel', 'stacked-signup'] as $design) {
-            $draft = $this->create(Goal::ShowMessage, ['template_id' => $design]);
-            $this->assertIsArray($draft, $design);
-            $request = new WP_REST_Request();
-            $request->set_param('id', $draft['id']);
-            $this->assertInstanceOf(WP_Error::class, $this->controller->publish($request), $design);
-        }
+        $form = $this->create(Goal::ShowMessage, ['template_id' => 'stacked-signup']);
+        $this->assertIsArray($form);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $form['id']);
+        $this->assertInstanceOf(WP_Error::class, $this->controller->publish($request));
+
+        // A link taken out at create and put back by an edit still waits.
+        $offer = $this->create(Goal::PromoteOffer, ['template_id' => 'offer-panel']);
+        $this->assertIsArray($offer);
+        $edit = new WP_REST_Request();
+        $edit->set_param('id', $offer['id']);
+        $edit->set_param('goal', Goal::ShowMessage->value);
+        $edit->set_param('config', $offer['config']);
+        $this->assertInstanceOf(\WP_REST_Response::class, $this->controller->update($edit));
+        $publish = new WP_REST_Request();
+        $publish->set_param('id', $offer['id']);
+        $this->assertInstanceOf(WP_Error::class, $this->controller->publish($publish));
+    }
+
+    /** A click design created for a message, from a linked design id, leaves its counted link behind. */
+    public function testAClickDesignCreatedForAMessageLosesItsCountedLink(): void
+    {
+        $message = $this->create(Goal::ShowMessage, ['template_id' => 'offer-panel']);
+        $this->assertIsArray($message);
+        $this->assertSame([], \WConvert\Template\ConvertingAct::offeredIn($message['config']['template']['tree']));
     }
 
     /** The goal and the design of one edit are one row write, so Undo has one thing to restore. */

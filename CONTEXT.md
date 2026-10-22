@@ -889,7 +889,9 @@ explicit evidence limits, not additional tracked stages.
 
 Incomplete Goal/design pairings may be saved as drafts. The gallery suggests
 fitting designs first using existing action/capture facets, and **Show all designs**
-preserves exploration. Publication checks the final design again. A click design
+preserves exploration. A design that fits once the form switch adds or removes
+its form is suggested too, and applied converted
+([ADR 0163](docs/adr/0163-capture-toggle.md)). Publication checks the final design again. A click design
 still cannot bind Destinations that would have no Lead to receive.
 
 **Request a consultation** now captures a request rather than redirecting to a

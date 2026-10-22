@@ -5,9 +5,9 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import type { Template } from '../../resources/renderer/src/types';
 import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../../resources/admin/src/templates/api';
-import { counterpartOf, type Fit } from '../../resources/admin/src/builder/Gallery';
+import { conversionOf, type Fit } from '../../resources/admin/src/builder/Gallery';
 import { TemplateDesignDetail } from '../../resources/admin/src/builder/TemplateDesignDetail';
-import { counterpartChoice, counterpartSource } from '../../resources/admin/src/builder/structure/captureConversion';
+import { conversionFor, otherSideOf } from '../../resources/admin/src/builder/structure/captureConversion';
 import { GOALS } from './support/goals';
 
 /** The gallery's way into the form switch (ADR 0163): designs that fit the Goal once converted. */
@@ -16,26 +16,26 @@ const goal = (id: string) => GOALS.find(entry => entry.id === id)!;
 const LABELS = { fields: {}, facetValues: {}, facets: {} } as unknown as TemplateLabelsWithFacets;
 const OFFER: TemplateIndexEntry = { id: 'offer-receipt', name: 'Offer receipt', display_type: 'popup', tier: 'free', availability: 'ready',
   facets: { act: 'click', captures: [], shape: 'panel', has_image: false, asks_consent: false } };
-const fitFor = (id: string): Fit => ({ bound: false, sibling: null, act: 'submit', outcome: goal(id).outcome, capture: { goal: id, goals: GOALS } });
+const fitFor = (id: string): Fit => ({ bound: false, sibling: null, act: 'submit', outcome: goal(id).outcome, capture: { goal: id, goals: GOALS, config: {} } });
 
 describe('which designs the switch makes fit', () => {
   it('offers click designs to a list goal and forms to an offer or a message, never the reverse', () => {
-    expect(counterpartOf(OFFER, fitFor('grow_email_list'))).toBe('email');
-    expect(counterpartOf(OFFER, fitFor('grow_sms_list'))).toBe('phone');
-    expect(counterpartOf(OFFER, fitFor('promote_offer'))).toBeNull();
+    expect(conversionOf(OFFER, fitFor('grow_email_list'))).toBe('email');
+    expect(conversionOf(OFFER, fitFor('grow_sms_list'))).toBe('phone');
+    expect(conversionOf(OFFER, fitFor('promote_offer'))).toBeNull();
     const form = { ...OFFER, facets: { ...OFFER.facets, act: 'submit' as const, captures: ['email'] } };
-    expect(counterpartOf(form, fitFor('promote_offer'))).toBe('none');
-    expect(counterpartOf(form, fitFor('show_message'))).toBe('none');
-    expect(counterpartOf(form, fitFor('deliver_lead_magnet'))).toBeNull();
-    expect(counterpartOf({ ...OFFER, remote: { id: 'x', revision: 1, sha256: '', state: 'install', thumbnail: null, tags: [], family: null, popularity: null, prerequisites: [] } }, fitFor('grow_email_list'))).toBeNull();
+    expect(conversionOf(form, fitFor('promote_offer'))).toBe('none');
+    expect(conversionOf(form, fitFor('show_message'))).toBe('none');
+    expect(conversionOf(form, fitFor('deliver_lead_magnet'))).toBeNull();
+    expect(conversionOf({ ...OFFER, remote: { id: 'x', revision: 1, sha256: '', state: 'install', thumbnail: null, tags: [], family: null, popularity: null, prerequisites: [] } }, fitFor('grow_email_list'))).toBeNull();
   });
 
   it('finds the setups of the goal on the other side', () => {
-    expect(counterpartSource(goal('grow_email_list'), GOALS)?.id).toBe('promote_offer');
-    expect(counterpartSource(goal('collect_enquiries'), GOALS)?.id).toBe('promote_offer');
-    expect(counterpartSource(goal('show_message'), GOALS)?.id).toBe('grow_email_list');
-    expect(counterpartSource(goal('recover_cart'), GOALS)).toBeNull();
-    expect(counterpartChoice(goal('collect_enquiries').outcome, { act: 'click', captures: [] })).toBe('email');
+    expect(otherSideOf(goal('grow_email_list'), GOALS)?.id).toBe('promote_offer');
+    expect(otherSideOf(goal('collect_enquiries'), GOALS)?.id).toBe('promote_offer');
+    expect(otherSideOf(goal('show_message'), GOALS)?.id).toBe('grow_email_list');
+    expect(otherSideOf(goal('recover_cart'), GOALS)).toBeNull();
+    expect(conversionFor(goal('collect_enquiries').outcome, { act: 'click', captures: [] })).toBe('email');
   });
 });
 
@@ -58,5 +58,28 @@ describe('using a design with its form added', () => {
     expect(applied.tree.submissions).toHaveLength(1);
     expect(applied.tree.steps.map(step => step.kind)).toEqual(['input', 'acknowledgement']);
     vi.unstubAllGlobals();
+  });
+});
+
+describe('an enquiries goal through the gallery (A6)', () => {
+  it('adds an enquiry form and keeps the enquiries goal', async () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+    const sample = design('offer-receipt');
+    const onChoose = vi.fn();
+    render(<TemplateDesignDetail entry={OFFER} template={sample} labels={LABELS} current={false} fit={fitFor('collect_enquiries')} goalLabel="Collect enquiries"
+      busy={false} onChoose={onChoose} onBack={vi.fn()} onPrepare={vi.fn().mockResolvedValue(sample)} />);
+    const use = await screen.findByRole('button', { name: 'Use with enquiry form' });
+    expect(screen.getByText(/The goal stays “Collect enquiries”\./)).toBeInTheDocument();
+    await waitFor(() => expect(use).toHaveAttribute('aria-disabled', 'false'));
+    await userEvent.click(use);
+    const [, applied] = onChoose.mock.calls[0] as [string, Template];
+    expect(applied.tree.submissions).toHaveLength(1);
+    vi.unstubAllGlobals();
+  });
+
+  it('never promises a conversion the switch refuses once the design is known', () => {
+    const quiz = { tree: { v: 2, steps: [{ id: 'r', name: 'Result', kind: 'result', content: { type: 'stack', children: [] } }], submissions: [] }, tokens: {} } as unknown as Template;
+    expect(conversionOf(OFFER, fitFor('grow_email_list'))).toBe('email');
+    expect(conversionOf(OFFER, fitFor('grow_email_list'), quiz)).toBeNull();
   });
 });

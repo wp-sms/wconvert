@@ -367,7 +367,7 @@ export type CaptureChoice = 'none' | ContactChannel;
  * facets before its tree is loaded (ADR 0163): a click design for a Goal that
  * collects email or phone, a form for one that does not.
  */
-export function counterpartChoice(outcome: GoalEntry['outcome'] | undefined, facets: { readonly act: string | null; readonly captures: readonly string[] }): CaptureChoice | null {
+export function conversionFor(outcome: GoalEntry['outcome'] | undefined, facets: { readonly act: string | null; readonly captures: readonly string[] }): CaptureChoice | null {
   if (!outcome) return null;
   const channels = outcome.capture_any_of.filter((field): field is ContactChannel => field === 'email' || field === 'phone');
   if (outcome.action === 'submit' && outcome.destination_type === null && channels.length > 0 && facets.act === 'click') {
@@ -382,7 +382,7 @@ export function counterpartChoice(outcome: GoalEntry['outcome'] | undefined, fac
  * collects contact details, an email list's for one that counts clicks or
  * nothing. Null where the switch has nothing to offer the Goal.
  */
-export function counterpartSource(goal: GoalEntry, goals: readonly GoalEntry[]): GoalEntry | null {
+export function otherSideOf(goal: GoalEntry, goals: readonly GoalEntry[]): GoalEntry | null {
   const ready = goals.filter(entry => entry.availability === 'ready' && entry.id !== goal.id);
   const outcome = goal.outcome;
   if (outcome.action === 'submit' && outcome.destination_type === null && outcome.capture_any_of.some(field => field === 'email' || field === 'phone')) {

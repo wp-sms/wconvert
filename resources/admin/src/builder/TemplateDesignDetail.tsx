@@ -1,5 +1,5 @@
 import { contentLockDesignCompatible } from '../inlinePlacement';
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, ClipboardList, MousePointerClick, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -12,10 +12,9 @@ import { TryAgain } from '../shell/Region';
 import { PreviewControls, usePreviewView } from '../discovery/PreviewControls';
 import { FactList, type Fact } from '../shell/FactList';
 import { PreviewFrame } from '../discovery/PreviewFrame';
-import { actChangeOf, asConverted, counterpartAction, counterpartOf, refusalFor, type Fit } from './Gallery';
+import { actChangeOf, asConverted, conversionOf, conversionWords, convertedDesign, refusalFor, type Fit } from './Gallery';
 import { CaptureChangeDialog } from './CaptureChangeDialog';
-import { convertCapture, convertedFor, type CaptureTarget } from './structure/captureConversion';
-import { adminSettings } from '../settings';
+import { convertCapture, type CaptureTarget } from './structure/captureConversion';
 import { dropsFieldMappings } from './destinations';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
@@ -106,20 +105,16 @@ export function TemplateDesignDetail({
   // render before the next request effect runs. Late responses are ignored.
   const candidate = prepared?.sample === sample && prepared?.mode === mode
     && prepared?.prepare === onPrepare ? prepared : null;
-  const ready = prepares ? candidate?.value : sample;
+  const design = prepares ? candidate?.value : sample;
   // Taken for a Goal it fits once converted, the design is shown and applied
   // with its form added or removed, as the switch would (ADR 0163).
-  const choice = counterpartOf(entry, fit);
-  const shop = adminSettings()?.offerLink;
-  const converted = useMemo(() => choice !== null && ready && fit.capture
-    ? convertedFor({ template: ready }, fit.capture.goal, fit.capture.goals, choice, shop ? { label: __('Shop now', 'wconvert'), href: shop.href } : undefined) : null,
-  [choice, ready, fit.capture, shop]);
-  const template = converted ? converted.config.template as Template : ready;
+  const choice = conversionOf(entry, fit, design);
+  const converted = useMemo(() => convertedDesign(entry, fit, design), [entry, fit, design]);
+  const template = converted ? converted.config.template as Template : design;
   const [explaining, setExplaining] = useState(false);
-  const target = useMemo((): CaptureTarget => choice === null || choice === 'none' ? { capture: 'none' } : { capture: choice }, [choice]);
-  const explain = useMemo(() => (next: CaptureTarget) => ready && fit.capture
-    ? convertCapture({ config: { template: ready }, goal: fit.capture.goal }, next, { goals: fit.capture.goals })
-    : { reason: '' }, [ready, fit.capture]);
+  const explain = useCallback((next: CaptureTarget) => design && fit.capture
+    ? convertCapture({ config: { ...fit.capture.config, template: design }, goal: fit.capture.goal }, next, { goals: fit.capture.goals })
+    : { reason: '' }, [design, fit.capture]);
   const preparationError = candidate?.error;
   const retryPreview = preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry;
   const [step, setStep] = useState(0);
@@ -163,12 +158,12 @@ export function TemplateDesignDetail({
         );
   const losesMappings = template !== undefined && !isCurrent && dropsFieldMappings(fieldMappings, template.tree);
   // Facts about the design as it will be applied, converted or not.
-  const facted = converted ? asConverted(entry, fit) : entry;
-  const fieldNames = fieldNamesOf(facted, labels);
+  const described = converted ? asConverted(entry, fit, design) : entry;
+  const fieldNames = fieldNamesOf(described, labels);
   const facts: Fact[] = [
     { icon: ClipboardList, label: __('Collects', 'wconvert'), text: fieldNames.length > 0 ? fieldNames.join(', ') : __('No form fields', 'wconvert') },
-    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: facted.facets.act === 'submit' ? __('Submits a form', 'wconvert') : facted.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert') },
-    ...(facted.facets.asks_consent ? [{ icon: ShieldCheck, label: __('Consent', 'wconvert'), text: __('Includes a consent checkbox', 'wconvert') }] : []),
+    { icon: MousePointerClick, label: __('Visitor action', 'wconvert'), text: described.facets.act === 'submit' ? __('Submits a form', 'wconvert') : described.facets.act === 'click' ? __('Follows a link', 'wconvert') : __('No conversion action', 'wconvert') },
+    ...(described.facets.asks_consent ? [{ icon: ShieldCheck, label: __('Consent', 'wconvert'), text: __('Includes a consent checkbox', 'wconvert') }] : []),
   ];
   const describedBy = [
     `${id}-replacement`,
@@ -238,21 +233,22 @@ export function TemplateDesignDetail({
       {/* What applying does is the note beside the button that does it. */}
       <AdminDialogFooter note={<span id={`${id}-replacement`}>
         {isCurrent ? __('This is the draft’s current design.', 'wconvert') : __('Replaces this draft’s design. You can undo.', 'wconvert')}
+        {converted && goalLabel && <> {/* translators: %s: the campaign's goal. */ sprintf(__('The goal stays “%s”.', 'wconvert'), goalLabel)}</>}
         {losesMappings && <> {__('Field mappings for missing fields are removed.', 'wconvert')}</>}
       </span>} back={
         <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {backLabel}
         </Button>}>
-            {converted && ready && <Button type="button" variant="outline" disabled={busy} onClick={() => setExplaining(true)}>{__('What changes', 'wconvert')}</Button>}
-            {explaining && ready && <CaptureChangeDialog open onOpenChange={setExplaining} before={ready} target={target} convert={explain} mode="preview" />}
+            {converted && design && <Button type="button" variant="outline" disabled={busy} onClick={() => setExplaining(true)}>{__('What changes', 'wconvert')}</Button>}
+            {explaining && design && choice && <CaptureChangeDialog open onOpenChange={setExplaining} before={design} target={{ capture: choice }} convert={explain} mode="preview" />}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
               {busy ? __('Applying design…', 'wconvert')
                 : isCurrent ? __('Current design', 'wconvert')
                 : changesFormat
                   ? sprintf(/* translators: %s: new campaign format. */ __('Switch to %s', 'wconvert'), toFormat)
-                  : converted && choice ? counterpartAction(choice, fit.outcome) : __('Use this design', 'wconvert')}
+                  : converted && choice ? conversionWords(choice, fit.outcome).action : __('Use this design', 'wconvert')}
         </Button>
       </AdminDialogFooter>
     </section>

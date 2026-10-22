@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { adminSettings } from '../../settings';
 
 export type ContactChannel = 'email' | 'phone';
 
@@ -23,3 +24,9 @@ export function contactWording(channel: ContactChannel) {
 
 /** The privacy link a consent sentence carries; the renderer resolves its address (ADR 0032). */
 export const privacyLink = () => ({ label: __('Privacy Policy', 'wconvert') });
+
+/** The "Shop now" button a form leaves behind for an offer: the shop page, or the home page without WooCommerce. */
+export function shopNowLink(): { readonly label: string; readonly href: string } | undefined {
+  const link = adminSettings()?.offerLink;
+  return link ? { label: __('Shop now', 'wconvert'), href: link.href } : undefined;
+}
