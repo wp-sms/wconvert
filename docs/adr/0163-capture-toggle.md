@@ -2,10 +2,9 @@
 
 Accepted 2026-10-22. Amends 0010, 0020, 0059, 0080, 0085 and 0099.
 
-Delivered in four PRs. §2 and the engine behind §1 and §3 have landed
-(`builder/structure/captureConversion.ts`); the switch, the box and §4 arrive
-with the editor and the gallery, and until then they describe the decision,
-not the code. Issue #322; the approved
+Delivered in four PRs. §2, the engine behind §1 and §3
+(`builder/structure/captureConversion.ts`), the editor's switch and box, and
+§4 have landed; the gallery's way in arrives last. Issue #322; the approved
 prototype is <https://claude.ai/artifact/DJJhMNevHZbXfqMha2DiPs>.
 
 Merchants pick a design for how it looks, then decide whether to show the offer
@@ -49,6 +48,10 @@ checked only by repeating that sweep.
 Form-owned text (field label, consent, submit, thank-you headline) uses defaults
 when added and is listed when removed. Re-adding regenerates the defaults; only
 Undo restores edits.
+
+Deleting the form's only email or phone field, a layout holding it, or the
+form's screen opens the same box. Deleting an offer's only counted link is
+still refused: that is a Goal change, not a form, and Change goal makes it.
 
 ## 2. A message has no converting act: the **Show a message** Goal
 

@@ -74,6 +74,8 @@ export interface AdminSettings {
    * confusion is about.
    */
   readonly homeUrl?: string;
+  /** The shop page, or the home page without WooCommerce: where an added "Shop now" button starts (ADR 0163). */
+  readonly offerLink?: { readonly href: string; readonly place: 'shop' | 'home' };
   /** The free plugin's version, for Help. */
   readonly version?: string;
   /** Plain-text WordPress site title for workspace identity. */

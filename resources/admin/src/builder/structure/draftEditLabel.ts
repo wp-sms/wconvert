@@ -2,10 +2,13 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { Template, TemplateTree } from '@renderer/types';
 import { walkNodes } from './journey';
 import type { History } from './history';
+import { captureState } from './captureConversion';
 
 export interface DraftSnapshot {
   readonly name: string;
   readonly config: Record<string, unknown>;
+  /** Restored with the design, so adding or removing the form undoes as one (ADR 0163). */
+  readonly goal: string | null;
 }
 const same = (a: unknown, b: unknown) => a === b || JSON.stringify(a) === JSON.stringify(b);
 
@@ -14,6 +17,9 @@ const same = (a: unknown, b: unknown) => a === b || JSON.stringify(a) === JSON.s
  */
 export function draftEditLabel(before: DraftSnapshot, after: DraftSnapshot): string {
   if (before.name !== after.name) return __('Rename campaign', 'wconvert');
+  const form = captureLabel(before, after);
+  if (form) return form;
+  if (before.goal !== after.goal) return __('Change goal', 'wconvert');
   const changed = [...new Set([...Object.keys(before.config), ...Object.keys(after.config)])]
     .filter(key => !same(before.config[key], after.config[key]));
   if (changed.includes('template_id')) return __('Change design', 'wconvert');
@@ -25,6 +31,18 @@ export function draftEditLabel(before: DraftSnapshot, after: DraftSnapshot): str
   if (!from?.tree || !to?.tree) return __('Change design', 'wconvert');
   if (same(from.tree, to.tree)) return __('Change design styles', 'wconvert');
   return journeyEditLabel(from.tree, to.tree);
+}
+
+/** The form switch's three edits, named as its buttons are. */
+function captureLabel(before: DraftSnapshot, after: DraftSnapshot): string | null {
+  const from = (before.config.template as Template | undefined)?.tree;
+  const to = (after.config.template as Template | undefined)?.tree;
+  if (!from || !to) return null;
+  const was = captureState(from), now = captureState(to);
+  if (was === now || was === 'other' || now === 'other') return null;
+  if (now === 'none') return __('Remove form', 'wconvert');
+  if (was === 'none') return now === 'email' ? __('Add email form', 'wconvert') : __('Add phone form', 'wconvert');
+  return now === 'phone' ? __('Ask for phone', 'wconvert') : __('Ask for email', 'wconvert');
 }
 
 function journeyEditLabel(before: TemplateTree, after: TemplateTree): string {

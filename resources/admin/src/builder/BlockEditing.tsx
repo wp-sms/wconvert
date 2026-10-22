@@ -41,6 +41,8 @@ import { FIELDS, LEAVES, childKeysOf, type Path } from './panel';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, TemplateTree } from '@renderer/types';
 import { useCountsNothing } from './countsNothing';
+import { useCaptureRequest } from './CaptureSwitch';
+import { takesTheForm } from './structure/captureConversion';
 
 /**
  * Moving, copying, removing and adding the blocks of one design, as one hook.
@@ -69,6 +71,7 @@ export interface BlockEditsOptions {
 export function useBlockEdits({ template, labels, act, step, selected, onSelect, onChange, onUndo, draft, focus = null }: BlockEditsOptions) {
   const [said, setSaid] = useState<string | null>(null);
   const countsNothing = useCountsNothing();
+  const requestCapture = useCaptureRequest();
   /*
    * A removal Undo can take back. Shown until the next change to the design —
    * an edit, a move or the Undo itself — because after that "Undo" would undo
@@ -137,6 +140,8 @@ export function useBlockEdits({ template, labels, act, step, selected, onSelect,
   };
 
   const remove = (block: Block) => {
+    // Taking the form's email or phone away removes the form, through the switch's box (ADR 0163).
+    if (requestCapture && takesTheForm(template.tree, withRemoved(template.tree, block.path))) { requestCapture('none'); return; }
     const refused = whyRemovalIsRefused(template.tree, block.path, countsNothing);
     const spot = spotOf(block.path);
 
@@ -292,6 +297,7 @@ export function RowAction({
 }) {
   const name = nameOfBlock(block, labels);
   const countsNothing = useCountsNothing();
+  const requestCapture = useCaptureRequest();
 
   if (control === 'up' || control === 'down') {
     const up = control === 'up';
@@ -315,7 +321,7 @@ export function RowAction({
     );
   }
 
-  const removal = removalRefusal(tree, block.path, countsNothing);
+  const removal = requestCapture && takesTheForm(tree, withRemoved(tree, block.path)) ? null : removalRefusal(tree, block.path, countsNothing);
   const copying = duplicationRefusal(tree, block.path);
   const first = block.position === 1;
   const last = block.position === block.setSize;

@@ -13,6 +13,7 @@ import { EditTree, screenIconOf, type EditTreeLook, type EditTreeRow } from './E
 import { FactList, FactRow, PanelHeader, PanelSection } from './PanelSection';
 import { QuestionPanelContext, ScreenAnswers, ScreenChips, ScreenIssues, ScreenThen } from './ScreenPanel';
 import { contactWording, privacyLink } from './structure/captureWording';
+import { useCaptureRequest } from './CaptureSwitch';
 import { nodesOf } from './structure/tree';
 import type { Path } from './panel';
 import type { JourneyChange } from './structure/changeTestGuide';
@@ -47,7 +48,7 @@ const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
+export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, look, formSwitch, lookPanel, elements, extraRows, editingScreen = true, onSelectElement, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, editorCanvas, elementPanel, elementSelection, onClearElement, testRequest, testReturnFocus, onTestClose, onTestExit, previewTitle, whoSeesIt }: {
   onUndo?(): void; labels?: TemplateLabels; onResultSelect?(id: string | undefined): void; tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree;
   /** The campaign's one issue list (ADR 0133); the screens and the map show the ones about a screen. */
   issues?: readonly CampaignIssue[];
@@ -55,6 +56,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   onIssue?(issue: CampaignIssue): void;
   /** The Edit tree's pinned Look row, and the panel it opens (ADR 0134). */
   look?: EditTreeLook; lookPanel?: ReactNode;
+  /** The Contact form switch, drawn above the screens (ADR 0163). */
+  formSwitch?: ReactNode;
   /** The open screen's elements, nested under its row in the Edit tree. */
   elements?: ReactNode;
   /** Tree rows that are not screens: the reopen button, the locked content preview. */
@@ -204,6 +207,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const [confirmGraphRemoval, setConfirmGraphRemoval] = useState(false);
   // The ⋯ menu's confirm for a plain delete.
   const [deleting, setDeleting] = useState(false);
+  const requestCapture = useCaptureRequest();
   const [straightening, setStraightening] = useState(false);
   // Why a campaign without answer lines takes no more screens, in two lengths (ADR 0139).
   const capRefusal = refusal(__('Up to 7 screens', 'wconvert'), __('A campaign without answer lines holds up to 7 screens.', 'wconvert'));
@@ -359,7 +363,10 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const graphDelete = tree.graph ? graphRemovalPlan(tree, current.id, journeys) : null;
   const deletionReason = optionalRemoval ? optionalRemoval.reason : graphDelete?.reason;
   // Why Delete is refused, in two lengths for its menu row (ADR 0139).
-  const deletionRefusal = tree.graph
+  // Deleting the main form's screen removes the form, through the same box as
+  // the Contact form switch, where the switch is offered (ADR 0163).
+  const takesForm = requestCapture !== null && !!tree.submissions[0]?.required && submissionScreen(tree, tree.submissions[0].id) === step;
+  const deletionRefusal = takesForm ? null : tree.graph
     ? deletionReason ? refusal((optionalRemoval ?? graphDelete)?.short ?? deletionReason, deletionReason) : null
     : removal.screens.length === 0 ? whyScreenStays(tree, step, journeys) : null;
   const applyGraphRemoval = (next: TemplateTree, destination: string) => {
@@ -384,6 +391,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   // A plain delete confirms in place; one that takes a signup or other screens
   // with it opens the dialog that says what goes.
   const askToDelete = () => {
+    if (takesForm) { requestCapture('none'); return; }
     if (tree.graph) { if (!deletionReason) { deletedGraphScreen.current = false; setConfirmGraphRemoval(true); } return; }
     if (removal.screens.length > 1 || captureOnScreen(tree, current.id)) setConfirmRemoval(true);
     else setDeleting(true);
@@ -518,7 +526,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
         <div className="wconvert-journey-side" data-mobile-pane={mobilePane} data-panel-open={panelOpen} data-editing={view === 'edit' || undefined} data-wide-panel={widePanel || undefined}>
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map(index => <option key={tree.steps[index].id} value={index}>{tree.steps[index].name}</option>)}</select></label></div>
           {view === 'edit' && <><EditTree tree={tree} step={step} editingScreen={editingScreen && !look?.open} issues={issues} onIssue={openIssue} onSelect={select}
-            look={look} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
+            look={look} formSwitch={formSwitch} elements={elements} extraRows={extraRows} addScreen={addScreenMenu} /><div className="wconvert-campaign-canvas">{editorCanvas}</div></>}
           {view === 'flow' && <FlowMapBoundary><Suspense fallback={<FlowSkeleton />}>
             <JourneyMap issues={issues} onIssue={openIssue} tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && (panelSection === 'paths' || !!elementPanel) ? pathFocus : null}
               onSelect={select} onSelectPath={openLine} samplePath={samplePath} sampleEdges={sampleEdges}
@@ -527,6 +535,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               destinationSummary={destinationSummary} />
           </Suspense></FlowMapBoundary>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Screens', 'wconvert')}>
+            {formSwitch}
             <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(__('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Lines may skip screens', 'wconvert') : __('Up to 7 screens without answer lines', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('All screens', 'wconvert')}>
               {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} index={index} ordinal={position + 1} selected={index === step}

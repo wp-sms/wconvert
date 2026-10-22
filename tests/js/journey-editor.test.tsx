@@ -686,7 +686,7 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   const user = userEvent.setup();
   const tree = graphFixture as unknown as TemplateTree;
   function HistoryEditor() {
-    const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree, tokens: {} } } }));
+    const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree, tokens: {} } }, goal: 'collect_enquiries' }));
     const [step, setStep] = useState(tree.steps.findIndex(item => item.id === 'interests'));
     const labels = draftHistoryLabels(history);
     return <><button onClick={() => setHistory(undo)}>{labels.undo}</button><button onClick={() => setHistory(redo)}>{labels.redo}</button>
