@@ -78,7 +78,7 @@ export interface OptinReport extends Numbers {
  */
 export interface GoalReport extends Numbers {
   goal: string;
-  action: 'submit' | 'click' | 'match' | 'add_to_cart';
+  action: 'submit' | 'click' | 'match' | 'add_to_cart' | 'none';
   result_label: string;
   rate_label: string;
   /** The merchant's own words for the Goal, translated in PHP. */

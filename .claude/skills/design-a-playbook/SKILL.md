@@ -36,7 +36,7 @@ Stable ids and choice `value` keys are identifiers, not translated words.
 return [
     'id' => 'kebab-case',
     'name' => __('Sentence case', 'wconvert'),
-    'goal' => 'grow_email_list',   // one of the seven, below
+    'goal' => 'grow_email_list',   // one of the nine, below
     'template_id' => 'centred-card',
     'notes' => __('Why a merchant would pick this, and what to expect.', 'wconvert'),
     'copy' => [ /* Slot Role => words */ ],
@@ -46,8 +46,9 @@ return [
 ];
 ```
 
-**The Goal is a closed enum of eight**: `grow_email_list`, `grow_sms_list`,
-`deliver_lead_magnet`, `promote_offer`, `recover_cart`, `collect_enquiries`, `find_match`, `increase_basket_value`.
+**The Goal is a closed enum of nine**: `grow_email_list`, `grow_sms_list`,
+`deliver_lead_magnet`, `promote_offer`, `show_message`, `recover_cart`, `collect_enquiries`, `find_match`, `increase_basket_value`.
+`show_message` names any one-screen click design; prefill takes the counted link out and only appearances are reported (ADR 0163). Give it no `cta_label`.
 `increase_basket_value` uses one products block with `action: add_to_cart`, counts server-confirmed additions, and requires WooCommerce plus Pro (ADR 0121).
 `find_match` uses paid question/result journeys. Read the current Goal enum and
 generated vocabulary for capabilities; never infer subscription or sale from capture.

@@ -123,7 +123,7 @@ export const isConvertingAct = (block: Block): boolean => block.type === 'button
  *    the write would block a merchant mid-rearrangement who is about to add the
  *    field back.
  */
-export function removalRefusal(tree: TemplateTree, path: Path): Refusal | null {
+export function removalRefusal(tree: TemplateTree, path: Path, countsNothing = false): Refusal | null {
   const current = nodeAt(tree, path);
   if (current === null) {
     return null;
@@ -134,7 +134,8 @@ export function removalRefusal(tree: TemplateTree, path: Path): Refusal | null {
 
   const after = withRemoved(tree, path);
 
-  if (convertingActOf(tree).length > 0 && convertingActOf(after).length === 0) {
+  // Under a Goal that shows a message, nothing to count is the design (ADR 0163).
+  if (!countsNothing && convertingActOf(tree).length > 0 && convertingActOf(after).length === 0) {
     /*
       **Shortened, and the cut is the rule rather than a word count.** These
       sentences print under a disabled menu item, in a menu of six — so a
@@ -233,7 +234,7 @@ function typesUnder(node: TemplateNode): string[] {
 
 
 /** {@link removalRefusal}'s sentence, for a caller that announces rather than draws it. */
-export const whyRemovalIsRefused = (tree: TemplateTree, path: Path): string | null => removalRefusal(tree, path)?.reason ?? null;
+export const whyRemovalIsRefused = (tree: TemplateTree, path: Path, countsNothing = false): string | null => removalRefusal(tree, path, countsNothing)?.reason ?? null;
 
 /** {@link duplicationRefusal}'s sentence, for a caller that announces rather than draws it. */
 export const whyDuplicationIsRefused = (tree: TemplateTree, path: Path): string | null => duplicationRefusal(tree, path)?.reason ?? null;

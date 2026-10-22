@@ -87,6 +87,8 @@ export function matchesEntryQuery(entry: TemplateIndexEntry, query: string, labe
     words.push(__('Form', 'wconvert'), labels?.params?.submit ?? __('Sends the form', 'wconvert'));
   } else if (entry.facets.act === 'click') {
     words.push(__('Link', 'wconvert'), __('Click-through', 'wconvert'), labels?.params?.link ?? __('Goes somewhere else', 'wconvert'));
+  } else if (entry.facets.act === null) {
+    words.push(__('Message', 'wconvert'), __('Announcement', 'wconvert'));
   }
 
   return query.trim().split(/\s+/u).every((part) => words.some((word) => contains(word, part, collator)));

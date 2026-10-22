@@ -56,7 +56,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
     facts.push({ icon: MapPin, label: __('Where', 'wconvert'), text: targetingSummary(targeting, vocabulary.targeting, 'compact') });
     if (setup.display_rules.audience.mode !== 'everyone') facts.push({ icon: Users, label: __('Who', 'wconvert'), text: summaryOf(summaries, 'who').text });
     if (setup.frequency && Object.keys(setup.frequency).length) {
-      const act = playbook.template ? (convertingActOf(playbook.template.tree)[0] ?? 'submit') : 'submit';
+      const act = playbook.template ? (convertingActOf(playbook.template.tree)[0] ?? null) : 'submit';
       facts.push({ icon: Repeat, label: __('How often', 'wconvert'), text: howOftenSummary(setup.frequency, 0, displayType !== 'inline', act).text });
     }
   }

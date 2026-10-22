@@ -14,14 +14,13 @@ import { statusOf, type OptinState } from '../optins/api';
 import { FactList } from '../shell/FactList';
 import { GuideLink, SuspensionGuideLink } from '../shell/GuideLink';
 import { GUIDES, docsUrl } from '../shell/docs';
-import { campaignFacts, linksIn } from '../optins/campaignFacts';
+import { campaignFacts, factAct, linksIn } from '../optins/campaignFacts';
 import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
 import { type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken } from './structure/tree';
-import { convertingActOf } from './structure/guards';
 import { summarise, summaryOf } from './rules/summaries';
 import { ISSUE, consentIn, followIssue, type CampaignIssue, type IssueRoutes } from './readiness/campaignIssues';
 import type { CaptureMode } from './captureMode';
@@ -177,7 +176,7 @@ export function ReadinessDialog({
   const facts = campaignFacts({
     rules: summaries,
     onRule: (section) => jump(() => onGoToRules(section)),
-    act: hasDesign ? convertingActOf(template.tree)[0] : undefined,
+    act: factAct(template, outcome),
     forwarding,
     links: linksIn(template),
     counts: goal.status === 'ready' ? goal.data?.headline_label ?? null : null,

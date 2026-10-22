@@ -14,4 +14,14 @@ final class MetadataTest extends TestCase
         $set[0]['analytics']['off'] = true;
         self::assertSame([], Metadata::forEntries($entries, $set));
     }
+
+    /** A message offers no act, so it is named `none` and sends no conversion event (ADR 0163). */
+    public function testAMessageHasNoConversionOutcome(): void
+    {
+        $tree = ['steps' => [['kind' => 'content', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Open late']]]]], 'submissions' => []];
+        $set = [['id' => 'm', 'goal' => 'show_message']];
+        self::assertSame('none', Metadata::forEntries([['id' => 'm', 'template' => ['tree' => $tree]]], $set)['m']['outcome']);
+        $tree['steps'][0]['content']['children'][] = ['type' => 'button', 'action' => 'link', 'href' => 'https://example.org/'];
+        self::assertSame('click', Metadata::forEntries([['id' => 'm', 'template' => ['tree' => $tree]]], $set)['m']['outcome']);
+    }
 }

@@ -34,6 +34,27 @@ final class CaptureJourneyTest extends TestCase
         self::assertSame('navigation', CaptureJourney::issue($template['tree']));
     }
 
+    /** One screen with no form may carry zero links or one; the Goal decides which it wants (ADR 0163). */
+    public function testAOneScreenDesignMayCarryNoLinkButNeverTwo(): void
+    {
+        $screen = static fn (array ...$children): array => ['v' => 2, 'steps' => [['id' => 's1', 'name' => 'Offer', 'kind' => 'content',
+            'content' => ['type' => 'stack', 'children' => $children]]], 'submissions' => []];
+        $words = ['type' => 'heading', 'id' => 'n1', 'text' => 'Free shipping'];
+        $link = static fn (string $id): array => ['type' => 'button', 'id' => $id, 'action' => 'link', 'label' => 'Shop', 'href' => 'https://example.test/'];
+
+        self::assertNull(CaptureJourney::issue($screen($words)));
+        self::assertNull(CaptureJourney::issue($screen($words, $link('n2'))));
+        self::assertSame('flow', CaptureJourney::issue($screen($words, $link('n2'), $link('n3'))));
+        self::assertSame('actions', CaptureJourney::issue($screen($words, ['type' => 'button', 'id' => 'n2', 'action' => 'next', 'label' => 'Next'])));
+    }
+
+    public function testACountedLinkStillCannotLiveInAFormDesign(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-only.json'), true);
+        $template['tree']['steps'][0]['content']['children'][] = ['type' => 'button', 'id' => 'shop', 'action' => 'link', 'label' => 'Shop', 'href' => 'https://example.test/'];
+        self::assertSame('actions', CaptureJourney::issue($template['tree']));
+    }
+
     public function testNavigationActionsMatchTheProductionManifest(): void
     {
         $manifest = \WConvert\Template\TemplateManifest::load(dirname(__DIR__, 3));

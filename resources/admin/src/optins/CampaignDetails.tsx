@@ -7,12 +7,11 @@ import { summarise, summaryOf, type DisplayRulesValue } from '../builder/rules/s
 import { derive } from '../builder/rules/picks';
 import { namedPages, whereReading } from '../builder/rules/sentence';
 import { resolveObjects } from '../builder/rules/objects';
-import { convertingActOf } from '../builder/structure/guards';
 import { destinationsSaid } from '../builder/destinations';
 import { capturedFields } from '../destinations/requirements';
 import { readDestinations } from '../destinations/api';
 import { listGoals } from '../goals/api';
-import { campaignFacts, linksIn } from './campaignFacts';
+import { campaignFacts, factAct, linksIn } from './campaignFacts';
 import { HowItRuns } from './CampaignSummary';
 import { RegionError } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
@@ -53,7 +52,7 @@ async function readContext(id: string) {
   ]);
   const config = draft.config;
   const template = config.template as Template | undefined;
-  const act = template ? convertingActOf(template.tree)[0] : undefined;
+  const act = factAct(template, goals.find((goal) => goal.id === draft.goal)?.outcome);
   const targeting = (config.targeting ?? {}) as Targeting;
   const value: DisplayRulesValue = {
     display_rules: planFrom(config.display_rules),

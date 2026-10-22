@@ -32,7 +32,8 @@ const SOURCES = ['search', 'social', 'direct'];
  */
 export default function SampleVisit({ value, vocabulary, onClose, onOpenSection, template, cartRequired = false, act = 'submit' }: {
   value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void; onOpenSection?: (section: SectionId) => void;
-  template?: Template; cartRequired?: boolean; act?: ConvertingAct;
+  /** Null for a message: nothing converts, so "Signed up before" is not a history it can have. */
+  template?: Template; cartRequired?: boolean; act?: ConvertingAct | null;
 }) {
   const plan = value.display_rules;
   const audience = plan ? audienceRules(plan) : [];
@@ -139,7 +140,7 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
       <input id={id} type="time" value={visitor.clock} onChange={event => set({ clock: event.target.value })} />),
     field('history', __('Before this visit', 'wconvert'), id =>
       <select id={id} value={visitor.history} onChange={event => set({ history: event.target.value as History })}>
-        {HISTORIES.map(history =>
+        {HISTORIES.filter(history => act !== null || history !== 'converted').map(history =>
           <option key={history} value={history}>{history === 'days-ago' ? __('Saw it on an earlier day', 'wconvert') : historyLabel(history, undefined, act)}</option>)}
       </select>),
     DATED.includes(visitor.history) && field('days-ago', __('How many days ago', 'wconvert'), id =>

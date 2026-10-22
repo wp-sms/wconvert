@@ -190,7 +190,7 @@ export function pageChoices(value: DisplayRulesValue, vocabulary: RuleVocabulary
 }
 
 /** What happened before this visit, in the visitor field's words. */
-export function historyLabel(history: History, daysAgo: number | undefined, act: ConvertingAct = 'submit'): string {
+export function historyLabel(history: History, daysAgo: number | undefined, act: ConvertingAct | null = 'submit'): string {
   switch (history) {
     case 'new': return __('First time here', 'wconvert');
     case 'this-visit': return __('Saw it earlier this visit', 'wconvert');
@@ -240,7 +240,7 @@ function audienceReason(pick: string): string | null {
   }
 }
 
-function pacingReason(stop: PacingStop, often: string, act: ConvertingAct): string {
+function pacingReason(stop: PacingStop, often: string, act: ConvertingAct | null): string {
   switch (stop) {
     /* translators: %s: how often it shows, e.g. “Once per visit”. */
     case 'session': return sprintf(__('They already saw it this visit (%s).', 'wconvert'), often);
@@ -263,7 +263,7 @@ function pacingReason(stop: PacingStop, often: string, act: ConvertingAct): stri
  * where leaving is the only way in on a touch screen, which can never happen.
  */
 export function checkVisit(value: DisplayRulesValue, vocabulary: RuleVocabulary, visitor: Visitor,
-  basket: BasketCheck = { status: 'unused' }, act: ConvertingAct = 'submit'): VisitResult {
+  basket: BasketCheck = { status: 'unused' }, act: ConvertingAct | null = 'submit'): VisitResult {
   const plan = value.display_rules;
   const summaries = summarise(value, vocabulary);
   const reasons: string[] = [];

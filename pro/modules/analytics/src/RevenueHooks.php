@@ -148,7 +148,7 @@ final class RevenueHooks
             $entry = array_column($set, null, 'id')[$id] ?? null;
             if (!is_array($entry)) return false;
             $metadata = Metadata::forEntries([['id' => $id] + $entry['payload']], $set)[$id] ?? null;
-            if ($metadata === null || ($metadata['outcome'] === 'addition' && !$addition) || (!$capture && $metadata['outcome'] === 'capture')) return false;
+            if ($metadata === null || $metadata['outcome'] === 'none' || ($metadata['outcome'] === 'addition' && !$addition) || (!$capture && $metadata['outcome'] === 'capture')) return false;
             if ($event !== null) {
                 // Claim the browser event once, including concurrent/replayed requests. Its
                 // timestamp expires before cleanup, so an old exact request cannot reopen credit.

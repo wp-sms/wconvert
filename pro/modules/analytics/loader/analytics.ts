@@ -1,4 +1,4 @@
-export interface CampaignMetadata { campaign: string; goal: string; outcome: 'capture' | 'quiz' | 'click' | 'addition'; label: string; display?: string; }
+export interface CampaignMetadata { campaign: string; goal: string; outcome: 'capture' | 'quiz' | 'click' | 'addition' | 'none'; label: string; display?: string; }
 export interface AnalyticsConfig {
   route: 'gtag' | 'gtm' | 'plausible'; measurement_id: string; consent: 'wp' | 'site'; dismissals: boolean;
   data_layer?: string; campaigns: Record<string, CampaignMetadata>; dry_run?: boolean;
@@ -53,7 +53,7 @@ export function createAnalytics(config: AnalyticsConfig) {
     observe(id: string, kind: Activity): Status {
       if (!Object.prototype.hasOwnProperty.call(config.campaigns, id) || !Object.prototype.hasOwnProperty.call(names, kind)) return 'ignored';
       const campaign = config.campaigns[id];
-      if ((kind === 'convert' && campaign.outcome === 'capture') || (kind === 'dismiss' && !config.dismissals)) return 'ignored';
+      if ((kind === 'convert' && (campaign.outcome === 'capture' || campaign.outcome === 'none')) || (kind === 'dismiss' && !config.dismissals)) return 'ignored';
       return send(names[kind], acts[kind], {
         campaign_id: campaign.campaign, optin_id: id, campaign_label: campaign.label,
         display_type: campaign.display ?? 'popup', goal: campaign.goal, outcome: campaign.outcome,

@@ -1,10 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowRight, Download, Lock, Mail, MessageSquare, MousePointerClick, Target } from 'lucide-react';
+import { ArrowRight, Download, Lock, Mail, Megaphone, MessageSquare, MousePointerClick, Target } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceCard } from '../shell/ChoiceGrid';
 import { renderingFor, tierName, tierProductName, type Surface } from './availability';
 import type { GoalEntry } from './api';
+import { countsNothing } from './countsNothing';
 
 /**
  * One [[Goal]] as a card, and the filter that decides which cards a surface
@@ -103,7 +104,8 @@ export function GoalCard({
   const Icon = goal.outcome.audience_channel === 'email' ? Mail
     : goal.outcome.audience_channel === 'phone' ? MessageSquare
     : goal.outcome.destination_type !== null ? Download
-    : goal.outcome.action === 'click' ? MousePointerClick : Target;
+    : goal.outcome.action === 'click' ? MousePointerClick
+    : countsNothing(goal.outcome) ? Megaphone : Target;
 
   return (
     <ChoiceCard

@@ -266,7 +266,7 @@ export function howOftenSummary(
   frequency: Frequency,
   priority: number,
   overlay: boolean,
-  act: ConvertingAct = 'submit',
+  act: ConvertingAct | null = 'submit',
 ): Summary {
   const caps = capsOf(frequency);
   const stoppers: string[] = [];
@@ -277,7 +277,8 @@ export function howOftenSummary(
     stoppers.push(__('they close it', 'wconvert'));
   }
 
-  if (frequency.stopAfterConversion !== false) {
+  // A message converts on nothing, so nothing a visitor does stops it (ADR 0163).
+  if (frequency.stopAfterConversion !== false && act !== null) {
     // No second "they": the sentence reads *"until they close it or sign up"*,
     // and the subject carries across the conjunction. Its own string rather
     // than a fragment of the first, because a language that does not carry it
