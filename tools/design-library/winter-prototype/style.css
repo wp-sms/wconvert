@@ -107,10 +107,11 @@
 .t-ribboncard h1{font:italic 91px/.82 Georgia,serif;letter-spacing:-.08em;margin:19px 0 24px;text-wrap:initial}
 .t-ribboncard .eyebrow{font-size:9px;padding:0;letter-spacing:.15em}.greeting-signoff{font:italic 17px Georgia,serif;margin:0 0 25px}
 .greeting-offer{border-top:1px solid #a92c2966;padding-top:20px}.t-ribboncard .body-copy{font-size:14px;margin-bottom:18px}.t-ribboncard .countdown{justify-content:center;gap:8px}.t-ribboncard .countdown b{font:28px/.95 DM;font-weight:700}.t-ribboncard .countdown>span{min-width:35px}.t-ribboncard .timer-label{font-size:8px}.t-ribboncard .cta{border-radius:0}.t-ribboncard .fine-print{font-size:10px}
-/* 37: the card IS the cracker. Text stays inside its paper centre. */
-.format-inline .campaign.t-cracker{--bg:transparent;--fg:#7f1831;--accent:#7f1831;--on:#fff2d8;width:900px;overflow:visible;box-shadow:none}
-.cracker-paper{background-image:var(--card-art);position:relative;background-size:100% 100%;background-repeat:no-repeat;padding:50px 27% 50px;text-align:center;min-height:530px}
-.t-cracker h1{font:700 86px/.82 DM;letter-spacing:-.075em;text-transform:uppercase;margin:30px 0 28px;text-wrap:initial}.t-cracker .eyebrow{padding:0;font-size:9px;letter-spacing:.1em}.t-cracker .body-copy{font-size:15px;margin:0 auto 23px}.t-cracker .fine-print{font-size:10px}.t-cracker .close{right:23%;top:32px}
+/* 37: the cat sits on the lid; the editable greeting fills the box front. */
+.format-inline .campaign.t-catnap{width:550px;--bg:#fff2d8;--fg:#823239;--accent:#244c3e;--on:#fff2d8;box-shadow:none;text-align:center;border-radius:0}
+.catnap-top{position:relative;background:#fbe7e7;padding-top:56px}.catnap-paper{padding:0 12% 32px;border-bottom:10px solid #a9343e}
+.t-catnap h1{font:italic 51px/1.04 Georgia,serif;letter-spacing:-.055em;margin:18px 0 23px;text-wrap:initial}
+.t-catnap .eyebrow{padding:0;font-size:9px;letter-spacing:.16em}.t-catnap .body-copy{font-size:15px;line-height:1.65;margin:0 auto 24px}.t-catnap .cta{border-radius:0}.catnap-signoff{font:italic 15px/1.5 Georgia,serif;margin:22px 0 0}.t-catnap .close{top:10px;right:10px}
 /* 38: a perforated dispatch ticket, with the date as its illustration. */
 .campaign.t-expressticket{--bg:#174f41;--fg:#fff0c9;--accent:#fff0c9;--on:#174f41;padding:12px;border-radius:10px}
 .ticket-top{text-align:center;border:1px solid #fff0c999;padding:35px 12px 15px}.ticket-top .eyebrow{font-size:17px;letter-spacing:.05em;padding:0;margin:0 0 10px}.ticket-route{font-size:8px;letter-spacing:.05em;line-height:1.5;margin:0}
@@ -125,20 +126,14 @@
 .newyear-poster{position:relative;text-align:center;padding:43px 8%;flex:1;display:flex;flex-direction:column;justify-content:center}.newyear-poster .eyebrow{padding:0;margin:0 0 25px;font-size:11px;letter-spacing:.18em}.campaign.t-newyearprint h1{font:700 clamp(95px,20vw,260px)/.75 DM;letter-spacing:-.09em;color:#b93c2f;margin:0 0 25px;text-wrap:initial}.print-wish{font:italic 25px Georgia,serif;margin:10px 0 0}.newyear-offer{background:#183d32;color:#fff5d9;padding:24px 35px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:50px;align-items:center;--fg:#fff5d9;--accent:#fff5d9;--on:#183d32}.newyear-offer .body-copy{font-size:14px;margin:0 0 15px}.newyear-offer .timer-wrap{margin:0;text-align:center}.newyear-offer .countdown{justify-content:center}.newyear-offer .countdown b{font:700 32px/1 DM}.newyear-offer .countdown>span{min-width:35px}.newyear-offer .timer-label{font-size:9px}.newyear-offer .cta{font-size:13px}.print-terms{text-align:center;font-size:9px;margin:13px 0}
 @media(max-width:650px){
  .campaign.t-ribboncard{border-width:6px}.ribbon-greeting{padding:34% 12% 26px}.t-ribboncard h1{font-size:73px}.greeting-signoff{font-size:15px}.t-ribboncard .countdown{gap:4px}.t-ribboncard .countdown>span{min-width:29px}.t-ribboncard .countdown b{font-size:23px}.t-ribboncard .body-copy{font-size:13px}
- .cracker-paper{padding:50px 25% 50px;min-height:0}.t-cracker h1{font-size:46px;line-height:.9}.t-cracker .body-copy{font-size:14px}.t-cracker .cta{font-size:12px;padding:13px 10px}.t-cracker .eyebrow{font-size:8px}.t-cracker .close{top:24px;right:21%}
  .ticket-date{gap:12px}.ticket-date strong{font-size:99px}.ticket-main{padding:23px 18px 9px}.ticket-stub{padding:20px 18px 10px}.ticket-date>span{font-size:11px}
  .campaign.t-santaletter,.campaign.t-santaletter.ack{padding:10px}.santa-paper,.t-santaletter.ack .ack-copy{padding:15px 24px 29px;border-radius:0 0 40px 40px}.t-santaletter h1{font-size:31px}.t-santaletter .body-copy{font-size:13px}.t-santaletter .close{top:14px;right:14px}
  .campaign.t-newyearprint{padding:14px}.newyear-poster{padding:48px 5% 34px;min-height:380px}.newyear-poster .eyebrow{font-size:9px;line-height:1.6;margin:0 20px 32px}.campaign.t-newyearprint h1{font-size:clamp(82px,19vw,120px)!important;line-height:.85}.print-wish{font-size:19px;line-height:1.3;max-width:220px;margin:0 auto}.newyear-offer{grid-template-columns:minmax(0,1fr);gap:27px;padding:25px}.newyear-offer .countdown{justify-content:space-between}.newyear-offer .countdown b{font-size:26px}.print-border{height:12px;flex-basis:12px;background-size:auto}.print-terms{font-size:9px}
 }
 
-.cracker-copy{position:relative;background:#f7b7c8;padding:26px 15px}
-.t-cracker .close{top:62px;right:27%}
-@media(max-width:650px){
- .cracker-paper{background-image:var(--card-narrow);background-size:190% 100%;padding:120px 7%;}
- .cracker-copy{padding:30px 20px}.t-cracker h1{font-size:59px}.t-cracker .close{top:130px;right:9%}
-}
-.cracker-paper{background-position:center}
+
 /* The inline example occupies an empty slot in its host page. */
-.format-inline:has(.t-cracker) .site-hero,.format-inline:has(.t-cracker) .site-products{visibility:hidden}
-.t-cracker .cracker-copy{padding-top:60px}
 .ticket-top{padding-top:50px}
+@media(max-width:650px){.catnap-paper{padding:0 9% 27px;border-bottom-width:7px}.t-catnap h1{font-size:34px}.t-catnap .body-copy{font-size:14px}.catnap-signoff{font-size:13px}}
+/* Keep the embedded card's sample page quiet. */
+.format-inline:has(.t-catnap) .site-hero,.format-inline:has(.t-catnap) .site-products{visibility:hidden}

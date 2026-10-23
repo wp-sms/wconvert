@@ -47,7 +47,7 @@ The sample deadlines are 1/18/20/23/24 December 2026 and 5 January 2027 at 20:00
 
 ## Editor-friendly revision — 23 October 2026
 
-The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 30 exported illustration PNG assets and four original AI-generated greeting-card assets, including wide banner variants via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders custom inline SVG artwork. The shipping decoration renderer supplies its own small built-in shapes.
+The review identified decoration that looked like a custom editor feature and object illustrations clipped by enlarged, upward-offset SVGs. The prototype now uses 30 exported illustration PNG assets and three original AI-generated greeting-card assets, including wide banner variants via ordinary image blocks. The source vectors remain authoring inputs only; no campaign renders custom inline SVG artwork. The shipping decoration renderer supplies its own small built-in shapes.
 
 - Complete object illustrations use contain fit with no negative margins or enlargement. Candles, snowglobes, trees, books, gifts and mugs stay intact at desktop and phone widths. Surrounding image panes match the asset background, including the entire reading-room left column.
 - Removed the postage stamps in 11 and 12, the oversized arrow in 27, the extra mark in 09 and the arrows inside primary buttons. Buttons now use simple centred text, matching the native button vocabulary.
@@ -66,12 +66,12 @@ Regenerate the original raster assets with `node tools/design-library/winter-pro
 Five more Pro concepts bring the batch to **40: 30 Pro / 10 Free**, with 16 countdowns and 13 motion treatments. They stay in the same proposed collection and existing theme filters. The gallery links directly to the additions.
 
 - **36 / Tied with a little joy:** an illustrated ribbon frames a large live Christmas greeting. The offer and 20 December countdown are a note inside the card. Popup.
-- **37 / A cracker of a Christmas:** the invitation itself is a pink-and-red cracker silhouette, with bold editable lettering in its centre. The phone composition uses an upright cracker. Inline.
+- **37 / All wrapped up:** a sleepy ginger cat claims the gift-box lid; the cream box front holds live greeting copy and a gift-edit button. One complete illustration works on desktop and phone. Inline.
 - **38 / The Christmas express:** a green dispatch ticket, with a huge editable 18 December date and a perforated countdown stub. No raster image. Slide-in.
 - **39 / A letter from Santa:** Santa’s illustrated face flows into a warm-white letter and email form, followed by a matching thank-you note and 15% code. Popup.
 - **40 / Hello, twenty twenty-seven:** a graphic New Year print with oversized editable lettering, checked trim, native sparkle accents and a contrasting offer/countdown strip. No raster image. Fullscreen.
 
-[Creative research and rationale](review/creative-direction.md) records the user-provided Dribbble references behind this revision. The compositions are greeting cards rather than product photography with adjacent copy. The three illustrated cards use replaceable panel backgrounds or an image header; the ticket and New Year print use live type, borders, colour panels and native decorations. Each card uses two optional native sparkle decorations. No opening-card, cracker-pulling or character animation interaction is implied. Pause and reduced motion leave the complete design readable.
+[Creative research and rationale](review/creative-direction.md) records the user-provided Dribbble and Pinterest references behind this revision. The compositions are greeting cards rather than product photography with adjacent copy. The three illustrated cards use replaceable panel backgrounds or an image header; the ticket and New Year print use live type, borders, colour panels and native decorations. Each card uses two optional native sparkle decorations. No opening-card or character animation interaction is implied. Pause and reduced motion leave the complete design readable.
 
 Wrapped consent labels now align the checkbox with the first text line, with a 3px optical offset. The entire label remains clickable and at least 44px tall. It should not be centred against the combined height of multiple lines.
 
@@ -132,11 +132,11 @@ Re-check every design through the native renderer on desktop and mobile, with lo
 | 34 | Holiday post | Holiday info | Inline | Free | — | — |
 | 35 | Winter hours | Holiday info | Slide-in | Pro | — | — |
 | 36 | Tied with a little joy | Gifting | Popup | Pro | Yes | Sparkles |
-| 37 | A cracker of a Christmas | Gifting | Inline | Pro | — | Sparkles |
+| 37 | All wrapped up | Gifting | Inline | Pro | — | Sparkles |
 | 38 | The Christmas express | Last-minute | Slide-in | Pro | Yes | Sparkles |
 | 39 | A letter from Santa | Signup | Popup | Pro | — | Sparkles |
 | 40 | Hello, twenty twenty-seven | New Year | Fullscreen | Pro | Yes | Sparkles |
 
 ## Assets and rights
 
-The first 30 illustration assets come from original vector source in art.mjs, exported to assets/art/*.png by rasterize-art.mjs. Four original greeting-card assets in assets/cards/ were generated with the built-in OpenAI ImageGen tool; exact generation prompts are recorded in assets/cards/provenance.json. External reference campaign artwork was not copied or included. Selected generated originals are included without post-processing. These card assets are not regenerated by rasterize-art.mjs. DM Sans (regular/bold) and Instrument Serif (regular) are local copies of the existing commerce prototype fonts. Their SIL Open Font License notices are included in assets/. No Google Fonts request or external media request occurs at runtime. Production font delivery continues to follow WConvert's font permission rules.
+The first 30 illustration assets come from original vector source in art.mjs, exported to assets/art/*.png by rasterize-art.mjs. Three original greeting-card assets in assets/cards/ were generated with the built-in OpenAI ImageGen tool; exact generation prompts are recorded in assets/cards/provenance.json. External reference campaign artwork was not copied or included. Selected generated originals are included without post-processing. These card assets are not regenerated by rasterize-art.mjs. DM Sans (regular/bold) and Instrument Serif (regular) are local copies of the existing commerce prototype fonts. Their SIL Open Font License notices are included in assets/. No Google Fonts request or external media request occurs at runtime. Production font delivery continues to follow WConvert's font permission rules.

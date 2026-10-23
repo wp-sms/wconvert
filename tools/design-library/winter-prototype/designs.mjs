@@ -37,7 +37,7 @@ const rows = [
 ["Holiday post","Holiday info","Inline","post","Check your\nChristmas delivery.","Christmas delivery has its own timetable. Check dates and delivery areas before ordering.","Read delivery information"],
 ["Winter hours","Holiday info","Slide-in","hours","Your holiday\nopening hours.","A little change to our opening hours. Find your best time to visit.","See full opening hours"],
 ["Tied with a little joy", "Gifting", "Popup", "ribboncard", "Merry\n& bright.", "A little Christmas treat: 20% off our gift edit until 20 December.", "Find a little joy"],
-["A cracker of a Christmas", "Gifting", "Inline", "cracker", "Oh,\nwhat fun!", "Little gifts. Big grins. A Christmas edit worth making a fuss about.", "Explore the gift edit"],
+["All wrapped up", "Gifting", "Inline", "catnap", "All wrapped up.\nTime to curl up.", "Cosy little gifts for your favourite people. Even the ones who prefer the box.", "Find their cosy little gift"],
 ["The Christmas express", "Last-minute", "Slide-in", "expressticket", "All aboard\nfor Christmas.", "Order by 18 December. Check delivery areas and dispatch dates before you buy.", "Check delivery dates"],
 ["A letter from Santa", "Signup", "Popup", "santaletter", "Dear gift lover,", "A little surprise from our workshop: join our emails for gift ideas and a 15% welcome code.", "Send my request", "email"],
 ["Hello, twenty twenty-seven", "New Year", "Fullscreen", "newyearprint", "HELLO,\n2027.", "Good things ahead. Start with 20% off our New Year edit, until 5 January.", "Meet your new favourites"]
@@ -50,7 +50,7 @@ export const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 const eyebrow=t=>`<p class="eyebrow">${t}</p>`;
 const headline=d=>`<h1>${esc(d.headline).replace(/\n/g,'<br>')}</h1>`;
 const body=d=>`<p class="body-copy">${esc(d.body)}</p>`;
-const cardBackground=key=>`style="--card-art:url('${creativeArtwork[key].src}');${key==='cracker'?`--card-narrow:url('${creativeArtwork.crackerMobile.src}');`:''}"`;
+const cardBackground=key=>`style="--card-art:url('${creativeArtwork[key].src}');"`;
 const cardImage=key=>`<img class="card-illustration" src="${creativeArtwork[key].src}" alt="${creativeArtwork[key].alt}">`;
 
 const image=(key,extra='',fit='contain')=>{if(['art-banner','globe-art','ack-art'].includes(extra))key+='Banner';const a=artwork[key];return `<div class="artwork ${extra}" data-art="${key}" style="--art-bg:${a.bg}"><img src="${a.src}" alt="${a.alt}" data-fit="${fit}" style="object-fit:${fit}" width="${a.width}" height="${a.height}"></div>`;};
@@ -104,7 +104,7 @@ export function composition(d,ack=false){
 
 
  case '36':html=`<div class="ribbon-greeting" ${cardBackground('ribboncard')} data-play-decor="ribboncard">${eyebrow('A LITTLE CHRISTMAS WISH')}${headline(d)}<p class="greeting-signoff">from our little shop to you</p><div class="greeting-offer">${body(d)}${countdown(d)}${action(d)}${note(d)}</div></div>`;break;
- case '37':html=`<div class="cracker-paper" ${cardBackground('cracker')} data-play-decor="cracker"><div class="cracker-copy">${eyebrow('A CRACKER OF A CHRISTMAS')}${headline(d)}${body(d)}${action(d)}<p class="fine-print">Picked with love. Given with a grin.</p></div></div>`;break;
+ case '37':html=`<div class="catnap-top" data-play-decor="catnap">${cardImage('catnap')}</div><div class="catnap-paper">${eyebrow('A VERY COSY CHRISTMAS')}${headline(d)}${body(d)}${action(d)}<p class="catnap-signoff">With love, from our little shop</p></div>`;break;
  case '38':html=`<div class="ticket-top">${eyebrow('THE CHRISTMAS EXPRESS')}<p class="ticket-route">FROM OUR WORKSHOP &nbsp; / &nbsp; TO YOUR DOOR</p></div><div class="ticket-main" data-play-decor="ticket">${headline(d)}<div class="ticket-date"><span>ORDER<br>BY</span><strong>18</strong><span>DEC<br>2026</span></div>${body(d)}</div><div class="ticket-stub">${countdown(d)}${action(d)}<p class="fine-print">Thoughtful gifts. Thoughtfully timed.</p></div>`;break;
  case '39':html=`<div class="santa-top" data-play-decor="santa">${cardImage('santaletter')}</div><div class="santa-paper">${eyebrow('POST FROM THE CHRISTMAS WORKSHOP')}${headline(d)}${body(d)}${action(d)}${note(d)}<p class="santa-signature">With a little Christmas magic,<br><em>The gift workshop</em></p></div>`;break;
  case '40':html=`<div class="print-border"></div><div class="newyear-poster" data-play-decor="print">${eyebrow('SOMETHING GOOD IS JUST BEGINNING')}${headline(d)}<p class="print-wish">a fresh start looks good on you.</p></div><div class="newyear-offer"><div>${body(d)}${action(d)}</div>${countdown(d)}</div><p class="print-terms">Selected items. Until 5 January. Offer terms apply.</p><div class="print-border"></div>`;break;

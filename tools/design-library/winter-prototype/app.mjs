@@ -86,7 +86,7 @@ const concept={
 '34':'An illustrated parcel and a clean ruled information panel. A useful Free delivery notice with no fake urgency.',
 '35':'A compact winter-hours card with aligned date/time rows. The information is the design; the action points to the full timetable.',
  '36':'A Christmas greeting wrapped in a loose printed ribbon. The lettering is the main event, and the offer reads like a little note inside the card. No separate product-photo pane.',
-'37':'The entire invitation takes the shape of a Christmas cracker. Oversized live lettering sits in its pink paper centre, with the red ends forming the silhouette rather than a boxed illustration.',
+'37':'A sleepy ginger cat claims the gift-box lid. The cream box front continues into an editable greeting and gift-edit link. One replaceable illustration stays complete on every screen; two quiet twinkles frame the cat.',
 '38':'A festive dispatch ticket: the ordering date becomes the main graphic, with a perforated countdown stub. Everything meaningful is editable text; there is no decorative image to replace.',
 '39':'Santa’s illustrated face becomes the top of a personal letter. The warm-white paper continues directly into the message and signup, then a matching thank-you note.',
 '40':'A bold New Year print with enormous live lettering, a checkerboard trim and a separate green offer strip. Graphic sparkle decorations fill the margins; no hero photograph is needed.' };
@@ -98,7 +98,7 @@ function render(){
   const style=document.createElement('style');style.textContent=DECORATION_CSS;campaign.append(style);
   campaign.classList.add('wc-root');campaign.dataset.motion=p.get('motion')==='off'||prefersReduced?'paused':'running';
   for(const panel of campaign.querySelectorAll('[data-play-decor]')){
-   const items=panel.dataset.playDecor==='print'?[{kind:'sparkle',motion:'float',color:'accent',x:9,y:20,size:65},{kind:'sparkle',motion:'blink',color:'fg',x:91,y:77,size:48}]:panel.dataset.playDecor==='cracker'?[{kind:'sparkle',motion:'blink',color:'accent-fg',x:15,y:16,size:19},{kind:'sparkle',motion:'float',color:'accent-fg',x:85,y:84,size:14}]:[{kind:'sparkle',motion:'float',color:'fg',x:9,y:38,size:16},{kind:'sparkle',motion:'blink',color:'fg',x:91,y:65,size:13}];
+   const items=panel.dataset.playDecor==='print'?[{kind:'sparkle',motion:'float',color:'accent',x:9,y:20,size:65},{kind:'sparkle',motion:'blink',color:'fg',x:91,y:77,size:48}]:panel.dataset.playDecor==='catnap'?[{kind:'sparkle',motion:'blink',color:'accent',x:14,y:21,size:17},{kind:'sparkle',motion:'float',color:'accent',x:72,y:16,size:13}]:[{kind:'sparkle',motion:'float',color:'fg',x:9,y:38,size:16},{kind:'sparkle',motion:'blink',color:'fg',x:91,y:65,size:13}];
    decorate(panel,{label:'Optional festive glints',items});
   }
  }
